@@ -100,10 +100,7 @@ end
 res = true;
 
 for i = 1:N
-    if abs(res_test(i)-res_real(i)) > 1e-14
-       res = false;
-       break;
-    end
+    assertLoop(abs(res_test(i)-res_real(i)) <= 1e-14,i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

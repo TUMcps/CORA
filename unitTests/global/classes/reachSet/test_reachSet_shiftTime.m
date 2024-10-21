@@ -43,10 +43,8 @@ R_shifted = shiftTime(R,shift);
 % compare results
 res = true;
 for i=1:steps-1
-    if ~withinTol(R_shifted.timePoint.time{i},...
-            R.timePoint.time{i}+shift,1e-14)
-        res = false; break
-    end
+    assertLoop(withinTol(R_shifted.timePoint.time{i},...
+            R.timePoint.time{i}+shift,1e-14),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

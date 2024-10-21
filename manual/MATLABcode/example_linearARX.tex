@@ -1,0 +1,39 @@
+% This file was automatically created from the m-file
+% "m2tex.m" written by USL.
+% The fontencoding in this file is UTF-8.
+%
+% You will need to include the following two packages in
+% your LaTeX-Main-File.
+%
+% \usepackage{color}
+% \usepackage{fancyvrb}
+%
+% It is advised to use the following option for Inputenc
+% \usepackage[utf8]{inputenc}
+%
+
+% definition of matlab colors:
+\definecolor{mblue}{rgb}{0,0,1}
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333}
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118}
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5}
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25}
+
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$}
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#}
+
+\noindent
+$$\color{mgreen}$% system matrices$\color{black}$$\\
+$A_bar = {[0.4 0.6; 0.6 0.4];$\\
+$    [0.1 0; 0.2 0.1]};$\\
+$B_bar = {[0; 0];[0.3; -0.7];$\\
+$    [0.1; 0]};$\\
+$$\\
+$$\color{mgreen}$% sampling time$\color{black}$$\\
+$dt = 0.1;$\\
+$$\\
+$$\color{mgreen}$% ARX system$\color{black}$$\\
+$sys = linearARX(A_bar, B_bar, dt);$\\
+
+\UndefineShortVerb{\$}
+\UndefineShortVerb{\#}

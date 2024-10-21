@@ -3,11 +3,12 @@ function Z = mtimes(factor1,factor2)
 %    interval matrix with a zonotope
 %
 % Syntax:
+%    Z = factor1 * factor2
 %    Z = mtimes(factor1,factor2)
 %
 % Inputs:
-%    factor1 - numerical or interval matrix
-%    factor2 - zonotope object 
+%    factor1 - zonotope object, numeric matrix or scalar
+%    factor2 - zonotope object, numeric scalar
 %
 % Outputs:
 %    Z - zonotope object
@@ -20,13 +21,7 @@ function Z = mtimes(factor1,factor2)
 %    figure; hold on;
 %    plot(Z,[1,2],'b');
 %    plot(Zmat,[1,2],'r');
-%
-% References:
-%    [1] M. Althoff. "Reachability analysis and its application to the 
-%        safety assessment of autonomous cars", Dissertation, TUM 2010
-%    [2] M. Althoff et al. "Modeling, Design, and Simulation of Systems 
-%        with Uncertainties". 2011
-%
+%    
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
@@ -41,107 +36,34 @@ function Z = mtimes(factor1,factor2)
 %                01-February-2011
 %                08-February-2011
 %                18-November-2015
-% Last revision: ---
+% Last revision: 04-October-2024 (MW, remove InferiorClasses from zonotope)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%Find a zonotope object
-[Z,M] = findClassArg(factor1,factor2,'zonotope');
-
 try
 
-    %numeric matrix
-    if isnumeric(M)
-        Z.c=M*Z.c;
-        Z.G=M*Z.G;
-        
-    % interval (see Theorem 3.3 in [1])
-    elseif isa(M,'interval')
-        %get minimum and maximum
-        M_min=infimum(M);
-        M_max=supremum(M);
-        %get center of interval matrix
-        T=0.5*(M_max+M_min);
-        %get symmetric interval matrix
-        S=0.5*(M_max-M_min);
-        Zabssum=sum(abs([Z.c,Z.G]),2);
-        %compute new zonotope
-        Z.c = T*Z.c;
-        Z.G = [T*Z.G,diag(S*Zabssum)]; 
-    
-    % interval matrix (see Theorem 3.3 in [1])
-    elseif isa(M,'intervalMatrix')
-        %get minimum and maximum
-        M_min=infimum(M.int);
-        M_max=supremum(M.int); 
-        %get center of interval matrix
-        T=0.5*(M_max+M_min);
-        %get symmetric interval matrix
-        S=0.5*(M_max-M_min);
-        Zabssum=sum(abs([Z.c,Z.G]),2);
-        %compute new zonotope
-        Z.c = T*Z.c;
-        Z.G = [T*Z.G,diag(S*Zabssum)]; 
-    
-    % matrix zonotope (see Sec. 4.4.1 in [2])
-    elseif isa(M,'matZonotope')
-        % extract center and generators
-        c = Z.c;
-        G = Z.G;
-        m = size(G,2);
-
-        % get output dimension
-        if all(M.dim == 1)
-            % multiplication with a scalar
-            n = length(c);
-        else
-            % matrix multiplication
-            n = M.dim(1);
-        end
-
-        % obtain first zonotope
-        cnew = M.C * c;
-        try
-        Gnew = [
-            M.C * G, ...
-            reshape(pagemtimes(M.G,c),n,[]), ...
-            reshape( ...
-                pagemtimes(M.G,reshape(G,size(G,1),1,1,size(G,2))), ...
-                n,[])
-        ];
-        catch ME
-            keyboard
-        end
-        
-        %write to Z.c, Z.G
-        Z.c=cnew;
-        Z.G=Gnew;
-    
-    else
-        % throw error
-        throw(CORAerror('CORA:noops',M,Z));
-    end
-
-catch ME
-    % note: error has already occured, so the operations below don't have
-    % to be efficient
-
-    % already know what's going on...
-    if startsWith(ME.identifier,'CORA')
-        rethrow(ME);
-    end
-
-    % check for empty sets
-    if representsa_(Z,'emptySet',eps)
+    % matrix/scalar * zonotope
+    if isnumeric(factor1)
+        c = factor1*factor2.c;
+        G = factor1*factor2.G;
+        Z = zonotope(c,G);
         return
     end
 
+    % zonotope * matrix
+    if isnumeric(factor2)
+        c = factor2*factor1.c;
+        G = factor2*factor1.G;
+        Z = zonotope(c,G);
+        return
+    end
+
+catch ME
     % check whether different dimension of ambient space
     equalDimCheck(factor1,factor2);
-
-    % other error...
     rethrow(ME);
-
 end
+
+throw(CORAerror('CORA:noops',factor1,factor2));
 
 % ------------------------------ END OF CODE ------------------------------

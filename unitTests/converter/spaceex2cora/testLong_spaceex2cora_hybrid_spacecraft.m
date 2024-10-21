@@ -55,11 +55,7 @@ for i = 1:length(x)
     diff = x{i} - x_SX{i};
     error = sum(diff.^2,1);
     
-    if any(error > 1e-5) 
-        disp('Failed Conversion: error = ' + string(max(error)));
-        res = false;
-        return
-    end 
+    assertLoop(error <= 1e-5,i) 
 end
 
 disp('Successful Conversion: error = ' + string(max(error)))

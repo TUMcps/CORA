@@ -1,0 +1,16 @@
+\subsection{Unit Tests} \label{sec:unitTests}
+
+To ensure that all functions in CORA work as they should, CORA contains a number of unit tests in the folder \texttt{unitTests}. Those unit tests are executed by different test suits:
+%, which also categorize the unit tests:
+\begin{itemize}
+ \item \texttt{runTestSuite}: This test suite should always be executed after installing CORA or updating MATLAB/CORA/MPT and runs all basic tests. All files whose function name starts with \texttt{test\_} are executed.
+ \item \texttt{runTestSuite\_INTLAB}: This test suite compares the interval arithmetic results with those of INTLAB\footnote{\url{http://www.ti3.tu-harburg.de/intlab/}}. To successfully execute those tests, INTLAB has to be installed. The tests are randomized and for each function, thousands of samples are generated. Simple, non-randomized tests for interval arithmetic are already included in \texttt{runTestSuite}. This test suite executes all files whose function name starts with \texttt{testINTLAB\_}.
+ \item \texttt{runTestSuite\_longDuration}: This test suite contains test functions that take a long time to compute. Running this test suite may take several hours. This test suite executes all files whose function name starts with \texttt{testLongDuration\_}.
+ \item \texttt{runTestSuite\_Mosek}: This test suite runs all files requiring the Mosek solver\footnote{\url{https://www.mosek.com}}, i.e., those that start with \texttt{testMosek\_}. 
+ \item \texttt{runTestSuite\_MP}: This test suite runs all files requiring the multiple precision toolbox\footnote{\url{https://www.mathworks.com/matlabcentral/fileexchange/6446-multiple-precision-toolbox-for-matlab}}, i.e., those that start with \texttt{testMP\_}. 
+ \item \texttt{runTestSuite\_SDPT3}: This test suite runs all files requiring the SDPT3 solver\footnote{\url{https://blog.nus.edu.sg/mattohkc/softwares/sdpt3}}, i.e., those that start with \texttt{testSDPT3\_}.
+ \item \texttt{runTestSuite\_nn}: This test suite runs all files related to the verification of neural networks, i.e., those indicated by \texttt{nn} and \texttt{neurNetContrSys}.
+\end{itemize}
+
+Note: According to our experience, results may vary numerically depending on the installed MATLAB version.
+CORA \CORAVERSION has been tested using MATLAB \MATLABversion.

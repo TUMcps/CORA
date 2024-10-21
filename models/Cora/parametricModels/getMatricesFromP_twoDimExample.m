@@ -1,4 +1,4 @@
-function [A, B, C, D] = getMatricesFromP_twoDimExample(p,sys)
+function [A, B, C, D] = getMatricesFromP_twoDimExample(p,dims)
 % getMatricesFromP_twoDimExample - returns matrices of a linear system
 % given a parameter vectors. This is required for gray-box conformance
 % syntehsis of linear systems.
@@ -25,9 +25,9 @@ function [A, B, C, D] = getMatricesFromP_twoDimExample(p,sys)
 %------------- BEGIN CODE --------------
 
 % obtain sizes of matrices
-dim_x = size(sys.A,1);
-dim_u = size(sys.B,2);
-dim_y = size(sys.C,1);
+dim_x = dims(1);
+dim_u = dims(2);
+dim_y = dims(3);
 
 % system matrix
 A = reshape(p(1:dim_x^2), dim_x, dim_x); 

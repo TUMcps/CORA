@@ -1,0 +1,48 @@
+\subsubsection{reachInner} \label{sec:reachInner}
+
+The operation \operator{reach}, which was introduced in \cref{sec:reach}, computes a tight outer-approximation $\mathcal{R}(t) \supseteq \mathcal{R}^e(t)$ of the exact reachable set $\mathcal{R}^e(t)$ as defined in \eqref{eq:reachSet}. For most cases computing an outer-approximation of the reachable set is sufficient. However, sometimes it also required to compute an inner-approximation $\mathcal{R}^i(t) \subseteq \mathcal{R}^e(t)$ of the exact reachable set: Inner-approximations can be used to prove that a system provably violates a given specification, they are required for conformance testing using \textit{reachset conformance} \cite{Roehm2016}, and they are very useful for controller synthesis where one often has to prove that the controlled system is guaranteed to reach a certain goal set.
+
+The operation \operator{reachInner} computes a tight inner-approximation $\mathcal{R}^i(t) \subseteq \mathcal{R}^e(t)$ of the exact reachable set $\mathcal{R}^e(t)$ as defined in \eqref{eq:reachSet}. Currently, CORA only supports the computation of inner-approximations for the reachable set at certain time-points $t_i$, but not for time intervals $\tau_i = [t_i,t_{i+1}]$. Since some approaches compute an inner-approximation based on the outer-approximation of the reachable set, the operation \texttt{reachInner} returns in some cases both an inner-approximation as well as an outer-approximation of the reachable set.
+
+The syntax for the operation \texttt{reachInner} is:
+\begin{equation*}
+	\begin{split}
+		[\texttt{Rin},\texttt{Rout}] &= \texttt{reachInner}(\texttt{sys},\texttt{params},\texttt{options}), \\
+		\texttt{Rin} &= \texttt{reachInner}(\texttt{sys},\texttt{params},\texttt{options}),
+	\end{split}
+\end{equation*}
+with input arguments
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{sys} & dynamic system defined by any of the classes in \cref{sec:continuousDynamics}, e.g., \texttt{linearSys}, \texttt{nonlinearSys}, etc. \\
+	$\bullet$~\texttt{params} & struct containing the parameter that define the reachability problem. The parameters are identical to those for the operation \texttt{reach} (see \cref{sec:reach}). \\
+	$\bullet$~\texttt{options} & struct containing algorithm settings for reachability analysis. Since the settings are different for each type of dynamic system, they are documented in \cref{sec:continuousDynamics}.
+\end{tabular}
+\end{center}
+
+and output arguments
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{Rin} & object of class \texttt{reachSet} (see \cref{sec:reachSet}) that stores the inner-approximations $\mathcal{R}^i(t_i)$ of the reachable set at time points $t_i$. \\
+	$\bullet$~\texttt{Rout} & object of class \texttt{reachSet} (see \cref{sec:reachSet}) that stores the outer-approximations $\mathcal{R}(t_i)$ of the reachable set at time points $t_i$ (class \texttt{nonlinearSys} only).
+\end{tabular}
+\end{center}
+
+
+Let us demonstrate the operation \texttt{reachInner} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.58\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_reachInner}
+\end{minipage}
+\begin{minipage}[t]{0.4\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/contDynamics/example_reachInner}
+\end{minipage}
+\end{center}

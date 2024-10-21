@@ -1,13 +1,13 @@
-function [R,tcomp] = observe_HinfG(obj,options)
+function [R,tcomp] = observe_HinfG(linsysDT,params,options)
 % observe_HinfG - computes the guaranteed state estimation approach
-% from [1].
-%
+%    from [1].
 %
 % Syntax:
-%    [R,tcomp] = observe_HinfG(obj,options)
+%    [R,tcomp] = observe_HinfG(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -19,8 +19,6 @@ function [R,tcomp] = observe_HinfG(obj,options)
 %        Interval estimation methods for discrete-time linear time-
 %        invariant systems. IEEE Transactions on Automatic Control,
 %        64(11):4717-4724, 2019.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -36,12 +34,11 @@ function [R,tcomp] = observe_HinfG(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % obtain offline gains
-
-options.L = observe_gain_HinfG(obj,options);
+options.L = observe_gain_HinfG(linsysDT,params,options);
 
 % apply set-membership approach
 tic
-R = observe_interval(obj,options);
+R = observe_interval(linsysDT,params,options);
 tcomp = toc;
 
 % ------------------------------ END OF CODE ------------------------------

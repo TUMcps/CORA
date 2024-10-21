@@ -1,0 +1,56 @@
+\subsubsection{simulate} \label{sec:simulate}
+
+The operation \texttt{simulate} simulates a dynamical system and returns a trajectory starting from the initial state $x_0 = x(t_0) \in \Rn$ for an input signal $u(t) \in \R^m$ and a parameter value $p \in \R^p$. The syntax is as follows:
+\begin{equation*}
+	\begin{split}
+		& [\texttt{t},\texttt{x}] = \texttt{simulate}(\texttt{sys},\texttt{params}), \\
+		& [\texttt{t},\texttt{x},\texttt{ind}] = \texttt{simulate}(\texttt{sys},\texttt{params},\texttt{options}), \\
+		& [\texttt{t},\texttt{x},\texttt{ind},\texttt{y}] = \texttt{simulate}(\texttt{sys},\texttt{params},\texttt{options}),
+	\end{split}
+\end{equation*} 
+with the input arguments
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{sys} &  dynamic system defined by one of the classes in \cref{sec:continuousDynamics,sec:hybridDynamics}, e.g., \texttt{linearSys}, \texttt{hybridAutomaton}, etc. \\
+	$\bullet$~\texttt{params} & struct containing the parameter for the simulation \\
+	 & \begin{tabular}[t]{l p{10cm}}	
+	 	--~\texttt{.tStart} & initial time $t_0$ (default value 0) \\
+	 	--~\texttt{.tFinal} & final time $t_f$ \\ 	
+	 	--~\texttt{.x0} & initial point $x_0$ \\
+	 	--~\texttt{.u} & piecewise-constant input signal $u(t)$ specified as a matrix for which the number of rows is identical to the number of system inputs \\
+	 	--~\texttt{.p} & parameter value $p$ (class \texttt{nonlinParamSys} only) \\
+	 	--~\texttt{.w} & disturbance $w$ (classes \texttt{linearSys} and \texttt{linearSysDT} only) \\
+	 	--~\texttt{.v} & sensor noise $v$ (classes \texttt{linearSys} and \texttt{linearSysDT} only) \\
+	 	--~\texttt{.y0guess} & guess for a consistent initial algebraic state (class \texttt{nonlinDASys} only, see \cref{sec:reachDAEsys}). \\
+	 	--~\texttt{.startLoc} & index of the initial location (class \texttt{hybridAutomaton} and \texttt{parallelHybridAutomaton} only) \\
+	 	--~\texttt{.finalLoc} & index of the final location (class \texttt{hybridAutomaton} and \texttt{parallelHybridAutomaton} only)
+	 	\end{tabular}	\\
+	$\bullet$~\texttt{options} & simulation options for MATLAB's \texttt{ode45} function (see \url{https://de.mathworks.com/help/matlab/ref/ode45.html}).
+\end{tabular}
+\end{center}
+and the output arguments
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{t} & time points of the simulated trajectory \\
+	$\bullet$~\texttt{x} & states of the simulated trajectory \\
+	$\bullet$~\texttt{ind} & index of event function triggered by MATLAB's \texttt{ode45} function (see \url{https://de.mathworks.com/help/matlab/ref/ode45.html}) \\
+	$\bullet$~\texttt{y} & output trajectory (classes \texttt{linearSys} and \texttt{linearSysDT} only)
+\end{tabular}
+\end{center}
+
+Let us demonstrate the operation \texttt{simulate} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.45\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_simulate}
+\end{minipage}
+\begin{minipage}[t]{0.4\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/contDynamics/example_simulate}
+\end{minipage}
+\end{center}

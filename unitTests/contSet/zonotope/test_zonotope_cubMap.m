@@ -48,9 +48,7 @@ temp = [2 3 1 4 7 1 0 -1 1 6 9 3 12 21 3 0 -3 3 -2 -3 -1 -4 -7 -1 0 1 -1];
 Z_ = [temp;temp];
 
 % check for correctness
-if ~compareMatrices(Z_,[Zres.c, Zres.G])
-    res = false;
-end
+assert(compareMatrices(Z_,[Zres.c, Zres.G]))
 
 
 % TEST 2: Cubic Multiplication
@@ -74,8 +72,8 @@ temp = [16 13 -1 14 -4 0 21 -7 3 -1];
 Z_ = [temp;temp];
 
 % check for correctness
-if ~compareMatrices(Z_,[Zres.c,Zres.G])
-    res = false;
+assert(compareMatrices(Z_,[Zres.c,Zres.G]))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

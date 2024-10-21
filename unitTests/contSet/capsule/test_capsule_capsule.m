@@ -23,7 +23,7 @@ function res = test_capsule_capsule
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
+res = true;
 
 % 2D center, generator, and radius
 c = [2; 0];
@@ -33,23 +33,15 @@ r = 0.5;
 % admissible initializations
 % only center
 C = capsule(c);
-res(end+1,1) = compareMatrices(C.c,c) && compareMatrices(C.g,zeros(2,1)) ...
-    && withinTol(C.r,0);
+assert(compareMatrices(C.c,c) && compareMatrices(C.g,zeros(2,1)) && withinTol(C.r,0));
 
 % center and generator
 C = capsule(c,g);
-res(end+1,1) = compareMatrices(C.c,c) && compareMatrices(C.g,g);
+assert(compareMatrices(C.c,c) && compareMatrices(C.g,g));
 
 % center, generator, and radius
 C = capsule(c,g,r);
-res(end+1,1) = compareMatrices(C.c,c) && compareMatrices(C.g,g) ...
-    && withinTol(C.r,r);
-
-% combine results
-res = all(res);
-
-
-if CHECKS_ENABLED
+assert(compareMatrices(C.c,c) && compareMatrices(C.g,g) && withinTol(C.r,r));
 
 % wrong initializations
 cn_1 = [3; 2; -1];
@@ -58,33 +50,16 @@ rneg = -0.2;
 rvec = [1; 4];
 
 % mismatch between center and generator
-try
-    C = capsule(c,gn_1); % <- should throw error here
-    res = false;
-end
-try
-    C = capsule(cn_1,g); % <- should throw error here
-    res = false;
-end
-
+assertThrowsAs(@capsule,'CORA:wrongInputInConstructor',c,gn_1);
+assertThrowsAs(@capsule,'CORA:wrongInputInConstructor',cn_1,g);
+    
 % negative radius
-try
-    C = capsule(c,g,rneg); % <- should throw error here
-    res = false;
-end
+assertThrowsAs(@capsule,'CORA:wrongValue',c,g,rneg);
 
 % radius as a vector
-try
-    C = capsule(c,g,rvec); % <- should throw error here
-    res = false;
-end
+assertThrowsAs(@capsule,'CORA:wrongValue',c,g,rvec);
 
 % too many input arguments
-try
-    C = capsule(c,g,r,r); % <- should throw error here
-    res = false;
-end
-
-end
+assertThrowsAs(@capsule,'CORA:numInputArgsConstructor',c,g,r,r);
 
 % ------------------------------ END OF CODE ------------------------------

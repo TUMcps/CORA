@@ -54,9 +54,7 @@ for i=1:nrTests
     pts = p1 + (p2-p1) .* linspace(0,1,ptsPerLine);
 
     % random points have to be also in Zenc
-    if ~all(contains(Zenc,pts))
-        res = false; return
-    end
+    assertLoop(all(contains(Zenc,pts)),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

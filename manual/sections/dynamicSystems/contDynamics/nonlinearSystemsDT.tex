@@ -1,0 +1,114 @@
+\subsubsection{Nonlinear Discrete-Time Systems} \label{sec:nonlinearSystemsDT}
+
+In this section, we consider nonlinear discrete-time systems defined as
+\begin{align}
+	x[i+1] &= f \big( x[i],u[i] \big), \label{eq:nonlinearSystemDT} \\
+	y[i] &= g \big( x[i],u[i] \big), \label{eq:nonlinearSystemDT_output}
+\end{align}
+where $x[i] \in \Rn$ is the system state, $u[i] \in \R^m$ is the system input, $y[i]$ is the system output, and $f:\Rn \times \R^m \to \Rn$ and $g:\Rn \times \R^m \to \R^o$ are continuous functions. %Lipschitz continuity not required for discrete-time systems
+Nonlinear discrete-time systems are implemented in CORA by the class \texttt{nonlinearSysDT}. An object of class \texttt{nonlinearSysDT} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \texttt{sys} = \texttt{nonlinearSysDT}(\texttt{fun},\Delta t), \\
+     	& \texttt{sys} = \texttt{nonlinearSysDT}(\texttt{name},\texttt{fun},\Delta t), \\
+    	& \texttt{sys} = \texttt{nonlinearSysDT}(\texttt{fun},\Delta t,n,m), \\
+     	& \texttt{sys} = \texttt{nonlinearSysDT}(\texttt{name},\texttt{fun},\Delta t,n,m), \\
+     	& \texttt{sys} = \texttt{nonlinearSysDT}(\texttt{fun},\Delta t,\texttt{outFun}), \\
+     	& \texttt{sys} = \texttt{nonlinearSysDT}(\texttt{name},\texttt{fun},\Delta t,\texttt{outFun}), \\
+     	& \texttt{sys} = \texttt{nonlinearSysDT}(\texttt{fun},\Delta t,n,m,\texttt{outFun},o), \\
+     	& \texttt{sys} = \texttt{nonlinearSysDT}(\texttt{name},\texttt{fun},\Delta t,n,m,\texttt{outFun},o),
+	\end{split}
+\end{equation*} 
+where \texttt{name} is a string specifying the name of the system, \texttt{fun} is a MATLAB function handle defining the function $f(x[i],u[i])$ in \eqref{eq:nonlinearSystemDT}, $\Delta t$ is the sampling time specifying the time difference between $x[i+1]$ and $x[i]$, $n$ is the number of states (see \eqref{eq:nonlinearSystemDT}), and $m$ is the number of inputs (see \eqref{eq:nonlinearSystemDT}), \texttt{outFun} is a MATLAB function handle defining the function $g(x[i],u[i])$ in \eqref{eq:nonlinearSystemDT_output}, and $o$ is the number of outputs. If the number of states $n$, the number of inputs $m$, and the number of outputs $o$ are not provided, they are automatically determined from the function handle \texttt{fun}. If no output equation is provided, we assume $y = x$. Let us demonstrate the class \texttt{nonlinearSysDT} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.48\textwidth}
+	\vspace{10pt}
+	\begin{equation*}
+	\begin{bmatrix} x_1[i+1] \\ x_2[i+1] \\ x_3[i+1] \end{bmatrix} = \begin{bmatrix} x_1[i] + u_1[i] \\ x_2[i] + u_2[i] \cos(x_1[i]) \\ x_3[i] + u_2[i] \sin(x_1[i]) \end{bmatrix}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[t]{0.48\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_nonlinearSysDT}
+\end{minipage}
+\end{center}
+
+
+
+
+
+\subsubsubsection{Operations \texttt{reach} / \texttt{observe}}  
+
+Since the system evolves in discrete time, the task of calculating the reachable set is identical to the computation of the image of the nonlinear function $f(x[i],u[i])$ in \eqref{eq:nonlinearSystemDT} for $x[i] \in \mathcal{X}_i$ and $u[i] \in \mathcal{U}$. Similar to continuous-time nonlinear systems, we abstract the nonlinear function by a Taylor series of order $\kappa$:
+\begin{equation} \label{eq:taylorSeriesDT}
+ x_l[i+1] \in \underbrace{\sum_{j=0}^{\kappa - 1} \frac{\left((z[i]-z^*)^T \nabla \right)^j f_l(z^*)}{j!}}_{f_l^{abstract}(x[i],u[i])} ~\oplus ~\mathcal{L}_l[i],
+\end{equation}
+where $z[i] = [x[i]^T~u[i]^T]^T$ and the Nabla operator is defined as $\nabla = \sum_{i=1}^{n+m} e_i \frac{\partial}{\partial z_i}$ with $e_i \in \mathbb{R}^{n+m}$ being orthogonal unit vectors. The set of abstraction errors $\mathcal{L}$ ensures that $f(x,u)\in f^{abstract}(x[i],u[i]) \oplus \mathcal{L}$, which allows the reachable set to be computed in an over-approximative way. 
+
+The settings for reachability analysis are specified as fields of the struct \texttt{options} (see \cref{sec:reach}). For nonlinear discrete-time systems the following settings are available:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{10cm}}	
+	--~\texttt{.tensorOrder} & order $\kappa$ of the Taylor series expansion for the abstraction of the dynamic function in \eqref{eq:taylorSeriesDT}. The recommended values are $\kappa = 2$ or $\kappa = 3$. \\
+	--~\texttt{.tensorOrderOutput} & order $\kappa$ of the Taylor series expansion for the abstraction of the output function. The recommended values are $\kappa = 2$ or $\kappa = 3$. \\
+	--~\texttt{.zonotopeOrder} & upper bound for the zonotope order $\rho$ (see \cref{sec:zonotope}). \\
+	--~\texttt{.reductionTechnique} & string specifying the method used to reduce the zonotope order (see \cref{tab:zono_reduction}). The default value is \texttt{'girard'}. \\
+	--~\texttt{.errorOrder} & the zonotope order $\rho$ (see \cref{sec:zonotope}) is reduced to \texttt{errorOrder} internally before the linearization error is computed. This is done since the computation of the linearization error involves quadratic or even cubic maps that drastically increase the number of generators of the set. \\
+	--~\texttt{.lagrangeRem} & struct containing settings for evaluating the Lagrange remainder $\mathcal{L}$ (see \cref{tab:settingsLagrangeRem}). \\
+	--~\texttt{.polyZono} & struct containing settings for restructuring polynomial zonotopes (see \cref{tab:polyZono}). Only to be used in \texttt{reach} for algorithm \texttt{'poly'} and if polynomial zonotopes are used to represent the reachable set.
+\end{tabular}
+\end{center}
+
+Besides the above settings for reachability analysis, one can also specify the algorithm for set-based estimation. The current list of observers for discrete-time nonlinear systems implemented is shown in \cref{tab:implementedObserversNonlinear}. The implemented observers are categorized according to \cite{Althoff2021c,Althoff2021d}. While some reachability analysis approaches are agnostic with respect to the set representation, most approaches for set-based observers are specifically designed for a specific set representation.
+
+Because strip-based observers can only finish their computation of the estimated set after the measurement, their result is always delayed. When a set-propagation observer or interval observer is real-time capable, the estimated set is obtained ahead of time. This issue can be fixed for strip-based observers when additionally computing a one-step prediction and use this set as the initial set as shown in \cite[Sec.~III]{Schuermann2018a}. For this reason, we list these algorithms as not  in \cref{tab:implementedObserversLinear}.
+
+\begin{table*}[tb]
+	\caption{Algorithms for set-based estimation for discrete-time nonlinear systems.}
+	\centering
+	\label{tab:implementedObserversNonlinear}
+	\begin{tabular}{llllc}
+		\toprule
+		& & {\bf Ready} \\
+		& {\bf Set repre-} & {\bf for} & {\bf Supported} \\
+		{\bf Technique} & {\bf sentation} & {\bf control} & {\bf Reference} \\
+		\midrule
+		\multicolumn{4}{c}{strip-based observers} \\
+		\midrule
+		VolMin-A &  zonotope &      \xmark & \cite{Alamo2005} \\
+		VolMin-B &  zonotope &      \xmark & \cite{Bravo2006a} \\
+		FRad-A &    zonotope &      \xmark & \cite{Alamo2005} \\
+		FRad-B &    zonotope &      \xmark & \cite{Wang2018a} \\
+		CZN-A &     constr. zono. & \xmark & \cite{Scott2016} \\
+		CZN-B &     constr. zono. & \xmark & \cite{Alanwar2020b} \\
+		\midrule
+		\multicolumn{4}{c}{set-propagation observers} \\
+		\midrule
+		FRad-C &    zonotope &      \cmark & \cite{Combastel2015} \\
+		\bottomrule
+	\end{tabular}
+\end{table*}
+
+
+
+
+\subsubsubsection{Operation \texttt{isconform}}
+
+The operator \texttt{isconform} checks reachset conformance. 
+The settings for reachset conformance checking are as for reachability analysis and rapidly-exploring random trees. In addition, the algorithm as listed in \cref{tab:nonlinAlgIsconform} can be selected.
+
+\begin{table}[h]
+	\caption{Conformance algorithms for discrete-time nonlinear systems.}
+	\centering
+	\label{tab:nonlinAlgIsconform}
+	\begin{tabular}{lll}
+		\toprule
+		\textbf{Algorithm} & \textbf{Description} & \textbf{Reference} \\
+		\midrule
+		\texttt{RRT} & checks conformance using RRTs & \cite{Althoff2012b} \\
+		\texttt{BF} & brute-force conformance check & \cite{Roehm2016} \\
+		\bottomrule
+	\end{tabular}
+\end{table}

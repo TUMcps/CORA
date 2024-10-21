@@ -73,31 +73,24 @@ for i=dims
         for k=1:rndDirs
             %% overapproximations
             % normal case
-            if supportFunc(Eo_exact,nn(:,k))<supportFunc(Z,nn(:,k)) || ...
-               supportFunc(Eo_n,nn(:,k))<supportFunc(Z,nn(:,k)) || ...
-               supportFunc(Eo_nb,nn(:,k))<supportFunc(Z,nn(:,k))
-                throw(CORAerror('CORA:testFailed'));
-            end
+            assertLoop(supportFunc(Eo_exact,nn(:,k)) >= supportFunc(Z,nn(:,k)),i,j,k);
+            assertLoop(supportFunc(Eo_n,nn(:,k)) >= supportFunc(Z,nn(:,k)),i,j,k);
+            assertLoop(supportFunc(Eo_nb,nn(:,k)) >= supportFunc(Z,nn(:,k)),i,j,k);
+
             % degenerate case
-            if supportFunc(Eo_exact_deg,nn_deg(:,k))<supportFunc(Z_deg,nn_deg(:,k)) || ...
-               supportFunc(Eo_n_deg,nn_deg(:,k))<supportFunc(Z_deg,nn_deg(:,k)) || ...
-               supportFunc(Eo_nb_deg,nn_deg(:,k))<supportFunc(Z_deg,nn_deg(:,k))
-                throw(CORAerror('CORA:testFailed'));
-            end
+            assertLoop(supportFunc(Eo_exact_deg,nn_deg(:,k)) >= supportFunc(Z_deg,nn_deg(:,k)),i,j,k);
+            assertLoop(supportFunc(Eo_n_deg,nn_deg(:,k)) >= supportFunc(Z_deg,nn_deg(:,k)),i,j,k);
+            assertLoop(supportFunc(Eo_nb_deg,nn_deg(:,k)) >= supportFunc(Z_deg,nn_deg(:,k)),i,j,k);
+               
             
             %% underapproximations
             % normal case
-            if supportFunc(Eu_exact,nn(:,k))>supportFunc(Z,nn(:,k)) || ...
-               supportFunc(Eu_n,nn(:,k))>supportFunc(Z,nn(:,k)) %|| ...
-               %supportFunc(Eu_nb,nn(:,k))>supportFunc(Z,nn(:,k)) 
-                throw(CORAerror('CORA:testFailed'));
-            end
+            assertLoop(supportFunc(Eu_exact,nn(:,k)) <= supportFunc(Z,nn(:,k)),i,j,k)
+            assertLoop(supportFunc(Eu_n,nn(:,k)) <= supportFunc(Z,nn(:,k)),i,j,k);
+
             % degenerate case
-            if supportFunc(Eu_exact_deg,nn_deg(:,k))>supportFunc(Z_deg,nn_deg(:,k)) || ...
-               supportFunc(Eu_n_deg,nn_deg(:,k))>supportFunc(Z_deg,nn_deg(:,k)) %|| ...
-               %supportFunc(Eu_nb_deg,nn_deg(:,k))>supportFunc(Z_deg,nn_deg(:,k)) 
-                throw(CORAerror('CORA:testFailed'));
-            end
+            assertLoop(supportFunc(Eu_exact_deg,nn_deg(:,k)) <= supportFunc(Z_deg,nn_deg(:,k)),i,j,k)
+            assertLoop(supportFunc(Eu_n_deg,nn_deg(:,k)) <= supportFunc(Z_deg,nn_deg(:,k)),i,j,k)
         end
     end
 end

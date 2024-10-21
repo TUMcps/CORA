@@ -60,9 +60,7 @@ for i=1:nrTests
 %     scatter(V_proj(1,:),V_proj(2,:),16,'g');
     
     % check vertices (large tolerance since linear programs are used)
-    if ~compareMatrices(V,V_proj,1e-8)
-        res = false;
-    end
+    assertLoop(compareMatrices(V,V_proj,1e-8),i)
 
 end
 

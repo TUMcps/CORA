@@ -35,7 +35,7 @@ Ac = obj.A.C;
 Ag = obj.A.G;
 c = center(Rinit);
 r = obj.stepSize;
-n = obj.dim;
+n = obj.nrOfStates;
 Uc = Uconst.c;
 UG = Uconst.G;
 params = obj.A.numgens;%'obj.A.gens' does not work anymore once lin_error2dAB adds lagrange remainder to system matrix
@@ -77,7 +77,7 @@ if (params>=2)
     end
 end
 %obatin zonotope
-R_lowOrder = zonotope([R_c,R_g]);
+R_lowOrder = zonotope(R_c,R_g);
 
 %HIGHER ORDER INDEPENDENT SOLUTION
 %get state transition matrices

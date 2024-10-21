@@ -1,0 +1,42 @@
+\subsubsubsection{Zonotopes} \label{sec:zonotope}
+
+A zonotope $\mathcal{Z} \subset \mathbb{R}^n$ is defined as
+\begin{equation} \label{eq:zonotope}
+\mathcal{Z} := \bigg \{ c + \sum_{i=1}^{p} \beta_i g\^{i} ~\bigg|~ \beta_i \in [-1,1] \bigg\},
+\end{equation}
+where $c \in \mathbb{R}^n$ is the center and $g\^i \in \mathbb{R}^n$ are the generators. The zonotope order $\rho$ is defined as $\rho = \frac{p}{n}$ and represents a dimensionless measure for the representation size.
+
+Zonotopes are represented in CORA by the class \texttt{zonotope}. An object of class \texttt{zonotope} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \mathcal{Z} = \texttt{zonotope}(c,G), \\
+		& \mathcal{Z} = \texttt{zonotope}(Z),
+	\end{split}
+\end{equation*} 
+where $G= [g^{(1)},\dots,g^{(p)}]$, $Z = [c,G]$, and $c,g^{(i)}$ are defined as in \eqref{eq:zonotope}. Let us demonstrate the construction of a zonotope by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{20pt}
+	\footnotesize
+	\input{./MATLABcode/example_setRep_zonotope}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-representations/example_zonotope}
+\end{minipage}
+\end{center}
+
+A more detailed example for zonotopes is provided in \cref{sec:zonotopeExample} and in the file \textit{examples/contSet/example\_zonotope.m} in the CORA toolbox.
+
+A zonotope can be interpreted as the Minkowski addition of line segments $l\^i = [-1,1]g\^{i}$. The step-by-step construction of a two-dimesional zonotope is visualized in \cref{fig:zonotope}. Zonotopes are a compact representation of sets in high-dimensional space. More importantly, operations required for reachability analysis, such as linear maps (see \cref{sec:mtimes}) and Minkowski addition (see \cref{sec:plus}) can be computed efficiently and exactly, and others, such as convex hull computation (see \cref{sec:convHull}) can be tightly over-approximated \cite{Girard2005}.
+
+\begin{figure}[htb]
+	\centering
+	\includetikz{./figures/tikz/set-representations/example_zonotope_construction}
+	\caption{Step-by-step construction of a zonotope.}
+	\label{fig:zonotope}
+\end{figure}
+
+In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), the class \texttt{zonotope} supports additional methods which are listed in \cref{sec:zonotopeOperations}.

@@ -33,6 +33,12 @@ function res = split(I,n)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% check if not a matrix set
+d = dim(I);
+if numel(d) > 1
+    throw(CORAerror('CORA:wrongValue','first','Interval must not be an n-d array with n > 1.'))
+end
+
 m = center(I);
 
 sup = I.sup;

@@ -26,7 +26,7 @@ function res = test_polytope_mldivide
 % skip test for now...
 res = true; return
 
-res = true(0);
+res = true;
 
 % 2D, unbounded, unbounded, no intersection
 P1 = polytope([-1 0; 0 -1],[-1; -1]);       % x >= 1, y >= 1
@@ -34,7 +34,7 @@ P2 = polytope([1 1],2);                     % x+y <= 2
 
 % compute set difference and compare to true result
 P = mldivide(P1,P2);
-res(end+1,1) = isequal(P1,P,1e-8);
+assert(isequal(P1,P,1e-8));
 
 % plot
 % figure; hold on;
@@ -52,7 +52,7 @@ P2 = polytope([1 0; -1 0; 0 1; 0 -1], [1;1;1;1]);
 P_ = mldivide(P1,P2);
 P_true = polytope([1 0;-1 0; 0 1], [1;1;-1]);
 
-res(end+1,1) = P_ == P_true;
+assert(P_ == P_true);
 
 % degenerate polytope / polyope
 % P1 = polytope([1 0; -1 0; 0 1; 0 -1], [1;1;1;-1]);
@@ -65,6 +65,6 @@ res(end+1,1) = P_ == P_true;
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

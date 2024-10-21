@@ -1,0 +1,66 @@
+\pgfplotsset{
+	X0Style/.style={
+		 draw=black, 
+		 fill=white,
+		 area legend
+	},
+	ShiftX0Style/.style={
+		draw=green,
+		area legend
+	},
+	IntReachStyle/.style={
+		draw=none, 
+		fill=white!70!black,
+		area legend
+	},
+	TpReachStyle/.style={
+		draw=blue,
+		area legend
+	},
+	FinalReachStyle/.style={
+		draw=red,
+		area legend
+	},
+	SimStyle/.style={
+		draw=black
+	}
+}
+
+\begin{tikzpicture}
+	\begin{groupplot}[
+		group style =  {
+			group size = 3 by 1,
+			horizontal sep = 1.4cm,
+			x descriptions at=edge bottom
+		},
+		width = 0.33\textwidth
+		]
+ 		\nextgroupplot[title={$[\beta,~\Psi]$}]
+		\input{example2/groupplot1.tikz}
+		\coordinate (top) at (rel axis cs:0,1);
+		\nextgroupplot[title={$[\dot{\Psi}, ~ v]$}]
+		\input{example2/groupplot2.tikz}
+		\nextgroupplot[title={$[s_x, ~ s_y]$}]
+		\input{example2/groupplot3.tikz}
+		\coordinate (bot) at (rel axis cs:1,0);
+	\end{groupplot}
+	% legend
+	\path (top|-current bounding box.south)--
+	coordinate(legendpos)
+	(bot|-current bounding box.south);
+	\matrix[
+	matrix of nodes,
+	nodes = {text width=2.7cm,align=left},
+	inner sep=0.2em,
+	draw
+	]at([yshift=-5ex]legendpos)
+	{
+		\ref{p:IntReach} $\mathcal{R}_{\text{cl}}([0;t_f])$
+		& \ref{p:X0} $\mathcal{X}^{(0)}$
+		& \ref{p:TpReach} $\mathcal{R}_{\text{cl}}(i\frac{t_f}{N})$ \\
+		\ref{p:ShiftX0} $\langle x_{\text{f}}, G_{\mathcal{X}^{(0)}} \rangle_Z$
+		& \ref{p:FinalReach} $\mathcal{R}_{\text{cl}}(t_f)$
+		& \ref{p:Sim} Simulation \\
+	};
+	
+\end{tikzpicture}

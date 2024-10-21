@@ -28,10 +28,6 @@ function res = testFlaky_conZonotope_and
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
-% TEST 1: conZonotope (random) --------------------------------------------
-
 % loop over different dimensions
 for j = 2:3
     
@@ -69,10 +65,10 @@ for j = 2:3
 %     end
 
     % check correctness
-     if ~compareMatrices(V,V_,1e-4)
-           res = false;
-           break
-     end     
+     assertLoop(compareMatrices(V,V_,1e-4),j)
 end
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

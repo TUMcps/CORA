@@ -1,22 +1,18 @@
-function R = guardIntersect_nondetGuard(loc,R,guard,options)
+function R = guardIntersect_nondetGuard(loc,R,guard,B)
 % guardIntersect_nondetGuard - enclosure of guard intersections for 
 %    non-deterministic guard sets with large uncertainty
 %
 % Syntax:
-%    R = guardIntersect_nondetGuard(loc,R,guard,options)
+%    R = guardIntersect_nondetGuard(loc,R,guard,B)
 %
 % Inputs:
 %    loc - location object
 %    R - list of intersections between the reachable set and the guard
 %    guard - guard set (class: constrained hyperplane)
-%    options - struct containing the algorithm settings
+%    B - basis
 %
 % Outputs:
 %    R - set enclosing the guard intersection
-%
-% References: 
-%   [1] M. Althoff et al. "Zonotope bundles for the efficient computation 
-%       of reachable sets", 2011
 
 % Authors:       Niklas Kochdumper
 % Written:       19-December-2019
@@ -25,31 +21,28 @@ function R = guardIntersect_nondetGuard(loc,R,guard,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% calc. orthogonal basis with the methods described in Sec. V.A in [1]
-B = calcBasis(loc,R,guard,options);
-
 % loop over all basis
 Z = cell(length(B),1);
     
 for i = 1:length(B)
    
     % enclose all reachable set with an interval in transformed space
-    I = [];
+    I = interval.empty(size(B{i},1));
     
     for j = 1:length(R)
-        intnew = interval(B{i}'*R{j});
-        if representsa_(intnew,'emptySet',eps) && representsa_(I,'emptySet',eps)
+        I_new = interval(B{i}'*R{j});
+        if representsa_(I_new,'emptySet',eps) && representsa_(I,'emptySet',eps)
             I = I | B{i}'*interval(R{j});
         else
-            I = I | intnew;
+            I = I | I_new;
         end
     end
 
     % backtransformation to the original space
-    Ztemp = B{i} * zonotope(I);
+    Z_trans = B{i} * zonotope(I);
     
     % convert the resulting set to a constrained zonotope
-    cZ = conZonotope(Ztemp);
+    cZ = conZonotope(Z_trans);
     
     % intersect the set with the guard set
     cZ = and_(cZ,guard,'exact');

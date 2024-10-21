@@ -1,23 +1,22 @@
-function Z = plus(summand1,summand2)
-% plus - overloaded '+' operator for the Minkowski addition of two
-%    zonotopes or a zonotope with a vector
+function S_out = plus(Z,S)
+% plus - overloaded '+' operator for the Minkowski addition of a zonotope
+%    with another set or vector
 %
 % Syntax:
-%    Z = plus(summand1,summand2)
+%    S_out = Z + S
+%    S_out = plus(Z,S)
 %
 % Inputs:
-%    summand1 - zonotope object or numerical vector
-%    summand2 - zonotope object, contSet object, or numerical vector
+%    Z - zonotope object, numeric
+%    S - contSet object, numeric
 %
 % Outputs:
-%    Z - zonotope after Minkowski addition
+%    S_out - zonotope after Minkowski addition
 %
 % Example: 
-%    Z=zonotope([1 1 0; 0 0 1]);
-%    summand1=Z;
-%    summand2=[2; 2];
-%    Z1=Z+summand1;
-%    Z2=Z+summand2;
+%    Z = zonotope([1;0],[1 0; 0 1]);
+%    Z1 = Z + Z;
+%    Z2 = Z + [2;-1];
 %
 %    figure; hold on;
 %    plot(Z,[1,2],'b');
@@ -32,7 +31,7 @@ function Z = plus(summand1,summand2)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       30-September-2006 
@@ -45,64 +44,60 @@ function Z = plus(summand1,summand2)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% determine zonotope object
-[Z,summand] = findClassArg(summand1,summand2,'zonotope');
+% ensure that numeric is second input argument
+[S_out,S] = reorderNumeric(Z,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < S_out.precedence
+    S_out = S + S_out;
+    return
+end
 
 try
 
     % different cases depending on the class of the second summand
-    if isa(summand,'zonotope')
-    
+    if isa(S,'zonotope')
         % see Equation 2.1 in [1]
-        Z.c = Z.c+summand.c;
-        if isempty(Z.c)
-            Z.G = zeros(dim(Z),0);
-        else
-            Z.G(:,(end+1):(end+size(summand.G,2))) = summand.G;
+        S_out.c = S_out.c + S.c;
+        if isempty(S_out.c)
+            S_out = zonotope.empty(dim(S_out));
+            return
         end
+        S_out.G(:,(end+1):(end+size(S.G,2))) = S.G;
+        return
+    end
     
-    elseif isnumeric(summand) && (isscalar(summand) || all(size(summand) == [dim(Z),1]))
-        % summand has to be a scalar or a column vector of correct size
-        
-        Z.c = Z.c + summand;
+    % numeric has to be a scalar or a column vector of correct size
+    if isnumeric(S) && iscolumn(S)
+        S_out.c = S_out.c + S;
+        return
+    end
     
-    elseif isa(summand,'interval')
-    
-        Z = Z + zonotope(summand);
-
-    elseif isa(summand,'polytope') || isa(summand,'conZonotope') || ...
-           isa(summand,'zonoBundle') || isa(summand,'polyZonotope') || ...
-           isa(summand,'conPolyZono')
-    
-        Z = summand + Z;        
-    
-    else
-        % throw error for given arguments
-        throw(CORAerror('CORA:noops',summand1,summand2));
+    if isa(S,'interval')
+        S = zonotope(S);
+        S_out.c = S_out.c + S.c;
+        S_out.G(:,(end+1):(end+size(S.G,2))) = S.G;
+        return
     end
 
 catch ME
     % note: error has already occured, so the operations below don't have
     % to be efficient
 
-    % already know what's going on...
-    if startsWith(ME.identifier,'CORA')
-        rethrow(ME);
-    end
-
     % check whether different dimension of ambient space
-    equalDimCheck(Z,summand);
+    equalDimCheck(S_out,S);
 
     % check for empty sets
-    if representsa_(Z,'emptySet',eps)
+    if representsa_(S_out,'emptySet',eps) || representsa_(S,'emptySet',1e-10)
+        S_out = zonotope.empty(dim(S_out));
         return
-    elseif representsa_(summand,'emptySet',1e-10)
-        Z = zonotope.empty(dim(Z)); return
     end
 
     % other error...
     rethrow(ME);
 
 end
+
+throw(CORAerror('CORA:noops',S_out,S));
 
 % ------------------------------ END OF CODE ------------------------------

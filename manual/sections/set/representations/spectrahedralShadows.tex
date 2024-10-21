@@ -1,0 +1,40 @@
+\subsubsubsection{Spectrahedral Shadows} \label{sec:spectraShadow}
+
+Spectrahedral shadows can be seen as the semidefinite generalization of polytopes, and can represent a large variety of convex sets. In particular, every convex set representation (e.g., zonotopes, intervals, ellipsoids, polytopes, capsules, zonotope bundles, and constrained zonotopes) implemented in CORA can be represented as a spectrahedral shadow. Formally, a spectrahedral shadow $\mathcal{SPS} \subseteq \Rn$ is defined as
+\begin{equation} \label{eq:spectrahedralShadow}
+	\mathcal{SPS} := \bigg \{ c + \sum_{i=1}^{p} \beta_i g\^{i} ~\bigg|~ A_{(0)} + \sum_{i=1}^p \beta_i A_{(i)} \succeq 0 \bigg\},
+\end{equation}
+where $c \in \mathbb{R}^n$ is the center vector, $g\^i \in \mathbb{R}^n$ are the generators, $A_{(i)}$ are symmetric coefficient matrices, and for a matrix $M$ the expression $M \succeq 0$ means that $M$ is positive semidefinite. If the matrix $G$ with columns $g\^i$ is the identity matrix, then $\mathcal{SPS}$ is also called a spectrahedron.
+
+As shown in \cite[Lemma 4.1.5.]{Netzer2011}, non-empty spectrahedral shadows can equivalently be defined as
+\begin{equation} \label{eq:spectrahedralShadow_existentialSum}
+	\mathcal{SPS} := \bigg \{ x \in \Rn ~\bigg|~ \exists y \in \mathbb{R}^q, A_{(0)} + \sum_{i=1}^p x_i A_{(i)} + \sum_{j=1}^q y_j B_{(j)} \succeq 0 \bigg\},
+\end{equation}
+where $A_{(i)}$ and $B_{(j)}$ are symmetric coefficient matrices. We call this representation the existential sum representation.
+
+Spectrahedral shadows are represented in CORA by the class \texttt{spectraShadow}. An object of class \texttt{spectraShadow} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \mathcal{SPS} = \texttt{spectraShadow}(A), \\
+		& \mathcal{SPS} = \texttt{spectraShadow}(A,c), \\
+		& \mathcal{SPS} = \texttt{spectraShadow}(A,c,G), \\
+		& \mathcal{SPS} = \texttt{spectraShadow}(E), \\
+	\end{split}
+\end{equation*} 
+where $G= [g^{(1)},\dots,g^{(p)}]$, with $c, g^{(i)}$ defined as in \eqref{eq:spectrahedralShadow} (if they are not specified, $c$ is chosen to be the origin, and $G$ the identity matrix). The matrix $A$ is the horizontal concatenation of the coefficient matrices $A_{(0)},\dots, A_{(p)}$, i.e., $A = \begin{bmatrix} A_{(0)} & A_{(1)} & \dots & A_{(p)}\end{bmatrix}$. On the other hand, $E$ is a $1\times 2$ cell array where the first element is a matrix $A$ that is the concatenation of the coefficient matrices matrices $A_{(0)},\dots, A_{(p)}$, i.e., $A = \begin{bmatrix} A_{(0)} & A_{(1)} & \dots & A_{(p)}\end{bmatrix}$, and the second element is a matrix $B$ that is the concatenation of the additional coefficient matrices $B_{(0)},\dots, B_{(q)}$, i.e., $B = \begin{bmatrix} B_{(0)} & B_{(1)} & \dots & B_{(q)}\end{bmatrix}$.
+Let us demonstrate the construction of a spectrahedral shadow by an example:
+
+\begin{center}
+	\begin{minipage}[t]{0.5\textwidth}
+		\vspace{20pt}
+		\footnotesize
+		\input{./MATLABcode/example_setRep_spectraShadow}
+	\end{minipage}
+	\begin{minipage}[t]{0.3\textwidth}
+		\vspace{0pt}
+		\centering
+		\includetikz{./figures/tikz/set-representations/example_spectraShadow}
+	\end{minipage}
+\end{center}
+
+A more detailed example for spectrahedral shadows is provided in \cref{sec:spectraShadowExample} and in the file \textit{examples/contSet/example\_spectraShadow.m} in the CORA toolbox.

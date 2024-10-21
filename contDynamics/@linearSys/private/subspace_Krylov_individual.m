@@ -1,15 +1,10 @@
 function [V,H,krylovOrder] = subspace_Krylov_individual(A,nu_A,v,initKrylovOrder,options)
 % subspace_Krylov_individual - computes the Krylov subspace for a single
-% vector given the accuracy to be achieved; the a-posteriori approach in 
-% equation 4.1 of 
-%
-% Jia, Z. & Lv, H. A posteriori error estimates of Krylov subspace 
-% approximations to matrix functions Numerical Algorithms, 2015, 69, 1-28
-%
-% is used for tight error computation
+%    vector given the accuracy to be achieved; the a-posteriori approach in 
+%    equation 4.1 of [1] is used for tight error computation
 %
 % Syntax:
-%    [V,H] = subspace_Krylov_individual(obj,v,options)
+%    [V,H,krylovOrder] = subspace_Krylov_individual(A,nu_A,v,initKrylovOrder,options)
 %
 % Inputs:
 %    A - system matrix
@@ -21,16 +16,21 @@ function [V,H,krylovOrder] = subspace_Krylov_individual(A,nu_A,v,initKrylovOrder
 % Outputs:
 %    V - orthonormal basis
 %    H - Hessenberg matrix
-%    KrylovOrder - dimension of the reduced system
+%    krylovOrder - dimension of the reduced system
 %
 % Example: 
 %    -
+%
+% References:
+%    [1] Jia, Z. & Lv, H. A posteriori error estimates of Krylov subspace 
+%        approximations to matrix functions Numerical Algorithms, 2015, 69,
+%        1-28
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       09-November-2018

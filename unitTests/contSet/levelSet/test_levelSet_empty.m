@@ -23,19 +23,17 @@ function res = test_levelSet_empty
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % 1D
 n = 1;
 ls = levelSet.empty(n);
-res(end+1,1) = representsa(ls,'emptySet') && dim(ls) == 1;
+assert(representsa(ls,'emptySet') && dim(ls) == 1);
 
 % 5D
 n = 5;
 ls = levelSet.empty(n);
-res(end+1,1) = representsa(ls,'emptySet') && dim(ls) == 5;
+assert(representsa(ls,'emptySet') && dim(ls) == 5);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

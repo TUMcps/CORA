@@ -82,7 +82,7 @@ end
 % check all subsystems
 for iSys = 1:length(subsystem)
     % init index matrices
-    indX = zeros(subsystem{iSys}.dim, sys.dim); %index for x-values
+    indX = zeros(subsystem{iSys}.nrOfStates, sys.nrOfStates); %index for x-values
     indY = zeros(subsystem{iSys}.nrOfConstraints, sys.nrOfConstraints); %index for y-values
     indUy = zeros(subsystem{iSys}.nrOfInputs, sys.nrOfConstraints); %index for u-values
     indUv = zeros(subsystem{iSys}.nrOfInputs, globalNrOfGenerators); %index for u-values from constant voltage

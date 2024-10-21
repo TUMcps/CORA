@@ -1,4 +1,4 @@
-function pass = test_spaceex2cora_parseInitial()
+function res = test_spaceex2cora_parseInitial()
 % test_spaceex2cora_parseInitial - example for parsing of initial sets
 %
 % Syntax:
@@ -16,8 +16,6 @@ function pass = test_spaceex2cora_parseInitial()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-
-pass = true;
 
 % Since file reading etc. is tested in test_spaceex2cora_parseConfig,
 % initial conditions are provided as strings and then given to the function
@@ -70,11 +68,15 @@ for i = 1:length(test_case)
         end
     % if an error is thrown, check whether the test_case was supposed to
     % throw one
-    catch
+    catch ME
         if ~error_expected(i)
-            pass = false;
+            rethrow(ME)
         end
     end
 end
+
+ 
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

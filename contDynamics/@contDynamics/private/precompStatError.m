@@ -1,13 +1,14 @@
-function [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError(obj,Rdelta,options)
+function [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError(sys,Rdelta,params,options)
 % precompStatError - precompute the second order static error along with 
 %    Hessian matrix
 %
 % Syntax:
-%    [H,Zdelta,errorStat,T,ind3] = precompStatError(obj,Rdelta,options)
+%    [H,Zdelta,errorStat,T,ind3] = precompStatError(sys,Rdelta,params,options)
 %
 % Inputs:
-%    obj - nonlinear system object
+%    sys - nonlinear system object
 %    Rdelta - shifted reachable set at the beginning of the time step
+%    params - model parameters
 %    options - options struct
 %
 % Outputs:
@@ -24,7 +25,7 @@ function [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError(obj,Rdelta,optio
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: none
 
 % Authors:       Niklas Kochdumper
 % Written:       27-July-2018
@@ -34,7 +35,7 @@ function [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError(obj,Rdelta,optio
 % ------------------------------ BEGIN CODE -------------------------------
 
 % set handle to correct file
-obj = setHessian(obj,'standard');
+sys = setHessian(sys,'standard');
 
 % initialize output arguments
 T = [];
@@ -53,15 +54,15 @@ else
 end
 
 % extend the sets by the input sets
-Ustat = zonotope(zeros(dim(options.U),1));
+Ustat = zonotope(zeros(dim(params.U),1));
 Z = cartProd(Rred,Ustat);
 Zdelta = cartProd(Rdelta,Ustat);
 
 % calculate the hessian tensor
-if isa(obj,'nonlinParamSys')
-    H = obj.hessian(obj.linError.p.x, obj.linError.p.u,options.paramInt);
+if isa(sys,'nonlinParamSys')
+    H = sys.hessian(sys.linError.p.x, sys.linError.p.u,params.paramInt);
 else
-    H = obj.hessian(obj.linError.p.x, obj.linError.p.u);
+    H = sys.hessian(sys.linError.p.x, sys.linError.p.u);
 end
 
 % calculate the quadratic map == static second order error
@@ -71,7 +72,7 @@ errorSecOrdStat = 0.5*quadMap(Z, H);
 if options.tensorOrder >= 4
     
     % set handle to correct file
-    obj = setThirdOrderTensor(obj,'standard');
+    sys = setThirdOrderTensor(sys,'standard');
    
     % reduce the order of the reachable set to speed-up the computations 
     % for cubic multiplication
@@ -80,19 +81,19 @@ if options.tensorOrder >= 4
        Rred = reduce(Rred,options.reductionTechnique,options.errorOrder3);
        Rdelta = reduce(Rdelta,options.reductionTechnique,options.errorOrder3);
        
-       Z = cartProd(Rred,options.U);
-       Zdelta3 = cartProd(Rdelta,options.U);
+       Z = cartProd(Rred,params.U);
+       Zdelta3 = cartProd(Rdelta,params.U);
        
     else
        Zdelta3 = Zdelta;
     end
     
     % calculate the third-order tensor
-    if isa(obj,'nonlinParamSys')
-        [T,ind3] = obj.thirdOrderTensor(obj.linError.p.x, ...
-                                        obj.linError.p.u, options.paramInt);
+    if isa(sys,'nonlinParamSys')
+        [T,ind3] = sys.thirdOrderTensor(sys.linError.p.x, ...
+                                        sys.linError.p.u, params.paramInt);
     else
-        [T,ind3] = obj.thirdOrderTensor(obj.linError.p.x, obj.linError.p.u);
+        [T,ind3] = sys.thirdOrderTensor(sys.linError.p.x, sys.linError.p.u);
     end
     
     % calculate the cubic map == static third-order error

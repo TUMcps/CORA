@@ -35,11 +35,11 @@ for i=1:nrTests
     dp1 = fpolyder(p);
     dp2 = polyder(p);
 
-    resvec(i) = all(withinTol(dp1,dp2));
+    assert(all(withinTol(dp1,dp2)));
 end
 
 % gather results
-res = all(resvec);
+res = true;
 
 
 % ------------------------------ END OF CODE ------------------------------

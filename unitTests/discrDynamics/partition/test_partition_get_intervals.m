@@ -26,36 +26,26 @@ oneDimField=partition([0,10],5);
 Ints1 = cellIntervals(oneDimField,1:nrOfCells(oneDimField));
 Ints2 = cellIntervals(oneDimField);
 
-if length(Ints1)==length(Ints2)
-    res1 = (norm(supremum(Ints1{3}) - supremum(Ints2{3}))<1e-9)&&(norm(infimum(Ints1{3}) - infimum(Ints2{3}))<1e-9);
-else
-    res1 = 0;
-end
+assert(length(Ints1)==length(Ints2))
+assert((norm(supremum(Ints1{3}) - supremum(Ints2{3}))<1e-9)&&(norm(infimum(Ints1{3}) - infimum(Ints2{3}))<1e-9));
 
 % check that cellIntervals works, 2DOF
 Ints1 = cellIntervals(twoDimField,1:nrOfCells(twoDimField));
 Ints2 = cellIntervals(twoDimField);
 
-if length(Ints1)==length(Ints2)
-    res2 = (norm(supremum(Ints1{3}) - supremum(Ints2{3}))<1e-9)&&(norm(infimum(Ints1{3}) - infimum(Ints2{3}))<1e-9);
-else
-    res2 = 0;
-end
-
+assert(length(Ints1)==length(Ints2))
+assert((norm(supremum(Ints1{3}) - supremum(Ints2{3}))<1e-9)&&(norm(infimum(Ints1{3}) - infimum(Ints2{3}))<1e-9));
 
 % check that cellIntervals works, 3DOF
 Ints1 = cellIntervals(threeDimField,1:nrOfCells(threeDimField));
 Ints2 = cellIntervals(threeDimField);
 
-if length(Ints1)==length(Ints2)
-    res3 = (norm(supremum(Ints1{3}) - supremum(Ints2{3}))<1e-9)&&(norm(infimum(Ints1{3}) - infimum(Ints2{3}))<1e-9);
-else
-    res3 = 0;
-end
+assert(length(Ints1)==length(Ints2))
+assert((norm(supremum(Ints1{3}) - supremum(Ints2{3}))<1e-9)&&(norm(infimum(Ints1{3}) - infimum(Ints2{3}))<1e-9));
 
+res = true;
 
-res = res1&&res2&&res3;
-% 
+ 
 % segmentPolytope(threeDimField,[1 5 3])
 % segmentPolytope(threeDimField)
 % segmentZonotope(threeDimField,[1 5 3])

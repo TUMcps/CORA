@@ -1,0 +1,42 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent              
+ \hspace*{-1.6em}{\scriptsize 1}$  $\color{mgreen}$% create affine object$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 2}$  I = interval(-1,1);$\\
+ \hspace*{-1.6em}{\scriptsize 3}$  aff = affine(I);$\\
+ \hspace*{-1.6em}{\scriptsize 4}$  $\\
+ \hspace*{-1.6em}{\scriptsize 5}$  $\color{mgreen}$% create taylor model object (for comparison)$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 6}$  maxOrder = 1;$\\
+ \hspace*{-1.6em}{\scriptsize 7}$  tay = taylm(int,maxOrder,$\color{mred}$'x'$\color{black}$);$\\
+ \hspace*{-1.6em}{\scriptsize 8}$  $\\
+ \hspace*{-1.6em}{\scriptsize 9}$  $\color{mgreen}$% define function$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 10}$  f = @(x) sin(x) * (x+1);$\\
+ \hspace*{-2em}{\scriptsize 11}$  $\\
+ \hspace*{-2em}{\scriptsize 12}$  $\color{mgreen}$% evaluate the function with affine arithmetic and taylor model$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 13}$  intAff = interval(f(aff))$\\
+ \hspace*{-2em}{\scriptsize 14}$  intTay = interval(f(tay))$\\ 
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

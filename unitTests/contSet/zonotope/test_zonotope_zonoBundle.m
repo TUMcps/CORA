@@ -26,7 +26,7 @@ function res = test_zonotope_zonoBundle
 % empty set
 Z = zonotope.empty(2);
 zB = zonoBundle(Z);
-res = representsa(zB,'emptySet') && dim(zB) == 2;
+assert(representsa(zB,'emptySet') && dim(zB) == 2);
 
 % instantiate zonotope
 c = [1;1;-1];
@@ -37,10 +37,10 @@ Z = zonotope(c,G);
 zB = zonoBundle(Z);
 
 % check converted set
-res(end+1,1) = zB.parallelSets == 1;
-res(end+1,1) = isequal(zB.Z{1},Z);
+assert(zB.parallelSets == 1);
+assert(isequal(zB.Z{1},Z));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

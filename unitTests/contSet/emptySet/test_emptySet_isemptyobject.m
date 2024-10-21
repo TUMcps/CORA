@@ -22,12 +22,15 @@ function res = test_emptySet_isemptyobject
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % init empty set
 n = 2;
 O = emptySet(n);
 
 % check result
-res = ~isemptyobject(O);
+assert(~isemptyobject(O));
 
 % ------------------------------ END OF CODE ------------------------------

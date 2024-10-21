@@ -23,6 +23,9 @@ function res = testLong_interval_acos
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % Random tests
 numberRandTests = 10000;

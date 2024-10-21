@@ -1,0 +1,37 @@
+\subsubsubsection{Affine} \label{sec:affine}
+
+Affine arithmetic uses affine forms, i.e., first-order polynomials consisting of a vector $x\in \mathbb{R}^n$ and noise symbols $\epsilon_i \in [-1,1]$ (see e.g., \cite{deFigueiredo2004}):
+\begin{equation*}
+ \hat{x} = x_0 + \epsilon_1 x_1 + \epsilon_2 x_2 + \ldots + \epsilon_p x_p.
+\end{equation*}
+The possible values of $\hat{x}$ lie within a zonotope \cite{Kuehn1998b}.
+
+Affine arithmetic is implemented by the class \texttt{affine}. Since we only consider intervals as inputs and outputs, we realized affine arithmetic as Taylor models of first order. The class \texttt{affine} therefore inherits all methods from the class \texttt{taylm} and does not implement any functionality on its own. The main purpose of the class \texttt{affine} is to provide a convenient and easy-to-use interface for the user. An object of class \texttt{affine} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \mathcal{A}(x) = \operator{affine}(\mathcal{D}), \\
+		& \mathcal{A}(x) = \operator{affine}(\mathcal{D},\texttt{order},\texttt{name},\texttt{optMethod},\texttt{tolerance},\texttt{eps}),
+	\end{split}
+\end{equation*}
+where the input arguments are identical to the ones for the class \texttt{taylm} (see \cref{sec:taylorModels}). Let us demonstrate the class \texttt{affine} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.50\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_rangeBoundingAffine}
+\end{minipage}
+\begin{minipage}[t]{0.25\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}	
+	Command Window:
+	
+	res =
+
+  [-3.69137,6.74245]
+	\end{verbatim}
+\end{minipage}
+\end{center}
+
+A more detailed example for the class \texttt{affine} is provided in \cref{sec:affineExample} and in the file \textit{examples/contSet/example\_affine.m} in the CORA toolbox.

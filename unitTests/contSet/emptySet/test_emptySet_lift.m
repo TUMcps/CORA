@@ -32,7 +32,7 @@ N = 6;
 dims = [1,2,5,6];
 O_ = lift(O,N,dims);
 fs_true = emptySet(N);
-res = isequal(fs_true,O_);
+assert(isequal(fs_true,O_));
 
 % not enough specified dimensions: fix error message before this...
 % projDims = [1,2,5];
@@ -43,30 +43,17 @@ res = isequal(fs_true,O_);
 %     res(end+1,1) = true;
 % end
 
-if CHECKS_ENABLED
-
 % dimensions out of range
 projDims = [-1,2,3,5];
-try
-    O_ = lift(O,N,projDims);
-    res(end+1,1) = false;
-catch
-    res(end+1,1) = true;
-end
+assertThrowsAs(@lift,'CORA:wrongValue',O,N,projDims);
 
 % higher-dimensional space smaller than original space
 N = 3;
-dims = [1,2,5,6];
-try
-    O_ = lift(O,N,projDims);
-    res(end+1,1) = false;
-catch
-    res(end+1,1) = true;
-end
+projDims = [1,2,5,6];
+assertThrowsAs(@lift,'CORA:wrongValue',O,N,projDims);
 
-end
 
-% combine results
-res = all(res);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

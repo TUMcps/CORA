@@ -32,7 +32,11 @@ dt = obj.sampleTime;
 tVec = 0:dt:dt*(nrOfTimeSteps-1);
 
 % create cell arrays with one entry only
-x{1} = obj.x;
+if isempty(obj.x)
+    x = {};
+else
+    x{1} = obj.x;
+end
 t{1} = tVec';
 y{1} = obj.y;
 

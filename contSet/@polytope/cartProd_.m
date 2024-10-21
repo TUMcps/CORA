@@ -104,13 +104,8 @@ end
 function P_out = aux_cartProd_Hpoly_Hpoly(P,S)
 % Cartesian product of two polytopes in halfspace representation according 
 % to [1, (29)]
-
-% block-concatenation of constraint matrices
-A = blkdiag(P.A_.val,S.A_.val);
-Ae = blkdiag(P.Ae_.val,S.Ae_.val);
-% vertical concatenation of offset vectors
-b = [P.b_.val; S.b_.val];
-be = [P.be_.val; S.be_.val];
+[A,b,Ae,be] = priv_cartProd(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val, ...
+    S.A_.val,S.b_.val,S.Ae_.val,S.be_.val);
 
 % init resulting polytope
 P_out = polytope(A,b,Ae,be);
@@ -126,10 +121,15 @@ function P_out = aux_cartProd_Hpoly_Vpoly(P_H,P_V,order)
 % we convert the vertex representation into the halfspace representation
 constraints(P_V);
 if order
-    P_out = aux_cartProd_Hpoly_Hpoly(P_H,P_V);
+    [A,b,Ae,be] = priv_cartProd(P_H.A_.val,P_H.b_.val,P_H.Ae_.val,P_H.be_.val, ...
+        P_V.A_.val,P_V.b_.val,P_V.Ae_.val,P_V.be_.val);
 else
-    P_out = aux_cartProd_Hpoly_Hpoly(P_V,P_H);
+    [A,b,Ae,be] = priv_cartProd(P_V.A_.val,P_V.b_.val,P_V.Ae_.val,P_V.be_.val, ...
+        P_H.A_.val,P_H.b_.val,P_H.Ae_.val,P_H.be_.val);
 end
+
+% init resulting polytope
+P_out = polytope(A,b,Ae,be);
 
 end
 
@@ -216,7 +216,7 @@ if order
     P_out = cartProd_(P,polytope(zeros(0,n),[],Ae,be),'exact');
 else
     % point x polytope
-    P_out = cartProd_(polytope(zeros(0,n),[],Ae,be),p,'exact');
+    P_out = cartProd_(polytope(zeros(0,n),[],Ae,be),P,'exact');
 end
 % resultng polytope is degenerate
 P_out.fullDim.val = false;

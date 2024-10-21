@@ -32,7 +32,7 @@ function obj = pexpm(obj,options)
 A=obj.A;
 taylorTerms=options.taylorTerms;
 r=options.timeStep;
-n=obj.dim;
+n=obj.nrOfStates;
 
 %initialize 
 Apower{1}=A;  

@@ -1,0 +1,33 @@
+\subsection{Kaucher Arithmetic}
+
+As described in \cref{sec:rangeBounding}, \textit{interval arithmetic} \cite{Jaulin2006} can be applied to compute an over-approximation for the range of values of a nonlinear function. In this section we consider \textit{Kaucher arithmetic} \cite{Kaucher1980}, which returns intervals that are interpretable as inner-approximation of the range of values for nonlinear functions that can be rewritten or abstracted so that each variable appears at most once. Kaucher arithmetic is based on generalized intervals defined as
+\begin{equation}
+	\mathcal{K} = [\underline{x},\overline{x}],~~ \underline{x},\overline{x} \in \Rn.
+	\label{eq:kaucherIntervals}
+\end{equation}
+In contrast to intervals as introduced in \cref{sec:interval}, generalized intervals omit the constraint $\forall i = \{1,\dots,n\}: ~ \underline{x}_i \leq \overline{x}_i$. In CORA, generalized intervals are implemented by the class \texttt{intKaucher}. An object of class \texttt{intKaucher} can be constructed as follows:
+\begin{equation*}
+	\mathcal{K} = \texttt{intKaucher}(\underline{x},\overline{x}),
+\end{equation*}
+where $\underline{x},\overline{x}$ are defined as in \eqref{eq:kaucherIntervals}. We demonstrate Kaucher arithmetic using the example in \cite[Example~1]{Goubault2017}, which considers the nonlinear function $f(x) = x^2 - x$ and the domain $x \in [2,3]$. Since the variable $x$ occurs twice in the function $f(x)$, Kaucher arithmetic cannot be applied directly. Therefore, we first compute an enclosure of the function $f(x)$ using the mean value theorem:
+\begin{equation*}
+		f^{abstract}(x) = f(2.5) + \frac{\partial f(x)}{\partial x} \bigg |_{x \in [2,3]} (x - 2.5) = 3.75 + [3, 5](x - 2.5).
+\end{equation*} 
+Since the variable $x$ occurs only once in the resulting function $f^{abstract}(x)$, we can now apply Kaucher arithmetic to compute an inner-approximation of the range of values for the function $f(x)$ on the domain $x \in [2,3]$, which yields $\{ f(x)~|~ x \in [2,3] \} \supseteq [2.25,5.25]$. In CORA, this example can be implemented as follows:
+
+\begin{center}
+\begin{minipage}[t]{0.55\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_kaucher}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{10pt}
+	\begin{verbatim}
+		Command Window:	
+	
+		res = 
+ [5.25000,2.25000]
+	\end{verbatim}
+\end{minipage}
+\end{center}

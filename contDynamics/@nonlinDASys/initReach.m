@@ -1,20 +1,19 @@
-function [Rnext, options] = initReach(obj, Rstart, options)
+function [Rnext, options] = initReach(nlnsysDA, Rstart, params, options)
 % initReach - computes the reachable continuous set for the next step
 %    given the current set as the start set
 %
 % Syntax:
-%    [Rnext, options] = initReach(obj, Rstart, options)
+%    [Rnext, options] = initReach(nlnsysDA, Rstart, params, options)
 %
 % Inputs:
-%    obj - nonlinearSys object
+%    nlnsysDA - nonlinDASys object
 %    Rstart - initial reachable set
+%    params - model parameters
 %    options - options for the computation of the reachable set
 %
 % Outputs:
 %    obj - nonlinearSys object
-%    Rnext - next reachable set 
-%
-% Example: 
+%    Rnext - next reachable set
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -52,8 +51,8 @@ else
         Rinit{k}.error_x = zeros(size(options.maxError_x));
         Rinit{k}.error_y = zeros(size(options.maxError_y));
         % obtain consistent initial algebraic set
-        y0 = options.y0guess;
-        y0 = consistentInitialState(obj, center(Rinit{k}.set), y0, options.uTrans);
+        y0 = params.y0guess;
+        y0 = consistentInitialState(nlnsysDA, center(Rinit{k}.set), y0, params.uTrans);
         Rinit_y{k} = zonotope(y0);
     end
 
@@ -64,7 +63,7 @@ setCounter=1;
 
 for k=1:iterations
 
-    [Rti,Rtp,Rti_y,~,dimForSplit,options] = linReach(obj,options,Rinit{k},Rinit_y{k},1);
+    [Rti,Rtp,Rti_y,~,dimForSplit,options] = linReach(nlnsysDA,Rinit{k},Rinit_y{k},params,options);
 
     %check if initial set has to be split
     if isempty(dimForSplit)
@@ -85,7 +84,7 @@ for k=1:iterations
             options.y0guess = center(Rinit_y{1});
         end
         
-        [Rres,options] = initReach(obj,Rsplit,options);
+        [Rres,options] = initReach(nlnsysDA,Rsplit,params,options);
         
         for i=1:length(Rres.tp)
             % add results to other results

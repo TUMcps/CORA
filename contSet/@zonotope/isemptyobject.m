@@ -44,8 +44,7 @@ end
 function res = aux_checkIfEmpty(Z)
 
     res = isnumeric(Z.c) && isempty(Z.c) ...
-        && isnumeric(Z.G) && isempty(Z.G) ...
-        && isnumeric(Z.halfspace) && isempty(Z.halfspace);
+        && isnumeric(Z.G) && isempty(Z.G);
 
 end
 

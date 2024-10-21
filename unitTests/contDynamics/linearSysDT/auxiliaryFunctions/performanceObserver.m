@@ -52,7 +52,7 @@ for i = 1:length(EstSet.timePoint.set)
         perf.volBox(end+1) = volume(perf.interval{i}); 
         % radius of interval hull
         perf.rad(:,end+1) = rad(perf.interval{i});
-    catch
+    catch ME
         % interval probably too small
         disp('time point ignored for evaluation');
     end

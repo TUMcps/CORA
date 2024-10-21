@@ -33,32 +33,32 @@ p_in = [0;0;0];
 p_out = [4;0.5;1];
 
 % check points
-res = contains(zB,p_in);
-res(end+1) = contains(zB,p_in,'exact:zonotope');
-res(end+1) = contains(zB,p_in,'exact:polytope');
-res(end+1) = ~contains(zB,p_out);
-res(end+1) = ~contains(zB,p_out,'exact:zonotope');
-res(end+1) = ~contains(zB,p_out,'exact:polytope');
+assert(contains(zB,p_in));
+assert(contains(zB,p_in,'exact:zonotope'));
+assert(contains(zB,p_in,'exact:polytope'));
+assert(~contains(zB,p_out));
+assert(~contains(zB,p_out,'exact:zonotope'));
+assert(~contains(zB,p_out,'exact:polytope'));
 
 % interval inside
 I = interval(-0.02*ones(3,1),0.02*ones(3,1));
-res(end+1) = contains(zB,I);
-res(end+1) = contains(zB,I,'exact:polytope');
+assert(contains(zB,I));
+assert(contains(zB,I,'exact:polytope'));
 
 % zonotope inside
 Z = zonotope(zeros(3,1),0.02*[1 2 0; -2 1 1; 0 -1 1]);
-res(end+1) = contains(zB,Z);
+assert(contains(zB,Z));
 
 % capsule inside
 C = capsule(zeros(3,1),0.02*ones(3,1),0.02);
-res(end+1) = contains(zB,C);
+assert(contains(zB,C));
 
 % ellipsoid inside
 E = ellipsoid(0.001*[3.2 1.1 -0.3; 1.1 11.4 3.9; -0.3 3.9 2.6],zeros(3,1));
-res(end+1) = contains(zB,E);
+assert(contains(zB,E));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

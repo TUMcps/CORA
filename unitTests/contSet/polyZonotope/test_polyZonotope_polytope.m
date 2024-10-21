@@ -48,8 +48,8 @@ V = vertices(P);
 V_ = [-2 -2 0 1.5 2 2 0;-1 1 3 2.5 1 -1 -3];
 
 % check for correctness
-if ~compareMatrices(V,V_,1e-12)
-    res = false;
+assert(compareMatrices(V,V_,1e-12))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

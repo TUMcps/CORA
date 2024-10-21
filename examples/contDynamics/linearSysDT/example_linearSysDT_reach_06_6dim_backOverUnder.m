@@ -49,11 +49,11 @@ B = [...
     -0.03479, -1.700e-6; ...
     0.004171, 2.913e-7];
 
-% constant input
-c = zeros(length(A),1);
+% disturbance matrix
+E = eye(6);
 
 % instantiate linear discrete time system
-sys = linearSysDT('sys',A,B,c,dt);
+sys = linearSysDT('sys',A,B,[],[],[],[],E,dt);
 
 
 % Parameter ---------------------------------------------------------------

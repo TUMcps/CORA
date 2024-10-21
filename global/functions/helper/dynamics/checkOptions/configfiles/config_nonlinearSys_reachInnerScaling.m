@@ -1,14 +1,12 @@
-function [paramsList,optionsList] = config_nonlinearSys_reachInnerScaling(sys,params,options)
-% config_nonlinearSys_reachInnerScaling - configuration file for validation of
-%    model parameters and algorithm parameters
+function [paramsList,optionsList] = config_nonlinearSys_reachInnerScaling
+% config_nonlinearSys_reachInnerScaling - configuration file for validation
+%    of model parameters and algorithm parameters
 %
 % Syntax:
-%    [paramsList,optionsList] = config_nonlinearSys_reachInnerScaling(sys,params,options)
+%    [paramsList,optionsList] = config_nonlinearSys_reachInnerScaling
 %
 % Inputs:
-%    sys - nonlinearSys object
-%    params - user-defined model parameters
-%    options - user-defined algorithm parameters
+%    -
 %
 % Outputs:
 %    paramsList - list of model parameters
@@ -58,6 +56,10 @@ optionsList(end+1,1) = add2list('lagrangeRem.zooMethods','mandatory');
 % default
 optionsList(end+1,1) = add2list('verbose','default');
 optionsList(end+1,1) = add2list('reductionTechnique','default');
+optionsList(end+1,1) = add2list('reductionInterval','default');
+optionsList(end+1,1) = add2list('compOutputSet','default');
+optionsList(end+1,1) = add2list('maxError','default');
+optionsList(end+1,1) = add2list('tensorOrderOutput','default');
 optionsList(end+1,1) = add2list('contractor','default');
 optionsList(end+1,1) = add2list('iter','default');
 optionsList(end+1,1) = add2list('splits','default');

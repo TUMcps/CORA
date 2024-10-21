@@ -43,10 +43,9 @@ sys_cora2 = nonlinearSys('test_nonlinear2_St1_FlowEq',f);
 
 
 % compare systems
-if sys_cora1 ~= sys_spaceex1
-    res = false;
-elseif sys_cora2 ~= sys_spaceex2
-    res = false;
+assert(sys_cora1 == sys_spaceex1)
+assert(sys_cora2 == sys_spaceex2)
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

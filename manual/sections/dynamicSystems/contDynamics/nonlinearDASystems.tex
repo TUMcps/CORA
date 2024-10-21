@@ -1,0 +1,73 @@
+\subsubsection{Nonlinear Differential-Algebraic Systems} \label{sec:nonlinearDASystems}
+
+The class \texttt{nonlinDASys} considers time-invariant, semi-explicit, index-1 differential-algebraic systems defined as
+\begin{equation}\label{eq:DAEsystem}
+\begin{gathered}
+ \dot{x} = f(x(t),y(t),u(t)), \\
+ 0 = g(x(t),y(t),u(t)), \\
+ z = h(x(t),y(t),u(t)),
+\end{gathered}
+\end{equation}
+where $x(t) \in \Rn$ is the vector of differential variables, $y(t) \in \R^q$ is the vector of algebraic variables, $u(t) \in \R^m$ is the vector of inputs, $z(t) \in \R^o$ is the system output, and $f: \Rn \times \R^q \times \R^m \to \Rn$, $g: \Rn \times \R^q \times \R^m \to \R^q$, and $h: \Rn \times \R^q \times \R^m \to \R^o$ are sufficiently smooth continuous functions. The initial state is consistent when $g(x(0),y(0),u(0)) = 0$, while for DAEs with an index greater than $1$, further hidden algebraic constraints have to be considered \cite[Chapter 9.1]{Ascher1998}. For an implicit DAE, the index-1 property holds if and only if $\forall t: \, \det(\frac{\partial g(x(t),y(t),u(t))}{\partial y})\neq 0$, i.e., the Jacobian of the algebraic equations is non-singular \cite[p. 34]{Brenan1989}. Loosely speaking, the index specifies the distance to an ODE (which has index $0$) by the number of required time differentiations of the general form $0 = F(\dot{\tilde{x}}, \tilde{x}, u, t)$ along a solution $\tilde{x}(t)$, in order to express $\dot{\tilde{x}}$ as a continuous function of $\tilde{x}$ and $t$ \cite[Chapter 9.1]{Ascher1998}. 
+
+Nonlinear differential-algebraic systems are implemented by the class \texttt{nonlinDASys}. An object of class \texttt{nonlinDASys} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \texttt{sys} = \texttt{nonlinDASys}(\texttt{dynFun},\texttt{conFun}), \\
+     	& \texttt{sys} = \texttt{nonlinDASys}(\texttt{name},\texttt{dynFun},\texttt{conFun}), \\
+    	& \texttt{sys} = \texttt{nonlinDASys}(\texttt{dynFun},\texttt{conFun},n,m,q), \\
+     	& \texttt{sys} = \texttt{nonlinDASys}(\texttt{name},\texttt{dynFun},\texttt{conFun},n,m,q), \\
+     	& \texttt{sys} = \texttt{nonlinDASys}(\texttt{dynFun},\texttt{conFun},\texttt{outFun}), \\
+     	& \texttt{sys} = \texttt{nonlinDASys}(\texttt{name},\texttt{dynFun},\texttt{conFun},\texttt{outFun}), \\
+     	& \texttt{sys} = \texttt{nonlinDASys}(\texttt{dynFun},\texttt{conFun},n,m,q,\texttt{outFun},o), \\
+     	& \texttt{sys} = \texttt{nonlinDASys}(\texttt{name},\texttt{dynFun},\texttt{conFun},n,m,q,\texttt{outFun},o),
+	\end{split}
+\end{equation*} 
+where \texttt{name} is a string specifying the name of the system, \texttt{dynFun} is a MATLAB function handle defining the function $f(x(t),y(t),u(t))$ in \eqref{eq:DAEsystem}, \texttt{conFun} is a MATLAB function handle defining the function $g(x(t),y(t),u(t))$ in \eqref{eq:DAEsystem}, \texttt{outFun} is a MATLAB function handle defining the function $h(x(t),y(t),u(t))$ in \eqref{eq:DAEsystem}, $n$ is the number of states (see \eqref{eq:DAEsystem}), $m$ is the number of inputs (see \eqref{eq:DAEsystem}), $q$ is the number of algebraic constraints (see \eqref{eq:DAEsystem}), and $o$ is the number of outputs (see \eqref{eq:DAEsystem}. If the number of states $n$, the number of inputs $m$, the number of constraints $q$, and the number of outputs $o$ are not provided, they are automatically determined from the function handles \texttt{dynFun} and \texttt{conFun}. If no output equation is provided, we assume $z = x$. Let us demonstrate the class \texttt{nonlinDASys} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.48\textwidth}
+	\vspace{10pt}
+	\begin{equation*}
+	\begin{split}
+		& \dot x = x + 1 + u \\
+		& 0 = (x + 1)y + 2
+	\end{split}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[t]{0.48\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_nonlinDASys}
+\end{minipage}
+\end{center}
+
+Parametric uncertainties as demonstrated in \cref{sec:nonlinearParamSystems} have not yet been implemented, but one can consider uncertain parameters using the existing techniques: for uncertain but fixed parameters, one can define each parameter as a state variable $\tilde{x}_i$ with the trivial dynamics $\dot{\tilde{x}}_i = 0$ and for time-varying parameters, one can specify the parameter as an uncertain input.
+
+
+
+\subsubsubsection{Operation \texttt{reach}}
+\label{sec:reachDAEsys}
+
+For nonlinear differential-algebraic systems, CORA uses the algorithm in \cite{Althoff2014a} to compute the reachable set. To apply the methods presented in \cref{sec:nonlinearReach}, the algorithm performs an abstraction of the original nonlinear DAEs to linear differential inclusions for each consecutive time interval $\tau_k$. A different abstraction is used for each time interval to minimize the over-approximation error. Based on a linearization of the functions $f(x(t),y(t),u(t))$ and $g(x(t),y(t),u(t))$, one can abstract the dynamics of the original nonlinear DAE by a linear system plus additive uncertainty as detailed in \cite[Section IV]{Althoff2014a}. This linear system only contains dynamic state variables $x$ and uncertain inputs $u$. The algebraic state $y$ is obtained afterwards by the linearized constraint function $g(x(t),y(t),u(t))$ as described in \cite[Proposition 2]{Althoff2014a}.
+
+In contrast to ordinary differential equations, the initial state for differential-algebraic systems is not automatically consistent. One therefore has to specify a guess for a consistent initial algebraic state with the additional parameter \texttt{params.y0guess} (see \cref{sec:dynamicSystemOperations}). Depending on the guess, a consistent initial algebraic state is found using the Newton-Raphson method.
+
+The settings for reachability analysis are specified as fields of the struct \texttt{options} (see \cref{sec:reach}). For nonlinear differential-algebraic systems, the following settings are available:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}[t]{l p{10cm}}	
+	--~\texttt{.timeStep} & time step size for one reachability time step. \\
+	--~\texttt{.tensorOrder} & order $\kappa$ of the Taylor series expansion for the abstraction in \cite[eq.~(8)]{Althoff2014a}. The recommended values are $\kappa = 2$ or $\kappa = 3$. \\
+	--~\texttt{.tensorOrderOutput} & order $\kappa$ of the Taylor series expansion for the abstraction of the output function. The recommended values are $\kappa = 2$ or $\kappa = 3$. \\
+	--~\texttt{.taylorTerms} & number of Taylor terms for the computation of the exponential matrix $e^{A\Delta t}$ (see \cite[Eq. (3.2)]{Althoff2010a}) for the linearized system. \\
+	--~\texttt{.zonotopeOrder} & upper bound for the zonotope order $\rho$ (see \cref{sec:zonotope}). \\
+	--~\texttt{.reductionTechnique} & string specifying the method used to reduce the zonotope order (see \cref{tab:zono_reduction}). The default value is \texttt{'girard'}. \\
+	--~\texttt{.errorOrder} & the zonotope order $\rho$ (see \cref{sec:zonotope}) is reduced to \texttt{errorOrder} internally before the linearization error is computed. This is done since the computation of the linearization error involves quadratic or even cubic maps that drastically increase the number of generators of the set. \\
+	--~\texttt{.intermediateOrder} & upper bound for the zonotope order $\rho$ (see \cref{sec:zonotope}) in internal computations of the algorithm. \\
+	--~\texttt{.maxError\_x} & vector of dimension $\Rn$ specifying the upper bound for the admissible abstraction error $\mathcal{L}$ for each system dimension of the dynamic equation $f(x(t),y(t),u(t))$ (see \eqref{eq:DAEsystem}). If the abstraction error exceeds the bound, the reachable set is split (see Step.~5 in \cref{fig:nonLinOverview}). The default value is $\infty$ (no splitting).\\
+	--~\texttt{.maxError\_y} & vector of dimension $\R^q$ specifying the upper bound for the admissible abstraction error $\mathcal{L}$ for each system dimension of the constraint equation $g(x(t),y(t),u(t))$ (see \eqref{eq:DAEsystem}). If the abstraction error exceeds the bound, the reachable set is split (see Step.~5 in \cref{fig:nonLinOverview}). The default value is $\infty$ (no splitting).\\
+	--~\texttt{.reductionInterval} & number of time steps after which redundant sets resulting from splitting are cancelled (see Step.~7 in \cref{fig:nonLinOverview}). The default value is $\infty$ (no cancellation). \\
+	--~\texttt{.lagrangeRem} & struct containing settings for evaluating the Lagrange remainder $\mathcal{L}$ (see \cref{tab:settingsLagrangeRem}). \\
+\end{longtable}
+\end{center}

@@ -13,7 +13,7 @@ function res = testLong_hybridAutomaton_reach_02_powerTrain
 %    -
 %
 % Outputs:
-%    res - true/false 
+%    res - true/false
 %
 % References:
 %   [1] M. Althoff et al. "Avoiding Geometic Intersection Operations in 
@@ -129,7 +129,7 @@ end
 
 % extract the states at the intersection with the guard set (before jump)
 [~,xHit] = extractHits(simRes2,3);
-points = reshape(cell2mat(xHit),HA.dim(1),[]);
+points = reshape(cell2mat(xHit),HA.nrOfStates(1),[]);
 % project for verification
 points = points(2:end,:);
 
@@ -180,17 +180,17 @@ for i = 1:length(guardIntersect)
     % reachability analysis (second part)
     u = [5; 0];                                
 
-    options_.U = zonotope(B3*u + c3);
-    options_.R0 = R.timePoint.set{end};
-    options_.finalLoc = params.finalLoc;
-    options_.startLoc = params.startLoc;
-    options_.tFinal = 2;
-    options_.tStart = 0.2;
+    params_.U = zonotope(B3*u + c3);
+    params_.R0 = R.timePoint.set{end};
+    params_.finalLoc = params.finalLoc;
+    params_.startLoc = params.startLoc;
+    params_.tFinal = 2;
+    params_.tStart = interval(0.2);
     options_.reductionTechnique = 'girard';
     options_.specification = [];
     options_.intersectInvariant = false;
     
-    [~,Rjump,~] = reach(loc,options_.R0,interval(options_.tStart),options_);
+    [~,Rjump,~] = reach(loc,params_,options_);
     
     % check if all simulated points are located inside the computed guard
     % intersection
@@ -200,9 +200,7 @@ for i = 1:length(guardIntersect)
     end
     poly = polytope(R);
     
-    if ~contains(poly,points,'exact',1e-10)
-        res = false; return
-    end
+    assertLoop(contains(poly,points,'exact',1e-10),i)
 
 end
 

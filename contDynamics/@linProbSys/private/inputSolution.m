@@ -1,18 +1,16 @@
-function obj = inputSolution(obj,options)
+function obj = inputSolution(obj,params,options)
 % inputSolution - computes the bloating due to the input 
 %
 % Syntax:
-%    obj = inputSolution(obj,options)
+%    obj = inputSolution(obj,params,options)
 %
 % Inputs:
 %    obj - linProbSys object
+%    params - model parameters
 %    options - options struct
 %
 % Outputs:
 %    obj - linProbSys object
-%
-% Example: 
-%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -30,17 +28,17 @@ function obj = inputSolution(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 %set of possible inputs
-V = obj.B*options.U;
+V = obj.B*params.U;
 
 %compute vTrans
-vTrans = obj.B*options.uTrans;
+vTrans = obj.B*params.uTrans;
 
 %load data from object/options structure
 A = obj.A;
 Apower = obj.taylor.powers;
 E = obj.taylor.error;
 r = options.timeStep;
-n = obj.dim;
+n = obj.nrOfStates;
 I = eye(n);
 F = obj.taylor.F; 
 

@@ -30,7 +30,7 @@ function [t,x,loc] = simulate(HA,params)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % new options preprocessing
-params = validateOptions(HA,mfilename,params,struct([]));
+params = validateOptions(HA,params,struct());
 
 % catch the case with time-varying inputs
 if size(params.uLoc{1},2) > 1
@@ -49,13 +49,16 @@ cnt = 0;
 
 % iteratively simulate for each location separately
 while tInter < params.tFinal && ...
-      ~isempty(locCurr) && ~isFinalLocation(locCurr,params.finalLoc)
+      ~isempty(locCurr) && ~priv_isFinalLocation(locCurr,params.finalLoc)
 
     % increment counter
     cnt = cnt + 1;
 
     % choose input
     params.u = params.uLoc{locCurr};
+
+    % compute derivatives of reset functions for current location
+    HA = derivatives(HA,locCurr);
 
     % simulate within the current location
     params.tStart = tInter;

@@ -55,10 +55,7 @@ for i=1:nTests
     [f_hess,H_str] = hessianHandle(pZ,pZ.id(ind_diff),pZ.id(~ind_diff));
     
     % check structure
-    if ~isempty(nonzeros(hess_sym(~H_str)))
-        res = false;
-        return;
-    end
+    assertLoop(isempty(nonzeros(hess_sym(~H_str))),i)
     
     % check function handle
     F_val = simplify(hess_sym-f_hess(x(ind_diff),x(~ind_diff)));
@@ -68,10 +65,7 @@ for i=1:nTests
     f_val = F_val(:);
     for j=1:length(f_val)
         cj = abs(double(coeffs(f_val(j),x)));
-        if any(cj > 0 & ~withinTol(cj,0,1e-8))
-            res = false;
-            return;
-        end
+        assertLoop((cj <= 0 | withinTol(cj,0,1e-8)),i,j)
     end
 end
 

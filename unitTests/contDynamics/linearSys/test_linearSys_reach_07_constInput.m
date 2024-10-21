@@ -1,12 +1,11 @@
-function res = test_linearSys_reach_07_constInput(~)
-% test_linearSys_reach_07_constInput - unit test to check if constant inputs c
-%   (cf. x' = Ax + Bu + c) are handled correctly; reduced version of
-%   testLong_reach_07
-% note: the simulation results may be not with absolute certainty correct,
-%       but should nonetheless remain inside the computed reachable sets
+function res = test_linearSys_reach_07_constInput
+% test_linearSys_reach_07_constInput - unit test to check if constant
+%    inputs c (cf. x' = Ax + Bu + c) are handled correctly; note: the
+%    simulation results may be not with absolute certainty correct, but
+%    should nonetheless remain inside the computed reachable sets
 %
 % Syntax:
-%    test_linearSys_reach_07_constInput(~)
+%    test_linearSys_reach_07_constInput
 %
 % Inputs:
 %    -
@@ -18,7 +17,7 @@ function res = test_linearSys_reach_07_constInput(~)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       07-January-2019
@@ -34,7 +33,7 @@ res = true;
 A = [0 1; 0 0];
 B = [0; 0];
 c = [0; -9.81];
-linSys = linearSys('linearSys',A,B,c);
+linsys = linearSys('linearSys',A,B,c);
 
 % Parameters --------------------------------------------------------------
 
@@ -51,31 +50,25 @@ options.zonotopeOrder = 20;
 
 % Reachability Analysis ---------------------------------------------------
 
-R = reach(linSys,params,options);
+R = reach(linsys,params,options);
 
 
 % Simulation --------------------------------------------------------------
 
 % number of initial points
 simOpt.points = 5;
-simRes = simulateRandom(linSys,params,simOpt); 
+simRes = simulateRandom(linsys,params,simOpt); 
 
 
 % Visualization -----------------------------------------------------------
 
-plotting = false;
-
-if plotting
-
-    figure; hold on; box on;
-    plot(R);
-    plot(simRes);
-
-end
+% figure; hold on; box on;
+% plot(R);
+% plot(simRes);
 
 % Numerical check ---------------------------------------------------------
 
 % check containment of simulation results in reachable set
-res = contains(R,simRes);
+assert(contains(R,simRes));
 
 % ------------------------------ END OF CODE ------------------------------

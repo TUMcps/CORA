@@ -1,13 +1,13 @@
-function [R,tcomp] = observe_PRadD(obj,options)
+function [R,tcomp] = observe_PRadD(linsysDT,params,options)
 % observe_PRadD - computes the guaranteed state estimation approach
-% from [1].
-%
+%    from [1].
 %
 % Syntax:
-%    [R,tcomp] = observe_PRadD(obj,options)
+%    [R,tcomp] = observe_PRadD(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -19,8 +19,6 @@ function [R,tcomp] = observe_PRadD(obj,options)
 %        Cembrano. Zonotopic set-membership state estimation for
 %        discrete-time descriptor LPV systems. IEEE Transactions
 %        on Automatic Control, 64(5):2092-2099, 2019.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -37,8 +35,7 @@ function [R,tcomp] = observe_PRadD(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % obtain offline gains
-
-OGain = observe_gain_PRadD(obj,options);
+OGain = observe_gain_PRadD(linsysDT,params,options);
 
 % set intersection procedure
 options.intersectionType = 2;
@@ -46,7 +43,7 @@ options.intersectionTechnique = OGain; % gain directly provided
 
 % apply set-membership approach
 tic
-R = observe_stripBased(obj,options);
+R = observe_stripBased(linsysDT,params,options);
 tcomp = toc;
 
 % ------------------------------ END OF CODE ------------------------------

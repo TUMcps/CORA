@@ -31,9 +31,7 @@ function res = norm(intMat,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if length(varargin)>1
-    throw(CORAerror('CORA:tooManyInputArgs',2));
-end
+narginchk(1,2);
 
 % set default values
 type = setDefaultValues({2},varargin);

@@ -34,13 +34,13 @@ O = ~fs;
 O_ = emptySet(n);
 
 % check solution
-res = O == O_;
+assert(O == O_);
 
 % different syntax
 O = not(fs);
-res(end+1,1) = O == O_;
+assert(O == O_);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

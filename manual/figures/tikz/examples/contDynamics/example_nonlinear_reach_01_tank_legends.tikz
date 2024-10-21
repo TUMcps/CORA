@@ -1,0 +1,6 @@
+\addlegendimage{plotstyle1}
+\addlegendentry{Reachable set}
+\addlegendimage{plotstyle3}
+\addlegendentry{Initial set}
+\addlegendimage{plotstyle4}
+\addlegendentry{Simulations}

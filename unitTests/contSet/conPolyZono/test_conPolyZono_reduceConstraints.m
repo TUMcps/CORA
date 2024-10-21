@@ -51,8 +51,8 @@ id = [1;3];
 
 cPZ_ = conPolyZono(c,G,E,[],[],[],[],id);
 
-if ~isequal(cPZ,cPZ_)
-    res = false;
+assert(isequal(cPZ,cPZ_))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

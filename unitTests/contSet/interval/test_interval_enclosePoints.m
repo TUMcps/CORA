@@ -23,14 +23,12 @@ function res = test_interval_enclosePoints
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % point cloud
 pts = [1 4 2 5 3 2 4 3 2 5; ...
        6 8 9 7 6 9 8 6 8 7];
 I = interval.enclosePoints(pts);
 I_true = interval([1; 6],[5; 9]);
-res(end+1,1) = isequal(I,I_true);
+assert(isequal(I,I_true));
 
 % unbounded
 pts = [-Inf -2 1 5; ...
@@ -38,9 +36,9 @@ pts = [-Inf -2 1 5; ...
         1    3 1 Inf];
 I = interval.enclosePoints(pts);
 I_true = interval([-Inf;-1;1],[5;4;Inf]);
-res(end+1,1) = isequal(I,I_true);
+assert(isequal(I,I_true));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

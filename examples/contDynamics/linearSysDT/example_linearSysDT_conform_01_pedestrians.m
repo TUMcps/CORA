@@ -24,7 +24,7 @@ function completed = example_linearSysDT_conform_01_pedestrians
 
 % Authors:       Matthias Althoff
 % Written:       29-June-2023
-% Last update:   ---
+% Last update:   21-March-2024 (LL, adapt to restructuring of "conform")
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -36,8 +36,12 @@ path = [CORAROOT filesep 'models' filesep 'testCases' filesep 'pedestrians'];
 load([path filesep 'Pellegrini2009Test'],'Pellegrini2009Test');
 
 %% Conformance settings
-options.confAlg = 'dyn';
-params.testSuite = Pellegrini2009Test;
+params.testSuite = cell(100,1);
+for m=1:100
+    % add nominal inputs equal to zeros to each test case since minimal input
+    % dimension for linearSysDT is 1
+    params.testSuite{m} = set_u(Pellegrini2009Test{m}, zeros(size(Pellegrini2009Test{m}.y,1),1));
+end
 
 
 %% System dynamics
@@ -48,46 +52,50 @@ dt = Pellegrini2009Test{1}.sampleTime;
 % discrete time system matrix from continuous system matrix Ac
 Ac = [0 0 1 0; 0 0 0 1; 0 0 0 0; 0 0 0 0];
 A = expm(Ac*dt);
-B = [];
+B = zeros(4,1);
 C = [1 0 0 0; 0 1 0 0];
-D = [];
+D = zeros(2,1);
+E = [dt,0,0.5*dt^2,0;0,dt,0,0.5*dt^2;0,0,dt,0;0,0,0,dt]; % input conversion from continuous time to discrete time
+F = eye(2);
 
 % instantiate linear discrete-time dynamics
-pedestrian = linearSysDT(A,B,[],C,D,dt);
+pedestrian = linearSysDT(A,B,[],C,D,[],E,F,dt);
 params.tFinal = 2;
 
 % uncertain inputs (disturbance W and sensor noise V are included in U 
 % according to the definition of u in the model)
-E = [dt,0,0.5*dt^2,0;0,dt,0,0.5*dt^2;0,0,dt,0;0,0,0,dt]; % input conversion from continuous time to discrete time
-Zcircle = zonotope(ellipsoid(eye(2)),20); % zonotope template (uniform acceleration limit)
-W = cartProd(interval([0;0]),Zcircle); % disturbance template
-params.W = E*W; % disturbance template for discrete time
+Zcircle = zonotope(ellipsoid(eye(2)),'outer:norm',20); % zonotope template (uniform acceleration limit)
+params.W = cartProd(interval([0;0]),Zcircle); % disturbance template
 params.V = zonotope([zeros(2,1),eye(2)]); % measurement uncertainty template
-params.R0conf = zonotope([zeros(4,1),eye(4)]); % initial state uncertainty template for conformance
+params.R0 = zonotope([zeros(4,1),eye(4)]); % initial state uncertainty template for conformance
 
 % options to weight cost function of different time steps
 maxNrOfTimeSteps = ceil(params.tFinal/dt); % maximum number of timeSteps
-options.w = ones(maxNrOfTimeSteps+1,1);
+options.cs.w = ones(maxNrOfTimeSteps+1,1);
+options.cs.constraints = 'half';
     
 %% Conformance synthesis
 % interval norm
-options.norm = 'interval';
-[params_interval, ~, ~, union_y_a] = conform(pedestrian,params,options); 
+options.cs.cost = 'interval';
+[params_interval, results] = conform(pedestrian,params,options); 
+union_y_a = results.unifiedOutputs;
 % Frobenius norm
-options.P = eye(2);
-options.norm = 'frob';
+options.cs.P = eye(2);
+options.cs.cost = 'frob';
 params_frob = conform(pedestrian,params,options); 
 
 % %% for debugging: check conformance
-% options.confAlg = 'dyn';
-% res = conform(pedestrian,'check',params_interval,options); 
-% res = conform(pedestrian,'check',params_frob,options);
+% params_interval.testSuite = params.testSuite;
+% res = isconform(pedestrian,params_interval,options); 
+% params_frob.testSuite = params.testSuite;
+% res = isconform(pedestrian,params_frob,options);
 
 %% Compute reachable set using obtained parameters
 options.zonotopeOrder = inf;
-params_interval.R0 = params_interval.R0conf;
-params_frob.R0 = params_frob.R0conf;
+options = rmfield(options, "cs");
+params_interval = rmfield(params_interval, "testSuite");
 R_interval = reach(pedestrian, params_interval, options);
+params_frob = rmfield(params_frob, "testSuite");
 R_frob = reach(pedestrian, params_frob, options);
 
 %% Plot test cases and reachable sets
@@ -95,6 +103,7 @@ R_frob = reach(pedestrian, params_frob, options);
 dims = {[1 2]};
 
 for k = 1:length(dims)
+    figure;
     
     % create separate plot for each time step
     for iStep = 1:length(R_interval.timePoint.time)
@@ -109,38 +118,21 @@ for k = 1:length(dims)
         plot(R_frob.timePoint.set{iStep},projDims,'g');
 
         % plot unified test cases
-        plot(union_y_a{iStep}(:,projDims(1)),union_y_a{iStep}(:,projDims(2)),'Marker','.','LineStyle', 'none');
+        plot(squeeze(union_y_a{1}(iStep,projDims(1),:)),...
+            squeeze(union_y_a{1}(iStep,projDims(2),:)),'kx');
 
         % label plot
         xlabel(['x_{',num2str(projDims(1)),'}']);
         ylabel(['x_{',num2str(projDims(2)),'}']);
         title(['Time step ',num2str(iStep)]);
         legend('interval norm','Frobenius norm')
-        
-        
-%         figure; hold on; box on
-%         projDims = dims{k};
-% 
-%         % plot reachable set of interval norm
-%         plot(R_interval.timePoint.set{iStep},projDims);
-%         
-%         % plot reachable set of Frobenius norm
-%         plot(R_frob.timePoint.set{iStep},projDims,'g');
-% 
-%         % plot unified test cases
-%         plot(union_y_a{iStep}(:,projDims(1)),union_y_a{iStep}(:,projDims(2)),'k','Marker','.','LineStyle', 'none');
-% 
-%         % label plot
-%         xlabel('a');
-%         ylabel('b');
-%         legend('interval norm','Frobenius norm')
     end
 end
 
 
 % example completed
 completed = true;
-end
 
+end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -25,6 +25,7 @@ function results = testSuiteCore(prefix,varargin)
 % Authors:       Dmitry Grebenyuk, Matthias Althoff
 % Written:       31-August-2016
 % Last update:   22-April-2024 (TL, better formatting)
+%                25-September-2024 (TL, more expressive error messages)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -77,7 +78,7 @@ for i=1:nrTests
         rng(testseeds(i));
         results(i,1).seed = testseeds(i);
 
-        tic;
+        testTime = tic;
         % supress output of tests by usage of evalc 
         % except for the header test, as it has its own output
         if startsWith(fname, 'testHeader')
@@ -101,22 +102,46 @@ for i=1:nrTests
         end
 
         % save time
-        results(i,1).time = toc;
+        results(i,1).time = toc(testTime);
 
         % print result on command window
         if verbose
             if res
                 fprintf('%s  (%.2fs)\n','passed',results(i,1).time);
             else
-                fprintf('%s  (%.2fs)\n','failed',results(i,1).time);
+                fprintf('%s  (%.2fs) : returned ''false''\n','failed',results(i,1).time);
             end
         end
 
-    catch
-        results(i,1).time = toc;
+    catch ME
+        results(i,1).time = toc(testTime);
         res = false;
         if verbose
-            fprintf('%s  (%.2fs)\n','failed',results(i,1).time);
+            % read error message and line number
+            idxThisFile = find(arrayfun(@(entry) contains(entry.name,mfilename), ME.stack),1,'last')';
+            idxTest = max([1,idxThisFile-1]);
+            entryTestFile = ME.stack(idxTest);
+            msg = strrep(ME.message,newline,' | '); % single line
+
+            % read file where error is thrown for additional information
+            addInfo = "";
+            % shift to file where error is thrown
+            idxErrorFile = 1;
+            while ismember(ME.stack(idxErrorFile).name, {'assertLoop'})
+                % go to 'real' file where error is thrown
+                idxErrorFile = idxErrorFile + 1;
+            end
+            if idxErrorFile ~= idxTest
+                entryErrorFile = ME.stack(idxErrorFile);
+                filepathErrorFile = entryErrorFile.file;
+                if contains(filepathErrorFile,CORAROOT)
+                    filepathErrorFile = filepathErrorFile(numel(CORAROOT)+2:end);
+                end
+                addInfo = sprintf(' (thrown in %s, line %i)',filepathErrorFile,entryErrorFile.line);
+            end
+
+            % display results
+            fprintf('%s  (%.2fs) : in line %i: ''%s''%s\n','failed',results(i,1).time,entryTestFile.line,msg,addInfo);
         end
     end
 

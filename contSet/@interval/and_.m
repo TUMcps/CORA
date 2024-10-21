@@ -26,50 +26,47 @@ function res = and_(I,S,varargin)
 % Written:       26-June-2015
 % Last update:   05-May-2020 (MW, standardized error message)
 % Last revision: 27-March-2023 (MW, rename and_)
+%                28-September-2024 (MW, integrate precedence)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% different cases depending on the class of the summand
-if isa(S,'interval')
-
-    % compute intersection
-    lb = max(I.inf, S.inf);
-    ub = min(I.sup, S.sup);
-
-    % check if result is empty
-    tmp = lb - ub;
-    if all(tmp <= eps, 'all')
-        res = interval(min([lb,ub],[],2),max([lb,ub],[],2));
-    else
-        res = interval.empty(dim(S));
-    end
-
-elseif isa(S,'halfspace') || isa(S,'conHyperplane')
-
-    % convert to conZonotope
-    cZ = conZonotope(I);
-
-    % compute intersection
-    res = and_(cZ,S,'exact');
-
-    % ecnlose intersection by interval
-    res = interval(res);
-
-elseif isa(S,'levelSet')
-
-    res = and_(S,I,'exact');
-
-elseif isa(S,'zonotope') || isa(S,'conZonotope') || ...
-       isa(S,'zonoBundle') || isa(S,'polytope') || ...
-       isa(S,'conPolyZono')
-
-    res = and_(S,I,'exact');
-
-else
-    
-    % throw error for given arguments
-    throw(CORAerror('CORA:noops',I,S));
-    
+% call function with lower precedence (all but interval-interval case)
+if isa(S,'contSet') && S.precedence < I.precedence
+    res = and_(S,I,varargin{:});
+    return
 end
+
+% interval-interval case
+
+% compute intersection
+lb = max(I.inf, S.inf);
+ub = min(I.sup, S.sup);
+
+% check if intersection is empty
+tmp = lb - ub;
+if all(tmp <= eps, 'all')
+    res = interval(min([lb,ub],[],2),max([lb,ub],[],2));
+else
+    res = interval.empty(prod(dim(S)));
+end
+
+
+% elseif isa(S,'polytope') && (representsa_(S,'halfspace',1e-12) || representsa_(S,'conHyperplane',1e-12))
+% 
+%     % convert to conZonotope
+%     cZ = conZonotope(I);
+% 
+%     % compute intersection
+%     res = and_(cZ,S,'exact');
+% 
+%     % ecnlose intersection by interval
+%     res = interval(res);
+% 
+% elseif isa(S,'zonotope') || isa(S,'conZonotope') || ...
+%        isa(S,'zonoBundle') || isa(S,'polytope')
+% 
+%     res = and_(S,I,'exact');
+% 
+% end
 
 % ------------------------------ END OF CODE ------------------------------

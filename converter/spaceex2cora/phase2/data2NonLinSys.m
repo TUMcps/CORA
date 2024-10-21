@@ -96,27 +96,27 @@ stateStr = sCommentStr;
 dynamicsC = aux_text2comment("equation:" + newline + State.Flow.Text) + newline;
 if isfield(State.Flow,'A')
     % Get information for linear system
-    linSysA = printMatrixConverter(State.Flow.A);
-    linSysAStr = "dynA = ..." + newline + linSysA + ";" + newline;
-    linSysB = printMatrixConverter(State.Flow.B);
-    linSysBStr = "dynB = ..." + newline + linSysB + ";" + newline;
-    linSysc = printMatrixConverter(State.Flow.c);
-    linSyscStr = "dync = ..." + newline + linSysc + ";" + newline;
+    linsysA = printMatrixConverter(State.Flow.A);
+    linsysAStr = "dynA = ..." + newline + linsysA + ";" + newline;
+    linsysB = printMatrixConverter(State.Flow.B);
+    linsysBStr = "dynB = ..." + newline + linsysB + ";" + newline;
+    linsysc = printMatrixConverter(State.Flow.c);
+    linsyscStr = "dync = ..." + newline + linsysc + ";" + newline;
     % Get information about outputs from Invariant of linear system
     if isempty(Comp.outputsGlobal)
         % no outputs, no equation of the form y = Cx + Du + k
-        dynamicsStr = dynamicsC + linSysAStr + linSysBStr + linSyscStr + ...
+        dynamicsStr = dynamicsC + linsysAStr + linsysBStr + linsyscStr + ...
             "sys = linearSys(dynA, dynB, dync);" + aux_newlines(2);
     else
         % include output equation y = Cx + Du + k
-        linSysC = printMatrixConverter(State.Flow.C);
-        linSysCStr = "dynC = ..." + newline + linSysC + ";" + newline;
-        linSysD = printMatrixConverter(State.Flow.D);
-        linSysDStr = "dynD = ..." + newline + linSysD + ";" + newline;
-        linSysk = printMatrixConverter(State.Flow.k);
-        linSyskStr = "dynk = ..." + newline + linSysk + ";" + newline;
-        dynamicsStr = dynamicsC + linSysAStr + linSysBStr + linSyscStr + ...
-            linSysCStr + linSysDStr + linSyskStr + aux_newlines(2) + ...
+        linsysC = printMatrixConverter(State.Flow.C);
+        linsysCStr = "dynC = ..." + newline + linsysC + ";" + newline;
+        linsysD = printMatrixConverter(State.Flow.D);
+        linsysDStr = "dynD = ..." + newline + linsysD + ";" + newline;
+        linsysk = printMatrixConverter(State.Flow.k);
+        linsyskStr = "dynk = ..." + newline + linsysk + ";" + newline;
+        dynamicsStr = dynamicsC + linsysAStr + linsysBStr + linsyscStr + ...
+            linsysCStr + linsysDStr + linsyskStr + aux_newlines(2) + ...
             "sys = linearSys(dynA, dynB, dync, dynC, dynD, dynk);" + aux_newlines(2);
     end
 else

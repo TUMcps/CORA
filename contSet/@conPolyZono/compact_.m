@@ -69,6 +69,17 @@ function cPZ = compact_(cPZ,method,tol,varargin)
         case 'all'
             % remove redundancies in states
             [cPZ.c,cPZ.G,E] = aux_removeRedundanciesGens(cPZ.c,cPZ.G,cPZ.E);
+
+            % catch the case where there are no generators left
+            if isempty(cPZ.G)
+                cPZ.E = [];
+                cPZ.EC = [];
+                cpZ.A = [];
+                cpZ.b = [];
+                cpZ.id = [];
+                return
+            end
+
             % remove redundancies in constraints
             if ~isempty(cPZ.A)
                 [b,cPZ.A,EC] = aux_removeRedundanciesGens(-cPZ.b,cPZ.A,cPZ.EC);

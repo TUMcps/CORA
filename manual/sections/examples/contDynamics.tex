@@ -1,0 +1,219 @@
+\subsection{Continuous Dynamics}
+\logToConsole{EXAMPLES: CONTINUOUS DYNAMICS}
+
+This section presents a variety of examples for continuous dynamics categorized along the different classes for dynamic systems realized in CORA. All subsequent examples can handle uncertain inputs. Uncertain parameters can be realized using different techniques:
+\begin{enumerate}
+    \item Introduce constant parameters as additional states and assign the dynamics $\dot{x}_i = 0$ to them. The disadvantage is that the dimension of the system is growing.
+    \item Introduce time-varying parameters as additional uncertain inputs.
+    \item Use specialized functions in CORA that can handle uncertain parameters.
+\end{enumerate}
+It is generally advised to use the last technique, but there is no proof that this technique always provides better results compared to the other techniques.
+
+\subsubsection{Linear Dynamics}
+
+For linear dynamics we demonstrate the usage of two different reachability algorithms.
+
+\paragraph{Standard Algorithm}
+
+First, we consider the standard algorithm from \cite{Girard2005}. We use a simple academic example from \cite[Sec.~3.2.3]{Althoff2010a} with not much focus on a connection to a real system. However, since linear systems are solely determined by their state and input matrix, adjusting this example to any other linear system is straightforward. Here, the system dynamics is
+\begin{equation*}
+    \dot{x}=\begin{bmatrix}
+                -1 & -4 & 0  & 0  & 0  \\
+                4  & -1 & 0  & 0  & 0  \\
+                0  & 0  & -3 & 1  & 0  \\
+                0  & 0  & -1 & -3 & 0  \\
+                0  & 0  & 0  & 0  & -2 \\
+    \end{bmatrix}  x + u(t), \quad
+    x(0)\in\begin{bmatrix} [0.9,1.1]
+               \\ [0.9,1.1] \\ [0.9,1.1] \\ [0.9,1.1] \\ [0.9,1.1]
+    \end{bmatrix}, \,
+    u(t) \in
+    \begin{bmatrix}
+    [0.9,1.1]
+        \\
+        [-0.25,0.25] \\
+        [-0.1,0.1] \\
+        [0.25,0.75] \\
+        [-0.75,-0.25] \\
+    \end{bmatrix}.
+\end{equation*}
+
+The MATLAB code that implements the simulation and reachability analysis of the linear example is (see file \textit{examples/contDynamics/linearSys/example\_linear\_reach\_01\_5dim.m} in the CORA toolbox):
+    {\small
+\input{./MATLABcode/example_linear_reach_01_5dim.tex}}
+
+The reachable set and the simulation are plotted in \cref{fig:example_linear_reach_01_5dim} for a time horizon of $t_f = 5$.
+
+\begin{figure}[htb]
+    \centering
+    \footnotesize
+    \includetikz{./figures/tikz/examples/contDynamics/example_linear_reach_01_5dim}
+    \caption{Illustration of the reachable set of the linear example. The white box shows the initial set and the black lines show simulated trajectories.}
+    \label{fig:example_linear_reach_01_5dim}
+\end{figure}
+
+\paragraph{Adaptive Algorithm}
+
+One major disadvantage of the standard algorithm used in the example above is that the user is required to manually tune the time step size, the number of Taylor terms, and the zonotope order to obtain a tight enclosure of the reachable set. The novel adaptive algorithm from \cite{Wetzlinger2020} tunes these parameters automatically in such a way that a certain precision is achieved. We consider the two-dimensional system
+\begin{equation*}
+    \dot{x}=\begin{bmatrix}
+                -0.7 & -2 \\ 2 & -0.7
+    \end{bmatrix}  x + u(t), \quad
+    x(0)\in\begin{bmatrix} [9.5,10.5]
+               \\ [4.5,5.5]
+    \end{bmatrix}, \,
+    u(t) \in
+    \begin{bmatrix}
+    [0.75,1.25]
+        \\
+        [0.75,1.25] \\
+    \end{bmatrix}.
+\end{equation*}
+
+The MATLAB code that implements reachability analysis with the adaptive algorithm (see file \textit{examples/contDynamics/linearSys/example\_linear\_reach\_04\_adaptive.m} in the CORA toolbox):
+    {\small
+\input{./MATLABcode/example_linear_reach_04_adaptive.tex}}
+
+The reachable sets computed with the adaptive algorithm for two different precision values are plotted in \cref{fig:example_linear_reach_04_adaptive} for a time horizon of $t_f = 5$.
+
+\begin{figure}[htb]
+    \centering
+    \footnotesize
+    \includetikz{./figures/tikz/examples/contDynamics/example_linear_reach_04_adaptive}
+    \caption{Illustration of the reachable set computed with the adaptive algorithm with a requested precision of \texttt{options.error = 1} (black) and \texttt{options.error = 0.05} (gray).}
+    \label{fig:example_linear_reach_04_adaptive}
+\end{figure}
+
+\subsubsection{Linear Dynamics with Uncertain Parameters}
+
+For linear dynamics with uncertain parameters, we use the transmission line example from \cite[Sec.~4.5.2]{Althoff2011b}, which can be modeled as an electric circuit with resistors, inductors, and capacitors. The parameters of each component have uncertain values as described in \cite[Sec.~4.5.2]{Althoff2011b}. This example shows how one can better take care of dependencies of parameters by using matrix zonotopes instead of interval matrices.
+
+The MATLAB code that implements the simulation and reachability analysis of the linear example with uncertain parameters is (see file \textit{examples/contDynamics/linParamSys/}\\ \textit{example\_linearParam\_reach\_01\_rlc\_const.m} in the CORA toolbox):
+    {\small
+\input{./MATLABcode/example_linearParam_reach_01_rlc_const.tex}}
+
+The reachable set and the simulation are plotted in \cref{fig:example_linearParam_reach_01_rlc_const} for a time horizon of $t_f = 0.3$.
+\begin{figure}[htb]
+    \centering
+    \footnotesize
+    \includetikz{./figures/tikz/examples/contDynamics/example_linearParam_reach_01_rlc_const}
+    \caption{Illustration of the reachable set of the transmission example. A white box shows the initial set and the black lines are simulated trajectories.}
+    \label{fig:example_linearParam_reach_01_rlc_const}
+\end{figure}
+
+\subsubsection{Nonlinear Dynamics}
+
+For nonlinear dynamics, several examples are presented.
+
+\paragraph{Tank System}
+The first example is the tank system from \cite{Althoff2008c} where water flows from one tank into another one. This example can be used to study the effect of water power plants on the water level of rivers. This example can be easy extended by several tanks and thus is a nice benchmark example to study the scalability of algorithms for reachability analysis. CORA can compute the reachable set with at least $100$ tanks.
+
+The MATLAB code that implements the simulation and reachability analysis of the tank example is (see file \textit{examples/contDynamics/nonlinearSys/}\textit{example\_nonlinear\_reach\_01\_tank.m} in the CORA toolbox):
+    {\small
+\input{./MATLABcode/example_nonlinear_reach_01_tank.tex}}
+
+The difference to specifying a linear system is that a link to a nonlinear differential equation has to be provided, rather than the system matrix $A$ and the input matrix $B$. The nonlinear system model $\dot{x}=f(x,u)$, where $x$ is the state and $u$ is the input, is shown below:
+    {\small
+\input{./MATLABcode/tank6Eq.tex}}
+
+The output of this function is $\dot{x}$ for a given time $t$, state $x$, and input $u$.
+
+\cref{fig:example_nonlinear_reach_01_tank} shows the reachable set and the simulation for a time horizon of $t_f = 400$.
+\begin{figure}[htb]
+    \centering
+    \footnotesize
+    \includetikz{./figures/tikz/examples/contDynamics/example_nonlinear_reach_01_tank}
+    \caption{Illustration of the reachable set of the linear example. The white box shows the initial set and the black lines show simulated trajectories.}
+    \label{fig:example_nonlinear_reach_01_tank}
+\end{figure}
+
+\paragraph{Van der Pol Oscillator}
+The Van der Pol oscillator is a standard example for limit cycles. By using reachability analysis one can show that one always returns to the initial set so that the obtained set is an invariant set. This example is used in \cite{Althoff2008c} to demonstrate that one can obtain a solution even if the linearization error becomes too large by splitting the reachable set. Later, in \cite{Althoff2013a} an improved method is presented that requires less splitting. This example demonstrates the capabilities of the simpler approach presented in \cite{Althoff2008c}. Due to the similarity of the MATLAB code compared to the previous tank example, we only present the reachable set in \cref{fig:example_nonlinear_reach_03_vanderPol}. The corresponding code can be found in the file \textit{examples/contDynamics/nonlinearSys/}\textit{example\_nonlinear\_reach\_03\_vanDerPol\_splitting.m} in the CORA toolbox.
+\begin{figure}[htb]
+    \centering
+    \footnotesize
+    \includegraphics[width=0.5\columnwidth]{./figures/examples/example_nonlinear_reach_03_vanderPol.eps}
+    \caption{Illustration of the reachable set of the Van der Pol oscillator. The white box shows the initial set and the black lines show simulated trajectories.}
+    \label{fig:example_nonlinear_reach_03_vanderPol}
+\end{figure}
+
+\paragraph{Seven-Dimensional Example for Non-Convex Set Representation}
+This academic example is used to demonstrate the benefits of using higher-order abstractions of nonlinear systems compared to linear abstractions. However, since higher order abstractions do not preserve convexity when propagating reachable sets, the non-convex set representation \textit{polynomial zonotope} is used as presented in \cite{Althoff2013a}. Please note that the entire reachable set for the complete time horizon is typically non-convex, even when the propagation from one point in time to another point in time is convex. Due to the similarity of the MATLAB code compared to the previous tank example, we only present the reachable set in \cref{fig:example_nonlinear_reach_04_sevenDim_nonConvexRepr}. The corresponding code can be found in the file \textit{examples/contDynamics/nonlinearSys/}\textit{example\_nonlinear\_reach\_04\_laubLoomis\_polyZonotope.m} in the CORA toolbox.
+
+\begin{figure}[htb]
+    \centering
+    \footnotesize
+    \includetikz{./figures/tikz/examples/contDynamics/example_nonlinear_reach_04_laubLoomis_polyZonotope}
+    \caption{Illustration of the reachable set of the seven-dimensional example for non-convex set representation. The white box shows the initial set and the black lines show simulated trajectories.}
+    \label{fig:example_nonlinear_reach_04_sevenDim_nonConvexRepr}
+\end{figure}
+
+\paragraph{Autonomous Car Following a Reference Trajectory}
+This example presents the reachable set of an automated vehicle developed at the German Aerospace Center. The difference of this example compared to the previous example is that a reference trajectory is followed. Similar models have been used in previous publications, see e.g., \cite{Althoff2011e,Althoff2012b,Althoff2014b}. In CORA, this only requires changing the input in \texttt{options.uTrans} from a vector to a matrix, where each column vector is the reference value at the next sampled point in time. Due to the similarity of the MATLAB code compared to the previous tank example, we only present the reachable set in \cref{fig:example_nonlinear_reach_05_autonomousCar}, where the reference trajectory is plotted in red. The corresponding code can be found in the file \textit{examples/contDynamics/nonlinearSys/}\textit{example\_nonlinear\_reach\_05\_autonomousCar.m} in the CORA toolbox.
+\begin{figure}[htb]
+    \centering
+    \footnotesize
+    \includetikz{./figures/tikz/examples/contDynamics/example_nonlinear_reach_05_autonomousCar}
+    \caption{Illustration of the reachable set of the seven-dimensional example for non-convex set representation. The white box shows the initial set and the black lines show simulated trajectories.}
+    \label{fig:example_nonlinear_reach_05_autonomousCar}
+\end{figure}
+
+\subsubsection{Nonlinear Dynamics with Uncertain Parameters}
+
+As for linear systems, specialized algorithms have been developed for considering uncertain parameters of nonlinear systems. To better compare the results, we again use the tank system whose reachable set we know from a previous example. The plots show not only the case with uncertain parameters, but also the one without uncertain parameters.
+
+The MATLAB code that implements the simulation and reachability analysis of the nonlinear example with uncertain parameters is (see file \textit{examples/contDynamics/nonlinParamSys/}\textit{example\_nonlinearParam\_reach\_01\_tank.m} in the CORA toolbox):
+    {\small
+\input{./MATLABcode/example_nonlinearParam_reach_01_tank}}
+
+The reachable set and the simulation are plotted in \cref{fig:example_nonlinearParam_reach_01_tank} for a time horizon of $t_f = 400$.
+\begin{figure}[htb]
+    \centering
+    \footnotesize
+    \includetikz{./figures/tikz/examples/contDynamics/example_nonlinearParam_reach_01_tank}
+    \caption{Illustration of the reachable set of the nonlinear parametric example. The light-blue region shows the reachable set with uncertain parameters, while the blue area shows the reachable set without uncertain parameters. The white box shows the initial set and the black lines show simulated trajectories.}
+    \label{fig:example_nonlinearParam_reach_01_tank}
+\end{figure}
+
+\subsubsection{Discrete-time Nonlinear Systems}
+
+We demonstrate the calculation of the reachable set for a time-discrete system with the example of a stirred tank reactor model. The original continuous time system model is given in \cite{Bravo2006}. Using the trapezoidal rule for time discretization, we obtained the following nonlinear discrete time system:
+\begin{equation}
+    \begin{split}
+        & C_A(k+1) = \frac{1-\frac{q \tau}{2V} - k_0 \cdot \tau \cdot \exp{\left(-\frac{E}{R \cdot T(k)}\right)} \cdot C_A(k) + \frac{q}{V} \cdot C_{Af} \cdot \tau}{1 + \frac{q\tau}{2V} + w_1(k) \cdot \tau} \\
+        & ~~ \\
+        & T(k+1) = \frac{T(k) \cdot \left( 1 - \frac{\tau}{2} - \frac{\tau \cdot U A}{2V \cdot \rho \cdot C_p} \right) + \tau \cdot \left( T_f \cdot \frac{q}{V} + \frac{U A \cdot u(C_A(k),T(k))}{V \cdot \rho \cdot C_p} \right)}{1 + \frac{\tau \cdot q}{2V} + \frac{\tau \cdot U A}{2V \cdot \rho \cdot C_p}}\\
+        & ~~ \\
+        & ~~~~~~~~~~~~ - \frac{ C_A(k) \cdot \frac{\Delta H \cdot k_0 \cdot \tau}{\rho \cdot C_p} \cdot \exp{\left( - \frac{E}{R \cdot T(k)} \right)}}{1 + \frac{\tau \cdot q}{2V} + \frac{\tau \cdot U A}{2V \cdot \rho \cdot C_p}} + \tau \cdot w_2(k) ~~,
+    \end{split}
+\end{equation}
+where $u(C_A(k),T(k)) = -3 \cdot C_A(k) -6.9 \cdot T(k)$ is the linear control law, $w_1(k) \in [-0.1,0.1]$ and $w_2(k) \in [-2,2]$ are bounded disturbances, and $\tau$ is the time step size. The values for the model parameters are given in \cite{Bravo2006}. The MATLAB code that implements the simulation and reachability analysis for the nonlinear discrete time model is shown below (see file \textit{examples/contDynamics/nonlinearSysDT/}\textit{example\_nonlinearDT\_reach\_cstrDisc.m} in the CORA toolbox):
+
+    {\small
+\input{./MATLABcode/example_nonlinearDT_reach_cstrDisc}}
+
+The reachable set and the simulation are displayed in \cref{fig:exampleNonlinearSysDT} for a time horizon of $t_f = 0.15$ min.
+\begin{figure}[htb]
+    \centering
+    \footnotesize
+    \includetikz{./figures/tikz/examples/contDynamics/example_nonlinearSysDT_reach_cstrDisc}
+    \caption{Illustration of the reachable set of the nonlinear discrete-time example. The black dots show the simulated points.}
+    \label{fig:exampleNonlinearSysDT}
+\end{figure}
+
+\subsubsection{Nonlinear Differential-Algebraic Systems}
+
+CORA is also capable of computing reachable sets for semi-explicit, index-1 differential-algebraic equations. Although many index-1 differential-algebraic equations can be transformed into an ordinary differential equation, this is not always possible. For instance, power systems cannot be simplified due to Kirchhoff's law which constraints the currents of a node to sum up to zero. The capabilities of computing reachable sets are demonstrated for a small power system consisting of three buses. More complicated examples can be found in \cite{Althoff2012c,Althoff2014a,Althoff2014c}.
+
+The MATLAB code that implements the simulation and reachability analysis of the nonlinear differential-algebraic example is (see file \textit{examples/contDynamics/nonlinDASys/}\\ \textit{example\_nonlinearDA\_reach\_01\_powerSystem\_3bus.m} in the CORA toolbox):
+    {\small
+\input{./MATLABcode/example_nonlinearDA_reach_01_powerSystem_3bus}}
+
+The reachable set and the simulation are plotted in \cref{fig:example_nonlinearDA_reach_01_powerSystem_3bus} for a time horizon of $t_f = 5$.
+\begin{figure}[htb]
+    \centering
+    \footnotesize
+    \includetikz{./figures/tikz/examples/contDynamics/example_nonlinearDA_reach_01_powerSystem_3bus}
+    \caption{Illustration of the reachable set of nonlinear differential-algebraic example. The white box shows the initial set and the black lines show simulated trajectories.}
+    \label{fig:example_nonlinearDA_reach_01_powerSystem_3bus}
+\end{figure}

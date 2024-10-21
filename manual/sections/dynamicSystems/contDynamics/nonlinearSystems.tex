@@ -1,0 +1,172 @@
+\subsubsection{Nonlinear Systems} \label{sec:nonlinearSystems}
+
+Although a fairly large group of dynamic systems can be described by linear systems, the extension to nonlinear systems is an important step towards the analysis of more complex systems. We consider general nonlinear continuous systems defined by the differential equation
+\begin{align}
+	\dot x(t) = f(x(t),u(t)), \label{eq:nonlinearSystem} \\
+	y(t) = g(x(t),u(t)), \label{eq:nonlinearSystem_output}
+\end{align}
+where $x(t) \in \Rn$ is the system state, $u(t) \in \R^m$ is the system input, $y(t) \in \R^o$ is the system output, and $f:\Rn \times \R^m \to \Rn$ and $g:\Rn \times \R^m \to \R^o$ are sufficiently smooth. 
+
+Nonlinear systems are implemented by the class \texttt{nonlinearSys}. An object of class \texttt{nonlinearSys} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \texttt{sys} = \texttt{nonlinearSys}(\texttt{fun}), \\
+     	& \texttt{sys} = \texttt{nonlinearSys}(\texttt{name},\texttt{fun}), \\
+    	& \texttt{sys} = \texttt{nonlinearSys}(\texttt{fun},n,m), \\
+     	& \texttt{sys} = \texttt{nonlinearSys}(\texttt{name},\texttt{fun},n,m), \\
+     	& \texttt{sys} = \texttt{nonlinearSys}(\texttt{fun},\texttt{outFun}), \\
+     	& \texttt{sys} = \texttt{nonlinearSys}(\texttt{name},\texttt{fun},\texttt{outFun}), \\
+     	& \texttt{sys} = \texttt{nonlinearSys}(\texttt{fun},n,m,\texttt{outFun},o), \\
+     	& \texttt{sys} = \texttt{nonlinearSys}(\texttt{name},\texttt{fun},n,m,\texttt{outFun},o),
+	\end{split}
+\end{equation*} 
+where \texttt{name} is a string specifying the name of the system, \texttt{fun} is a MATLAB function handle defining the function $f(x(t),u(t))$ in \eqref{eq:nonlinearSystem}, $n$ is the number of states (see \eqref{eq:nonlinearSystem}), and $m$ is the number of inputs (see \eqref{eq:nonlinearSystem}), \texttt{outFun} is the output equation in \eqref{eq:nonlinearSystem_output} and $o$ is the number of outputs (see \eqref{eq:nonlinearSystem_output}). If the number of states $n$, the number of inputs $m$, and the number of outputs $o$ are not provided, they are automatically determined from the function handle \texttt{fun}. If no output equation is provided, we assume $y = x$.
+Let us demonstrate the class \texttt{nonlinearSys} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.48\textwidth}
+	\vspace{10pt}
+	\begin{equation*}
+	\begin{bmatrix} \dot x_1 \\ \dot x_2 \end{bmatrix} = \begin{bmatrix}  x_2 + u \\ (1-x_1^2)x_2 - x_1 \end{bmatrix}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[t]{0.48\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_nonlinearSys}
+\end{minipage}
+\end{center}
+
+
+
+
+\subsubsubsection{Operation \texttt{reach}}
+\label{sec:nonlinearReach}
+
+Reachability analysis of nonlinear systems is much more complicated compared to linear systems, because many valuable properties are no longer valid. One of them is the superposition principle, which allows one to obtain the homogeneous and the inhomogeneous solution separately. Another advantage of linear systems is that the reachable set can be computed by a linear map in the absence of uncertain inputs. This makes it possible to exploit that geometric representations, such as ellipsoids, zonotopes, and polytopes, are closed under linear transformations, i.e., they are again mapped to ellipsoids, zonotopes, and polytopes, respectively. In CORA, reachability analysis of nonlinear systems is based on state-space abstraction. We consider abstraction by linear systems as presented in \cite[Section 3.4]{Althoff2010a} and by polynomial systems as presented in \cite{Althoff2013a}. Since the abstraction causes additional errors, the abstraction errors are determined in an over-approximative way and added as an additional uncertain input to ensure an over-approximative computation.
+
+
+\begin{figure}[ht!] 
+	\centering
+	\includetikz{./figures/tikz/contDynamics/nonlinear_overview}
+    \caption{Computation of reachable sets for nonlinear systems -- overview.}
+    \label{fig:nonLinOverview}
+\end{figure}
+
+A brief visualization of the overall concept for computing the reachable set is shown in \cref{fig:nonLinOverview}. As in the previous approaches, the reachable set is computed iteratively for time intervals $t\in \tau_k = [k \, r, (k+1)r]$ where $k \in \mathbb{N}^+$. The procedure for computing the reachable sets of the consecutive time intervals is as follows:
+
+\begin{itemize}
+
+\item[\ding{192}] The nonlinear system $\dot{x}(t)= f(x(t),u(t))$ is either abstracted to a linear system as shown in \eqref{eq:linearSystem}, or after introducing $z= [x^T, \, u^T]^T$, to a polynomial system resulting from the computation of a Taylor series of order $\kappa$:
+\begin{equation} \label{eq:polynomialEquation}
+ \dot{x}_i \in \underbrace{\sum_{j=0}^{\kappa-1} \frac{\left((z(t)-z^*)^T \nabla \right)^j f_i(z^*)}{j!}}_{f_i^{abstract}(x,u)} ~\oplus ~\mathcal{L}_i(t),
+\end{equation}
+where the Nabla operator is defined as $\nabla = \sum_{i=1}^{n+m} e_i \frac{\partial}{\partial z_i}$ with $e_i \in \mathbb{R}^{n+m}$ being orthogonal unit vectors. The set of abstraction errors $\mathcal{L}$ ensures that $f(x,u)\in f^{abstract}(x,u) \oplus \mathcal{L}$, which allows the reachable set to be computed in an over-approximative way. 
+
+\item[\ding{193}] Next, the set of required abstraction errors $\bar{\mathcal{L}}$ is obtained heuristically.
+
+\item[\ding{194}] The reachable set $\mathcal{R}^{abstract}(\tau_k)$ of $\dot{x}(t) \in f^{abstract}(x(t),u(t)) \oplus \bar{\mathcal{L}}$ is computed.
+
+\item[\ding{195}] The set of abstraction errors $\mathcal{L}$ is computed based on the reachable set $\mathcal{R}^{abstract}(\tau_k)$. 
+
+\item[\ding{196}] As long as $\mathcal{L} \nsubseteq \bar{\mathcal{L}}$, the abstraction error is not admissible, requiring the assumption $\bar{\mathcal{L}}$ to be enlarged. If several enlargements are not successful, one has to split the reachable set and continue with one more partial reachable set. 
+
+\item[\ding{197}] If $\mathcal{L} \subseteq \bar{\mathcal{L}}$, the abstraction error is accepted and the reachable set is obtained by using the tighter abstraction error: $\dot{x}(t) \in f^{abstract}(x(t),u(t)) \oplus \mathcal{L}$. 
+
+\item[\ding{198}] It remains to increase the time step ($k:=k+1$) and cancel redundant reachable sets that are already covered by previously-computed reachable sets. This decreases the number of reachable sets that have to be considered in the next time interval. 
+\end{itemize}
+
+The necessity of splitting reachable sets is indicated in the workspace outputs using the keyword \texttt{split}. In general, reachable sets of nonlinear systems are non-convex. Therefore, tight enclosures of the reachable set can often be better achieved by a non-convex set representation. For strongly nonlinear systems, we therefore recommend the conservative polynomialization algorithm (see \cref{tab:nonlinAlg}) in combination with polynomial zonotopes (see \cref{sec:polynomialZonotopes}).
+
+\begin{table}[h]
+	\caption{Reachability algorithms for nonlinear systems.}
+	\centering
+	\label{tab:nonlinAlg}
+	\begin{tabular}{lll}
+		\toprule
+		\textbf{Algorithm} & \textbf{Description} & \textbf{Reference} \\
+		\midrule
+		\texttt{lin} & conservative linearization & \cite{Althoff2008c} and \cite[Section 3.4]{Althoff2010a} \\
+		\texttt{lin-adaptive} & conservative linearization with & \cite{Wetzlinger2021} \\
+		& adaptive parameter tuning & \\
+		\texttt{poly} & conservative polynomialization & \cite{Althoff2013a}\\
+		\texttt{poly-adaptive} & conservative polynomialization with & \cite{Wetzlinger2021} \\
+		& adaptive parameter tuning & \\
+		\texttt{linRem} & abstraction by linear parametric system & -- \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
+The settings for reachability analysis are specified as fields of the struct \texttt{options} (see \cref{sec:reach}). The following settings are available. (Note that all but \texttt{options.alg} are redundant if \texttt{options.alg} is set to \texttt{lin-adaptive} or \texttt{poly-adaptive}):
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}[t]{l p{10cm}}	
+	--~\texttt{.alg} & string specifying the used reachability algorithm (see \cref{tab:nonlinAlg}). \\
+	--~\texttt{.timeStep} & time step size for one reachability time step. \\
+	--~\texttt{.tensorOrder} & order $\kappa$ of the Taylor series expansion for the abstraction in \eqref{eq:polynomialEquation} of the dynamic function. The recommended values are $\kappa = 2$ or $\kappa = 3$. \\
+	--~\texttt{.tensorOrderOutput} & order $\kappa$ of the Taylor series expansion for the abstraction in \eqref{eq:polynomialEquation} of the output function. The recommended values are $\kappa = 2$ or $\kappa = 3$. \\
+	--~\texttt{.taylorTerms} & number of Taylor terms for the computation of the exponential matrix $e^{A\Delta t}$ (see \cite[Eq. (3.2)]{Althoff2010a}) for the linearized system. \\
+	--~\texttt{.zonotopeOrder} & upper bound for the zonotope order $\rho$ (see \cref{sec:zonotope}). \\
+	--~\texttt{.reductionTechnique} & string specifying the method used to reduce the zonotope order (see \cref{tab:zono_reduction}). The default value is \texttt{'girard'}. \\
+	--~\texttt{.errorOrder} & the zonotope order $\rho$ (see \cref{sec:zonotope}) is reduced to \texttt{errorOrder} internally before the linearization error is computed. This is done since the computation of the linearization error involves quadratic or even cubic maps that drastically increase the number of generators of the set. \\
+	--~\texttt{.intermediateOrder} & upper bound for the zonotope order $\rho$ (see \cref{sec:zonotope}) during internal computations of the algorithm. \\
+	--~\texttt{.maxError} & vector of dimension $\Rn$ specifying the upper bound for the admissble abstraction error $\mathcal{L}$ for each system dimension. If the abstraction error exceeds the bound, the reachable set is splitted (see Step.~5 in \cref{fig:nonLinOverview}). The default value is $\infty$ (no splitting).\\
+	--~\texttt{.reductionInterval} & number of time steps after which redundant sets resulting from splitting are cancelled (see Step.~7 in \cref{fig:nonLinOverview}). The default value is $\infty$ (no cancellation). \\
+	--~\texttt{.lagrangeRem} & struct containing settings for evaluating the Lagrange remainder $\mathcal{L}$ (see \cref{tab:settingsLagrangeRem}). \\
+	--~\texttt{.polyZono} & struct containing settings for restructuring polynomial zonotopes (see \cref{tab:polyZono}). Only to be used for algorithm \texttt{'poly'} and if polynomial zonotopes are used to represent the reachable set.
+\end{longtable}
+\end{center}
+
+
+\subsubsubsection{Operation \texttt{reachInner}}
+
+To compute inner-approximations of reachable sets for nonlinear systems, CORA implements three different algorithms: The set scaling approach from~\cite{Kochdumper2020e} (\texttt{options.algInner = 'scale'}) which represents inner-approximations with polynomial zonotopes, the approach from~\cite{Goubault2020} \newline (\texttt{options.algInner = 'parallelo'}) that represents inner-approximations with parallelotopes, and the Picard-Lindel{\"o}f iteration based approach from \cite{Goubault2017} (\texttt{options.algInner = 'proj'}). While the algorithms \texttt{'parallelo'} and \texttt{'scale'} compute full inner-approximations, the algorithm \texttt{'proj'} only computes an inner-approximation of the projection onto a single dimension.
+
+The settings for reachability analysis are specified as fields of the struct \texttt{options} (see \cref{sec:reachInner}). The following settings are available:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}[t]{l p{13cm}}	
+	--~\texttt{.algInner} & string specifying the used reachability algorithm. The available algorithms are \texttt{'scale'} (algorithm from \cite{Kochdumper2020e}), \texttt{'parallelo'} (algorithm \cite{Goubault2020}), and \texttt{'proj'} (algorithm from \cite{Goubault2017}).
+\end{longtable}
+\end{center}
+
+\textbf{Settings for Scaling Algorithm:}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}[t]{l p{10cm}}	
+	--~\texttt{.timeStep} & time step size for one reachability time step for the computation of the outer-approximation (see \cref{sec:nonlinearReach}). \\
+	--~\texttt{.timeStepInner} & time step size for the inner-approximation, which has to be a multiple of the time step size for the outer-approximation. If set to \texttt{'end'}, only the inner-approximation at the final time is computed. The default value is \texttt{'end'}.\\
+	--~\texttt{.contractor} & string specifying the contractor that is applyied to properly scale the reachable set (see \cref{tab:contractors}). The default value is \texttt{'linearize'}. \\
+	--~\texttt{.orderInner} & zonotope order $\rho$ (see \cref{sec:zonotope}) for the inner-approximation. The default value is $5$. \\
+	--~\texttt{.splits} & number of recusive splits for the contraction (see \cref{sec:contractors}). The default value is $8$. \\
+	--~\texttt{.iter} & number of consequtive contractions applied (see \cref{sec:contractors}). The default value is $2$.\\
+	--~\texttt{.scaleFac} & scaling factor $\in ~]0,1]$ applied to scale the initial guess determined with nonlinear programming. If set to \texttt{'auto'} the optimal scaling factor is determined automatically. The default value is \texttt{'auto'}. \\
+	--~\texttt{.inpChanges} & number of input changes of the piecewise-constant input signals used to approximate time-varying inputs. The default value is $0$. \\
+	--~\texttt{.taylorTerms} & setting for computing the outer-approximation of the reachable set (see \cref{sec:nonlinearReach}).  \\
+	--~\texttt{.zonotopeOrder} & setting for computing the outer-approximation of the reachable set (see \cref{sec:nonlinearReach}). \\
+	--~\texttt{.reductionTechnique} & setting for computing the outer-approximation of the reachable set (see \cref{sec:nonlinearReach}). \\
+	--~\texttt{.errorOrder} & setting for computing the outer-approximation of the reachable set (see \cref{sec:nonlinearReach}). \\
+	--~\texttt{.intermediateOrder} & setting for computing the outer-approximation of the reachable set (see \cref{sec:nonlinearReach}). \\
+	--~\texttt{.polyZono} & setting for computing the outer-approximation of the reachable set (see \cref{sec:nonlinearReach}).
+\end{longtable}
+\end{center}
+
+\textbf{Settings for Parallelotope Algorithm:}
+
+The settings are identical to the settings for reachability analysis of nonlinear systems, which are documented in \cref{sec:nonlinearReach}.
+
+
+\vspace{1cm}
+
+\textbf{Settings for Projection Algorithm:}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}[t]{l p{13cm}}	
+	--~\texttt{.timeStep} & time step size for one reachability time step for the computation of the outer-approximation as well as the inner-approximation. \\
+	--~\texttt{.taylorOrder} & Taylor order $k$ for the Taylor series expansion in solution space (see \cite[Eq. (6)]{Goubault2017} and \cite[Alg. 1]{Goubault2017}). \\
+	--~\texttt{.taylmOrder} &  upper bound for the polynomial degree of the Taylor model monomials (see \cref{sec:taylorModels}) \\
+\end{longtable}
+\end{center}

@@ -1,0 +1,233 @@
+\subsection{Class \texttt{reachSet}}
+\label{sec:reachSet}
+
+Reachable sets are stored as objects of class \texttt{reachSet}. This class implements several useful methods that make it very convenient to handle the resulting reachable sets.
+
+An object of class \texttt{reachSet} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \texttt{R} = \texttt{reachSet}(\texttt{timePoint}), \\
+		& \texttt{R} = \texttt{reachSet}(\texttt{timePoint},\texttt{parent}), \\
+		& \texttt{R} = \texttt{reachSet}(\texttt{timePoint},\texttt{parent},\texttt{loc}), \\
+		& \texttt{R} = \texttt{reachSet}(\texttt{timePoint},\texttt{timeInt}), \\
+		& \texttt{R} = \texttt{reachSet}(\texttt{timePoint},\texttt{timeInt},\texttt{parent}), \\
+		& \texttt{R} = \texttt{reachSet}(\texttt{timePoint},\texttt{timeInt},\texttt{parent},\texttt{loc}),
+	\end{split}
+\end{equation*}	
+with input arguments
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{12cm} }
+	$\bullet$~\texttt{timePoint} & struct with fields \texttt{.set} and \texttt{.time} storing reachable sets of time points.\\
+	$\bullet$~\texttt{timeInt} & struct with fields \texttt{.set}, \texttt{.time}, and \texttt{.algebraic} (\texttt{nonlinDASys} only, see \cref{sec:nonlinearDASystems}) storing reachable sets of time intervals. \\
+	$\bullet$~\texttt{parent} & index of the parent reachable set. \\
+	$\bullet$~\texttt{loc} & index of the location (see \cref{sec:hybridDynamics}) to which the reachable set belongs (hybrid systems only).
+\end{tabular}
+\end{center}
+
+The reachable set can consist of multiple strands as visualized in \cref{fig:reachSet}. New strands are created at location changes for hybrid systems, if reachable sets are split, and if reachable sets are united. For the reachable set shown in \cref{fig:reachSet}, the corresponding \texttt{reachSet} object is as follows:
+
+\begin{center}
+\begin{minipage}[t]{0.32\textwidth}
+	\footnotesize
+	\begin{verbatim}
+		R = 
+
+  5x1 reachSet array:
+
+    timePoint
+    timeInterval
+    parent
+    loc
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.32\textwidth}
+	\footnotesize
+	\begin{verbatim}
+	R(1)
+
+  reachSet with properties:
+
+       timePoint: [1x1 struct]
+    timeInterval: [1x1 struct]
+          parent: 0
+             loc: 1
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.32\textwidth}
+	\footnotesize
+	\begin{verbatim}
+	R(2)
+
+  reachSet with properties:
+
+       timePoint: [1x1 struct]
+    timeInterval: [1x1 struct]
+          parent: 1
+             loc: 2
+	\end{verbatim}
+\end{minipage}
+\end{center}
+
+\vspace{0.1cm}
+
+\begin{center}
+\begin{minipage}[t]{0.32\textwidth}
+	\footnotesize
+	\begin{verbatim}
+	R(3)
+
+  reachSet with properties:
+
+       timePoint: [1x1 struct]
+    timeInterval: [1x1 struct]
+          parent: 2
+             loc: 2
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.32\textwidth}
+	\footnotesize
+	\begin{verbatim}
+	R(4)
+
+  reachSet with properties:
+
+       timePoint: [1x1 struct]
+    timeInterval: [1x1 struct]
+          parent: 2
+             loc: 2
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.32\textwidth}
+	\footnotesize
+	\begin{verbatim}
+	R(5)
+
+  reachSet with properties:
+
+       timePoint: [1x1 struct]
+    timeInterval: [1x1 struct]
+          parent: [3,4]
+             loc: 2
+	\end{verbatim}
+\end{minipage}
+\end{center}
+
+
+\begin{figure}[htb]	
+\begin{center}
+	\includegraphics[width=0.7\columnwidth]{./figures/examples/example_reachSet.eps}	
+	\caption{Example demonstrating the different strands of the reachable set.}
+	\label{fig:reachSet}
+	\end{center}
+\end{figure}
+
+
+%\newpage
+Next, we explain the most common methods for the class \texttt{reachSet} in detail.
+
+
+
+\subsubsection{\texttt{add}}
+
+The method \texttt{add} adds a reachable set to another one:
+\begin{equation*}
+\begin{split}
+	& \texttt{R} = \texttt{add}(\texttt{R1},\texttt{R2}), \\
+	& \texttt{R} = \texttt{add}(\texttt{R1},\texttt{R2},\texttt{parent}),
+\end{split}
+\end{equation*}
+where \texttt{R1} and \texttt{R2} are both objects of class \texttt{reachSet}, and \texttt{parent} is the index of the parent for the root element of \texttt{R2}. Adding reachable sets is for example useful if the overall reachable set is computed in multiple sequences.
+
+\subsubsection{\texttt{find}}
+
+The method \texttt{find} returns all reachable sets that satisfy the specified condition:
+\begin{equation*}
+	\texttt{res} = \texttt{find}(\texttt{R},\texttt{prop},\texttt{val}),
+\end{equation*}
+where \texttt{R} is an object of class \texttt{reachSet}, \texttt{prop} is a string specifying the property for the condition, \texttt{val} is the desired value of the property, and \texttt{res} is an object of class \texttt{reachSet} containing all reachable sets that satisfy the property.  Currently, the following values for \texttt{prop} are supported:
+\begin{itemize}
+	\item \texttt{'location'}: find all reachable sets that correspond to the specified location.
+	\item \texttt{'parent'}: find all reachable sets with the specified parent.
+	\item \texttt{'time'}: find all reachable sets that correspond to the specified time interval.
+\end{itemize}
+
+
+\subsubsection{\texttt{plot}}
+
+The method \texttt{plot} visualizes a two-dimensional projection of the boundary of reachable set for time intervals:
+%
+\begin{align*}
+	\begin{split}
+		&\texttt{han} = \operator{plot}(\texttt{R}), \\
+		&\texttt{han} = \operator{plot}(\texttt{R},\texttt{dim}), \\
+		&\texttt{han} = \operator{plot}(\texttt{R},\texttt{dim},\texttt{linespec}), \\
+		&\texttt{han} = \operator{plot}(\texttt{R},\texttt{dims},\texttt{linespec},\texttt{namevaluepairs}),
+	\end{split}
+\end{align*}
+where \texttt{R} is an object of class \texttt{reachSet}, \texttt{han} is a handle to the plotted MATLAB graphics object, and the additional input arguments are defined as
+
+\begin{itemize}
+	\item \texttt{dims}: Integer vector $\texttt{dims} \in \mathbb{N}_{\leq n}^2$ specifying the dimensions for which the projection is visualized (default value: \texttt{dims = [1 2]}).
+	\item \texttt{linespec}: (optional) line specifications, e.g., \texttt{'--*r'}, as supported by MATLAB\footnote{\url{https://de.mathworks.com/help/matlab/ref/linespec.html}}.
+	\item \texttt{namevaluepairs}: (optional) further specifications as name-value pairs, e.g.,
+	\texttt{'LineWidth',2} and \texttt{'FaceColor',[.5 .5 .5]}, as supported by MATLAB.
+	If the plot is not filled, these are the built-in
+	Line Properties\footnote{\url{https://de.mathworks.com/help/matlab/ref/matlab.graphics.chart.primitive.line-properties.html}},
+	if the plot is filled, they correspond to the Patch Properties\footnote{\url{https://de.mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html}}.
+\end{itemize}
+%
+The following name-value pairs enhance the built-in functionalities:
+\begin{itemize}
+	\item \texttt{'Order'}: zonotope order for plotting. If provided,
+		the zonotope order is reduced to the given order before the set is plotted.
+	\item \texttt{'Splits'}: number of splits applied to refine the plotted over-approximation
+		of polynomial zonotopes (polynomial zonotopes only, see \cref{sec:polynomialZonotopes}).
+	\item \texttt{'Unify'}: If the name-value pair \texttt{'Unify',true} is passed the union of all reachable sets is computed to avoid overlapping regions in the plot. The resulting figure then usually requires significantly less storage space. 
+\end{itemize}
+
+For discrete-time systems (see \cref{sec:linearSysDT} and \cref{sec:nonlinearSystemsDT}), the reachable set at time points is visualized since there exists no reachable set for time intervals.
+
+
+\subsubsection{\texttt{plotOverTime}}
+
+The method \texttt{plotOverTime} visualizes a one-dimensional projection of the reachable set of time intervals over time:
+%
+\begin{align*}
+	\begin{split}
+		&\texttt{han} = \operator{plotOverTime}(\texttt{R}), \\
+		&\texttt{han} = \operator{plotOverTime}(\texttt{R},\texttt{dims}), \\
+		&\texttt{han} = \operator{plotOverTime}(\texttt{R},\texttt{dims},\texttt{linespec}), \\
+		&\texttt{han} = \operator{plotOverTime}(\texttt{R},\texttt{dims},\texttt{linespec},\texttt{namevaluepairs}),
+	\end{split}
+\end{align*}
+where \texttt{R} is an object of class \texttt{reachSet}, \texttt{han} is a handle to the plotted MATLAB graphics object, and the additional input arguments are defined as
+
+\begin{itemize}
+	\item \texttt{dims}: Integer vector $\texttt{dims} \in \mathbb{N}_{\leq n}$ specifying the dimensions for which the projection is visualized (default value: \texttt{dim = 1}).
+	\item \texttt{linespec}: (optional) line specifications, e.g., \texttt{'--*r'}, as supported by MATLAB\footnote{\url{https://de.mathworks.com/help/matlab/ref/linespec.html}}.
+	\item \texttt{namevaluepairs}: (optional) further specifications as name-value pairs, e.g.,
+	\texttt{'LineWidth',2} and \texttt{'FaceColor',[.5 .5 .5]}, as supported by MATLAB.
+	They correspond to the Patch Properties\footnote{\url{https://de.mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html}}.
+\end{itemize}
+%
+The following name-value pairs enhance the built-in functionalities:
+\begin{itemize}	
+	\item \texttt{'Unify'}: If the name-value pair \texttt{'Unify',true} is passed the union of all reachable sets is computed to avoid overlapping regions in the plot. The resulting figure then usually requires significantly less storage space. %especially useful when the reachable set has several strands 
+\end{itemize}
+For discrete-time systems (see \cref{sec:linearSysDT} and \cref{sec:nonlinearSystemsDT}), the reachable set at time points is visualized since there exists no reachable set for time intervals.
+
+
+\subsubsection{query}
+
+The method \texttt{query} returns the value of a certain property of an object of class \texttt{reachSet}:
+\begin{equation*}
+	\texttt{val} = \texttt{query}(\texttt{R},\texttt{prop}),
+\end{equation*}
+where \texttt{R} is an object of class \texttt{reachSet}, \texttt{prop} is a string specifying the property of interest, and \texttt{val} is the value of the property. Currently, the following values for \texttt{prop} are supported:
+\begin{itemize}
+	\item \texttt{'reachSet'}: returns all reachable sets of time intervals as a cell array.
+	\item \texttt{'reachSetTimePoint'}: returns all reachable sets at points in time as a cell array.
+	\item \texttt{'finalSet'}: returns the last time-point reachable set.
+	\item \texttt{'tVec'}: returns the vector of time step sizes (only supported for one single strand).
+\end{itemize}

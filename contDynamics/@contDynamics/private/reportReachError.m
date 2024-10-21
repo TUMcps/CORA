@@ -22,7 +22,7 @@ function reportReachError(ME,time,ind)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % called due to set explosion
-if strcmp(ME.identifier,'CORAerror:reachSetExplosion')
+if strcmp(ME.identifier,'CORA:reachSetExplosion')
 
     % display information to user
     fprintf("\n");

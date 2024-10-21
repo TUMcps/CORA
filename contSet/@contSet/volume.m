@@ -28,11 +28,7 @@ function res = volume(S,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
-if nargin < 1
-    throw(CORAerror('CORA:notEnoughInputArgs',1));
-elseif nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(1,3);
 
 % check input arguments
 inputArgsCheck({{S,'att','contSet'}});

@@ -1,15 +1,15 @@
-function [res,R] = checkFlow(loc,guard,R,options)
+function [res,R] = checkFlow(loc,guard,R,params)
 % checkFlow - remove all intersections for which the flow of the system
 %    does not point toward the guard set (see Sec. 4.4.4 in [1])
 %
 % Syntax:
-%    [res,R] = checkFlow(loc,guard,R,options)
+%    [res,R] = checkFlow(loc,guard,R,params)
 %
 % Inputs:
 %    loc - location object
-%    guard - guard set (class: conHyperplane, levelSet)
+%    guard - guard set (class: polytope, levelSet)
 %    R - cell-array of reachable sets
-%    options - struct containing the algorithm settings
+%    params - model parameters
 %
 % Outputs:
 %    res - true/false whether flow points toward the guard for any of the
@@ -38,10 +38,13 @@ function [res,R] = checkFlow(loc,guard,R,options)
     
     % adapt the guard set such that the normal vector of the hyperplane
     % points toward the outside of the invariant set
-    if isa(guard,'conHyperplane')
+    if isa(guard,'polytope') && representsa_(guard,'conHyperplane',1e-12)
         guard = aux_adaptGuard(loc,guard,R); 
-    else
+    elseif isa(guard,'levelSet')
         outside = aux_getOutside(loc,guard,R);
+    else
+        throw(CORAerror('CORA:notSupported',...
+            'Requires levelSet or polytope representing constrained hyperplane.'));
     end
     
     % loop over all reachable sets
@@ -51,10 +54,10 @@ function [res,R] = checkFlow(loc,guard,R,options)
     for i=1:length(R)
             
         % check if the flow points toward the guard set
-        if isa(guard,'conHyperplane')
-            res = aux_flowInDirection(sys,guard,R{i},options);
-        else
-            res = aux_flowInDirectionLevelSet(sys,guard,R{i},outside,options);
+        if isa(guard,'polytope') && representsa_(guard,'conHyperplane',1e-12)
+            res = aux_flowInDirection(sys,guard,R{i},params);
+        elseif isa(guard,'levelSet')
+            res = aux_flowInDirectionLevelSet(sys,guard,R{i},outside,params);
         end
         
         if res
@@ -78,22 +81,22 @@ end
 
 % TODO: move to contDynamics?
 
-function res = aux_flowInDirection(sys,guard,R,options)
+function res = aux_flowInDirection(sys,guard,R,params)
 % check if the flow of the system points in the direction of the guard set
     
     % get hyperplane normal direction
-    c = guard.a' ./ norm(guard.a');
+    c = guard.Ae ./ norm(guard.Ae);
 
     % project reachable set onto the hyperplane
-    Rproj = projectOnHyperplane(guard,R);
+    Rproj = projectOnHyperplane(R,guard);
 
     % fast check: check if the flow of the center points towards the guard
-    options.u = center(options.U);
-    options.w = zeros(sys.dim,1);                     % fix for disturbance
+    params.u = center(params.U);
+    params.w = center(params.W);
     
-    fcnHan = getfcn(sys,options);
+    fcnHan = getfcn(sys,params);
     flow = fcnHan(0,center(Rproj));
-    flow = c'*flow;
+    flow = c*flow;
     
     if flow > 0
         res = true;
@@ -101,7 +104,7 @@ function res = aux_flowInDirection(sys,guard,R,options)
     end
 
     % compute interval enclosure of the reachable set
-    B = gramSchmidt(guard.a');
+    B = gramSchmidt(guard.Ae');
     
     if isa(Rproj,'zonoBundle')
         Rproj = Rproj.Z{1}; 
@@ -117,34 +120,30 @@ function res = aux_flowInDirection(sys,guard,R,options)
     if isa(sys,'linearSys')
         cen = center(R);
         G = generators(R);
-        int = interval(-ones(size(G,2),1),ones(size(G,2),1));
-        temp = c'*sys.A;
-        flow = temp*cen + (temp*G)*int + ...
-                (c'*sys.B)*interval(options.U);
-        if ~isempty(sys.c)
-            flow = flow + c'*sys.c; 
-        end
+        I = interval(-ones(size(G,2),1),ones(size(G,2),1));
+        cA = c*sys.A;
+        flow = cA*cen + (cA*G)*I + (c*sys.B)*interval(params.U) + sys.c;
     else
         tay = taylm(R);
-        options.u = taylm(interval(options.U),4,'u');
-        fcnHan = getfcn(sys,options);
+        params.u = taylm(interval(params.U),4,'u');
+        fcnHan = getfcn(sys,params);
         flow = fcnHan(0,tay);
-        flow = c' * flow;
+        flow = c * flow;
     end
     
     % check if the flow points in the direction of the guard set
     res = supremum(interval(flow)) > 0;
 end
 
-function res = aux_flowInDirectionLevelSet(sys,guard,R,outside,options)
+function res = aux_flowInDirectionLevelSet(sys,guard,R,outside,params)
 % check if the flow of the system points in the direction of the guard set
 
     % fast check: check if the flow of the center points towards the guard
-    options.u = center(options.U);
-    options.w = zeros(sys.dim,1);                     % fix for disturbance
+    params.u = center(params.U);
+    params.w = center(params.W);
     
     c = center(R);
-    fcnHan = getfcn(sys,options);
+    fcnHan = getfcn(sys,params);
     flow = outside*guard.der.grad(c)'*fcnHan(0,c);
     
     if flow > 0
@@ -161,8 +160,8 @@ function res = aux_flowInDirectionLevelSet(sys,guard,R,outside,options)
     
     % compute flow in hyperplane normal direction
     tay = taylm(R);
-    options.u = taylm(interval(options.U),4,'u');
-    fcnHan = getfcn(sys,options);
+    params.u = taylm(interval(params.U),4,'u');
+    fcnHan = getfcn(sys,params);
     flow = outside*(guard.der.grad(tay))'*fcnHan(0,tay);
     
     % check if the flow points in the direction of the guard set
@@ -170,10 +169,10 @@ function res = aux_flowInDirectionLevelSet(sys,guard,R,outside,options)
 end
 
 function guard = aux_adaptGuard(loc,guard,R)
-% adapt the guard set such that the normal vector of the hyperplane points
-% toward the outside of the invariant set
+% adapt the guard set such that the normal vector of the hyperplane
+% points toward the outside of the invariant set
 
-    hs = halfspace(guard.a',guard.b);
+    P = polytope(guard.Ae,guard.be);
     inv = loc.invariant;
     
     % get center of the first reachable set
@@ -185,12 +184,12 @@ function guard = aux_adaptGuard(loc,guard,R)
     
     % check if center is on the correct side of the hyperplane
     if contains_(inv,c,'exact',100*eps)
-        if ~contains_(hs,c)
-            guard = conHyperplane(-guard.a',-guard.b);
+        if ~contains_(P,c,'exact',100*eps)
+            guard = polytope([],[],-guard.Ae,-guard.be);
         end
     else
-        if contains_(hs,c)
-            guard = conHyperplane(-guard.a',-guard.b);
+        if contains_(P,c,'exact',100*eps)
+            guard = polytope([],[],-guard.Ae,-guard.be);
         end
     end
 end

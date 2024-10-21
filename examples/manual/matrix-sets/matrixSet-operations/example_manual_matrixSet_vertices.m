@@ -32,4 +32,6 @@ A = matZonotope(C,G);
 % compute vertices
 res = vertices(A)
 
+end
+
 % ------------------------------ END OF CODE ------------------------------

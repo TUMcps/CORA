@@ -1,0 +1,76 @@
+\subsubsection{simulateRandom} \label{sec:simulateRandom}
+
+The operation \operator{simulateRandom} simulates a dynamic system for multiple random initial states $x_0 \in \mathcal{X}_0$ and random values for the inputs $u(t) \in \mathcal{U}$ as well as parameters $p \in \mathcal{P}$. The syntax is as follows:
+\begin{equation*}
+	\texttt{simRes} = \texttt{simulateRandom}(\texttt{sys},\texttt{params},\texttt{options})
+\end{equation*}	
+with input arguments
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{sys} &  dynamic system defined by one of the classes in \cref{sec:continuousDynamics,sec:hybridDynamics}, e.g., \texttt{linearSys}, \texttt{hybridAutomaton}, etc. \\
+	$\bullet$~\texttt{params} & struct containing the parameters that define the reachability problem. The parameters are identical to those for the operation \operator{reach} (see \cref{sec:reach}). \\
+	$\bullet$~\texttt{options} & struct containing settings for the random simulation \\
+		& \begin{tabular}[t]{l p{10cm}}	
+		--~\texttt{.points} & number of random initial states (positive integer)\\
+	 	--~\texttt{.type} & sampling method: \texttt{'standard'} (default, undefined distribution), \texttt{'gaussian'} (Gaussian distribution), \texttt{'rrt'} (sampling using \textit{rapidly exploring random trees})
+	 	\end{tabular} \\
+	 	& depending on the sampling method, there are different additional settings \\
+		& \texttt{.type = 'standard'}: standard sampling method (undefined distribution) \\
+		& \begin{tabular}[t]{l p{10cm}}	
+	 	--~\texttt{.fracVert} & percentage of initial states randomly drawn from the vertices of the initial set $\mathcal{X}_0$ (value in $[0,1]$) \\ 	
+	 	--~\texttt{.fracInpVert} & percentage of input values randomly drawn from the vertices of the input set $\mathcal{U}$ (value in $[0,1]$) \\
+	 	--~\texttt{.nrConstInp} & number piecewise-constant input values within the input signal during simulation (integer $\geq 1$) \\
+	 	\end{tabular} \\
+	 	& \texttt{.type = 'rrt'}: sampling using \emph{rapidly-exploring random trees} \\
+	 	& \begin{tabular}[t]{l p{10cm}}	
+	 	--~\texttt{.vertSamp} & flag specifying whether random initial states, inputs, and parameters are sampled from the vertices of the corresponding sets (0 or 1).\\ 	
+	 	--~\texttt{.stretchFac} & stretching factor for enlarging the reachable sets during execution of the algorithm (scalar $>$ 1). \\
+	 	--~\texttt{.R} & object of class \texttt{reachSet} (see \cref{sec:reachSet}) that stores the reachable set for the corresponding reachability problem.
+	 	\end{tabular} \\
+	 	& \texttt{.type = 'gaussian'}: sampling from gaussian distribution \\
+		& \begin{tabular}[t]{l p{10cm}}	
+	 	--~\texttt{.nrConstInp} & number piecewise-constant input values within the input signal during simulation (integer $\geq 1$) \\
+	 	--~\texttt{.p\_conf} & probability that sampled value is within the set (value in $(0,1)$)
+	 	\end{tabular}
+\end{tabular}
+\end{center}
+
+and output arguments
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{simRes} & object of class \texttt{simResult} (see \cref{sec:simResult}) that stores the simulated trajectories.
+\end{tabular}
+\end{center}
+
+Let us demonstrate the operation \texttt{simulateRandom} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.58\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_simulateRandom}
+\end{minipage}
+\begin{minipage}[t]{0.4\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/contDynamics/example_simulateRandom}
+\end{minipage}
+\end{center}
+
+
+% example RRT
+%Let us demonstrate the operation \texttt{simulateRRT} by an example:
+%
+%\begin{center}
+%\begin{minipage}[t]{0.58\textwidth}
+%	\footnotesize
+%	\input{./MATLABcode/example_simulateRRT}
+%\end{minipage}
+%\begin{minipage}[t]{0.4\textwidth}
+%	\vspace{30pt}
+%	\centering
+%	\includegraphics[width=0.9\columnwidth]{./figures/examples/example_simulateRRT.eps}
+%\end{minipage}
+%\end{center}

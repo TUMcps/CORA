@@ -23,32 +23,30 @@ function res = test_fullspace_and
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
 % init fullspace
 n = 2;
 fs = fullspace(n);
 
 % intersection with itself
-res(end+1,1) = isequal(fs & fs,fs);
+assert(isequal(fs & fs,fs));
 
 % intersection with zonotope
 Z = zonotope(zeros(n,1),eye(n));
-res(end+1,1) = isequal(fs & Z,Z);
+assert(isequal(fs & Z,Z));
 
 % intersection with emptySet
 O = emptySet(n);
-res(end+1,1) = isequal(fs & O,O);
+assert(isequal(fs & O,O));
 
 % unbounded interval
 I = interval([-Inf;2],[9;Inf]);
-res(end+1,1) = isequal(fs & I,I);
+assert(isequal(fs & I,I));
 
 % numeric vector
 p = [1;-1];
-res(end+1,1) = compareMatrices(fs & p,p);
+assert(compareMatrices(fs & p,p));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

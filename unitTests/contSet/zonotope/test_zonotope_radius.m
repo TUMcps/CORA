@@ -33,6 +33,8 @@ r = radius(Z);
 r_true = 5;
 
 % check results
-res = withinTol(r,r_true);
+assert(withinTol(r,r_true));
+
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

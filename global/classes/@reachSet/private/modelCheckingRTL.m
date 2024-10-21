@@ -101,9 +101,9 @@ function res = modelCheckingRTL(R,eq)
                 for l = 1:length(sets)
 
                     try
-                       int = isIntersecting_(unsafeSet{k},sets{l},'exact');
+                       int = isIntersecting_(unsafeSet{k},sets{l},'exact',1e-8);
                     catch
-                       int = isIntersecting_(unsafeSet{k},sets{l},'approx');
+                       int = isIntersecting_(unsafeSet{k},sets{l},'approx',1e-8);
                     end
 
                     if int
@@ -143,7 +143,7 @@ function list = aux_safe2unsafe(sets)
         for j = 1:length(tmp)
             for k = 1:length(list)
                 if isa(list{k},'levelSet') || isa(tmp{j},'levelSet') || ...
-                                            isIntersecting_(list{k},tmp{j},'exact')
+                                            isIntersecting_(list{k},tmp{j},'exact',1e-8)
                     list_{end+1} = and_(list{k},tmp{j},'exact');
                 end
             end

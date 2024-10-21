@@ -29,21 +29,21 @@ fs = fullspace(n);
 
 % init point
 p = [2;1];
-res = contains(fs,p);
+assert(contains(fs,p));
 
 % init zonotope
 Z = zonotope([2;1],eye(n));
-res(end+1,1) = contains(fs,Z);
+assert(contains(fs,Z));
 
 % init ellipsoid
 E = ellipsoid(eye(n),ones(n,1));
-res(end+1,1) = contains(fs,E);
+assert(contains(fs,E));
 
 % empty set
 O = emptySet(n);
-res(end+1,1) = contains(fs,O);
+assert(contains(fs,O));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

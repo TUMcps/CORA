@@ -44,10 +44,7 @@ for i=1:nrOfTests
     vol_true = (pi^(n/2) / gamma(1+n/2)) * r^n;
 
     % compare results
-    if ~withinTol(vol_true,vol)
-        res = false;
-        break;
-    end
+    assertLoop(withinTol(vol_true,vol),i)
 
 end
 

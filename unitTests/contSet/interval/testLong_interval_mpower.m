@@ -34,10 +34,8 @@ numberRandTests = 10000;
 for i=1:numberRandTests
     a = interval(-randi(1000,1,1)*rand(1),randi(1000,1,1)*rand(1));
     b = a^0;
-    if b.inf ~= 1 || b.sup ~= 1
-        res = false;
-        return;
-    end
+    assertLoop(b.inf == 1,i)
+    assertLoop(b.sup == 1,i)
 end
 
 % if exponent is even, inf is greater or equal to than 0
@@ -45,9 +43,7 @@ for i=1:numberRandTests
     a = interval(-randi(1000,1,1)*rand(1),randi(1000,1,1)*rand(1));
     exponent = 2*randi([1,4],1,1); % 2,4,6,8
     b = a^exponent;
-    if b.inf < 0
-        res = false; return;
-    end
+    assertLoop(b.inf >= 0,i)
 end
 
 % if inf > 0, inf after operation also > 0
@@ -56,23 +52,16 @@ for i=1:numberRandTests
     a = interval(randinf,randinf*2);
     exponent = randi([1,5],1,1);
     b = a^exponent;
-    if b.inf <= 0
-        res = false; return;
-    end
+    assertLoop(b.inf > 0,i)
 end
 
 % if exponent is non-integer, run through only if inf > 0
 for i=1:numberRandTests
     randinf = randi(1000,1,1)*rand(1);
     a = interval(randinf,randinf*2);
-    try
-        b = a^rand(1);
-        if b.inf <= 0
-            res = false; return;
-        end
-    catch
-        res = false; return;
-    end
+    
+    b = a^rand(1);
+    assertLoop(b.inf > 0,i)
 end
 
 for i=1:numberRandTests
@@ -80,9 +69,7 @@ for i=1:numberRandTests
     try
         b = a^rand(1); % should throw an error
         % in case no error thrown, result should be NaN
-        if ~all(isnan(b.inf))
-            res = false; return;
-        end
+        assertLoop(all(isnan(b.inf)),i)
     catch
         continue
     end

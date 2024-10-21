@@ -67,10 +67,11 @@ params.R0 = capsule([10;5],[0.2;-0.1],0.1);
 params.U = capsule(U);
 R = reach(sys, params, options);
 
-% polytope: no convex hull function...
-% params.R0 = [10;5] + polytope([1 1; 0 -1; 1 -1],ones(3,1));
+% polytope: no reduce function...
+% params.R0 = [10;5] + polytope([1 0; -1 1; -1 -1],ones(3,1));
 % params.U = polytope(U);
 % R = reach(sys, params, options);
+
 
 % all executed successfully
 res = true;

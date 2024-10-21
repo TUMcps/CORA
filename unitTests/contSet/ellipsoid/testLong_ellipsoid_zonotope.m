@@ -15,7 +15,7 @@ function res = testLong_ellipsoid_zonotope
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Victor Gassmann, Matthias Althoff
 % Written:       14-October-2019
@@ -52,22 +52,22 @@ for i=dims
         %% overapproximations
         % normal case
         Zo_box = zonotope(E);
-        Zo_n = zonotope(E,m,'outer:norm');
-        %Zo_nb = zonotope(E,m,'outer:norm_bnd');
+        Zo_n = zonotope(E,'outer:norm',m);
+        %Zo_nb = zonotope(E,'outer:norm_bnd',m);
         % degenerate case
         Zo_box_deg = zonotope(E_deg);
-        Zo_n_deg = zonotope(E_deg,m,'outer:norm');
-        %Zo_nb_deg = zonotope(E_deg,m,'outer:norm_bnd');
+        Zo_n_deg = zonotope(E_deg,'outer:norm',m);
+        %Zo_nb_deg = zonotope(E_deg,'outer:norm_bnd',m);
         
         %% underapproximations
         % normal case
-        Zu_box = zonotope(E,[],'inner:box');
-        Zu_n = zonotope(E,m,'inner:norm');
-        Zu_nb = zonotope(E,m,'inner:norm_bnd');
+        Zu_box = zonotope(E,'inner:box');
+        Zu_n = zonotope(E,'inner:norm',m);
+        Zu_nb = zonotope(E,'inner:norm_bnd',m);
         % degenerate case
-        Zu_box_deg = zonotope(E_deg,[],'inner:box');
-        Zu_n_deg = zonotope(E_deg,m,'inner:norm');
-        Zu_nb_deg = zonotope(E_deg,m,'inner:norm_bnd');
+        Zu_box_deg = zonotope(E_deg,'inner:box');
+        Zu_n_deg = zonotope(E_deg,'inner:norm',m);
+        Zu_nb_deg = zonotope(E_deg,'inner:norm_bnd',m);
         
         
         nn = cc./repmat(sqrt(sum(cc.^2,1)),n,1);
@@ -82,35 +82,25 @@ for i=dims
             
             %% overapproximations
             % normal case
-            if supportFunc(E,d)>supportFunc(Zo_n,d)+TOL || ...
-               supportFunc(E,d)>supportFunc(Zo_box,d)+TOL
-               %supportFunc(E,d)>supportFunc(Zo_nb,d)+TOL || ...
-                res = false;
-                return;
-            end
+            assertLoop(supportFunc(E,d) <= supportFunc(Zo_n,d)+TOL,i,j,k)
+            assertLoop(supportFunc(E,d) <= supportFunc(Zo_box,d)+TOL,i,j,k)
+            % assertLoop(supportFunc(E,d) <= supportFunc(Zo_nb,d)+TOL,i,j,k)
+
             % degenerate case
-            if supportFunc(E_deg,d_deg)>supportFunc(Zo_n_deg,d_deg)+TOL || ...
-               supportFunc(E_deg,d_deg)>supportFunc(Zo_box_deg,d_deg)+TOL
-               %supportFunc(E_deg,d_deg)>supportFunc(Zo_nb_deg,d_deg)+TOL || ...
-                res = false;
-                return;
-            end
+            assertLoop(supportFunc(E_deg,d_deg) <= supportFunc(Zo_n_deg,d_deg)+TOL,i,j,k)
+            assertLoop(supportFunc(E_deg,d_deg) <= supportFunc(Zo_box_deg,d_deg)+TOL,i,j,k)
+            %assertLoop(supportFunc(E_deg,d_deg) <= supportFunc(Zo_nb_deg,d_deg)+TOL,i,j,k)
             
             %% underapproximations
             % normal case
-            if supportFunc(E,d)+TOL<supportFunc(Zu_n,d) || ...
-               supportFunc(E,d)+TOL<supportFunc(Zu_nb,d) || ...
-               supportFunc(E,d)+TOL<supportFunc(Zu_box,d)
-                res = false;
-                return;
-            end
+            assertLoop(supportFunc(E,d)+TOL >= supportFunc(Zu_n,d),i,j,k)
+            assertLoop(supportFunc(E,d)+TOL >= supportFunc(Zu_nb,d),i,j,k)
+            assertLoop(supportFunc(E,d)+TOL >= supportFunc(Zu_box,d),i,j,k)
+
             % degenerate case
-            if supportFunc(E_deg,d_deg)+TOL<supportFunc(Zu_n_deg,d_deg) || ...
-               supportFunc(E_deg,d_deg)+TOL<supportFunc(Zu_nb_deg,d_deg) || ...
-               supportFunc(E_deg,d_deg)+TOL<supportFunc(Zu_box_deg,d_deg)
-                res = false;
-                return;
-            end
+            assertLoop(supportFunc(E_deg,d_deg)+TOL >= supportFunc(Zu_n_deg,d_deg),i,j,k)
+            assertLoop(supportFunc(E_deg,d_deg)+TOL >= supportFunc(Zu_nb_deg,d_deg),i,j,k)
+            assertLoop(supportFunc(E_deg,d_deg)+TOL >= supportFunc(Zu_box_deg,d_deg),i,j,k)
         end
     end
 end

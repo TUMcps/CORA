@@ -1,0 +1,34 @@
+% This file was created by matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+%
+\begin{tikzpicture}
+\footnotesize
+
+\begin{axis}[%
+width=3cm,
+height=3cm,
+at={(0in,0in)},
+scale only axis,
+xmin=-1.75,
+xmax=1.25,
+xlabel style={font=\color{white!15!black}},
+xlabel={$x_{(1)}$},
+ymin=-2.98,
+ymax=-0.82,
+ylabel style={font=\color{white!15!black}},
+ylabel={$x_{(2)}$},
+axis background/.style={fill=white},
+title style={font=\bfseries},
+title={$\mathcal{S}$}
+]
+\addplot [color=mycolor1, forget plot]
+  table[row sep=crcr]{%
+-1.4113	-2.6153\\
+0.8993	-2.6153\\
+0.8993	-1.1773\\
+-1.4113	-1.1773\\
+-1.4113	-2.6153\\
+};
+\end{axis}
+\end{tikzpicture}%

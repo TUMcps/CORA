@@ -1,0 +1,37 @@
+\subsubsubsection{Ellipsoids} \label{sec:ellipsoids}
+
+An ellipsoid is a geometric object in $\mathbb{R}^n$. Ellipsoids are parameterized by a center $q \in \mathbb{R}^n$ and a positive semi-definite, symmetric shape matrix $Q\in \mathbb{R}^{n\times n}$ and defined as\footnote{\href{Ellipsoidal Toolbox (Technical Report)}{https://www2.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-46.pdf},  Sec. 2.2.4}
+\begin{equation} \label{eq:ellipsoid}
+	\mathcal{E} := \Big\{x\in \mathbb{R}^n ~ \Big| ~ l^Tx \leq l^Tq + \sqrt{l^TQl}, \ \forall l \in \mathbb{R}^n \Big \}.
+\end{equation}
+If we assume $Q$ to be invertible (which holds true for non-degenerate ellipsoids), it can be equivalently defined as (see \cite[Definition 2.1.3]{Kurzhanskiy2006})
+\begin{equation*}
+	\mathcal{E} := \Big\{ x\in \mathbb{R}^n ~ \Big| ~ \left(x-q\right)^T Q^{-1}\left(x-q\right)\leq 1 \Big \}.
+\end{equation*}
+Ellipsoids have a compact representation increasing only with dimension. Linear maps (see \cref{sec:mtimes}) can be computed exactly and efficiently, Minkowski sum (see \cref{sec:plus}) and others can be tightly over-approximated.
+
+Ellipsoids are represented in CORA by the class \texttt{ellipsoid}. An object of class \texttt{ellipsoid} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \mathcal{E} = \texttt{ellipsoid}(Q), \\
+		& \mathcal{E} = \texttt{ellipsoid}(Q,q),
+	\end{split}
+\end{equation*} 
+where $Q,q$ are defined as in \eqref{eq:ellipsoid}. Let us demonstrate the construction of an ellipsoid by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{30pt}
+	\footnotesize
+	\input{./MATLABcode/example_setRep_ellipsoid}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-representations/example_ellipsoid}
+\end{minipage}
+\end{center}
+
+A more detailed example for ellipsoids is provided in \cref{sec:ellipsoidExample} and in the file \textit{examples/contSet/example\_ellipsoid.m} in the CORA toolbox. In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), the class \texttt{ellipsoid} supports additional methods, which are listed in \cref{sec:ellipsoidOperation}.
+
+\textbf{Note:} While the MPT toolbox comes with the semi-definite program solver SeDuMi\footnote{\url{https://sedumi.ie.lehigh.edu/}}, it proves to be somewhat unreliable for higher-dimensional systems. Therefore, we encourage users to install SDPT3\footnote{\url{https://www.math.cmu.edu/~reha/sdpt3.html}} as some operations on higher-dimensional ellipsoids will fail using SeDuMi.

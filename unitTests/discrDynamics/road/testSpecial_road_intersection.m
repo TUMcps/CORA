@@ -18,6 +18,9 @@ function res = testSpecial_road_intersection
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 %load probabilistic model
 load probModel_car_sim_02September2016_newPartitionFormat probModel
@@ -95,13 +98,13 @@ for i = 1:runs
     intersected_MC = sum(intArray)/runsMC;
     
     % init partial result
-    resPartial(end+1) = 1;
+    assert(1);
     
     % there is a non-zero intersection probability although an intersection
     % is detected by the Monte carlo simulation
     if intersected_db == 0 && intersected_MC >= 0.1
         % test not passed
-        resPartial(end) = 0;
+        assert(0);
         
         %plot for debugging
         aux_plotForDebugging(Zcenter, ZcenterEgo, bodyZono, ZcenterCurr, ...
@@ -112,7 +115,7 @@ for i = 1:runs
         % Monte Carlo simulation should not exceed a threshold
         if intersected_db > 0.1 && intersected_MC > 0.1 && relDiff > 0.4
             % test not passed
-            resPartial(end) = 0;
+            assert(0);
             
             %plot for debugging
             aux_plotForDebugging(Zcenter, ZcenterEgo, bodyZono, ZcenterCurr, ...

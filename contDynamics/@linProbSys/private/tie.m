@@ -31,7 +31,7 @@ function obj = tie(obj,options)
 Apower=obj.taylor.powers;
 taylorTerms=options.taylorTerms;
 r=options.timeStep;
-n=obj.dim;
+n=obj.nrOfStates;
 
 %initialize Asum
 Asum=zeros(n);

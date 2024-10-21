@@ -23,10 +23,10 @@ function res = testLong_capsule_contains
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+res = true;
 nrTests = 1000;
 
 % 1. Same center, generator, different radius
-res(1) = true;
 
 for i=1:nrTests
 
@@ -42,20 +42,14 @@ for i=1:nrTests
     C_small = capsule(c,g,r_small);
     C_big = capsule(c,g,r_big);
 
-    % compute containment
-    bigInSmall = contains(C_small,C_big);
-    smallInBig = contains(C_big,C_small);
-
     % check for correctness
-    if bigInSmall || ~smallInBig
-        res(1) = false; break;
-    end
+    assert(~contains(C_small,C_big));
+    assert(contains(C_big,C_small));
 
 end
 
 
 % 2. centers too far away from one another
-res(2) = true;
 
 for i=1:nrTests
 
@@ -73,20 +67,14 @@ for i=1:nrTests
     C_plus = capsule(c_plus,g,r);
     C_minus = capsule(c_minus,g,r);
 
-    % compute containment
-    minusInPlus = contains(C_plus,C_minus);
-    plusInMinus = contains(C_minus,C_plus);
-
-    % check for correctness
-    if minusInPlus || plusInMinus
-        res(2) = false; break;
-    end
+    % check correctness
+    assert(~contains(C_plus,C_minus));
+    assert(~contains(C_minus,C_plus));
 
 end
 
 
 % 3. capsules overlapping
-res(3) = true;
 
 for i=1:nrTests
 
@@ -104,19 +92,9 @@ for i=1:nrTests
     C1 = capsule(c,g1,r);
     C2 = capsule(c,g2,r);
 
-    % compute containment
-    C2inC1 = contains(C1,C2);
-    C1inC2 = contains(C2,C1);
-
     % check for correctness
-    if C2inC1 || C1inC2
-        res(3) = false; break;
-    end
-
+    assert(~contains(C1,C2));
+    assert(~contains(C2,C1));
 end
-
-
-% combine tests
-res = all(res);
 
 % ------------------------------ END OF CODE ------------------------------

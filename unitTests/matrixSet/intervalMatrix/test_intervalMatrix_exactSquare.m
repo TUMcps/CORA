@@ -29,6 +29,9 @@ function res = test_intervalMatrix_exactSquare
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % create interval matrix
 % center
@@ -104,6 +107,6 @@ res_1 = all(I <= enlarge(I2,1+1e-8));
 res_2 = all(I2 <= enlarge(I,1+1e-8));
 
 %result of different computation techniques
-res = res_1 && res_2;
+assert(res_1 && res_2);
 
 % ------------------------------ END OF CODE ------------------------------

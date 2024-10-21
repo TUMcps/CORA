@@ -31,11 +31,7 @@ figure;
 
 % empty reachSet
 R = reachSet();
-
-try
-    plotOverTime(R);
-    res = false;
-end
+assertThrowsAs(@plotOverTime,'MATLAB:structRefFromNonStruct',R);
 
 % discrete-time system
 A = [0.9810    0.0143    0.0262   -0.0140;
@@ -67,7 +63,8 @@ try
     plotOverTime(R,4,'Unify',true);
 
 catch ME
-    res = false;
+    close
+    rethrow(ME)
 end
 
 % linear continuous-time system
@@ -97,7 +94,8 @@ try
     plotOverTime(R,4,'Unify',true);
 
 catch ME
-    res = false;
+    close
+    rethrow(ME)
 end
 
 % close figure;

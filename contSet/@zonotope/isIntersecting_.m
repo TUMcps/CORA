@@ -1,14 +1,14 @@
-function res = isIntersecting_(Z,S,varargin)
+function res = isIntersecting_(Z,S,type,tol,varargin)
 % isIntersecting_ - determines if zonotope intersects a set
 %
 % Syntax:
-%    res = isIntersecting_(Z,S)
-%    res = isIntersecting_(Z,S,type)
+%    res = isIntersecting_(Z,S,type,tol)
 %
 % Inputs:
 %    Z - zonotope object
 %    S - contSet object
 %    type - type of check ('exact' or 'approx')
+%    tol - tolerance
 %
 % Outputs:
 %    res - true/false
@@ -42,15 +42,40 @@ function res = isIntersecting_(Z,S,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% call function for other set representations
-if isa(S,'halfspace') || isa(S,'conHyperplane') || ...
-   isa(S,'polytope') || isa(S,'ellipsoid')
+% ensure that numeric is second input argument
+[Z,S] = reorderNumeric(Z,S);
 
-    res = isIntersecting_(S,Z,varargin{:});
-
-else
-    
-    res = isIntersecting_(conZonotope(Z),S,varargin{:});
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < Z.precedence
+    res = isIntersecting_(S,Z,type,tol);
+    return
 end
+
+% numeric case: check containment
+if isnumeric(S)
+    res = contains_(Z,S,type,tol);
+    return
+end
+
+% sets must not be empty
+if representsa_(Z,'emptySet',0) || representsa_(S,'emptySet',0)
+    res = false;
+    return
+end
+
+% general idea: convert to constrained zonotope and check for intersection
+% unless S is unbounded as unbounded sets are not convertible to conZonotopes
+if isa(S,'contSet')
+    if isBounded(S) 
+        % both bounded, convert to constrained zonotope
+        res = isIntersecting_(conZonotope(Z),conZonotope(S),type,tol,varargin{:});
+    else
+        % S unbounded, use polytope function
+        res = isIntersecting_(polytope(S),Z,type,tol,varargin{:});
+    end
+    return
+end
+
+throw(CORAerror('CORA:noops',Z,S));
 
 % ------------------------------ END OF CODE ------------------------------

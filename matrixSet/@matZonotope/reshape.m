@@ -31,11 +31,7 @@ function matZ_reshaped = reshape(matZ,n,m)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin < 3
-    throw(CORAerror('CORA:notEnoughInputArgs',3))
-elseif nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3))
-end
+narginchk(3,3);
 
 matZ_reshaped = matZ;
 matZ_reshaped.C = reshape(matZ.C,n,m);

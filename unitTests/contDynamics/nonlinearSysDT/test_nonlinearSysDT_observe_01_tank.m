@@ -25,6 +25,9 @@ function res = test_nonlinearSysDT_observe_01_tank()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % define tank model
 dt = 0.5;
@@ -35,10 +38,10 @@ tank = nonlinearSysDT('tank',fun,dt,n,m,out_fun,r);
 
 % parameters
 params.tFinal = 10;
-params.R0 = zonotope(20*ones(6,1),4*eye(6));
-params.U = zonotope(zeros(3,1));
-params.V = zonotope(zeros(3,1),0.2*eye(3));
-params.W = zonotope(zeros(6,1),0.001*eye(6));
+params.R0 = zonotope(20*ones(n,1),4*eye(n));
+params.U = zonotope(zeros(m,1));
+params.V = zonotope(zeros(r,1),0.2*eye(r));
+params.W = zonotope(zeros(n,1),0.001*eye(n));
 params.u = [0.1000    0.1000    0.1000    0.1025    0.1050    0.1075    0.1100    0.1125    0.1150    0.1175    0.1200    0.1225    0.1250    0.1275    0.1300    0.1325    0.1350    0.1375    0.1400    0.1425;
     0.1000    0.1000    0.1000    0.1025    0.1050    0.1075    0.1100    0.1125    0.1150    0.1175    0.1200    0.1225    0.1250    0.1275    0.1300    0.1325    0.1350    0.1375    0.1400    0.1425;
     0.1000    0.1000    0.1000    0.1050    0.1100    0.1150    0.1200    0.1250    0.1300    0.1350    0.1400    0.1450    0.1500    0.1550    0.1600    0.1650    0.1700    0.1750    0.1800    0.1850];
@@ -126,7 +129,7 @@ for iEst = 1:length(Estimator)
     end
 
     %check if slightly bloated versions enclose each other
-    resPartial(end+1) = isequal(IH,IH_saved,1+accuracy);
+    assert(isequal(IH,IH_saved,1+accuracy));
 end
 
 % final result

@@ -23,20 +23,21 @@ function res = test_zonotope_zonotope
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty zonotopes
 Z = zonotope.empty(2);
-res(end+1,1) = representsa(Z,'emptySet') && dim(Z) == 2;
+assert(representsa(Z,'emptySet') && dim(Z) == 2);
 Z = zonotope(zeros(3,0));
-res(end+1,1) = representsa(Z,'emptySet') ...
-    && size(Z.c,1) == 3 && size(Z.G,1) == 3;
+assert(representsa(Z,'emptySet'))
+assert(size(Z.c,1) == 3);
+assert(size(Z.G,1) == 3);
 Z = zonotope(zeros(3,0),[]);
-res(end+1,1) = representsa(Z,'emptySet') ...
-    && size(Z.c,1) == 3 && size(Z.G,1) == 3;
+assert(representsa(Z,'emptySet'))
+assert(size(Z.c,1) == 3);
+assert(size(Z.G,1) == 3);
 Z = zonotope(zeros(3,0),zeros(3,0));
-res(end+1,1) = representsa(Z,'emptySet') ...
-    && size(Z.c,1) == 3 && size(Z.G,1) == 3;
+assert(representsa(Z,'emptySet'))
+assert(size(Z.c,1) == 3);
+assert(size(Z.G,1) == 3);
 
 
 % random center, random generator matrix
@@ -46,22 +47,17 @@ Zmat = [c,G];
 
 % admissible initializations
 Z = zonotope(c,G);
-res(end+1,1) = compareMatrices(Z.c,c) && compareMatrices(Z.G,G);
+assert(compareMatrices(Z.c,c) && compareMatrices(Z.G,G));
 
 Z = zonotope(c);
-res(end+1,1) = compareMatrices(Z.c,c) && isempty(Z.G) && size(G,1) == 3;
+assert(compareMatrices(Z.c,c) && isempty(Z.G) && size(G,1) == 3);
 
 Z = zonotope(Zmat);
-res(end+1,1) = compareMatrices(Z.c,Zmat(:,1)) ...
-    && compareMatrices(Z.G,Zmat(:,2:end));
+assert(compareMatrices(Z.c,Zmat(:,1)))
+assert(compareMatrices(Z.G,Zmat(:,2:end)));
 
 
-% combine results
-res = all(res);
-
-% wrong initializations
-if CHECKS_ENABLED
-
+% wrong instantiations
 c_plus1 = [4; 6; -2; 3];
 G_plus1 = [2 -4 -6 3 5; 1 -7 3 -5 2; 0 4 -7 3 2; 2 0 5 -4 2];
 randLogicals = randn(size(G)) > 0;
@@ -69,40 +65,23 @@ c_NaN = c; c_NaN(2) = NaN;
 G_NaN = G; G_NaN(randLogicals) = NaN;
 
 % center and generator matrix do not match
-try
-    Z = zonotope(c_plus1,G); % <- should throw error here
-    res = false;
-end
-try
-    Z = zonotope(c,G_plus1); % <- should throw error here
-    res = false;
-end
+assertThrowsAs(@zonotope,'CORA:wrongInputInConstructor',c_plus1,G);
+assertThrowsAs(@zonotope,'CORA:wrongInputInConstructor',c,G_plus1);
 
 % center is empty
-try
-    Z = zonotope([],G); % <- should throw error here
-    res = false;
-end
-
+assertThrowsAs(@zonotope,'CORA:wrongInputInConstructor',[],G);
 
 % center has NaN entry
-try
-    Z = zonotope(c_NaN,G); % <- should throw error here
-    res = false;
-end
+assertThrowsAs(@zonotope,'CORA:wrongValue',c_NaN,G);
 
 % generator matrix has NaN entries
-try
-    Z = zonotope(c,G_NaN); % <- should throw error here
-    res = false;
-end
+assertThrowsAs(@zonotope,'CORA:wrongValue',c,G_NaN);
 
 % too many input arguments
-try
-    Z = zonotope(c,G,G); % <- should throw error here
-    res = false;
-end 
+assertThrowsAs(@zonotope,'CORA:numInputArgsConstructor',c,G,G);
 
-end
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

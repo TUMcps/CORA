@@ -1,12 +1,12 @@
-function [t,x,ind,y] = simulate(obj,params)
+function [t,x,ind,y] = simulate(nlnsysDT,params,varargin)
 % simulate - simulates a nonlinear discrete-time system
 %
 % Syntax:
-%    [t,x] = simulate(obj,params)
-%    [t,x,ind,y] = simulate(obj,params)
+%    [t,x] = simulate(nlnsysDT,params)
+%    [t,x,ind,y] = simulate(nlnsysDT,params)
 %
 % Inputs:
-%    obj - nonlinearSysDT object
+%    nlnsysDT - nonlinearSysDT object
 %    params - struct containing the parameters for the simulation
 %       .tStart: initial time
 %       .tFinal: final time
@@ -24,13 +24,13 @@ function [t,x,ind,y] = simulate(obj,params)
 % Example: 
 %    f = @(x,u) [x(1) + u(1);x(2) + u(2)*cos(x(1));x(3) + u(2)*sin(x(1))];
 %    dt = 0.25;
-%    sys = nonlinearSysDT(f,dt);
+%    nlnsysDT = nonlinearSysDT(f,dt);
 %    
 %    params.x0 = [0;0;0];
 %    params.tFinal = 1;
 %    params.u = [0.02 0.02 0.02 0.02; 2 3 4 5;];
 %
-%    [t,x] = simulate(sys,params);
+%    [t,x] = simulate(nlnsysDT,params);
 %
 %    plot(x(:,2),x(:,3),'.k','MarkerSize',20);
 %
@@ -58,7 +58,7 @@ comp_y = false;
 if nargout == 4
     ind = [];
     % CORAwarning('CORA:contDynamics',"Output trajectories not supported for class nonlinearSysDT!");
-    if ~isempty(obj.out_mFile)
+    if ~isempty(nlnsysDT.out_mFile)
         comp_y = true;
     else
     	y = [];
@@ -70,7 +70,7 @@ if ~isfield(params,'tStart')
 	params.tStart = 0; 
 end
 
-t = params.tStart:obj.dt:params.tFinal;
+t = params.tStart:nlnsysDT.dt:params.tFinal;
 t = t';
 
 if t(end) ~= params.tFinal
@@ -95,22 +95,22 @@ x = zeros(length(t),length(params.x0));
 x(1,:) = params.x0';
 
 if comp_y
-    y = zeros(length(t),obj.nrOfOutputs);
-    y(1,:) = obj.out_mFile(x(1,:)',params.u(:,1))';
+    y = zeros(length(t),nlnsysDT.nrOfOutputs);
+    y(1,:) = nlnsysDT.out_mFile(x(1,:)',params.u(:,1))';
 end
 
 % loop over all time steps
 for i = 1:length(t)-1
 
     if change
-        temp = obj.mFile(x(i,:)',params.u(:,i));
+        temp = nlnsysDT.mFile(x(i,:)',params.u(:,i));
         if comp_y
-            y(i+1,:) = obj.out_mFile(temp,params.u(:,i+1))';
+            y(i+1,:) = nlnsysDT.out_mFile(temp,params.u(:,i+1))';
         end
     else
-        temp = obj.mFile(x(i,:)',params.u);
+        temp = nlnsysDT.mFile(x(i,:)',params.u);
         if comp_y
-            y(i+1,:) = obj.out_mFile(temp,params.u)';
+            y(i+1,:) = nlnsysDT.out_mFile(temp,params.u)';
         end
     end
 

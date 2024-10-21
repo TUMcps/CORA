@@ -1,0 +1,24 @@
+\subsubsection{Interval Matrices} \label{sec:intervalMatrix}
+
+An interval matrix is a special case of a matrix zonotope and specifies the interval of possible values for each matrix element:
+\begin{equation*}
+	\mathcal{A}_{[i]}=[\underline{A},\overline{A}], \quad  \forall i,j: \underline{a}_{ij}\leq\overline{a}_{ij}, \quad \underline{A},\overline{A}\in\mathbb{R}^{n \times n}.
+\end{equation*}
+The matrix $\underline{A}$ is referred to as the \textit{lower bound} and $\overline{A}$ as the \textit{upper bound} of $\mathcal{A}_{[i]}$. 
+
+In CORA, interval matrices are implemented by the class \texttt{intervalMatrix}. An object of class \texttt{intervalMatrix} can be constructed as follows:
+\begin{equation*}
+	\mathcal{A}_{[i]} = \texttt{intervalMatrix}(C,D),
+\end{equation*}
+where $C = 0.5 (\overline{A}+\underline{A})$ is the center matrix and $D = 0.5 (\overline{A}-\underline{A})$ is the width matrix.
+
+Let us demonstrate the construction of an \texttt{intervalMatrix} object by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_intervalMatrix}
+\end{minipage}
+\end{center}
+
+A more detailed example for interval matrices is provided in \cref{sec:intervalMatrixExample} and in the file \textit{examples/matrixSet/example\_intervalMatrix.m} in the CORA toolbox. Furthermore, a list of methods for the class \texttt{intervalMatrix} is provided in \cref{sec:intervalMatrixOperations}.

@@ -28,41 +28,35 @@ NVpairs = {'Age',12,'Name','John','Children',2};
 
 % read value for name 'Age'
 [NVpairs_,val] = readNameValuePair(NVpairs,'Age');
-res = val == 12;
-res(end+1,1) = length(NVpairs_) == 4;
+assert(val == 12);
+assert(length(NVpairs_) == 4);
 
 % read value for name 'Name', check case insensitivity
 [NVpairs_,val] = readNameValuePair(NVpairs,'NAME');
-res(end+1,1) = strcmp(val,'John');
-res(end+1,1) = length(NVpairs_) == 4;
+assert(strcmp(val,'John'));
+assert(length(NVpairs_) == 4);
 
 % read value for name 'Children', spelt wrongly
 [NVpairs_,val] = readNameValuePair(NVpairs,'Childrn');
-res(end+1,1) = isempty(val);
-res(end+1,1) = length(NVpairs_) == 6;
+assert(isempty(val));
+assert(length(NVpairs_) == 6);
 
 % read out existing name with default value
 [NVpairs_,val] = readNameValuePair(NVpairs,'Age','isscalar',2);
-res(end+1,1) = val == 12;
-res(end+1,1) = length(NVpairs_) == 4;
+assert(val == 12);
+assert(length(NVpairs_) == 4);
 
 % read out non-existing name with default value
 [NVpairs_,val] = readNameValuePair(NVpairs,'Parents','isscalar',2);
-res(end+1,1) = val == 2;
-res(end+1,1) = length(NVpairs_) == 6;
+assert(val == 2);
+assert(length(NVpairs_) == 6);
 
 % fail the check
-try 
-    [NVpairs_,val] = readNameValuePair(NVpairs,'Age','ischar');
-    res(end+1,1) = false;
-end
-try 
-    [NVpairs_,val] = readNameValuePair(NVpairs,'Name',@isscalar);
-    res(end+1,1) = false;
-end
+assertThrowsAs(@readNameValuePair,'CORA:specialError',NVpairs,'Age','ischar');
+assertThrowsAs(@readNameValuePair,'CORA:specialError',NVpairs,'Name','isscalar');
 
 
-% combine results
-res = all(res);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

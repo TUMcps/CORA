@@ -1,0 +1,1070 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+\documentclass{article}
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}% a4 paper
+%\IEEEoverridecommandlockouts         
+%\overrideIEEEmargins
+\input{packages}
+%\bibliography{literature}
+%TO-DO:
+%- read /check references
+
+\title{\LARGE \bf
+Complexity Analysis for "Reachability Analysis of ARMAX Models"
+}
+\author{Laura L\"utzow% <-this % stops a space
+}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+
+
+\section{Considered Complexities}
+\subsection{With Matrices}
+\begin{itemize}
+    \item matrix multiplication: $AB$ with $A\in \mathbb{R}^{m \times n},~B\in \mathbb{R}^{n \times o}$
+    \begin{itemize}
+        \item[$\rightarrow$] complexity $\mathcal{O}(mno)$
+    \end{itemize}
+    \item matrix addition: $A+B$ with $A\in \mathbb{R}^{m \times n},~B\in \mathbb{R}^{m \times n}$
+    \begin{itemize}
+        \item[$\rightarrow$] complexity $\mathcal{O}(mn)$
+    \end{itemize}    
+    \item matrix power: $A^k$ with $A\in \mathbb{R}^{m \times m}$
+    \begin{itemize}
+        \item[$\rightarrow$] complexity $\mathcal{O}(km^3)$
+    \end{itemize}   
+\end{itemize}
+
+\subsection{With Zonotopes}
+\begin{itemize}
+    \item linear transformation: $A\mathcal{B}$ with $A\in \mathbb{R}^{m \times n}$ and the zonotope $\mathcal{B}=\langle c_B, G_B\rangle$ with $G_B\in \mathbb{R}^{n \times \eta_B}$
+    \begin{itemize}
+        \item[$\rightarrow$] complexity $\mathcal{O}(mn\eta_B)$
+    \end{itemize}
+    \item Minkowski sum: $\mathcal{A}\oplus\mathcal{B}$ with the zonotopes $~\mathcal{A}=\langle c_A, G_A\rangle$ with $G_A\in \mathbb{R}^{n \times \eta_A},~~\mathcal{B}=\langle c_B, G_B\rangle$ with $G_B\in \mathbb{R}^{n \times \eta_B}$
+    \begin{itemize}
+        \item[$\rightarrow$] complexity $\mathcal{O}(n)$
+    \end{itemize}   
+    \item exact addition: $\mathcal{A}\boxplus\mathcal{B}$ with the zonotopes $~\mathcal{A}=\langle c_A, G_A\rangle$ with $G_A\in \mathbb{R}^{n \times \eta_A},~~\mathcal{B}=\langle c_B, G_B\rangle$ with $G_B\in \mathbb{R}^{n \times \eta_B}$
+    \begin{itemize}
+        \item assuming the position of the dependent generators is known (no sorting necessary)
+        \item[$\rightarrow$] complexity $\mathcal{O}(n \min(\eta_A,\eta_B))$
+    \end{itemize}    
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Reachability Analysis with Dependency-preserving Sets} \label{sec:meth1}
+
+\subsection{Formulas and Algorithm}
+\setcounter{proposition}{2}
+\setcounter{equation}{5}
+\begin{proposition}\label{theo:reach_zon}\textbf{Reachability analysis with dependency-preserving sets.}
+By representing the combined input and disturbance sets $\tilde{\mathcal{U}}(i)={\mathcal{U}}(i) \times {\mathcal{W}}(i) \times {\mathcal{V}}(i)$, $0\leq i\leq k$, with a dependency-preserving set representation, 
+we can compute the reachable set as
+\begin{align}
+    \mathcal{Y}(k) &= \bigboxplus_{i=1}^p \bar{A}_{i} \mathcal{Y}(k-i) \boxplus \bigboxplus_{i=0}^p \bar{B}_{i} \tilde{\mathcal{U}}(k-i), \label{eq:ARMAXzon_reach}
+\end{align}
+where the output sets $\mathcal{Y}(i)$, $i=0,...,p-1$, can be initialized from the measurements $y(i)$.
+\end{proposition}
+
+
+\subsection{Complexity}
+\begin{itemize}
+    \item multiplication $M_{Ai}(k-i) = \bar{A}_{i} \mathcal{Y}(k-i)$ with 
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\bar{A}_{i}\in \mathbb{R}^{n_y \times n_y}$
+            \item $G_{\mathcal{Y}(k-i)} \in \mathbb{R}^{n_y \times (k-i+1)o n_{\tilde{u}}}$
+        \end{itemize}
+        \item complexity for one specific $k$ and $i$:
+        \begin{itemize}
+            \item $\mathcal{O}(n_y^2 (k-i+1)o n_{\tilde{u}})$
+        \end{itemize}
+        \item overall complexity (for $k=p,...,k_h+p$ and $i=1,...,p$ --> $k_h p$ computations; and $(k-i+1)\leq k_h+p$):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h^2 n_{\tilde{u}} n_y^2 o p + k_h n_{\tilde{u}} n_y^2 o p^2)$
+        \end{itemize}
+    \end{itemize}
+    \item multiplication $M_{Bi}(k-i) = \bar{B}_{i} \tilde{\mathcal{U}}(k-i)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\bar{B}_{i}\in \mathbb{R}^{n_y \times n_{\tilde{u}}}$
+            \item $G_{\mathcal{U}(k-i)} \in \mathbb{R}^{n_{\tilde{u}} \times o n_{\tilde{u}}}$
+        \end{itemize}
+        \item overall complexity (for $k=p,...,k_h+p$ and $i=0,...,p$ --> $k_h (p+1)$ computations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_{\tilde{u}}^2 n_y o p)$
+        \end{itemize}
+    \end{itemize}
+    \item Minkowski sum $M_B(k) = \bigboxplus_{i=0}^p M_{Bi}(k-i) = \oplus_{i=0}^p M_{Bi}(k-i)$ (since $\mathcal{U}(k)$ are independent)    
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $G_{M_{Bi}(k-i)} \in \mathbb{R}^{n_{y} \times o n_{\tilde{u}}}$ 
+        \end{itemize}
+        \item overall complexity (for $k=p,...,k_h+p$ --> $k_h$ computations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_y p)$
+        \end{itemize}
+    \end{itemize}
+    \item exact addition $M_{A}(k) = \bigboxplus_{i=1}^p M_{Ai}(k-i)$    
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}          
+            \item $G_{M_{Ai}(k-i)} \in \mathbb{R}^{n_{y} \times (k-i+1)o n_{\tilde{u}}}$    
+        \end{itemize}
+        \item assume that we know the positions of the dependent generators --> no sorting necessary
+        \item complexity for one specific $k$ and $i$:
+        \begin{itemize}
+            \item $\mathcal{O}(n_{y} (k-i+1) o n_{\tilde{u}} p)$
+        \end{itemize}
+        \item overall complexity (for $k=p,...,k_h+p$ --> $k_h$ computations; and $(k-i+1)\leq k_h+p$):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h^2 n_{\tilde{u}} n_{y} o p + k_h n_{\tilde{u}} n_{y} o p^2)$
+        \end{itemize}
+    \end{itemize}
+    \item exact addition $\mathcal{Y}(k) = M_{A}(k) \boxplus M_{B}(k)$    
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $G_{M_{B}(k)} \in \mathbb{R}^{n_{y} \times (p+1) o n_{\tilde{u}}}$            
+            \item $G_{M_{A}(k)} \in \mathbb{R}^{n_{y} \times ko n_{\tilde{u}}}$    
+        \end{itemize}
+        \item assuming the positions of the dependent generators are known
+        \item overall complexity (for $k=p,...,k_h+p$ --> $k_h$ computations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_{\tilde{u}} n_{y} o p)$
+        \end{itemize}
+    \end{itemize}
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(
+      k_h^2 n_{\tilde{u}} n_y^2 o p + k_h n_{\tilde{u}} n_y^2 o p^2
+    + k_h n_{\tilde{u}}^2 n_y o p 
+    + k_h n_y p
+    + k_h^2 n_{\tilde{u}} n_{y} o p + k_h n_{\tilde{u}} n_{y} o p^2 
+    + k_h n_{\tilde{u}} n_{y} o p) \\
+    = 
+    \mathcal{O}(k_h^2 n_{\tilde{u}} n_y^2 o p + k_h n_{\tilde{u}} n_y^2 o p^2
+    + k_h n_{\tilde{u}}^2 n_y o p)
+    \end{align*}
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Reachability Analysis with Arbitrary Set Representations} \label{sec:meth2}
+
+\subsection{Formulas and Algorithm}
+\setcounter{equation}{6}
+\begin{theorem} \label{prop:ARMAXreform}\textbf{Alternative ARMAX formulation.} 
+The ARMAX model can be formulated as 
+\begin{align}
+    \tilde{y}_{(k:k_+)} &= {\tilde{A}(k) \tilde{y}_\text{init}} +  \sum_{i=0}^{k_+}\tilde{B}_{i}(k) \tilde{u}(k_+-i) \label{eq:ARMAXtvp}
+\end{align}
+with the stacked outputs
+\begin{align}
+    \tilde{y}_\text{init}= \begin{bmatrix}
+        y(0) \\
+        y(1) \\
+        \vdots\\
+        y(p-1)
+    \end{bmatrix},~ 
+    \tilde{y}_{(k:k_+)}= \begin{bmatrix}
+        y(k) \\
+        y(k+1) \\
+        \vdots\\
+        y(k_+)
+    \end{bmatrix}\in \mathbb{R}^{pn_y} \label{eq:ytilde}    
+\end{align}
+and $k_+ = k+p-1$. 
+The time-varying parameters $\tilde{A}(k) \in \mathbb{R}^{pn_y \times pn_y}$ 
+and $\tilde{B}_{i}(k) \in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$ 
+can be computed as
+\begin{subequations}\label{eq:ARMAXtvp_param}
+    \begin{align}    
+    \tilde{A}(k) &= \bar{A}_\text{ext}^{k}, \label{eq:ARMAXtvp_paramA} \\
+    \tilde{B}_{i}(k) &=  \sum_{j=0}^{k-1} \bar{A}_\text{ext}^{j} \bar{B}_{\text{ext},i-j},  
+    \label{eq:ARMAXtvp_paramB}
+\end{align}
+\end{subequations}
+where 
+\begin{align}  
+    \bar{A}_\text{ext} &= \begin{bmatrix}  
+        \mathbf{0} &\mathbf{I} & \mathbf{0} & ... & \mathbf{0}  \\
+        \mathbf{0} &\mathbf{0} & \mathbf{I} & ... & \mathbf{0}  \\
+        \vdots & \vdots & \vdots  & \ddots & \vdots \\
+        \mathbf{0} & \mathbf{0} & \mathbf{0} & ... & \mathbf{I} \\
+        \bar{A}_{p} & \bar{A}_{p-1} &  \bar{A}_{p-2} & ...&  \bar{A}_{1}
+    \end{bmatrix},%\label{eq:Atilde}
+    ~ \bar{B}_{\text{ext},i} = \begin{bmatrix}
+        \mathbf{0} \\
+        \mathbf{0} \\
+        \vdots\\
+        \mathbf{0}       \\
+        \bar{B}_{i} 
+    \end{bmatrix}\label{eq:Btilde}  ,
+\end{align}
+and $\bar{B}_{i}=\mathbf{0}$ for $i< 0$ or $i>p$. 
+\end{theorem}
+
+\setcounter{equation}{13}
+\begin{lemma}\label{lem:recParam}
+The time-varying parameters $\tilde{A}(k+\Delta k)$ and $\tilde{B}_{i}(k+\Delta k)$, $\Delta k\geq 0$, can be
+computed from $\tilde{A}(k)$ and $\tilde{B}_{i}(k)$ for $i \geq p + \Delta k$ with   
+\begin{subequations}\label{eq:ARMAXtvp_paramRec}
+    \begin{align}
+    \tilde{A}(k+\Delta k) &= \bar{A}_{\text{ext}}^{\Delta k}  \tilde{A}(k), \label{eq:ARMAXtvp_paramRecA}\\
+    \tilde{B}_{i}(k+\Delta k) &= \bar{A}_{\text{ext}}^{\Delta k} \tilde{B}_{i-\Delta k}(k).
+    \label{eq:ARMAXtvp_paramRecB}
+\end{align}
+\end{subequations}
+\end{lemma}
+
+\begin{lemma}\label{lem:recParam2} For $i< k$ and $\Delta k \geq 0$, we can directly reuse old parameters with
+\begin{align}
+    \tilde{B}_{i}(k+\Delta k) &= \tilde{B}_{i}(k). \label{eq:ARMAXtvp_paramRecB2}
+\end{align}
+\end{lemma}
+
+\begin{lemma}\label{lem:recParam3} The parameters $\tilde{B}_{i+1}(k)$ can be obtained from $\tilde{B}_{i}(k)$ with
+\begin{align}
+    \tilde{B}_{i+1}(k) &= \bar{A}_\text{ext}\tilde{B}_{i}(k) + \bar{B}_{\text{ext},i+1} - \bar{A}_\text{ext}^{k}\bar{B}_{\text{ext},i+1-k}. \label{eq:ARMAXtvp_paramRecB3}
+\end{align}
+\end{lemma}
+
+\begin{theorem}\label{theo:reach_gen}\textbf{Reachability analysis with arbitrary sets.}
+The reachable sets of an ARMAX model at the consecutive time points $k=k_{\text{init}},~k_{\text{init}}+1,~ ....,~p+k_h$, where $k_{\text{init}} \geq p$, can be obtained with \cref{alg:reachRec}.
+\begin{algorithm}[!h]
+\caption{Reachablity analysis with arbitrary sets.}\label{alg:reachRec}
+\begin{algorithmic}[1]
+\State $k \gets k_{\text{init}},\quad k_+ \gets k_{\text{init}} +p-1$ 
+\State $\tilde{A} \gets$ \cref{eq:ARMAXtvp_paramA} \label{algline:Atilde}
+\State $\tilde{B}_0 \gets$ \cref{eq:ARMAXtvp_paramB}\label{algline:Btilde0}
+\State $\tilde{B}_i,$~{\small $i=1,...,k_+$} $\gets$ \cref{eq:ARMAXtvp_paramRecB3}\label{algline:Btildei}
+\State ${\mathcal{S}} \gets \tilde{A} \tilde{y}_\text{init} \oplus \bigoplus_{i=p}^{k_+} \tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)$ \label{algline:ARMAXtvp_S}
+\While{$k\leq p+k_h$}
+\State $\tilde{\mathcal{Y}}_{(k:k_+)} \gets{\mathcal{S}}\oplus \bigoplus_{i=0}^{p-1}  \tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)$ \label{algline:ARMAXtvp_reach} 
+\State $k \gets k+p,\quad k_+ \gets k_+ +p$
+\If{$k< 3p$} \label{algline:test} % i\leq k-2p
+\State $\tilde{B}_p \gets$ \cref{eq:ARMAXtvp_paramB}\label{algline:ARMAXtvp_paramB2p} 
+\State $\tilde{B}_i$, {\small $i=p+1,...,2p-1$} $\gets$ \cref{eq:ARMAXtvp_paramRecB3} \label{algline:ARMAXtvp_paramB2i}
+\EndIf
+\State ${\mathcal{S}} \gets \bar{A}_\text{ext}^{p} {\mathcal{S}}  \oplus \bigoplus_{i=p}^{2p-1} \tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)$  \label{algline:ARMAXtvp_SRec}
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+\end{theorem}
+
+
+\subsection{Complexity}
+with $k_{\text{init}} = p$
+\subsubsection{\cref{algline:Atilde}} \label{sec:line2}
+executed once for $k=k_{\text{init}}=p$:
+
+$\tilde{A} \gets$ \cref{eq:ARMAXtvp_paramA}
+\begin{itemize}
+    \item matrix exponentiation $\tilde{A}(k_{\text{init}}) = \bar{A}_\text{ext}^{k_{\text{init}}}$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\bar{A}_\text{ext} \in \mathbb{R}^{pn_y \times pn_y}$
+        \end{itemize}
+        \item complexity for computing $\bar{A}_\text{ext} \bar{A}_\text{ext}$:
+        \begin{itemize}
+            \item $\mathcal{O}(n_y^3 p^2)$ due to special structure (only have to compute the last $n_y$ rows when multiplying $\bar{A}_\text{ext}$ with another $pn_y \times pn_y$ matrix -- the remaining rows are identical to the last $(p-1)n_y$ rows of the other matrix)
+        \end{itemize}        
+        \item overall complexity for $k=p$:
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_y^3 p^3)$
+        \end{itemize}
+    \end{itemize}
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(n_y^3 p^3)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:Btilde0}} \label{sec:line3}
+executed once for $k=k_{\text{init}}=p$:
+
+$\tilde{B}_i \gets$ \cref{eq:ARMAXtvp_paramB}{ \small for $i=0$}: 
+$$\tilde{B}_{0}(k) =  \sum_{j=0}^{k-1} \bar{A}_\text{ext}^{j} \bar{B}_{\text{ext},0-j}$$
+\begin{itemize}
+    \item multiplication $\tilde{B}_{0}(k) =  \bar{A}_\text{ext}^{0} \bar{B}_{\text{ext},0} = \bar{B}_{\text{ext},0}$ (since $\bar{B}_{\text{ext},0-j}= 0$ for $j>0$) 
+    \begin{itemize}        
+        \item overall complexity:
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(1)$
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{\cref{algline:Btildei}} \label{sec:line4}
+executed once for $k=k_{\text{init}}=p$:
+
+$\tilde{B}_i \gets$ \cref{eq:ARMAXtvp_paramRecB3}{ \small for $i=1,...,2p-1$}:
+$$\tilde{B}_{i+1}(k) = \bar{A}_\text{ext}\tilde{B}_{i}(k) + \bar{B}_{\text{ext},i+1} - \bar{A}_\text{ext}^{k}\bar{B}_{\text{ext},i+1-k}$$
+\begin{itemize}
+    \item multiplication $\bar{A}_\text{ext}\tilde{B}_{i}(k)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\bar{A}_\text{ext} \in \mathbb{R}^{pn_y \times pn_y}$
+            \item $\tilde{B}_{i}(k) \in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+        \end{itemize}
+        \item complexity for one computation:
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_{\tilde{u}} n_y^2 p)$ due to special structure of $\bar{A}_\text{ext}$ (only have to compute the last $n_y$ rows when multiplying $\bar{A}_\text{ext}$ with another matrix -- the remaining rows are identical to the last $(p-1)n_y$ rows of the other matrix)
+        \end{itemize}    
+        \item overall complexity (for all $\tilde{B}_i$ with $i=1,...,2p-1$):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_{\tilde{u}} n_y^2 p^2)$
+        \end{itemize}
+    \end{itemize}
+    \item multiplication $\bar{A}_\text{ext}^{k}\bar{B}_{\text{ext},i+1-k}$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\bar{A}_\text{ext}^k \in \mathbb{R}^{pn_y \times pn_y}$ (already precomputed in \cref{algline:Atilde}) 
+            \item $\bar{B}_{\text{ext},i-p+1} \in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+        \end{itemize}
+        \item complexity for one computation:
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_{\tilde{u}} n_y^2 p)$ due to special structure of $\bar{B}_{\text{ext},i-p+1}$ (only have to consider the last $n_y$ columns from the first matrix when multiplying it with $\bar{B}_{\text{ext},i-p+1}$)
+        \end{itemize} 
+        \item overall complexity (for all $\tilde{B}_i$ with $i=1,...,2p-1$):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_{\tilde{u}} n_y^2 p^2)$
+        \end{itemize}
+    \end{itemize}
+    \item addition $\bar{A}_\text{ext}\tilde{B}_{i}(k) + \bar{B}_{\text{ext},i+1} - \bar{A}_\text{ext}^{k}\bar{B}_{\text{ext},i+1-k}$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item each summand $\in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+        \end{itemize}
+        \item overall complexity (for all $\tilde{B}_i$ with $i=1,...,2p-1$):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_{\tilde{u}} n_y p^2)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(n_{\tilde{u}} n_y^2 p^2)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:ARMAXtvp_S}} \label{sec:line5}
+executed once for $k=k_{\text{init}}=p$ and $k_+=2p-1$:
+
+${\mathcal{S}} \gets \tilde{A} \tilde{y}_\text{init} \oplus \bigoplus_{i=p}^{k_+} \tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)$
+\begin{itemize}
+    \item multiplication $\tilde{A} \tilde{y}_\text{init}$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\tilde{A} \in \mathbb{R}^{pn_y \times pn_y}$
+            \item $\tilde{y}_\text{init} \in \mathbb{R}^{pn_y \times 1}$
+        \end{itemize}
+        \item overall complexity: %(for $k=2p-1, 3p-1, ..., k_h$ --> $k_h/p$ iterations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_y^2 p^2)$
+        \end{itemize}
+    \end{itemize}
+    \item multiplication $\tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\tilde{B}_{i} \in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+            \item $G_{\mathcal{U}(k_+-i)} \in \mathbb{R}^{n_{\tilde{u}} \times o n_{\tilde{u}}}$
+        \end{itemize}
+        \item overall complexity (for $i=p,...,2p-1$ --> $p$ computations)
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_{\tilde{u}}^2 n_y o p^2)$
+        \end{itemize}
+    \end{itemize}
+    \item Minkowski sum $\tilde{A} \tilde{y}_\text{init} \oplus \bigoplus_{i=p}^{k_+} \tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\tilde{A} \tilde{y}_\text{init} \in \mathbb{R}^{pn_y \times 1}$ 
+            \item $G_{\tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)} \in \mathbb{R}^{pn_y \times on_{\tilde{u}}}$ 
+            \item[] (where the number of generators does not influence the complexity of the Minkowski sum)
+        \end{itemize}
+        \item overall complexity for $p$ sums:% (for $k=2p-1, 3p-1, ..., k_h$ --> $k_h/p$ iterations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_y p^2)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(n_y^2 p^2 + n_{\tilde{u}}^2 n_y o p^2)
+    \end{align*}
+\end{itemize}
+
+
+\subsubsection{\cref{algline:ARMAXtvp_reach}} \label{sec:line7}
+executed $k_h/p$ times
+
+$\tilde{\mathcal{Y}}(k) \gets{\mathcal{S}}\oplus \bigoplus_{i=0}^{p-1}  \tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)$ 
+\begin{itemize}
+    \item multiplication $\tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\tilde{B}_{i} \in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+            \item $G_{\mathcal{U}(k_+-i)} \in \mathbb{R}^{n_{\tilde{u}} \times o n_{\tilde{u}}}$
+        \end{itemize}
+        \item overall complexity (for $i=0,...,p-1$ and $k=p, 2p, ..., k_h+p$ --> $pk_h/p=k_h$ computations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_{\tilde{u}}^2 n_y o p)$
+        \end{itemize}
+    \end{itemize}
+    \item Minkowski sum $\mathcal{S}\oplus \bigoplus_{i=0}^{p-1}  \tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $G_{\mathcal{S}(k)} \in \mathbb{R}^{pn_y \times k o n_{\tilde{u}}}$
+            \item $G_{\tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)} \in \mathbb{R}^{pn_y \times on_{\tilde{u}}}$ 
+            \item[] (where the number of generators does not influence the complexity of the Minkowski sum)
+        \end{itemize}
+        \item overall complexity (for $p$ sums and $k=p, 2p, ..., k_h+p$ --> $pk_h/p=k_h$ computations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_y p)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(k_h n_{\tilde{u}}^2 n_y o p)
+    \end{align*}
+\end{itemize}
+
+
+\subsubsection{\cref{algline:ARMAXtvp_paramB2p}} \label{sec:line10}
+executed once for $k=2p$:
+
+$\tilde{B}_i \gets$ \cref{eq:ARMAXtvp_paramB}{ \small for $i=p$,} 
+$$\tilde{B}_{p}(k) =  \sum_{j=0}^{k-1} \bar{A}_\text{ext}^{j} \bar{B}_{\text{ext},p-j} = \sum_{j=0}^{p} \bar{A}_\text{ext}^{j} \bar{B}_{\text{ext},p-j} $$
+\begin{itemize}
+    \item matrix exponentiation $\bar{A}_\text{ext}^{j}$ with $j=0,...,p$
+    \begin{itemize}
+        \item precomputed when computing $\tilde{A}(p)=\bar{A}_\text{ext}^{p}$
+        \item overall complexity:
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(1)$
+        \end{itemize}
+    \end{itemize}
+    \item multiplication $\bar{A}_\text{ext}^{j} \bar{B}_{\text{ext},p-j}$ 
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\bar{A}_\text{ext}^j \in \mathbb{R}^{pn_y \times pn_y}$
+            \item $\bar{B}_{\text{ext},p-j} \in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+        \end{itemize}        
+        \item complexity for one specific $j$:
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_{\tilde{u}} n_y^2 p)$ due to special structure of $\bar{B}_{\text{ext},i-p+1}$ (only have to consider the last $n_y$ columns from the first matrix when multiplying it with $\bar{B}_{\text{ext},i-p+1}$)
+        \end{itemize} 
+        \item overall complexity (for $j=0,...,p$):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_{\tilde{u}} n_y^2 p^2)$
+        \end{itemize}
+    \end{itemize}
+    \item addition $ \sum_{j=0}^{p} \bar{A}_\text{ext}^{j} \bar{B}_{\text{ext},p-j}$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item each summand $\in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+        \end{itemize}
+        \item overall complexity for $p$ additions:
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_{\tilde{u}} n_y p^2)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(n_{\tilde{u}} n_y^2 p^2)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:ARMAXtvp_paramB2i}} \label{sec:line11}
+executed once for $k=2p$:
+$\tilde{B}_i \gets$ \cref{eq:ARMAXtvp_paramRecB3}{ \small for $i=p+1,...,2p-1$}
+$$\tilde{B}_{i+1}(k) = \bar{A}_\text{ext}\tilde{B}_{i}(k) + \bar{B}_{\text{ext},i+1} - \bar{A}_\text{ext}^{k}\bar{B}_{\text{ext},i+1-k}$$
+\begin{itemize}
+    \item multiplication $\bar{A}_\text{ext}^{k}=\bar{A}_\text{ext}^{p}\bar{A}_\text{ext}^{p}$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\bar{A}_\text{ext}^p \in \mathbb{R}^{pn_y \times pn_y}$ (already precomputed in \cref{algline:Atilde}) 
+        \end{itemize}
+        \item overall complexity:
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_y^3 p^3)$
+        \end{itemize} 
+    \end{itemize}
+    \item remaining computations: see \cref{sec:line4}
+        \begin{itemize}
+            \item[$\rightarrow$] complexity: $\mathcal{O}(n_{\tilde{u}} n_y^2 p^2)$
+        \end{itemize} 
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(n_{\tilde{u}} n_y^2 p^2 + n_y^3 p^3)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:ARMAXtvp_SRec}} \label{sec:line13}
+executed $k_h/p$ times
+
+${\mathcal{S}} \gets \bar{A}_\text{ext}^{p} {\mathcal{S}}  \oplus \bigoplus_{i=p}^{2p-1} \tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)$  
+
+\begin{itemize}
+    \item multiplication $\bar{A}_\text{ext}^{p} {\mathcal{S}}$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\bar{A}_\text{ext}^p \in \mathbb{R}^{pn_y \times pn_y}$
+            \item $G_{\mathcal{S}(k)} \in \mathbb{R}^{pn_y \times k o n_{\tilde{u}}}$
+        \end{itemize}
+        \item overall complexity (for $k=p, 2p, ..., k_h+p$ --> $k_h/p$ iterations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h^2 n_{\tilde{u}} n_y^2 o p)$
+        \end{itemize}
+    \end{itemize}    
+    \item multiplication $\tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\tilde{B}_{i} \in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+            \item $G_{\mathcal{U}(k_+-i)} \in \mathbb{R}^{n_{\tilde{u}} \times o n_{\tilde{u}}}$
+        \end{itemize}
+        \item overall complexity (for $i=p,...,2p-1$ and $k=2p-1, 3p-1, ..., k_h+2p-1$ --> $pk_h/p=k_h$ computations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_{\tilde{u}}^2 n_y o p)$
+        \end{itemize}
+    \end{itemize}
+    \item Minkowski sum $\bar{A}_\text{ext}^{p} {\mathcal{S}}  \oplus \bigoplus_{i=p}^{2p-1} \tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}            
+            \item $G_{\bar{A}_\text{ext}^{p} {\mathcal{S}}(k)} \in \mathbb{R}^{pn_y \times k o n_{\tilde{u}}}$
+            \item $G_{\tilde{B}_{i} \tilde{\mathcal{U}}(k_+-i)} \in \mathbb{R}^{pn_y \times on_{\tilde{u}}}$ 
+            \item[] (where the number of generators does not influence the complexity of the Minkowski sum)
+        \end{itemize}
+        \item overall complexity (for $p$ sums and $k=3p-1, 3p-1, ..., k_h+p-1$ --> $pk_h/p=k_h$ computations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_y p)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(k_h^2 n_{\tilde{u}} n_y^2 o p + k_h n_{\tilde{u}}^2 n_y o p)
+    \end{align*}
+\end{itemize}
+
+
+\subsubsection{Resulting complexity}
+\begin{align*}\mathcal{O}(n_y^3 p^3) %line2
++\mathcal{O}(1) %line3
++\mathcal{O}(n_{\tilde{u}} n_y^2 p^2) %line4
++\mathcal{O}(n_y^2 p^2 + n_{\tilde{u}}^2 n_y o p^2) %line5
++\mathcal{O}(k_h n_{\tilde{u}}^2 n_y o p) %line7
++\mathcal{O}(n_{\tilde{u}} n_y^2 p^2) %line10
++\mathcal{O}(n_{\tilde{u}} n_y^2 p^2 + n_y^3 p^3)\\ %line11
++\mathcal{O}(k_h^2 n_{\tilde{u}} n_y^2 o p + k_h n_{\tilde{u}}^2 n_y o p) \\ %line13
+= \mathcal{O}(n_y^3 p^3 + n_{\tilde{u}} n_y^2 p^2 + n_{\tilde{u}}^2 n_y o p^2 + k_h n_{\tilde{u}}^2 n_y o p + k_h^2 n_{\tilde{u}} n_y^2 o p)
+\end{align*}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Reachability Analysis with Reduced Complexity}
+\subsection{Formulas and Algorithm}
+
+\begin{theorem} \textbf{Efficient reachability analysis.} \label{theo:reach_eff}
+    If the combined input and disturbance sets can be described by the constant set $\tilde{\mathcal{U}}_c$ and the time-varying signal $\tilde{u}_v(i)$ such that $\tilde{\mathcal{U}}(i) = \tilde{\mathcal{U}}_c + \tilde{u}_v(i)$, $0 \leq i\leq p+k_h$, we can compute the reachable sets at the consecutive time points $k_{\text{init}},~k_{\text{init}}+1,~ ....,~p+k_h$, where $k_{\text{init}} \geq p$, with \cref{alg:approx}
+\vspace{-0.2cm}
+\begin{algorithm}[hbt]
+\caption{Efficient reachability analysis.}\label{alg:approx}
+\begin{algorithmic}[1]
+\State $k \gets k_{\text{init}},\quad k_+ \gets k_{\text{init}} +p-1$ 
+\State $\tilde{A} \gets$ \cref{eq:ARMAXtvp_paramA} \label{algline:line2}
+\State $\tilde{B}_0 \gets$ \cref{eq:ARMAXtvp_paramB}\label{algline:line3}
+\State $\tilde{B}_i,$~{\small $i=1,...,k_+$} $\gets$ \cref{eq:ARMAXtvp_paramRecB3}\label{algline:line4}
+\State $\mathcal{S}_c \gets \bigoplus_{i=0}^{k-1}\tilde{B}_i \tilde{\mathcal{U}}_c$ \label{algline:line5}
+\State $\mathcal{T}_{c1} \gets \bigoplus_{i=k}^{k_+}\tilde{B}_i \tilde{\mathcal{U}}_c$  \label{algline:line6}
+\State $s_v \gets \tilde{A} \tilde{y}_\text{init} + \sum_{i=p}^{k_+} \tilde{B}_{i}\tilde{u}_v(k_+-i)$\label{algline:line7}
+\While{$k\leq p+k_h$}
+\State $\tilde{\mathcal{Y}}_c \gets \mathcal{S}_c \oplus \mathcal{T}_{c1}$\label{algline:line9}
+\State $\tilde{y}_v \gets s_v + \sum_{i=0}^{p-1}  \tilde{B}_{i} \tilde{u}_v(k_+-i)$\label{algline:line10}
+\State $\tilde{\mathcal{Y}}_{(k:k_+)} \gets \tilde{y}_v \oplus \tilde{\mathcal{Y}}_c$ \label{algline:line11}
+\State $k \gets k+p$,\quad $k_+ \gets k_++p$
+\If{$k< 2p$} \label{algline:test2} % i\leq k-2p
+\State $\tilde{B}_p \gets$ \cref{eq:ARMAXtvp_paramB} \label{algline:line14}
+\State $\tilde{B}_i$, {\small $i=p+1,...,2p-1$} $\gets$ \cref{eq:ARMAXtvp_paramRecB3}\label{algline:line15}
+\EndIf
+\If{$k=k_{\text{init}}+p$}
+\State $\mathcal{T}_{c2} \gets \bigoplus_{i=k-p}^{k_+-p}\tilde{B}_i \tilde{\mathcal{U}}_c$\label{algline:line18}
+\EndIf
+\State $\mathcal{S}_c \gets \mathcal{S}_c \oplus \mathcal{T}_{c2}$ \label{algline:line20}
+\State $\mathcal{T}_{c1} \gets \bar{A}_\text{ext}^p \mathcal{T}_{c1}$ \label{algline:line21}
+\State $\mathcal{T}_{c2} \gets \bar{A}_\text{ext}^p \mathcal{T}_{c2}$ \label{algline:line22}
+\State $s_v \gets \bar{A}_\text{ext}^{p} s_v  + \sum_{i=p}^{2p-1} \tilde{B}_{i} \tilde{u}_v(k_+-i)$ \label{algline:line23}
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+\end{theorem}
+
+\subsection{Complexity}
+\subsubsection{\cref{algline:line2}} 
+$\tilde{A} \gets$ \cref{eq:ARMAXtvp_paramA} 
+\begin{itemize}
+    \item see \cref{sec:line2}
+    \item[$\rightarrow$] resulting complexity: 
+    \begin{align*}
+        \mathcal{O}(n_y^3 p^3)
+    \end{align*}
+\end{itemize}
+
+
+\subsubsection{\cref{algline:line3}} 
+$\tilde{B}_0 \gets$ \cref{eq:ARMAXtvp_paramB}
+\begin{itemize}
+    \item see \cref{sec:line3}
+    \item[$\rightarrow$] resulting complexity: 
+    \begin{align*}
+        \mathcal{O}(1)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:line4}} 
+$\tilde{B}_i,$~{\small $i=1,...,k_+$} $\gets$ \cref{eq:ARMAXtvp_paramRecB3}
+\begin{itemize}
+    \item see \cref{sec:line4}
+    \item[$\rightarrow$] resulting complexity: 
+    \begin{align*}
+        \mathcal{O}(n_{\tilde{u}} n_y^2 p^2)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:line5}} 
+$\mathcal{S}_c \gets \bigoplus_{i=0}^{k-1}\tilde{B}_i \tilde{\mathcal{U}}_c$ 
+executed once for $k=p$
+\begin{itemize}
+    \item multiplication $\tilde{B}_{i} \tilde{\mathcal{U}}_c$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\tilde{B}_{i} \in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+            \item $G_{\mathcal{U}_c} \in \mathbb{R}^{n_{\tilde{u}} \times o n_{\tilde{u}}}$
+        \end{itemize}
+        \item overall complexity (for $i=0,...,p-1$ --> $p$ computations)
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_{\tilde{u}}^2 n_y o p^2)$
+        \end{itemize}
+    \end{itemize}
+    \item Minkowski sum $\bigoplus_{i=0}^{k-1}\tilde{B}_i \tilde{\mathcal{U}}_c$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}            
+            \item $G_{\tilde{B}_{i} \tilde{\mathcal{U}}_c} \in \mathbb{R}^{pn_y \times on_{\tilde{u}}}$ 
+            \item[] (where the number of generators does not influence the complexity of the Minkowski sum)
+        \end{itemize}
+        \item overall complexity for $p-1$ sums:% (for $k=2p-1, 3p-1, ..., k_h$ --> $k_h/p$ iterations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_y p^2)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(n_{\tilde{u}}^2 n_y o p^2)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:line6}} 
+$\mathcal{T}_{c1} \gets \bigoplus_{i=k}^{k_+}\tilde{B}_i \tilde{\mathcal{U}}_c$  
+executed once for $k=p,~k_+=2p-1$
+\begin{itemize}
+    \item multiplication $\tilde{B}_{i} \tilde{\mathcal{U}}_c$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\tilde{B}_{i} \in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+            \item $G_{\mathcal{U}_c} \in \mathbb{R}^{n_{\tilde{u}} \times o n_{\tilde{u}}}$
+        \end{itemize}
+        \item overall complexity (for $i=p,...,2p-1$ --> $p$ computations)
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_{\tilde{u}}^2 n_y o p^2)$
+        \end{itemize}
+    \end{itemize}
+    \item Minkowski sum $\bigoplus_{i=p}^{2p-1}\tilde{B}_i \tilde{\mathcal{U}}_c$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $G_{\tilde{B}_{i} \tilde{\mathcal{U}}_c} \in \mathbb{R}^{pn_y \times on_{\tilde{u}}}$ 
+            \item[] (where the number of generators does not influence the complexity of the Minkowski sum)
+        \end{itemize}
+        \item overall complexity for $p-1$ sums:
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_y p^2)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(n_{\tilde{u}}^2 n_y o p^2)
+    \end{align*}
+\end{itemize}
+ 
+\subsubsection{\cref{algline:line7}} 
+$s_v \gets \tilde{A} \tilde{y}_\text{init} + \sum_{i=p}^{k_+} \tilde{B}_{i}\tilde{u}_v(k_+-i)$
+executed once for $k=p,~k_+=2p-1$
+\begin{itemize}
+    \item multiplication $\tilde{A} \tilde{y}_\text{init}$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\tilde{A} \in \mathbb{R}^{pn_y \times pn_y}$
+            \item $\tilde{y}_\text{init} \in \mathbb{R}^{pn_y \times 1}$
+        \end{itemize}
+        \item overall complexity: %(for $k=2p-1, 3p-1, ..., k_h$ --> $k_h/p$ iterations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_y^2 p^2)$
+        \end{itemize}
+    \end{itemize}
+    \item multiplication $\tilde{B}_{i} \tilde{u}_v(k_+-i)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\tilde{B}_{i} \in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+            \item $\tilde{u}_v(k_+-i) \in \mathbb{R}^{n_{\tilde{u}} \times 1}$
+        \end{itemize}
+        \item overall complexity (for $i=p,...,2p-1$ --> $p$ computations)
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_{\tilde{u}} n_y p^2)$
+        \end{itemize}
+    \end{itemize}
+    \item addition $\tilde{A} \tilde{y}_\text{init} \oplus \bigoplus_{i=p}^{k_+} \tilde{B}_{i} \tilde{u}_v(k_+-i)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item each summand $\in \mathbb{R}^{pn_y \times 1}$
+        \end{itemize}
+        \item overall complexity for $p-1$ sums:% (for $k=2p-1, 3p-1, ..., k_h$ --> $k_h/p$ iterations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_y p^2)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(n_y^2 p^2 + n_{\tilde{u}} n_y p^2)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:line9}} 
+$\tilde{\mathcal{Y}}_c \gets \mathcal{S}_c \oplus \mathcal{T}_{c1}$
+executed $k_h/p$-times
+\begin{itemize}
+    \item Minkowski sum $\mathcal{S}_c \oplus \mathcal{T}_{c1}$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}        
+            \item $G_{\mathcal{S}_c(k)} \in \mathbb{R}^{pn_y \times k o n_{\tilde{u}}}$
+            \item $G_{\mathcal{T}_{c1}} \in \mathbb{R}^{pn_y \times pon_{\tilde{u}}}$ 
+            \item[] (where the number of generators does not influence the complexity of the Minkowski sum)
+        \end{itemize}
+        \item overall complexity for $k_h/p$ computations:
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_y)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(k_h n_y)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:line10}} 
+$\tilde{y}_v \gets s_v + \sum_{i=0}^{p-1}  \tilde{B}_{i} \tilde{u}_v(k_+-i)$
+executed $k_h/p$-times
+\begin{itemize}
+    \item multiplication $\tilde{B}_{i} \tilde{u}_v(k_+-i)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\tilde{B}_{i} \in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+            \item $\tilde{u}_v(k_+-i) \in \mathbb{R}^{n_{\tilde{u}} \times 1}$
+        \end{itemize}
+        \item overall complexity (for $i=p,...,2p-1$ --> $p*k_h/p=k_h$ computations)
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_{\tilde{u}} n_y p)$
+        \end{itemize}
+    \end{itemize}
+    \item addition $s_v + \sum_{i=0}^{p-1}  \tilde{B}_{i} \tilde{u}_v(k_+-i)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item each summand $\in \mathbb{R}^{pn_y \times 1}$
+        \end{itemize}
+        \item overall complexity (for $p$ sums --> $p*k_h/p=k_h$ computations):% (for $k=2p-1, 3p-1, ..., k_h$ --> $k_h/p$ iterations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_y p)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(k_h n_{\tilde{u}} n_y p)
+    \end{align*}
+\end{itemize}
+
+
+\subsubsection{\cref{algline:line11}} 
+$\tilde{\mathcal{Y}}_{(k:k_+)} \gets \tilde{y}_v \oplus \tilde{\mathcal{Y}}_c$ 
+executed $k_h/p$-times
+\begin{itemize}
+    \item addition $\tilde{y}_v \oplus \tilde{\mathcal{Y}}_c$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item each summand $\in \mathbb{R}^{pn_y \times 1}$
+        \end{itemize}
+        \item overall complexity (for $k_h/p$ computations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_y)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(k_h n_y)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:line14}} 
+$\tilde{B}_p \gets$ \cref{eq:ARMAXtvp_paramB} 
+\begin{itemize}
+    \item see \cref{sec:line10}
+    \item[$\rightarrow$] resulting complexity: 
+    \begin{align*}
+        \mathcal{O}(n_{\tilde{u}} n_y^2 p^2)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:line15}} 
+$\tilde{B}_i$, {\small $i=p+1,...,2p-1$} $\gets$ \cref{eq:ARMAXtvp_paramRecB3}
+\begin{itemize}
+    \item see \cref{sec:line11}
+    \item[$\rightarrow$] resulting complexity: 
+    \begin{align*}
+        \mathcal{O}(n_{\tilde{u}} n_y^2 p^2 + n_y^3 p^3)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:line18}} 
+$\mathcal{T}_{c2} \gets \bigoplus_{i=k-p}^{k_+-p}\tilde{B}_i \tilde{\mathcal{U}}_c$
+executed once for $k=2p$
+\begin{itemize}
+    \item multiplication $\tilde{B}_{i} \tilde{\mathcal{U}}_c$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\tilde{B}_{i} \in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+            \item $G_{\mathcal{U}_c} \in \mathbb{R}^{n_{\tilde{u}} \times o n_{\tilde{u}}}$
+        \end{itemize}
+        \item overall complexity (for $i=p,...,2p-1$ --> $p$ computations)
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_{\tilde{u}}^2 n_y o p^2)$
+        \end{itemize}
+    \end{itemize}
+    \item Minkowski sum $\bigoplus_{i=k-p}^{k_+-p}\tilde{B}_i \tilde{\mathcal{U}}_c$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $G_{\tilde{B}_{i} \tilde{\mathcal{U}}_c} \in \mathbb{R}^{pn_y \times on_{\tilde{u}}}$ 
+            \item[] (where the number of generators does not influence the complexity of the Minkowski sum)
+        \end{itemize}
+        \item overall complexity for $p-1$ sums:
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(n_y p^2)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(n_{\tilde{u}}^2 n_y o p^2)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:line20}} 
+$\mathcal{S}_c \gets \mathcal{S}_c \oplus \mathcal{T}_{c2}$ 
+executed $k_h/p$-times
+\begin{itemize}
+    \item Minkowski sum $\mathcal{S}_c \oplus \mathcal{T}_{c2}$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $G_{\mathcal{S}_c(k)} \in \mathbb{R}^{pn_y \times k o n_{\tilde{u}}}$
+            \item $G_{\mathcal{T}_{c2}} \in \mathbb{R}^{pn_y \times pon_{\tilde{u}}}$ 
+            \item[] (where the number of generators does not influence the complexity of the Minkowski sum)
+        \end{itemize}
+        \item overall complexity for $k_h/p$ computations:
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_y)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(k_h n_y)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{\cref{algline:line21}} 
+$\mathcal{T}_{c1} \gets \bar{A}_\text{ext}^p \mathcal{T}_{c1}$ 
+executed $k_h/p$-times
+\begin{itemize}
+    \item multiplication $\bar{A}_\text{ext}^{p} \mathcal{T}_{c1}$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\bar{A}_\text{ext}^p \in \mathbb{R}^{pn_y \times pn_y}$
+            \item $G_{\mathcal{T}_{c1}} \in \mathbb{R}^{pn_y \times p o n_{\tilde{u}}}$
+        \end{itemize}
+        \item[$\rightarrow$] overall complexity for $k_h/p$ computations:
+        \begin{align*}
+        \mathcal{O}(k_h n_{\tilde{u}} n_y^2 o p^2)
+    \end{align*}
+    \end{itemize}    
+\end{itemize}
+
+\subsubsection{\cref{algline:line22}} 
+$\mathcal{T}_{c2} \gets \bar{A}_\text{ext}^p \mathcal{T}_{c2}$
+executed $k_h/p$-times
+\begin{itemize}
+    \item multiplication $\bar{A}_\text{ext}^{p} \mathcal{T}_{c2}$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\bar{A}_\text{ext}^p \in \mathbb{R}^{pn_y \times pn_y}$
+            \item $G_{\mathcal{T}_{c2}} \in \mathbb{R}^{pn_y \times p o n_{\tilde{u}}}$
+        \end{itemize}
+        \item[$\rightarrow$] overall complexity for $k_h/p$ computations:
+        \begin{align*}
+        \mathcal{O}(k_h n_{\tilde{u}} n_y^2 o p^2)
+        \end{align*}
+    \end{itemize}    
+\end{itemize}
+
+\subsubsection{\cref{algline:line23}} 
+$s_v \gets \bar{A}_\text{ext}^{p} s_v  + \sum_{i=p}^{2p-1} \tilde{B}_{i} \tilde{u}_v(k_+-i)$ 
+executed $k_h/p$-times
+\begin{itemize}
+    \item multiplication $\bar{A}_\text{ext}^{p} s_v$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\bar{A}_\text{ext}^{p} \in \mathbb{R}^{pn_y \times pn_y}$
+            \item $s_v \in \mathbb{R}^{pn_y \times 1}$
+        \end{itemize}
+        \item overall complexity for $k_h/p$ computations: %(for $k=2p-1, 3p-1, ..., k_h$ --> $k_h/p$ iterations):
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_y^2 p)$
+        \end{itemize}
+    \end{itemize}
+    \item multiplication $\tilde{B}_{i} \tilde{u}_v(k_+-i)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item $\tilde{B}_{i} \in \mathbb{R}^{pn_y \times n_{\tilde{u}}}$
+            \item $\tilde{u}_v(k_+-i) \in \mathbb{R}^{n_{\tilde{u}} \times 1}$
+        \end{itemize}
+        \item overall complexity (for $i=p,...,2p-1$ --> $p k_h/p$ computations)
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_{\tilde{u}} n_y p)$
+        \end{itemize}
+    \end{itemize}
+    \item addition $\bar{A}_\text{ext}^{p} s_v  + \sum_{i=p}^{2p-1} \tilde{B}_{i} \tilde{u}_v(k_+-i)$
+    \begin{itemize}
+        \item dimensions:
+        \begin{itemize}
+            \item each summand $\in \mathbb{R}^{pn_y \times 1}$
+        \end{itemize}
+        \item overall complexity for $p$ sums --> $p k_h/p$ computations:
+        \begin{itemize}
+            \item[$\rightarrow$] $\mathcal{O}(k_h n_y p)$
+        \end{itemize}
+    \end{itemize}    
+    \item[$\rightarrow$] resulting complexity: \begin{align*}
+        \mathcal{O}(k_h n_y^2 p + k_h n_{\tilde{u}} n_y p)
+    \end{align*}
+\end{itemize}
+
+\subsubsection{Resulting complexity}
+\begin{align*}
+\mathcal{O}(n_y^3 p^3) %line2
++\mathcal{O}(1) %line3
++\mathcal{O}(n_{\tilde{u}} n_y^2 p^2) %line4
++\mathcal{O}(n_{\tilde{u}}^2 n_y o p^2) %line5
++\mathcal{O}(n_{\tilde{u}}^2 n_y o p^2) %line6
++\mathcal{O}(n_y^2 p^2 + n_{\tilde{u}} n_y p^2) %line7
++\mathcal{O}(k_h n_y) %line9
++\mathcal{O}(k_h n_{\tilde{u}} n_y p) %line10
++\mathcal{O}(k_h n_y)\\ %line11
++\mathcal{O}(n_{\tilde{u}} n_y^2 p^2) %line14
++\mathcal{O}(n_{\tilde{u}} n_y^2 p^2 + n_y^3 p^3) %line15
++\mathcal{O}(n_{\tilde{u}}^2 n_y o p^2) %line18
++\mathcal{O}(k_h n_y) %line20
++\mathcal{O}(k_h n_{\tilde{u}} n_y^2 o p^2) %line21
++\mathcal{O}(k_h n_{\tilde{u}} n_y^2 o p^2) %line22
++\mathcal{O}(k_h n_y^2 p + k_h n_{\tilde{u}} n_y p) %line23
+ \\ 
+= \mathcal{O}(n_y^3 p^3 
++ n_{\tilde{u}}^2 n_y o p^2
++ k_h n_{\tilde{u}} n_y^2 o p^2)
+\end{align*}
+
+
+\newpage
+\section{Computational Complexity}
+ using $k_h = pf_k$, $n_y = n_{y0} f_n$, $n_{\tilde{u}} = n_{{\tilde{u}}0} f_n$
+
+
+\subsection{Complexity of \cref{theo:reach_zon}}
+\begin{align*}
+        \mathcal{O}(k_h^2 n_{\tilde{u}} n_y^2 o p 
+    + k_h n_{\tilde{u}} n_y^2 o p^2
+    + k_h n_{\tilde{u}}^2 n_y o p) =
+    \mathcal{O}(f_k^2 f_n^3 o p^3)
+    \end{align*}
+
+
+\subsection{Complexity of \cref{theo:reach_gen}}
+\begin{align*}
+\mathcal{O}(n_y^3 p^3 
++ n_{\tilde{u}} n_y^2 p^2 
++ n_{\tilde{u}}^2 n_y o p^2 + k_h n_{\tilde{u}}^2 n_y o p + k_h^2 n_{\tilde{u}} n_y^2 o p) =
+\mathcal{O}(f_k^2 f_n^3 o p^3)
+\end{align*}
+
+
+\subsection{Complexity of \cref{theo:reach_eff}}
+\begin{align*}
+\mathcal{O}(n_y^3 p^3 
++ n_{\tilde{u}}^2 n_y o p^2
++ k_h n_{\tilde{u}} n_y^2 o p^2) =
+\mathcal{O}(f_k f_n^3 o p^3)
+\end{align*}
+
+\begin{table}[hb]
+\vspace{0.2cm}
+    \caption{Computational complexity with symbolic zonotopes.}
+    \label{tab:complexity}
+    \centering
+    \begin{tabular}{c c c c}
+       \toprule
+       \textbf{Approach} & \multicolumn{3}{c}{\textbf{Time complexity w.r.t.}}\\
+        &  $f_k$ & $f_n$ & $p$  \\
+       \midrule 
+        \cref{theo:reach_zon} & $\mathcal{O}(f_k^2)$ & $\mathcal{O}(f_n^3)$ & $\mathcal{O}(p^3)$\\ 
+        \cref{theo:reach_gen}  & $\mathcal{O}(f_k^2)$ & $\mathcal{O}(f_n^3)$  & $\mathcal{O}(p^3)$ \\ 
+        \cref{theo:reach_eff}  & $\mathcal{O}(f_k)$ & $\mathcal{O}(f_n^3)$  & $\mathcal{O}(p^3)$ \\ 
+        \bottomrule
+    \end{tabular}
+    \vspace{-0.5cm}
+\end{table}
+
+
+\end{document}
+
+

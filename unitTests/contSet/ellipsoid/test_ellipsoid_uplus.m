@@ -23,8 +23,6 @@ function res = test_ellipsoid_uplus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = true(0);
-
 % init
 Q = [2.7 -0.2;-0.2 2.4];
 q = [1;2];
@@ -33,12 +31,12 @@ E = ellipsoid(Q, q);
 pE = +E;
 
 % compare with E
-resvec(end+1) = isequal(pE, E);
+assert(isequal(pE, E));
 
 % test empty case
-resvec(end+1) = isemptyobject(+ellipsoid.empty(2));
+assert(isemptyobject(+ellipsoid.empty(2)));
 
 % add results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,0 +1,19 @@
+\begin{tikzpicture}
+\footnotesize
+
+\node[inner sep=0pt] (v) at (0,0) {\includegraphics[width=0.7\columnwidth]{./figures/hybridReachOverview.eps}};
+
+\node[anchor=west] at (-5.35, -0.1) {initial set};
+\node[anchor=center] at (0, 2.25) {reachable set};
+\node[anchor=west] at (1, -1.25) {guard sets};
+\node[anchor=west] at (2.75, 2.25) {guard sets};
+\node[anchor=west] at (1.5, 1.2) {jump};
+\node[anchor=west] at (5.6, 0.25) {etc.};
+\node[anchor=west] at (-5.6, 1.15) {invariant};
+\node[anchor=west] at (-3.5, 2.25) {unsafe set};
+\node[anchor=west] at (-3.8, -2.35) {$x_1$};
+\node[anchor=west] at (-5, -1.25) {$x_2$};
+\node[anchor=west] at (-2, -2.25) {location $v_1$};
+\node[anchor=west] at (2, -2.25) {location $v_2$};
+
+\end{tikzpicture}%

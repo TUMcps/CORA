@@ -1,19 +1,18 @@
-function [Rnext,options] = post_Krylov(obj,options)
+function [Rnext,options] = post_Krylov(linsys,params,options)
 % post_Krylov - computes the reachable continuous set for one time step in 
-% the Krylov subspace
+%    the Krylov subspace
 %
 % Syntax:
-%    [Rnext,options] = post_Krylov(obj,R,options)
+%    [Rnext,options] = post_Krylov(linsys,params,options)
 %
 % Inputs:
-%    obj - linearSys object
+%    linsys - linearSys object
+%    params - model parameters
 %    options - options for the computation of the reachable set
 %
 % Outputs:
 %    Rnext - reachable set of the next time step
 %    options - options for the computation of the reachable set
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -39,8 +38,8 @@ R_tp_prev = options.Rhom_tp_proj;
 %R_hom_0 = options.Rhom_0;
 RV_0 = options.RV_0;
 % multiplications with exponential matrix
-[R_hom_tp_proj,R_Krylov_proj] = exponential_Krylov_projected(obj,options.R0,options,1);
-[RV_proj,R_V_Krylov_proj] = exponential_Krylov_projected(obj,RV_0,options,0);
+[R_hom_tp_proj,R_Krylov_proj] = exponential_Krylov_projected(linsys,params.R0,options,1);
+[RV_proj,R_V_Krylov_proj] = exponential_Krylov_projected(linsys,RV_0,options,0);
 
 % other results
 R_tie_proj = options.R_tie_proj;

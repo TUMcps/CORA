@@ -1,4 +1,4 @@
-function HA = rendezvous_nonlinear_passive_nondet(~)
+function HA = rendezvous_nonlinear_passive_nondet()
 % rendezvous_nonlinear_passive_nondet - nonlinear spacecraft-rendezvous
 %    system with nondeterministic switching (see Sec. 3.6 in [1])
 %
@@ -6,7 +6,7 @@ function HA = rendezvous_nonlinear_passive_nondet(~)
 %    HA = rendezvous_nonlinear_passive_nondet()
 %
 % Inputs:
-%    ---
+%    -
 %
 % Outputs:
 %    HA - hybridAutomaton object
@@ -14,13 +14,19 @@ function HA = rendezvous_nonlinear_passive_nondet(~)
 % References:
 %    [1] L. Geretti, “ARCH-COMP20 Category Report: Continuous and Hybrid 
 %        Systems with Nonlinear Dynamics", 2020
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% Author:        Niklas Kochdumper
-% Written:       22-May-2020
-% Last update:   ---
-% Last revision: ---
+% Authors:        Niklas Kochdumper
+% Written:        22-May-2020
+% Last update:    ---
+% Last revision:  ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %% Generated on 04-Jun-2018
@@ -55,21 +61,20 @@ invA = ...
 [0,0,0,0,1;1,0,0,0,0];
 invb = ...
 [150;-100];
-invOpt = struct('A', invA, 'b', invb);
 inv = polytope(invA, invb);
 
-trans = {};
+trans = transition();
 %% equation:
 %   
 resetA = ...
 [1,0,0,0,0;0,1,0,0,0;0,0,1,0,0;0,0,0,1,0;0,0,0,0,1];
 resetc = ...
 [0;0;0;0;0];
-reset = struct('A', resetA, 'c', resetc);
+reset = linearReset(resetA,[],resetc);
 
 %% equation:
 %   y>=-100 & x+y >=-141.1 & x>=-100 & y-x<=141.1 & y<=100 & x+y<=141.1 & x<=100 & y-x>=-141.1 & t < 120
-guard = conHyperplane([-1,0,0,0,0],100);
+guard = polytope([],[],[-1,0,0,0,0],100);
 
 trans = transition(guard, reset, 2);
 
@@ -79,7 +84,7 @@ resetA = ...
 [1,0,0,0,0;0,1,0,0,0;0,0,1,0,0;0,0,0,1,0;0,0,0,0,1];
 resetc = ...
 [0;0;0;0;0];
-reset = struct('A', resetA, 'c', resetc);
+reset = linearReset(resetA,[],resetc);
 
 %% equation:
 %   t >= 120 & t <= 150
@@ -88,7 +93,6 @@ guard = polytope([0 0 0 0 -1; 0 0 0 0 1],[-120; 150]);
 trans(2) = transition(guard, reset, 3);
 
 loc(1) = location('S1', inv, trans, dynamics);
-
 
 
 %-------------------------------State P2-----------------------------------
@@ -110,7 +114,6 @@ invA = ...
 0,0;1,0,0,0,0;1,-1,0,0,0];
 invb = ...
 [150;100;141.1;100;141.1;100;141.1;100;141.1];
-invOpt = struct('A', invA, 'b', invb);
 inv = polytope(invA, invb);
 
 trans = transition();
@@ -120,7 +123,7 @@ resetA = ...
 [1,0,0,0,0;0,1,0,0,0;0,0,1,0,0;0,0,0,1,0;0,0,0,0,1];
 resetc = ...
 [0;0;0;0;0];
-reset = struct('A', resetA, 'c', resetc);
+reset = linearReset(resetA,[],resetc);
 
 %% equation:
 %   t >= 120 & t <= 150
@@ -129,7 +132,6 @@ guard = polytope([0 0 0 0 -1; 0 0 0 0 1],[-120; 150]);
 trans = transition(guard, reset, 3);
 
 loc(2) = location('S2', inv, trans, dynamics);
-
 
 
 %-----------------------------State Passive--------------------------------
@@ -150,17 +152,13 @@ invA = ...
 [1,0,0,0,0;-1,0,0,0,0];
 invb = ...
 [10000;10000];
-invOpt = struct('A', invA, 'b', invb);
 inv = polytope(invA, invb);
 
 trans = transition();
 loc(3) = location('S3', inv, trans, dynamics);
 
 
-
-HA = hybridAutomaton(loc);
-
-
-end
+% compose hybrid automaton
+HA = hybridAutomaton('spacecraft_passive',loc);
 
 %------------- END OF CODE --------------

@@ -1,0 +1,68 @@
+\subsubsection{computeGO} \label{sec:computeGO}
+
+The operation \operator{computeGO} computes the parameters of a general output (GO) model, which provides a linear approximation of the output of the system along a reference trajectory, using a first-order Taylor series expansion ~\cite{Luetzow2024b}. 
+For the reference trajectory defined by the initial state $\bar{x}[1]$ and the inputs $\bar{u}[i]$, $i=1,...,k$, the output of the GO model for the state ${x}[1]$ and the inputs ${u}[i]$ is given as
+\begin{align}
+	y_{GO}[k] &= \bar{y}[k] + \bar{C}[k] (x[1]-\bar{x}[1]) + \sum_{i=1}^k \bar{D}_i[k] (u[i]-\bar{u}[i]) %+ \sum_{i=1}^k \bar{E}_i[k] l[i]
+	, \label{eq:GOmodel_y}
+\end{align} 
+We can extend the GO model to also provide a linear approximation of the system state, which is given as:
+\begin{align}	
+	x_{GO}[k+1] &= \bar{x}[k+1] + \bar{A}[k] (x[1]-\bar{x}[1]) + \sum_{i=1}^k \bar{B}_i[k] (u[i]-\bar{u}[i]). %+ \sum_{i=1}^k \bar{F}_i[k] l[i]
+	\label{eq:GOmodel_x} 
+\end{align}
+
+With the set $\mathcal{L}[i]=\mathcal{L}_x[i] \times \mathcal{L}_y[i]$, which contains higher-order Taylor terms and the Lagrange remainder for the Taylor series expansion at time step $i$, we can compute the reachable set of states $\mathcal{X}$ and the reachable set of outputs $\mathcal{Y}$ of the system for the uncertain initial state $x[1] \in \mathcal{X}[1]$ and uncertain inputs $u[i] \in \mathcal{U}[i]$ with the GO model as
+\begin{align}
+	\mathcal{X}[k+1] &= \bar{x}[k+1] \oplus \bar{A}[k] (\mathcal{X}[1]-\bar{x}[1]) \oplus \bigoplus_{i=1}^k \bar{B}_i[k] (\mathcal{U}[i]-\bar{u}[i]) \oplus \bigoplus_{i=1}^k \bar{F}_i[k] \mathcal{L}[i] \label{eq:GOmodel_xL} \\
+	\mathcal{Y}[k] &= \bar{y}[k] \oplus \bar{C}[k] (\mathcal{X}[1]-\bar{x}[1]) \oplus \bigoplus_{i=1}^k \bar{D}_i[k] (\mathcal{U}[i]-\bar{u}[i]) \oplus \bigoplus_{i=1}^k \bar{E}_i[k] \mathcal{L}[i]. \label{eq:GOmodel_yL}
+\end{align} 
+
+The syntax for the operation \texttt{computeGO} is:
+\begin{equation*}
+\begin{split}
+    & \texttt{p\_GO} = \texttt{computeGO}(\texttt{sys},\texttt{x0\_ref},\texttt{u\_ref},\texttt{n\_k})
+\end{split}
+\end{equation*}
+with input arguments
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{sys} & dynamic system defined by one of the classes \texttt{linearSysDT} (see \cref{sec:linearSysDT}), \texttt{linearARX} (see \cref{sec:linearARX}), \texttt{nonlinearSysDT} (see \cref{sec:nonlinearSystemsDT}), or \texttt{nonlinearARX} (see \cref{sec:nonlinearSystems_ARX}). \\
+	$\bullet$~\texttt{x0\_ref} & initial state of the reference trajectory, equivalent to $\bar{x}[1]$ in~\eqref{eq:GOmodel_x} and \eqref{eq:GOmodel_y}. \\
+	$\bullet$~\texttt{u\_ref} & inputs for the reference trajectory, equivalent to $\bar{u}[\cdot]$ in~\eqref{eq:GOmodel_x} and \eqref{eq:GOmodel_y}. \\
+	$\bullet$~\texttt{n\_k} & time horizon. 
+\end{tabular}
+\end{center}
+
+and output arguments
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{p\_GO} & parameters of the GO model with $k=1,...,n\_k$ and $i=1,...,k$. \\
+	& \begin{tabular}[t]{l p{10cm}}
+		--~\texttt{.A\{k\}} & matrix that describes the influence of the initial state $x[1]$ on the state $x[k+1]$, equivalent to $\bar{A}[k]$ in \eqref{eq:GOmodel_x} and \eqref{eq:GOmodel_xL}.\\
+		--~\texttt{.B\{k,i\}} & matrix that describes the influence of the input $u[i]$ on the state $x[k+1]$, equivalent to $\bar{B}_i[k]$ in \eqref{eq:GOmodel_x} and \eqref{eq:GOmodel_xL}.\\
+		--~\texttt{.F\{k,i\}} & matrix that describes the influence of the linearization error $l[i]$ on the state $x[k+1]$, equivalent to $\bar{F}_i[k]$ in \eqref{eq:GOmodel_xL}.\\
+		--~\texttt{.C\{k\}} & matrix that describes the influence of the initial state $x[1]$ on the output $y[k]$, equivalent to $\bar{C}[k]$ in \eqref{eq:GOmodel_y} and \eqref{eq:GOmodel_yL}.\\
+		--~\texttt{.D\{k,i\}} & matrix that describes the influence of the input $u[i]$ on the output $y[k]$, equivalent to $\bar{D}_i[k]$ in \eqref{eq:GOmodel_y} and \eqref{eq:GOmodel_yL}.\\
+		--~\texttt{.E\{k,i\}} & matrix that describes the influence of the linearization error $l[i]$ on the output $y[k]$, equivalent to $\bar{E}_i[k]$ in \eqref{eq:GOmodel_yL}.\\
+		--~\texttt{.x(:,k)} & reference state, equivalent to $\bar{x}[k]$. \\
+		--~\texttt{.u(:,k)} & reference input, equivalent to $\bar{u}[k]$.\\
+		--~\texttt{.y(:,k)} & reference output, equivalent to $\bar{y}[k]$ .
+	\end{tabular}
+\end{tabular}
+\end{center}
+
+
+Let us demonstrate the operation \texttt{computeGO} by an example:
+
+
+\begin{center}
+	\begin{minipage}[t]{\textwidth}
+		\footnotesize
+		\input{./MATLABcode/example_computeGO}
+	\end{minipage}
+\end{center}

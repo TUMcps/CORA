@@ -23,8 +23,6 @@ function res = test_zonoBundle_uminus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = true(0);
-
 % init
 Z1 = zonotope([1 3 0; 1 0 2]);
 Z2 = zonotope([0 2 2; 0 2 -2]);
@@ -34,12 +32,12 @@ zB = zonoBundle({Z1,Z2});
 nzB = -zB;
 
 % compare with -1 * zB
-resvec(end+1) = isequal(nzB, -1*zB);
+assert(isequal(nzB, -1*zB));
 
 % test empty case
-resvec(end+1) = isemptyobject(-zonoBundle.empty(2));
+assert(isemptyobject(-zonoBundle.empty(2)));
 
 % add results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -21,6 +21,9 @@ function res = test_linearSysDT_reach_01_5dim()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 % System Dynamics ---------------------------------------------------------
@@ -92,6 +95,6 @@ IH_saved = interval( ...
 res_zonoBundles = isequal(IH,IH_saved,1e-8);
 
 %result of different set representations
-res = res_zono && res_zonoBundles;
+assert(res_zono && res_zonoBundles);
 
 % ------------------------------ END OF CODE ------------------------------

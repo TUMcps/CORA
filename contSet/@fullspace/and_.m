@@ -1,4 +1,4 @@
-function S = and_(fs,S,varargin)
+function S_out = and_(fs,S,varargin)
 % and_ - overloads '&' operator, computes the intersection of a
 %    full-dimensional space and another set or numerical vector;
 %    case R^0: can only intersect with R^0, 0 (not representable in
@@ -6,8 +6,8 @@ function S = and_(fs,S,varargin)
 %    respectively
 %
 % Syntax:
-%    S = and_(fs,S)
-%    S = and_(fs,S,method)
+%    S_out = and_(fs,S)
+%    S_out = and_(fs,S,method)
 %
 % Inputs:
 %    fs - fullspace object
@@ -15,12 +15,12 @@ function S = and_(fs,S,varargin)
 %    method - (optional) approximation method
 %
 % Outputs:
-%    set - intersection
+%    S_out - intersection
 %
 % Example: 
 %    fs = fullspace(2);
 %    S = zonotope([1;1],[2 1; -3 1]);
-%    S = fs & S;
+%    S_out = fs & S;
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,13 +31,17 @@ function S = and_(fs,S,varargin)
 % Authors:       Mark Wetzlinger
 % Written:       22-March-2023
 % Last update:   05-April-2023 (rename and_)
+%                28-September-2024 (MW, use precedence)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% re-order sets due to class preference
-[fs,S] = findClassArg(fs,S,'fullspace');
-
-% intersection is always the other set
+% intersection is always the other set, no need to re-direct to lower
+% precedence
+if isa(S,'contSet')
+    S_out = S.copy();
+else
+    S_out = S;
+end
 
 % ------------------------------ END OF CODE ------------------------------

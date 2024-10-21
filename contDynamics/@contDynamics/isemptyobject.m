@@ -11,7 +11,8 @@ function res = isemptyobject(sys)
 %    res - true/false
 %
 % Example: 
-%    ---
+%    sys = contDynamics();
+%    isemptyobject(sys)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,7 +33,7 @@ res = false(r,c);
 % loop over all contDynamics
 for i=1:r
     for j=1:c
-        res(r,c) = sys(r,c).dim == 0;
+        res(r,c) = sys(r,c).nrOfStates == 0;
     end
 end
 

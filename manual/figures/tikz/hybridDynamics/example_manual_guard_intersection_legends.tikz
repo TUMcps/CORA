@@ -1,0 +1,10 @@
+\addlegendimage{plotstyle1}
+\addlegendentry{Guard intersection}
+\addlegendimage{plotstyle2}
+\addlegendentry{box}
+\addlegendimage{plotstyle3}
+\addlegendentry{pca}
+\addlegendimage{plotstyle4}
+\addlegendentry{flow}
+\addlegendimage{plotstyle5}
+\addlegendentry{Intersection}

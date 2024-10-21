@@ -4,26 +4,23 @@ function [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,varargin
 %    arithmetic.
 %
 % Syntax:
-%    [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,varargin)
+%    [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,)
+%    [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,params)
 %
 % Inputs:
 %    matZ - matZonotope object
 %    r - time step size
-%    intermediate Order - Taylor series order until computation is 
-%                         performed with matrix zonotopes
 %    maxOrder - maximum Taylor series order until remainder is computed
-%    options - options struct
+%    params - model parameters (inputs)
 %
 % Outputs:
 %    eZ - matrix zonotope exponential part
 %    eI - interval matrix exponential part
-%    zPow - ?
+%    zPow - ???
 %    iPow - cell array storing the powers of the matrix:
 %           A,A^2,...,A^(intermediateOrder)
 %    E - interval matrix for the remainder
 %    RconstInput - ???
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -42,11 +39,11 @@ function [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,varargin
 %cannot directly use u as input since zonotope has preference over
 %matZonotopes
 if length(varargin) == 1
-    options = varargin{1};
-    if ~isa(options.uTrans,'zonotope')
-        u = zonotope([options.uTrans,zeros(size(options.uTrans))]);
+    params = varargin{1};
+    if ~isa(params.uTrans,'zonotope')
+        u = zonotope([params.uTrans,zeros(size(params.uTrans))]);
     else
-        u = zonotope(options.uTrans);
+        u = zonotope(params.uTrans);
     end
 else
     u = zonotope([0,0]);

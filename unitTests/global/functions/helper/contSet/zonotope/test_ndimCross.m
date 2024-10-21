@@ -23,22 +23,22 @@ function res = test_ndimCross()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
+res = true;
 
 % 2D
 M = [5; -2];
 v = ndimCross(M);
 v_true = [-2; -5];
-res(end+1,1) = all(withinTol(v,v_true));
+assert(all(withinTol(v,v_true)));
 
 % 3D
 M = [1 2; 3 4; 5 6];
 v = ndimCross(M);
 v_true = [-2; 4; -2];
-res(end+1,1) = all(withinTol(v,v_true));
+assert(all(withinTol(v,v_true)));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

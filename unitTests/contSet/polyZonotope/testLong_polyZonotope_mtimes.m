@@ -76,11 +76,7 @@ for i = 1:5
 
     % check if the all transformed random points are located inside the
     % resulting polynomial zonotope object
-    suc = containsPointSet(pZres,points_,[],30);
-    
-    if ~suc
-       throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(containsPointSet(pZres,points_,[],30),i);
 end
 
 
@@ -134,11 +130,7 @@ for i = 1:5
 
     % check if the all transformed random points are located inside the
     % resulting polynomial zonotope object
-    suc = containsPointSet(pZres,points_);
-    
-    if ~suc
-       throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(containsPointSet(pZres,points_),i);
 end
 
 % ------------------------------ END OF CODE ------------------------------

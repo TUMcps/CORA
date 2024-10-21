@@ -1,0 +1,9 @@
+\begin{tikzpicture}
+\footnotesize
+
+\node[inner sep=0pt] (v) at (0,0) {\includegraphics[height=2.5cm]{./figures/halfspaceRepresentation.eps}};
+\node[anchor=west] at (1.75, 1.1) {$\mathcal{H}\^i$};
+\node[anchor=west] at (1.75, 0.3) {$\mathcal{S}=\{x|c^T x= d\}$};
+\node[anchor=west] at (1.75, -0.4) {$\mathcal{H}\^1\cap \mathcal{H}\^2\ldots\cap \mathcal{H}\^q$};
+
+\end{tikzpicture}%

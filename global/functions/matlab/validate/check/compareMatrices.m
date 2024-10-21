@@ -24,7 +24,7 @@ function res = compareMatrices(M1,M2,varargin)
 %    signed - (optional) true/false, whether columns are equal up to *-1
 %
 % Outputs:
-%    -
+%    - res - logical value
 %
 % Example:
 %    M1 = [2 1; 0 2];

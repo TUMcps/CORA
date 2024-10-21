@@ -12,9 +12,8 @@ function display(loc)
 %
 % Example:
 %    inv = interval([-2;-1],[1;2]);
-%    trans = transition(conHyperplane([2 0],1),...
-%               struct('A',eye(2),'c',zeros(2,1)),2);
-%    sys = linearSys([1 -3; -2 1],1);
+%    trans = transition(polytope([],[],[2 0],1),linearReset.eye(2),2);
+%    sys = linearSys([1 -3; -2 1],[0;1]);
 %    loc = location(inv,trans,sys)
 %
 % Other m-files required: none
@@ -114,7 +113,7 @@ end
 
 % dynamics
 disp("  Dynamics: " + class(loc.contDynamics) + ...
-    " (state dim.: " + loc.contDynamics.dim + ...
+    " (state dim.: " + loc.contDynamics.nrOfStates + ...
     ", input dim.: " + loc.contDynamics.nrOfInputs + ...
     ", output dim.: " + loc.contDynamics.nrOfOutputs + ")");
 

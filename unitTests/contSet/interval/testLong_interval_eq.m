@@ -40,11 +40,8 @@ for i=1:nrTests
     I2 = interval(lb2, ub2);
     
     % compute non-equality
-    if ~(I1 == I1)
-        res = false; break
-    elseif I1 == I2
-        res = false; break
-    end
+    assertLoop(I1 == I1,i)
+    assertLoop(I1 ~= I2,i)
 
 end
 

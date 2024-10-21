@@ -1,20 +1,21 @@
-function E = or(E,S,varargin)
-% or - overloads '|' operator to compute an inner-/outer-approximation of
+function S_out = or(E,S,varargin)
+% or - overloads '|' operator to compute an inner/outer approximation of
 %    the union of an ellipsoid and another set representation
 %
 % Syntax:
-%    E = or(E,S)
-%    E = or(E,S,mode)
+%    S_out = E | S
+%    S_out = or(E,S)
+%    S_out = or(E,S,mode)
 %
 % Inputs:
 %    E - ellipsoid object
-%    S - contSet object (or array)
+%    S - contSet object, numeric, cell-array
 %    mode - type of approximation (optional):
 %               'inner' (inner-approximation)
 %               'outer' (outer-approximation)
 %
 % Outputs:
-%    E - ellipsoid object
+%    S_out - ellipsoid object
 %
 % Example: 
 %    E1 = ellipsoid([3 -1; -1 1],[1;0]);
@@ -22,7 +23,7 @@ function E = or(E,S,varargin)
 %    E = E1 | E2;
 %
 % References:
-%    Convex Optimization; Boyd
+%    S. Boyd and L. Vandenberghe, "Convex Optimization", 2004.
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,67 +39,64 @@ function E = or(E,S,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%% parsing and checking
-% make sure first argument is class argument 
-[E,S] = findClassArg(E,S,'ellipsoid');
+% default values
 mode = setDefaultValues({'outer'},varargin);
 
+% ensure that numeric is second input argument
+[E,S] = reorderNumeric(E,S);
+
+% check dimensions
+equalDimCheck(E,S);
+
 % check input arguments
-inputArgsCheck({{E,'att','ellipsoid','scalar'};
+inputArgsCheck({{E,'att','ellipsoid'};
                 {S,'att',{'contSet','numeric','cell'}};
                 {mode,'str',{'outer','inner'}}});
 
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < E.precedence
+    S_out = or(S,E,varargin{:});
+    return
+end
+
 % empty set case
-if ~representsa_(E,'emptySet',eps) && all(representsa_(S,'emptySet',eps))
+if ~representsa_(E,'emptySet',eps) && (~iscell(S) && representsa_(S,'emptySet',eps))
+    S_out = E;
     return;
 end
 
-% check if equal dims
-equalDimCheck(E,S);
-
-
-if all(representsa_(S,'emptySet',eps))
-    return;
+% trivial inner approximation: return E
+if strcmp(mode,'inner')
+    S_out = E;
+    return
 end
 
-%% different unions
-if isa(S,'double')
-    V = S;
-    if strcmp(mode,'outer')
-        E_p = ellipsoid.enclosePoints(V,'min-vol');
-        E = orEllipsoidOA([E,E_p]);
-        return;
-    else
-        P = polytope.enclosePoints(V);
-        E = or(E,P,'inner');
-        return;
-    end
+% all to one cell-array
+if ~iscell(S)
+    S = {S};
+end
+if any(cellfun(@(S_i) ~isa(S_i,'ellipsoid') && ~isa(S_i,'polytope') && ...
+    ~(isnumeric(S_i) && iscolumn(S_i)), S, 'UniformOutput',true))
+    throw(CORAerror('CORA:noops',E,S,mode));
+end
+E_cell = [{E}, cellfun(@(S_i) aux_convert(S_i),S,'UniformOutput',false)];
+S_out = priv_orEllipsoidOA(E_cell);
+
 end
 
-if isa(S,'ellipsoid')
-    if strcmp(mode,'outer')
-        E = orEllipsoidOA([E;S(:)]);
-        return;
-    else
-        throw(CORAerror('CORA:noops',E,S,'inner'));
-    end
+
+% Auxiliary functions -----------------------------------------------------
+
+function E = aux_convert(S)
+% helper function to convert multiple operands to ellipsoids correctly
+if isnumeric(S) && iscolumn(S)
+    E = ellipsoid.origin(length(S)) + S;
+elseif isa(S,'polytope')
+    E = ellipsoid(S,'outer');
+else
+    E = S;
 end
 
-if isa(S,'polytope')
-    if strcmp(mode,'outer')
-        E_S = ellipsoid.array(1,numel(S));
-        for i=1:numel(S)
-            E_S(i) = ellipsoid(S,'outer');
-        end
-        E = orEllipsoid([E,E_S]);
-    else
-        % not implemented
-        %E = orEllipsoidIA([E,ellipsoid(S,'inner')]);
-        throw(CORAerror('CORA:noops',E,S));
-    end
 end
-
-% throw error for all other combinations
-throw(CORAerror('CORA:noops',E,S));
 
 % ------------------------------ END OF CODE ------------------------------

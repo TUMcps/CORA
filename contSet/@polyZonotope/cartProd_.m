@@ -65,7 +65,7 @@ if ~isa(S,'polyZonotope')
     if isa(S,'zonotope') || isa(S,'interval')
         
         S = zonotope(S);
-        S = polyZonotope(center(S),[],generators(S),[]);
+        S = polyZonotope(center(S),[],generators(S));
         
     elseif isa(S,'conPolyZono')
         
@@ -79,57 +79,23 @@ if ~isa(S,'polyZonotope')
         S = polyZonotope(S);
         
     elseif isnumeric(S)
-        S = polyZonotope(S,[],[],[]);
+        S = polyZonotope(S);
     else        
         % throw error for given arguments
         throw(CORAerror('CORA:noops',pZ,S));
     end
 end
 
-% get dimensions
-n1 = length(pZ.c);
-n2 = length(S.c);
-
-% center vector
+% concatenate center vector
 c = [pZ.c;S.c];
 
 % generator matrix, exponent matrix and identifier vector
-if isempty(pZ.G)
-    if isempty(S.G)
-       G = []; 
-       E = []; 
-       id = [];
-    else
-       G = [zeros(n1,size(S.G,2));S.G];
-       E = S.E;
-       id = S.id;
-    end
-else
-    if isempty(S.G)
-       G = [pZ.G;zeros(n2,size(pZ.G,2))];
-       E = pZ.E;
-       id = pZ.id;
-    else
-       G = blkdiag(pZ.G,S.G);
-       E = blkdiag(pZ.E,S.E);
-       id = [pZ.id;max(pZ.id)+S.id];
-    end
-end
+G = blkdiag(pZ.G,S.G);
+E = blkdiag(pZ.E,S.E);
+id = [pZ.id; max([pZ.id;0])+S.id];
 
 % matrix of independent generators
-GI = [];
-
-if isempty(pZ.GI)
-   if ~isempty(S.GI)
-       GI = [zeros(n1,size(S.GI,2));S.GI];
-   end
-else
-   if isempty(S.GI)
-       GI = [pZ.GI;zeros(n2,size(pZ.GI,2))];
-   else
-       GI = blkdiag(pZ.GI,S.GI);
-   end
-end       
+GI = blkdiag(pZ.GI,S.GI);
     
 % generate new polyZonotope
 pZ = polyZonotope(c,G,GI,E,id);

@@ -69,9 +69,8 @@ for i = 1:5
         intReal = 1/interval(min(y),max(y));
         
         % compare the results
-        if infimum(int) > infimum(intReal) || supremum(int) < supremum(intReal)
-            throw(CORAerror('CORA:testFailed'));
-        end          
+        assertLoop(infimum(int) <= infimum(intReal),i,j);
+        assertLoop(supremum(int) >= supremum(intReal),i,j);
     end
 end
 

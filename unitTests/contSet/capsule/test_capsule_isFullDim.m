@@ -23,8 +23,6 @@ function res = test_capsule_isFullDim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % define properties
 c = [2; 0; -1];
 g = [-1; 1; 2];
@@ -34,26 +32,26 @@ r0 = 0;
 
 % generator and radius all-zero
 C = capsule(c,g0,r0);
-res(end+1,1) = ~isFullDim(C);
+assert(~isFullDim(C));
 
 % generator all-zero
 C = capsule(c,g0,r);
-res(end+1,1) = isFullDim(C);
+assert(isFullDim(C));
 
 % radius is zero
 C = capsule(c,g,r0);
-res(end+1,1) = ~isFullDim(C);
+assert(~isFullDim(C));
 
 % generator and radius non-zero
 C = capsule(c,g,r);
-res(end+1,1) = isFullDim(C);
+assert(isFullDim(C));
 
 % empty set
 C = capsule.empty(2);
-res(end+1,1) = ~isFullDim(C);
+assert(~isFullDim(C));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

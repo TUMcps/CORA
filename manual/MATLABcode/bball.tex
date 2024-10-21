@@ -1,0 +1,92 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                                                                  
+ $$\color{mblue}$function$\color{black}$ HA = bball(~)$\\
+ $$\\
+ $$\color{mgreen}#%% Generated on 27-Aug-2022#\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$%---------------Automaton created from Component 'system'------------------$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}#%% Interface Specification:#\color{black}$$\\
+ $$\color{mgreen}$%   This section clarifies the meaning of state, input & output dimensions$\color{black}$$\\
+ $$\color{mgreen}$%   by showing their mapping to SpaceEx variable names. $\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$% Component 1 (system.ball):$\color{black}$$\\
+ $$\color{mgreen}$%  state x := [x; v]$\color{black}$$\\
+ $$\color{mgreen}$%  input u := [uDummy]$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$%-------------------------Component system.ball----------------------------$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$%-----------------------------State always---------------------------------$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}#%% equation:#\color{black}$$\\
+ $$\color{mgreen}$%   x' == v & v' == -g$\color{black}$$\\
+ $dynA =$\color{mblue}$ ...$\color{black}$$\\
+ $[0,1;0,0];$\\
+ $dynB =$\color{mblue}$ ...$\color{black}$$\\
+ $[0;0];$\\
+ $dync =$\color{mblue}$ ...$\color{black}$$\\
+ $[0;-9.81];$\\
+ $dynamics = linearSys(dynA, dynB, dync);$\\
+ $$\\
+ $$\color{mgreen}#%% equation:#\color{black}$$\\
+ $$\color{mgreen}$%   x >= 0$\color{black}$$\\
+ $A =$\color{mblue}$ ...$\color{black}$$\\
+ $[-1,0];$\\
+ $b =$\color{mblue}$ ...$\color{black}$$\\
+ $[0];$\\
+ $polyOpt = struct($\color{mred}$'A'$\color{black}$, A, $\color{mred}$'b'$\color{black}$, b);$\\
+ $inv = polytope(polyOpt);$\\
+ $$\\
+ $trans = {};$\\
+ $$\color{mgreen}#%% equation:#\color{black}$$\\
+ $$\color{mgreen}$%   v' := -c*v$\color{black}$$\\
+ $resetA =$\color{mblue}$ ...$\color{black}$$\\
+ $[1,0;0,-0.75];$\\
+ $resetB =$\color{mblue}$ ...$\color{black}$$\\
+ $[1,0;0,-0.75];$\\ 
+ $resetc =$\color{mblue}$ ...$\color{black}$$\\
+ $[0;0];$\\
+ $reset = struct($\color{mred}$'A'$\color{black}$, resetA, $\color{mred}$'B'$\color{black}$, resetB, $\color{mred}$'c'$\color{black}$, resetc);$\\
+ $$\\
+ $$\color{mgreen}#%% equation:#\color{black}$$\\
+ $$\color{mgreen}$%   x <= eps & v < 0$\color{black}$$\\
+ $c = [-1;0];$\\
+ $d = 0;C =$\color{mblue}$ ...$\color{black}$$\\
+ $[0,1];$\\
+ $D = [0];$\\
+ $$\\
+ $guard = polytope(C,D,c,d);$\\
+ $$\\
+ $trans(1) = transition(guard, reset, 1);$\\
+ $$\\
+ $loc(1) = location($\color{mred}$'S1'$\color{black}$, inv, trans, dynamics);$\\
+ $$\\
+ $HA = hybridAutomaton(loc);$\\
+ $$\\
+ $$\color{mblue}$end$\color{black}$$\\ 
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

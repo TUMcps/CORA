@@ -31,7 +31,7 @@ classdef reachSet
 % Authors:       Niklas Kochdumper
 % Written:       29-May-2020             
 % Last update:   ---
-% Last revision: ---
+% Last revision: 15-October-2024 (MW, restructure)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
@@ -55,74 +55,32 @@ methods
     % class constructor
     function R = reachSet(varargin)
         
-        % parse input arguments
+        % 1. empty instantiation
         if nargin == 0
             return
-            % empty object
-        elseif nargin == 1
+        end
+        assertNarginConstructor(1:4,nargin);
+
+        % 2. copy constructor
+        if nargin == 1
             if isa(varargin{1},'reachSet')
-                % copy constructor
                 R = varargin{1};
-            else
-                R.timePoint = varargin{1};
+                return
             end
-        elseif nargin == 2
-            R.timePoint = varargin{1};
-            if isstruct(varargin{2}) || ...
-                    (isnumeric(varargin{2}) && isempty(varargin{2}))
-                R.timeInterval = varargin{2};
-            else
-                R.parent = varargin{2};
-            end
-        elseif nargin == 3
-            R.timePoint = varargin{1};
-            if isstruct(varargin{2}) || ...
-                    (isnumeric(varargin{2}) && isempty(varargin{2}))
-                R.timeInterval = varargin{2};
-                R.parent = varargin{3};
-            else
-                R.parent = varargin{2};
-                R.loc = varargin{3};
-            end
-        elseif nargin == 4
-            R.timePoint = varargin{1};
-            R.timeInterval = varargin{2};
-            R.parent = varargin{3};
-            R.loc = varargin{4};
-        else
-            throw(CORAerror('CORA:tooManyInputArgs',4));
         end
         
-        % check correct format of reachable sets
-        if CHECKS_ENABLED
-            sets = {'timeInterval','timePoint'};
-            for i=1:length(sets)
-                if ~isempty(R.(sets{i}))
-                    temp = R.(sets{i});
-                    if ~isstruct(temp) ... % has to be a struct
-                            || ~isfield(temp,'set') || ... % has to have .set
-                            ~isfield(temp,'time') || ... % has to have .time
-                            (~isempty(temp.set) && ~iscell(temp.set)) || ... % .set have to be cells
-                            (~isempty(temp.time) && ~iscell(temp.time)) || ... % .time have to be cells
-                            any(size(temp.set) ~= size(temp.time)) % .set and .time have to be of equal length
-                        throw(CORAerror('CORA:wrongInputInConstructor',...
-                            'Fields .set and/or .time have the wrong format.'));
-                    end
-                    % optional fields: .error, .algebraic
-                    if isfield(temp,'error') && ...
-                            ( ~isnumeric(temp.error) || ... % has to be numeric
-                              any(size(temp.error) ~= size(temp.time)) ) % correct length
-                        throw(CORAerror('CORA:wrongInputInConstructor',...
-                            'Field .error have the wrong format.'));
-                    elseif isfield(temp,'algebraic') && ...
-                            ( ~iscell(temp.algebraic) || ... % has to be cell-array
-                              any(size(temp.algebraic) ~= size(temp.time)) ) % correct length
-                        throw(CORAerror('CORA:wrongInputInConstructor',...
-                            'Field .algebraic have the wrong format.'));
-                    end
-                end
-            end
-        end
+        % 2. parse input arguments: varargin -> vars
+        [timePoint,timeInterval,parent,loc] = aux_parseInputArgs(varargin{:});
+
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(timePoint,timeInterval,parent,loc,nargin);
+
+        % 4. assign properties
+        R.timePoint = timePoint;
+        R.timeInterval = timeInterval;
+        R.parent = parent;
+        R.loc = loc;
+
     end
 
     % get initial set
@@ -143,6 +101,80 @@ end
 methods (Static = true)
     % instantiate reachSet object from structs
     R = initReachSet(timePoint,timeInt)
+end
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function [timePoint,timeInterval,parent,loc] = aux_parseInputArgs(varargin)
+
+    % default values
+    timePoint = []; timeInterval = []; parent = 0; loc = 0;
+
+    if nargin == 1
+        timePoint = varargin{1};
+    elseif nargin == 2
+        timePoint = varargin{1};
+        if isstruct(varargin{2}) || ...
+                (isnumeric(varargin{2}) && isempty(varargin{2}))
+            timeInterval = varargin{2};
+        else
+            parent = varargin{2};
+        end
+    elseif nargin == 3
+        timePoint = varargin{1};
+        if isstruct(varargin{2}) || ...
+                (isnumeric(varargin{2}) && isempty(varargin{2}))
+            timeInterval = varargin{2};
+            parent = varargin{3};
+        else
+            parent = varargin{2};
+            loc = varargin{3};
+        end
+    elseif nargin == 4
+        [timePoint,timeInterval,parent,loc] = varargin{:};
+    end
+
+end
+
+function aux_checkInputArgs(timePoint,timeInterval,parent,loc,n_in)
+
+% check correct format of reachable sets
+if CHECKS_ENABLED && n_in > 0
+
+    % same checks for both sets
+    sets = {timeInterval,timePoint};
+
+    for i=1:numel(sets)
+        if isempty(sets{i})
+            continue
+        end
+
+        Rset = sets{i};
+        if ~isstruct(Rset) ... % has to be a struct
+                || ~isfield(Rset,'set') || ... % has to have .set
+                ~isfield(Rset,'time') || ... % has to have .time
+                (~isempty(Rset.set) && ~iscell(Rset.set)) || ... % .set have to be cells
+                (~isempty(Rset.time) && ~iscell(Rset.time)) || ... % .time have to be cells
+                any(size(Rset.set) ~= size(Rset.time)) % .set and .time have to be of equal length
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Fields .set and/or .time have the wrong format.'));
+        end
+        % optional fields: .error, .algebraic
+        if isfield(Rset,'error') && ...
+                ( ~isnumeric(Rset.error) || ... % has to be numeric
+                  any(size(Rset.error) ~= size(Rset.time)) ) % correct length
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Field .error have the wrong format.'));
+        elseif isfield(Rset,'algebraic') && ...
+                ( ~iscell(Rset.algebraic) || ... % has to be cell-array
+                  any(size(Rset.algebraic) ~= size(Rset.time)) ) % correct length
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Field .algebraic have the wrong format.'));
+        end
+    end
 end
 
 end

@@ -1,13 +1,14 @@
-function res = isequal(pZ1,pZ2,varargin)
-% isequal - checks if two polynomial zonotopes are equal
+function res = isequal(pZ,S,varargin)
+% isequal - checks if a polynomial zonotope is equal to another set or
+%    point
 %
 % Syntax:
-%    res = isequal(pZ1,pZ2)
-%    res = isequal(pZ1,pZ2,tol)
+%    res = isequal(pZ,S)
+%    res = isequal(pZ,S,tol)
 %
 % Inputs:
-%    pZ1 - polyZonotope object
-%    pZ2 - polyZonotope object
+%    pZ - polyZonotope object
+%    S - contSet object, numeric
 %    tol - (optional) tolerance
 %
 % Outputs:
@@ -31,58 +32,88 @@ function res = isequal(pZ1,pZ2,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% too many input arguments
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(2,3);
 
 % parse input arguments
 tol = setDefaultValues({eps},varargin);
 
 % check input arguments
-inputArgsCheck({{pZ1,'att','polyZonotope'};
-                {pZ2,'att','polyZonotope'};
+inputArgsCheck({{pZ,'att',{'polyZonotope','numeric'}};
+                {S,'att',{'contSet','numeric'}};
                 {tol,'att','numeric',{'nonnan','scalar','nonnegative'}}});
+
+% ensure that numeric is second input argument
+[pZ,S] = reorderNumeric(pZ,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < pZ.precedence
+    res = isequal(S,pZ,tol);
+    return
+end
+
+% ambient dimensions must match
+if ~equalDimCheck(pZ,S,true)
+    res = false;
+    return
+end
+
+if isa(S,'polyZonotope')
+    res = aux_isequal_polyZonotope(pZ,S,tol);
+    return
+end
+
+% for zonotopes and interval, use exact conversion (fast)
+if isa(S,'zonotope') || isa(S,'interval')
+    S = polyZonotope(S);
+    res = aux_isequal_polyZonotope(pZ,S,tol);
+    return
+end
+
+throw(CORAerror('CORA:noops',pZ,S));
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_isequal_polyZonotope(pZ,S,tol)
 
 % assume false
 res = false;
 
-% compare dimensions (quick check)
-if dim(pZ1) ~= dim(pZ2)
-    return
-end
-
 % remove redundancies in representation
-pZ1 = compact_(pZ1,'all',eps);
-pZ2 = compact_(pZ2,'all',eps);
+pZ = compact_(pZ,'all',eps);
+S = compact_(S,'all',eps);
 
 % compare number of generators (quick check)
-if size(pZ1.G,2) ~= size(pZ2.G,2) || size(pZ1.GI,2) ~= size(pZ2.GI,2)
+if size(pZ.G,2) ~= size(S.G,2) || size(pZ.GI,2) ~= size(S.GI,2)
     return 
 end
 
 % compare identifier vectors
-temp1 = sort(pZ1.id); temp2 = sort(unique([pZ1.id;pZ2.id]));
+temp1 = sort(pZ.id); temp2 = sort(unique([pZ.id;S.id]));
 if length(temp1) ~= length(temp2) || ~all(temp1 == temp2)
     return;
-elseif ~all(pZ1.id == pZ2.id)
-    [~,E1,E2] = mergeExpMatrix(pZ1.id,pZ2.id,pZ1.E,pZ2.E);
+elseif ~all(pZ.id == S.id)
+    [~,E1,E2] = mergeExpMatrix(pZ.id,S.id,pZ.E,S.E);
 else
-    E1 = pZ1.E; E2 = pZ2.E;
+    E1 = pZ.E; E2 = S.E;
 end
 
 % jointly compare dependent generators and exponent matrices
-if ~compareMatrices([pZ1.G;E1],[pZ2.G;E2], tol)
+if ~compareMatrices([pZ.G;E1],[S.G;E2], tol)
     return
 end
-if ~compareMatrices(pZ1.GI,pZ2.GI, tol, 'equal', false, false)
+if ~compareMatrices(pZ.GI,S.GI, tol, 'equal', false, false)
     return
 end
-if ~all(withinTol(pZ1.c, pZ2.c, tol))
+if ~all(withinTol(pZ.c, S.c, tol))
     return
 end
 
 % all checks ok
 res = true;
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

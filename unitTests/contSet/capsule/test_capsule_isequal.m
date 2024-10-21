@@ -23,8 +23,6 @@ function res = test_capsule_isequal
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty capsule
 C_empty = capsule.empty(2);
 
@@ -43,25 +41,25 @@ C = capsule(c1,g1,r1);
 % test combinations of properties
 % ... different center
 C_ = capsule(c2,g1,r1);
-res(end+1,1) = ~isequal(C,C_,tol);
+assert(~isequal(C,C_,tol));
 
 % ... different generator
 C_ = capsule(c1,g2,r1);
-res(end+1,1) = ~isequal(C,C_,tol);
+assert(~isequal(C,C_,tol));
 
 % ... different radius
 C_ = capsule(c1,g1,r2);
-res(end+1,1) = ~isequal(C,C_,tol);
+assert(~isequal(C,C_,tol));
 
 % ... empty capsule
-res(end+1,1) = ~isequal(C,C_empty);
+assert(~isequal(C,C_empty));
 
 % ... capsule of reduced dimension
 C_red = capsule(c1(1:end-1),g1(1:end-1),r1);
-res(end+1,1) = ~isequal(C,C_red);
+assert(~isequal(C,C_red));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

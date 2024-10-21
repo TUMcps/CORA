@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+\footnotesize
+
+\node[inner sep=0pt] (v) at (0,0) {\includegraphics[height=4cm]{./figures/hybridSimulation_miss.eps}};
+\node[anchor=west] at (-3.2, -1.75) {$x_{(1)}$};
+\node[anchor=west] at (-4.25, -0.75) {$x_{(2)}$};
+
+\node[anchor=east] at (-3.45, 1.025) {initial state};
+\node[anchor=east] at (-3.45, 0.05) {intermediate states};
+
+\node[anchor=west] at (3.7, 0.9) {invariant};
+\node[anchor=west] at (3.7, -0.7) {guard set};
+
+\end{tikzpicture}%

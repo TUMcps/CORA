@@ -71,9 +71,7 @@ for j = 1:length(methods)
 
         % check if the all points from the original polynomial zonotope are
         % enclosed by the reduced polynomial zonotope
-        if ~containsPointSet(pZres,points,[],30)
-            res = false; return
-        end
+        assertLoop(containsPointSet(pZres,points,[],30),j,i)
     end
 end
 
@@ -105,9 +103,7 @@ for j = 1:length(methods)
 
         % check if the all points from the original polynomial zonotope are
         % enclosed by the reduced polynomial zonotope
-        if ~containsPointSet(pZres,points,[],30)
-            res = false; return
-        end
+        assertLoop(containsPointSet(pZres,points,[],30),j,i)
     end
 end
 

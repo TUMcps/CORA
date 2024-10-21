@@ -1,4 +1,4 @@
-classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) conPolyZono < contSet
+classdef conPolyZono < contSet
 % conPolyZono - class definition for constrained polynomial zonotopes 
 %
 % Syntax:
@@ -48,7 +48,7 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) conPolyZono < contS
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-properties (SetAccess = protected, GetAccess = public)
+properties (SetAccess = {?contSet, ?matrixSet}, GetAccess = public)
     c;        % center
     G;        % generator matrix
     E;        % exponent matrix
@@ -72,6 +72,7 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor(1:8,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'conPolyZono')
@@ -90,12 +91,25 @@ methods
         % 5. assign properties
         obj.c = c; obj.G = G; obj.E = E; obj.A = A; obj.b = b;
         obj.EC = EC; obj.GI = GI; obj.id = id;
+
+        % 6. set precedence (fixed)
+        obj.precedence = 30;
     end
 end
 
 methods (Static = true)
     cPZ = generateRandom(varargin) % generate random conPolyZono object
-    C = empty(n) % instantiates an empty constrained polynomial zonotope
+    cPZ = empty(n) % instantiates an empty constrained polynomial zonotope
+    cPZ = origin(n) % instantiates a constrained polynomial zonotope representing the origin in R^n
+end
+
+methods (Access = protected)
+    [abbrev,printOrder] = getPrintSetInfo(S)
+end
+
+% plotting
+methods (Access = {?contSet})
+    han = plot3D(S,varargin);
 end
 
 
@@ -155,12 +169,6 @@ end
 
 function [c,G,E,A,b,EC,GI,id] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin > 8
-        % too many input arguments
-        throw(CORAerror('CORA:tooManyInputArgs',8));
-    end
 
     % default values
     [c,G,E] = setDefaultValues({[],[],[]},varargin);
@@ -259,15 +267,14 @@ function [c,G,E,A,b,EC,GI,id] = aux_computeProperties(c,G,E,A,b,EC,GI,id)
     if ~isempty(c)
         % make center a column vector
         c = reshape(c,[],1);
-    else
-        % set generator matrices to correct dimensions
-        n = size(c,1);
-        if isempty(G)
-            G = zeros(n,0);
-        end
-        if isempty(GI)
-            GI = zeros(n,0);
-        end
+    end
+    % set generator matrices to correct dimensions
+    n = size(c,1);
+    if isempty(G)
+        G = zeros(n,0);
+    end
+    if isempty(GI)
+        GI = zeros(n,0);
     end
 
 end

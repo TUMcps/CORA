@@ -1,8 +1,7 @@
 function res = test_linearSys_reach_01
-% test_linearSys_reach_01 - unit test function of linear reachability analysis
-%
-% Checks the solution of the linearSys class for a small example
-% with constant input against the analytical solution
+% test_linearSys_reach_01 - unit test function of linear reachability
+%    analysis; checks the solution of the linearSys class for a small
+%    example without inputs against the analytical solution e^At*x0
 %
 % Syntax:
 %    res = test_linearSys_reach_01
@@ -21,60 +20,40 @@ function res = test_linearSys_reach_01
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% Define acceptable reachability overapproximation error
-% Since a linear system is tested this can be small
-eps = 1e-10;
+% tolerance
+tol = 1e-10;
 
 timeStep = 0.1;
 numberOfTimeSteps = 50;
 
-A = [0.1 1; -1 0.1]; % system matrix
-B = 1; % input matrix
-linSys = linearSys('linearSys',A,B); %linear continuous system
+% dynamics
+A = [0.1 1; -1 0.1];
+linsys = linearSys('linearSys',A);
 
-% Configuration of the reachability analysis ------------------------------
-options.R0 = zonotope([[1; 1], diag([0.5, 0.5])]); %initial set
+% model parameters
+params.R0 = zonotope([[1; 1], diag([0.5, 0.5])]);
+params.U = zonotope(0);
+params.uTrans = 0;
+params.tFinal = timeStep * numberOfTimeSteps;
+
 options.timeStep = timeStep;
-options.tFinal = options.timeStep * numberOfTimeSteps;
 options.taylorTerms = 10;
 options.zonotopeOrder = 20;
-options.compTimePoint = true;
-% note: warning for compTimePoint is ok, since post_Euclidean used
-options.U = zonotope(0);
-options.uTrans = 0;
-options.originContained = true;
-options.reductionTechnique = 'girard';
-options.linAlg = 'standard';
-%--------------------------------------------------------------------------
 
-%obtain factors for initial state and input solution
-for i=1:(options.taylorTerms+1)
-    %compute initial state factor
-    options.factor(i) = options.timeStep^(i)/factorial(i);    
-end
+% compute reachable set
+R = reach(linsys,params,options);
 
-%compute reachable set
-[Rnext, options] = initReach(linSys,options.R0,options);
-for i=1:numberOfTimeSteps-1
-    [Rnext, options] = post(linSys,[],options);
-end
+% read out vertices of last set
+Vcomputed = vertices(R.timePoint.set{end});
 
-% Check solution against analytical solution by comparison of the vertices
+% check solution against analytical solution by comparison of the vertices
+%    x(t) = e^(A*t)*x0
+Vexact = vertices(expm(A)^(timeStep*numberOfTimeSteps)*params.R0);
 
-% The solution can be computed analytically:
-% x(t) = e^(A*t)*x0
+% compare
+assert(compareMatrices(Vexact,Vcomputed,tol,"equal",false));
 
-% Vertices of both zonotopes
-Vexact = vertices(expm(A)^(timeStep*numberOfTimeSteps)*options.R0);
-Vcomputed = vertices(Rnext.tp);
-
-% Sort both vertice lists so that corresponding vertices should be on the
-% same index
-Vexact = sortrows(Vexact')';
-Vcomputed = sortrows(Vcomputed')';
-
-% Each entry should be around zero;
-res = all(all(abs(Vexact - Vcomputed) < eps));
-
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

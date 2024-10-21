@@ -24,22 +24,19 @@ function res = test_parallelHybridAutomaton_mergeTransitionSets_01
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = [];
-
 % first component, first location
 dynamics{1,1} = linearSys([0 -1; 1 0],[1 0; 0 1],[],[0.05 0.05]);
 inv{1,1} = polytope([1 1],0);
-guard = conHyperplane([1 1],0);
-reset = struct('A',[1 0; 0 1],'c',[3;3]);
+guard = polytope([],[],[1 1],0);
+reset = linearReset([1 0; 0 1],zeros(2,2),[3;3]);
 trans{1,1} = transition(guard,reset,2);
 loc = location('loc1',inv{1,1},trans{1,1},dynamics{1,1});
 
 % first component, second location
 dynamics{1,2} = linearSys([0 -1; -1 0],[0 1; 1 0],[],[0.05 -0.05]);
 inv{1,2} = polytope([-1 -1],0);
-guard = conHyperplane([1 1],0);
-reset = struct('A',[1 0; 0 1],'c',[-3;3]);
+guard = polytope([],[],[1 1],0);
+reset = linearReset([1 0; 0 1],zeros(2,2),[-3;3]);
 trans{1,2} = transition(guard,reset,1);
 loc(2) = location('loc2',inv{1,2},trans{1,2},dynamics{1,2});
 
@@ -49,16 +46,16 @@ HA1 = hybridAutomaton(loc);
 % second component, first location
 dynamics{2,1} = linearSys([0 1 -1; 1 0 0; 0 1 0],[0;-1;0],[],[0 0 0.05; 0.05 0.05 0]);
 inv{2,1} = polytope([1 1 1],1);
-guard = conHyperplane([1 1 1],1);
-reset = struct('A',[1 0 0; 0 1 0; 0 0 1],'c',[1;1;1]);
+guard = polytope([],[],[1 1 1],1);
+reset = linearReset([1 0 0; 0 1 0; 0 0 1],zeros(3,1),[1;1;1]);
 trans{2,1} = transition(guard,reset,2);
 loc(1) = location('loc1',inv{2,1},trans{2,1},dynamics{2,1});
 
 % second component, second location
 dynamics{2,2} = linearSys([0 -1 1; 1 0 0; 0 1 0],[0;0;1],[],[0.05 0 0; 0 0.05 -0.05]);
 inv{2,2} = polytope([-1 -1 -1],-1);
-guard = conHyperplane([1 1 1],1);
-reset = struct('A',[1 0 0; 0 1 0; 0 0 1],'c',[-1;-1;-1]);
+guard = polytope([],[],[1 1 1],1);
+reset = linearReset([1 0 0; 0 1 0; 0 0 1],zeros(3,1),[-1;-1;-1]);
 trans{2,2} = transition(guard,reset,1);
 loc(2) = location('loc2',inv{2,2},trans{2,2},dynamics{2,2});
 
@@ -83,19 +80,16 @@ comb = [1 1; 1 2; 2 1; 2 2];
 for i=1:size(comb,1)
 
     % merge transition sets
-    mergedTrans = mergeTransitionSets(pHA,...
-        {pHA.components(1).location(comb(i,1)).transition,...
-        pHA.components(2).location(comb(i,2)).transition},...
-        comb(i,:)',allLabels);
+    mergedTrans = mergeTransitionSets(pHA,comb(i,:)',allLabels);
     
     % instantiate true solution: 2 transitions
 
     % guard set
-    guard = conHyperplane([trans{1,comb(i,1)}.guard.a,...
-        zeros(1,length(trans{2,comb(i,2)}.guard.a))],0);
+    guard = polytope([],[],[trans{1,comb(i,1)}.guard.Ae,...
+        zeros(1,length(trans{2,comb(i,2)}.guard.Ae))],0);
 
     % reset function
-    reset = struct('A',eye(5),'c',...
+    reset = linearReset(eye(5),[],...
         [trans{1,comb(i,1)}.reset.c;...
         zeros(length(trans{2,comb(i,2)}.reset.c),1)]);
 
@@ -107,11 +101,11 @@ for i=1:size(comb,1)
     mergedTrans_(1) = transition(guard,reset,target);
 
     % guard set
-    guard = conHyperplane([zeros(1,length(trans{1,comb(i,1)}.guard.a)),...
-        trans{2,comb(i,2)}.guard.a],1);
+    guard = polytope([],[],[zeros(1,length(trans{1,comb(i,1)}.guard.Ae)),...
+        trans{2,comb(i,2)}.guard.Ae],1);
 
     % reset function
-    reset = struct('A',eye(5),'c',...
+    reset = linearReset(eye(5),[],...
         [zeros(length(trans{1,comb(i,1)}.reset.c),1);...
         trans{2,comb(i,2)}.reset.c]);
     
@@ -123,12 +117,12 @@ for i=1:size(comb,1)
     mergedTrans_(2) = transition(guard,reset,target);
 
     % compare solutions
-    res(end+1,1) = length(mergedTrans) == length(mergedTrans_);
-    res(end+1,1) = isequal(mergedTrans(1),mergedTrans_(1),1e-14);
-    res(end+1,1) = isequal(mergedTrans(2),mergedTrans_(2),1e-14);
+    assert(length(mergedTrans) == length(mergedTrans_));
+    assert(isequal(mergedTrans(1),mergedTrans_(1),1e-14));
+    assert(isequal(mergedTrans(2),mergedTrans_(2),1e-14));
 end
 
-% combine results
-res = all(res);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

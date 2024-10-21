@@ -1,0 +1,68 @@
+\subsection{Hybrid Dynamics}
+\logToConsole{EXAMPLES: HYBRID DYNAMICS}
+
+As already described in \cref{sec:hybridDynamics}, CORA can compute reachable sets of mixed discrete/continuous or so-called hybrid systems. The difficulty in computing reachable sets of hybrid systems is the intersection of reachable sets with guard sets and the subsequent enclosure by the used set representation. As demonstrated in \cref{sec:hybridAutomatonReach}, CORA implements multiple different approaches for handling intersections with guard sets, some of which are demonstrated by the examples shown here.
+
+\subsubsection{Bouncing Ball Example} \label{sec:bouncingBallExample}
+
+
+We demonstrate the syntax of CORA for the well-known bouncing ball example, see e.g., \cite[Section 2.2.3]{Schaft2000}. 
+Given is a ball in \cref{fig:bouncingBall2} with dynamics $\ddot{s} = -g$, where $s$ is the vertical position and $g$ is the gravity constant. After impact with the ground at $s=0$, the velocity changes to $v' = -\alpha v$ ($v=\dot{s}$) with $\alpha \in [0,1]$.
+The corresponding hybrid automaton can be formalized according to \cref{sec:hybridDynamics} as
+
+\begin{center}
+\begin{minipage}[l]{0.3\columnwidth}
+\begin{center}
+    \includetikz{./figures/tikz/hybridDynamics/bouncing_ball}
+\end{center}
+\end{minipage}
+\begin{minipage}[l]{0.6\columnwidth}
+\begin{equation*}
+\footnotesize
+  \begin{array}{ll}
+   HA &= (L_1) \\
+   & {\tiny ~} \\
+   L_1 &= (f_1(\cdot),\mathcal{S}_1,(T_1)) \\
+   & {\tiny ~} \\
+   f_1(x,u) &= \begin{bmatrix} x_2 \\ -g \end{bmatrix}, ~~ g = 9.81 \\
+   & {\tiny ~} \\
+   \mathcal{S}_1 &= \Big \{ [x_1 ~x_2]^T \in \R^2~\Big |~ x_2 \geq 0 \Big \} \\
+   & {\tiny ~} \\
+   T_1 &= (\mathcal{G}_1,r_1(\cdot),1) \\
+   & {\tiny ~} \\
+   \mathcal{G}_1 &= \Big \{ [x_1 ~x_2]^T \in \R^2~\Big |~ x_1 = 0,~x_2 \leq 0 \Big \} \\
+   & {\tiny ~} \\
+   r(x) &= \begin{bmatrix} x_1 \\ -\alpha x_2 \end{bmatrix}, ~~ \alpha = 0.75
+  \end{array}
+\end{equation*}
+\end{minipage}
+\captionof{figure}{Example for a hybrid system: bouncing ball.} \label{fig:bouncingBall2}
+\end{center}
+
+The MATLAB code that implements the simulation and reachability analysis of the bouncing ball example is (see file \textit{examples/hybridDynamics/hybridAutomaton/}\\ \textit{example\_hybrid\_reach\_01\_bouncingBall.m} in the CORA toolbox):
+
+{\small
+\input{./MATLABcode/example_hybrid_reach_01_bouncingBall.tex}}
+
+The reachable set and the simulation are plotted in \cref{fig:bouncingBallResult} for a time horizon of $t_f = 1.7$.
+
+\begin{figure}[htb]
+  \centering	
+  	\footnotesize
+    \includetikz{./figures/tikz/examples/hybridDynamics/example_hybrid_reach_01_bouncingBall}
+    \caption{Illustration of the reachable set of the bouncing ball.}
+    \label{fig:bouncingBallResult}		
+\end{figure}
+
+
+\subsubsection{Powertrain Example}
+
+The powertrain example is taken out of \cite[Sec.~6]{Althoff2012a}, which models the powertrain of a car with backlash. To investigate the scalability of the approach, one can add further rotating masses, similarly to adding further tanks for the tank example. Since the code of the powertrain example is rather lengthy, we are not presenting it in the manual; the interested reader can look it up in the example folder of the CORA code. The reachable set and the simulation are plotted in \cref{fig:example_hybrid_reach_02_powerTrain} for a time horizon of $t_f = 2$. The corresponding code can be found in the file \textit{examples/hybridDynamics/hybridAutomaton/}\textit{example\_hybrid\_reach\_02\_powerTrain.m} in the CORA toolbox.
+
+\begin{figure}[htb]
+  \centering	
+  	\footnotesize
+  \includetikz{./figures/tikz/examples/hybridDynamics/example_hybrid_reach_02_powerTrain}
+    \caption{Illustration of the reachable set of the bouncing ball. The black box shows the initial set and the black line shows the simulated trajectory.}
+    \label{fig:example_hybrid_reach_02_powerTrain}		
+\end{figure}

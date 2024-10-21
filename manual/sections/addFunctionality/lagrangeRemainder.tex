@@ -1,0 +1,25 @@
+\subsection{Evaluating the Lagrange Remainder}
+
+One critical step in reachability analysis for nonlinear systems is the evaluation of the Lagrange remainder $\mathcal{L}$ (see \eqref{eq:polynomialEquation} in \cref{sec:nonlinearReach}) using range bounding (see \cref{sec:rangeBounding}). The evaluation of the Lagrange remainder is often the most time-consuming part of reachability analysis and if the computed bounds are not tight, the reachable set might ``explode''. Therefore, CORA provides several different options for evaluating the Lagrange remainder, which can be specified as fields of the struct \texttt{options.lagrangeRem} (see \cref{tab:settingsLagrangeRem}).
+
+\begin{table}
+\centering
+\renewcommand{\arraystretch}{1.3}
+\caption{Fields of the struct \texttt{options.lagrangeRem} defining the settings for evaluating the Lagrange remainder during reachability analysis for nonlinear systems.}
+\label{tab:settingsLagrangeRem}
+\begin{tabular}{ l p{11cm} }	
+\toprule
+\textbf{Setting} & \textbf{Description} \\
+\midrule
+--~\texttt{.simplify} & string specifying the method to simplify the symbolic equations in the Lagrange remainder. The available methods are \texttt{'none'} (no simplification), \texttt{'simplify'} (simplification using MATLABs \texttt{simplify} function\footnote{\url{https://de.mathworks.com/help/symbolic/simplify-symbolic-expressions.html}}), \texttt{'collect'} (simplification using MATLABs \texttt{collect} function\footnote{\url{https://de.mathworks.com/help/symbolic/collect.html}}), and \texttt{'optimize'} (simplifications using MATLABs code optimization for symbolic expressions\footnote{see setting \texttt{'Optimize'} in \url{https://de.mathworks.com/help/symbolic/matlabfunction.html}}). The default value is \texttt{'none'}. \\
+--~\texttt{.tensorParallel} & flag with value 0 or 1 specifying whether parallel computing is used to evaluate the Lagrange remainder. The default value is 0 (no parallel computing). \\
+--~\texttt{.replacements} & function handle to a function $r(x,u)$ (nonlinear systems) or $r(x,u,p)$ (nonlinear parametric systems) that describes expressions that are replaced and precomputed in the Lagrange remainder equations in order to speed up the evaluation (optional).  \\
+--~\texttt{.method} & range bounding method used for evaluating the Lagrange remainder. The available methods are \texttt{'interval'} (interval arithmetic, see \cref{sec:interval}), \texttt{'taylorModel'} (see \cref{sec:taylorModels}), or \texttt{'zoo'} (see \cref{sec:zoo}). The default value is \texttt{'interval'}. \\
+--~\texttt{.zooMethods} & cell array specifying the range bounding methods for class \texttt{zoo} (see \cref{sec:zoo}). The available methods are \texttt{'interval'}, \texttt{'affine(int)'}, \texttt{'affine(bnb)'}, \texttt{'affine(bnbAdv)'}, \texttt{affine(linQuad)'}, \texttt{'taylm(int)'}, \texttt{'taylm(bnb)'}, \texttt{'taylm(bnbAdv)'}, and \texttt{'taylm(linQuad)'}. \\
+--~\texttt{.maxOrder} & maximum polynomial order for Taylor models (see \cref{sec:taylorModels}). \\
+--~\texttt{.optMethod} & method used to calculate bounds of Taylor models (see \cref{sec:taylorModels}). The available methods are \texttt{'int'}, \texttt{'bnb'}, \texttt{'bnbAdv'}, and \texttt{'linQuad'}. The default value is \texttt{'int'}. \\
+--~\texttt{.tolerance} & minimum absolute value for Taylor model coefficients (see \cref{sec:taylorModels}). \\
+--~\texttt{.eps} & termination tolerance for bounding algorithm for Taylor models (see \cref{sec:taylorModels}). \\
+\bottomrule
+\end{tabular}
+\end{table}

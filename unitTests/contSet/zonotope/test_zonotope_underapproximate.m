@@ -22,6 +22,9 @@ function res = test_zonotope_underapproximate
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % create zonotope
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
@@ -44,6 +47,6 @@ true_V_2 = [2, -10, -4, -4; ...
     -8, 10, 6, -4];
 
 % check results
-res = compareMatrices(V_1,true_V_1) && compareMatrices(V_2,true_V_2);
+assert(compareMatrices(V_1,true_V_1) && compareMatrices(V_2,true_V_2));
 
 % ------------------------------ END OF CODE ------------------------------

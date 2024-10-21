@@ -1,17 +1,18 @@
-function C = plus(summand1,summand2)
+function S_out = plus(C,S)
 % plus - Overloaded '+' operator for the over-approximative Minkowski 
 %    addition of two capsules or the exact translation of a capsule by a 
 %    vector
 %
 % Syntax:
-%    C = plus(summand1,summand2)
+%    S_out = C + S
+%    S_out = plus(C,S)
 %
 % Inputs:
-%    summand1 - capsule or numerical vector
-%    summand2 - capsule or numerical vector
+%    C - capsule object, numeric
+%    S - contSet object, numeric
 %
 % Outputs:
-%    C - capsule after Minkowski addition
+%    C_out - Minkowski sum
 %
 % Example: 
 %    C = capsule([1; 1; 0], [0.5; -1; 1], 0.5);
@@ -26,7 +27,7 @@ function C = plus(summand1,summand2)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       04-March-2019 
@@ -35,56 +36,60 @@ function C = plus(summand1,summand2)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%Find a capsule object
-[C,summand] = findClassArg(summand1,summand2,'capsule');
+% ensure that numeric is second input argument
+[S_out,S] = reorderNumeric(C,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < C.precedence
+    S_out = S + C;
+    return
+end
 
 try
 
-    %Is summand a capsule?
-    if isa(summand,'capsule')
-
+    if isa(S,'capsule')
         % add centers
-        C.c = C.c + summand.c;
+        S_out.c = S_out.c + S.c;
         % only replace generator if the one of the summand is longer
-        length_C = norm(C.g);
-        length_summand = norm(summand.g);
-        if length_C < length_summand
-            C.g = summand.g;
+        length_C = norm(S_out.g);
+        length_S = norm(S.g);
+        if length_C < length_S
+            S_out.g = S.g;
             radiusOfGenerator = length_C;
         else
-            radiusOfGenerator = length_summand; 
+            radiusOfGenerator = length_S; 
         end
         % obtain new radius
-        C.r = C.r + summand.r + radiusOfGenerator;
-        
-    elseif isnumeric(summand) && isvector(summand)
-        %Calculate Minkowski sum
-        C.c = C.c + summand;
-        
-    elseif isa(summand,'conPolyZono')
-        
-        C = summand + C;
-
-    elseif isa(summand,'interval')
-        % shift center
-        c_ = C.c + center(summand);
-        % enlarge radius by radius of enclosing hyperball of interval
-        r_ = C.r + radius(summand);
-        C = capsule(c_,C.g,r_);
-
-    elseif isa(summand,'zonotope')
-        % outer-approximate zonotope by interval and use interval method
-        C = C + interval(summand);
+        S_out.r = S_out.r + S.r + radiusOfGenerator;
+        return
+    end
     
-    elseif representsa_(summand,'origin',eps)
+    % numeric: add to center
+    if isnumeric(S) && iscolumn(S)
+        S_out.c = S_out.c + S;
+        return
+    end
+
+    if isa(S,'interval')
+        % shift center
+        S_out.c = S_out.c + center(S);
+        % enlarge radius by radius of enclosing hyperball of interval
+        S_out.r = S_out.r + radius(S);
+        return
+    end
+
+    if isa(S,'zonotope')
+        % enclose zonotope by interval, same method as for interval
+        S = interval(S);
+        S_out.c = S_out.c + center(S);
+        S_out.r = S_out.r + radius(S);
+        return
+    end
+    
+    if representsa_(S,'origin',eps)
         % addition of only the origin (note: for some set representations,
         % this is a bit slow, so we put it at the end of the list...)
         return
-
-    %something else?
-    else
-        % throw error for given arguments
-        throw(CORAerror('CORA:noops',summand1,summand2));
     end
 
 catch ME
@@ -97,18 +102,19 @@ catch ME
     end
 
     % check for empty sets
-    if representsa_(C,'emptySet',eps)
+    if representsa_(S_out,'emptySet',eps) || representsa_(S,'emptySet',eps)
+        S_out = capsule.empty(dim(S_out));
         return
-    elseif representsa_(summand,'emptySet',eps)
-        C = capsule.empty(dim(C)); return
     end
 
     % check whether different dimension of ambient space
-    equalDimCheck(C,summand);
+    equalDimCheck(S_out,S);
 
     % other error...
     rethrow(ME);
 
 end
+
+throw(CORAerror('CORA:noops',C,S));
 
 % ------------------------------ END OF CODE ------------------------------

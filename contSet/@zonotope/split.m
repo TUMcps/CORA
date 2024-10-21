@@ -194,11 +194,11 @@ Zsplit{2} = zonoBundle(Z2);
 
 end
 
-function Zsplit = aux_halfspaceSplit(Z,h)
+function Zsplit = aux_halfspaceSplit(Z,hs)
 
 %halfspace values
-dir = h.c;
-d = h.d;
+dir = hs.A';
+d = hs.b;
 
 %center and generator matrix
 c = Z.c;

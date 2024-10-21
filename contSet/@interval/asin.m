@@ -59,8 +59,8 @@ ind4 = lb >= -1 & ub <= 1;
 I.inf(ind4) = asin(lb(ind4));
 I.sup(ind4) = asin(ub(ind4));
 
-% return error if NaN occures
-if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
+% return error if NaN occurs
+if any(isnan(I.inf),"all") || any(isnan(I.sup),"all")
     throw(CORAerror('CORA:outOfDomain','validDomain','>= -1 && <= 1'));
 end
 

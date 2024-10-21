@@ -1,0 +1,108 @@
+\subsubsection{Hybrid Automata} \label{sec:hybridAutomaton}
+
+A hybrid automaton is modeled by the class \texttt{hybridAutomaton}. An object of class \texttt{hybridAutomaton} can be constructed as follows:
+\begin{equation*}
+    HA = \texttt{hybridAutomaton}(\mathbf{L}),
+\end{equation*}
+where $\mathbf{L} = (L_1,\dots,L_p)$ is a list of location objects represented as a MATLAB cell array. Locations are modeled by the class \texttt{location} (see \eqref{eq:location}).
+
+The hybrid automaton for the bouncing ball example in \cref{fig:bouncingBall} can be constructed as follows:
+
+\begin{center}
+    \begin{minipage}[t]{0.1\textwidth}
+        \vspace{10pt}
+    \end{minipage}
+    \begin{minipage}[t]{0.8\textwidth}
+        \footnotesize
+        \input{./MATLABcode/example_hybridAutomaton}
+    \end{minipage}
+\end{center}
+
+\vspace{1cm}
+
+\subsubsubsection{Operation \texttt{reach}}
+\label{sec:hybridAutomatonReach}
+
+For reachability analysis, we consider a set of initial states $\mathcal{X}_0 \subseteq \mathcal{S}_{v(0)}$ and a set of uncertain inputs $\mathcal{U} \subset \mathbb{R}^m$. The set of uncertain inputs can be different for each location of the hybrid automaton. An illustration of a reachable set of a hybrid automaton is provided in \cref{fig_hybridReachIllustration}. To calculate the reachable set inside a single location, CORA uses the reachability algorithms for continuous systems described in \cref{sec:continuousDynamics}. The most challenging part in reachability analysis for hybrid automata is the computation of the intersection between the reachable set and the guard set. CORA supports multiple methods for the calculation of guard intersections, which are listed in \cref{tab:guardIntersection}. For the intersection methods \texttt{polytope}, \texttt{zonoGirard}, \texttt{conZonotope}, and \texttt{nondetGuard} (see \cref{tab:guardIntersection}), the intersection with the guard set is enclosed by one or multiple oriented hyperrectangles. CORA supports the three methods listed in \cref{tab:enclose} to calculate the orientation of these hyperrectangles. The resulting hyperrectangles for the different enclosure methods are visualized in \cref{fig:enclose}. If multiple enclosure methods are specified, the reachable set is enclosed by the intersection of all computed hyperrectangles (see \cref{fig:enclose} (right)).
+
+\begin{figure}[htb]
+    \centering
+    \includetikz{./figures/tikz/hybridDynamics/hybridReachOverview}
+    \caption{Illustration of the reachable set of a hybrid automaton.}
+    \label{fig_hybridReachIllustration}
+\end{figure}
+
+The settings for reachability analysis are specified as fields of the struct \texttt{options} (see \cref{sec:reach}). For hybrid automata the settings for the involved continuous dynamics objects (see \cref{sec:continuousDynamics})
+have to be provided. In addition, the following settings specific to hybrid automata are available:
+
+\begin{center}
+    \renewcommand{\arraystretch}{1.3}
+    \begin{tabular}[t]{l p{10cm}}
+        --~\texttt{.guardIntersect}     & string specifying the method used to calculate the intersections with the guard sets. The available methods are listed in \cref{tab:guardIntersection}.                                                                                                                                                                       \\
+        --~\texttt{.enclose}            & cell array storing the strings that describe the methods for enclosing the intersections with the guard sets. The available methods are listed in \cref{tab:enclose}. Required for the guard intersection methods \texttt{polytope}, \texttt{zonoGirard}, \texttt{conZonotope}, and \texttt{nondetGuard}.                     \\
+        --~\texttt{.guardOrder}         & upper bound for the zonotope order $\rho$ (see \cref{sec:zonotope}). The zonotope order is reduced to \texttt{guardOrder} before the intersections with the guard sets are calculated in order to decrease the computation time. Required for the guard intersection methods \texttt{conZonotope} and \texttt{hyperplaneMap}. \\
+        --~\texttt{.timeStep}           & time step size for one reachability time step. One can choose different time steps for each location by specifying \texttt{timeStep} as a cell array.                                                                                                                                                                             \\
+        --~\texttt{.intersectInvariant} & flag with value \texttt{true} or \texttt{false} specifying whether the computed reachable set is intersected with the invariant set to obtain a tighter enclosure. The default value is \texttt{false} (no intersection).
+    \end{tabular}
+\end{center}
+Furthermore, it is possible for hybrid automata to specify the set of uncertain inputs \texttt{params.U}, the time step \texttt{options.timeStep}, and the specification \texttt{spec} (see \cref{sec:reach}) as a MATLAB cell array with as many entries as the hybrid automaton has locations if the values are different for each location.
+
+\begin{table*}[h]
+    \centering
+    \caption{Methods for enclosing guard intersections.}
+    \label{tab:enclose}
+    \begin{tabular}{l p{10cm} c}
+        \toprule
+        \textbf{Method} & \textbf{Description}                                                                                            & \textbf{Reference}                \\
+        \midrule
+        \texttt{box}    & The intersection is enclosed with an axis-aligned box.                                                          & Sec. V.A.a in \cite{Althoff2011f} \\
+        \texttt{pca}    & The orientation of the hyperrectangle is determined using principal component analysis. & Sec. V.A.b in \cite{Althoff2011f} \\
+        \texttt{flow}   & The orientation of the hyperrectangle is determined based on the direction of the flow of the dynamic function. & Sec. V.A.d in \cite{Althoff2011f} \\
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
+
+\begin{table*}
+    \centering
+    \caption{Guard intersection methods in CORA.}
+    \label{tab:guardIntersection}
+    \begin{tabular}{l p{10cm} c}
+        \toprule
+        \textbf{Method}        & \textbf{Description}                                                                                                                                                                                                                                                                                                                                                                                                                                      & \textbf{Reference}     \\
+        \midrule
+        \texttt{polytope}      & The reachable sets are converted to polytopes and then intersected with the guard sets. Afterwards, the vertices of the sets representing the intersections are calculated. Finally, the vertices are enclosed by oriented hyperrectangles, where the orientation is determined by the methods in \cref{tab:enclose}. & \cite{Althoff2010d} \\
+        \texttt{zonoGirard}    & First, suitable template directions are determined using the methods in \cref{tab:enclose}. Then, the algorithm described in \cite{Girard2008} is applied to compute an upper and a lower bound for the projection of the intersection between reachable set and guard set onto each template direction. & \cite{Girard2008} \\
+        \texttt{conZonotope}   & Guard intersection computation based on constrained zonotopes (see \cref{sec:conZonotope}). Constrained zonotopes are closed under intersection. To this end, we first convert the reachable sets to constrained zonotopes and then intersect the reachable set with the guard sets. Finally, the union of all intersections is enclosed by oriented hyperrectangles, where the orientation is determined with the methods in \cref{tab:enclose}. & \\
+        \texttt{hyperplaneMap} & The continuous dynamics are abstracted by constant flow, which allows to calculate the intersection with a hyperplane using a closed formula (guard mapping). & \cite{Althoff2012a} \\
+        \texttt{pancake}       & The dynamics of the system is scaled by the distance to the guard set so that the reachable set is very flat shortly before passing the guard set. It is then often possible to pass the guard set in a single time step. & \cite{Bak2017} \\
+        \texttt{nondetGuard}   & Guard intersection approach that works very well for non-deterministic guard sets. We first enclose all reachable sets that intersect the guard set with oriented hyperrectangles, where the orientation is determined using the methods in \cref{tab:enclose}. Afterwards, we compute the intersection of the oriented hyperrectangles with the guard set. & \\
+        \texttt{levelSet}      & The intersections between the reachable set and nonlinear guard sets are enclosed by polynomial zonotopes (see \cref{sec:polynomialZonotopes}) & \cite{Kochdumper2020d} \\
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
+\begin{table*}
+    \centering
+    \caption{Supported combinations of guard sets and guard intersection methods. The shorthand \texttt{polytope} denotes all polytopic set representations, which are \texttt{interval}, \texttt{zonotope}, \texttt{polytope}, \texttt{conZonotope}, and \texttt{zonoBundle}.}
+    \label{tab:guardSet}
+    \begin{tabular}{ p{4.5cm} C{3cm} C{3cm} C{3cm}}
+        \toprule
+        \texttt{options.guardIntersect} & \texttt{polytope} & \texttt{levelSet} \\ \midrule
+        \texttt{polytope}               & $\cmark$          & $\xmark$          \\
+        \texttt{zonoGirard}             & $\xmark$          & $\xmark$          \\
+        \texttt{conZonotope}            & $\cmark$          & $\xmark$          \\
+        \texttt{hyperplaneMap}          & $\xmark$          & $\xmark$          \\
+        \texttt{pancake}                & $\xmark$          & $\xmark$          \\
+        \texttt{nondetGuard}            & $\cmark$          & $\xmark$          \\
+        \texttt{levelSet}               & $\xmark$          & $\cmark$          \\
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
+\begin{figure}[htb]
+    \centering
+    \includetikz{./figures/tikz/hybridDynamics/example_manual_guard_intersection}
+    \caption{Enclosing hyperrectangles for different methods to obtain the orientation (left) and intersection between the hyperrectangles for all methods (right).}
+    \label{fig:enclose}
+\end{figure}

@@ -45,10 +45,9 @@ B = [0.5; -0.25];
 sys_cora2 = linearSys(A,B);
 
 % compare systems
-if sys_cora1 ~= sys_spaceex1
-    res = false;
-elseif sys_cora2 ~= sys_spaceex2
-    res = false;
+assert(sys_cora1 == sys_spaceex1)
+assert(sys_cora2 == sys_spaceex2)
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

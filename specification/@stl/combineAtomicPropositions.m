@@ -20,14 +20,10 @@ function [phi,aps] = combineAtomicPropositions(phi)
 
 % Authors:       Benedikt Seidl
 % Written:       11-May-2023
-% Last update:   ---
+% Last update:   08-February-2024 (FL, use interval property of stl instead of from and to)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-
-arguments
-    phi stl
-end
 
 aps = containers.Map;
 phi = aux_inner(phi);
@@ -49,20 +45,20 @@ function phi = aux_inner(phi)
         lhs = aux_inner(phi.lhs);
         rhs = aux_inner(phi.rhs);
     
-        phi = until(lhs, rhs, interval(phi.from, phi.to));
+        phi = until(lhs, rhs, phi.interval);
     elseif strcmp(phi.type, 'release')
         lhs = aux_inner(phi.lhs);
         rhs = aux_inner(phi.rhs);
     
-        phi = release(lhs, rhs, interval(phi.from, phi.to));
+        phi = release(lhs, rhs, phi.interval);
     elseif strcmp(phi.type, 'finally')
         lhs = aux_inner(phi.lhs);
     
-        phi = finally(lhs, interval(phi.from, phi.to));
+        phi = finally(lhs, phi.interval);
     elseif strcmp(phi.type, 'globally')
         lhs = aux_inner(phi.lhs);
     
-        phi = globally(lhs, interval(phi.from, phi.to));
+        phi = globally(lhs, phi.interval);
     elseif strcmp(phi.type, 'next')
         lhs = aux_inner(phi.lhs);
     

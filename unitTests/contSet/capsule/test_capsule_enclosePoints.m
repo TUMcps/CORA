@@ -27,7 +27,7 @@ function res = test_capsule_enclosePoints
 n = 2;
 p = zeros(n,0);
 C = capsule.enclosePoints(p);
-res = representsa_(C,'emptySet',eps) && dim(C) == n;
+assert(representsa_(C,'emptySet',eps) && dim(C) == n);
 
 % points
 p = [-1  1 2 3 2  1 -2 -4 3;...
@@ -36,13 +36,13 @@ p = [-1  1 2 3 2  1 -2 -4 3;...
 C = capsule.enclosePoints(p);
 
 % check if all points are contained in capsule
-res(end+1,1) = all(contains(C,p));
+assert(all(contains(C,p)));
 
 % only one point
 p = [-1;1;3];
 C = capsule.enclosePoints(p);
 % center has to be point, generator and radius 0
-res(end+1,1) = all(p == center(C)) && C.r == 0 && ~any(C.g);
+assert(all(p == center(C)) && C.r == 0 && ~any(C.g));
 
 % visualization
 % figure; hold on;
@@ -50,6 +50,6 @@ res(end+1,1) = all(p == center(C)) && C.r == 0 && ~any(C.g);
 % plot(p(1,:),p(2,:),'.k');
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

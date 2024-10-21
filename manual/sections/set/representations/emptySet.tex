@@ -1,0 +1,17 @@
+\subsubsubsection{Empty Set} \label{sec:emptySet}
+
+A empty set does not contain any elements.
+This set representation $\mathcal{O} \subset \mathbb{R}^n$ is defined as follows:
+\begin{equation}
+	\mathcal{O} = \emptyset.
+	\label{eq:defEmptySet}
+\end{equation}
+Empty sets are represented in CORA by the class \texttt{emptySet}.
+An object of class \texttt{emptySet} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		\mathcal{O} = \texttt{emptySet}(n), \\
+	\end{split}
+\end{equation*}
+where $n$ is the number of dimensions of the set.
+Empty sets are used in hybrid systems to model instant transitions.

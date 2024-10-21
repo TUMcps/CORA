@@ -46,26 +46,22 @@ sys = linearSysDT(A,B,dt);
 params.R0 = zonotope([10;-5;8;-12],0.5*eye(4));
 params.tFinal = 5;
 
-try
-    % single point
-    simOpt.points = 1;
-    simRes = simulateRandom(sys,params,simOpt);
-    
-    % plot time step
-    plot(simRes,[2,4]);
-    plot(simRes,[1,3],'r');
 
-    % multiple points
-    simOpt.points = 10;
-    simRes = simulateRandom(sys,params,simOpt);
+% single point
+simOpt.points = 1;
+simRes = simulateRandom(sys,params,simOpt);
 
-    % plot time step
-    plot(simRes);
-    plot(simRes,[1,3],'r');
+% plot time step
+plot(simRes,[2,4]);
+plot(simRes,[1,3],'r');
 
-catch
-    res = false;
-end
+% multiple points
+simOpt.points = 10;
+simRes = simulateRandom(sys,params,simOpt);
+
+% plot time step
+plot(simRes);
+plot(simRes,[1,3],'r');
 
 % simulations from nonlinear continuous-time system
 f = @(x,u) [-x(1)^2*x(2) - u(1); -exp(x(2))];
@@ -74,26 +70,22 @@ params.R0 = zonotope([10;5],0.05*eye(2));
 params.U = zonotope(0,0.02);
 params.tFinal = 2;
 
-try
-    % single point
-    simOpt.points = 1;
-    simRes = simulateRandom(sys,params,simOpt);
-    
-    % plot time step
-    plot(simRes);
-    plot(simRes,[1,2],'r');
 
-    % multiple points
-    simOpt.points = 10;
-    simRes = simulateRandom(sys,params,simOpt);
+% single point
+simOpt.points = 1;
+simRes = simulateRandom(sys,params,simOpt);
 
-    % plot time step
-    plot(simRes,[1,2]);
-    plot(simRes,[1,2],'r');
+% plot time step
+plot(simRes);
+plot(simRes,[1,2],'r');
 
-catch
-    res = false;
-end
+% multiple points
+simOpt.points = 10;
+simRes = simulateRandom(sys,params,simOpt);
+
+% plot time step
+plot(simRes,[1,2]);
+plot(simRes,[1,2],'r');
 
 % close figure
 close

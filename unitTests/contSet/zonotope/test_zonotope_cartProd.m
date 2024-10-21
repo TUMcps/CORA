@@ -23,47 +23,45 @@ function res = test_zonotope_cartProd
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % zonotope-zonotope case:
 
 % 2D and 1D zonotopes
 Z1 = zonotope([1,2,3,4; 5 6 7 8]);
 Z2 = zonotope([9 10 11]);
-Z_ = cartProd(Z1,Z2);
-c = Z_.c; G = Z_.G;
+Z_cartProd = cartProd(Z1,Z2);
 % compare to true result
-true_c = [1; 5; 9];
-true_G = [2, 3, 4, 0, 0; ...
+c_true = [1; 5; 9];
+G_true = [2, 3, 4, 0, 0; ...
           6, 7, 8, 0, 0; ...
           0, 0, 0, 10,11];
-res(end+1,1) = compareMatrices(c,true_c) && compareMatrices(G,true_G);
+assert(compareMatrices(Z_cartProd.c,c_true));
+assert(compareMatrices(Z_cartProd.G,G_true));
 
 
 % 2D zonotope, 1D numeric
 Z1 = zonotope([0;2],[3 4 2; -3 -1 3]);
 num = 1;
-Z_ = cartProd(Z1,num);
-c = Z_.c; G = Z_.G;
+Z_cartProd = cartProd(Z1,num);
 % compare to true result
-true_c = [0; 2; 1];
-true_G = [3  4 2; ...
+c_true = [0; 2; 1];
+G_true = [3  4 2; ...
          -3 -1 3; ...
           0  0 0];
-res(end+1,1) = compareMatrices(c,true_c) && compareMatrices(G,true_G);
+assert(compareMatrices(Z_cartProd.c,c_true));
+assert(compareMatrices(Z_cartProd.G,G_true));
 
 % other ordering
-Z_ = cartProd(num,Z1);
-c = Z_.c; G = Z_.G;
+Z_cartProd = cartProd(num,Z1);
 % compare to true result
-true_c = [1; 0; 2];
-true_G = [0  0 0; ...
+c_true = [1; 0; 2];
+G_true = [0  0 0; ...
           3  4 2; ...
          -3 -1 3];
-res(end+1,1) = compareMatrices(c,true_c) && compareMatrices(G,true_G);
+assert(compareMatrices(Z_cartProd.c,c_true));
+assert(compareMatrices(Z_cartProd.G,G_true));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

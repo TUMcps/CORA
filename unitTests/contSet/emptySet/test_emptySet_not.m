@@ -34,13 +34,13 @@ fs = ~O;
 fs_ = fullspace(n);
 
 % check solution
-res = fs == fs_;
+assert(fs == fs_);
 
 % different syntax
 fs = not(O);
-res(end+1,1) = fs == fs_;
+assert(fs == fs_);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

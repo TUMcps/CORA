@@ -1,13 +1,14 @@
-function Verr = linError_thirdOrder(obj, options, R)
+function Verr = linError_thirdOrder(nlnsysDT,Rdelta,params,options)
 % linError_thirdOrder - computes the linearization error
 %
 % Syntax:
-%    Verr = linError_thirdOrder(obj,options,R)
+%    Verr = linError_thirdOrder(nlnsysDT,options,R)
 %
 % Inputs:
-%    obj - nonlinearSysDT system object
-%    options - options struct
+%    nlnsysDT - nonlinearSysDT system object
 %    R - actual reachable set
+%    params - model parameters
+%    options - options struct
 %
 % Outputs:
 %    Verr - set of abstraction errors 
@@ -16,7 +17,7 @@ function Verr = linError_thirdOrder(obj, options, R)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: none
 
 % Authors:       Matthias Althoff, Niklas Kochdumper
 % Written:       21-August-2012
@@ -28,27 +29,32 @@ function Verr = linError_thirdOrder(obj, options, R)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % set correct tensor files
-obj = setHessian(obj,'standard');
-obj = setThirdOrderTensor(obj,'int');
+nlnsysDT = setHessian(nlnsysDT,'standard');
+nlnsysDT = setThirdOrderTensor(nlnsysDT,'int');
 
 % compute interval enclosure of reachable set
-dx = interval(R);
-du = interval(options.U);
+dx = interval(Rdelta);
+du = interval(params.U - center(params.U));
 dz = [dx;du];
 
-Int_x = dx + obj.linError.p.x;
-Int_u = du + obj.linError.p.u;
+Int_x = dx + nlnsysDT.linError.p.x;
+Int_u = du + nlnsysDT.linError.p.u;
 
 % reduce order before quadMap to save computation time
 if contains(options.alg,'adaptive')
-    Rred = reduce(R,'adaptive',options.redFactor);
+    Rred = reduce(Rdelta,'adaptive',options.redFactor);
 else
-    Rred = reduce(R,options.reductionTechnique,options.errorOrder);
+    Rred = reduce(Rdelta,options.reductionTechnique,options.errorOrder);
 end
-Z = cartProd(Rred,options.U);
+if isa(nlnsysDT, 'nonlinearARX') && (isa(Rred,'polyZonotope') || ...
+            isa(Rred,'conPolyZono'))
+    Z = stack(Rred,params.U - center(params.U));
+else
+    Z = cartProd(Rred,params.U - center(params.U));
+end
 
 % calculate hessian tensor
-H = obj.hessian(obj.linError.p.x,obj.linError.p.u);
+H = nlnsysDT.hessian(nlnsysDT.linError.p.x,nlnsysDT.linError.p.u);
 
 % evaluate third-order tensor with range bounding
 if isfield(options,'lagrangeRem') && ...
@@ -59,16 +65,16 @@ if isfield(options,'lagrangeRem') && ...
     [objX,objU] = initRangeBoundingObjects(Int_x,Int_u,options);
 
     % evaluate third order tensor 
-    [T,ind] = obj.thirdOrderTensor(objX,objU);
+    [T,ind] = nlnsysDT.thirdOrderTensor(objX,objU);
 else
-    [T,ind] = obj.thirdOrderTensor(Int_x,Int_u);
+    [T,ind] = nlnsysDT.thirdOrderTensor(Int_x,Int_u);
 end
 
 % second order abstraction error
 error_secondOrder = 0.5*quadMap(Z,H);
 
 % Lagrange remainder
-rem = interval(zeros(obj.dim,1),zeros(obj.dim,1));
+rem = interval(zeros(nlnsysDT.nrOfStates,1),zeros(nlnsysDT.nrOfStates,1));
 for i=1:length(ind)
     temp = interval(0,0);
     for j=1:length(ind{i})

@@ -1,0 +1,28 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent               $$\color{mblue}$function$\color{black}$ dx = tank6Eq(x,u)$\\ $$\\ $    $\color{mgreen}$% parameter$\color{black}$$\\ $    k = 0.015;$\\ $    k2 = 0.01;$\\ $    g = 9.81; $\\ $$\\ $    $\color{mgreen}$% differential equations$\color{black}$$\\ $    dx(1,1) = u(1)+0.1+k2*(4-x(6))-k*sqrt(2*g)*sqrt(x(1));  $\color{mgreen}$% tank 1$\color{black}$$\\ $    dx(2,1) = k*sqrt(2*g)*(sqrt(x(1))-sqrt(x(2)));          $\color{mgreen}$% tank 2$\color{black}$$\\ $    dx(3,1) = k*sqrt(2*g)*(sqrt(x(2))-sqrt(x(3)));          $\color{mgreen}$% tank 3$\color{black}$$\\ $    dx(4,1) = k*sqrt(2*g)*(sqrt(x(3))-sqrt(x(4)));          $\color{mgreen}$% tank 4$\color{black}$$\\ $    dx(5,1) = k*sqrt(2*g)*(sqrt(x(4))-sqrt(x(5)));          $\color{mgreen}$% tank 5$\color{black}$$\\ $    dx(6,1) = k*sqrt(2*g)*(sqrt(x(5))-sqrt(x(6)));          $\color{mgreen}$% tank 6$\color{black}$$\\ 
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

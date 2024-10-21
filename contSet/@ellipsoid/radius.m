@@ -1,13 +1,13 @@
 function r = radius(E,varargin)
-% radius - Computes the radius of an enclosing hyperball of an ellipsoid
+% radius - computes the radius of an enclosing hyperball of an ellipsoid
 %
 % Syntax:
-%    r = radius(E) returns the largest radius
-%    r = radius(E,i) returns the i largest radii
+%    r = radius(E)
+%    r = radius(E,i)
 %
 % Inputs:
 %    E - ellipsoid object
-%    i - integer > 0
+%    i - number of largest radii to be returned
 %
 % Outputs:
 %    r - radius/vector of radii of enclosing hyperball
@@ -18,14 +18,14 @@ function r = radius(E,varargin)
 %
 %    figure; hold on;
 %    plot(E,[1,2],'r');
-%    Ecirc = ellipsoid(r^2 * eye(2),center(E));
-%    plot(Ecirc,[1,2],'b');
+%    E_circ = ellipsoid(r^2 * eye(2),center(E));
+%    plot(E_circ,[1,2],'b');
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff, Victor Gassmann
 % Written:       05-March-2021
@@ -40,12 +40,13 @@ function r = radius(E,varargin)
 i = setDefaultValues({1},varargin);
 
 % check input arguments
-inputArgsCheck({{E,'att','ellipsoid','scalar'};
+inputArgsCheck({{E,'att','ellipsoid'};
                 {i,'att','numeric',{'integer','>=',1,'<=',dim(E)}}});
 
 % quick check for empty set
 if representsa_(E,'emptySet',eps)
-    r = zeros(dim(E),0); return
+    r = zeros(dim(E),0);
+    return
 end
 
 % compute eigenvalues

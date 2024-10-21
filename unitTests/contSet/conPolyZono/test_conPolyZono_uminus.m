@@ -23,8 +23,6 @@ function res = test_conPolyZono_uminus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = true(0);
-
 % init
 c = [0;0];
 G = [2 0 2; 0 2 2];
@@ -37,21 +35,21 @@ cPZ = conPolyZono(c,G,E,A,b,EC,GI);
 
 % negate
 ncPZ = -cPZ;
-resvec(end+1) = all(ncPZ.c == -c, 'all');
-resvec(end+1) = all(ncPZ.G == -G, 'all');
-resvec(end+1) = all(ncPZ.GI == -GI, 'all');
-resvec(end+1) = all(ncPZ.E == E, 'all');
-resvec(end+1) = all(ncPZ.A == A, 'all');
-resvec(end+1) = all(ncPZ.b == b, 'all');
-resvec(end+1) = all(ncPZ.EC == EC, 'all');
+assert(all(ncPZ.c == -c, 'all'));
+assert(all(ncPZ.G == -G, 'all'));
+assert(all(ncPZ.GI == -GI, 'all'));
+assert(all(ncPZ.E == E, 'all'));
+assert(all(ncPZ.A == A, 'all'));
+assert(all(ncPZ.b == b, 'all'));
+assert(all(ncPZ.EC == EC, 'all'));
 
 % compare with -1 * cPZ
-resvec(end+1) = isequal(ncPZ, -1*cPZ);
+assert(isequal(ncPZ, -1*cPZ));
 
 % test empty case
-resvec(end+1) = isemptyobject(-conPolyZono.empty(2));
+assert(isemptyobject(-conPolyZono.empty(2)));
 
 % add results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

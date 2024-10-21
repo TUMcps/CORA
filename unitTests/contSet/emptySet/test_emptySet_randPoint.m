@@ -29,6 +29,9 @@ O = emptySet(n);
 
 % sample random point
 p = randPoint(O);
-res = all(size(p) == [n,0]);
+assert(all(size(p) == [n,0]));
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,0 +1,61 @@
+\subsubsubsection{Polytopes} \label{sec:polytopes}
+
+There exist two representations for polytopes: The halfspace representation (H-representation) and the vertex representation (V-representation).
+Details of the implemented functionalities can be found in~\cite{Wetzlinger2024a}.
+
+\paragraph{H-Representation of a Polytope}
+The halfspace representation specifies a convex polytope $\mathcal{P}$ by the intersection of $q$ halfspaces $\mathcal{H}\^{i}$: $\mathcal{P}=\mathcal{H}\^{1} \cap \mathcal{H}\^{i} \cap \ldots \cap \mathcal{H}\^{q}$. A halfspace is one of the two parts obtained by bisecting the $n$-dimensional Euclidean space with a hyperplane $\mathcal{S}:=\{x \, | \, a^T x = b\}, a \in\mathbb{R}^{n},b\in\mathbb{R}$. The vector $a$ is the normal vector of the hyperplane and $b$ is the scalar product of any point on the hyperplane with the normal vector. From this follows that the corresponding halfspace is $\mathcal{H}:=\{x \, | \, a^T x\leq b\}$. As the convex polytope $\mathcal{P}$ is the non-empty intersection of $q$~halfspaces, all $q$~inequalities have to be fulfilled simultaneously.
+
+A convex polytope $\mathcal{P}$ is the bounded intersection of $q$ halfspaces:
+\begin{equation}
+  \mathcal{P}:=\Big\{x \in \mathbb{R}^n ~\big|~ A\, x\leq b \Big\}, \quad A\in\mathbb{R}^{q\times n}, b\in\mathbb{R}^{q}.
+  \label{eq:polytopeHalfspace}
+\end{equation}
+When the intersection is unbounded, one obtains a polyhedron \cite{Ziegler1995}.
+
+\paragraph{V-Representation of a Polytope}
+A polytope with vertex representation is defined as the convex hull of a finite set of points in the $n$-dimensional Euclidean space. The points are also referred to as vertices and denoted by $\mathtt{v}\^i\in\mathbb{R}^n$. A convex hull of a finite set of $r$ points $\mathtt{v}\^i\in\mathbb{R}^n$ is obtained from their linear combination:
+\begin{equation}
+\mathtt{Conv}(\mathtt{v}\^1,\ldots,\mathtt{v}\^r):=\Big\{\sum_{i=1}^{r} \alpha_i \mathtt{v}\^i ~\big|~ \alpha_i \in\mathbb{R}, \, \alpha_i\geq 0, \, \sum_{i=1}^{r} \alpha_i=1 \Big\}.
+	\label{eq:polytopeVertex}
+\end{equation}
+%Given the convex hull operator $\mathtt{Conv}()$, a convex and bounded polytope can be defined in vertex representation as follows:
+
+
+The halfspace and the vertex representation are illustrated in \cref{fig_polytope}. Algorithms that convert from H- to V-representation and vice versa are presented in \cite{Kaibel2003}.
+
+\begin{figure}[htb]		
+    \centering
+	\subfigure[$V-representation$]{\includetikz{./figures/tikz/set-representations/polytope-v-representation}}
+	\hspace{1cm}
+	\subfigure[$H-representation$]{\includetikz{./figures/tikz/set-representations/polytope-h-representation}\label{fig:polytopeHRepresentation}}
+	  \caption{Possible representations of a polytope.}
+	  \label{fig_polytope}
+\end{figure}
+
+
+Polytopes are represented in CORA by the class \texttt{polytope}.
+An object of class \texttt{polytope} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \mathcal{P} = \texttt{polytope}(V), \\
+		& \mathcal{P} = \texttt{polytope}(A,b), \\
+		& \mathcal{P} = \texttt{polytope}(A,b,Ae,be),
+	\end{split}
+\end{equation*} 
+where $V = [v^{(1)},\dots,v^{(r)}]$, $v^{(i)}$ is defined as in \eqref{eq:polytopeVertex}, $A,b$ are defined as in \eqref{eq:polytopeHalfspace}, and $Ae,be$ are equality constraints that are used to compactly represent pairwise inequality constraints $a^\top x \leq b, a^\top x \geq b$. Let us demonstrate the construction of a polytope by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.55\textwidth}
+	\vspace{5pt}
+	\footnotesize
+	\input{./MATLABcode/example_setRep_polytope}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-representations/example_polytope}
+\end{minipage}
+\end{center}
+
+A more detailed example for polytopes is provided in \cref{sec:polytopeExample} and in the file \textit{examples/contSet/example\_polytope.m} in the CORA toolbox. In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), the class \texttt{polytope} supports additional methods, which are listed in \cref{sec:polytopeOperations}.

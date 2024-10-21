@@ -12,9 +12,6 @@ function obj = inputTie(obj,options)
 % Outputs:
 %    obj - linParamSys object
 %
-% Example:
-%    -
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

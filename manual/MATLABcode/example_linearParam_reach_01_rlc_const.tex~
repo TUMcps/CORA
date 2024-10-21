@@ -1,0 +1,166 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                                                                                                                                                                          
+ \hspace*{-1.6em}{\scriptsize 1}$  $\color{mblue}$function$\color{black}$ example_linearParam_reach_01_rlc_const()$\\
+ \hspace*{-2em}{\scriptsize 32}$  $\\
+ \hspace*{-2em}{\scriptsize 33}$  $\color{mgreen}$%init: get matrix zonotopes of the model$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 34}$  [matZ_A,matZ_B] = initRLC_uTest();$\\
+ \hspace*{-2em}{\scriptsize 35}$  matI_A = intervalMatrix(matZ_A);$\\
+ \hspace*{-2em}{\scriptsize 36}$  $\\
+ \hspace*{-2em}{\scriptsize 37}$  $\color{mgreen}$%get dimension$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 38}$  dim=matZ_A.dim;$\\
+ \hspace*{-2em}{\scriptsize 39}$  $\\
+ \hspace*{-2em}{\scriptsize 40}$  $\color{mgreen}$%compute initial set$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 41}$  $\color{mgreen}$%specify range of voltages$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 42}$  u0 = intervalMatrix(0,0.2);$\\
+ \hspace*{-2em}{\scriptsize 43}$  $\\
+ \hspace*{-2em}{\scriptsize 44}$  $\color{mgreen}$%compute inverse of A$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 45}$  intA = intervalMatrix(matZ_A);$\\
+ \hspace*{-2em}{\scriptsize 46}$  invAmid = inv(center(intA.int)); $\\
+ \hspace*{-2em}{\scriptsize 47}$  $\\
+ \hspace*{-2em}{\scriptsize 48}$  $\color{mgreen}$%compute initial set$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 49}$  intB = intervalMatrix(matZ_B);$\\
+ \hspace*{-2em}{\scriptsize 50}$  R0 = invAmid*intB*u0 + intervalMatrix(0,1e-3*ones(dim,1));$\\
+ \hspace*{-2em}{\scriptsize 51}$  $\\
+ \hspace*{-2em}{\scriptsize 52}$  $\color{mgreen}$%convert initial set to zonotope$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 53}$  R0 = zonotope(interval(R0));$\\
+ \hspace*{-2em}{\scriptsize 54}$  $\\
+ \hspace*{-2em}{\scriptsize 55}$  $\color{mgreen}$%initial set$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 56}$  options.x0=center(R0); $\color{mgreen}$%initial state for simulation$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 57}$  options.R0=R0; $\color{mgreen}$%initial state for reachability analysis$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 58}$  $\\
+ \hspace*{-2em}{\scriptsize 59}$  $\color{mgreen}$%inputs$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 60}$  u=intervalMatrix(1,0.01);$\\
+ \hspace*{-2em}{\scriptsize 61}$  U = zonotope(interval(intB*u));$\\
+ \hspace*{-2em}{\scriptsize 62}$  options.uTrans=center(U);$\\
+ \hspace*{-2em}{\scriptsize 63}$  options.U=U+(-options.uTrans); $\color{mgreen}$%input for reachability analysis$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 64}$  $\\
+ \hspace*{-2em}{\scriptsize 65}$  $\color{mgreen}$%other$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 66}$  options.tStart=0; $\color{mgreen}$%start time$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 67}$  options.tFinal=0.7; $\color{mgreen}$%final time$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 68}$  options.intermediateOrder = 2;$\\
+ \hspace*{-2em}{\scriptsize 69}$  options.originContained = 0;$\\
+ \hspace*{-2em}{\scriptsize 70}$  options.timeStep = 0.002;$\\
+ \hspace*{-2em}{\scriptsize 71}$  options.eAt = expm(matZ_A.center*options.timeStep);$\\
+ \hspace*{-2em}{\scriptsize 72}$  $\\
+ \hspace*{-2em}{\scriptsize 73}$  options.zonotopeOrder=400; $\color{mgreen}$%zonotope order$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 74}$  options.polytopeOrder=3; $\color{mgreen}$%polytope order$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 75}$  options.taylorTerms=6;$\\
+ \hspace*{-2em}{\scriptsize 76}$  $\\
+ \hspace*{-2em}{\scriptsize 77}$  $\color{mgreen}$%time step$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 78}$  r = options.timeStep;$\\
+ \hspace*{-2em}{\scriptsize 79}$  maxOrder=options.taylorTerms;$\\
+ \hspace*{-2em}{\scriptsize 80}$  $\\
+ \hspace*{-2em}{\scriptsize 81}$  $\color{mgreen}$%instantiate linear dynamics with constant parameters$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 82}$  linSys  = linParamSys(matZ_A, eye(dim), r, maxOrder);$\\
+ \hspace*{-2em}{\scriptsize 83}$  linSys2 = linParamSys(matI_A, eye(dim), r, maxOrder);$\\
+ \hspace*{-2em}{\scriptsize 84}$  $\\
+ \hspace*{-2em}{\scriptsize 85}$  $\color{mgreen}$%reachable set computations$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 86}$  tic$\\
+ \hspace*{-2em}{\scriptsize 87}$  Rcont = reach(linSys, options);$\\
+ \hspace*{-2em}{\scriptsize 88}$  tComp = toc;$\\
+ \hspace*{-2em}{\scriptsize 89}$  disp([$\color{mred}$'computation time of reachable set using matrix zonotopes: '$\color{black}$,num2str(tComp)]);$\\
+ \hspace*{-2em}{\scriptsize 90}$  $\\
+ \hspace*{-2em}{\scriptsize 91}$  tic$\\
+ \hspace*{-2em}{\scriptsize 92}$  Rcont2 = reach(linSys2, options);$\\
+ \hspace*{-2em}{\scriptsize 93}$  tComp = toc;$\\
+ \hspace*{-2em}{\scriptsize 94}$  disp([$\color{mred}$'computation time of reachable set using interval matrices: '$\color{black}$,num2str(tComp)]);$\\
+ \hspace*{-2em}{\scriptsize 95}$  $\\
+ \hspace*{-2em}{\scriptsize 96}$  $\color{mgreen}$%create random simulations; RRTs would provide better results, but are$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 97}$  $\color{mgreen}$%computationally more demanding$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 98}$  runs = 60;$\\
+ \hspace*{-2em}{\scriptsize 99}$  fractionVertices = 0.5;$\\
+ \hspace*{-2.4em}{\scriptsize 100}$  fractionInputVertices = 0.5;$\\
+ \hspace*{-2.4em}{\scriptsize 101}$  inputChanges = 6;$\\
+ \hspace*{-2.4em}{\scriptsize 102}$  simRes = simulate_random(linSys2, options, runs, fractionVertices, fractionInputVertices, inputChanges);$\\
+ \hspace*{-2.4em}{\scriptsize 103}$  $\\
+ \hspace*{-2.4em}{\scriptsize 104}$  $\color{mgreen}$%plot results--------------------------------------------------------------$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 105}$  $\color{mblue}$for$\color{black}$ plotRun=1:2$\\
+ \hspace*{-2.4em}{\scriptsize 106}$      $\color{mgreen}$% plot different projections$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 107}$      $\color{mblue}$if$\color{black}$ plotRun==1$\\
+ \hspace*{-2.4em}{\scriptsize 108}$          projectedDimensions=[1 $\color{mred}$21];$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 109}$      $\color{mblue}$else$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 110}$          projectedDimensions=[20 $\color{mred}$40];$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 111}$      $\color{mblue}$end$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 112}$      $\\
+ \hspace*{-2.4em}{\scriptsize 113}$      figure;$\\
+ \hspace*{-2.4em}{\scriptsize 114}$      hold $\color{mred}$on$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 115}$      $\\
+ \hspace*{-2.4em}{\scriptsize 116}$      $\color{mgreen}$%plot reachable sets$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 117}$      $\color{mblue}$for$\color{black}$ i=1:length(Rcont2)$\\
+ \hspace*{-2.4em}{\scriptsize 118}$          Zproj = project(Rcont2{i},projectedDimensions);$\\
+ \hspace*{-2.4em}{\scriptsize 119}$          Zproj = reduce(Zproj,$\color{mred}$'girard'$\color{black}$,3);$\\
+ \hspace*{-2.4em}{\scriptsize 120}$          plotFilled(Zproj,[1 2],[.675 .675 .675],$\color{mred}$'EdgeColor'$\color{black}$,$\color{mred}$'none'$\color{black}$);$\\
+ \hspace*{-2.4em}{\scriptsize 121}$      $\color{mblue}$end$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 122}$  $\\
+ \hspace*{-2.4em}{\scriptsize 123}$      $\color{mblue}$for$\color{black}$ i=1:length(Rcont)$\\
+ \hspace*{-2.4em}{\scriptsize 124}$          Zproj = project(Rcont{i},projectedDimensions);$\\
+ \hspace*{-2.4em}{\scriptsize 125}$          Zproj = reduce(Zproj,$\color{mred}$'girard'$\color{black}$,3);$\\
+ \hspace*{-2.4em}{\scriptsize 126}$          plotFilled(Zproj,[1 2],[.75 .75 .75],$\color{mred}$'EdgeColor'$\color{black}$,$\color{mred}$'none'$\color{black}$);$\\
+ \hspace*{-2.4em}{\scriptsize 127}$      $\color{mblue}$end$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 128}$  $\\
+ \hspace*{-2.4em}{\scriptsize 129}$      $\color{mgreen}$%plot initial set$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 130}$      plotFilled(options.R0,projectedDimensions,$\color{mred}$'w'$\color{black}$,$\color{mred}$'EdgeColor'$\color{black}$,$\color{mred}$'k'$\color{black}$);$\\
+ \hspace*{-2.4em}{\scriptsize 131}$         $\\
+ \hspace*{-2.4em}{\scriptsize 132}$      $\color{mgreen}$%plot simulation results      $\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 133}$      $\color{mblue}$for$\color{black}$ i=1:length(simRes.t)$\\
+ \hspace*{-2.4em}{\scriptsize 134}$          plot(simRes.x{i}(:,projectedDimensions(1)),simRes.x{i}(:,projectedDimensions(2)),$\color{mred}$'Color'$\color{black}$,0*[1 1 1]);$\\
+ \hspace*{-2.4em}{\scriptsize 135}$      $\color{mblue}$end$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 136}$  $\\
+ \hspace*{-2.4em}{\scriptsize 137}$      $\color{mgreen}$%öabel plot$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 138}$      xlabel([$\color{mred}$'x_{'$\color{black}$,num2str(projectedDimensions(1)),$\color{mred}$'}'$\color{black}$]);$\\
+ \hspace*{-2.4em}{\scriptsize 139}$      ylabel([$\color{mred}$'x_{'$\color{black}$,num2str(projectedDimensions(2)),$\color{mred}$'}'$\color{black}$]);$\\
+ \hspace*{-2.4em}{\scriptsize 140}$  $\color{mblue}$end$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 141}$  $\\
+ \hspace*{-2.4em}{\scriptsize 142}$  $\color{mgreen}$%plot results over time$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 143}$  $\\
+ \hspace*{-2.4em}{\scriptsize 144}$  figure;$\\
+ \hspace*{-2.4em}{\scriptsize 145}$  hold $\color{mred}$on$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 146}$  $\\
+ \hspace*{-2.4em}{\scriptsize 147}$  $\color{mgreen}$%plot time elapse$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 148}$  $\color{mblue}$for$\color{black}$ i=1:length(Rcont2)$\\
+ \hspace*{-2.4em}{\scriptsize 149}$      $\color{mgreen}$%get Uout $\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 150}$      Uout1 = interval(project(Rcont{i},0.5*dim));$\\
+ \hspace*{-2.4em}{\scriptsize 151}$      Uout2 = interval(project(Rcont2{i},0.5*dim));$\\
+ \hspace*{-2.4em}{\scriptsize 152}$      $\color{mgreen}$%obtain times$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 153}$      t1 = (i-1)*options.timeStep;$\\
+ \hspace*{-2.4em}{\scriptsize 154}$      t2 = i*options.timeStep;$\\
+ \hspace*{-2.4em}{\scriptsize 155}$      $\color{mgreen}$%generate plot areas as interval hulls$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 156}$      IH1 = interval([t1; infimum(Uout1)], [t2; supremum(Uout1)]);$\\
+ \hspace*{-2.4em}{\scriptsize 157}$      IH2 = interval([t1; infimum(Uout2)], [t2; supremum(Uout2)]);$\\
+ \hspace*{-2.4em}{\scriptsize 158}$  $\\
+ \hspace*{-2.4em}{\scriptsize 159}$      plotFilled(IH2,[1 2],[.675 .675 .675],$\color{mred}$'EdgeColor'$\color{black}$,$\color{mred}$'none'$\color{black}$);$\\
+ \hspace*{-2.4em}{\scriptsize 160}$      plotFilled(IH1,[1 2],[.75 .75 .75],$\color{mred}$'EdgeColor'$\color{black}$,$\color{mred}$'none'$\color{black}$);$\\
+ \hspace*{-2.4em}{\scriptsize 161}$  $\color{mblue}$end$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 162}$  $\\
+ \hspace*{-2.4em}{\scriptsize 163}$  $\color{mgreen}$%plot simulation results$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 164}$  $\color{mblue}$for$\color{black}$ i=1:(length(simRes.t))$\\
+ \hspace*{-2.4em}{\scriptsize 165}$      plot(simRes.t{i},simRes.x{i}(:,0.5*dim),$\color{mred}$'Color'$\color{black}$,0*[$\color{mred}$1 1 1]);$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 166}$  $\color{mblue}$end$\color{black}$$\\
+ \hspace*{-2.4em}{\scriptsize 167}$  $\\
+ \hspace*{-2.4em}{\scriptsize 168}$  $\color{mgreen}$%--------------------------------------------------------------------------$\color{black}$$\\
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

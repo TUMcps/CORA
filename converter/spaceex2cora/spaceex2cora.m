@@ -44,9 +44,7 @@ function spaceex2cora(xmlFile,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % number of input arguments
-if nargin > 6
-    throw(CORAerror('CORA:tooManyInputArgs',6));
-end
+narginchk(0,6);
 
 % set default value: conversion to parallel hybrid automaton
 save2pha = setDefaultValues({true},varargin);

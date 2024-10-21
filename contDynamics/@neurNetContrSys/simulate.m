@@ -148,9 +148,9 @@ for i = 1:length(time) - 1
         end
 
         % store the results
-        x = [x; x_(:, 1:obj.dim)];
+        x = [x; x_(:, 1:obj.nrOfStates)];
         t = [t; t_];
-        x0 = x(end, 1:obj.dim)';
+        x0 = x(end, 1:obj.nrOfStates)';
         cnt = cnt + index(end);
 
         if ~isempty(ind)

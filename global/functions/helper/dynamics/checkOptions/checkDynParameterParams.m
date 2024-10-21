@@ -36,6 +36,8 @@ switch field
         checks = aux_getChecksParams_tFinal(checks,sys,func,params,options);
     case 'R0'
         checks = aux_getChecksParams_R0(checks,sys,func,params,options);
+    case 'Rend'
+        checks = aux_getChecksParams_Rend(checks,sys,func,params,options);
     case 'U'
         checks = aux_getChecksParams_U(checks,sys,func,params,options);
     case 'u'
@@ -68,14 +70,18 @@ switch field
         checks = aux_getChecksParams_paramInts(checks,sys,func,params,options);
     case 'inputCompMap'
         checks = aux_getChecksParams_inputCompMap(checks,sys,func,params,options);
-    case 'R0conf'
-        checks = aux_getChecksParams_R0conf(checks,sys,func,params,options);
     case 'testSuite'
         checks = aux_getChecksParams_testSuite(checks,sys,func,params,options);
+    case 'testSuite_train'
+        checks = aux_getChecksParams_testSuite_train(checks,sys,func,params,options);
+    case 'testSuite_val'
+        checks = aux_getChecksParams_testSuite_val(checks,sys,func,params,options);
     case 'w'
         checks = aux_getChecksParams_w(checks,sys,func,params,options);
     case 'y0'
         checks = aux_getChecksParams_y0(checks,sys,func,params,options);
+    case 'Y0'
+        checks = aux_getChecksParams_Y0(checks,sys,func,params,options);
 
     otherwise
         CORAwarning('CORA:contDynamics','Unknown params.%s', field); return;
@@ -102,10 +108,24 @@ end
 
 % R0
 function checks = aux_getChecksParams_R0(checks,sys,func,params,options)
-    checks(end+1) = add2checks(@(val)any(ismember(getMembers('R0'),class(val))), 'memberR0');
-    if isa(sys,'hybridAutomaton')
-        checks(end+1) = add2checks(@(val)dim(val)==sys.location(params.startLoc).contDynamics.dim, 'eqsysdim');
+    if contains(func,'conform')
+        checks(end+1) = add2checks(@(val)any(ismember(getMembers('R0'),class(val))), 'memberR0conf');
     else
+        checks(end+1) = add2checks(@(val)any(ismember(getMembers('R0'),class(val))), 'memberR0');
+    end
+    if isa(sys,'hybridAutomaton')
+        checks(end+1) = add2checks(@(val)dim(val)==sys.location(params.startLoc).contDynamics.nrOfStates, 'eqsysdim');
+    elseif isa(sys,'nonlinearARX') || isa(sys,'linearARX')
+        checks(end+1) = add2checks(@(val)dim(val)==sys.n_p*sys.nrOfOutputs, 'eqsysdim');
+    elseif sys.nrOfStates ~= 0 %not an empty sys object
+        checks(end+1) = add2checks(@(val)eq(dim(val),sys.nrOfStates), 'eqsysdim');
+    end
+end
+
+% Rend
+function checks = aux_getChecksParams_Rend(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@(val)any(ismember(getMembers('Rend'),class(val))), 'memberRend');
+    if sys.dim ~= 0 %not an empty sys object
         checks(end+1) = add2checks(@(val)eq(dim(val),sys.dim), 'eqsysdim');
     end
 end
@@ -118,7 +138,9 @@ function checks = aux_getChecksParams_U(checks,sys,func,params,options)
         checks(end+1) = add2checks(@(val)c_pHA_U(val,sys,params),'');
     else
         checks(end+1) = add2checks(@(val)any(ismember(getMembers('U'),class(val))), 'memberU');
-        checks(end+1) = add2checks(@(val)eq(dim(val),sys.nrOfInputs), 'eqinput');
+        if sys.nrOfStates ~= 0 %not an empty sys object
+            checks(end+1) = add2checks(@(val)eq(dim(val),sys.nrOfInputs), 'eqinput');
+        end
     end
 end
 
@@ -158,14 +180,30 @@ end
 
 % W
 function checks = aux_getChecksParams_W(checks,sys,func,params,options)
-    checks(end+1) = add2checks(@(val)any(ismember(getMembers('W'),class(val))), 'memberW');
-    checks(end+1) = add2checks(@(val)eq(dim(val),sys.dim), 'eqsysdim');
+    if isa(sys,'hybridAutomaton')
+        checks(end+1) = add2checks(@(val)(~iscell(val)&&isa(val,'contSet'))||(iscell(val)&&(all(size(val)==[length(sys.location),1])||all(size(val)==[1,length(sys.location)]))), '???');
+    elseif isa(sys,'parallelHybridAutomaton')
+        checks(end+1) = add2checks(@(val)c_pHA_W(val,sys,params),'');
+    else
+        checks(end+1) = add2checks(@(val)any(ismember(getMembers('W'),class(val))), 'memberW');
+        if sys.nrOfStates ~= 0 %not an empty sys object
+            checks(end+1) = add2checks(@(val)eq(dim(val),sys.nrOfDisturbances), 'eqdists');
+        end
+    end
 end
 
 % V
 function checks = aux_getChecksParams_V(checks,sys,func,params,options)
-    checks(end+1) = add2checks(@(val)any(ismember(getMembers('V'),class(val))), 'memberW');
-    checks(end+1) = add2checks(@(val)eq(dim(val),sys.nrOfOutputs), 'eqoutput');
+    if isa(sys,'hybridAutomaton')
+        checks(end+1) = add2checks(@(val)(~iscell(val)&&isa(val,'contSet'))||(iscell(val)&&(all(size(val)==[length(sys.location),1])||all(size(val)==[1,length(sys.location)]))), '???');
+    elseif isa(sys,'parallelHybridAutomaton')
+        checks(end+1) = add2checks(@(val)c_pHA_V(val,sys,params),'');
+    else
+        checks(end+1) = add2checks(@(val)any(ismember(getMembers('V'),class(val))), 'memberV');
+        if sys.nrOfStates ~= 0 %not an empty sys object
+            checks(end+1) = add2checks(@(val)eq(dim(val),sys.nrOfNoises), 'eqnoises');
+        end
+    end
 end
 
 % y
@@ -225,22 +263,22 @@ end
 function checks = aux_getChecksParams_x0(checks,sys,func,params,options)
     if isa(sys,'hybridAutomaton')
         checks(end+1) = add2checks(@isvector, 'isvector');
-        checks(end+1) = add2checks(@(val)length(val)==sys.location(params.startLoc).contDynamics.dim, 'isnumeric');
+        checks(end+1) = add2checks(@(val)length(val)==sys.location(params.startLoc).contDynamics.nrOfStates, 'isnumeric');
     elseif isa(sys,'parallelHybridAutomaton')
-        checks(end+1) = add2checks(@(val)all(size(val)==[sys.dim,1]), 'eqsysdim');
+        checks(end+1) = add2checks(@(val)all(size(val)==[sys.nrOfStates,1]), 'eqsysdim');
     end
 end
 
 % refPoints
 function checks = aux_getChecksParams_refPoints(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
-    checks(end+1) = add2checks(@(val)size(val,1)==sys.dim, 'eqsysdim');
+    checks(end+1) = add2checks(@(val)size(val,1)==sys.nrOfStates, 'eqsysdim');
     checks(end+1) = add2checks(@(val)size(val,2)==reachSteps(params,options)+1, 'eqreachSteps');
 end
 
 % paramInts
 function checks = aux_getChecksParams_paramInts(checks,sys,func,params,options)
-    checks(end+1) = add2checks(@(val)size(val,1)==sys.dim, 'eqsysdim');
+    checks(end+1) = add2checks(@(val)size(val,1)==sys.nrOfStates, 'eqsysdim');
     checks(end+1) = add2checks(@(val)size(val,2)==reachSteps(params,options)+1, 'eqreachSteps');
 end
 
@@ -252,14 +290,18 @@ function checks = aux_getChecksParams_inputCompMap(checks,sys,func,params,option
     checks(end+1) = add2checks(@(val) all(size(val)==[sys.nrOfInputs,1]) || all(size(val)==[1,sys.nrOfInputs]), '???');
 end
 
-% R0conf
-function checks = aux_getChecksParams_R0conf(checks,sys,func,params,options)
-    checks(end+1) = add2checks(@(val)any(ismember(getMembers('R0conf'),class(val))), 'memberR0conf');
-    checks(end+1) = add2checks(@(val)eq(dim(val),sys.dim), 'eqsysdim');
-end
-
 % testSuite
 function checks = aux_getChecksParams_testSuite(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@(val)all(cellfun(@(x)isa(x,'testCase'),val)), 'istestCase');
+end
+
+% testSuite_train
+function checks = aux_getChecksParams_testSuite_train(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@(val)all(cellfun(@(x)isa(x,'testCase'),val)), 'istestCase');
+end
+
+% testSuite_val
+function checks = aux_getChecksParams_testSuite_val(checks,sys,func,params,options)
     checks(end+1) = add2checks(@(val)all(cellfun(@(x)isa(x,'testCase'),val)), 'istestCase');
 end
 
@@ -273,6 +315,12 @@ end
 function checks = aux_getChecksParams_y0(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)eq(size(val,1),sys.nrOfOutputs), 'eqoutput');
+end
+
+% Y0
+function checks = aux_getChecksParams_Y0(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@(val)any(ismember(getMembers('Y0'),class(val{1}))), 'memberY0');
+    checks(end+1) = add2checks(@(val)eq(dim(val{1}),sys.nrOfOutputs), 'eqsysdim');
 end
 
 % ------------------------------ END OF CODE ------------------------------

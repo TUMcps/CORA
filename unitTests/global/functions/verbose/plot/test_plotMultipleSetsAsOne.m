@@ -23,8 +23,6 @@ function res = test_plotMultipleSetsAsOne
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % create sets
 S1 = zonotope([1;2],[1 0 1; 0 1 1]);
 S2 = interval([-5;-3],[-3;-2]);
@@ -37,35 +35,35 @@ try
 
     % test plot with differnt amount of sets
     plotMultipleSetsAsOne({})
-    resvec(end+1) = length(ax.Children) == 1;
+    assert(length(ax.Children) == 1);
     plotMultipleSetsAsOne({S1})
-    resvec(end+1) = length(ax.Children) == 1;
+    assert(length(ax.Children) == 1);
     plotMultipleSetsAsOne({S1,S2})
-    resvec(end+1) = length(ax.Children) == 1;
+    assert(length(ax.Children) == 1);
     plotMultipleSetsAsOne({S1,S2,S3})
-    resvec(end+1) = length(ax.Children) == 1;
+    assert(length(ax.Children) == 1);
 
     % check dimension
     plotMultipleSetsAsOne({S1,S2,S3},[1,2]);
-    resvec(end+1) = length(ax.Children) == 1;
+    assert(length(ax.Children) == 1);
     plotMultipleSetsAsOne({S1,S2,S3},[2,1]);
-    resvec(end+1) = length(ax.Children) == 1;
+    assert(length(ax.Children) == 1);
 
     % check plot options
     plotMultipleSetsAsOne({S1,S2,S3},[1,2],{'FaceColor',[0 0 1]});
-    resvec(end+1) = length(ax.Children) == 1;
+    assert(length(ax.Children) == 1);
     plotMultipleSetsAsOne({S1,S2,S3},[1,2],{'FaceColor',[0 0 1],'EdgeColor',[1 0 0]});
-    resvec(end+1) = length(ax.Children) == 1;
+    assert(length(ax.Children) == 1);
 
     % check purpose
     plotMultipleSetsAsOne({S1,S2,S3},[1,2],{},'none');
-    resvec(end+1) = length(ax.Children) == 1;
+    assert(length(ax.Children) == 1);
     plotMultipleSetsAsOne({S1,S2,S3},[1,2],{'Marker','.'},'none');
-    resvec(end+1) = length(ax.Children) == 1;
+    assert(length(ax.Children) == 1);
 
     % check different settings for each set (required for reachSet/plot)
     plotMultipleSetsAsOne({S1,S2,S3},[1,2],{{'Marker','.'},{'Marker','o'},{'Marker','.'}});
-    resvec(end+1) = length(ax.Children) == 1;
+    assert(length(ax.Children) == 1);
 
     close
 
@@ -75,20 +73,20 @@ try
 
     % test plot with differnt amount of sets
     plotMultipleSetsAsOne({S1})
-    resvec(end+1) = length(ax.Children) == 1;
+    assert(length(ax.Children) == 1);
     plotMultipleSetsAsOne({S1,S2})
-    resvec(end+1) = length(ax.Children) == 2;
+    assert(length(ax.Children) == 2);
     plotMultipleSetsAsOne({S1,S2,S3})
-    resvec(end+1) = length(ax.Children) == 3;
+    assert(length(ax.Children) == 3);
 
     close;
 
 catch ME
     close
-    resvec(end+1) = false;
+    rethrow(ME)
 end
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

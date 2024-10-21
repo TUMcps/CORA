@@ -1,0 +1,41 @@
+\subsubsection{Neural Network Control Systems} \label{sec:neuralNetContrSys}
+
+Due to the current trend towards artificial intelligence, the system class of neural network control system is gaining more and more importance.
+In CORA, we consider neural network control systems with discrete feedback,
+where the neural network controller updates the control input at the end of the time steps defined by the sampling time $\Delta t$.
+CORA implements the approach described in~\cite{Kochdumper2023b,ladner2023a},
+please visit \cref{sec:neuralNetworks} for implementation details on the neural network.
+
+\begin{figure}[htb]
+  \centering	
+    \footnotesize
+    \includetikz{./figures/tikz/contDynamics/feedback_neuralNetContrSys}
+    \caption{Structure of a neural network control system.}
+    \label{fig:neuralNetworkControlledSys}		
+\end{figure}
+
+Neural network control systems are implemented by the class \texttt{neurNetContrSys}. An object of class \texttt{neurNetContrSys} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \texttt{sys = neurNetContrSys(sysOL,nn},\Delta t),
+	\end{split}
+\end{equation*}
+where \texttt{sysOL} is a child of class \texttt{contDynamics} (see \cref{fig:classDiagram}) describing the dynamics of the open-loop system,
+\texttt{nn} is the neural network controller of class \texttt{neuralNetwork},
+and $\Delta t \in \R_{> 0}$ is the sampling time of the controller.
+Note that the dynamics of the open-loop system can be specified by any of the system classes described in \cref{sec:continuousDynamics} (e.g. \texttt{linearSys}, \texttt{nonlinearSys}, etc.).
+Since CORA does not explicitly distinguish between control inputs and uncertain inputs, we treat the first $N$ inputs of the open-loop system as control inputs and the remaining inputs as uncertain inputs, where $N$ is the number of outputs of the neural network controller.
+Let us demonstrate the class \texttt{neurNetContrSys} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.95\textwidth}
+\footnotesize 
+\input{./MATLABcode/example_neurNetContrSys}
+\end{minipage}
+\end{center}
+
+where \texttt{params} and \texttt{options} are the settings for reachability analysis for \texttt{sysOL},
+which are identical to the settings for the respective open-loop system class (\cref{sec:continuousDynamics}).
+Note that the sampling time $\Delta t$ of the neural network can be different from the time step for reachability analysis stored in \texttt{options.timeStep}.
+Options for the network evaluations are stored in \texttt{options.nn} (see \cref{sec:neuralNetworks} for details).
+Further examples of neural network control systems can be found at \texttt{./cora/examples/contDynamics/neurNetContrSys}.

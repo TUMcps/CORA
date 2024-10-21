@@ -23,7 +23,7 @@ function res = globally(obj,time)
 
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   07-February-2024 (FL, replace from and to by interval)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -34,7 +34,7 @@ function res = globally(obj,time)
                       'This operation is not supported for stl objects!'));
     end
     
-    if ~isa(time,'interval') || ~all(size(time) == [1,1])
+    if ~isa(time,'stlInterval') && (~isa(time,'interval') || ~all(size(time) == [1,1]))
         throw(CORAerror('CORA:wrongValue',...
                         'Wrong format for input argument "time"!'));
     end
@@ -47,8 +47,7 @@ function res = globally(obj,time)
     res.rhs = [];
     res.id = [];
     res.temporal = true;
-    res.from = infimum(time);
-    res.to = supremum(time);
+    res.interval = stlInterval(time);
 end
 
 % ------------------------------ END OF CODE ------------------------------

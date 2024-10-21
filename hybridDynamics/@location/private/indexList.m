@@ -42,16 +42,15 @@ function eq = aux_getEquations(S)
 % get number of inequality constraints describing the set representation
 
     if isa(S,'polytope')
-
-        eq = length(S.b);
+        if representsa_(S,'conHyperplane',1e-12)
+            eq = 1;
+        else
+            eq = length(S.b);
+        end
     
     elseif isa(S,'levelSet')
     
         eq = length(S.eq);
-
-    elseif isa(S,'conHyperplane')
-
-        eq = 1;
     
     else
         throw(CORAerror('CORA:specialError',...

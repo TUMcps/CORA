@@ -12,7 +12,7 @@ variables:
 # define base settings
 .base-job:
   image:
-    name: tobiasladnertum/cora:r2023b
+    name: tobiasladnertum/cora:r2024b
     entrypoint: [""]
   tags:
     - matlab
@@ -58,6 +58,9 @@ test-job:
   script: 
     # reset CORA
     - matlab -batch "addpath(genpath('.')); resetCORA();"
+    
+    # remove unitTestsStatus.mat in case runTestSuite fails and old 'successful' run is still present
+    - if [ -f "./unitTests/unitTestsStatus.mat" ]; then rm -Rf ./unitTests/unitTestsStatus.mat; fi
 
     # run testSuite
     - matlab -batch "addpath(genpath('.')); maxNumCompThreads(4); runTestSuite('$testSuite');"
@@ -69,8 +72,8 @@ test-job:
     - matlab -batch "addpath(genpath('.')); resetCORA();"
     - if [ -d "./DLT_CustomLayers" ]; then rm -Rf ./DLT_CustomLayers; fi
     
-    # exit with exit code
-    - EXIT_CODE=$(<failed.txt)
+    # exit with exit code (EXIT_CODE=0 means 'Job succeeded')
+    - if [ -f "failed.txt" ]; then EXIT_CODE=$(<failed.txt); else EXIT_CODE=1; fi
     - rm failed.txt
     - echo "Exiting with code $EXIT_CODE."
     - exit $EXIT_CODE
@@ -128,7 +131,7 @@ test-flaky:
   extends: .base-runTestSuite-ext
   stage: compatibility
   image:
-    name: tobiasladnertum/cora:$matlabVerison
+    name: tobiasladnertum/cora:$matlabVersion
   variables:
     testSuite: 'short'
   rules:
@@ -141,19 +144,25 @@ test-flaky:
 test-compatibility-2022b:
   extends: .base-runTestSuite-compatibility
   variables:
-    matlabVerison: 'r2022b'
+    matlabVersion: 'r2022b'
 
 # run 2023b
 test-compatibility-2023b:
   extends: .base-runTestSuite-compatibility
   variables:
-    matlabVerison: 'r2023b'
+    matlabVersion: 'r2023b'
 
 # run 2024a
 test-compatibility-2024a:
   extends: .base-runTestSuite-compatibility
   variables:
-    matlabVerison: 'r2024a'
+    matlabVersion: 'r2024a'
+
+# run 2024a
+test-compatibility-2024b:
+  extends: .base-runTestSuite-compatibility
+  variables:
+    matlabVersion: 'r2024b'
 
 # Examples test stage ---------------------------------------------------------
 

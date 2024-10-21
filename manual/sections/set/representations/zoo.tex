@@ -1,0 +1,45 @@
+\subsubsubsection{Zoo} \label{sec:zoo}
+
+When it comes to range bounding, it is often better to use several simple range bounding methods in parallel and intersect the result, instead of tuning one method towards high accuracy. This is demonstrated by the numerical examples shown in \cite{Althoff2018b} and by the code example in \cref{sec:zooExample}. To facilitate mixing different range bounding techniques, we created the class \texttt{zoo} in which one can specify the methods to be combined. An object of class \texttt{zoo} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \mathcal{Z}(x) = \operator{zoo}(\mathcal{D},\texttt{methods}), \\
+		& \mathcal{Z}(x) = \operator{zoo}(\mathcal{D},\texttt{methods},\texttt{name},\texttt{maxOrder},\texttt{tolerance},\texttt{eps}),
+	\end{split}
+\end{equation*}
+where all input arguments except of \texttt{methods} are identical to the ones for the class \texttt{taylm} (see \cref{sec:taylorModels}). The argument \texttt{methods} is a cell array containing strings that describe the range bounding methods that are combined. The following range bounding methods are available:
+
+\begin{itemize}
+ \item \texttt{'interval'} -- Interval arithmetic (see \cref{sec:interval}).
+ \item \texttt{'affine(int)'} -- Affine arithmetic; the bounds of the affine objects are calculated with interval arithmetic (see \cref{sec:affine}).
+ \item \texttt{'affine(bnb)'} -- Affine arithmetic; the bounds of the affine objects are calculated with the branch and bound algorithm (see \cref{sec:affine}).
+ \item \texttt{'affine(bnbAdv)'} -- Affine arithmetic; the bounds of the affine objects are calculated with the advanced branch and bound algorithm (see \cref{sec:affine}).
+ \item \texttt{'affine(linQuad)'} -- Affine arithmetic; the bounds of the affine objects are calculated with the algorithm that is based on the Linear Dominated Bounder and the Quadratic Fast Bounder (see \cref{sec:affine}).
+ \item \texttt{'taylm(int)'} -- Taylor models; the bounds of the Taylor models are calculated with interval arithmetic (see \cref{sec:taylorModels}).
+ \item \texttt{'taylm(bnb)'} -- Taylor models; the bounds of the Taylor models are calculated with the branch and bound algorithm (see \cref{sec:taylorModels}).
+ \item \texttt{'taylm(bnbAdv)'} -- Taylor models; the bounds of the Taylor models are calculated with the advanced branch and bound algorithm (see \cref{sec:taylorModels}).
+ \item \texttt{'taylm(linQuad)'} -- Taylor models; the bounds of the Taylor models are calculated with the algorithm that is based on the Linear Dominated Bounder and the Quadratic Fast Bounder (see \cref{sec:taylorModels}).
+\end{itemize} 
+
+All functions that are implemented for class \texttt{taylm} are also available for the class \texttt{zoo}. Let us demonstrate the class \texttt{zoo} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.50\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_rangeBoundingZoo}
+\end{minipage}
+\begin{minipage}[t]{0.25\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}	
+	Command Window:
+	
+	res =
+
+  [-0.23983,4.92298]
+	\end{verbatim}
+\end{minipage}
+\end{center}
+
+A more detailed example for the class \texttt{zoo} is provided in \cref{sec:zooExample} and in the file \textit{examples/contSet/example\_zoo.m} in the CORA toolbox.

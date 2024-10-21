@@ -29,6 +29,9 @@ function res = test_intervalMatrix_plus
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 %% create first interval matrix
 % center
@@ -66,13 +69,13 @@ C = A + B;
 resPartial = [];
 
 % same center?
-resPartial(end+1) = (max(max(abs(center(C) - center(C_true)))) == 0);
+assert((max(max(abs(center(C) - center(C_true)))) == 0));
 % same radius?
-resPartial(end+1) = (max(max(abs(rad(C) - rad(C_true)))) == 0);
+assert((max(max(abs(rad(C) - rad(C_true)))) == 0));
 % same infumum?
-resPartial(end+1) = (max(max(abs(infimum(C.int) - infimum(C_true.int)))) == 0);
+assert((max(max(abs(infimum(C.int) - infimum(C_true.int)))) == 0));
 % same supremum?
-resPartial(end+1) = (max(max(abs(supremum(C.int) - supremum(C_true.int)))) == 0);
+assert((max(max(abs(supremum(C.int) - supremum(C_true.int)))) == 0));
 
 %% addition with a normal matrix
 M = [1, 2; -3 1];
@@ -80,13 +83,13 @@ C_true = intervalMatrix([1, 2.5; -2.25, -0.5],[1, 1.5; 0.25, 0.5]);
 C = M + A;
 
 % same center?
-resPartial(end+1) = (max(max(abs(center(C) - center(C_true)))) == 0);
+assert((max(max(abs(center(C) - center(C_true)))) == 0));
 % same radius?
-resPartial(end+1) = (max(max(abs(rad(C) - rad(C_true)))) == 0);
+assert((max(max(abs(rad(C) - rad(C_true)))) == 0));
 % same infumum?
-resPartial(end+1) = (max(max(abs(infimum(C.int) - infimum(C_true.int)))) == 0);
+assert((max(max(abs(infimum(C.int) - infimum(C_true.int)))) == 0));
 % same supremum?
-resPartial(end+1) = (max(max(abs(supremum(C.int) - supremum(C_true.int)))) == 0);
+assert((max(max(abs(supremum(C.int) - supremum(C_true.int)))) == 0));
 
 %% multiplication with a scalar
 m = 3;
@@ -94,13 +97,13 @@ C_true = intervalMatrix([3, 3.5; 3.75, 1.5],[1, 1.5; 0.25, 0.5]);
 C = m + A;
 
 % same center?
-resPartial(end+1) = (max(max(abs(center(C) - center(C_true)))) == 0);
+assert((max(max(abs(center(C) - center(C_true)))) == 0));
 % same radius?
-resPartial(end+1) = (max(max(abs(rad(C) - rad(C_true)))) == 0);
+assert((max(max(abs(rad(C) - rad(C_true)))) == 0));
 % same infumum?
-resPartial(end+1) = (max(max(abs(infimum(C.int) - infimum(C_true.int)))) == 0);
+assert((max(max(abs(infimum(C.int) - infimum(C_true.int)))) == 0));
 % same supremum?
-resPartial(end+1) = (max(max(abs(supremum(C.int) - supremum(C_true.int)))) == 0);
+assert((max(max(abs(supremum(C.int) - supremum(C_true.int)))) == 0));
 
 %result of all tests
 res = all(resPartial);

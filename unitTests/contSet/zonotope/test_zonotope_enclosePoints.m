@@ -22,6 +22,9 @@ function res = test_zonotope_enclosePoints
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % points
 p = [1  3 -2  4 3 -1 1 0;...
@@ -38,6 +41,7 @@ Z_ = zonotope.enclosePoints(p,'stursberg');
 % plot(p(1,:),p(2,:),'.k');
 
 % check if all points are contained
-res = all(contains(Z,p)) && all(contains(Z_,p));
+assert(all(contains(Z,p)))
+assert(all(contains(Z_,p)))
 
 % ------------------------------ END OF CODE ------------------------------

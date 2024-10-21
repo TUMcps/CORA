@@ -1,0 +1,28 @@
+\subsubsection{Matrix Zonotopes} \label{sec:zonotopeMatrix}
+
+A matrix zonotope is defined analogously to zonotopes (see \cref{sec:zonotope}):
+\begin{equation}\label{eq:matrixZonotope}
+	\mathcal{A}_{[z]}=\Big\{ C+\sum_{i=1}^{\kappa} p_i G\^{i} \Big| p_i \in [-1,1] \Big\}, \quad G\^{i}\in\mathbb{R}^{n \times m},
+\end{equation}
+and is written in short form as $\mathcal{A}_{[z]}=(C, G\^1, \ldots , G\^\kappa)$,
+where the first matrix is referred to as the \textit{matrix center} and the other matrices as \textit{matrix generators}.
+The order of a matrix zonotope is defined as $\rho = \kappa/n$. When exchanging the matrix generators by vector generators $g\^{i}\in \mathbb{R}^{n\cdot m}$,
+one obtains a zonotope (see e.g., \cite{Girard2005}).
+
+Matrix zonotopes are implemented by the class \texttt{matZonotope}. An object of class \texttt{matZonotope} can be constructed as follows:
+\begin{equation*}
+	\mathcal{A}_{[z]} = \texttt{matZonotope}(C,\texttt{G}),
+\end{equation*}
+where \texttt{G} is a three-dimensional array ($n\times m\times \kappa$) that stores the generator matrices, see \eqref{eq:matrixZonotope}.
+
+\newpage
+Let us demonstrate the construction of a \texttt{matZonotope} object by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_matZonotope}
+\end{minipage}
+\end{center}
+
+A more detailed example for matrix zonotopes is provided in \cref{sec:matrixZonotopeExample} and in the file \textit{examples/matrixSet/example\_matZonotope.m} in the CORA toolbox. Furthermore, a list of methods for the class \texttt{matZonotope} is provided in \cref{sec:matrixZonotopeOperations}.

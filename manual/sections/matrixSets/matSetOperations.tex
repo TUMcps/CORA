@@ -1,0 +1,124 @@
+\subsection{Matrix Set Operations} \label{sec:matSetOperations}
+
+This section describes the implemented standard operations for matrix sets.
+
+\subsubsection{mtimes}
+\label{sec:mtimesMatSet}
+
+The method \texttt{mtimes}, which overloads the $*$ operator, implements the multiplication of two matrix sets or the multiplication of a matrix set with a vector set, depending on the input arguments. Given two matrix sets $\mathcal{A}_1,\mathcal{A}_2 \subset \R^{n \times n}$ and a vector set $\mathcal{S} \subset \Rn$, the method \texttt{mtimes} computes
+\begin{equation*}
+	\begin{split}
+		& \texttt{mtimes}(\mathcal{A}_1,\mathcal{A}_2) = \mathcal{A}_1 \otimes \mathcal{A}_2 = \{ A_1 \cdot A_2~|~ A_1 \in \mathcal{A}_1,~A_2 \in \mathcal{A}_2 \}, \\
+		& \texttt{mtimes}(\mathcal{A}_1,\mathcal{S}) = \mathcal{A}_1 \otimes \mathcal{S} = \{ A_1 \cdot s ~|~ A_1 \in \mathcal{A}_1,~s \in \mathcal{S} \}.
+	\end{split}
+\end{equation*}  
+If the corresponding matrix set representation is not closed under multiplication, \operator{mtimes} returns an over-approximation. Let us demonstrate the method \texttt{mtimes} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_mtimesMatSet}
+\end{minipage}
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/matSet-operations/example_mtimes}
+\end{minipage}
+\end{center}
+
+\vspace{1cm}
+\subsubsection{plus} \label{sec:plusMatSet}
+
+The method \texttt{plus}, which overloads the $+$ operator, implements the Minkowski sum of two matrix sets. Given two matrix sets $\mathcal{A}_1,\mathcal{A}_2 \subset \R^{n \times n}$, their Minkowski sum is defined as 
+\begin{equation*}
+	\texttt{plus}(\mathcal{A}_1,\mathcal{A}_2) = \mathcal{A}_1 \oplus \mathcal{A}_2 = \{ A_1 + A_2 ~|~ A_1 \in \mathcal{A}_1,~ A_2 \in \mathcal{A}_2 \}.
+\end{equation*}
+If the corresponding matrix set representation is not closed under Minkowski sum, \operator{plus} returns an over-approximation. Let us demonstrate the method \texttt{plus} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.55\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_plusMatSet}
+\end{minipage}
+\begin{minipage}[t]{0.43\textwidth}
+	\vspace{10pt}
+	\begin{verbatim}
+		Command Window:	
+	
+		res = 
+  [2.000,4.000] [0.000,6.000]
+  [3.000,5.000] [4.000,6.000]
+	\end{verbatim}
+\end{minipage}
+\end{center}
+
+\newpage
+\subsubsection{expm} \label{expmMatSet}
+
+Given a matrix set $\mathcal{A} \subset \R^{n \times n}$, the method \texttt{expm} computes a tight enclosure of the matrix exponential
+\begin{equation*}
+	\texttt{expm}(\mathcal{A}) \supseteq e^{\mathcal{A}} = \sum_{i=0}^\infty \frac{\mathcal{A}^k}{k!} \; .
+\end{equation*}
+The number of Taylor terms $\eta$ used for the calculation of the matrix exponential (see \cite[Theorem~3.2]{Althoff2010a}) can be specified as an additional input argument:
+\begin{equation*}
+	\texttt{expm}(\mathcal{A},\eta) \supseteq e^{\mathcal{A}}.
+\end{equation*}
+The computation of a tight enclosure of the matrix exponential for matrix sets is essential for reachability analysis of linear parametric systems (see \cref{sec:linearParamSystems}). Let us demonstrate the method \texttt{expm} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_expmMatSet}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+	\vspace{10pt}
+	\begin{verbatim}
+		Command Window:	
+	
+		res = 
+  [1.00000,1.00000] [-1.21072,1.95859]
+  [0.00000,0.00000] [-5.25685,5.44556]
+	\end{verbatim}
+\end{minipage}
+\end{center}
+
+\vspace{1cm}
+\subsubsection{vertices} \label{sec:verticesMatSet}
+
+Given a matrix set $\mathcal{A} \subset \R^{n \times n}$, the method \texttt{vertices} computes its vertices $V_1,\dots,V_q$, $V_i \in \R^{n \times n}$:
+\begin{equation*}
+	\texttt{vertList} = \texttt{vertices}(\mathcal{A}),
+\end{equation*}
+where \texttt{vertList} is a MATLAB cell array that stores the vertices $V_i$.
+Let us demonstrate the method \texttt{vertices} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_verticesMatSet}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{10pt}
+	\begin{verbatim}
+		Command Window:	
+	
+		res{1} = 
+   -1.0000   -1.0000
+    3.0000    1.0000
+
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{31pt}
+	\begin{verbatim}
+	
+		res{2} = 
+    1.0000    3.0000
+    3.0000    3.0000
+
+	\end{verbatim}
+\end{minipage}
+\end{center}

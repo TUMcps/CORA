@@ -1,7 +1,7 @@
 function S = compact(S,varargin)
 % compact - removes redundancies in the representation of a set, the
-%    resulting set is equal to the original set, but minimal in its
-%    representation
+%    resulting set is equal to the original set up to a given tolerance, 
+%    but minimal in its representation
 %
 % Syntax:
 %    S = compact(S)
@@ -33,7 +33,7 @@ function S = compact(S,varargin)
 % representation:
 % - capsule, ellipsoid, emptySet, fullspace, halfspace, interval
 if isa(S,'capsule') || isa(S,'ellipsoid') || isa(S,'emptySet') ...
-        || isa(S,'fullspace') || isa(S,'halfspace') || isa(S,'interval')
+        || isa(S,'fullspace') || isa(S,'interval')
     return;
 end
 
@@ -48,7 +48,7 @@ if isa(S,'zonotope')
 
 elseif isa(S,'polytope')
     [method,tol] = setDefaultValues({'all',1e-9},varargin);
-    methods = {'all','zeros','A','Ae','aligned','V'};
+    methods = {'all','zeros','A','Ae','aligned','V','AtoAe'};
 
 elseif isa(S,'conZonotope')
     [method,tol] = setDefaultValues({'all',eps},varargin);
@@ -66,10 +66,17 @@ elseif isa(S,'levelSet')
     [method,tol] = setDefaultValues({'all',eps},varargin);
     methods = 'all';
 
+elseif isa(S,'polygon')
+    [method,tol] = setDefaultValues({'all',0.01},varargin);
+    methods = {'all','simplify','douglasPeucker'};
+
 end
 % check input arguments
-inputArgsCheck({{method,'str',methods},...
-    {tol,'att','numeric',{'scalar','nonnegative'}}});
+inputArgsCheck({ ...
+    {S,'att','contSet'},...
+    {method,'str',methods},...
+    {tol,'att','numeric',{'scalar','nonnegative'}} ...
+});
 
 
 % other classes may implement compact

@@ -22,6 +22,9 @@ function res = test_fullspace_box
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % init fullspace
 n = 2;
@@ -31,6 +34,6 @@ fs = fullspace(n);
 fs_ = box(fs);
 
 % compare results
-res = isequal(fs,fs_);
+assert(isequal(fs,fs_));
 
 % ------------------------------ END OF CODE ------------------------------

@@ -36,7 +36,7 @@ function pZ = reduce(pZ,option,order,varargin)
     % adaptive order reduction
     if strcmp(option,'adaptive')
         % note: var 'order' is not an order here
-        pZ = reduceAdaptive(pZ,order);
+        pZ = priv_reduceAdaptive(pZ,order);
         return;
     end
 

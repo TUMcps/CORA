@@ -1,16 +1,18 @@
-function [Rti,Rtp,Rti_y,perfInd,dimForSplit,options] = linReach(obj,options,Rinit,Rinit_y,iter)
+function [Rti,Rtp,Rti_y,perfInd,dimForSplit,options] = linReach(nlnsysDA,Rinit,Rinit_y,params,options,iter)
 % linReach - computes the reachable set after linearazation and returns if
 %    the initial set has to be split in order to control the linearization
 %    error
 %
 % Syntax:
-%    [Rti,Rtp,perfInd,dimForSplit,options] = linReach(obj,options,Rinit,Rinit_y,iter)
+%    [Rti,Rtp,perfInd,dimForSplit,options] = ...
+%       linReach(nlnsysDA,Rinit,Rinit_y,params,options,iter)
 %
 % Inputs:
-%    obj - nonlinear DAE system object
-%    options - options struct
+%    nlnsysDA - nonlinDASys object
 %    Rinit - initial reachable set (diff. variables)
 %    Rinit_y - initial reachable set (alg. variables)
+%    params - model parameters
+%    options - options struct
 %    iter - flag for activating iteration
 %
 % Outputs:
@@ -28,7 +30,7 @@ function [Rti,Rtp,Rti_y,perfInd,dimForSplit,options] = linReach(obj,options,Rini
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       21-November-2011
@@ -46,16 +48,15 @@ abstrerr_y = Rinit.error_y;
 Rinit = Rinit.set;
 
 % linearize nonlinear system
-[obj,linSys,options,linOptions] = linearize(obj,options,Rinit,Rinit_y); 
+[nlnsysDA,linsys,linParams,linOptions] = linearize(nlnsysDA,Rinit,Rinit_y,params,options); 
 
 %translate Rinit by linearization point
-Rdelta = Rinit + (-obj.linError.p.x);
+Rdelta = Rinit + (-nlnsysDA.linError.p.x);
 
 % compute reachable set of linearized system
 % ti: time interval, tp: time point
-linOptions.p = obj.linError.p.x;
-R = initReach(linSys,Rdelta,linOptions);
-Rtp = R.tp; Rti = R.ti;
+linOptions.p = nlnsysDA.linError.p.x;
+[Rtp,Rti] = oneStep(linsys,Rdelta,linParams.U,linParams.uTrans,options.timeStep,options.taylorTerms);
 
 % performance indices for splitting
 perfIndCurr_x = Inf; perfIndCurr_y = Inf;
@@ -73,11 +74,12 @@ while ((perfIndCurr_x > 1) || (perfIndCurr_y > 1)) && (perfInd <= 1)
     end
 
     %convert error to zonotope
-    Verror_x = zonotope([0*appliedError_x,diag(appliedError_x)]);
-    Verror_y = zonotope([0*appliedError_y,diag(appliedError_y)]);
-    Verror = Verror_x + obj.linError.CF_inv * Verror_y;
+    Verror_x = zonotope(0*appliedError_x,diag(appliedError_x));
+    Verror_y = zonotope(0*appliedError_y,diag(appliedError_y));
+    Verror = Verror_x + nlnsysDA.linError.CF_inv * Verror_y;
 
-    RallError = errorSolution(linSys,options,Verror); 
+    RallError = particularSolution_timeVarying(linsys,Verror,...
+        options.timeStep,options.taylorTerms); 
 
     %compute maximum reachable set due to maximal allowed linearization error
     Rmax = Rti + RallError;
@@ -85,19 +87,19 @@ while ((perfIndCurr_x > 1) || (perfIndCurr_y > 1)) && (perfInd <= 1)
     % obtain linearization error
     if options.tensorOrder == 2
 %         [Verror, error, error_x, error_y, Rti_y] = ...
-%            linError(obj, options, Rmax, Verror_y);
+%            linError(nlnsysDA, options, Rmax, Verror_y);
         if ~isfield(options,'index')
             % conventional computation
             [Verror, error, error_x, error_y, Rti_y] = ...
-                linError_mixed_noInt(obj, options, Rmax, Verror_y);
+                linError_mixed_noInt(nlnsysDA, Rmax, Verror_y, params, options);
         else
             % compositional computation
             [Verror, error, error_x, error_y, Rti_y] = ...
-                linError_mixed_noInt_comp(obj, options, Rmax, Verror_y);
+                linError_mixed_noInt_comp(nlnsysDA, Rmax, Verror_y, params, options);
         end
     elseif options.tensorOrder == 3
         [Verror, error, error_x, error_y, Rti_y] = ...
-            linError_thirdOrder(obj, options, Rmax, Verror_y);
+            linError_thirdOrder(nlnsysDA, Rmax, Verror_y, params, options);
     end
     
     
@@ -121,20 +123,21 @@ while ((perfIndCurr_x > 1) || (perfIndCurr_y > 1)) && (perfInd <= 1)
 end
 
 % compute reachable set due to the linearization error
-Rerror = errorSolution(linSys,options,Verror);
+Rerror = particularSolution_timeVarying(linsys,Verror,...
+    options.timeStep,options.taylorTerms);
 
 %translate reachable sets by linearization point
-Rti = Rti + obj.linError.p.x;
-Rtp = Rtp + obj.linError.p.x;
+Rti = Rti + nlnsysDA.linError.p.x;
+Rtp = Rtp + nlnsysDA.linError.p.x;
 
 if perfInd > 0.8
     disp('investigate');
 end
 
 dimForSplit = [];
-if (perfInd > 1) && (iter == 1)
+if perfInd > 1 && iter == 1
     % find best split
-    dimForSplit = select(obj,options,Rinit,Rinit_y,iter);
+    dimForSplit = select(nlnsysDA,Rinit,Rinit_y,params,options,iter);
 end
 
 %add interval of actual error

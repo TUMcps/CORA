@@ -1,0 +1,21 @@
+\subsection{State Space Partitioning} \label{sec:partition}
+
+It is sometimes useful to partition the state space into cells, for instance, when abstracting a continuous stochastic system by a discrete stochastic system. CORA supports axis-aligned partitioning using the class \texttt{partition}.
+
+We mainly support the following methods for partitions:
+\begin{itemize}
+ \item \texttt{cellCenter} -- returns a cell array of cell center positions of the partition segments whose indices are given as input.
+ \item \texttt{cellIndices} -- returns cell indices given a set of cell coordinates.
+ \item \texttt{cellIntervals} -- returns a cell array of interval objects corresponding to the cells specified as input.
+ \item \texttt{cellPolytopes} -- returns polytopes of selected cells.
+ \item \texttt{cellSegments} -- returns cell coordinates given a set of cell indices.
+ \item \texttt{cellZonotopes} -- returns zonotopes of selected cells.
+ \item \texttt{display} -- displays the parameters of the partition in the MATLAB workspace.
+ \item \texttt{exactIntersectingCells} -- finds the exact cells of the partition that intersect a set P, and the proportion of P that is in each cell.
+ \item \texttt{intersectingCells} -- returns the cells possibly intersecting with a continuous set, overapproximatively, by over-approximating the convex set as a multidimensional interval.
+ \item \texttt{nrOfCells} -- returns the number of cells of the partition.
+ \item \texttt{findSegments} -- returns segment indices intersecting with a given multidimensional interval.
+ \item \texttt{nrOfStates} -- returns the number of discrete states of the partition.
+ \item \texttt{partition} -- constructor of the class.
+ \item \texttt{plot} -- plots the partition.
+\end{itemize}

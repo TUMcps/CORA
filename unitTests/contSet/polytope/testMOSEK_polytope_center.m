@@ -23,10 +23,13 @@ function res = testMOSEK_polytope_center
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % ensure that MOSEK is on the path
 if ~isSolverInstalled('mosek')
-    res = false; return
+    assert(false);
 end
 
 % instantiate polytope
@@ -40,7 +43,7 @@ c_mosek = center(P);
 % remove MOSEK from path
 [suc,path2mosek] = removeSolverFromPath('mosek');
 if ~suc
-    res = false; return
+    assert(false);
 end
 
 % compute center using MATLAB linprog
@@ -52,6 +55,6 @@ for i=1:length(path2mosek)
 end
 
 % compare results
-res = all(withinTol(c_matlab,c_mosek));
+assert(all(withinTol(c_matlab,c_mosek)));
 
 % ------------------------------ END OF CODE ------------------------------

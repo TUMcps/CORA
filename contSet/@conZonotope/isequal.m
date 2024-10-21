@@ -36,44 +36,79 @@ function res = isequal(cZ,S,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% too many input arguments
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(2,3);
 
 % set default tolerance
 tol = setDefaultValues({1e-12},varargin);
 
 % check input arguments
-inputArgsCheck({ {cZ,'att','conZonotope'}, ...
-                 {S,'att','contSet'}, ...
+inputArgsCheck({ {cZ,'att',{'conZonotope','numeric'}}, ...
+                 {S,'att',{'contSet','numeric'}}, ...
                  {tol,'att','numeric',{'nonempty','scalar','finite','nonnegative'}}});
 
-% only implemented for conZonotope - conZonotope/zonotope/interval
-if ~( isa(S,'conZonotope') || isa(S,'zonotope') || isa(S,'interval') ...
-        || isa(S,'polytope'))
-    throw(CORAerror('CORA:noops',cZ,S));
+% ensure that numeric is second input argument
+[cZ,S] = reorderNumeric(cZ,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < cZ.precedence
+    res = isequal(S,cZ,tol);
+    return
 end
 
-% second set: polytope
-if isa(S,'polytope')
-    res = contains(S,cZ,'exact',tol) && contains_(cZ,S,'exact',tol);
+% ambient dimensions must match
+if ~equalDimCheck(cZ,S,true)
+    res = false;
+    return
+end
+
+% check empty cases
+cZ_empty = representsa_(cZ,'emptySet',tol);
+S_empty = representsa_(S,'emptySet',tol);
+if cZ_empty && S_empty
+    res = true;
+    return
+elseif xor(cZ_empty,S_empty)
+    res = false;
+    return
+end
+
+% two constrained zonotopes
+if isa(S,'conZonotope')
+    res = aux_isequal_conZonotope(cZ,S,tol);
     return
 end
 
 % second set: zonotope or interval
 if isa(S,'zonotope') || isa(S,'interval')
     % first set: conZonotope without constraints
-    if isempty(cZ.A) && isempty(cZ.b)
+    if representsa_(cZ,'zonotope',tol)
         res = isequal(zonotope(cZ),zonotope(S),tol);
     else
-        % constraints given
         res = false;
     end
     return
 end
 
-% two constrained zonotopes
+throw(CORAerror('CORA:noops',cZ,S));
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_isequal_conZonotope(cZ,S,tol)
+
+% check point cases
+[cZ_isPoint, cZ_p] = representsa_(cZ,'point',tol);
+[S_isPoint, S_p] = representsa_(S,'point',tol);
+if cZ_isPoint && S_isPoint
+    res = all(withinTol(cZ_p, S_p, tol));
+    return
+elseif (~cZ_isPoint && S_isPoint) || ...
+        (cZ_isPoint && ~S_isPoint)
+    res = false;
+    return
+end
 
 % check if both are represented completely equally
 if all(withinTol(cZ.c,S.c,tol)) ...
@@ -85,5 +120,7 @@ end
 
 % general method: check vertices (computationally expensive!)
 res = compareMatrices(vertices(cZ),vertices(S),tol);
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -29,16 +29,16 @@ O = emptySet(n);
 
 % intersection with itself
 O_ = O & O;
-res = isequal(O,O_);
+assert(isequal(O,O_));
 
 % init zonotope
 Z = zonotope(zeros(n,1),eye(n));
 
 % intersection with zonotope
 O_ = O & Z;
-res(end+1,1) = isequal(O,O_);
+assert(isequal(O,O_));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

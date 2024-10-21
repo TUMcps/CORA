@@ -52,7 +52,7 @@ options.verifyAlg = 'reachavoid:zonotope';
 % Specifications ----------------------------------------------------------
 
 % unsafe sets
-hs = halfspace([0 -1],-12.1);
+hs = polytope([0 -1],-12.1);
 spec = specification(hs,'unsafeSet');
 
 P = polytope([-1 0;0 -1;1 2],[0;0;4]) + [-3.8;5.833];

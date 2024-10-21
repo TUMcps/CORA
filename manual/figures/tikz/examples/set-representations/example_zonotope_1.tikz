@@ -1,0 +1,62 @@
+% This file was created by matlab2tikz.
+%
+\begin{tikzpicture}
+\footnotesize
+
+\begin{axis}[%
+width=4cm,
+height=4cm,
+at={(0in,0in)},
+scale only axis,
+xmin=-3.9,
+xmax=6.9,
+xlabel style={font=\color{white!15!black}},
+xlabel={$x_{(1)}$},
+ymin=-3.8,
+ymax=5.8,
+ylabel style={font=\color{white!15!black}},
+ylabel={$x_{(2)}$},
+axis background/.style={fill=white}
+]
+\addplot [color=blue, forget plot]
+  table[row sep=crcr]{%
+1	-1\\
+3	1\\
+1	3\\
+-1	1\\
+1	-1\\
+};
+\addplot [color=green, forget plot]
+  table[row sep=crcr]{%
+-2	0\\
+0	0\\
+0	2\\
+-2	2\\
+-2	0\\
+};
+\addplot [color=red, forget plot]
+  table[row sep=crcr]{%
+-1	-1\\
+1	-1\\
+3	1\\
+3	3\\
+1	5\\
+-1	5\\
+-3	3\\
+-3	1\\
+-1	-1\\
+};
+\addplot [color=black, forget plot]
+  table[row sep=crcr]{%
+-0.5	-2.5\\
+1.5	-1.5\\
+4.5	1.5\\
+5.5	3.5\\
+4.5	4.5\\
+2.5	3.5\\
+-0.5	0.5\\
+-1.5	-1.5\\
+-0.5	-2.5\\
+};
+\end{axis}
+\end{tikzpicture}%

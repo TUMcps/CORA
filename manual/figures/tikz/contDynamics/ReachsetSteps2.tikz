@@ -1,0 +1,18 @@
+\begin{tikzpicture}
+\footnotesize
+
+\node[inner sep=0pt] (v) at (0,0) {\includegraphics[width=0.7\columnwidth]{./figures/ReachsetSteps2.eps}};
+
+\node[anchor=center] at (-3.2, -0.9) {$\mathcal{X}_0$};
+\node[anchor=center] at (-2.1, 1.2) {$\mathcal{R}^d_h$};
+
+\node[anchor=center] at (1.6, 0) {\shortstack{convex hull of \\ $\mathcal{X}_0$, $\mathcal{R}^d_h$}};
+\node[anchor=center] at (3.1, 2.1) {$\mathcal{R}^d(\tau_0)$};
+
+\node[anchor=center] at (-5, -2.1) {\ding{192}};
+\node[anchor=center] at (-1.4, -2.1) {\ding{193}};
+\node[anchor=center] at (3.2, -2.1) {\ding{194}};
+
+\node[anchor=center] at (4.6, -1.5) {enlargement};
+
+\end{tikzpicture}%

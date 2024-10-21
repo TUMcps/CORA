@@ -45,10 +45,9 @@ function cPZ = quadMap(varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin == 1
-    throw(CORAerror('CORA:notEnoughInputArgs',2));
+narginchk(2,3);
 
-elseif nargin == 2                                  % quadratic map
+if nargin == 2                                  % quadratic map
     % syntax:
     % cPZ = quadMap(cPZ1,Q)
     
@@ -76,11 +75,8 @@ elseif nargin == 3                                  % mixed quadratic map
     cPZ = conPolyZono(pZ);
     
     % update constraints
-    cPZ = updateConstraints(cPZ,cPZ1,cPZ2);
+    cPZ = priv_updateConstraints(cPZ,cPZ1,cPZ2);
     
-else
-    
-    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
 % ------------------------------ END OF CODE ------------------------------

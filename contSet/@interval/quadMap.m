@@ -40,14 +40,11 @@ function I = quadMap(varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % compute quadratic map for zonotopes
-if nargin == 1
-    throw(CORAerror('CORAerror:notEnoughInputArgs',2));
-elseif nargin == 2
+narginchk(2,3);
+if nargin == 2
     I = quadMap(zonotope(varargin{1}),varargin{2});
 elseif nargin == 3
     I = quadMap(zonotope(varargin{1}),zonotope(varargin{2}),varargin{3});
-else
-    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
 % enclose the result with an interval

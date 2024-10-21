@@ -7,7 +7,7 @@ function res = douglasPeucker(points,varargin)
 %
 % Inputs:
 %    points - points defining the line segment
-%    tol - tolerance for the Hausdorf distance between original and
+%    tol - tolerance for the Haussdorf distance between original and
 %          simplified line segment 
 %
 % Outputs:

@@ -52,31 +52,20 @@ dt = 0.01;
 sys = neurNetContrSys(sysOL,nn,dt);
 
 % check wrong input
-try    
-    sys = neurNetContrSys();
-    % should have thrown an error
-    res = false;
-end
-try    
-    sys = neurNetContrSys(sysOL,nn,[0.1, 0.2]);
-    % should have thrown an error
-    res = false;
-catch
-end
+assertThrowsAs(@neurNetContrSys,'MATLAB:structRefFromNonStruct');
+assertThrowsAs(@neurNetContrSys,'CORA:wrongValue',sysOL,nn,[0.1, 0.2]);
 
-try
-    W1 = rand(100, 3);
-    nn = neuralNetwork({ ...
-        nnLinearLayer(W1, b1); ...
-        nnReLULayer(); ...
-        nnLinearLayer(W2, b2); ...
-        nnReLULayer(); ...
-    });
-    sys = neurNetContrSys(sysOL,nn,[0.1, 0.2]);
-    res = false;
-catch
-end
+W1 = rand(100,3);
+b1 = rand(100,1);
+nn = neuralNetwork({ ...
+    nnLinearLayer(W1, b1); ...
+    nnReLULayer(); ...
+    nnLinearLayer(W2, b2); ...
+    nnReLULayer(); ...
+});
+assertThrowsAs(@neurNetContrSys,'CORA:wrongValue',sysOL,nn,[0.1, 0.2]);
 
+% test completed
 res = true;
 
 % ------------------------------ END OF CODE ------------------------------

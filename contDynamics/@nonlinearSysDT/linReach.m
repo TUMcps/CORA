@@ -1,17 +1,19 @@
-function [Rtp,options] = linReach(obj,Rinit,options)
+function [Rtp,options,Verror] = linReach(nlnsysDT,Rinit,params,options)
 % linReach - computes the reachable set after linearization
 %
 % Syntax:
-%    [Rtp,options] = linReach(obj,Rinit,options)
+%    [Rtp,options,Verror] = linReach(nlnsysDT,Rinit,params,options)
 %
 % Inputs:
-%    obj - nonlinearSysDT system object
+%    nlnsysDT - nonlinearSysDT object
 %    Rinit - initial reachable set
+%    params - model parameters
 %    options - options struct
 %
 % Outputs:
 %    Rtp - resulting reachable set
 %    options - options struct
+%    Verror - linearization error
 %
 % Example:
 %    -
@@ -20,43 +22,48 @@ function [Rtp,options] = linReach(obj,Rinit,options)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: none
 
 % Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
 % Written:       21-August-2012
 % Last update:   29-January-2018 (NK)
 %                08-April-2021 (NK, use exact plus for polyZonotopes)
 %                18-June-2021 (MW, adaptive algorithm)
+%                06-November-2023 (LL, add Verror as output)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
     % linearize nonlinear system
-    [obj,A_lin,U] = linearize(obj,Rinit,options); 
+    [nlnsysDT,A_lin,U] = linearize(nlnsysDT,Rinit,params); 
 
     % translate Rinit by linearization point
-    Rdelta = Rinit + (-obj.linError.p.x);
+    Rdelta = Rinit + (-nlnsysDT.linError.p.x);
 
     % compute reachable set of linearized system
-    Rtp = A_lin*Rdelta + U;
+    if (isa(Rdelta,'polyZonotope') || isa(Rdelta,'conPolyZono')) && ...
+            (isa(U,'polyZonotope') || isa(U,'conPolyZono'))
+        Rtp = exactPlus(A_lin*Rdelta, U);
+    else
+        Rtp = A_lin*Rdelta + U;
+    end
     
     % first step of adaptive: decide tensorOrder (also compute Verror)
+    Verror = 0;
     if strcmp(options.alg,'lin-adaptive') && options.i == 1
-        [options,Verror] = aux_tuneTensorOrder(obj,options,Rdelta,[],[]);
+        [options,Verror] = aux_tuneTensorOrder(nlnsysDT,Rdelta,params,options,[],[]);
         
     else
         % obtain abstraction error
         if options.tensorOrder == 2
-            Verror = linError_mixed_noInt(obj, options, Rdelta);
+            Verror = linError_mixed_noInt(nlnsysDT, Rdelta, params, options);
         elseif options.tensorOrder == 3
-            Verror = linError_thirdOrder(obj, options, Rdelta);
+            Verror = linError_thirdOrder(nlnsysDT, Rdelta, params, options);
         end
     end
 
     % add set of abstraction errors
-    if options.tensorOrder == 3 && ...
-       (isa(Rtp,'polyZonotope') || isa(Rtp,'conPolyZono'))
-   
+    if isa(Rtp,'polyZonotope') || isa(Rtp,'conPolyZono')   
         Rtp = exactPlus(Rtp,Verror);
     else
         Rtp = Rtp + Verror;
@@ -89,10 +96,10 @@ function [Rtp,options] = linReach(obj,Rinit,options)
         radVerror = rad(interval(Verror));
         if options.tensorOrder == 2 && ...
                 all( 1 - radVerror ./ options.Verrorprev > 1-options.zetaK)
-        	options = aux_tuneTensorOrder(obj,options,Rdelta,radVerror,[]);
+        	options = aux_tuneTensorOrder(nlnsysDT,Rdelta,params,options,radVerror,[]);
         elseif options.tensorOrder == 3 && ...
                 all( 1 - radVerror ./ options.Verrorprev < options.zetaK-1)
-            options = aux_tuneTensorOrder(obj,options,Rdelta,[],radVerror);
+            options = aux_tuneTensorOrder(nlnsysDT,Rdelta,params,options,[],radVerror);
         end
     end
     
@@ -101,18 +108,18 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [options,Verror] = aux_tuneTensorOrder(obj,options,Rdelta,radVerror_2,radVerror_3)
+function [options,Verror] = aux_tuneTensorOrder(nlnsysDT,Rdelta,params,options,radVerror_2,radVerror_3)
 
     % 1. compute other order (Verror_2 or Verror_3) if necessary
     % 2. compare to current Verror
     % 3. adapt tensorOrder and Verrorprev if change significant enough
 
     if isempty(radVerror_2)
-        Verror_2 = linError_mixed_noInt(obj, options, Rdelta);
+        Verror_2 = linError_mixed_noInt(nlnsysDT, Rdelta, params, options);
         radVerror_2 = rad(interval(Verror_2));
     end
     if isempty(radVerror_3)
-        Verror_3 = linError_thirdOrder(obj, options, Rdelta);
+        Verror_3 = linError_thirdOrder(nlnsysDT, Rdelta, params, options);
         radVerror_3 = rad(interval(Verror_3));
     end
 

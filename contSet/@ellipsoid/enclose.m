@@ -43,14 +43,16 @@ function E = enclose(E,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,3);
+
 % check input arguments
-if length(varargin) == 1
+if nargin == 2
     E2 = varargin{1};
     inputArgsCheck({{E,'att','ellipsoid','scalar'}; ...
                     {E2,'att','ellipsoid','scalar'}});
     equalDimCheck(E,E2);
 
-elseif length(varargin) == 2
+elseif nargin == 3
     M = varargin{1};
     Eplus = varargin{2};
     inputArgsCheck({{E,'att','ellipsoid','scalar'}; ...
@@ -58,8 +60,6 @@ elseif length(varargin) == 2
                     {M,'att','numeric',{'size',[dim(E),dim(Eplus)]}}});
     E2 = M*Eplus;
     
-else
-    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
 % compute enclosure using convex hull

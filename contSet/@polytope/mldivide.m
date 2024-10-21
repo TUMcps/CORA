@@ -46,11 +46,11 @@ equalDimCheck(P1,P2);
 n = dim(P1);
 
 % empty set cases
-if representsa_(P1,'emptySet')
+if representsa_(P1,'emptySet',1e-12)
     % P1 empty -> P1 \ P2 empty
     P_out = polytope.empty(n);
     return
-elseif representsa_(P2,'emptySet')
+elseif representsa_(P2,'emptySet',1e-12)
     % P2 empty -> P1 \ P2 = P1
     P_out = P1;
     return

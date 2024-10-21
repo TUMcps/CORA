@@ -23,19 +23,17 @@ function res = test_emptySet_empty
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % 1D
 n = 1;
 O = emptySet.empty(n);
-res(end+1,1) = representsa(O,'emptySet') && dim(O) == 1;
+assert(representsa(O,'emptySet') && dim(O) == 1);
 
 % 5D
 n = 5;
 O = emptySet.empty(n);
-res(end+1,1) = representsa(O,'emptySet') && dim(O) == 5;
+assert(representsa(O,'emptySet') && dim(O) == 5);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

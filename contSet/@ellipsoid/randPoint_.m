@@ -1,5 +1,5 @@
 function p = randPoint_(E,N,type,varargin)
-% randPoint_ - generates a random point within an ellipsoid
+% randPoint_ - samples a random point from within an ellipsoid
 %
 % Syntax:
 %    p = randPoint_(E)
@@ -28,7 +28,7 @@ function p = randPoint_(E,N,type,varargin)
 %
 % See also: contSet/randPoint, interval/randPoint_
 
-% Authors:       Victor Gassmann, Mark Wetzlinger, Max Perschl, Adrian Kulmburg
+% Authors:       Victor Gassmann, Mark Wetzlinger, Maximilian Perschl, Adrian Kulmburg
 % Written:       18-March-2021
 % Last update:   25-June-2021 (MP, add type gaussian)
 %                19-August-2022 (MW, integrate standardized pre-processing)
@@ -43,17 +43,16 @@ if ischar(N) && strcmp(N,'all')
         "Number of vertices 'all' is not supported for class ellipsoid."));
 end
 
-% ellipsoid is just a point
-if rank(E)==0
-    % replicate point N times
+% ellipsoid is just a point -> replicate center N times
+if representsa_(E,'point',eps)
     p = repmat(E.q,1,N);
     return;
 end
 
-% read center
-c = E.q;
-% shift center
-E = E + (-c);
+% save original center
+c_orig = E.q;
+% shift ellipsoid to be centered at the origin
+E = E + E.q;
 
 % compute rank and dimension
 r = rank(E);
@@ -70,7 +69,7 @@ E = G*E;
 
 % generate different types of extreme points
 if strcmp(type,'standard') || startsWith(type,'uniform')
-    % generate points uniformely distributed (with N -> infinity)
+    % generate points uniformly distributed (with N -> infinity)
     % on the unit hypersphere
     X = randn(dim(E),N);
     pt = X./sqrt(sum(X.^2,1));
@@ -80,7 +79,7 @@ if strcmp(type,'standard') || startsWith(type,'uniform')
     pt = r.*pt;
     
     % stack again, backtransform and shift
-    p = T*[inv(G)*pt;zeros(n_rem,N)] + c;
+    p = T*[inv(G)*pt;zeros(n_rem,N)] + c_orig;
 
 elseif strcmp(type,'extreme')
     % Do the same as above, but without the radius
@@ -88,7 +87,7 @@ elseif strcmp(type,'extreme')
     pt = X./sqrt(sum(X.^2,1));
     
     % stack again, backtransform and shift
-    p = T*[inv(G)*pt;zeros(n_rem,N)] + c;
+    p = T*[inv(G)*pt;zeros(n_rem,N)] + c_orig;
 
 end
 

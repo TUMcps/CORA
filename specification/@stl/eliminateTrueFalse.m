@@ -23,7 +23,7 @@ function res = eliminateTrueFalse(obj)
 
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   08-February-2024 (FL, use interval property of stl instead of from and to)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -92,13 +92,13 @@ function res = eliminateTrueFalse(obj)
         rhs = eliminateTrueFalse(obj.rhs);
 
         if strcmp(lhs.type,'true')
-            res = finally(rhs,interval(obj.from,obj.to));
+            res = finally(rhs,obj.interval);
         elseif strcmp(rhs.type,'true')
             res = stl(true);
         elseif strcmp(rhs.type,'false')
             res = stl(false);
         else
-            res = until(lhs,rhs,interval(obj.from,obj.to));
+            res = until(lhs,rhs,obj.interval);
         end
 
     elseif strcmp(obj.type,'release')
@@ -107,13 +107,13 @@ function res = eliminateTrueFalse(obj)
         rhs = eliminateTrueFalse(obj.rhs);
 
         if strcmp(lhs.type,'false')
-            res = globally(rhs,interval(obj.from,obj.to));
+            res = globally(rhs,obj.interval);
         elseif strcmp(rhs.type,'true')
             res = stl(true);
         elseif strcmp(lhs.type,'true')
             res = stl(true);
         else
-            res = release(lhs,rhs,interval(obj.from,obj.to));
+            res = release(lhs,rhs,obj.interval);
         end
 
     elseif strcmp(obj.type,'finally')
@@ -125,7 +125,7 @@ function res = eliminateTrueFalse(obj)
         elseif strcmp(inner.type,'true')
             res = stl(true);
         else
-            res = finally(inner,interval(obj.from,obj.to));
+            res = finally(inner,obj.interval);
         end
 
     elseif strcmp(obj.type,'globally')
@@ -137,7 +137,7 @@ function res = eliminateTrueFalse(obj)
         elseif strcmp(inner.type,'true')
             res = stl(true);
         else
-            res = globally(inner,interval(obj.from,obj.to));
+            res = globally(inner,obj.interval);
         end    
 
     elseif ismember(obj.type,{'<','<=','>','>=','true','false'})

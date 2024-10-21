@@ -19,6 +19,9 @@ function res = testMP_Krylov_homogeneousSolution_precise(~)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % enable access to private function "initReach_Krylov"
 path = CORAROOT;
@@ -89,7 +92,7 @@ G_exact = generators(R_exact);
 
 % Are generators identical?
 maxDiff = max(max(abs(G_Krylov-G_exact)));
-res = (maxDiff < 1e-8);
+assert((maxDiff < 1e-8));
 
 % revoke access to private function "initReach_Krylov"
 delete(target);

@@ -1,0 +1,72 @@
+\subsubsection{reach} \label{sec:reach}
+
+The operation \operator{reach} computes the reachable set of a dynamic system. Let us denote the solution of a dynamic system by $\chi(t;x_0,u(\cdot),p)$, where $t\in\mathbb{R}$ is the time, $x_0 = x(t_0) \in \mathbb{R}^n$ is the initial state, $u(\cdot) \in \mathbb{R}^m$ is the system input, and $p\in \mathbb{R}^p$ is a parameter vector. The reachable set at time $t=t_f$ can be defined for a set of initial states $\mathcal{X}_0 \subset \Rn$, a set of input values $\mathcal{U}(t) \subset \R^m$, and a set of parameter values $\mathcal{P} \subset \R^p$, as
+\begin{equation}
+  \mathcal{R}^e(t_f) = \Big\{ \chi(t_f;x_0,u(\cdot),p,w) \in \mathbb{R}^n ~\big|~ x_0 \in \mathcal{X}_0, \forall t \in [t_0,t_f]: u(t)\in\mathcal{U}(t), p \in \mathcal{P}, w \in \mathcal{W} \Big\}.
+  \label{eq:reachSet}
+\end{equation}
+Since the exact reachable set $\mathcal{R}^e(t)$ as defined in \eqref{eq:reachSet} cannot be computed in general, the operation \texttt{reach} computes a tight enclosure $\mathcal{R}(t) \supseteq \mathcal{R}^e(t)$.
+
+The syntax for the operation \texttt{reach} is:
+\begin{equation*}
+\begin{split}
+	& \texttt{R} = \texttt{reach}(\texttt{sys},\texttt{params},\texttt{options}) \\,
+	& [\texttt{R},\texttt{res}] = \texttt{reach}(\texttt{sys},\texttt{params},\texttt{options},\texttt{spec}),
+\end{split}
+\end{equation*}
+with input arguments
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{sys} & dynamic system defined by any of the classes in \cref{sec:continuousDynamics,sec:hybridDynamics}, e.g., \texttt{linearSys}, \texttt{hybridAutomaton}, etc. \\
+	$\bullet$~\texttt{params} & struct containing the parameter that define the reachability problem \\
+	& \begin{tabular}[t]{l p{10cm}}	
+	 	--~\texttt{.tStart} & initial time $t_0$ (default value 0) \\
+	 	--~\texttt{.tFinal} & final time $t_f$ \\
+	 	--~\texttt{.R0} & initial set $\mathcal{X}_0$ specified by one of the set representations in \cref{sec:basicSetRep}\\
+	 	--~\texttt{.U} & input set $\mathcal{U}$ specified as an object of class \texttt{zonotope} (see \cref{sec:zonotope})\\
+	 	--~\texttt{.u} & time-dependent center $u_c(t)$ of the time-varying input set $\mathcal{U}(t) := u_c(t) \oplus \mathcal{U}$ specified as a matrix for which the number of columns is identical to the number of reachability steps (optional)\\
+	 	--~\texttt{.paramInt} & set of parameter values $\mathcal{P}$ specified as an object of class \texttt{interval} (see \cref{sec:interval}) (class \texttt{nonlinParamSys} only)\\
+	 	--~\texttt{.W} & disturbance set $\mathcal{W}$ specified as an object of class \texttt{interval} (see \cref{sec:interval}) or \texttt{zonotope} (see \cref{sec:zonotope} (classes \texttt{linearSys} and \texttt{linearSysDT} only) \\
+	 	--~\texttt{.V} & set of sensor noises $\mathcal{V}$ specified as an object of class \texttt{interval} (see \cref{sec:interval})or \texttt{zonotope} (see \cref{sec:zonotope} (classes \texttt{linearSys} and \texttt{linearSysDT} only) \\
+	 \end{tabular}
+\end{tabular}
+\end{center}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	& \begin{tabular}[t]{l p{10cm}}	
+	    --~\texttt{.y0guess} & guess for a consistent initial algebraic state (class \texttt{nonlinDASys} only, see \cref{sec:reachDAEsys}). \\
+	 	--~\texttt{.startLoc} & index of the initial location (class \texttt{hybridAutomaton} and \texttt{parallelHybridAutomaton} only)\\
+	 	--~\texttt{.finalLoc} & index of the final location. Reachability analysis stops as soon as the final location is reached (class \texttt{hybridAutomaton} and \texttt{parallelHybridAutomaton} only, optional)
+	 \end{tabular} \\
+	$\bullet$~\texttt{options} & struct containing algorithm settings for reachability analysis. Since the settings are different for each type of dynamic system, they are documented in \cref{sec:continuousDynamics} and \cref{sec:hybridDynamics}. \\
+	$\bullet$~\texttt{spec} & object of class \texttt{specification} (see \cref{sec:specification}) which represents the specifications the system has to verify. Reachability analysis stops as soon as a specification is violated.
+\end{tabular}
+\end{center}
+
+and output arguments
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{R} & object of class \texttt{reachSet} (see \cref{sec:reachSet}) that stores the reachable set $\mathcal{R}(t_i)$ at time point $t_i$ and the reachable set $\mathcal{R}(\tau_i)$ for time intervals $\tau_i = [t_i,t_{i+1}]$. \\
+	$\bullet$~\texttt{res} & Boolean flag that indicates whether the specifications are satisfied (\texttt{res} = 1) or not (\texttt{res} = 0).
+\end{tabular}
+\end{center}
+
+
+Let us demonstrate the operation \texttt{reach} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.58\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_reach}
+\end{minipage}
+\begin{minipage}[t]{0.4\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/contDynamics/example_reach}
+\end{minipage}
+\end{center}

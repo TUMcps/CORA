@@ -130,7 +130,7 @@ function p = aux_randPointExtreme(cPZ)
 % zonotope
 
     GI = cPZ.GI;
-    cPZ.GI = [];
+    cPZ.GI = zeros(dim(cPZ),0);
     res = 0;
     
     % loop until a suitable point was found

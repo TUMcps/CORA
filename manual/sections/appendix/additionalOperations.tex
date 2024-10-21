@@ -1,0 +1,544 @@
+\section{Additional Methods for Set Representations}
+
+In addition to the set operations described in \cref{sec:setOperations}, some set representations implement additional methods. This section documents most of the implemented methods and explains optional parameters for some methods.
+
+
+% Zonotopes -------------------------------------------------------------------
+
+\subsection{Zonotopes} \label{sec:zonotopeOperations}
+
+In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), the class \texttt{zonotope} supports the following methods:
+\begin{itemize}
+    \item \texttt{abs} -- returns a zonotope with absolute values of the center and the generators
+    \item \texttt{box} -- computes an enclosing axis-aligned box in generator representation.
+    \item \texttt{constrSat} -- checks if all values of a zonotope satisfy the constraint $Cx<=d$, $C\in\mathbb{R}^{m\times n}$, $d\in\mathbb{R}^m$.
+    \item \texttt{deleteAligned} -- combines aligned generators to a single generator. This reduces the order of a zonotope while not causing any over-approximation.
+    \item \texttt{deleteZeros} -- deletes generators whose entries are all zero.
+    \item \texttt{dominantDirections} - computes the directions that span a parallelotope which tightly encloses a zonotope.
+    \item \texttt{encloseMany} -- function for the enclosure of multiple zonotopes with a zonotope.
+%	\item \texttt{enclosingPolytope} -- converts a zonotope to a polytope representation in an over-approximative way to save computational time. The technique can be influenced by options, but most techniques are inspired by \cite[Sec.~2.5.6]{Althoff2010a}.
+    \item \texttt{enlarge} -- enlarges the generators of a zonotope by a vector of factors for each dimension.
+    \item \texttt{exactPlus} -- compute the addition of two sets while preserving the dependencies between the two sets.
+    \item \texttt{filterOut} -- deletes parallelotopes that are covered by other parallelotopes from a list of parallelotopes
+    \item \texttt{generatorLength} -- returns the lengths of the generators.
+    \item \texttt{generators} -- returns the generators of a zonotope as a matrix whose column vectors are the generators.
+    \item \texttt{intervalMultiplication} -- multiplication of a zonotope with an interval (automatically called via mtimes)
+    \item \texttt{intersectStrip} -- encloses the intersection between a zonotope and a strip with a zonotope.
+    \item \texttt{isInterval} -- checks if a zonotope represents an interval.
+    \item \texttt{minnorm} -- returns the minimum zonotope norm.
+    \item \texttt{minus} -- approximates the Minkowski difference of two zonotopes or a zonotope and a vector.
+    \item \texttt{norm} -- computes the maximum norm value of all points in a zonotope. For more detail, see \cref{sec:zono_norm}.
+    \item \texttt{orthVectors} -- computes remaining orthogonal vectors when the zonotope is not full dimensional.
+    \item \texttt{polygon} -- converts a two-dimensional zonotope into a polygon and returns its vertices.
+%	\item \texttt{polytope} -- returns an exact polytope in halfspace representation according to \cite[Theorem 2.1]{Althoff2010a}. 
+    \item \texttt{projectHighDim} -- project a zonotope to a higher dimensional space.
+    \item \texttt{quadMap\_parallel} -- parallel execution of quadMap-operation for zonotopes, see \cref{sec:quadMap}.
+    \item \texttt{radius} -- computes the radius of a hypersphere enclosing a zonotope.
+    \item \texttt{rank} -- computes the rank of the generator matrix.
+    \item \texttt{reduceUnterApprox} -- computes a zonotope with desired zonotope order which is a subset of the original zonotope.
+    \item \texttt{rotate} -- rotates a 2-dimensional zonotope by the specified angle.
+    \item \texttt{sampleBox} -- returns specified number of samples uniformly distributed in a full-dimensional parallelotope.
+    \item \texttt{split} -- splits a zonotope into two or more zonotopes that enclose the original zonotope. More details can be found in \cref{sec:zono_split}.
+    \item \texttt{splitFirstGen} -- split a zonotope along the first generator.
+    \item \texttt{tensorMultiplication} -- computes $M_{ijk...l} x_j x_k \cdots x_l | x \in \mathcal{Z}$ for a zonotope $\mathcal{Z}$ and a tensor $M$.
+    \item \texttt{underapproximate} -- returns the vertices of an under-approximation. The under-approximation is computed by finding the vertices that are extreme in the direction of a set of vectors, stored in the matrix S. If S is not specified, it is constructed by the vectors spanning an over-approximative parallelotope. (Warning: high computational complexity).
+    \item \texttt{volumeRatio} -- computes the approximate volume ratio of a zonotope and its over-approximating polytope
+    \item \texttt{zonotopeNorm} -- computes the norm of a point with respect to the zonotope-norm induced by the zonotope
+\end{itemize}
+
+\subsubsection{Method \texttt{split}} \label{sec:zono_split}
+
+The ultimate goal is to compute the reachable set of a single point in time or time interval with a single set representation. However, reachability analysis often requires abstractions of the original dynamics, which might become inaccurate for large reachable sets. In that event it can be useful to split the reachable set and continue with two or more set representations for the same point in time or time interval. Zonotopes are not closed under intersection, and thus not under splits. Several options as listed in \cref{tab:zono_split} can be selected to optimize the split performance.
+
+\begin{table}[h]
+    \caption{Split techniques for zonotopes.}
+    \centering
+    \label{tab:zono_split}
+    \begin{tabular}{lll}
+        \toprule
+        \textbf{Split technique}      & \textbf{Comment}                       & \textbf{Reference}                   \\
+        \midrule
+        \texttt{splitOneGen}          & splits one generator                   & \cite[Proposition 3.8]{Althoff2010a} \\
+        \texttt{directionSplit}       & splits all generators in one direction & ---                                  \\
+        \texttt{directionSplitBundle} & exact split using zonotope bundles     & \cite[Section V.A]{Althoff2011f}     \\
+        \texttt{halfspaceSplit}       & split along a given halfspace          & ---                                  \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsubsection{Method \texttt{norm}} \label{sec:zono_norm}
+This function can compute the Euclidean norm of the zonotope vertex with the biggest Euclidean distance from the center (without enumerating vertices). Although this problem has exponential worst-case complexity in the number of generators, by using a more advanced branch-and-bound solver like Gurobi\footnote{https://www.gurobi.com/} with YALMIP, the computation time can be reduced significantly.
+
+\subsubsection{Method \texttt{ellipsoid}} \label{sec:zono_ellipsoid}
+\cref{tab:zono_ell} shows available conversions from a zonotope $Z$ to an ellipsoid $E$. Results specified (o: overapproximation, u: underapproximation)
+\begin{itemize}
+    \item by \texttt{o:exact}, \texttt{u:exact} are the optimal minimum-volume enclosing and maximum-volume inscribed ellipsoids. For more detail, see \cite[Sec. 8.4.1, Sec. 8.4.2]{Boyd2004}.
+    \item by \texttt{o:norm},\texttt{u:norm} approximate \texttt{o:exact},\texttt{u:exact} by using the exact zonotope norm.
+    \item by \texttt{o:norm:bnd}, \texttt{u:norm:bnd} are the same as their respective \texttt{*:norm} specifier, but use a tractably computable bound on the zonotope norm.
+\end{itemize}
+
+\begin{table}[h]
+    \caption{Available zonotope $\rightarrow$ ellipsoid conversions with ``$+$'', ``$-$'' meaning polynomial and exponential complexity with respect to generator count, respectively.}
+    \centering
+    \label{tab:zono_ell}
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{Specifier}  & \textbf{Mode} & \textbf{Complexity} \\
+        \midrule
+        \texttt{o:exact}    & o             & $-$                 \\
+        \texttt{o:norm}     & o             & $-$                 \\
+        \texttt{o:norm:bnd} & o             & $+$                 \\
+        \texttt{u:exact}    & u             & $-$                 \\
+        \texttt{u:norm}     & u             & $-$                 \\
+        \texttt{u:norm:bnd} & u             & $+$                 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+
+% Intervals -------------------------------------------------------------------
+
+\subsection{Intervals}    \label{sec:intervalOperations}
+
+In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}) the class \texttt{interval} supports additional mehtods. Since the \texttt{interval} class has a lot of methods, we separate them into methods that realize mathematical functions and methods that do not realize mathematical functions.
+
+\paragraph{Methods realizing mathematical functions and operations}
+\begin{itemize}
+    \item \texttt{abs} -- returns the absolute value as defined in \cite[Eq.~(10)]{Althoff2016a}.
+    \item \texttt{acos} -- $\arccos(\cdot)$ function as defined in \cite[Eq.~(6)]{Althoff2016a}.
+    \item \texttt{acosh} -- $\arccosh(\cdot)$ function as defined in \cite[Eq.~(8)]{Althoff2016a}.
+    \item \texttt{asin} -- $\arcsin(\cdot)$ function as defined in \cite[Eq.~(6)]{Althoff2016a}.
+    \item \texttt{asinh} -- $\arcsinh(\cdot)$ function as defined in \cite[Eq.~(8)]{Althoff2016a}.
+    \item \texttt{atan} -- $\arctan(\cdot)$ function as defined in \cite[Eq.~(6)]{Althoff2016a}.
+    \item \texttt{atanh} -- $\arctanh(\cdot)$ function as defined in \cite[Eq.~(8)]{Althoff2016a}.
+    \item \texttt{cos} -- $\cos(\cdot)$ function as defined in \cite[Eq.~(13)]{Althoff2016a}.
+    \item \texttt{cosh} -- $\cosh(\cdot)$ function as defined in \cite[Eq.~(7)]{Althoff2016a}.
+    \item \texttt{ctranspose} -- overloaded '\,'\,' operator for single operand to transpose a matrix.
+    \item \texttt{enlarge} -- enlarges each dimension by a factor around its mean value.
+    \item \texttt{eq} -- overloads the '==' operator to check if both intervals are equal.
+    \item \texttt{exp} -- exponential function as defined in \cite[Eq.~(4)]{Althoff2016a}.
+    \item \texttt{horzcat} -- overloads horizontal concatenation.
+    \item \texttt{infimum} -- returns the infimum.
+    \item \texttt{isscalar} -- returns true if the interval is one-dimensional, false otherwise.
+    \item \texttt{le} -- overloads \texttt{<=} operator: Is one interval equal or the subset of another interval?
+    \item \texttt{log} -- natural logarithm function as defined in \cite[Eq.~(5)]{Althoff2016a}.
+    \item \texttt{lt} -- overloads \texttt{<} operator: Is one interval equal or the subset of another interval?
+    \item \texttt{minus} -- overloaded '-' operator, see \cite[Eq.~(2)]{Althoff2016a}.
+    \item \texttt{mpower} -- overloaded '\string^' operator (power), see \cite[Eq.~(9)]{Althoff2016a}.
+    \item \texttt{mrdivide} -- overloaded '/' operator (division), see \cite[Eq.~(3)]{Althoff2016a}.
+    \item \texttt{mtimes} -- overloaded '*' operator (multiplication), see \cite[Eq.~(2)]{Althoff2016a} for scalars and \cite[Eq.~(16)]{Althoff2016a} for matrices.
+    \item \texttt{ne} -- overloaded '~=' operator.
+    \item \texttt{power} -- overloaded '.\string^' operator for intervals (power), see \cite[Eq.~(9)]{Althoff2016a}.
+    \item \texttt{prod} -- product of array elements.
+    \item \texttt{rdivide} -- overloads the './' operator: provides elementwise division of two matrices.
+    \item \texttt{sin} -- $\sin(\cdot)$ function as defined in \cite[Eq.~(12)]{Althoff2016a}.
+    \item \texttt{sinh} -- $\sinh(\cdot)$ function as defined in \cite[Eq.~(7)]{Althoff2016a}.
+    \item \texttt{sqrt} -- $\sqrt{(\cdot)}$ function as defined in \cite[Eq.~(5)]{Althoff2016a}.
+    \item \texttt{tan} -- $\tan(\cdot)$ function as defined in \cite[Eq.~(14)]{Althoff2016a}.
+    \item \texttt{tanh} -- $\tanh(\cdot)$ function as defined in \cite[Eq.~(7)]{Althoff2016a}.
+    \item \texttt{times} -- overloaded '.*' operator for elementwise multiplication of matrices.
+    \item \texttt{transpose} -- overloads the '\, .' \,' operator to compute the transpose of an interval matrix.
+    \item \texttt{uminus} -- overloaded '-' operator for a single operand.
+    \item \texttt{uplus} -- overloaded '+' operator for single operand.
+\end{itemize}
+
+\paragraph{Other methods}
+
+\begin{itemize}
+    \item \texttt{diag} -- create diagonal matrix or get diagonal elements of matrix.
+    \item \texttt{enlarge} -- enlarges an \texttt{interval} object around its center.
+    \item \texttt{gridPoints} -- computes grid points of an interval; the points are generated in a way such that a continuous space is uniformly partitioned.
+    \item \texttt{horzcat} -- overloads the operator for horizontal concatenation, e.g., \texttt{a = [b,c,d]}.
+    \item \texttt{infimum} -- returns the infimum of an interval.
+    \item \texttt{isscalar} -- returns $1$ if interval is scalar and $0$ otherwise.
+    \item \texttt{length} -- overloads the operator that returns the length of the longest array dimension.
+    \item \texttt{partition} -- partitions a multidimensional interval into subintervals.
+    \item \texttt{rad} -- returns the radius ($=0.5 \cdot$width) of an interval.
+    \item \texttt{radius} -- computes the radius of a hypersphere enclosing an interval.
+% \item \texttt{rank} -- ???
+    \item \texttt{reshape} -- overloads the operator 'reshape' for reshaping matrices.
+    \item \texttt{size} -- overloads the operator that returns the size of the object, i.e., length of an array in each dimension.
+    \item \texttt{split} -- splits an interval in one dimension.
+    \item \texttt{subsasgn} -- overloads the operator that assigns elements of an interval matrix \texttt{I}, e.g., \texttt{I(1,2)=value}, where the element of the first row and second column is set.
+    \item \texttt{subsref} -- overloads the operator that selects elements of an interval matrix \texttt{I}, e.g., \texttt{value=I(1,2)}, where the element of the first row and second column is read.
+    \item \texttt{sum} -- overloaded 'sum()' operator for intervals.
+    \item \texttt{supremum} -- returns the supremum of an interval.
+    \item \texttt{vertcat} -- overloads the operator for vertical concatenation, e.g., \texttt{a = [b;c;d]}.
+\end{itemize}
+
+
+% Ellipsoids ------------------------------------------------------------------
+
+\subsection{Ellipsoids}    \label{sec:ellipsoidOperation}
+
+In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}) the class \texttt{ellipsoid} supports the following methods:
+\begin{itemize}
+% \item \texttt{boundary} -- deterministically computes a specified number of uniformly distributed points on the boundary.
+    \item \texttt{distance} -- computes the smallest euclidean distance between an ellipsoid and another set representation.
+    \item \texttt{enlarge} -- enlarges the ellipsoid by a scalar factor for each dimension.
+    \item \texttt{eq} -- overloads the '==' operator to check if two ellipsoids are equal.
+    \item \texttt{intersectStrip} -- computes the intersection of a ellipsoid and a list of strips.
+    \item \texttt{minus} -- computes the Minkowski difference as defined in \cite{Kurzhanskiy2006}.
+    \item \texttt{radius} -- returns the radius of the smallest hyper-sphere which contains a given ellipsoid
+    \item \texttt{rank} -- returns the rank of an ellipsoid
+\end{itemize}
+
+\subsubsection{Method \texttt{plus}} \label{sec:ell_plus}
+
+In \cite[Sec. 2.2.2]{Kurzhanskiy2006}, an approach to compute an ellipsoidal overapproximation of the Minkowski sum of two $n$-dimensional ellipsoids is provided. The method \texttt{plus} (overwriting \texttt{+}) uses this approach to compute the resulting ellipsoid for $2n$ roughly uniformly sampled unit directions, intersect all of the resulting ellipsoids and calculate the intersection overapproximation using \texttt{and}.
+
+However, since in many cases, one can often find a direction such that the result in that direction has a smaller volume than on average, we also support an overloaded method \texttt{and(E1,E2,L)} which allows to specify custom direction(s).
+
+\subsubsection{Method \texttt{zonotope}} \label{sec:ell_zonotope}
+
+In \cite{Gassmann2020a}, inner and outer approximations for both ellipsoids and zonotopes are presented. \cref{tab:ell_zono} shows these conversions from an ellipsoid $E$ to a zonotope $Z$ where $m$ is the user-specified number of generators. Results specified (o: outer approximation, i: inner approximation)
+\begin{itemize}
+    \item by \texttt{o:box},\texttt{u:box} are the optimal minimum-volume and maximum-volume parallelotopes,
+    \item by \texttt{o:norm},\texttt{u:norm} approximate $Z$ arbitrarily closely for arbitrary $m$ using the exact zonotope norm,
+    \item by \texttt{o:norm:bnd}, \texttt{u:norm:bnd} are the same as their respective \texttt{*:norm} specifier, but use a tractably computable bound on the zonotope norm.
+\end{itemize}
+
+\begin{table}[h]
+    \caption{Available ellipsoid $\rightarrow$ zonotope conversions with ``$+$'', ``$-$'' meaning polynomial and exponential complexity with respect to dimension, respectively.}
+    \centering
+    \label{tab:ell_zono}
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{Specifier}  & \textbf{Mode} & \textbf{Complexity} \\
+        \midrule
+        \texttt{o:box}      & o             & $+$                 \\
+        \texttt{o:norm}     & o             & $-$                 \\
+        \texttt{o:norm:bnd} & o             & $+$                 \\
+        \texttt{i:box}      & i             & $+$                 \\
+        \texttt{i:norm}     & i             & $-$                 \\
+        \texttt{i:norm:bnd} & i             & $+$                 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsubsection{Method \texttt{distance}} \label{sec:ell_distance}
+
+Computes the euclidean distance between the second argument \texttt{S} and the ellipsoid \texttt{E}, where \texttt{distance(E,S)}$>0$ means the two objects do not intersect. For \texttt{distance(E,S)}$=0$, \texttt{S} and \texttt{E} either touch or intersect. For \texttt{S} being a hyperplane, \texttt{distance(E,S)}$=0$ means \texttt{S} and \texttt{E} touch, and \texttt{distance(E,S)}$<0$ represents a real intersection.
+
+% Polytopes -------------------------------------------------------------------
+
+\subsection{Polytopes}    \label{sec:polytopeOperations}
+
+In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), the class \texttt{polytope} supports the following methods:
+
+\begin{itemize}
+    \item \texttt{eq} -- overloads the '==' operator to check if two polytopes are equal.
+    \item \texttt{eventFcn} -- event function that detects is a trajectory enters the set. This function is required for the simulation of hybrid systems (see \cref{sec:simulationHybridAutomaton}).
+    \item \texttt{constraints} -- computes the halfspace representation of the polytope.
+    \item \texttt{hausdorffDist} -- alculates the Hausdorff distance between a polytope and a set or a point
+    \item \texttt{le} -- overloads the '$<=$' operator; returns 1 if one polytopes is equal or enclosed by the other one and 0 otherwise.
+    \item \texttt{minus} -- overloaded '-' operator for the subtraction of a vector from an \texttt{polytope} or the Minkowski difference between two \texttt{polytope} objects.
+    \item \texttt{mldivide} -- computes the set difference $P_1\setminus P_2$ such that $P_2$ is subtracted from $P_1$.
+    \item \texttt{projectHighDim} -- projects a polytope to a higher-dimensional space.
+\end{itemize}
+
+
+% Polynomial Zonotopes ------------------------------------------------------------
+
+\subsection{Polynomial Zonotopes}    \label{sec:polyZonotopeOperations}
+
+In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), the class \texttt{polyZonotope} supports the following methods:
+
+\begin{itemize}
+    \item \texttt{approxVolumeRatio} -- computes the approximate ratio of the volumes between the dependent generator and the independent generator part of the polynomial zonotope.
+    \item \texttt{compact} -- removes redundancies in the representation of the polynomial zonotope.
+    \item \texttt{containsPointSet} -- checks if a point set is fully enclosed by a tight over-approximation of a polynomial zonotope.
+    \item \texttt{deleteZeros} -- deletes all generators of length 0.
+    \item \texttt{exactPlus} -- compute the addition of two sets while preserving the dependencies between the two sets.
+    \item \texttt{fhandle} -- computes a function handle based on the given polynomial zonotope.
+    \item \texttt{getSubset} -- extracts a subset by specifying new ranges for the factors.
+    \item \texttt{hausdorffDist} -- calculates an approximation of the Hausdorff distance between a polynomial zonotope and a point cloud.
+    \item \texttt{hessianHandle} -- computes a function handle which returns the hessian matrix at the given point.
+    \item \texttt{innerApprox} -- returns an inner-approximation of a polynomial zonotope with a union of zonotopes.
+    \item \texttt{isInterval} -- checks if a polynomial zonotope represents an interval.
+    \item \texttt{isPolytope} -- checks if a polynomial zonotope represents a polytope.
+    \item \texttt{isZero} -- check for each dimension if polynomial zonotope is equal to zero.
+    \item \texttt{isZonotope} -- checks if a polynomial zonotope represents a zonotope.
+    \item \texttt{jacobian} -- computes the derivatives of a given polynomial zonotope.
+    \item \texttt{jacobianHandle} -- computes a function handle which calculates the jacobian matrix at a given point.
+    \item \texttt{noIndep} -- remove the independent generators from a polynomial zonotope.
+    \item \texttt{onlyId} -- returns a polynomial zonotope with only specified ids as well as the remaining polynomial zonotope.
+    \item \texttt{partZonotope} -- computes a zonotope over-approximation in the specified id entries only.
+    \item \texttt{plotRandPoint} -- plots a point cloud of random points inside a polynomial zonotope.
+% \item \texttt{pointSet} -- computes a set of random points inside the polynomial zonotope.
+% \item \texttt{pointSetExtreme} -- computes the set of all extreme points (all factors $\pm 1$) inside the polynomial zonotope.
+    \item \texttt{polygon} -- creates a polygon enclosure of a two-dimensional polynomial zonotope.
+    \item \texttt{replaceId} -- replaces specified id entries with others.
+    \item \texttt{resolve} -- replaces specified id entries with given numerical values for corresponding dependent factors.
+    \item \texttt{restoreId} -- adds (if not alreay there) specified ids
+    \item \texttt{restructure} -- Calculate a new over-approxmiating representation of a polynomial zonotope in such a way that there remain no independent generators. More information can be found in \cref{sec:restructurepolyZonotope}.
+    \item \texttt{split} -- splits a polynomial zonotope into two or more polynomial zonotopes that enclose the original polynomial zonotope.
+    \item \texttt{splitDepFactor} -- splits one dependent factor of a polynomial zonotope.
+    \item \texttt{splitLongestGen} -- splits the longest generator dependent generator with a polynomial order of 1 for a polynomial zonotope.
+% \item \texttt{splitOneGen} -- splits one generator factor of a polynomial zonotope.
+    \item \texttt{stack} -- extends dimensionality with provided polynomial zonotopes while preserving dependencies.
+    \item \texttt{subs} -- computes the functional composition of two polynomial zonotopes.
+    \item \texttt{sum} -- computes the sum of multiple polynomial zonotopes.
+\end{itemize}
+
+\subsubsection{Method \texttt{jacobian}}
+For a $n$-dimensional polynomial zonotope \texttt{pZ} with $N$ dependent factors, \texttt{jacobian(pZ)} returns a $N$-dimensional cell array where each element is the respective derivative of \texttt{pZ} with dimension $n$.
+
+\subsubsection{Method \texttt{jacobianHandle}}
+For a $n$-dimensional polynomial zonotope \texttt{pZ}, where \texttt{id} contains some (in any order) or all ids of \texttt{pZ}, \texttt{jacobianHandle(pZ,id)} returns a function handle of the form \texttt{@(x,p)H(x,p)}. This handle returns the corresponding jacobian matrix of size $n$ by \texttt{numel(id)} at \texttt{x}, \texttt{p}, where \texttt{x} are treated as variables, and \texttt{p} as parameters.
+
+Accepts symbolic vectors for \texttt{x} and \texttt{p}.
+
+\subsubsection{Method \texttt{hessianHandle}}
+
+For a 1D polynomial zonotope \texttt{pZ}, where \texttt{id} contains some (in any order) or all ids of \texttt{pZ}, \texttt{hessianHandle(pZ,id)} returns a function handle of the form \texttt{@(x,p)H(x,p)}. This handle returns the corresponding square, symmetric hessian matrix of size \texttt{numel(id)} by \texttt{numel(id)} at \texttt{x} and \texttt{p}, where \texttt{x} are treated as variables, and \texttt{p} as parameters.
+
+Accepts symbolic vectors for \texttt{x} and \texttt{p}.
+
+% Capsules ------------------------------------------------------------
+
+\subsection{Capsule}    \label{sec:capsuleOperations}
+
+In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), the class \texttt{capsule} supports the following methods:
+
+\begin{itemize}
+    \item \texttt{enlarge} -- enlarges the capsule around its center.
+    \item \texttt{polygon} -- under-approximates a two-dimensional capsule by a polygon and returns its vertices.
+    This function is mainly used for plotting.
+    \item \texttt{radius} -- returns the radius of the enclosing hyperball.
+\end{itemize}
+
+
+% Zonotope Bundles ------------------------------------------------------------
+
+\subsection{Zonotope Bundles}    \label{sec:zonoBundleOperations}
+
+In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), the class \texttt{zonoBundle} supports the following methods:
+
+\begin{itemize}
+    \item \texttt{encloseTight} -- generates a zonotope bundle that encloses two zonotopes bundles in a possibly tighter way than \texttt{enclose} as outlined in \cite[Sec. VI.A]{Althoff2011f}.
+    \item \texttt{enlarge} -- enlarges the generators of each zonotope in the bundle by a vector of factors for each dimension.
+    \item \texttt{reduceCombined} -- reduces the order of a zonotope bundle by not reducing
+    each zonotope separately as in \texttt{reduce}, but in a combined fashion.
+    \item \texttt{replace} -- replaces a zonotope at an index position by another zonotope.
+    \item \texttt{shrink} -- shrinks the size of individual zonotopes by explicitly computing the intersection of individual zonotopes; however, in total, the size of the zonotope bundle will increase. This step is important when individual zonotopes are large, but the zonotope bundles represents a small set. In this setting, the over-approximations of some operations, such as \texttt{mtimes} might become too over-approximative. Although \texttt{shrink} initially increases the size of the zonotope bundle, subsequent operations are less over-approximative since the individual zonotopes have been shrunk.
+    \item \texttt{split} -- splits a zonotope bundle into two or more zonotopes bundles. Other than for zonotopes, the split is exact. The method can split halfway in a particular direction or given a separating hyperplane.
+\end{itemize}
+
+
+% Constrained Zonotopes -------------------------------------------------------
+
+\subsection{Constrained Zonotopes}    \label{sec:conZonotopeOperations}
+
+In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), the class \texttt{conZonotope} supports the following methods:
+
+\begin{itemize}
+    \item \texttt{conIntersect} -- add the constraint that the linear transformation of a constrained zonotope intersects another constrained zonotope
+    \item \texttt{deleteZeros} -- deletes generators whose entries are all zero.
+    \item \texttt{intersectStrip} -- computes the intersection of a constrained zonotope and a list of strips.
+    \item \texttt{intervalMultiplication} -- computes the multiplication of an interval with a constrained zonotope,
+    this function is called by the function \texttt{mtimes}.
+    \item \texttt{minus} -- computes the Minkowski difference of two constrained zonotopes.
+    \item \texttt{plotZono} -- plots a two-dimensional projection of the \texttt{conZonotope} object together with the corresponding zonotope.
+    \item \texttt{reduceConstraints} -- reduces the number of constraints of a constrained zonotope.
+    \item \texttt{rescale} -- prune the domain of the zonotope factors $\beta_i$ by adequate adaption of the zonotope generators. More details can be found in \cite{Scott2016}.
+    \item \texttt{split} -- splits a constrained zonotope into two or more constrained zonotopes
+    that enclose the original constrained zonotope.
+\end{itemize}
+
+\subsubsection{Method \texttt{reduce}} \label{sec:conZono_reduce}
+
+One parameter to describe the complexity of a constrained zonotope is the \textit{degrees-of-freedom order} $o_c = (p-q)/n$, where $p$ represents the number of generators, $q$ is the number of constraints and $n$ is the state space dimension. The method \texttt{reduce} implements the two options reduction of the number of constraints $q$ \cite[Section 4.2]{Scott2016} and reduction of the \textit{degrees-of-freedom order} $o_c$ \cite[Section 4.3]{Scott2016}.
+
+
+% Probabilistic Zonotopes ------------------------------------------------------
+
+\subsection{Probabilistic Zonotopes}        \label{sec:probZonotopeOperations}
+
+In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), the class \texttt{probZonotope} supports the following methods:
+
+\begin{itemize}
+    \item \texttt{abs} -- returns a probabilistic zonotope with absolute values of the center and the interval generator vectors.
+    \item \texttt{enclosingPolytope} -- converts the mean of a probabilistic zonotope to a polytope representation.
+    \item \texttt{enclosingProbability} -- computes values to plot the mesh of a two-dimensional projection of the enclosing probability hull.
+    \item \texttt{generators} -- returns the generator matrix of a probabilistic zonotope using its covariance matrix Sigma.
+    \item \texttt{max} -- computes an over-approximation of the maximum on the m-sigma bound according to \cite[Equation 3]{Althoff2009d}.
+    \item \texttt{mean} -- returns the uncertain mean of a probabilistic zonotope.
+    \item \texttt{probReduce} -- reduces the number of single Gaussian distributions to the dimension of the state space.
+    \item \texttt{pyramid} -- encloses a probabilistic zonotope $\mathscr{Z}$ by a pyramid with step sizes defined by an array of confidence bounds and determines the probability of intersection with a polytope $\mathcal{P}$ as described in \cite[Section VI.C]{Althoff2009d}.
+    \item \texttt{reduce} -- returns an over-approximating zonotope with fewer generators. The zonotope of the uncertain mean $\mathcal{Z}$ is reduced, while the order reduction of the probabilistic part is done by the method \texttt{probReduce}.
+    \item \texttt{sigma} -- returns the $\Sigma$ matrix of a probabilistic zonotope.
+    \item \texttt{singleGenPlot} -- plots a two-dimensional projection of a probabilistic zonotope with a maximum of 5 generators.
+    \item \texttt{sup} -- returns the supremum by $\lvert| \cdot |\rvert_\infty$ of the probabilistic zonotope.
+% \item \texttt{zonotope} -- converts a probabilistic zonotope to a common zonotope where for each generator, a m-sigma interval is taken.
+\end{itemize}
+
+
+% Level Sets ------------------------------------------------------------------
+
+\subsection{Level Sets}    \label{sec:levelSetOperations}
+
+In addition to the methods described in \cref{sec:setOperations}, we support the following methods for the class \texttt{levelSet}:
+\begin{itemize}
+    \item \texttt{eventFcn} -- event function that detects is a trajectory enters the set. This function is required for the simulation of hybrid systems (see \cref{sec:simulationHybridAutomaton}).
+    \item \texttt{tightenDomain} -- contracts the interval domain for the intersection between a level set and another set.
+\end{itemize}
+
+\subsubsection{Method \texttt{plot}}
+
+Since level sets can in general be unbounded, it is often impossible to plot the whole level set. When plotting a level set we therefore first extract the area of the state space that is shown in the current plot, and then plot the intersection between this area and the level set. Consequently, it is important to first define the desired area of the plot using MATLABs \texttt{xlim} and \texttt{ylim} functions before the level set is plotted.
+
+Furthermore, the projection of a level set on two dimensions usually fills the whole space and is therefore not very interesting. Instead of plotting the real projection, we set all states that do not belong to the current projection equal to 0 and then plot the resulting set which is a level set in 2D.
+
+
+% Taylor Models ---------------------------------------------------------------
+
+\subsection{Taylor Models}    \label{sec:taylorModelOperations}
+
+
+Since this class has a lot of methods, we separate them into methods that realize mathematical functions and methods that do not realize mathematical functions.
+
+\paragraph{Methods realizing mathematical functions and operations}
+\begin{itemize}
+    \item \texttt{acos} -- $\arccos(\cdot)$ function as defined in \cite[Eq.~(31)]{Althoff2018b}.
+    \item \texttt{asin} -- $\arcsin(\cdot)$ function as defined in \cite[Eq.~(30)]{Althoff2018b}.
+    \item \texttt{atan} -- $\arctan(\cdot)$ function as defined in \cite[Eq.~(32)]{Althoff2018b}.
+    \item \texttt{cos} -- $\cos(\cdot)$ function as defined in \cite[Eq.~(25)]{Althoff2018b}.
+    \item \texttt{cosh} -- $\cosh(\cdot)$function as defined in \cite[Eq.~(28)]{Althoff2018b}.
+    \item \texttt{det} -- determinant of a Taylor model matrix.
+    \item \texttt{exp} -- exponential function as defined in \cite[Eq.~(21)]{Althoff2018b}.
+% \item \texttt{interval} -- various implementations of the bound operator $B(\cdot)$ as presented in \cite[Sec.~2.3]{Althoff2018b}.
+    \item \texttt{log} -- natural logarithm function as defined in \cite[Eq.~(22)]{Althoff2018b}.
+    \item \texttt{minus} -- overloaded '-' operator, see \cite[Eq.~(7)]{Althoff2018b}.
+    \item \texttt{mpower} -- overloaded '\string^' operator (power).
+    \item \texttt{mrdivide} -- overloaded '/' operator (division), see \cite[Eq.~(9)]{Althoff2018b}.
+    \item \texttt{power} -- overloaded '.\string^' operator (elementwise power).
+    \item \texttt{rdivide} -- overloads the './' operator: provides elementwise division of two matrices.
+    \item \texttt{reexpand} -- re-expand the Taylor model at a new expansion point.
+    \item \texttt{sin} -- $\sin(\cdot)$ function as defined in \cite[Eq.~(24)]{Althoff2018b}.
+    \item \texttt{sinh} -- $\sinh(\cdot)$ function as defined in \cite[Eq.~(27)]{Althoff2018b}.
+    \item \texttt{sqrt} -- $\sqrt{(\cdot)}$ function as defined in \cite[Eq.~(23)]{Althoff2018b}.
+    \item \texttt{tan} -- $\tan(\cdot)$ function as defined in \cite[Eq.~(26)]{Althoff2018b}.
+    \item \texttt{tanh} -- $\tanh(\cdot)$ function as defined in \cite[Eq.~(29)]{Althoff2018b}.
+    \item \texttt{times} -- overloaded '.*' operator for elementwise multiplication of matrices.
+    \item \texttt{trace} -- trace of a Taylor model matrix.
+    \item \texttt{uminus} -- overloaded '-' operator for a single operand.
+    \item \texttt{uplus} -- overloaded '+' operator for a single operand.
+\end{itemize}
+
+\paragraph{Other methods}
+
+\begin{itemize}
+    \item \texttt{getCoef} -- returns the array of polynomial coefficients of a \texttt{taylm} object.
+    \item \texttt{getRem} -- returns the interval part of a \texttt{taylm} object.
+    \item \texttt{getSyms} -- returns the polynomial part of a \texttt{taylm} object as a symbolic expression.
+    \item \texttt{optBernstein} -- range bounding using Bernstein polynomials.
+    \item \texttt{optBnb} -- implementation of the branch and bound algorithm as presented in \cite[Sec.~2.3.2]{Althoff2018b}.
+    \item \texttt{optBnbAdv} -- implementation of the advanced branch and bound algorithm as presented in \cite[Sec.~2.3.2]{Althoff2018b}.
+    \item \texttt{optLinQuad} -- implementation of the algorithm based on LDB and QFB as presented in \cite[Sec.~2.3.3]{Althoff2018b}.
+    \item \texttt{prod} -- product of array elements.
+    \item \texttt{set} -- set the additional class parameters (see \cite[Sec.~4.3]{Althoff2018b}).
+    \item \texttt{setName} -- set the names of the variables in \texttt{taylm}.
+    \item \texttt{subsasgn} -- overloads the operator that assigns elements of a \texttt{taylm} matrix \texttt{I}, e.g., \texttt{I(1,2) = value}, where the element of the first row and second column is set.
+    \item \texttt{subsref} -- overloads the operator that selects elements of a \texttt{taylm} matrix \texttt{I}, e.g., \texttt{value = I(1,2)}, where the element of the first row and second column is read.
+\end{itemize}
+
+\subsubsection{Creating Taylor Models} \label{sec:createTaylorModels}
+
+Here we describe the different ways to create an object of class \texttt{taylm}. To make use of cancellation effects, we have to provide names for variables in order to recognize identical variables; this is different from implementations of interval arithmetic, where each variable is treated individually. We have realized three primal ways to generate a matrix containing Taylor models.
+
+\paragraph{Method 1: Composition from scalar Taylor models.} The first possibility is to generate scalar Taylor models from intervals as shown subsequently.
+    {\small
+\input{./MATLABcode/example_taylm_method1.tex}}
+When a scalar Taylor model is generated from a scalar interval, the name of the variable is deduced from the name of the interval. If one wishes to overwrite the name of a variable \texttt{a2} to \texttt{c}, one can use the command \texttt{taylm(a2, 6, }\{\texttt{'c'}\}\texttt{)}.
+
+\paragraph{Method 2: Converting an interval matrix.} One can also first generate an interval matrix, i.e., a matrix containing intervals, and then convert the interval matrix into a Taylor model. The subsequent example generates the same Taylor model as in the previous example.
+    {\small
+\input{./MATLABcode/example_taylm_method2.tex}}
+Note that the cell for naming variables \{\texttt{'a1';'a2'}\} has to have the same dimensions as the interval matrix \texttt{a}. If no names are provided, default names are automatically generated.
+
+\paragraph{Method 3: Symbolic expressions.} We also provide the possibility to create a Taylor model from a symbolic expression.
+    {\small
+\input{./MATLABcode/example_taylm_method3.tex}}
+This method does not require naming variables since variable names are taken from the variable names of the symbolic expression. The interval of possible values has to be specified after the symbolic expression $s$; here: $[[-2,0]\, [-3, 1]]^T$.
+
+All examples generate a row vector $c$. Since all variables are normalized to the range $[-1,1]$, we obtain
+$$
+c =
+\begin{bmatrix}
+    0.5 + 1.5 \cdot \tilde{a}_1 + [0,0] \\
+    2.5 + 0.5 \cdot \tilde{a}_2 + [0,0] \\
+\end{bmatrix}
+\text{~.}
+$$
+
+The following workspace output of MATLAB demonstrates how the dependency problem is considered by keeping track of all encountered variables:
+\begin{Verbatim}[samepage=true]
+>> c(1) + c(1)
+ans = 
+	1.0 + 3.0*a1 + [0.00000,0.00000]
+
+>> c(1) + c(2)
+ans = 
+	3.0 + 1.5*a1 + 0.5*a2 + [0.00000,0.00000]
+\end{Verbatim}
+
+\subsection{Deprecated Functionality}\label{sec:deprecated-functionality}
+
+In a continuous effort to harmonize functionality across CORA and improve the user experience,
+some older functionality gets deprecated with each release.
+\cref{tab:deprecated-currently} lists all currently deprecated functionality along with their replacement.
+A warning is printed into the command window if a user calls a deprecated function.
+We encourage users to switch to the suggested replacement as soon as possible
+as continuing using the deprecated functionality might result in unexpected behavior and eventually broken code.
+Former functionality which is no longer supported is listed in \cref{tab:deprecated-former}.
+
+\begin{table}
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \caption{List of currently deprecated functionality along with their replacement.}
+    \label{tab:deprecated-currently}
+    \resizebox{\textwidth}{!}{
+        \begin{tabular}{ l l l p{8cm} }
+            \toprule
+            \textbf{Functionality}           & \textbf{Replacement}               & \textbf{Since} & \textbf{Description}                                                                                                                                                                                                                                                       \\
+            \midrule
+            \texttt{contDynamics.dim}        & \texttt{contDynamics.nrOfStates}   & v2025          & This change was made to be consistent with the other properties.                                                                                                                                                                                                           \\
+            \texttt{polygon.simplify}        & \texttt{polygon.compact}           & v2025          & This change was made in an effort to unify the syntax across all set representations.                                                                                                                                                                                      \\
+            \texttt{conHyperplane}           & \texttt{polytope}                  & v2025          & Constrained hyperplanes are a special case of polytopes. As the benefit of having an additional class for this special case is minor, we removed it to improve maintainability.                                                                                            \\
+            \texttt{halfspace}               & \texttt{polytope}                  & v2025          & Halfspaces are a special case of polytopes. As the benefit of having an additional class for this special case is minor, we removed it to improve maintainability.                                                                                                         \\
+            \texttt{reset} struct            & \texttt{non|linearReset}           & v2025          & This change was made to improve code reliability.                                                                                                                                                                                                                          \\
+            \texttt{matPolytope/constructor} & see description                    & v2024.2.0      & To specify the vertices, use a single numeric matrix with dimensions (n x m x N) instead of a cell array with N vertices each with dimensions (n x m).                                                                                                                     \\
+            \texttt{matZonotope/constructor} & see description                    & v2024.2.0      & To specify the generators, use a single numeric matrix with dimensions (n x m x N) instead of a cell array with N generators each with dimensions (n x m).                                                                                                                 \\
+            \texttt{conPolyZono.Grest}       & \texttt{conPolyZono.GI}            & v2024          & This change was made to be consistent with the notation in papers.                                                                                                                                                                                                         \\
+            \texttt{conPolyZono.expMat}      & \texttt{conPolyZono.E}             & v2024          & This change was made to be consistent with the notation in papers.                                                                                                                                                                                                         \\
+            \texttt{conPolyZono.expMat\_}    & \texttt{conPolyZono.EC}            & v2024          & This change was made to be consistent with the notation in papers.                                                                                                                                                                                                         \\
+            \texttt{conZonotope.Z}           & \texttt{conZonotope.c/G}           & v2024          & This change was made to be consistent with the notation in papers.                                                                                                                                                                                                         \\
+            \texttt{conZonotope/deleteZeros} & \texttt{compact(cZ,'zeros')}       & v2024          & This change was made in an effort to unify the syntax across all set representations.                                                                                                                                                                                      \\
+            \texttt{contSet/is<Name>}        & \texttt{representsa(S,'<name>')}   & v2024          & This change was made in an effort to unify the syntax across all set representations.                                                                                                                                                                                      \\
+            \texttt{contSet/isZero}          & \texttt{representsa(S,'origin')}   & v2024          & This change was made in an effort to unify the syntax across all set representations.                                                                                                                                                                                      \\
+            \texttt{contSet/isEmpty}         & \texttt{representsa(S,'emptySet')} & v2024          & This change was made in an effort to unify the syntax across all set representations. Additionally, the function \texttt{isempty} is also called implicitly by MATLAB in various circumstances, e.g., when shown in the workspace, which might lead to long loading times. \\
+            \texttt{polyZonotope.Grest}      & \texttt{polyZonotope.GI}           & v2024          & This change was made to be consistent with the notation in papers.                                                                                                                                                                                                         \\
+            \texttt{polyZonotope.expMat}     & \texttt{polyZonotope.E}            & v2024          & This change was made to be consistent with the notation in papers.                                                                                                                                                                                                         \\
+            \texttt{zonotope.Z}              & \texttt{zonotope.c/G}              & v2024          & This change was made to be consistent with the notation in papers.                                                                                                                                                                                                         \\
+            \texttt{zonotope.halfspaces}     & \texttt{zonotope/polytope}         & v2024          & This change was made to avoid code redundancy.                                                                                                                                                                                                                             \\
+            \bottomrule
+        \end{tabular}
+    }
+\end{table}
+
+\begin{table}
+    \centering
+    \renewcommand{\arraystretch}{1.3}
+    \caption{List of currently deprecated functionality along with their replacement.}
+    \label{tab:deprecated-former}
+    \resizebox{\textwidth}{!}{
+        \begin{tabular}{ l l l p{8cm} }
+            \toprule
+            \textbf{Functionality} & \textbf{Replacement}      & \textbf{Since} & \textbf{Reason}                                                                                                                                                                                                                                                                                                                                  \\
+            \midrule
+            \texttt{contSet/in}    & \texttt{contSet/contains} & v2022          & The main reason is that the syntax \texttt{in(S1,S2)} can also be written as \texttt{S1.in(S2)}. This is, however, the opposite of the actual computation, which checks whether \texttt{S2} is a subset of \texttt{S1}. The function \texttt{contains} eliminates this potential confusion, as \texttt{S1.contains(S2)} is semantically correct. \\
+            \bottomrule
+        \end{tabular}
+    }
+\end{table}

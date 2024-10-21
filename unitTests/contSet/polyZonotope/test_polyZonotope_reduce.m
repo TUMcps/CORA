@@ -42,10 +42,11 @@ GI =  [3 0; 0 4];
 c = [0;0];
 
 % check for correctness
-if ~all(withinTol(c,pZred.c)) || ~compareMatrices(GI,pZred.GI) ...
-        || ~isempty(pZred.G) || ~isempty(pZred.E) || ~isempty(pZred.id)
-    res = false;
-end
+assert(all(withinTol(c,pZred.c)))
+assert(compareMatrices(GI,pZred.GI))
+assert(isempty(pZred.G))
+assert(isempty(pZred.E))
+assert(isempty(pZred.id))
 
 
 % TEST 2
@@ -67,9 +68,10 @@ GI = [-4 2.5 0; -1 0 6.5];
 E = 1;
 
 % check for correctness
-if ~all(withinTol(c,pZred.c)) || ~compareMatrices(G,pZred.G) ...
-        || ~compareMatrices(GI,pZred.GI)
-    res = false;
+assert(all(withinTol(c,pZred.c)))
+assert(compareMatrices(G,pZred.G))
+assert(compareMatrices(GI,pZred.GI))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

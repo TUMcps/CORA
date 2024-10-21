@@ -32,16 +32,6 @@ function p = quadMapPoint(x1,x2,Q)
 
 % get dimension for input argument check
 n = size(x1,1);
-% check input arguments
-% try
-%     inputArgsCheck({{x1,'att','numeric',{'nonnan','vector'}},...
-%                     {x2,'att','numeric',{'nonnan','vector','size',[n,1]}},...
-%                     {Q,'att','cell',{'size',[n,1]}}});
-% catch
-%     inputArgsCheck({{x1,'att','numeric',{'nonnan','vector'}},...
-%                     {x2,'att','numeric',{'nonnan','vector','size',[n,1]}},...
-%                     {Q,'att','cell',{'size',[1,n]}}});
-% end
 
 % init point
 p = zeros(n,1);

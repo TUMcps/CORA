@@ -35,12 +35,11 @@ end
 
 methods
     function obj = setproperty(varargin)
+        assertNarginConstructor([0,1],nargin);
         if nargin == 0
             obj.val = [];
         elseif nargin == 1
             obj.val = varargin{1};
-        else
-            throw(CORAerror('CORA:tooManyInputArgs',2));
         end
     end
 

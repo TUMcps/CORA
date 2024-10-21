@@ -25,20 +25,20 @@ function res = test_zonoBundle_representsa
 
 % fully-empty zonoBundle
 zB = zonoBundle.empty(2);
-res = representsa(zB,'emptySet');
+assert(representsa(zB,'emptySet'));
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);
 Z2 = zonotope([0;0], [2 2; 2 -2]);
 zB = zonoBundle({Z1,Z2});
-res(end+1,1) = ~representsa(zB,'emptySet');
+assert(~representsa(zB,'emptySet'));
 
 % empty intersection
 Z2 = zonotope([-4;1],[0.5 1; 1 -1]);
 zB = zonoBundle({Z1,Z2});
-res(end+1,1) = representsa(zB,'emptySet');
+assert(representsa(zB,'emptySet'));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

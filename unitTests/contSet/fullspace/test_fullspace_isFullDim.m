@@ -22,12 +22,15 @@ function res = test_fullspace_isFullDim
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % init fullspace
 n = 2;
 fs = fullspace(n);
 
 % check property
-res = isFullDim(fs);
+assert(isFullDim(fs));
 
 % ------------------------------ END OF CODE ------------------------------

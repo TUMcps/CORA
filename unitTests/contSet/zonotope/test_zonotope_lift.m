@@ -23,8 +23,6 @@ function res = test_zonotope_lift
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % init
 Z = zonotope([1;1], [3 0; 0 2]);
 
@@ -32,17 +30,19 @@ Z = zonotope([1;1], [3 0; 0 2]);
 try
     Z_lift = lift(Z,5,[2,1]);
     % should fail
-    resvec(end+1) = false;
+    assert(false);
 catch ME
-    resvec(end+1) = strcmp(ME.identifier,'CORA:notDefined');
+    if ~strcmp(ME.identifier,'CORA:notDefined')
+        rethrow(ME)
+    end
 end
 
 % except no new dimensions are created
 Z_lift = lift(Z,2,[2,1]);
 Z_proj = project(Z,[2,1]);
-resvec(end+1) = isequal(Z_proj,Z_lift);
+assert(isequal(Z_proj,Z_lift));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

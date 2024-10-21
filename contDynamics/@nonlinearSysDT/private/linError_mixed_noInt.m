@@ -1,25 +1,28 @@
-function error_zono = linError_mixed_noInt(obj,options,R)
+function error_zono = linError_mixed_noInt(nlnsysDT,Rdelta,params,options)
 % linError_mixed_noInt - computes the linearization error
 %
 % Syntax:
-%    error_zono = linError_mixed_noInt(obj,options,R)
+%    error_zono = linError_mixed_noInt(nlnsysDT,Rdelta,params,options)
 %
 % Inputs:
-%    obj - nonlinearSysDT system object
+%    nlnsysDT - nonlinearSysDT object
+%    Rdelta - initial set
+%    params - model parameters
 %    options - options struct
-%    R - initial set
 %
 % Outputs:
 %    error_zono - zonotope overapproximating the linearization error
-%
-% Example:
-%    -
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: none
+%
+% References: 
+%   [1] M. Althoff and B. Krogh, "Reachability Analysis of Nonlinear
+%       Differential-Algebraic Systems" in IEEE Transactions on Automatic 
+%       Control, vol. 59, no. 2, pp. 371-383, 2014.
 
 % Authors:       Matthias Althoff, Niklas Kochdumper
 % Written:       21-August-2012
@@ -29,27 +32,39 @@ function error_zono = linError_mixed_noInt(obj,options,R)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% if nonlinearARX: system dimension = dimension of output
+if isa(nlnsysDT,"nonlinearARX")
+    n = nlnsysDT.dim_y;
+else
+    n = nlnsysDT.nrOfStates;
+end
+
 % use correct Hessian file
-obj = setHessian(obj,'int');
+nlnsysDT = setHessian(nlnsysDT,'int');
 
 %obtain intervals and combined interval z
-dx = interval(R);
-du = interval(options.U);
+dx = interval(Rdelta);
+du = interval(params.U - center(params.U));
 dz = [dx; du];
 
 %compute interval of reachable set
-totalInt_x = dx + obj.linError.p.x;
+totalInt_x = dx + nlnsysDT.linError.p.x;
 
 %compute intervals of input
-totalInt_u = du + obj.linError.p.u;
+totalInt_u = du + nlnsysDT.linError.p.u;
 
 %compute zonotope of state and input
 if contains(options.alg,'adaptive')
-    Rred = reduce(R,'adaptive',options.redFactor);
+    Rred = reduce(Rdelta,'adaptive',options.redFactor);
 else
-    Rred = reduce(R,options.reductionTechnique,options.errorOrder);
+    Rred = reduce(Rdelta,options.reductionTechnique,options.errorOrder);
 end
-Z = cartProd(Rred,options.U);
+if isa(nlnsysDT, 'nonlinearARX') && (isa(Rred,'polyZonotope') || ...
+            isa(Rred,'conPolyZono'))
+    Z = stack(Rred,params.U - center(params.U));
+else
+    Z = cartProd(Rred,params.U - center(params.U));
+end
 
 %obtain hessian tensor
 if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ...
@@ -59,26 +74,26 @@ if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ..
     [objX,objU] = initRangeBoundingObjects(totalInt_x,totalInt_u,options);
 
     % evaluate the hessian tensor 
-    H = obj.hessian(objX,objU);
+    H = nlnsysDT.hessian(objX,objU);
 else
-    H = obj.hessian(totalInt_x, totalInt_u);
+    H = nlnsysDT.hessian(totalInt_x, totalInt_u);
 end
 
 %obtain absolute values
 dz_abs = max(abs(infimum(dz)), abs(supremum(dz)));
 
 %separate evaluation
-H_mid = cell(obj.dim,1);
-H_rad = cell(obj.dim,1);
-for i=1:obj.dim
+H_mid = cell(n,1);
+H_rad = cell(n,1);
+for i=1:n
     H_mid{i} = sparse(center(H{i}));
     H_rad{i} = sparse(rad(H{i}));
 end
 error_mid = 0.5*quadMap(Z,H_mid);
 
 %interval evaluation
-error_rad = zeros(obj.dim,1);
-for i=1:obj.dim
+error_rad = zeros(n,1);
+for i=1:n
     error_rad(i,1) = 0.5*dz_abs'*H_rad{i}*dz_abs;
 end
 

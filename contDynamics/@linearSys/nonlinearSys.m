@@ -1,14 +1,14 @@
-function sys = nonlinearSys(obj)
+function nlnsys = nonlinearSys(linsys)
 % nonlinearSys - converts a linearSys object to a nonlinearSys object
 %
 % Syntax:
-%    sys = nonlinearSys(obj)
+%    nlnsys = nonlinearSys(linsys)
 %
 % Inputs:
-%    obj - linearSys object
+%    linsys - linearSys object
 %
 % Outputs:
-%    sys - nonlinearSys object
+%    nlnsys - nonlinearSys object
 %
 % Example:
 %    A = [-0.3780    0.2839    0.5403   -0.2962
@@ -20,9 +20,9 @@ function sys = nonlinearSys(obj)
 %    C = [1 1 0 0; 0 -0.5 0.5 0];
 %    D = [0 0 1; 0 0 0];
 %    k = [0; 0.02];
-%    obj = linearSys(A,B,c,C,D,k)
+%    linsys = linearSys(A,B,c,C,D,k)
 %
-%    sys = nonlinearSys(obj)
+%    nlnsys = nonlinearSys(linsys)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,34 +32,41 @@ function sys = nonlinearSys(obj)
 
 % Authors:       Mark Wetzlinger
 % Written:       22-January-2023
-% Last update:   ---
+% Last update:   02-September-2024 (MW, message for disturbance/noise matrices)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% non-unit matrices for E and F currently not supported by nonlinearSys
+if any(any(linsys.E)) || any(any(linsys.F))
+    throw(CORAerror('CORA:notSupported', ...
+        'Only all-zero disturbance/noise matrices supported for conversion.'));
+end
+
 % function handle for state equation
-f = aux_funHan(obj.A,obj.B,obj.c);
+f = aux_funHan(linsys.A,linsys.B,linsys.c);
 
 % check if an output equation is given
-if ( (isscalar(obj.C) && obj.C == 1) || ...
-        ( all(size(obj.C) == [obj.dim,obj.dim]) && all(all(obj.C == eye(obj.dim))) ) ) ...
-        || ~any(any(obj.D)) || ~any(obj.k)
+if ( (isscalar(linsys.C) && linsys.C == 1) || ...
+        ( all(size(linsys.C) == [linsys.nrOfStates,linsys.nrOfStates]) ...
+        && all(all(linsys.C == eye(linsys.nrOfStates))) ) ) ...
+        || ~any(any(linsys.D)) || ~any(linsys.k)
 
     % convert output matrix to full matrix
-    C = obj.C;
-    if isscalar(obj.C) && obj.C == 1
-        C = eye(obj.dim);
+    C = linsys.C;
+    if isscalar(linsys.C) && linsys.C == 1
+        C = eye(linsys.nrOfStates);
     end
 
-    g = aux_funHan(C,obj.D,obj.k);
+    g = aux_funHan(C,linsys.D,linsys.k);
 
     % instantiate resulting nonlinearSys object
-    sys = nonlinearSys(obj.name,f,g);
+    nlnsys = nonlinearSys(linsys.name,f,g);
 
 else
 
     % instantiate resulting nonlinearSys object
-    sys = nonlinearSys(obj.name,f);
+    nlnsys = nonlinearSys(linsys.name,f);
 
 end
 

@@ -25,140 +25,153 @@ function memberlist = getMembers(fieldname)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if strcmp(fieldname,'R0')
-    memberlist = {'capsule','conPolyZono','conZonotope','ellipsoid','interval',...
-        'polytope','polyZonotope','probZonotope','zonoBundle','zonotope'};
+switch fieldname
+    case 'R0'
+        memberlist = {'capsule','conPolyZono','conZonotope','ellipsoid','interval',...
+            'polytope','polyZonotope','probZonotope','spectraShadow','zonoBundle','zonotope'};
+    
+    case 'R0conf'
+        memberlist = {'zonotope'};
 
-elseif strcmp(fieldname,'R0conf')
-    memberlist = {'zonotope'};
+    case 'Rend'
+        memberlist = {'polytope','interval'};
     
-elseif strcmp(fieldname,'U')
-    memberlist = {'zonotope','interval','ellipsoid','polyZonotope',...
-        'conZonotope','capsule','polytope','conPolyZono','zonoBundle'};
+    case 'U'
+        memberlist = {'zonotope','interval','ellipsoid','polyZonotope',...
+            'conZonotope','capsule','polytope','conPolyZono','zonoBundle'};
 
-elseif strcmp(fieldname,'V')
-    memberlist = {'zonotope','ellipsoid','interval'};
+    case 'V'
+        memberlist = {'zonotope','ellipsoid','interval'};
     
-elseif strcmp(fieldname,'W')
-    memberlist = {'zonotope','ellipsoid','interval'};
+    case 'W'
+        memberlist = {'zonotope','ellipsoid','interval'};
 
-elseif strcmp(fieldname,'safeSet')
-    memberlist = {'polytope','halfspace'};
+    case 'safeSet'
+        memberlist = {'polytope'};
 
-elseif strcmp(fieldname,'unsafeSet')
-    memberlist = {'polytope','halfspace'};
+    case 'unsafeSet'
+        memberlist = {'polytope'};
     
-elseif strcmp(fieldname,'Usim')
-    memberlist = {'capsule','conPolyZono','conZonotope','ellipsoid','interval',...
-        'polytope','polyZonotope','probZonotope','zonoBundle','zonotope'};
+    case 'Usim'
+        memberlist = {'capsule','conPolyZono','conZonotope','ellipsoid','interval',...
+            'polytope','polyZonotope','probZonotope','zonoBundle','zonotope'};
     
-elseif strcmp(fieldname,'alg')
-    memberlist = {'lin','poly','linRem','lin-adaptive','poly-adaptive'};
+    case 'alg'
+        memberlist = {'lin','poly','linRem','lin-adaptive','poly-adaptive'};
 
-elseif strcmp(fieldname,'alg4DT')
-    memberlist = {'lin','lin-adaptive','poly-adaptive'};
+    case 'alg4DT'
+        memberlist = {'lin','lin-adaptive','poly-adaptive'};
     
-elseif strcmp(fieldname,'alg4DA')
-    memberlist = {'lin','lin-adaptive'};
+    case 'alg4DA'
+        memberlist = {'lin','lin-adaptive'};
     
-elseif strcmp(fieldname,'alg4param')
-    memberlist = {'lin','poly','linRem'};
+    case 'alg4param'
+        memberlist = {'lin','poly','linRem'};
     
-elseif strcmp(fieldname,'alg4observe')
-    memberlist = {'VolMin-A','VolMin-B',...
-        'FRad-A','FRad-B','FRad-C',...
-        'PRad-A','PRad-B','PRad-C','PRad-D','PRad-E',...
-        'CZN-A','CZN-B',...
-        'Nom-G','Hinf-G',...
-        'ESO-A','ESO-B','ESO-C','ESO-D',...
-        'backward','ROPO'};
+    case 'alg4observe'
+        memberlist = {'VolMin-A','VolMin-B',...
+            'FRad-A','FRad-B','FRad-C',...
+            'PRad-A','PRad-B','PRad-C','PRad-D','PRad-E',...
+            'CZN-A','CZN-B',...
+            'Nom-G','Hinf-G',...
+            'ESO-A','ESO-B','ESO-C','ESO-D',...
+            'backward','ROPO'};
+        
+    case 'algInner'
+        memberlist = {'proj','parallelo','scale','minkdiff'};
+        
+    case 'reductionTechnique'
+        memberlist = {'girard','combastel','pca','methA','methB','methC',...
+            'methD','methE','methF','redistribute','cluster','scott','constOpt'};
     
-elseif strcmp(fieldname,'algInner')
-    memberlist = {'proj','parallelo','scale'};
-    
-elseif strcmp(fieldname,'reductionTechnique')
-    memberlist = {'girard','combastel','pca','methA','methB','methC',...
-        'methD','methE','methF','redistribute','cluster','scott','constOpt'};
+    case 'reductionTechnique4nlsys'
+        memberlist = [getMembers('reductionTechnique'),...
+                      {'approxdep_girard','approxdep_pca'}];
+        
+    case 'reductionTechniqueUnderApprox'
+        memberlist = {'sum','scale','linProg'};
+        
+    case 'linAlg'
+        memberlist = {'standard','wrapping-free','fromStart',...
+            'decomp','krylov','adaptive','supportFunc'};
+        
+    case 'reachAlg'
+        memberlist = getMembers('linAlg');
 
-elseif strcmp(fieldname,'reductionTechnique4nlsys')
-    memberlist = [getMembers('reductionTechnique'),...
-                  {'approxdep_girard','approxdep_pca'}];
+    case 'linAlg4backward'
+        memberlist = {'inner:EA:timepoint','outer:EA:timepoint','inner:EA:timeinterval',...
+                      'inner:AE:timepoint','outer:AE:timepoint','outer:AE:timeinterval'};
+        %%% memberlist = {'minimal','maximal','minimal:naive'};
     
-elseif strcmp(fieldname,'reductionTechniqueUnderApprox')
-    memberlist = {'sum','scale','linProg'};
-    
-elseif strcmp(fieldname,'linAlg')
-    memberlist = {'standard','wrapping-free','fromStart',...
-        'decomp','krylov','adaptive','supportFunc'};
-    
-elseif strcmp(fieldname,'reachAlg')
-    memberlist = getMembers('linAlg');
-
-elseif strcmp(fieldname,'linAlg4HA')
-    memberlist = {'standard','wrapping-free','fromStart','adaptive'};
-    
-elseif strcmp(fieldname,'guardIntersect')
-    memberlist = {'polytope','conZonotope','levelSet',...
-        'zonoGirard','pancake','hyperplaneMap','nondetGuard'};
-    
-elseif strcmp(fieldname,'guardIntersect4enclose')
-    % if guardIntersect is one of these, then enclose is mandatory
-    memberlist = {'polytope','conZonotope','zonoGirard','nondetGuard'};
-    
-elseif strcmp(fieldname,'guardIntersect4guardOrder')
-    % if guardIntersect is one of these, then guardOrder is mandatory
-    memberlist = {'conZonotope','hyperplaneMap'};
-    
-elseif strcmp(fieldname,'enclose')
-    memberlist = {'box','pca','flow'};
-    
-elseif strcmp(fieldname,'restructureTechnique')
-    prefix = {'zonotope','reduceFull','reducePart','reduceDI','reduce'};
-    redMethod = getMembers('reductionTechnique');
-    memberlist = {};
-    for i=1:length(redMethod)
-        redMethod{i}(1) = upper(redMethod{i}(1));
-    end
-    for i=1:length(prefix)
-        for j=1:length(redMethod)
-            memberlist = [memberlist, [prefix{i} redMethod{j}]];
+    case 'linAlg4HA'
+        memberlist = {'standard','wrapping-free','fromStart','adaptive'};
+        
+    case 'guardIntersect'
+        memberlist = {'polytope','conZonotope','levelSet',...
+            'zonoGirard','pancake','hyperplaneMap','nondetGuard'};
+        
+    case 'guardIntersect4enclose'
+        % if guardIntersect is one of these, then enclose is mandatory
+        memberlist = {'polytope','conZonotope','zonoGirard','nondetGuard'};
+        
+    case 'guardIntersect4guardOrder'
+        % if guardIntersect is one of these, then guardOrder is mandatory
+        memberlist = {'conZonotope','hyperplaneMap'};
+        
+    case 'enclose'
+        memberlist = {'box','pca','flow'};
+        
+    case 'restructureTechnique'
+        prefix = {'zonotope','reduceFull','reducePart','reduceDI','reduce'};
+        redMethod = getMembers('reductionTechnique');
+        memberlist = {};
+        for i=1:length(redMethod)
+            redMethod{i}(1) = upper(redMethod{i}(1));
         end
-    end
+        for i=1:length(prefix)
+            for j=1:length(redMethod)
+                memberlist = [memberlist, [prefix{i} redMethod{j}]];
+            end
+        end
+        
+    case 'lagrangeRem.simplify'
+        memberlist = {'none','simplify','collect','optimize'};
+        
+    case 'lagrangeRem.method'
+        memberlist = {'interval','taylorModel','zoo'};
+     
+    case 'lagrangeRem.zooMethods'
+        memberlist = {'interval','affine(int)','affine(bnb)','affine(bnbAdv)',...
+            'affine(linQuad)','taylm(int)','taylm(bnb)','taylm(bnbAdv)','taylm(linQuad)'};
+        
+    case 'lagrangeRem.optMethod'
+        memberlist = {'int','bnb','bnbAdv','linQuad'};
+        
+    case 'contractor'
+        memberlist = {'linearize','forwardBackward','polyBox'};
+        
+    case 'type'
+        memberlist = {'standard','gaussian','rrt','constrained'};
+        
+    case 'norm'
+        memberlist = {'interval','frob'};
     
-elseif strcmp(fieldname,'lagrangeRem.simplify')
-    memberlist = {'none','simplify','collect','optimize'};
+    case 'armaxAlg'
+        memberlist = {'exactAddition', 'tvpEfficient', 'tvpGeneral'};   
     
-elseif strcmp(fieldname,'lagrangeRem.method')
-    memberlist = {'interval','taylorModel','zoo'};
- 
-elseif strcmp(fieldname,'lagrangeRem.zooMethods')
-    memberlist = {'interval','affine(int)','affine(bnb)','affine(bnbAdv)',...
-        'affine(linQuad)','taylm(int)','taylm(bnb)','taylm(bnbAdv)','taylm(linQuad)'};
+    case 'Y0'
+        memberlist = {'zonotope','interval','ellipsoid','polyZonotope',...
+            'conZonotope','capsule','polytope','conPolyZono','zonoBundle'}; 
+        
+    case 'cs.cost'
+        memberlist = {'interval','frob'};
     
-elseif strcmp(fieldname,'lagrangeRem.optMethod')
-    memberlist = {'int','bnb','bnbAdv','linQuad'};
-    
-elseif strcmp(fieldname,'contractor')
-    memberlist = {'linearize','forwardBackward','polyBox'};
-    
-elseif strcmp(fieldname,'type')
-    memberlist = {'standard','gaussian','rrt','constrained'};
-    
-elseif strcmp(fieldname,'norm')
-    memberlist = {'interval','frob'};
-    
-elseif strcmp(fieldname,'confAlgSynth')
-    memberlist = {'RRT','dyn','gray'};
-    
-elseif strcmp(fieldname,'confAlgCheck')
-    memberlist = {'RRT','dyn','BF'};
+    case 'cs.constraints'
+        memberlist = {'half','gen'};
 
-elseif strcmp(fieldname,'armaxAlg')
-    memberlist = {'exactAddition', 'tvpEfficient', 'tvpGeneral'};    
-    
-else
-    throw(CORAerror('CORA:wrongValue','first','Check file.'));
-    
+    otherwise
+        throw(CORAerror('CORA:wrongValue','first','Check file.'));
+
 end
 
 end

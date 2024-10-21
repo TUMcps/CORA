@@ -1,0 +1,49 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                        
+ \hspace*{-1.6em}{\scriptsize 1}$  Z1=[10; 0]; $\color{mgreen}$% uncertain center$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 2}$  Z2=[0.6 1.2  ; 0.6 -1.2]; $\color{mgreen}$% generators with normally distributed factors$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 3}$  pZ=probZonotope(Z1,Z2); $\color{mgreen}$% probabilistic zonotope$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 4}$  $\\
+ \hspace*{-1.6em}{\scriptsize 5}$  M=[-1 -1;1 -1]*0.2; $\color{mgreen}$% mapping matrix$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 6}$  pZencl = enclose(pZ,M); $\color{mgreen}$% probabilistic enclosure of pZ and M*pZ$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 7}$  $\\
+ \hspace*{-1.6em}{\scriptsize 8}$  figure $\color{mgreen}$% initialize figure$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 9}$  hold $\color{mred}$on$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 10}$  camlight $\color{mred}$headlight$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 11}$      $\\
+ \hspace*{-2em}{\scriptsize 12}$  plot(pZ,[1 2],$\color{mred}$'FaceColor'$\color{black}$,[0.2 0.2 0.2],...$\\
+ \hspace*{-2em}{\scriptsize 13}$      $\color{mred}$'EdgeColor'$\color{black}$,$\color{mred}$'none'$\color{black}$, $\color{mred}$'FaceLighting'$\color{black}$,$\color{mred}$'phong'$\color{black}$); $\color{mgreen}$% plot pZ $\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 14}$      $\\
+ \hspace*{-2em}{\scriptsize 15}$  plot(expm(M)*pZ,[1,2],$\color{mred}$'FaceColor'$\color{black}$,[0.5 0.5 0.5],...$\\
+ \hspace*{-2em}{\scriptsize 16}$      $\color{mred}$'EdgeColor'$\color{black}$,$\color{mred}$'none'$\color{black}$, $\color{mred}$'FaceLighting'$\color{black}$,$\color{mred}$'phong'$\color{black}$); $\color{mgreen}$% plot expm(M)*pZ$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 17}$  $\\
+ \hspace*{-2em}{\scriptsize 18}$  plot(pZencl,[1,2],$\color{mred}$'k'$\color{black}$,$\color{mred}$'FaceAlpha'$\color{black}$,0) $\color{mgreen}$% plot enclosure$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 19}$  $\\
+ \hspace*{-2em}{\scriptsize 20}$  campos([-3,-51,1]); $\color{mgreen}$% set camera position$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 21}$  drawnow; $\color{mgreen}$% draw 3D view$\color{black}$$\\
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

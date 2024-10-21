@@ -1,26 +1,30 @@
-function [E_err, c_tilde, d_tilde] = trajectoryError(obj,f,u,R0,tmin,tmax,tc,order,n)
+function [E_err,c_tilde,d_tilde] = trajectoryError(linsys,f,u,R0,tmin,tmax,tc,order,n)
 % trajectoryError - computes the error between a linear system solution and
-% a constant derivative solution. This function is required for computing
-% the error for the mapping-based approach for guard intersection as
-% presented at HSCC'12.
+%    a constant derivative solution. This function is required for 
+%    computing the error for the mapping-based approach for guard
+%    intersection as presented at HSCC'12.
 %
 % Syntax:
-%    E_err = trajectoryError(A,f,u,R0,tmin,tmax,tc,order,n)
+%    [E_err,c_tilde,d_tilde] = trajectoryError(linsys,f,u,R0,tmin,tmax,tc,order,n)
 %
 % Inputs:
-%    obj - linear system object
+%    linsys - linear system object
 %    f - constant flow offset of other dynamics
 %    u - input of linear system
 %    R0 - initial set
 %    tmin - start time
 %    tmax - final time
-%    tc - "center time", i.e. hitting time for x0
-%    
+%    tc - "center time", i.e., hitting time for x0
+%    order - Taylor order
+%    n - normal vector of halfspace
 %
 % Outputs:
 %    E_err - abstraction error
+%    c_tilde - ?
+%    d_tilde - ?
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: 
 % Subfunctions: none
@@ -45,7 +49,7 @@ end
 
 %obtain dimension and system matrix
 dim = length(u);
-A = obj.A;
+A = linsys.A;
 
 %compute powers of tmin and tmax
 tZono = aux_timePowers(tmin,tmax,order);
@@ -112,12 +116,17 @@ end
 function tZono = aux_timePowers(tmin,tmax,order)
 
 %first order
+tminPow = zeros(order,1);
+tmaxPow = zeros(order,1);
 tminPow(1) = tmin;
 tmaxPow(1) = tmax;
 
+tradPow = zeros(order,1);
+tmidPow = zeros(order,1);
 tradPow(1) = 0.5*(tmaxPow(1) - tminPow(1));
 tmidPow(1) = 0.5*(tmaxPow(1) + tminPow(1));
 
+tZono = cell(order,1);
 tZono{1} = matZonotope(tmidPow(1),tradPow(1));
 
 %higher orders

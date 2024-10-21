@@ -24,7 +24,7 @@ function res = test_hybridAutomaton_isequal
 % ------------------------------ BEGIN CODE -------------------------------
 
 % compare empty automata
-res = isequal(hybridAutomaton(),hybridAutomaton());
+assert(isequal(hybridAutomaton(),hybridAutomaton()));
 
 % invariant
 inv_2D_poly = polytope([-1,0],0);
@@ -32,21 +32,18 @@ inv_2D_int = interval([-4;-2],[4;8]);
 inv_3D_int = interval([-1;0;0],[1;2;3]);
 
 % transitions
-c = [-1;0]; d = 0; C = [0,1]; D = 0;
-guard = conHyperplane(c,d,C,D);
-reset = struct('A',[1,0;0,-0.75;0,-1],'c',[0;0;0]);
+guard = polytope([0 1],0,[-1 0],0);
+reset = linearReset([1,0;0,-0.75;0,-1]);
 trans_2D_3D = transition(guard,reset,2);
 
-reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
+reset = linearReset([1,0;0,-0.75]);
 trans_2D_2D = transition(guard,reset,1);
 
-clear reset
-reset.f = @(x,u) [x(1);-x(2)*x(1);sqrt(x(1))];
+reset = nonlinearReset(@(x,u) [x(1);-x(2)*x(1);sqrt(x(1))]);
 trans_2D_3D_nonlin = transition(guard,reset,2);
 
-c = [-1;0;0]; d = 0; C = [0,0,1]; D = 0;
-guard = conHyperplane(c,d,C,D);
-reset = struct('A',zeros(2,3),'c',zeros(2,1));
+guard = polytope([0 0 1],0,[-1 0 0],0);
+reset = linearReset(zeros(2,3));
 trans_3D_2D = transition(guard,reset,1);
 
 % flow equation
@@ -64,33 +61,33 @@ loc_6 = location(inv_2D_int,trans_2D_3D_nonlin,dynamics_2D_nonlin);
 
 % same hybrid automaton
 HA1 = hybridAutomaton([loc_1;loc_2]);
-res(end+1,1) = isequal(HA1,HA1);
+assert(isequal(HA1,HA1));
 
 % same array of hybrid automata
 temp = isequal([HA1;HA1],[HA1;HA1]);
-res(end+1,1) = all(size(temp) == [2,1]);
-res(end+1,1) = all(temp);
+assert(all(size(temp) == [2,1]));
+assert(all(temp));
 
 % different number of locations
 HA2 = hybridAutomaton(loc_3);
-res(end+1,1) = ~isequal(HA1,HA2);
+assert(~isequal(HA1,HA2));
 
 % different invariant
 HA3 = hybridAutomaton(loc_4);
-res(end+1,1) = ~isequal(HA2,HA3);
+assert(~isequal(HA2,HA3));
 
 % different flow
 HA4 = hybridAutomaton(loc_5);
-res(end+1,1) = ~isequal(HA2,HA4);
+assert(~isequal(HA2,HA4));
 
 % different reset function
 HA5 = hybridAutomaton([loc_6;loc_2]);
-res(end+1,1) = ~isequal(HA2,HA5);
+assert(~isequal(HA2,HA5));
 
 % different length of arrays
-res(end+1,1) = ~isequal([HA1;HA2],HA3);
+assert(~isequal([HA1;HA2],HA3));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

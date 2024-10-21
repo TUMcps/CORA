@@ -1,0 +1,36 @@
+\subsection{Restructuring Polynomial Zonotopes}
+\label{sec:restructurepolyZonotope}
+
+In this subsection, we describe the settings for triggering and implementing the \texttt{restructure} operation of polynomial zonotopes (see \cref{sec:polynomialZonotopes}). As described in \cref{sec:nonlinearReach}, it is advantageous to use a non-convex set representation such as polynomial zonotopes to represent the reachable sets of nonlinear systems. Since during reachability analysis the size of the independent part of the polynomial zonotope constantly grows, the accuracy can be significantly improved by shifting generators from the independent to the dependent part as done by the \texttt{restructure} operation described in \cite[Sec.~2.5]{Kochdumper2021a}. For this restructuring process, there exist some additional settings listed in \cref{tab:polyZono}.
+
+\begin{table}
+\centering
+\renewcommand{\arraystretch}{1.3}
+\caption{Fields of the struct \texttt{options.polyZono} defining the settings for restructuring polynomial zonotopes (see \cite[Sec.~2.5]{Kochdumper2021a}).}
+\label{tab:polyZono}
+\begin{tabular}{ l p{11cm} }	
+\toprule
+\textbf{Setting} & \textbf{Description} \\
+\midrule
+	--~\texttt{.maxPolyZonoRatio} & upper bound $\mu_d$ for the volume ratio between the independent and dependent part of a polynomial zonotope (see \cite[Line~18 in Alg.~1]{Kochdumper2021a}). If the bound is exceeded, the polynomial zonotope is restructured. The default value is $\infty$ (no restructuring).  \\
+	--~\texttt{.maxDepGenOrder} & upper bound for the value $\frac{p}{n}$ after restructuring, where $p$ is the number of dependent polynomial zonotope factors (see \cref{sec:polynomialZonotopes}) and $n$ is the system dimension. The default value is 20. \\
+	--~\texttt{.restructureTechnique} & string specifying the method that is applied to restructure polynomial zonotopes. The string is composed of two parts \texttt{restructureTechnique} = \texttt{method} + \texttt{reductionTechnique}, where \texttt{method} represents the restructure strategy (see \cref{tab:restructureStrategy}) and \texttt{reductionTechnique} represents the zonotope reduction technique (see \cref{tab:zono_reduction}). Note that the two parts are combined by camelCase. The default value is \texttt{'reduceGirard'}. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{Strategies for restructuring polynomial zonotopes}
+\label{tab:restructureStrategy}
+\begin{tabular}{ l l }	
+\toprule
+\textbf{Strategy} & \textbf{Description} \\
+\midrule
+\texttt{reduce} & reduction of independent generators \\
+\texttt{reduceFull} & reduction of independent generators to zonotope order 1 \\
+\texttt{zonotope} & enclosure of polynomial zonotope with a zonotope \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -51,14 +51,14 @@ v = ones(length(A),1);
 
 % compare V
 maxErr_V = max(max(abs(V-V_expokit(:, 1:KrylovOrder))));
-res(1) = (maxErr_V < 1e-14);
+assert(maxErr_V < 1e-14);
 
 % compare H
 maxErr_H = max(max(abs(H-H_expokit(1:KrylovOrder, 1:KrylovOrder))));
-res(2) = (maxErr_H < 1e-14);
+assert(maxErr_H < 1e-14);
 
 % compare all results
-res = all(res);
+res = true;
 
 end
 

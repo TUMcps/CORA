@@ -1,0 +1,111 @@
+\subsection{Set Representations} \label{sec:setRepresentations}
+\logToConsole{SET REPRESENTATIONS}
+
+The basis of any efficient reachability analysis is an appropriate set representation. On the one hand, the set representation should be general enough to describe the reachable sets accurately; on the other hand, it is crucial that the set representation facilitates efficient and scalable operations on them. CORA provides a wide range of set representations that are explained in detail in this section. \cref{tab:setConversion} shows the supported conversions between set representations. In order to convert a set, it is sufficient to pass the current set to the class constructor of the target set representation, as demonstrated by the following example:
+
+    {\footnotesize \input{./MATLABcode/example_setConversion}}
+
+\begin{table}[htb]
+    \centering
+    \footnotesize
+    \caption{Set conversions supported by CORA. The row headers represent the original set representation and the column headers the target set representation after conversion. The shortcuts e (exact conversion) and o (over-approximation) are used.}
+    \label{tab:setConversion}
+    \begin{tabular}{ l c c c c c c c c c c c}
+        \toprule
+        & \textbf{Z} & \textbf{zB} & \textbf{pZ} & \textbf{cPZ} & \textbf{cZ} & \textbf{P} & \textbf{I} & \textbf{tay} & \textbf{C} & \textbf{E} & \textbf{SpS}\\
+        \midrule
+        \textbf{zonotope} (Z, \cref{sec:zonotope})                       & -          & e           & e           & e            & e           & e          & o          & e            & o          & o          & e          \\
+        \textbf{zonoBundle} (zB, \cref{sec:zonoBundle})                  & o          & -           & e           & e            & e           & e          & o          &              &            &            & e          \\
+        \textbf{polyZonotope} (pZ, \cref{sec:polynomialZonotopes})       & o          &             & -           & e            &             & o          & o          & o            &            & o          & o          \\
+        \textbf{conPolyZono} (cPZ, \cref{sec:conPolyZono})               & o          & o           & o           & -            & o           & o          & o          & o            & o          & o          &            \\
+        \textbf{probZonotope} (probZ, \cref{sec:probabilisticZonotopes}) & o          &             &             &              &             &            &            &              &            &            &            \\
+        \textbf{conZonotope} (cZ, \cref{sec:conZonotope})                & o          & e           & e           & e            & -           & e          & o          &              &            &            & e          \\
+        \textbf{polytope} (P, \cref{sec:polytopes})                      &            & e           & e           & e            & e           & -          & o          &              &            &            & e          \\
+        \textbf{interval} (I, \cref{sec:interval})                       & e          & e           & e           & e            & e           & e          & -          &              & o          & o          & e          \\
+        \textbf{taylm} (tay, \cref{sec:taylorModels})                    &            &             &             & e            &             &            & o          & -            &            &            &            \\
+        \textbf{capsule} (C, \cref{sec:capsules})                        & o          &             &             & e            &             &            & o          &              & -          &            & e          \\
+        \textbf{ellipsoid} (E, \cref{sec:ellipsoids})                    & o          &             &             & e            &             &            & o          &              &            & -          & e          \\
+        \textbf{spectraShadow} (SpS, \cref{sec:spectraShadow})    & o          & o           & o           & o            & o           &            & o          &              &            &            & -          \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+% Basic set representations --------------------------------------------------------------------------------------------
+
+\subsubsection{Basic Set Representations} \label{sec:basicSetRep}
+
+We first introduce basic set representations predominantly used to represent reachable sets.
+
+\input{./sections/set/representations/zonotopes}
+
+\input{./sections/set/representations/intervals}
+
+\input{./sections/set/representations/ellipsoids}
+
+\input{./sections/set/representations/polytopes}
+
+\input{./sections/set/representations/polynomialZonotopes}
+
+\input{./sections/set/representations/constrainedPolynomialZonotopes}
+
+\input{./sections/set/representations/capsule}
+
+\input{./sections/set/representations/zonotopeBundles}
+
+\input{./sections/set/representations/constrainedZonotopes}
+
+\input{./sections/set/representations/spectrahedralShadows}
+
+\input{./sections/set/representations/probabilisticZonotopes}
+
+% Auxiliary set representations ----------------------------------------------------------------------------------------
+
+\subsubsection{Auxiliary Set Representations}
+
+Next, we introduce some additional set representations. These set representations are mainly used in CORA to represent guard sets for hybrid systems (see \cref{sec:hybridDynamics}).
+
+\input{./sections/set/representations/emptySet}
+
+\input{./sections/set/representations/fullspace}
+
+\input{./sections/set/representations/levelSet}
+
+% range bounding -------------------------------------------------------------------------------------------------------
+
+\subsubsection{Set Representations for Range Bounding}
+\label{sec:rangeBounding}
+
+For general nonlinear functions it is often infeasible or impossible to exactly determine its minimum and maximum on a certain domain. Therefore, one often tightly encloses the minimum and maximum by range bounding. Given a nonlinear function $f:~\Rn \to \R$ and a domain $\mathcal{D} \subset \Rn$, the range bounding operation $\operator{B}$ returns a tight enclosure of the function values:
+\begin{equation}
+    \operator{B}(f(x),\mathcal{D}) \supseteq \Big [ \min_{x \in \mathcal{D}} f(x),~ \max_{x \in \mathcal{D}} f(x) \Big ].
+    \label{eq:rangeBounding}
+\end{equation}
+
+There exist many different ways to implement the range bounding operation \operator{B} in \eqref{eq:rangeBounding}. The simplest method is to apply \textit{interval arithmetic} \cite{Jaulin2006}, for which the \texttt{interval} class (see \cref{sec:interval}) can be used. A detailed description how \textit{interval arithmetic} is implemented in CORA is provided in \cite{Althoff2016a}. However, while interval arithmetic is fast, it often results in quite conservative bounds. We therefore additionally implemented Taylor models \cite{Makino2003} by the class \texttt{taylm} (see \cref{sec:taylorModels}), affine arithmetic \cite{deFigueiredo2004} by the class \texttt{affine} (see \cref{sec:affine}), and a combination of several methods by the class \texttt{zoo} (see \cref{sec:zoo}).
+
+Let us first demonstrate range bounding for the nonlinear function $f(x) = \sin(x_1) x_2 + x_1^2$ within the domain $x_1 \in [-1,2]$, $x_2 \in [0,1]$. Bounds using interval arithmetic can be computed as follows:
+
+\begin{center}
+    \begin{minipage}[t]{0.50\textwidth}
+        \vspace{10pt}
+        \footnotesize
+        \input{./MATLABcode/example_rangeBounding}
+    \end{minipage}
+    \begin{minipage}[t]{0.25\textwidth}
+        \vspace{10pt}
+
+        \begin{verbatim}
+	Command Window:
+	
+	res =
+
+  [-0.84147,5.00000]
+        \end{verbatim}
+    \end{minipage}
+\end{center}
+
+\input{./sections/set/representations/TaylorModels}
+
+\input{./sections/set/representations/affine}
+
+\input{./sections/set/representations/zoo}

@@ -1,13 +1,13 @@
-function res = isequal(sys1,sys2,varargin)
+function res = isequal(nlnsys1,sys2,varargin)
 % isequal - checks if two nonlinear systems are equal
 %
 % Syntax:
-%    res = isequal(sys1,sys2)
-%    res = isequal(sys1,sys2,tol)
+%    res = isequal(nlnsys1,sys2)
+%    res = isequal(nlnsys1,sys2,tol)
 %
 % Inputs:
-%    sys1 - nonlinearSys object
-%    sys2 - nonlinearSys object
+%    nlnsys1 - nonlinearSys object
+%    sys2 - nonlinearSys object, linearSys object
 %    tol - tolerance (optional)
 %
 % Outputs:
@@ -16,9 +16,9 @@ function res = isequal(sys1,sys2,varargin)
 % Example:
 %    f = @(x,u) [x(1)^2 - u(1); x(2)];
 %    g = @(x,u) [x(2)^2 - u(1); x(1)]; 
-%    sys1 = nonlinearSys(f);
-%    sys2 = nonlinearSys(g);
-%    res = sys1 == sys2
+%    nlnsys1 = nonlinearSys(f);
+%    nlnsys2 = nonlinearSys(g);
+%    res = isequal(nlnsys1,nlnsys2)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -33,16 +33,13 @@ function res = isequal(sys1,sys2,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% too many input arguments
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(2,3);
 
 % default values
 tol = setDefaultValues({eps},varargin);
 
 % check input arguments
-inputArgsCheck({{sys1,'att','nonlinearSys'};
+inputArgsCheck({{nlnsys1,'att','nonlinearSys'};
                 {sys2,'att',{'nonlinearSys','linearSys'}};
                 {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
 
@@ -52,25 +49,25 @@ if isa(sys2,'linearSys')
 end
 
 % check name
-if ~strcmp(sys1.name,sys2.name)
+if ~strcmp(nlnsys1.name,sys2.name)
     res = false; return
 end
 
 % quick check: are both output equations are linear/nonlinear
-if length(sys1.out_isLinear) ~= length(sys2.out_isLinear) || ...
-    any(xor(sys1.out_isLinear,sys2.out_isLinear))
+if length(nlnsys1.out_isLinear) ~= length(sys2.out_isLinear) || ...
+    any(xor(nlnsys1.out_isLinear,sys2.out_isLinear))
     res = false; return
 end
 
 % compare differential equations
-if ~aux_compareEquations(sys1.mFile,sys1.dim,sys1.nrOfInputs,sys1.dim,...
-        sys2.mFile,sys2.dim,sys2.nrOfInputs,sys2.dim)
+if ~aux_compareEquations(nlnsys1.mFile,nlnsys1.nrOfStates,nlnsys1.nrOfInputs,nlnsys1.nrOfStates,...
+        sys2.mFile,sys2.nrOfStates,sys2.nrOfInputs,sys2.nrOfStates)
     res = false; return
 end
 
 % compare output equations
-if ~aux_compareEquations(sys1.out_mFile,sys1.dim,sys1.nrOfInputs,sys1.nrOfOutputs,...
-        sys2.out_mFile,sys2.dim,sys2.nrOfInputs,sys2.nrOfOutputs)
+if ~aux_compareEquations(nlnsys1.out_mFile,nlnsys1.nrOfStates,nlnsys1.nrOfInputs,nlnsys1.nrOfOutputs,...
+        sys2.out_mFile,sys2.nrOfStates,sys2.nrOfInputs,sys2.nrOfOutputs)
     res = false; return
 end
 

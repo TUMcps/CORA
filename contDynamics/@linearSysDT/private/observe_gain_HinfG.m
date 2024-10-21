@@ -1,12 +1,13 @@
-function [OGain,tComp]= observe_gain_HinfG(obj,options)
-% observe_gain_HinfG - computes the gain for the guaranteed state estimation
-% approach from [1].
+function [OGain,tComp]= observe_gain_HinfG(linsysDT,params,options)
+% observe_gain_HinfG - computes the gain for the guaranteed state
+%    estimation approach from [1].
 %
 % Syntax:
-%    [OGain,tComp]= observe_gain_HinfG(obj,options)
+%    [OGain,tComp]= observe_gain_HinfG(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -18,8 +19,6 @@ function [OGain,tComp]= observe_gain_HinfG(obj,options)
 %        Interval estimation methods for discrete-time linear time-
 %        invariant systems. IEEE Transactions on Automatic Control,
 %        64(11):4717-4724, 2019.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -39,12 +38,12 @@ tic
 % It is assumed that E and F are multiplied with unit
 % uncertainties; thus, E and F can be seen as generators of zonotopes
 % representing the disturbance and noise set
-E = generators(options.W);
-F = generators(options.V);
+E = generators(params.W);
+F = generators(params.V);
 
 % obtain system dimension and nr of outputs
-n = obj.dim;
-nrOfOutputs = obj.nrOfOutputs;
+n = linsysDT.nrOfStates;
+nrOfOutputs = linsysDT.nrOfOutputs;
 nw = size(E,2);
 nv = size(F,1);
 
@@ -71,11 +70,11 @@ for i = 1:length(gamma)
     SM(3,1) = 0;
     SM(3,2) = 0;
     SM(3,3) = -gamma(i)*gamma(i)*eye(nv);
-    SM(4,1) = P*obj.A-Y*obj.C;
+    SM(4,1) = P*linsysDT.A-Y*linsysDT.C;
     SM(4,2) = P*E;
     SM(4,3) = -Y*F;
     SM(4,4) = -P;
-    SM= sdpvar(SM);
+    SM = sdpvar(SM);
     constraint = [P>=0,SM<=0,gamma(i)>=0]; % constraint function    
     objective = gamma(i)*gamma(i); % objective function
     solpb = optimize(constraint, objective, options_sdp); % optimze the LMIs
@@ -96,8 +95,5 @@ end
 
 % computation time
 tComp = toc;
-
- 
-end
 
 % ------------------------------ END OF CODE ------------------------------

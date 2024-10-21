@@ -1,0 +1,30 @@
+\section{Simulation of Hybrid Automata} \label{sec:simulationHybridAutomaton}
+
+While the reachable set computation of hybrid systems as performed in CORA is described in several publications, see e.g., \cite{Althoff2010d,Althoff2010a,Althoff2012a}, the simulation of hybrid systems is nowhere documented. For this reason, the simulation is described in this subsection in more detail. The simulation is performed by applying the following steps:
+\begin{itemize}
+ \item[\ding{192}] Preparation 1: Guard sets and invariants can be specified by any set representation that CORA offers. For simulation purposes, all set representations are transformed into a halfspace representation as illustrated in \cref{fig:polytopeHRepresentation}. This is performed by transforming intervals, zonotopes, and zonotope bundles to a polytope, see \cref{tab:setConversion}. Next, of all polytopes the halfspace generation is obtained. Guards that are already defined as halfspaces do not have to be converted, of course. In the end, one obtains a set of halfspaces for guard sets and the invariant for each location. The result for one location is shown in \cref{fig:hybridSimulation}.
+ 
+ \item[\ding{193}] Preparation 2: The ordinary differential equation (ODE) solvers of MATLAB can be connected to so-called \textit{event functions}. If during the simulation, one of the event functions has a zero crossing, MATLAB stops the simulation and goes forward and backward in time in an iterative way to determine the zero crossing up to some numerical precision. It can be set if the ODE solver should react to a zero crossing when the event function changes from negative to positive (\texttt{direction=+1}), the other way round (\texttt{direction=-1}), or in any direction (\texttt{direction=0}). It can also be set if the simulation should stop after a zero crossing or not. 
+ 
+ CORA automatically generates an event function for each halfspace, where the simulation is stopped when the halfspace of the invariant is left (\texttt{direction=+1}) and stopped for halfspaces of guard sets when the halfspace is entered (\texttt{direction=-1}). In any case, the simulation will stop.
+ 
+ \item[\ding{194}] During the simulation, the integration of the ODE stops as soon as any event function is triggered. This, however, does not necessarily mean that a guard set is hit as shown in \cref{fig:hybridSimulation_details}. Only when the state is on the edge of a guard set, the integration is stopped for the current location. Otherwise, the integration is continued. Please note that it is not sufficient to check whether a state during the simulation enters a guard set, since this could cause missing a guard set as shown in \cref{fig:hybridSimulation_miss}.
+ 
+ \item[\ding{195}] After a guard set is hit, the discrete state changes according to the transition function and the continuous state according to the jump function as described above. Currently, only urgent semantics is implemented in CORA, i.e., a transition is taken as soon as a guard set is hit, although the guard might model non-deterministic switching. The simulation continues with step \ding{194} in the next location until the time horizon is reached.
+\end{itemize}
+
+\begin{figure}[htb]
+  \centering	
+	\subfigure[Considered location.]{\includetikz{./figures/tikz/sim-hybrid-automata/hybridSimulation_1}}
+	\vspace{0.5cm}
+	\subfigure[Simulation using halfspaces.]{\includetikz{./figures/tikz/sim-hybrid-automata/hybridSimulation_2}\label{fig:hybridSimulation_details}}
+    \caption{Illustration of the algorithm for simulating a hybrid automaton.}
+    \label{fig:hybridSimulation}		
+\end{figure}
+
+\begin{figure}[htb]
+    \centering
+    \includetikz{./figures/tikz/sim-hybrid-automata/hybridSimulation_miss}
+    \caption{Guard intersections can be missed when one only checks whether intermediate states are in any guard set.}
+    \label{fig:hybridSimulation_miss}		
+\end{figure}

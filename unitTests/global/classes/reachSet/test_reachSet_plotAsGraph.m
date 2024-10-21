@@ -51,9 +51,9 @@ try
 
     close;
 
-catch
-    res = false;
+catch ME
     close;
+    rethrow(MEs)
 end
 
 % ------------------------------ END OF CODE ------------------------------

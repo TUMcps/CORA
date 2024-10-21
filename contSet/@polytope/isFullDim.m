@@ -1,14 +1,16 @@
-function [res,subspace] = isFullDim(P)
+function [res,subspace] = isFullDim(P,varargin)
 % isFullDim - checks if the dimension of the affine hull of a polytope is
 %    equal to the dimension of its ambient space; additionally, one can
 %    obtain a basis of the subspace in which the polytope is contained
 %
 % Syntax:
 %    res = isFullDim(P)
+%    res = isFullDim(P,tol)
 %    [res,subspace] = isFullDim(P)
 %
 % Inputs:
 %    P - polytope object
+%    tol - tolerance
 %
 % Outputs:
 %    res - true/false
@@ -47,10 +49,12 @@ function [res,subspace] = isFullDim(P)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% too many input arguments
-if nargin > 2
-    throw(CORAerror('CORA:tooManyInputArgs',2));
-end
+% parse input
+tol = setDefaultValues({1e-12},varargin);
+inputArgsCheck({ ...
+    {P,'att','polytope'}; ...
+    {tol,'att','numeric','scalar'}; ...
+})
 
 % check if fullDim property is already set
 if ~isempty(P.fullDim.val)
@@ -65,11 +69,12 @@ end
 % check whether V- or H-representation given
 if P.isVRep.val
     % --- V representation
-    [res, subspace] = aux_isFullDim_Vpoly(P,nargout);
+    % compute degeneracy acc. to [1, (17)] and subspace acc. to [1, (20)]
+    [res,subspace] = priv_isFullDim_V(P.V_.val,tol);
 
 else
     % --- H representation
-    [res, subspace] = aux_isFullDim_Hpoly(P,nargout);
+    [res,subspace] = aux_isFullDim_Hpoly(P,nargout,tol);
 
 end
 
@@ -81,46 +86,18 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [res,subspace] = aux_isFullDim_Vpoly(P,num_argout)
-% compute degeneracy acc. to [1, (17)] and subspace acc. to [1, (20)]
-
-% set tolerance, read out dimension
-tol = 1e-10;
-n = dim(P);
-
-% compute rank shifted by mean
-V_shifted = P.V_.val - mean(P.V_.val,2);
-rankV = rank(V_shifted,tol);
-% compare to ambient dimension
-res = rankV == n;
-
-% compute basis of affine hull
-if num_argout == 2
-    if res
-        subspace = eye(n);
-    else
-        [Q,R] = qr(V_shifted);
-        subspace = Q(:,1:rankV);
-    end
-else
-    % dummy value for subspace (not used further)
-    subspace = NaN;
-end
-
-end
-
-function [res,subspace] = aux_isFullDim_Hpoly(P,num_argout)
+function [res,subspace] = aux_isFullDim_Hpoly(P,num_argout,tol)
 
 if dim(P) == 1
     % 1D case
-    [res,subspace] = aux_isFullDim_1D_Hpoly(P);
+    [res,subspace] = aux_isFullDim_1D_Hpoly(P,tol);
 else
     % >=2D case
     if num_argout < 2
         % If the user only wants to know whether the polytope is
         % degenerate, we can check this rapidly using linear
         % programming, see [1, (18)]
-        res = aux_isFullDim_nD_Hpoly_nosubspace(P);
+        res = aux_isFullDim_nD_Hpoly_nosubspace(P,tol);
         % put a dummy value here (will not be used further)
         subspace = NaN;
     
@@ -128,14 +105,14 @@ else
         % If on the other hand, the user is interested in the subspace,
         % we have to do the computations from above in a more specific
         % way, see [1, Alg. 2]
-        [res,subspace] = aux_isFullDim_nD_H_subspace(P);
+        [res,subspace] = aux_isFullDim_nD_H_subspace(P,tol);
         
     end
 end
 
 end
 
-function [res,subspace] = aux_isFullDim_1D_Hpoly(P)
+function [res,subspace] = aux_isFullDim_1D_Hpoly(P,tol)
 % special method for 1D polytopes (vertices fast to compute)
 
 % compute vertices
@@ -166,7 +143,7 @@ end
 
 end
 
-function res = aux_isFullDim_nD_Hpoly_nosubspace(P)
+function res = aux_isFullDim_nD_Hpoly_nosubspace(P,tol)
 
 % Existence of equality constraints implies degenerate case (set may
 % also be empty)
@@ -174,16 +151,18 @@ if ~isempty(P.Ae_.val)
     res = false;
     return
 end
+% ...no more equality constraints from here on
 
 % number of inequality constraints and dimension
 [nrCon,n] = size(P.A_.val);
 
 % normalize constraints
-P_norm = normalizeConstraints(P,'A');
+[P_A,P_b,P_Ae,P_be] = ...
+    priv_normalizeConstraints(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val,'A');
 
 % quick check: any pair of inequalities of type
 %   ax <= b, ax >= b_ (-ax <= -b_), with b_ >= b?
-dotprod = tril(P_norm.A * P_norm.A');
+dotprod = tril(P_A * P_A');
 idxAntiParallel = find(withinTol(dotprod,-1));
 for i=1:length(idxAntiParallel)
     % read out matrix indexing from linear indexing
@@ -192,7 +171,7 @@ for i=1:length(idxAntiParallel)
     %  ax <= b1, -ax <= b2 <=> ax >= -b2  ->  -b2 >= b1?
     % -ax <= b1 <=> ax >= -b1, ax <= b2   ->  -b1 >= b2 <=> -b2 >= b1?
     % ...the one with the reversed sign has to be larger (or equal)!
-    if -P_norm.b(c) > P_norm.b(r) || withinTol(-P_norm.b(c),P_norm.b(r))
+    if -P_b(c) > P_b(r) || withinTol(-P_b(c),P_b(r),tol)
         res = false;
         return
     end
@@ -243,10 +222,10 @@ end
 
 end
 
-function [res,subspace] = aux_isFullDim_nD_H_subspace(P)
+function [res,subspace] = aux_isFullDim_nD_H_subspace(P,tol)
 % since we have to evaluate many linear programs anyway, we can quickly
 % check if the polytope is completely empty -> also degenerate
-if representsa_(P,'emptySet',1e-10)
+if representsa_(P,'emptySet',tol)
     res = false;
     subspace = [];
     return

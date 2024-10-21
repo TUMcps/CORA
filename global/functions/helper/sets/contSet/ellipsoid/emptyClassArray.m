@@ -25,18 +25,18 @@ function A = emptyClassArray(classname,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % input arg checks
-if isempty(varargin)
-    throw(CORAerror('CORA:notEnoughInputArgs',1));
-elseif length(varargin)==1 
+narginchk(1,Inf);
+if nargin == 2
     if size(varargin{1},1)~=1
         throw(CORAerror('CORA:wrongValue','first','1 by x size vector'));
     end
     sz = varargin{1};
-elseif length(varargin)==2 && any(cellfun(@(cc)numel(cc)~=1,varargin))
+elseif nargin == 3 && any(cellfun(@(cc)numel(cc)~=1,varargin))
     throw(CORAerror('CORA:wrongValue','first/second/third/...','integer'));
 else
     sz = horzcat(varargin{:});
 end
+
 inputArgsCheck({{classname,'att',{'char','string'},{'istextscalar'}};
                     {sz,'att',{'numeric'},{'integer','nonnegative'}}});
 

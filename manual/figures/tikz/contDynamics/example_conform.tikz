@@ -1,0 +1,134 @@
+% This file was created by matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.27060,0.58820,1.00000}%
+%
+\begin{tikzpicture}
+\footnotesize
+
+\begin{axis}[%
+width=4cm,
+height=4cm,
+at={(0in,0in)},
+scale only axis,
+xmin=0,
+xmax=5,
+ymin=-1,
+ymax=2.5,
+axis background/.style={fill=white}
+]
+
+\addplot[area legend, line width=2.0pt, draw=mycolor1, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+0	1.69\\
+0	1.9135\\
+}--cycle;
+
+\addplot[area legend, line width=2.0pt, draw=mycolor1, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+1	1.6085\\
+1	2.2\\
+}--cycle;
+
+\addplot[area legend, line width=2.0pt, draw=mycolor1, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+2	0.75\\
+2	1.2743\\
+}--cycle;
+
+\addplot[area legend, line width=2.0pt, draw=mycolor1, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+3	-0.14\\
+3	0.2776\\
+}--cycle;
+
+\addplot[area legend, line width=2.0pt, draw=mycolor1, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+4	-0.6566\\
+4	-0.2004\\
+}--cycle;
+
+\addplot[area legend, line width=2.0pt, draw=mycolor1, fill=mycolor1, forget plot]
+table[row sep=crcr] {%
+x	y\\
+5	-0.7283\\
+5	-0.18\\
+}--cycle;
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+0	1.79\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+0	1.89\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+0	1.69\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+1	2\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+1	2.2\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+1	1.8\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+2	0.85\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+2	0.95\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+2	0.75\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+3	-0.14\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+3	-0.14\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+3	-0.14\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+4	-0.36\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+4	-0.46\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+4	-0.26\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+5	-0.38\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+5	-0.58\\
+};
+\addplot [color=black, only marks, mark=*, mark size=0.7500pt, mark options={solid, black}, forget plot]
+  table[row sep=crcr]{%
+5	-0.18\\
+};
+\end{axis}
+\end{tikzpicture}%

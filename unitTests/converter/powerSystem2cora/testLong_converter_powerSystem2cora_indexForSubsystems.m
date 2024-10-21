@@ -25,6 +25,9 @@ function res = testLong_converter_powerSystem2cora_indexForSubsystems()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % load model parameters to obtain Vgen
 load IEEE30
@@ -119,7 +122,7 @@ for i = 1:length(sys)
     g = sys{i}.conFile(x0,y0,u0);
         
     % Is constraint function output close to 0?
-    resPartial(end+1) = (norm(g) <= accuracy);
+    assert((norm(g) <= accuracy));
 end
 
 % final result

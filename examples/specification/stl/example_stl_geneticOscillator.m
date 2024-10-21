@@ -87,10 +87,12 @@ factor = 1.5;
 % define atomic propositions
 
 % x6 - 1 > 0
-P = stl('P', atomicProposition(halfspace([0 0 0 0 0 -1 0 0 0], -1)));
+P = stl('P', atomicProposition(polytope([0 0 0 0 0 -1 0 0 0], -1)));
 
 % 0.032 − 125^2(x4 − 0.003)^2 − 3(x6 − 0.5)^2 > 0
 Q = stl('Q', atomicProposition(ellipsoid(Q * factor, q), [4 6]));
+% overapproximating the ellipsoid as a level set speeds up the computation
+% Q = stl('Q', atomicProposition(levelSet(ellipsoid(Q * factor, q)), [4 6]));
 
 % define formula
 phi = globally(P | globally(Q, interval(3,3.5)), interval(0,1));
@@ -104,10 +106,17 @@ res = res && modelChecking(R,phi,'signals');
 tComp = toc;
 disp(['verification of reachable set: ',num2str(tComp)]);
 
+% Model check formula on reachable set using the incremental algorithm
+tic
+res = res && modelChecking(R,phi,'incremental','verbose',true);
+tComp = toc;
+disp(['verification of reachable set (incremental): ',num2str(tComp)]);
 
 % Verify all simulation traces
 tic
-res = res && monitorSTL(simRes,phi);
+for i = 1:length(simRes)
+    res = res && monitorSTL(simRes(i),phi);
+end
 tComp = toc;
 disp(['verification of simulation traces: ',num2str(tComp)]);
 

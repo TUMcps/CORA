@@ -23,21 +23,19 @@ function res = test_conZonotope_dim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty case
 cZ = conZonotope.empty(3);
-res(end+1,1) = dim(cZ) == 3;
+assert(dim(cZ) == 3);
 cZ = conZonotope(zeros(2,0));
-res(end+1,1) = dim(cZ) == 2;
+assert(dim(cZ) == 2);
 
 % simple case
 Z = [0 3 0 1;0 0 2 1];
 A = [1 0 1]; b = 1;
 cZ = conZonotope(Z,A,b);
-res(end+1,1) = dim(cZ) == 2;
+assert(dim(cZ) == 2);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

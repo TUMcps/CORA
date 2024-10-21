@@ -62,9 +62,8 @@ for j = 1:length(methods)
         check1 = infimum(I) < min(points_) || withinTol(infimum(I) - min(points_),0,1e-10);
         check2 = max(points_) < supremum(I) || withinTol(max(points_) - supremum(I),0,1e-10);
 
-        if ~check1 || ~check2
-            res = false; return
-        end
+        assertLoop(check1,j,i)
+        assertLoop(check2,j,i)
     end
 end
 
@@ -100,9 +99,7 @@ for j = 1:length(methods)
         % check if the all points from the polynomial zonotope are located
         % inside the calculated range
         points_ = dir' * points;
-        if ~(infimum(I) - min(points_) < 1e-10 && max(points_) - supremum(I) < 1e-10)
-            res = false; return
-        end
+        assertLoop(infimum(I) - min(points_) < 1e-10 && max(points_) - supremum(I) < 1e-10,j,i)
     end
 end
 

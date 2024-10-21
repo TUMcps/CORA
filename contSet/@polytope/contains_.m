@@ -204,8 +204,7 @@ end
 
 % generic method: check support function value along each normal vector of
 % equality and inequality constraints
-A = [P.A_.val; P.Ae_.val; -P.Ae_.val];
-b = [P.b_.val; P.be_.val; -P.be_.val];
+[A,b] = priv_equalityToInequality(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val);
 
 % additional support function options for other sets
 otherOptions = {};

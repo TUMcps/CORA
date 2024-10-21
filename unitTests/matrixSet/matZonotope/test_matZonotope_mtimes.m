@@ -23,8 +23,6 @@ function res = test_matZonotope_mtimes
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % init some matrix zonotopes
 % scalar
 C = 0;
@@ -43,29 +41,29 @@ matZ = matZonotope(C,G);
 factor = 2;
 matZres = factor * matZscalar;
 matZres = matZscalar * factor ;
-resvec(end+1) = all(dim(matZres) == [1,1]);
+assert(all(dim(matZres) == [1,1]));
 matZres = factor * matZvector;
 matZres = matZvector * factor ;
-resvec(end+1) = all(dim(matZres) == [3,1]);
+assert(all(dim(matZres) == [3,1]));
 matZres = factor * matZ;
 matZres = matZ * factor;
-resvec(end+1) = all(dim(matZres) == [3,2]);
+assert(all(dim(matZres) == [3,2]));
 
 % matrx case
 factor = magic(3);
 matZres = factor * matZscalar;
 matZres = matZscalar * factor ;
-resvec(end+1) = all(dim(matZres) == [3,3]);
+assert(all(dim(matZres) == [3,3]));
 matZres = factor * matZvector;
-resvec(end+1) = all(dim(matZres) == [3,1]);
+assert(all(dim(matZres) == [3,1]));
 matZres = factor * matZ;
-resvec(end+1) = all(dim(matZres) == [3,2]);
+assert(all(dim(matZres) == [3,2]));
 
 % matZ * matZ
 matZres = matZ.' * matZvector;
-resvec(end+1) = all(dim(matZres) == [2,1]);
+assert(all(dim(matZres) == [2,1]));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

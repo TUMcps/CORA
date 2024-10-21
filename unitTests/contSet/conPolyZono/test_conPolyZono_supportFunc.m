@@ -25,13 +25,12 @@ function res = test_conPolyZono_supportFunc
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
 tol = 1e-6;
 
 % empty set
 cPZ = conPolyZono.empty(2);
-res(end+1,1) = supportFunc(cPZ,[1;1],'upper') == -Inf;
-res(end+1,1) = supportFunc(cPZ,[1;1],'lower') == Inf;
+assert(supportFunc(cPZ,[1;1],'upper') == -Inf);
+assert(supportFunc(cPZ,[1;1],'lower') == Inf);
 
 % Analytical Tests --------------------------------------------------------
 
@@ -67,13 +66,13 @@ problem.ub = ones(3,1);
 % % visualization
 % figure; hold on
 % plot(cPZ,[1,2],'r','Splits',15);
-% ch = conHyperplane(d,val_);
-% plot(ch,[1,2],'b');
+% P = polytope([],[],d,val_);
+% plot(P,[1,2],'b');
 
 % compare with exact solution
-res(end+1,1) = withinTol(val,val_,tol);
+assert(withinTol(val,val_,tol));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

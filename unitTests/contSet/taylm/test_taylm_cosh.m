@@ -31,10 +31,8 @@ eps = 10^-3;
 s = sinh(1);
 c = cosh(1);
 
-if ~appeq( getCoef(t),[c; s; c/2; s/6], eps ) ||...
-        ~appeq( getRem(t), interval(0, 0.15676), eps)
-    res = false;
-end
+assert(appeq( getCoef(t),[c; s; c/2; s/6], eps ))
+assert(appeq( getRem(t), interval(0, 0.15676), eps))
 
 %% Test 2
 syms x
@@ -44,9 +42,7 @@ eps = 10^-3;
 s = sinh(1);
 c = cosh(1);
 
-if ~appeq( getCoef(t),[c; s; c/2; s/6], eps ) ||...
-        ~appeq( getRem(t), interval(0, 0.15676), eps)
-    res = false;
-end  
+assert(appeq( getCoef(t),[c; s; c/2; s/6], eps ))
+assert(appeq( getRem(t), interval(0, 0.15676), eps))    
 
 % ------------------------------ END OF CODE ------------------------------

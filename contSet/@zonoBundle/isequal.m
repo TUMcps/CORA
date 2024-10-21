@@ -1,13 +1,13 @@
-function res = isequal(zB1,zB2,varargin)
-% isequal - checks if two zonotope bundles are equal
+function res = isequal(zB,S,varargin)
+% isequal - checks if a zonotope bundle is equal to another set or point
 %
 % Syntax:
-%    res = isequal(zB1,zB2)
-%    res = isequal(zB1,zB2,tol)
+%    res = isequal(zB,S)
+%    res = isequal(zB,S,tol)
 %
 % Inputs:
-%    zB1 - zonoBundle object
-%    zB2 - zonoBundle object
+%    zB - zonoBundle object
+%    S - contSet object, numeric
 %    tol - (optional) tolerance
 %
 % Outputs:
@@ -25,42 +25,75 @@ function res = isequal(zB1,zB2,varargin)
 %
 % See also: none
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Adrian Kulmburg
 % Written:       17-September-2019
-% Last update:   ---
+% Last update:   08-July-2024 (AK, implemented exact checks)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% too many input arguments
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(2,3);
 
 % parse input arguments
 tol = setDefaultValues({eps},varargin);
 
 % check input arguments
-inputArgsCheck({{zB1,'att','zonoBundle'};
-                {zB2,'att','zonoBundle'};
+inputArgsCheck({{zB,'att',{'zonoBundle','numeric'}};
+                {S,'att',{'contSet','numeric'}};
                 {tol,'att','numeric',{'nonnan','scalar','nonnegative'}}});
 
-% assume false
-res = false;
+% ensure that numeric is second input argument
+[zB,S] = reorderNumeric(zB,S);
 
-% check number of parallelSets
-if zB1.parallelSets ~= zB2.parallelSets
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < zB.precedence
+    res = isequal(S,zB,tol);
     return
 end
 
-% compare individual zonotopes
-for z=1:zB1.parallelSets
-    if ~isequal(zB1.Z{z},zB2.Z{z})
-        return
-    end
+% ambient dimensions must match
+if ~equalDimCheck(zB,S,true)
+    res = false;
+    return
 end
 
-% all comparisons ok
+if isa(S,'zonoBundle')
+    res = aux_isequal_zonoBundle(zB,S,tol);
+    return
+end
+
+% general idea: check using mutual containment
+if isa(S,'contSet')
+    res = zB.contains_(S,'exact',tol) && S.contains_(zB,'exact',tol);
+    return
+end
+
+throw(CORAerror('CORA:noops',zB,S));
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_isequal_zonoBundle(zB,S,tol)
+
 res = true;
+% quick check: all individual zonotopes are equal
+if zB.parallelSets == S.parallelSets
+    for z=1:zB.parallelSets
+        if ~isequal(zB.Z{z},S.Z{z})
+            res = false;
+            break
+        end
+    end
+end
+if res
+    return
+end
+
+% general check using mutual containment
+res = zB.contains(S, 'exact', tol) && S.contains(zB, 'exact', tol);
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

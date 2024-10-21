@@ -50,9 +50,6 @@ function res = project(cPZ,dims)
 res = cPZ;
 res.c = cPZ.c(dims);
 res.G = cPZ.G(dims,:);
-
-if ~isempty(cPZ.GI)
-    res.GI = res.GI(dims,:); 
-end
+res.GI = res.GI(dims,:);
     
 % ------------------------------ END OF CODE ------------------------------

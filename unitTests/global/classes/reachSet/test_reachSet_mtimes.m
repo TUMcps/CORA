@@ -44,9 +44,7 @@ R_mapped = expm(A*dt) * R;
 
 % compare results
 for i=1:steps-1
-    if ~isequal(R.timePoint.set{i+1},R_mapped.timePoint.set{i},1e-14)
-        res = false; break
-    end
+    assertLoop(isequal(R.timePoint.set{i+1},R_mapped.timePoint.set{i},1e-14),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

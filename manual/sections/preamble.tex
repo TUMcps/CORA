@@ -1,0 +1,288 @@
+% logging
+\newcommand{\logToConsole}[1]{
+    \typeout{}
+    \typeout{------------------------------------------------------------------------------}
+    \typeout{#1}
+    \typeout{------------------------------------------------------------------------------}
+    \typeout{}
+}
+
+\logToConsole{PREAMBLE}
+
+\usepackage[
+    pdfauthor={\CORAauthors},
+    pdftitle={CORA Manual - \CORAVERSION},
+    pdfsubject={CORA - A Tool for Continuous Reachability Analysis},
+    pdfkeywords={\CORAkeywords}
+]{hyperref}
+
+%% More layout: Get rid of indenting throughout entire document
+\setlength{\parindent}{0in}
+
+%Changes from Matthias Althoff:
+\usepackage{color}
+\usepackage{fancyvrb}
+\usepackage{eurosym}
+%\usepackage[a4paper,left=2.5cm,right=2.5cm,nohead]{geometry}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{fancyhdr} %for header
+%\usepackage{paralist}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{lastpage}
+\usepackage{parskip}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathrsfs}
+\usepackage{cite}
+\usepackage{pifont} %for circled numbers
+\usepackage{caption}
+\usepackage{framed}
+\usepackage{footnote}
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\usepackage{longtable}
+
+%\usepackage{breakurl}
+% added by Dmitry Grebenyuk
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{verbatim}
+\usepackage{tcolorbox}
+\usepackage{rotating}
+\tcbuselibrary{breakable,skins}
+
+% table colums with fixed width
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+\newcolumntype{L}[1]{>{\arraybackslash}m{#1}}
+
+% enable use of footnotes in tables
+\makesavenoteenv{tabular}
+\makesavenoteenv{table}
+
+% argmin command
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% subsubsubsection command ---------
+
+\titleclass{\subsubsubsection}{straight}[\subsection]
+
+\newcounter{subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection.\arabic{subsubsubsection}}
+
+\titleformat{\subsubsubsection}
+{\normalfont\normalsize\bfseries}{\thesubsubsubsection}{1em}{}
+\titlespacing*{\subsubsubsection}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{5}{\z@}%
+{1\baselineskip plus 0.25\baselineskip minus 0.25\baselineskip}%
+{1\baselineskip plus 0.25\baselineskip minus 0.25\baselineskip}{\normalfont  \normalsize\bfseries}}%
+\renewcommand\subparagraph{\@startsection{subparagraph}{6}{\parindent}%
+{3.25ex \@plus1ex \@minus .2ex}%
+{-1em}%
+{\normalfont\normalsize\bfseries}}
+\def\toclevel@subsubsubsection{4}
+\def\toclevel@paragraph{5}
+\def\toclevel@paragraph{6}
+\def\l@subsubsubsection{\@dottedtocline{4}{7em}{4em}}
+\def\l@paragraph{\@dottedtocline{5}{10em}{5em}}
+\def\l@subparagraph{\@dottedtocline{6}{14em}{6em}}
+\makeatother
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+% -----------------------------------
+
+
+
+\newcommand{\mathpzc}[1]{\underline{#1}}
+%Indexing elements----------------------
+\renewcommand{\^}[1]{^{(#1)}}
+\renewcommand{\th}[1]{#1^\text{th}}
+%---------------------------------------
+%-Dmitry
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+
+\DeclareMathOperator{\arccosh}{arccosh}
+\DeclareMathOperator{\arcsinh}{arcsinh}
+\DeclareMathOperator{\arctanh}{arctanh}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rn}{\mathbb{R}^n}
+\newcommand{\operator}[1]{{\normalfont \texttt{#1}}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}}
+
+\newenvironment{wide_itemize}{
+    \begin{itemize}
+        \setlength{\itemsep}{10pt}
+        \setlength{\parskip}{0pt}
+        \setlength{\parsep}{0pt}
+        }{
+    \end{itemize}}
+
+\newenvironment{packed_itemize}{
+    \begin{itemize}
+        \renewcommand{\labelitemi}{$\bullet$}
+        \setlength{\itemsep}{2pt}
+        \setlength{\parskip}{0pt}
+        \setlength{\parsep}{0pt}
+        }{
+    \end{itemize}}
+
+\newenvironment{first_itemize}{
+    \setlist{nolistsep}
+    \vspace{-0.2cm}
+    \begin{itemize}
+        \setlength{\itemsep}{2pt}
+        \setlength{\parskip}{0pt}
+        \setlength{\parsep}{0pt}
+        }{
+    \end{itemize}}
+
+\newtcolorbox{nestedlist}{blanker,
+    unbreakable,
+    left=3mm,right=3mm,top=2mm,bottom=2mm,
+    before skip=5pt,after skip=5pt,
+    every box/.style={borderline west={1pt}{2pt}{black}},
+}
+
+\newcommand{\sep}[1]{{\large\textbf{#1}} \vspace{0.3cm}} %seperator
+
+\newcommand{\brake}{\mbox{} \vspace{0cm} \mbox{}} %seperator
+
+%\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+
+
+
+\pagestyle{fancy} %set differnt page style for header
+\setlength{\headheight}{14pt}
+\fancyhead[L]{\leftmark}
+\fancyhead[C]{}
+% \fancyhead[R]{}
+\fancyhead[R]{\smash{\includegraphics[height=\headheight]{./logo/CoraLogo_icon}}}
+\fancyfoot[L]{}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{}
+
+
+\fancypagestyle{firststyle}
+{
+    \addtolength{\headheight}{-1.05cm}
+    \addtolength{\headsep}{1.05cm}
+}
+
+% tikz
+\usepackage{tikzscale}
+\usepackage{pgfplots}
+\usepackage{mathtools}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{external}
+\tikzexternalize[prefix=./figures/externalize/]
+\tcbsetforeverylayer{shield externalize}% required for tcolorbox/nestedlist
+\newcommand{\includetikz}[1]{%
+    \tikzsetnextfilename{#1}%
+    \input{#1.tikz}%
+}
+% explicitly set line width to avoid different widths in different pdf viewers
+\tikzset{every picture/.style={line width=0.5pt}}
+% groupplots
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{matrix}
+\usetikzlibrary{backgrounds}
+% uml
+\usetikzlibrary{arrows,shapes,positioning}
+\usetikzlibrary{ext.paths.ortho}
+\usetikzlibrary{calc}
+\usetikzlibrary {arrows.meta}
+\usetikzlibrary{patterns}
+\usetikzlibrary{plotmarks,bending,positioning,fit} % rl
+
+% checkmark and crossmark
+\usepackage{pifont}
+\newcommand{\cmark}{\text{\ding{51}}}%
+\newcommand{\xmark}{\text{\ding{55}}}%
+
+
+\newcommand{\textttsmall}[1]{\textcolor{blue}{\small{\texttt{#1}}}}
+
+% neural networks
+
+% neural network
+\newcommand{\NN}[0]{\ensuremath{\Phi}}
+\newcommand{\numLayers}[0]{\ensuremath{\kappa}}
+\newcommand{\numNeurons}[0]{\ensuremath{n}}
+
+% layers
+\newcommand{\nnLayerName}[2]{\ensuremath{L_{#1}^\text{#2}}}
+\newcommand{\nnLayer}[3]{\ensuremath{\nnLayerName{#1}{#2}\left(#3\right)}}
+\newcommand{\nnActFun}{\ensuremath{\phi}}
+\newcommand{\actfun}{\nnActFun} % remove?
+
+
+
+% point propagation
+\newcommand{\nnInput}[0]{\ensuremath{x}}
+\newcommand{\nnHidden}[0]{\ensuremath{h}}
+\newcommand{\nnOutput}[0]{\ensuremath{y}}
+\newcommand{\nnGrad}{\ensuremath{g}}
+
+% set propagation
+\newcommand{\nnInputSet}[0]{\mathcal{X}}
+\newcommand{\nnHiddenSet}[0]{\mathcal{H}}
+\newcommand{\nnHiddenSetExact}[0]{\nnHiddenSet^*}
+\newcommand{\nnOutputSet}[0]{\mathcal{Y}}
+\newcommand{\nnOutputSetExact}[0]{\nnOutputSet^*}
+\newcommand{\nnGradSet}{\mathcal{G}}
+
+% set-based training
+\newcommand{\nnTarget}{\ensuremath{t}}
+\NewDocumentCommand{\nablaOperator}{e{_^}}{%
+    \mathop{}\!% \mathop for good spacing before \nabla
+    \nabla
+    \IfValueT{#1}{_{\!#1}}% tuck in the subscript
+    \IfValueT{#2}{^{#2}}% possible superscript
+}
+
+
+% other
+\newcommand{\nnPertRadius}{\epsilon}
+
+% specification
+\newcommand{\nnUnsafeSet}[0]{\mathcal{S}}
+
+
+% cleverref ---
+
+\usepackage{cleveref}
+
+\crefname{section}{Sec.}{Sec.}
+\crefname{subsection}{Sec.}{Sec.}
+\crefname{subsubsection}{Sec.}{Sec.}
+\crefname{subsubsubsection}{Sec.}{Sec.}
+\crefname{figure}{Fig.}{Fig.}
+\crefname{algorithm}{Alg.}{Alg.}
+\crefname{table}{Tab.}{Tab.}
+\crefname{example}{Example}{Example}
+\crefname{definition}{Def.}{Def.}
+\crefname{proposition}{Prop.}{Prop.}
+\crefname{theorem}{Thm.}{Thm.}
+\crefname{lemma}{Lemma}{Lemmas}
+\crefname{appendix}{Appendix}{Appendices}
+
+\Crefname{section}{Sec.}{Sec.}
+\Crefname{subsection}{Sec.}{Sec.}
+\Crefname{subsubsection}{Sec.}{Sec.}
+\Crefname{subsubsubsection}{Sec.}{Sec.}
+\Crefname{figure}{Fig.}{Fig.}
+\Crefname{algorithm}{Alg.}{Alg.}
+\Crefname{table}{Tab.}{Tab.}
+\crefname{example}{Example}{Example}
+\Crefname{definition}{Def.}{Def.}
+\Crefname{proposition}{Prop.}{Prop.}
+\Crefname{theorem}{Thm.}{Thm.}
+\Crefname{lemma}{Lemma}{Lemmas}
+\Crefname{appendix}{Appendix}{Appendices}

@@ -1,0 +1,85 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                                                          
+ \hspace*{-1.6em}{\scriptsize 1}$  $\color{mblue}$function$\color{black}$ bouncingBall()$\\
+ \hspace*{-1.6em}{\scriptsize 2}$  $\\
+ \hspace*{-1.6em}{\scriptsize 3}$  $\color{mgreen}$%set options---------------------------------------------------------------$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 4}$  options.x0 = [1; 0]; $\color{mgreen}$%initial state for simulation$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 5}$  options.R0 = zonotope([options.x0, diag([0.05, 0.05])]); $\color{mgreen}$%initial set$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 6}$  options.startLoc = 1; $\color{mgreen}$%initial location$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 7}$  options.finalLoc = 0; $\color{mgreen}$%0: no final location$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 8}$  options.tStart = 0; $\color{mgreen}$%start time$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 9}$  options.tFinal = 5; $\color{mgreen}$%final time$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 10}$  options.timeStepLoc{1} = 0.05; $\color{mgreen}$%time step size in location 1$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 11}$  options.taylorTerms = 10;$\\
+ \hspace*{-2em}{\scriptsize 12}$  options.zonotopeOrder = 20;$\\
+ \hspace*{-2em}{\scriptsize 13}$  options.polytopeOrder = 10;$\\
+ \hspace*{-2em}{\scriptsize 14}$  options.errorOrder=2;$\\
+ \hspace*{-2em}{\scriptsize 15}$  options.reductionTechnique = $\color{mred}$'girard'$\color{black}$;$\\
+ \hspace*{-2em}{\scriptsize 16}$  options.isHybrid = 1;$\\
+ \hspace*{-2em}{\scriptsize 17}$  options.isHyperplaneMap = 0;$\\
+ \hspace*{-2em}{\scriptsize 18}$  options.enclosureEnables = [5]; $\color{mgreen}$%choose enclosure method(s)$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 19}$  options.originContained = 0;$\\
+ \hspace*{-2em}{\scriptsize 20}$  options.polytopeType = $\color{mred}$'mpt'$\color{black}$;$\\
+ \hspace*{-2em}{\scriptsize 21}$  $\color{mgreen}$%--------------------------------------------------------------------------$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 22}$  $\\
+ \hspace*{-2em}{\scriptsize 23}$  $\color{mgreen}$%specify hybrid automaton--------------------------------------------------$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 24}$  $\color{mgreen}$%define large and small distance$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 25}$  dist = 1e3;$\\
+ \hspace*{-2em}{\scriptsize 26}$  eps = 1e-6;$\\
+ \hspace*{-2em}{\scriptsize 27}$  $\\
+ \hspace*{-2em}{\scriptsize 28}$  A = [0 1; 0 0]; $\color{mgreen}$% system matrix$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 29}$  B = eye(2); $\color{mgreen}$% input matrix$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 30}$  linSys = linearSys($\color{mred}$'linearSys'$\color{black}$,A,B); $\color{mgreen}$%linear continuous system$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 31}$  $\\
+ \hspace*{-2em}{\scriptsize 32}$  inv = interval([-2*eps, dist; -dist, dist]); $\color{mgreen}$%invariant$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 33}$  guard = interval([- eps, 0; -dist, 0]); $\color{mgreen}$%guard set$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 34}$  reset.A = [0, 0; 0, -0.75]; reset.b = zeros(2,1); $\color{mgreen}$%reset$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 35}$  trans{1} = transition(guard,reset,1,$\color{mred}$'a'$\color{black}$,$\color{mred}$'b'$\color{black}$); $\color{mgreen}$%transition$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 36}$  loc{1} = location($\color{mred}$'loc1'$\color{black}$,1,inv,trans,linSys); $\color{mgreen}$%location$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 37}$  HA = hybridAutomaton(loc); $\color{mgreen}$% select location for hybrid automaton$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 38}$  $\color{mgreen}$%--------------------------------------------------------------------------$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 39}$  $\\
+ \hspace*{-2em}{\scriptsize 40}$  $\color{mgreen}$%set input:$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 41}$  options.uLoc{1} = [0; -1]; $\color{mgreen}$%input for simulation$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 42}$  options.uLocTrans{1} = options.uLoc{1}; $\color{mgreen}$%center of input set$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 43}$  options.Uloc{1} = zonotope(zeros(2,1)); $\color{mgreen}$%input deviation from center$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 44}$  $\\
+ \hspace*{-2em}{\scriptsize 45}$  $\color{mgreen}$%simulate hybrid automaton$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 46}$  HA = simulate(HA,options); $\\
+ \hspace*{-2em}{\scriptsize 47}$  $\\
+ \hspace*{-2em}{\scriptsize 48}$  $\color{mgreen}$%compute reachable set$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 49}$  [HA] = reach(HA,options);$\\
+ \hspace*{-2em}{\scriptsize 50}$  $\\
+ \hspace*{-2em}{\scriptsize 51}$  $\color{mgreen}$%choose projection and plot------------------------------------------------$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 52}$  options.projectedDimensions = [1 2];$\\
+ \hspace*{-2em}{\scriptsize 53}$  options.plotType = $\color{mred}$'b'$\color{black}$;$\\
+ \hspace*{-2em}{\scriptsize 54}$  plot(HA,$\color{mred}$'reachableSet'$\color{black}$,options); $\color{mgreen}$%plot reachable set$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 55}$  plot(options.R0,options.projectedDimensions,$\color{mred}$'blackFrame'$\color{black}$); $\color{mgreen}$%plot initial set$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 56}$  plot(HA,$\color{mred}$'simulation'$\color{black}$,options); $\color{mgreen}$%plot simulation$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 57}$  $\color{mgreen}$%--------------------------------------------------------------------------$\color{black}$$\\
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

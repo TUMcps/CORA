@@ -33,9 +33,9 @@ options.verifyAlg = 'reachavoid:supportFunc';
 
 % forall t: -1.7e-4 <= y3 <= 1.7e-4 (should be violated)
 d = 1.7e-4;
-hs1 = halfspace([0 0 1],-d);
-hs2 = halfspace([0 0 -1],-d);
-spec = specification({hs1,hs2},'unsafeSet');
+P1 = polytope([0 0 1],-d);
+P2 = polytope([0 0 -1],-d);
+spec = specification({P1,P2},'unsafeSet');
 
 
 % System Dynamics ---------------------------------------------------------

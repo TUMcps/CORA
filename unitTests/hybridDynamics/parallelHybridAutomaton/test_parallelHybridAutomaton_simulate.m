@@ -38,19 +38,19 @@ params.u = 4;
 [t,x,loc] = simulate(pHA,params);
 
 % must be correct type
-res = iscell(t) && iscell(x) && isnumeric(loc);
+assert(iscell(t) && iscell(x) && isnumeric(loc));
 % must be of same length
-res(end+1,1) = length(t) == length(x) && length(t) == size(loc,1);
+assert(length(t) == length(x) && length(t) == size(loc,1));
 
 % check first and final entry in time vector
-res(end+1,1) = withinTol(t{1}(1),params.tStart) ...
-    && withinTol(t{end}(end),params.tFinal);
+assert(withinTol(t{1}(1),params.tStart) ...
+    && withinTol(t{end}(end),params.tFinal));
 % check initial state
-res(end+1,1) = compareMatrices(x{1}(1,:)',params.x0);
+assert(compareMatrices(x{1}(1,:)',params.x0));
 % check start location
-res(end+1,1) = compareMatrices(loc(1,:)',params.startLoc);
+assert(compareMatrices(loc(1,:)',params.startLoc));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

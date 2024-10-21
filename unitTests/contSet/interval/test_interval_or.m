@@ -42,10 +42,11 @@ IntUnion_true = interval(lower_true, upper_true);
 
 % empty set
 I_empty = interval.empty(3);
-res_e = or(Int1,I_empty) == Int1;
+assert(or(Int1,I_empty) == Int1);
 % compare results
-res_analytical = all(infimum(IntUnion) == infimum(IntUnion_true)) && ...
-        all(supremum(IntUnion) == supremum(IntUnion_true)) && res_e;
+assert(all(infimum(IntUnion) == infimum(IntUnion_true)))
+assert(all(supremum(IntUnion) == supremum(IntUnion_true)))
+
 % -------------------------------------------------------------------------
 
 % TEST 2: Random ----------------------------------------------------------
@@ -67,11 +68,35 @@ upper_true = max(upper1, upper2);
 IntUnion_true = interval(lower_true, upper_true);
 
 % compare results
-res_rand = all(infimum(IntUnion) == infimum(IntUnion_true)) && ...
-        all(supremum(IntUnion) == supremum(IntUnion_true));
+assert(all(infimum(IntUnion) == infimum(IntUnion_true)))
+assert(all(supremum(IntUnion) == supremum(IntUnion_true)))
+
+% TEST 3: Empty sets ------------------------------------------------------
+
+I = interval([1;2],[3;4]);
+Iempty = interval.empty(2);
+
+I_or = I | Iempty;
+assert(isequal(I,I_or));
+
+I_or = Iempty | I;
+assert(isequal(I,I_or));
+
 % -------------------------------------------------------------------------
 
-% add results
-res = res_analytical && res_rand;
+% n-d arrays
+lb = reshape([ 1.000 3.000 2.000 5.000 -3.000 0.000 2.000 1.000 0.000 -2.000 -1.000 3.000 0.000 0.000 0.000 0.000 1.000 -1.000 1.000 0.000 0.000 0.000 0.000 0.000 ], [2,2,2,3]);
+ub = reshape([ 1.500 4.000 4.000 10.000 -1.000 0.000 3.000 2.000 1.000 0.000 2.000 4.000 0.000 0.000 0.000 0.000 2.000 -0.500 3.000 2.000 0.000 0.000 0.000 0.000 ], [2,2,2,3]);
+I1 = interval(lb,ub);
+I2 = I1+1;
+I = I1 | I2;
+I_true = interval(lb,ub+1);
+
+assert(isequal(I,I_true))
+
+% test completed
+res = true;
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

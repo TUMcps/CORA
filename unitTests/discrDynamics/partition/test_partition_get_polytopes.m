@@ -25,26 +25,18 @@ twoDimField=partition([0,10; -3,3],[5;10]);
 Pols1 = cellPolytopes(twoDimField,1:nrOfCells(twoDimField));
 Pols2 = cellPolytopes(twoDimField);
 
-if length(Pols1)==length(Pols2)
-    res1 = (norm(volume(Pols1{3}) - volume(Pols2{3}))<1e-9);
-else
-    res1 = 0;
-end
-
+assert(length(Pols1)==length(Pols2))
+assert(norm(volume(Pols1{3}) - volume(Pols2{3}))<1e-9);
 
 % check that cellPolytopes works, 3DOF
 Pols1 = cellPolytopes(threeDimField,1:nrOfCells(threeDimField));
 Pols2 = cellPolytopes(threeDimField);
 
-if length(Pols1)==length(Pols2)
-    res2 = (norm(volume(Pols1{3}) - volume(Pols2{3}))<1e-9);
-else
-    res2 = 0;
-end
+assert(length(Pols1)==length(Pols2))
+assert((norm(volume(Pols1{3}) - volume(Pols2{3}))<1e-9));
 
+res = true;
 
-res = res1&&res2;
-% 
 % cellPolytopes(threeDimField,[1 5 3])
 % cellPolytopes(threeDimField)
 % cellPolytopes(threeDimField,[1 5 3])

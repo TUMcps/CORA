@@ -67,16 +67,12 @@ function Z = minkDiff(minuend, subtrahend, varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% parse inputs
+narginchk(2,3);
+
 % list implemented algorithms
 implementedAlgs = {'exact','inner','outer','outer:coarse','outer:scaling', ...
     'approx','inner:conZonotope','inner:RaghuramanKoeln'};
-
-% parse inputs
-if nargin < 2
-    throw(CORAerror("CORA:notEnoughInputArgs",2))
-elseif nargin > 3
-    throw(CORAerror("CORA:tooManyInputArgs",3))
-end
 
 % check inputs
 method = setDefaultValues({'approx'},varargin);

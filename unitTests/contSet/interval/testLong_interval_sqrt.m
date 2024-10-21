@@ -23,8 +23,6 @@ function res = testLong_interval_sqrt
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
 % random tests
 nrOfTests = 1000;
 
@@ -32,18 +30,16 @@ for i=1:nrOfTests
 
     % if inf < 0, result is NaN -> should throw an error
     I = interval(-randi(1000,1,1)*rand(1),randi(1000,1,1)*rand(1));
-    try
-        sqrt(I);
-        res = false;
-    end
+    assertThrowsAs(@sqrt,'CORA:outOfDomain',I);
 
     lb = randi(1000,1,1)*rand(1);
     I = interval(lb,lb*2);
     I_sqrt = sqrt(I);
 
-    if any(I_sqrt.inf <= 0)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop((I_sqrt.inf > 0),i)
 end
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

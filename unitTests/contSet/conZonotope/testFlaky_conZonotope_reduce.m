@@ -81,10 +81,9 @@ for j = 1:length(methods)
 %         plot(cRed{i},[1,2],'b');
         
         % check if all vertices are located inside the set
-        dist = P.A*V - P.b*ones(1,size(V,2));
-        if ~all(all( dist < 0 | withinTol(dist,0,tol) ))
-            throw(CORAerror('CORA:testFailed'));
-        end
+        [A,b] = constraints(P);
+        dist = A*V - b*ones(1,size(V,2));
+        assertLoop(all(all( dist < 0 | withinTol(dist,0,tol) )),j,i)
     end
 end
 
@@ -133,9 +132,7 @@ for j = 1:length(methods)
         
         % check if all vertices are located inside the set
         dist = P.A*V - P.b*ones(1,size(V,2));
-        if ~all(all( dist < 0 | withinTol(dist,0,tol) ))
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(all(all( dist < 0 | withinTol(dist,0,tol) )),j,i)
     end
 end
 
@@ -152,8 +149,8 @@ V = vertices(cZ);
 V_ = vertices(cZred);
 
 % compare with the real vertices
-if ~compareMatrices(V,V_,tol)
-    res = false;
+assert(compareMatrices(V,V_,tol))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,0 +1,46 @@
+\subsubsection{Nonlinear ARX Models} \label{sec:nonlinearSystems_ARX}
+
+In this section, we consider nonlinear autoregressive models with exogenous input (nonlinear ARX models) defined as
+\begin{equation}\label{eq:NARX}
+	y[i] = f(y[i-1:i-p],{u}[i:i-p])
+\end{equation} 
+with
+\begin{align*}
+	y[i-1:i-p] &=\begin{bmatrix} y[i-1]^\top &... & y[i-p]^\top\end{bmatrix}^\top, \\
+	{u}[i:i-p] &= \begin{bmatrix} {u}[i]^\top &...&{u}[i-p]^\top\end{bmatrix}^\top,
+\end{align*} 
+where $y[i] \in \R^o$ is the system output, $u[i] \in \R^m$ is the system input, and $f:\R^{op} \times \times \R^{m(p+1)} \to \R^o$ is a continuous function. %Lipschitz continuity not required for discrete-time systems
+Nonlinear ARX models are implemented in CORA by the class \texttt{nonlinearARX}. An object of class \texttt{nonlinearARX} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+    	& \texttt{sys} = \texttt{nonlinearARX}(\texttt{fun},\Delta t,o,m,p), \\
+     	& \texttt{sys} = \texttt{nonlinearARX}(\texttt{name},\texttt{fun},\Delta t,o,m,p), \\
+	\end{split}
+\end{equation*} 
+where \texttt{name} is a string specifying the name of the system, \texttt{fun} is a MATLAB function handle defining the function $f(y[i-1:i-p],{u}[i:i-p])$ in \eqref{eq:NARX}, $\Delta t$ is the sampling time specifying the time difference between $y[i]$ and $y[i-1]$, $o$ is the dimension of the system output $y[i]$, $m$ is the dimension of the system input $u[i]$, and $p$ is the number of past outputs and inputs that are considered in the function $f$. Let us demonstrate the class \texttt{nonlinearARX} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.48\textwidth}
+	\vspace{10pt}
+	\begin{equation*}
+	\begin{bmatrix} y_1[i] \\ y_2[i] \\ y_3[i] \end{bmatrix} = \begin{bmatrix} y_1[i-1] + u_1[i] + \cos(u_1[i-1]) \\ y_2[i-2] + y_3[i-1] \cos(u_2[i]) \\ y_3[i-1] + u_2[i-1] \sin(y_1[i-2]) \end{bmatrix}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[t]{0.48\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_nonlinearARX}
+\end{minipage}
+\end{center}
+
+
+
+
+
+\subsubsubsection{Operations \texttt{reach}}  
+
+By introducing the state $x[i] = y[i:i-p+1]$ and the input $\tilde{u}[i] = {u}[i:i-p]$, the nonlinear ARX model in \eqref{eq:NARX} can be transformed to an object of the class \texttt{nonlinearSysDT}.
+More details on the transformation can be found in \cite{Luetzow2024b}. 
+Thus, the reachable set of \texttt{nonlinearARX} objects can be computed analogously to the reachable set of \texttt{nonlinearSysDT} objects leading to the same available settings specified in the struct \texttt{options} (see \cref{sec:nonlinearSystemsDT}).
+
+
+

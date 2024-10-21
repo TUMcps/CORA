@@ -37,7 +37,7 @@ function obj = exactTerms(obj,options)
 %load data from object structure
 A=obj.A;
 r=options.timeStep;
-n=obj.dim;
+n=obj.nrOfStates;
 
 %initialize the square of A (sq), the first term of the interval exponential (H), the
 %first term of the exponential for the input (Hu)

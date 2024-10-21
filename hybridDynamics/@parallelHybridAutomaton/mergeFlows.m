@@ -1,13 +1,12 @@
-function sys = mergeFlows(pHA,flowList,locID)
+function sys = mergeFlows(pHA,locID)
 % mergeFlows - merges the continuous dynamics of several subcomponents to 
 %    obtain the continous dynamics for the overall system
 %
 % Syntax:
-%    sys = mergeFlows(pHA,flowList,locID)
+%    sys = mergeFlows(pHA,locID)
 %
 % Inputs:
 %    pHA - parallelHybridAutomaton object
-%    flowList - continous dynamics object for each subcomponent
 %    locID - indices of the current location
 %
 % Outputs:
@@ -26,29 +25,35 @@ function sys = mergeFlows(pHA,flowList,locID)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-
+    
     % number of components
-    numComps = length(flowList);
+    numComps = length(pHA.components);
+
+    % read out flow of active location of i-th subcomponent
+    flowList = cell(1,numComps);
+    for i=1:numComps
+        flowList{i} = pHA.components(i).location(locID(i)).contDynamics;
+    end
 
     % check whether flow equations are linear or nonlinear
-    isLinSys = false(numComps,1);
-    isNonlinSys = false(numComps,1);
+    isLinsys = false(numComps,1);
+    isNonlinsys = false(numComps,1);
     for i=1:numComps
-        isLinSys(i) = isa(flowList{i},'linearSys');
-        isNonlinSys(i) = isa(flowList{i},'nonlinearSys');
+        isLinsys(i) = isa(flowList{i},'linearSys');
+        isNonlinsys(i) = isa(flowList{i},'nonlinearSys');
     end
 
     % merge flows according to the dynamics
-    if ~all(isLinSys | isNonlinSys)
+    if ~all(isLinsys | isNonlinsys)
         throw(CORAerror('CORA:specialError',...
             ['Only "linearSys" and "nonlinearSys" objects are currently ', ...
             'supported for parallel hybrid automata are currently supported!']));
-    elseif all(isLinSys)
+    elseif all(isLinsys)
         sys = aux_mergeFlowsLinearSys(pHA,flowList);
     else
         % convert all linearSys to nonlinearSys
         for i=1:length(flowList)
-            if isLinSys(i)
+            if isLinsys(i)
                 flowList{i} = nonlinearSys(flowList{i});
             end
         end
@@ -59,15 +64,32 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function res = aux_mergeFlowsLinearSys(pHA,flowList)
+function sys_merged = aux_mergeFlowsLinearSys(pHA,flowList)
+% merge the flows of all linear systems from the current location ID to a
+% joint flow; this becomes difficult because inputs of some components are
+% outputs of others
+% note: disturbances and noises are globally unique per component, that is,
+% disturbance i to component j is only used there and in no other component
 
     numComps = length(flowList);
     
     % allocate merged dynamics
-    Amerged = zeros(pHA.dim,pHA.dim);
-    Bmerged = zeros(pHA.dim,pHA.nrOfInputs);
-    cMerged = zeros(pHA.dim,1);
     name = cell(numComps,1);
+    Amerged = zeros(pHA.nrOfStates,pHA.nrOfStates);
+    Bmerged = zeros(pHA.nrOfStates,pHA.nrOfInputs);
+    cMerged = zeros(pHA.nrOfStates,1);
+    Emerged = zeros(pHA.nrOfStates,pHA.nrOfDisturbances);
+    Fmerged = zeros(pHA.nrOfStates,pHA.nrOfNoises);
+
+    % save index for disturbances
+    idxDist = 1;
+    % pre-compute noise binds
+    cumulativeDists = [0; ...
+        cumsum(arrayfun(@(x) x.location(1).contDynamics.nrOfDisturbances, pHA.components))];
+    bindsNoises = cell(numComps,1);
+    for i = 1:numComps
+        bindsNoises{i} = (cumulativeDists(i)+1):cumulativeDists(i+1);
+    end
     
     % loop over all subcomponents
     for i = 1:numComps
@@ -80,22 +102,24 @@ function res = aux_mergeFlowsLinearSys(pHA,flowList)
         name{i,1} = flow.name;
         A = flow.A;
         B = flow.B;
-        if isempty(flow.c)
-            c = zeros(size(A,1),1);
-        else
-            c = flow.c;
-        end
+        c = flow.c;
+        E = flow.E;
         
         % constant input vector c
         cMerged(stateBinds) = cMerged(stateBinds) + c;
-        
+
         % system matrix A
         Amerged(stateBinds,stateBinds) = A;
+
+        % disturbance matrix E
+        distComp = size(E,2);
+        Emerged(stateBinds,idxDist:idxDist+distComp-1) = E;
+        idxDist = idxDist + distComp;
         
-        % input matrix B
+        % input binds: system matrix A (via C), input matrix B, offset c
         for j = 1:size(inputBinds,1)
     
-            % differentiate between global and local input
+            % distinguish between global and local input
             if inputBinds(j,1) == 0
                 % global input
                 Bmerged(stateBinds,inputBinds(j,2)) = ...
@@ -107,45 +131,53 @@ function res = aux_mergeFlowsLinearSys(pHA,flowList)
                 outputFeedComp = inputBinds(j,2);
 
                 % flow equation of the i-th component (index 1)
-                %   x1' = A1*x1 + B1*u1 + c1
+                %   x1'(i) = A1(i,:)*x1 + B1(i,:)*u1 + c1(i) + E1(i,:)*w1
                 % and output equation of the feeding component (index 2)
-                %   y2  = C2*x2 + D2*u2 + k2
-                % with (simplified here to only one input/output)
-                %   u1  = y2
+                %   y2(k)  = C2(k,:)*x2 + D2(k,:)*u2 + k2(k) + F2(k,:)*v2
+                % with -- looking here to only one input/output pair --
+                %   u1(j) = y2(k)
                 % results in the composed system
-                %   x1' = A1*x1 + B1*(C2*x2 + D2*u2 + k2) + c1
+                %   x1'(i) = A1(i,:)*x1
+                %            + B1(i,:) * (C2(k,:)*x2 + D2(k,:)*u2 + k2 + F2(k,:)*v2)
+                %            + c1(i) + E1(i,:)*w1
                 % which can be expanded to
-                %   x1' = (A1*x1 + B1*C2*x2) + B1*D2*u2 + (c1 + B1*k2)
+                %   x1'(i) = (A1(i,:)*x1 + B1(i,:)*C2(k,:)*x2)
+                %            + B1(i,:)*D2(k,:)*u2
+                %            + (c1(i) + B1(i,:)*k2(k))
+                %            + E1(i,:)*w1
+                %            + B1(i,:)*F2(k,:)*v2
                 % note: we deal with each input sequentially, so that
-                % actually B1*u1 is replaced only element-wise
+                % actually B1*u1 is replaced only element-wise (iterator: j)
             
                 % flow equations from the component whose output is the
                 % input to the i-th component
                 feedFlow = flowList{feedComp};
-                % state and input binds of that component
+                % state, input, and noise binds of that component
                 feedStateBinds = pHA.bindsStates{feedComp};
                 feedInputBinds = pHA.bindsInputs{feedComp};
+                feedNoiseBinds = bindsNoises{feedComp};
                 
-                % if a system has no matrices C/D/k, we assume the states
+                % if a system has no matrices D/k/F, we assume the states
                 % to be given as outputs for parallelization (just as for
                 % nonlinear systems)
                 if isscalar(feedFlow.C) && feedFlow.C == 1 ...
-                        && isempty(feedFlow.D) && isempty(feedFlow.k)
-                    C = eye(feedFlow.dim);
+                        && ~any(any(feedFlow.D)) && ~any(feedFlow.k) ...
+                        && ~any(any(feedFlow.F))
+                    C = eye(feedFlow.nrOfStates);
                 else 
                     C = feedFlow.C;
                 end
                 
-                % part with matrix C: A1*x1 + B1*C2*x2
+                % part with matrix C:
+                %    A1*x1 + B1*C2*x2
+                %    [A1 0; 0 B1*C2] * [x1;x2]
                 Amerged(stateBinds,feedStateBinds) = ...
                     Amerged(stateBinds,feedStateBinds) ...
                     + B(:,j)*C(outputFeedComp,:);
                 
                 % part with offset vector k: c1 + B1*k2
-                if ~isempty(feedFlow.k)
-                    cMerged(stateBinds) = cMerged(stateBinds) ...
-                        + B(:,j)*feedFlow.k(outputFeedComp);
-                end
+                cMerged(stateBinds) = cMerged(stateBinds) ...
+                    + B(:,j)*feedFlow.k(outputFeedComp);
                 
                 % part with feedthrough matrix D: B1*D2*u2
                 if ~isempty(feedFlow.D)
@@ -176,6 +208,10 @@ function res = aux_mergeFlowsLinearSys(pHA,flowList)
                             + B(:,j)*d(ind1);
                     end
                 end
+
+                % sensor noise F: x1'(i) = ... + B1(i,:)*F2(k,:)*v2
+                Fmerged(stateBinds,feedNoiseBinds) = ...
+                    B(:,j)*feedFlow.F(outputFeedComp,:);
             end
         end
     end
@@ -183,21 +219,22 @@ function res = aux_mergeFlowsLinearSys(pHA,flowList)
     % allocate merged name (remove all default names '')
     namemerged = strjoin(name(cellfun(@(x)~isempty(x),name,'UniformOutput',true)),' x ');
     
-    % construct resulting continuous dynamics object
-    res = linearSys(namemerged,Amerged,Bmerged,cMerged);
+    % construct resulting linear systems object
+    sys_merged = linearSys(namemerged,Amerged,Bmerged,cMerged,1,[],[],Emerged,Fmerged);
 end
 
-function res = aux_mergeFlowsNonlinearSys(pHA,flowList,locID)
+function sys_merged = aux_mergeFlowsNonlinearSys(pHA,flowList,locID)
+    % note: disturbance/noise matrices not supported!
 
     % number of components in parallel hybrid automaton
     numComps = length(flowList);
     
     % construct symbolic state vector and input vector for merged flow
-    x = sym('x',[pHA.dim,1]);
+    x = sym('x',[pHA.nrOfStates,1]);
     u = sym('u',[pHA.nrOfInputs,1]);
     
     % initialize dynamic function
-    f = sym(zeros(pHA.dim,1));
+    f = sym(zeros(pHA.nrOfStates,1));
     
     % loop over all subcomponents
     for i = 1:numComps
@@ -292,7 +329,7 @@ function res = aux_mergeFlowsNonlinearSys(pHA,flowList,locID)
     funHan = matlabFunction(f,'Vars',{x,u});
     
     % instantiate nonlinear system
-    res = nonlinearSys(name,funHan,pHA.dim,pHA.nrOfInputs);
+    sys_merged = nonlinearSys(name,funHan,pHA.nrOfStates,pHA.nrOfInputs);
 end
 
 % ------------------------------ END OF CODE ------------------------------

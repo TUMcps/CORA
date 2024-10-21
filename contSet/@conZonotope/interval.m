@@ -48,18 +48,19 @@ cZ = compact_(cZ,'zeros',eps);
 
 % loop over all dimensions
 for i = 1:n
-    temp = zeros(n,1);
-    temp(i) = 1;
+    dir = unitvector(i,n);
 
     % calculate exact bounds by solving a linear program
-    lb = supportFunc_(cZ,temp,'lower');
+    lb = supportFunc_(cZ,dir,'lower');
     if lb == Inf
         % empty
         I = interval.empty(n);
         return
     end
-    ub = supportFunc_(cZ,temp,'upper');
+    ub = supportFunc_(cZ,dir,'upper');
     I(i) = interval(lb,ub);
+    % we do not need to check for emptiness here since this is already
+    % covered by the check for 'lower' above
     
 end
 

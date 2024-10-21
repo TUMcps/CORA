@@ -26,6 +26,9 @@ function res = testLong_linearSysDT_observe_04_FRad_A()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 %% Load side slip model
@@ -43,7 +46,6 @@ estSet_alternative = stripBasedObserver_unitTest(vehicle,params,options);
 %% compare whether enclosing hulls of the estimated sets match
 % init
 timeSteps = length(estSet.timePoint.set);
-resPartial = zeros(timeSteps,1);
 accuracy = 1e-8;
 % loop over set
 for iSet = 1:timeSteps
@@ -51,14 +53,10 @@ for iSet = 1:timeSteps
     IH = interval(estSet.timePoint.set{iSet});
     IH_alternative = interval(estSet_alternative.timeInterval.set{iSet});
     % check if slightly bloated versions enclose each other
-    res_incl = isequal(IH,IH_alternative,1+accuracy);
+    assert(isequal(IH,IH_alternative,1+accuracy));
     % check if simulation is enclosed
-    res_sim = contains(IH,simRes.x{1}(iSet,:)');
-    % combine results
-    resPartial(iSet) = res_incl & res_sim;
+    assert(contains(IH,simRes.x{1}(iSet,:)'));
 end
-% Are all sets matching?
-res = all(resPartial);
 
 
 % %% Plot results of estimated states

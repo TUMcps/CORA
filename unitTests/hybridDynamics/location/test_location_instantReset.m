@@ -25,8 +25,8 @@ function res = test_location_instantReset
 
 % init location
 inv = interval([-2;1],[1;4]);
-guard = conHyperplane([1 0],4);
-reset = struct('A',[2 -1; 1 3],'c',[1;-1]);
+guard = polytope([],[],[1 0],4);
+reset = linearReset([2 -1; 1 3],[],[1;-1]);
 trans = transition(guard,reset,2);
 flow = linearSys([2 1; -1 2],1);
 loc = location(inv,trans,flow);
@@ -43,22 +43,21 @@ options.U = zonotope(0);
 [R,Rjump,res_] = instantReset(loc,R0,tStart,options);
 
 % 'res' must be true as no specification was violated
-res = res_;
+assert(res_);
 % reach set must only contain the first time-point solution
-res(end+1,1) = ~isempty(R.timePoint) && length(R.timePoint.set) == 1;
+assert(~isempty(R.timePoint) && length(R.timePoint.set) == 1);
 % no time-interval solution
-res(end+1,1) = isempty(R.timeInterval);
+assert(isempty(R.timeInterval));
 % only one jumped set
-res(end+1,1) = length(Rjump) == 1;
+assert(length(Rjump) == 1);
 % apply reset function to set
-res(end+1,1) = isequal(Rjump{1}.set,reset.A*R0+reset.c);
+assert(isequal(Rjump{1}.set,reset.A*R0+reset.c));
 % goal location = 2
-res(end+1,1) = Rjump{1}.loc == trans.target;
+assert(Rjump{1}.loc == trans.target);
 % no time has passed
-res(end+1,1) = Rjump{1}.time == tStart;
+assert(Rjump{1}.time == tStart);
 
-% combine results
-res = all(res);
-
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

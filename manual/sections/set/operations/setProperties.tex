@@ -1,0 +1,147 @@
+\subsubsection{Set Properties}
+
+In this subsection, we describe the methods that compute geometric properties of sets.
+
+\subsubsubsection{center}
+
+The method \operator{center} returns the center of a set. Let us demonstrate the method \operator{center} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.4\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_center}
+\end{minipage}
+\begin{minipage}[t]{0.2\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}
+	Command Window:
+		
+	res =
+
+   -0.5000
+   -0.5000
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-properties/example_center}
+\end{minipage}
+\end{center}
+
+
+\subsubsubsection{dim}
+
+The method \operator{dim} returns the dimension of the ambient space of a set, that is, the dimension in which a set is defined. Let us demonstrate the method \operator{dim} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_dim}
+\end{minipage}
+\begin{minipage}[t]{0.25\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}	
+	Command Window:
+	
+	res = 3
+	\end{verbatim}
+\end{minipage}
+\end{center}
+
+\subsubsubsection{norm}
+The method \operator{norm} returns the maximum norm value of the vector norm for points inside a set $\mathcal{S} \subset \Rn$: 
+$$ \texttt{norm}(\mathcal{S},p) = \max_{x \in \mathcal{S}} \left\lVert x\right\rVert_p, ~~ p \in \{1,2,\dots,\infty\},$$
+where the $p$-norm $\left\lVert \cdot \right\rVert_p$ is defined as
+$$ \left\lVert x\right\rVert_p = \bigg(\sum_{i=1}^n \left| x_i \right|^p \bigg)^{1/p}.$$
+Let us demonstrate the method \operator{norm} by an example:
+
+\begin{center}
+	\begin{minipage}[t]{0.4\textwidth}
+		\vspace{10pt}
+		\footnotesize
+		\input{./MATLABcode/example_norm}
+	\end{minipage}
+	\begin{minipage}[t]{0.20\textwidth}
+		\vspace{10pt}
+		
+		\begin{verbatim}
+		Command Window:
+		
+		res =
+		
+		2.8284
+		\end{verbatim}
+	\end{minipage}
+	\begin{minipage}[t]{0.3\textwidth}
+		\vspace{0pt}
+		\centering
+		\includetikz{./figures/tikz/set-properties/example_norm}
+	\end{minipage}
+\end{center}
+
+\subsubsubsection{vertices}
+
+Given a set $\mathcal{S} \subset \Rn$, the method \operator{vertices} computes the vertices $v_1,\dots,v_q$, $v_i \in \Rn$ of the set:
+\begin{equation*}
+	[v_1,\dots,v_q] = \operator{vertices}(\mathcal{S}).
+\end{equation*}
+Please note that the computation of vertices can be computationally demanding for complex-shaped and/or high-dimensional sets.
+Let us demonstrate the method \operator{vertices} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_vertices}
+\end{minipage}
+\begin{minipage}[t]{0.32\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}
+	Command Window:
+		
+	V =
+
+     1     1    -2    -2
+     1    -2     1    -2
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-properties/example_vertices}
+\end{minipage}
+\end{center}
+
+
+
+\subsubsubsection{volume}
+
+The method \operator{volume} returns the volume of a set. Let us demonstrate the method \operator{volume} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.4\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_volume}
+\end{minipage}
+\begin{minipage}[t]{0.2\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}
+	Command Window:
+		
+	res = 12
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-properties/example_volume}
+\end{minipage}
+\end{center}

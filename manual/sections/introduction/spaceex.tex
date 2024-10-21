@@ -1,0 +1,7 @@
+\subsection{Connections to and from SpaceEx}
+
+As part of the EU project \underline{Un}ifying \underline{Co}ntrol and \underline{Ver}ification of \underline{C}yber-\underline{P}hysical \underline{S}ystems (UnCoVerCPS) the tools CORA and SpaceEx\cite{Frehse2011} have been integrated to a certain extent.
+
+\paragraph{Importing and Exporting SpaceEx Models} CORA can read SpaceEx models as described in \cref{sec:loadingModels} and CORA models can be exported as SpaceEx models as detailed in \cref{sec:cora2spaceex}. This has two major benefits: First, SpaceEx has become the quasi-standard for model exchange between tools for formal verification of hybrid systems (see ARCH friendly competition in \cref{sec:ARCH}) so that many model files in this format are available. Second, SpaceEx offers a graphical model editor which is briefly presented in \cref{sec:creatingSpaceExModels}, helping non-experts to easily model hybrid systems.
+
+\paragraph{CORA/SX} CORA code for computing reachable sets of nonlinear systems is available in the SpaceEx extension CORA/SX as C++ code. CORA has several implementations to compute reachable sets of nonlinear systems---in the first CORA/SX version, the most basic, but very efficient algorithm from \cite{Althoff2008c} has been implemented. Also, the zonotope class from CORA is available in CORA/SX, making efficient computations for switched linear systems possible as described in \cite{Althoff2016c}. 

@@ -1,0 +1,33 @@
+\subsubsubsection{Capsules} \label{sec:capsules}
+
+A capsule $\mathcal{C} \subset \Rn$ is defined as the Minkowski sum (see \cref{sec:plus}) of a line segment $\mathcal{L}$ and a sphere $\mathcal{S}$:
+\begin{equation} \label{eq:capsule}
+	\mathcal{C} := \mathcal{L} \oplus \mathcal{S}, ~~ \mathcal{L} = \{c + g \alpha~|~ \alpha \in [-1,1]\}, ~ \mathcal{S} = \{ x~|~ ||x||_2 \leq r \},
+\end{equation}
+where $c,g \in \Rn$ represent the center and the generator of the line segment, respectively, and $r \in \mathbb{R}_{\geq 0}$ is the radius of the sphere.
+
+Capsules are represented in CORA by the class \texttt{capsule}. An object of class \texttt{capsule} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \mathcal{C} = \texttt{capsule}(c), \\
+		& \mathcal{C} = \texttt{capsule}(c,g), \\
+		& \mathcal{C} = \texttt{capsule}(c,r), \\
+		& \mathcal{C} = \texttt{capsule}(c,g,r), \\
+	\end{split}
+\end{equation*} 
+where $c,g,r$ are defined as in \eqref{eq:capsule}. Let us demonstrate the construction of a capsule by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{30pt}
+	\footnotesize
+	\input{./MATLABcode/example_setRep_capsule}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-representations/example_capsule}
+\end{minipage}
+\end{center}
+
+A more detailed example for capsules is provided in \cref{sec:capsuleExample} and in the file \textit{examples/contSet/example\_capsule.m} in the CORA toolbox.

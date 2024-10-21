@@ -1,0 +1,15 @@
+\subsection{Set Operations} \label{sec:setOperations}
+\logToConsole{SET OPERATIONS}
+
+The reachability algorithms implemented in CORA rely on set-based computation. One major design principle is that the same standard set operations are implemented for all set representations so that algorithms can be executed with different set representations. In this section, we introduce the most important set operations, which are demonstrated by examples involving concrete set representations. Set representations are later detailed in \cref{sec:setRepresentations}; however, in order to follow the subsequent examples, it suffices to consider the sets as arbitrary continuous sets.
+
+If a set representation is not closed under an operation, an over-approximation is returned (see \cref{tab:basicOperations}).
+
+\input{sections/set/operations/basicSetOperations}
+
+\input{sections/set/operations/predicates}
+
+\input{sections/set/operations/setProperties}
+
+\input{sections/set/operations/auxiliaryOperations}
+

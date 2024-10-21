@@ -40,9 +40,7 @@ for i=1:nrTests
     C = capsule.enclosePoints(p);
 
     % check if all points are contained in capsule
-    if ~all(contains(C,p))
-        res = false; break
-    end
+    assertLoop(all(contains(C,p)),i)
 
 end
 

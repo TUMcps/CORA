@@ -1,0 +1,38 @@
+\subsection{Abstraction to Markov Chains} \label{sec:MarkovChains}
+
+The main idea of the Markov chain abstraction is to analyze a dynamic system probabilistically by a Markov chain instead of making use of the original system dynamics. The Markov chain abstraction has to be performed so that it approximates the behavior of the original system with appropriate accuracy. The abstraction can be applied to both continuous and hybrid systems. Since Markov chains are stochastic systems with a discrete state space, the continuous state space of the original state and input space has to be discretized for the abstraction as presented in \cref{sec:partition}. This implies that the number of states of the Markov chain grows exponentially with the dimension of the continuous state space. Thus, the presented abstraction is only applicable to low-dimensional systems of typically up to $4$ continuous state variables.
+
+The following definition of Markov chains is adapted from \cite{Cassandras2009}:
+A discrete time Markov chain $MC=(Y ,\hat{p}^0,\Phi)$ consists of
+\begin{itemize}
+\item The countable set of locations $Y \subset\mathbb{N}_{>0}$.
+\item The initial probability $\hat{p}^0_i=P(\mathbf{z}(0)=i)$, with random state $\mathbf{z}:\Omega\to Y$, where $\Omega$ is the set of elementary events and $P()$ is an operator determining the probability of an event.
+\item The transition matrix $\Phi_{ij}=P(\mathbf{z}(k+1)=i|\mathbf{z}(k)=j)$ so that $\hat{p}(k+1)=\Phi \hat{p}(k)$.
+\end{itemize}
+
+Clearly, the Markov chain fulfills the Markov property, i.e., the probability distribution of the future time step $\hat{p}(k+1)$ depends only on the probability distribution of the current time step $\hat{p}(k)$. If a process does not fulfill this property, one can always augment the discrete state space by states of previous time steps, allowing the construction of a Markov chain with the new state $\mathbf{z}^*(k)^T=\begin{bmatrix} \mathbf{z}(k)^T, \mathbf{z}(k-1)^T, \mathbf{z}(k-2)^T, \ldots \end{bmatrix}$. An example of a Markov chain is visualized in \cref{fig_markovChain} by a graph whose nodes represent the states $1,2,3$ and whose labeled arrows represent the transition probabilities $\Phi_{ij}$ from state $j$ to $i$.
+
+\begin{center}
+\begin{figure}[htb]
+\centering 
+	\includetikz{./figures/tikz/discSystems/MarkovChain}
+	\caption{Exemplary Markov chain with 3 states.}
+	\label{fig_markovChain}
+\end{figure}
+\end{center}
+
+
+The relation of the discrete time step $k$ and the continuous time is established by introducing the time increment $\tau\in\mathbb{R}^+$ after which the Markov chain is updated according to the transition matrix $\Phi$. Thus, the continuous time at time step $k$ is $t_k=k\cdot\tau$. The generation of a Markov chain from continuous dynamics is performed as described in \cite[Sec.~4.3]{Althoff2010a}.
+
+
+
+We mainly support the following methods for Markov chains:
+\begin{itemize}
+ \item \texttt{build} -- builds the transition matrices of the Markov chains using simulation.
+ \item \texttt{build\_reach} -- builds the transition matrices of the Markov chains using reachability analysis.
+ \item \texttt{convertTransitionMatrix} -- converts the transition matrix of a Markov chain so that it can be used for an optimized update as presented in \cite{Althoff2009a}.
+ \item \texttt{markovchain} -- constructor of the class.
+ \item \texttt{plot} -- generates 3 plots of a Markov chain: 1. sample trajectories; 2. reachable cells for the final time; 3. reachable cells for the time interval.
+ \item \texttt{plot\_reach} -- generates 3 plots of a Markov chain: 1. continuous reachable set together with sample trajectories; 2. reachable cells for the final time; 3. reachable cells for the time interval.
+ \item \texttt{plotP} -- plots the 2D probability distribution of a Markov chain.
+\end{itemize}

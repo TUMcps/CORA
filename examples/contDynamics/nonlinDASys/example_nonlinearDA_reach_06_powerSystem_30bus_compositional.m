@@ -266,7 +266,7 @@ R_4 = reach(IEEE30_model, params, options);
 tComp = toc;
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
-save IEEE30reach
+% save IEEE30reach
 
 % Simulation --------------------------------------------------------------
 
@@ -302,12 +302,13 @@ for iRun = 1:nrRuns
     params.R0 = zonotope(simRes_2{iRun}.x{1}(end,:)');
     simRes_3{iRun} = simulateRandom(IEEE30_model, params, simOpt);
 end
-save IEEE30sim
+% save IEEE30sim
 % Visualization -----------------------------------------------------------
 
 doPlot = false;
 if ~doPlot
-    disp('Visualiation is turned off for this example for time reasons. You can enable it by setting the ''doPlot'' variable to true.')
+    disp(['Visualiation is turned off for this example for time reasons. '...
+        'You can enable it by setting the ''doPlot'' variable to true.']);
     completed = true;
     return
 end

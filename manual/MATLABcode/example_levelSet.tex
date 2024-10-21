@@ -1,0 +1,45 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                 
+ \hspace*{-1.6em}{\scriptsize 1}$  $\color{mgreen}$% construct level sets$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 2}$  syms $\color{mred}$x y$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 3}$  eq = sin(x) + y;$\\
+ \hspace*{-1.6em}{\scriptsize 4}$  $\\
+ \hspace*{-1.6em}{\scriptsize 5}$  ls1 = levelSet(eq,[x;y],$\color{mred}$'=='$\color{black}$);$\\
+ \hspace*{-1.6em}{\scriptsize 6}$  ls2 = levelSet(eq,[x;y],$\color{mred}$'<='$\color{black}$);$\\
+ \hspace*{-1.6em}{\scriptsize 7}$  $\\
+ \hspace*{-1.6em}{\scriptsize 8}$  $\color{mgreen}$% visualize the level sets$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 9}$  subplot(1,2,1)$\\
+ \hspace*{-2em}{\scriptsize 10}$  xlim([-1.5,1.5]);$\\
+ \hspace*{-2em}{\scriptsize 11}$  ylim([-1,1]);$\\
+ \hspace*{-2em}{\scriptsize 12}$  plot(ls1,[1,2],$\color{mred}$'b'$\color{black}$);$\\
+ \hspace*{-2em}{\scriptsize 13}$  $\\
+ \hspace*{-2em}{\scriptsize 14}$  subplot(1,2,2)$\\
+ \hspace*{-2em}{\scriptsize 15}$  xlim([-1.5,1.5]);$\\
+ \hspace*{-2em}{\scriptsize 16}$  ylim([-1,1]);$\\
+ \hspace*{-2em}{\scriptsize 17}$  plot(ls2,[1,2],$\color{mred}$'Color'$\color{black}$,[0.9451 0.5529 0.5686]);$\\
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

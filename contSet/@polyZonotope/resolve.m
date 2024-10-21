@@ -69,7 +69,7 @@ if ~isempty(eMx)
 end
 E = eM;
 E(indx,:) = [];
-[E,G,c] = removeZeroExponents(E,G);
+[E,G,c] = priv_removeZeroExponents(E,G);
 c = c + pZ.c;
 if isempty(E) || all(E(:)==0)
     c = c + sum(G,2);

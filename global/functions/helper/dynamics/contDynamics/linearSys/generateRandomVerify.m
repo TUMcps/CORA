@@ -54,9 +54,8 @@ function [sys,params,spec,sat] = generateRandomVerify(varargin)
 
 % 1. read name-value pairs
 % name-value pairs -> number of input arguments is always a multiple of 2
-if nargin == 0
-    throw(CORAerror('CORA:notEnoughInputArgs',2));
-elseif mod(nargin,2) ~= 0
+narginchk(2,Inf);
+if mod(nargin,2) ~= 0
     throw(CORAerror('CORA:evenNumberInputArgs'));
 end
 [n,nrInputs,nrOutputs,realInt,imagInt,convFactor,nrSpecs,...
@@ -268,7 +267,7 @@ while length(spec) < nrSpecs && iteration <= max_iterations
             S = S - center(S);
         case 'halfspace'
             % no randomness here...
-            S = halfspace(-ell,0);
+            S = polytope(-ell',0);
             sV_S = 0;
         otherwise
             throw(CORAerror('CORA:notSupported'));
@@ -291,7 +290,7 @@ while length(spec) < nrSpecs && iteration <= max_iterations
         % representation are not closed under Minkowski sum with a ball
         switch setRepSpec
             case 'halfspace'
-                S = halfspace(S.c, S.d + vecnorm(S.c*maxError));
+                S = polytope(S.A, S.b + vecnorm(S.A*maxError));
             case 'zonotope'
                 S = S + zonotope(zeros(nrOutputs,1),maxError*eye(nrOutputs));
             case 'interval'
@@ -309,7 +308,7 @@ while length(spec) < nrSpecs && iteration <= max_iterations
     if ~strcmp(setRepSpec,'halfspace')
         intersectionFound = false;
         for i=1:length(spec)
-            if isIntersecting_(S,spec(i).set,'approx')
+            if isIntersecting_(S,spec(i).set,'approx',1e-8)
                 intersectionFound = true; break;
             end
         end

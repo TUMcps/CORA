@@ -26,11 +26,11 @@ function res = test_location_potInt
 
 % init location
 inv = interval([-2;-1],[3;5]);
-guard = conHyperplane([1 0],3);
-reset = struct('A',eye(2),'c',[2;0]);
+guard = polytope([],[],[1 0],3);
+reset = linearReset(eye(2),[],[2;0]);
 trans(1) = transition(guard,reset,2);
-guard = conHyperplane([0 1],5);
-reset = struct('A',eye(2),'c',[0;2]);
+guard = polytope([],[],[0 1],5);
+reset = linearReset(eye(2),[],[0;2]);
 trans(2) = transition(guard,reset,2);
 flow = linearSys(zeros(2),0,[1;1]);
 loc = location(inv,trans,flow);
@@ -57,20 +57,20 @@ end
 % init object (no time-point solutions)
 R = reachSet([],sets);
 
-% set options (dummy)
-options.finalLoc = 4;
+% set final location (just a dummy value here...)
+finalLoc = 4;
 
 % check for potential intersections
-[guards,setIndices] = potInt(loc,R,options);
+[guards,setIndices] = potInt(loc,R,finalLoc);
 
 % total intersections: 7
-res = length(guards) == 7;
+assert(length(guards) == 7);
 % correct guards for each intersection
-res(end+1,1) = all(guards == [1,1,1,1,2,2,2]');
+assert(all(guards == [1,1,1,1,2,2,2]'));
 % correct indicies of intersecting sets
-res(end+1,1) = all(setIndices == [3,4,5,6,6,7,8]');
+assert(all(setIndices == [3,4,5,6,6,7,8]'));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -21,38 +21,41 @@ function res = test_interval_isscalar
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty
 I = interval.empty(1);
-res(end+1,1) = ~isscalar(I);
+assert(~isscalar(I));
 
 % bounded, scalar
 I = interval(-5, 2);
-res(end+1,1) = isscalar(I);
+assert(isscalar(I));
 
 % bounded, vector
 I = interval([-5,-4,-3,0,0,5],[-2,0,2,0,5,8]);
-res(end+1,1) = ~isscalar(I);
+assert(~isscalar(I));
 
 % bounded, matrix
 I = interval([1 2; 3 4],[5 6; 7 8]);
-res(end+1,1) = ~isscalar(I);
+assert(~isscalar(I));
 
 % unbounded, scalar
 I = interval(-Inf,Inf);
-res(end+1,1) = isscalar(I);
+assert(isscalar(I));
 
 % unbounded, vector
 I = interval([-Inf;1],[2;Inf]);
-res(end+1,1) = ~isscalar(I);
+assert(~isscalar(I));
 
 % unbounded, matrix
 I = interval([-Inf 2; 1 -Inf],[2 4; Inf 0]);
-res(end+1,1) = ~isscalar(I);
+assert(~isscalar(I));
 
+% n-d arrays
+lb = reshape([ 1.000 3.000 2.000 5.000 -3.000 0.000 2.000 1.000 0.000 -2.000 -1.000 3.000 0.000 0.000 0.000 0.000 1.000 -1.000 1.000 0.000 0.000 0.000 0.000 0.000 ], [2,2,2,3]);
+ub = reshape([ 1.500 4.000 4.000 10.000 -1.000 0.000 3.000 2.000 1.000 0.000 2.000 4.000 0.000 0.000 0.000 0.000 2.000 -0.500 3.000 2.000 0.000 0.000 0.000 0.000 ], [2,2,2,3]);
+I = interval(lb,ub);
+assert(~isscalar(I));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

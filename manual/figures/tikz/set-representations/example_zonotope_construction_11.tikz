@@ -1,0 +1,15 @@
+\addplot [plotstyle1]
+  table[row sep=crcr]{%
+0	0\\
+2	2\\
+};
+\addplot[plotstyle2] table[row sep=crcr]{%
+x	y\\
+0	0\\
+1	1\\
+2	2\\
+};
+\node[]
+at (axis cs:1.2,1) {$c$};
+\node[]
+at (axis cs:1.4,1.6) {$l^{(1)}$};

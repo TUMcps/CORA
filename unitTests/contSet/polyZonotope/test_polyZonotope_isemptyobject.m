@@ -23,18 +23,16 @@ function res = test_polyZonotope_isemptyobject
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty polynomial zonotope
 pZ = polyZonotope.empty(2);
-res(end+1,1) = isemptyobject(pZ);
+assert(isemptyobject(pZ));
 
 % instantiate polynomial zonotopes
 pZ = polyZonotope([0;0],[0 4 1 -1 2; 1 2 -1 -1 1],...
     [-7 1 1;15 1 -1],[1 0 0 0 1;0 1 0 3 2; 0 0 1 1 0]);
-res(end+1,1) = ~isemptyobject(pZ);
+assert(~isemptyobject(pZ));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,13 +1,14 @@
-function R = observe_intersectionFreeAdaptive(obj,options)
+function R = observe_intersectionFreeAdaptive(linsysDT,params,options)
 % observe_intersectionFreeAdaptive - computes the guaranteed state
 % estimation approach according to the intersection-free approach
 % when the gain changes in each iteration, see [1], [2].
 %
 % Syntax:
-%    R = observe_intersectionFreeAdaptive(obj,options)
+%    R = observe_intersectionFreeAdaptive(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -20,8 +21,6 @@ function R = observe_intersectionFreeAdaptive(obj,options)
 %    [2] M. Althoff and J. J. Rath. Comparison of Set-Based Techniques 
 %        for Guaranteed State Estimation of Linear Disturbed Systems, 
 %        in preparation.
-%
-% Example:
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,19 +37,18 @@ function R = observe_intersectionFreeAdaptive(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 %time period
-
-tVec = options.tStart:options.timeStep:options.tFinal-options.timeStep;
+tVec = params.tStart:options.timeStep:params.tFinal-options.timeStep;
 
 % initialize parameter for the output equation
 R = cell(length(tVec),1);
 % store first reachable set
-Rnext.tp = options.R0;
-R{1} = options.R0;
+Rnext.tp = params.R0;
+R{1} = params.R0;
 
 % F is chosen in [1] such that they are multiplied with unit
 % uncertainties; thus, E and F can be seen as generators of zonotopes
 % representing the disturbance and noise set
-F = generators(options.V);
+F = generators(params.V);
 
 % loop over all time steps
 for k = 1:length(tVec)-1
@@ -61,14 +59,14 @@ for k = 1:length(tVec)-1
         G = generators(Rnext.tp);
         G_comb = G*G';
 %         L = obj.A * G_comb * obj.C' * inv(obj.C*G_comb*obj.C' + F*F');
-        L = obj.A * G_comb * obj.C' / (obj.C*G_comb*obj.C' + F*F');
+        L = linsysDT.A * G_comb * linsysDT.C' / (linsysDT.C*G_comb*linsysDT.C' + F*F');
     else
         disp('this observer type is not yet implemented')
     end
     
     % Prediction, eq. (11) in [2]
-    Rnext.tp = (obj.A-L*obj.C)*Rnext.tp + obj.B*options.uTransVec(:,k) + ...
-        L*options.y(:,k) + (-L)*options.V + options.W;
+    Rnext.tp = (linsysDT.A-L*linsysDT.C)*Rnext.tp + linsysDT.B*params.uTransVec(:,k) + ...
+        L*params.y(:,k) + (-L)*params.V + params.W;
     
     % Order reduction
     Rnext.tp = reduce(Rnext.tp,options.reductionTechnique,options.zonotopeOrder);
@@ -76,6 +74,5 @@ for k = 1:length(tVec)-1
     % Store result
     R{k+1} = Rnext.tp;
 end
-
 
 % ------------------------------ END OF CODE ------------------------------

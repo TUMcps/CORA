@@ -43,9 +43,7 @@ for i=1:nrTests
     P2 = P2 - center(P2);
 
     % both sets contain the origin
-    if ~isIntersecting(P1,P2)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(isIntersecting(P1,P2),i)
 
     % shift P1 by random point inside P1
     P1 = P1 - randPoint(P1);
@@ -54,9 +52,7 @@ for i=1:nrTests
     P1_ = M * P1;
 
     % both sets contain the origin
-    if ~isIntersecting(P1,P1_)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(isIntersecting(P1,P1_),i)
 
 end
 

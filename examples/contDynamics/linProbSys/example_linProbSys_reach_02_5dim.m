@@ -81,7 +81,7 @@ for k = 1:length(dims)
     projDims = dims{k};
 
     % plot reachable sets 
-    plot(R,projDims,'Color','next','m',2.5,'FaceColor','interp','DisplayName','Reachable set');
+    plot(R,projDims,'Color',nextcolor,'m',2.5,'FaceColor','interp','DisplayName','Reachable set');
     
     % plot initial set
     plot(zonotope(params.R0,3),projDims,'k','FaceColor','w','ZPos',5,'DisplayName','Initial set');

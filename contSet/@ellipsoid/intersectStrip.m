@@ -10,14 +10,14 @@ function [E,sigma_sq] = intersectStrip(E,C,phi,y,varargin)
 %    C - matrix of normal vectors of strips
 %    phi - vector of widths of strips/auxiliary struct for Liu2016
 %    y - center of intersected strips
-%    sigma_seq_prev - 
+%    sigma_seq_prev - ???
 %    methods to calculate the weights
 %               'Gollamudi1996' according to [1]
 %               'Liu2016' according to [2]
 %
 % Outputs:
 %    E - enclosing ellipsoid
-%    sigma_sq
+%    sigma_sq - ???
 %
 % Example: (one strip and one ellipsoid)
 %    C = [1 0];
@@ -64,14 +64,10 @@ function [E,sigma_sq] = intersectStrip(E,C,phi,y,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-
 % parse input
-if nargin < 4
-    throw(CORAerror("CORA:notEnoughInputArgs", 4))
-elseif nargin > 6
-    throw(CORAerror('CORA:tooManyInputArgs', 6))
-end
+narginchk(4,6);
 [sigma_sq_prev,method] = setDefaultValues({0,'Gollamudi1996'},varargin);
+
 if ~isnumeric(sigma_sq_prev)
     method = sigma_sq_prev;
     sigma_sq_prev = 0;

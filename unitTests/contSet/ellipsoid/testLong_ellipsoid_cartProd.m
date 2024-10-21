@@ -38,14 +38,12 @@ for j=1:runs
         n2 = dim(E2);
         E = cartProd(E1,E2);
         Y = combineVec(Y1,Y2);
-        if ~contains(E,Y)
-            res = false;
-            return;
-        end
+        assertLoop(contains(E,Y),j,k)
+
         % "contains" check only works if at least one ellipsoid is non-degenerate
         if ((isFullDim(E) || isFullDim(E1)) && ~contains(project(E,1:n1),E1)) ||...
            ((isFullDim(E) || isFullDim(E2)) && ~contains(project(E,n1+1:n1+n2),E2))
-            res = false;
+            assert(false);
             return;
         end
     end

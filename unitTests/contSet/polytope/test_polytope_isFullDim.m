@@ -25,158 +25,156 @@ function res = test_polytope_isFullDim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty object
 P = polytope.empty(2);
-res(end+1,1) = ~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % fullspace object
 P = polytope.Inf(2);
-res(end+1,1) = isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val);
 
 
 % 1D, only inequalities, bounded
 A = [2;-1]; b = [6;1];
 P = polytope(A,b);
-res(end+1,1) = isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val);
 
 % 1D, only equalities, single point
 Ae = 3; be = 5;
 P = polytope([],[],Ae,be);
-res(end+1,1) = ~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % 1D, only inequalities, unbounded
 A = [3;2;4]; b = [5;2;-3];
 P = polytope(A,b);
-res(end+1,1) = isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val);
 
 % 1D, only inequalities, empty
 Ae = [1;4]; be = [2;-5];
 P = polytope([],[],Ae,be);
-res(end+1,1) = ~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val ...
-    && ~isempty(P.emptySet.val) && P.emptySet.val;
+assert(~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val ...
+    && ~isempty(P.emptySet.val) && P.emptySet.val);
 
 % 1D, inequalities and equalities, empty
 A = [1;-4]; b = [4;-2]; Ae = 5; be = 100;
 P = polytope(A,b,Ae,be);
-res(end+1,1) = ~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val ...
-    && ~isempty(P.emptySet.val) && P.emptySet.val;
+assert(~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val ...
+    && ~isempty(P.emptySet.val) && P.emptySet.val);
 
 % 1D, fully empty
 A = zeros(0,1); b = zeros(0,0);
 P = polytope(A,b);
-res(end+1,1) = isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val ...
-    && ~isempty(P.emptySet.val) && ~P.emptySet.val;
+assert(isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val ...
+    && ~isempty(P.emptySet.val) && ~P.emptySet.val);
 
 % 1D, vertex instantiation
 V = [1;2];
 P = polytope(V);
 [res_,X] = isFullDim(P);
-res(end+1,1) = ~res_ && isempty(X);
+assert(~res_ && isempty(X));
 
 
 % 2D, empty
 A = [1 0]; b = 3; Ae = [1 0]; be = 4;
 P = polytope(A,b,Ae,be);
-res(end+1,1) = ~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % 2D, non-degenerate, vertex instantiation
 V = [2 0; -2 0; 0 2; 0 -2]';
 P = polytope(V);
-res(end+1,1) = isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val);
 
 % 2D, non-degenerate, bounded
 A = [-1 -1; 1 0;-1 0; 0 1; 0 -1]; b = [2; 3; 2; 3; 2];
 P = polytope(A,b);
-res(end+1,1) = isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val);
 
 % 2D, degenerate
 A = [1 0; -1 0; 0 1; 0 -1]; b = [2; 2; 2; -2];
 P = polytope(A,b);
-res(end+1,1) = ~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % 2D, degenerate
 A = [1 1; 1 -1; -1 0]; b = zeros(3,1);
 P = polytope(A,b);
-res(end+1,1) = ~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % 2D, non-degenerate, unbounded
 A = [-1 0; 0 -1]; b = [-1; -1];
 P = polytope(A,b);
-res(end+1,1) = isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(isFullDim(P) && ~isempty(P.fullDim.val) && P.fullDim.val);
 
 % 2D, degenerate, unbounded
 Ae = [1 0]; be = 0;
 P = polytope([],[],Ae,be);
-res(end+1,1) = ~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % 2D, degenerate, bounded, inequality and equality constraints
 A = [-1 0; 0 -1]; b = [-1; -1]; Ae = [1 0]; be = 0;
 P = polytope(A,b,Ae,be);
-res(end+1,1) = ~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % 2D, degenerate (single point)
 Ae = [1 0; 0 1]; be = [1; 2];
 P = polytope([],[],Ae,be);
 [res_,X] = isFullDim(P);
-res(end+1,1) = ~res_ && isempty(X);
+assert(~res_ && isempty(X));
 
 % 2D, non-degenerate, unbounded (with subspace computation)
 % ...unit square in x1-x2
 A = [1 0;-1 0;0 1;0 -1]; b = [1;1;1;1];
 P = polytope(A,b);
 [res_, X] = isFullDim(P);
-res(end+1,1) = res_ && rank(X) == 2 && all(size(X) == [2,2]);
+assert(res_ && rank(X) == 2 && all(size(X) == [2,2]));
 
 % 2D, only origin (with subspace computation)
 Ae = eye(2); be = zeros(2,1);
 P = polytope([],[],Ae,be);
 [res_,X] = isFullDim(P);
-res(end+1,1) = ~res_ && isempty(X);
+assert(~res_ && isempty(X));
 
 
 % 3D, degenerate, unbounded
 A = [1 1 0; 1 -1 0; -1 0 0]; b = zeros(3,1);
 P = polytope(A,b);
-res(end+1,1) = ~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % 3D, degenerate, bounded
 A = [1 1 0; 1 -1 0; -1 0 0; 0 0 1; 0 0 -1]; b = [0; 0; 0; 1; 1];
 P = polytope(A,b);
-res(end+1,1) = ~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isFullDim(P) && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % 3D, non-degenerate, unbounded (with subspace computation)
 % ...unit square in x1-x2, unbounded in x3
 A = [1 0 0;-1 0 0;0 1 0;0 -1 0]; b = [1;1;1;1];
 P = polytope(A,b);
 [res_, X] = isFullDim(P);
-res(end+1,1) = res_ && rank(X) == 3 && all(size(X) == [3,3]);
+assert(res_ && rank(X) == 3 && all(size(X) == [3,3]));
 
 % 3D, degenerate, bounded (with subspace computation)
 V = [1 0 0; 0 1 0; -1 0 0; 0 -1 0]' + [4;3;2];
 P = polytope(V);
 [res_, X] = isFullDim(P);
-res(end+1,1) = ~res_ && rank(X) == 2 && all(size(X) == [3,2]);
+assert(~res_ && rank(X) == 2 && all(size(X) == [3,2]));
 
 % 3D, degenerate, asymmetric, bounded (with subspace computation)
 V = [1 0 0; 0 1 0; 1 1 0; 0.5 1.2 0; -1 0 0; 0 -1 0]' + [4;3;2];
 P = polytope(V);
 [res_, X] = isFullDim(P);
-res(end+1,1) = ~res_ && rank(X) == 2 && all(size(X) == [3,2]);
+assert(~res_ && rank(X) == 2 && all(size(X) == [3,2]));
 
 % 3D, degenerate, asymmetric, non-trivial subspace, bounded (with subspace computation)
 V = [1 1 0; -1 1 1; 0 1 1] * ...
     ([1 0 0; 0 1 0; 1 1 0; 0.5 1.2 0; -1 0 0; 0 -1 0]' + [4;3;2]);
 P = polytope(V);
 [res_, X] = isFullDim(P);
-res(end+1,1) = ~res_ && rank(X) == 2 && all(size(X) == [3,2]);
+assert(~res_ && rank(X) == 2 && all(size(X) == [3,2]));
 
 % 3D, non-degenerate, asymmetric bounded (with subspace computation)
 V = [1 0 0; 0 1 0; 1 1 0; 0.5 1.2 0; -1 0 0; 0 -1 0; 0 0 1; 0 0 -1]' + [4;3;2];
 P = polytope(V);
 [res_, X] = isFullDim(P);
-res(end+1,1) = res_ && rank(X) == 3 && all(size(X) == [3,3]);
+assert(res_ && rank(X) == 3 && all(size(X) == [3,3]));
 
 
 % 4D, degenerate, unbounded (with subspace computation)
@@ -185,25 +183,25 @@ A = [1 0 0 0;-1 0 0 0;0 1 0 0;0 -1 0 0]; b = [1;1;1;1];
 Ae = [0 0 0 1]; be = 0;
 P = polytope(A,b,Ae,be);
 [res_, X] = isFullDim(P);
-res(end+1,1) = ~res_ && rank(X) == 3 && all(size(X) == [4,3]);
+assert(~res_ && rank(X) == 3 && all(size(X) == [4,3]));
 % same polytope, but represented via only inequality constraints
 A = [1 0 0 0;-1 0 0 0;0 1 0 0;0 -1 0 0; 0 0 0 1; 0 0 0 -1];
 b = [1;1;1;1;0;0];
 P = polytope(A,b);
 [res_, X] = isFullDim(P);
-res(end+1,1) = ~res_ && rank(X) == 3 && size(X,1) == 4 && size(X,2) == 3;
+assert(~res_ && rank(X) == 3 && size(X,1) == 4 && size(X,2) == 3);
 
 % 4D, degenerate, bounded (with subspace computation)
 % ...unit square in x1-x2, x3 = 0
 A = [1 0 0;-1 0 0;0 1 0;0 -1 0]; b = [1;1;1;1]; Ae = [0 0 1]; be = 0;
 P = polytope(A,b,Ae,be);
 [res_, X] = isFullDim(P);
-res(end+1,1) = ~res_ && rank(X) == 2 && all(size(X) == [3,2]);
+assert(~res_ && rank(X) == 2 && all(size(X) == [3,2]));
 % same polytope, but represented via only inequality constraints
 A = [1 0 0;-1 0 0;0 1 0;0 -1 0;0 0 1;0 0 -1]; b = [1;1;1;1;0;0];
 P = polytope(A,b);
 [res_, X] = isFullDim(P);
-res(end+1,1) = ~res_ && rank(X) == 2 && all(size(X) == [3,2]);
+assert(~res_ && rank(X) == 2 && all(size(X) == [3,2]));
 
 
 % sequence of functions
@@ -215,36 +213,36 @@ isFullDim(P);
 % intersection of 2 non-degenarate polytopes could be both degenarate or not -> empty property
 A = [1 0; -1 0; 0 1; 0 -1]; b = [1;1;1;1];
 P2 = polytope(A,b);
-res(end+1,1) = isFullDim(P2);
+assert(isFullDim(P2));
 P = P & P2;
-res(end+1,1) = isempty(P.fullDim.val);
+assert(isempty(P.fullDim.val));
 
 % intersection with degenerate polytope would always be degenarate
 A = [1 0; -1 0; 0 1; 0 -1]; b = [1;0;0;0];
 P3 = polytope(A,b);
-res(end+1,1) = ~isFullDim(P3);
+assert(~isFullDim(P3));
 P = P & P3;
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % no change
 P = normalizeConstraints(P);
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % Minkowski sum with fully dimensional polytope would be fully dimensional
 A = [0.9691, -0.2466; -0.2466, -0.9691; -0.5109, 0.8597; 0.6113, -0.7914; -0.4098, 0.9122];
 b = [0.9185; 1.0376; 1.0311; 0.9590; 1.0213];
 P4 = polytope(A,b);
-res(end+1,1) = isFullDim(P4);
+assert(isFullDim(P4));
 P = P + P4;
-res(end+1,1) = ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(~isempty(P.fullDim.val) && P.fullDim.val);
 
 % Projecting to higher dimension changes fullDim property
 P_ = projectHighDim(P,4,[3,4]);
-res(end+1,1) = ~isempty(P_.fullDim.val) && ~P_.fullDim.val;
+assert(~isempty(P_.fullDim.val) && ~P_.fullDim.val);
 
 % Lifting to higher dimension does not change fullDim property
 P = lift(P,4,[3,4]);
-res(end+1,1) = ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(~isempty(P.fullDim.val) && P.fullDim.val);
 
 % If one polytope is non-degenerate, then the Minkowski diff is non-degenerate
 A = [
@@ -264,7 +262,7 @@ A = [
 b = [1.6556; 0.2467; 2.7103; 1.1828; -0.1755; 1.2791; -0.0778; 1.4433; 0.6343; 1.3312; -1.9076; 1.9076];
 P5 = polytope(A,b);
 P = minkDiff(P,P5);
-res(end+1,1) = ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(~isempty(P.fullDim.val) && P.fullDim.val);
 
 % linear map with invertible matrix keeps properties
 A = [1   3  -2   4;
@@ -272,9 +270,9 @@ A = [1   3  -2   4;
     -1   2   0   3;
      1  -1   3   2;];
 P = A*P;
-res(end+1,1) = ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(~isempty(P.fullDim.val) && P.fullDim.val);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

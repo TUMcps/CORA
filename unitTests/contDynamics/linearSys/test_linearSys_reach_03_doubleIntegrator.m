@@ -53,6 +53,8 @@ IH = interval(Rcont.timeInterval.set{end});
 IH_true = ones(dim_x,1)*interval(1.76, 2.2);
 
 % final result
-res = isequal(IH,IH_true,1e-8);
+assert(isequal(IH,IH_true,1e-8));
+
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

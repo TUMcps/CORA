@@ -18,12 +18,11 @@ function res = test_linearSys_isequal
 
 % Authors:       Mark Wetzlinger
 % Written:       09-January-2023
-% Last update:   ---
+% Last update:   30-August-2024 (MW, integrate E and F matrices)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
 res = true;
 
 % stable system matrix: n x n
@@ -53,27 +52,33 @@ D = [0 0 1;
 % constant input: q x 1
 k = [0; 0.02];
 
+% disturbance matrix: n x r
+E = [1 0.5; 0 -0.5; 1 -1; 0 1];
+
+% disturbance matrix on output: y x s
+F = [1; 0.5];
+
 % instantiate different linearSys-objects
 sys_AB = linearSys(A,B);
 sys_ABC = linearSys(A,B,c_def,C);
 sys_ABCD = linearSys(A,B,c_def,C,D);
 sys_ABcCDk = linearSys(A,B,c,C,D,k);
+sys_ABcCDkE = linearSys(A,B,c,C,D,k,E);
+sys_ABcCDkEF = linearSys(A,B,c,C,D,k,E,F);
 
 
 % compare instantiated systems
-if ~isequal(sys_AB,sys_AB)
-    res = false;
-elseif isequal(sys_AB,sys_ABC)
-    res = false;
-elseif ~isequal(sys_ABC,sys_ABC)
-    res = false;
-elseif isequal(sys_AB,sys_ABCD)
-    res = false;
-elseif isequal(sys_ABCD,sys_ABcCDk)
-    res = false;
-elseif ~isequal(sys_ABcCDk,sys_ABcCDk)
-    res = false;
-end
+assert(isequal(sys_AB,sys_AB));
+assert(~isequal(sys_AB,sys_ABC));
+assert(isequal(sys_ABC,sys_ABC));
+assert(~isequal(sys_AB,sys_ABCD));
+assert(~isequal(sys_ABCD,sys_ABcCDk));
+assert(isequal(sys_ABcCDk,sys_ABcCDk));
+assert(~isequal(sys_ABcCDk,sys_ABcCDkE));
+assert(isequal(sys_ABcCDkE,sys_ABcCDkE));
+assert(~isequal(sys_ABcCDkE,sys_ABcCDkEF));
+assert(isequal(sys_ABcCDkEF,sys_ABcCDkEF));
+
 
 % case that did not work previously...
 sys_lin = linearSys([0 1 -1; 1 0 0; 0 1 0],[0;-1;0],[],[0 0 0.05; 0.05 0.05 0]);
@@ -81,8 +86,9 @@ f = @(x,u) [x(2)-x(3); x(1)-u(1); x(2)];
 g = @(x,u) [0.05*x(3);0.05*x(1)+0.05*x(2)];
 sys_nonlin = nonlinearSys('linearSys',f,g);
 
-if ~isequal(sys_lin,sys_nonlin,1e-14)
-    res = false;
-end
+assert(isequal(sys_lin,sys_nonlin,1e-14));
+
+% combine results
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

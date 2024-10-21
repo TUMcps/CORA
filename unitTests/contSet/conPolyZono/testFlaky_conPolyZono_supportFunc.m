@@ -63,8 +63,8 @@ for i = 1:5
         val = supportFunc(cPZ,d,'lower',methods{j});
         
         % check for correctness
-        if val > val_ && ~withinTol(val,val_,tol)
-            throw(CORAerror('CORA:testFailed'));
+        if val > val_ 
+            assertLoop(withinTol(val,val_,tol),i,j)
         end
     end
 end

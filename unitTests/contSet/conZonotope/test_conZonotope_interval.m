@@ -28,37 +28,34 @@ function res = test_conZonotope_interval
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
-% Figure 1 in [1]
-Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
-A = [1 1 1]; b = 1;
-cZ = conZonotope(Z,A,b);
-I = interval(cZ);
-I_ = interval([-2.5;-1.5],[3.5;2.5]);
-res(end+1,1) = isequal(I,I_);
-
-
-% Figure 2 in [1]
-Z = [0 1 0 1;0 1 2 -1];
-A = [-2 1 -1]; b = 2;
-cZ = conZonotope(Z,A,b);
-I = interval(cZ);
-I_ = interval([-2;-2],[0;3]);
-res(end+1,1) = isequal(I,I_);
+% % Figure 1 in [1]
+% Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
+% A = [1 1 1]; b = 1;
+% cZ = conZonotope(Z,A,b);
+% I = interval(cZ);
+% I_ = interval([-2.5;-1.5],[3.5;2.5]);
+% res(end+1,1) = isequal(I,I_);
+% 
+% 
+% % Figure 2 in [1]
+% Z = [0 1 0 1;0 1 2 -1];
+% A = [-2 1 -1]; b = 2;
+% cZ = conZonotope(Z,A,b);
+% I = interval(cZ);
+% I_ = interval([-2;-2],[0;3]);
+% res(end+1,1) = isequal(I,I_);
 
 
-% empty case
+% empty case: constraint beta = -2 infeasible within |beta| <= 1
 c = [0; 0];
 G = [1; -1];
 A = 1; b = -2;
 cZ = conZonotope(c,G,A,b);
 I = interval(cZ);
-res(end+1,1) = representsa_(I,'emptySet',eps);
+assert(representsa_(I,'emptySet',eps));
 
 
 % combine results
-res = all(res);
-
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

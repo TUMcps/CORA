@@ -1,0 +1,363 @@
+\documentclass{article}
+
+% packages
+\usepackage[margin=1in]{geometry}
+
+% math packages not required
+%\usepackage{etoolbox}
+%\usepackage{mathtools}
+\usepackage{amsmath}
+%\usepackage{amsfonts}
+
+% MATLAB code
+\usepackage{fancyvrb}
+
+% links
+\usepackage[hidelinks]{hyperref}
+
+% enumerate and itemize using costum spacing
+\usepackage{enumitem}
+
+\usepackage{setspace}
+\setstretch{1.44}%  default
+
+% TikZ / PGF Plots
+\usepackage{tikz}
+\usepackage{pgfplots}
+
+% libraries
+\usetikzlibrary{matrix}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{calc}
+
+\usepackage{siunitx}
+
+\usepackage{xcolor}
+\usepackage{listings}
+\lstset
+{
+	language=[LaTeX]TeX,
+	breaklines=true,
+	basicstyle=\tt,
+	keywordstyle=\color{blue},
+	identifierstyle=\color{black},
+}
+
+% macros
+\definecolor{darkblue}{RGB}{16,52,166}
+\newcommand{\linkto}[2]{\href{#1}{\textcolor{darkblue}{#2}}}
+
+\usepackage{cleveref}
+
+
+\begin{document}
+\begin{center}
+\huge
+\textbf{Introduction to matlab2tikz} \\
+\smallskip \small
+Mark Wetzlinger, \linkto{mailto:m.wetzlinger@tum.de}{m.wetzlinger@tum.de}, last update: \today
+\end{center}
+
+\bigskip
+
+Exporting figures is a common task when working with toolboxes such as CORA and AROC.
+Preferably, one wants to use vector graphics for LaTeX documents to achieve high quality.
+To this end, the \emph{matlab2tikz} toolbox has been written to enable the export of MATLAB figures to compilable \emph{TikZ/pgfplots} files.
+TikZ/pgfplots are LaTeX packages enabling the creation of figures via code commands.
+This introduction shows how to export figures created in CORA/AROC for the usage in LaTeX documents.
+
+Acknowledgments: Many thanks to Victor Ga{\ss}mann for his exploratory work and helpful suggestions.
+
+\section{Setup}
+\label{sec:setup}
+
+For the setup in MATLAB, the following toolboxes are required on your MATLAB path:
+%
+\begin{itemize}[itemsep=0pt]
+	\item \linkto{https://tumcps.github.io/CORA/}{CORA}, and required toolboxes (see CORA manual, Section~1.3 \emph{Installation})
+	\item \linkto{https://tumcps.github.io/AROC/}{AROC} (optional)
+	\item \linkto{https://github.com/matlab2tikz/matlab2tikz}{matlab2tikz}
+\end{itemize}
+%
+For the setup in LaTeX, the following packages and libraries are required:
+%
+\begin{itemize}[itemsep=0pt]
+	\item \verb|\usepackage{tikz}|
+	\item \verb|\usepackage{pgfplots}|
+	\item \verb|\usepackage{calc}| (not required, but strongly recommended)
+	\item If group plots are used (see \cref{sec:groupplots}): \\
+			\verb|\usepgfplotslibrary{groupplots}| \\
+			\verb|\usetikzlibrary{pgfplots.groupplots}| \\
+			\verb|\usetikzlibrary{matrix}|
+\end{itemize}
+%
+For further reading, consider the extensive documentation (for \linkto{https://ctan.ebinger.cc/tex-archive/graphics/pgf/base/doc/pgfmanual.pdf}{TikZ} and for \linkto{https://ctan.space-pro.be/tex-archive/graphics/pgf/contrib/pgfplots/doc/pgfplots.pdf}{pgfplots}) or Google.
+
+
+\section{Main steps}
+\label{sec:mainsteps}
+
+The general workflow is comprised of the following main steps:
+%
+\begin{enumerate}[itemsep=0pt]
+	\item Generation of the figure(s) in MATLAB.
+	\item Call of the function \verb|fig2tikz|.
+	\item Generation of the TikZ/pgfplots file using \verb|matlab2tikz|.
+	\item Post-processing of the generated file and integration in LaTeX.
+\end{enumerate}
+
+% Step 1
+\subsection{Figure Generation}
+\label{ssec:figuregeneration}
+
+Figures generated in CORA/AROC are usually based on either individual sets (\verb|contSet| objects) or the classes \verb|reachSet| or \verb|simResult|.
+The corresponding plot functions overload the MATLAB built-in functions with some additional input arguments, such as the projected dimension of the set or the desired coloring---this is documented in the CORA manual or the respective function headers in CORA.
+For \verb|reachSet| objects, the name-value pair \verb|'Unify',true|false| (default: \verb|false|) has been implemented which unifies all projected sets to a single set in order to keep the resulting file size of the exported figure small.
+Note that much of the figure formatting can already be made in MATLAB:
+%
+\begin{itemize}[itemsep=0pt]
+	\item The font of the axis labels; using MATLAB's name-value pair \verb|'interpreter','latex'|, mathtext (\$ ... \$) can be directly copied into the corresponding TikZ/pgfplots file.
+	\item Legend entries as specied in MATLAB using the \verb|legend| command, including options such as the name-value pairs \verb|'Location',...| and \verb|'Orientation',...|, among others.
+\end{itemize}
+%
+The following graphics objects (ordered alphabetically) are supported by \verb|matlab2tikz|:
+\verb|'area'|, \verb|'bar'|, \verb|'contour'|, \verb|'errorbar'|, \verb|'histogram'|, \verb|'hggroup'|, \verb|'hgtransform'|, \verb|'image'|, \verb|'light'|, \verb|'line'|, \linebreak \verb|'matlab.graphics.primitive.Group'|, \verb|'patch'|, \verb|'quiver'|, \verb|'rectangle'|, \verb|'scatter'|, \verb|'stair'|, \verb|'stem'|, \verb|'surface'|, \verb|'text'|, \verb|''|.
+The plotted graphics objects can be listed using the command
+%
+\begin{verbatim}
+  fig.CurrentAxes.Children;
+\end{verbatim}
+%
+where \verb|fig| is a \verb|1x1 Figure| object;
+
+% Step 2
+\subsection{Function \texttt{fig2tikz}}
+\label{ssec:fig2tikz}
+
+The aforementioned name-value pair \verb|'Unify',true| constructs a \verb|polygon| object which is a wrapper class for the MATLAB built-in class \verb|polyshape| extended by various convenient operations, e.g. \verb|plot|, \verb|and| (intersection), \verb|in| (containment check), \verb|plus| (Minkowski sum).
+As this is a costum class, \verb|matlab2tikz| cannot convert it.
+Thus, the function \verb|fig2tikz| has been implemented in order to convert the plotted \verb|polygon| object into a line or patch which can be processed.
+The function reads as follows:
+%
+\begin{verbatim}
+  fig = fig2tikz(fig,precision);
+\end{verbatim}
+%
+Both input arguments are optional.
+If provided, the input argument \verb|fig| has to be a \verb|1x1 Figure| object (default: \verb|gcf|, i.e., the currently selected figure), whereas \verb|precision| has to be a value between 0 and 1 (default: \verb|1e-5|).
+Furthermore, the command \verb|cleanfigure| is executed as well, which iterates of all graphics objects within the figure and reduces the precision to limit the size of the resulting file.
+Note: We recommend the usage of \verb|fig2tikz| also if all objects are known to be convertible by \verb|matlab2tikz|, as the representation of \verb|Line| objects is also simplified.
+
+% Step 3
+\subsection{Function \texttt{matlab2tikz}}
+\label{ssec:matlab2tikz}
+
+Next, the conversion to a TikZ/pgfplots file can be made.
+To this end, the function
+%
+\begin{verbatim}
+  matlab2tikz(filename.tikz);
+\end{verbatim}
+%
+has to be called, which generates a file called \verb|filename| in the current directory, where the file extension \verb|.tikz| is recommended as a naming convention, but can in principle be chosen arbitrarily.
+This file can then be moved to the LaTeX code directory for integration into the document.
+
+% Step 4
+\subsection{Post-processing and integration into LaTeX}
+\label{ssec:postprocessing}
+
+Finally, the file has to be integrated into the LaTeX document using
+%
+\begin{verbatim}
+  \input{filename.tikz}.
+\end{verbatim}
+In written reports, this is typically placed inside of a figure environment, while for presentations (LaTeX beamer), it can be inserted directly.
+The file itself can be opened within the LaTeX editor and altered as needed.
+In general, there is a header, the \verb|\begin{tikzpicture} ... \end{tikzpicture}| environment, and a \verb|\begin{axis} ... \end{axis}| environment per subplot, including the command \verb|\addplot| for each plotted object.
+Here are some of the most useful tips for further polishing:
+%
+\begin{itemize}[itemsep=0pt]
+	\item Sometimes, there is a second but empty \verb|\begin{axis} ... \end{axis}| environment at the very bottom, which can be deleted.
+	\item By default, \verb|matlab2tikz| creates legend entries using the command \verb|\addlegendentry{text}| after each plotted object. If no legend is desired, one can simply add a \verb|\legend{}| command just before \verb|\end{axis}|. If only some objects should have labels, the search-and-replace function can be used to identify all undesired legend entries.
+	\item The position defined in the optional parameter \verb|at| within the \verb|axis|-environment, which is only relevant if there is another \verb|axis|-environment and even then, only the relative position to one another is relevant.
+	\item The size of the figure can be easily adjusted using the optional parameters \verb|width| and \verb|height| within the \verb|axis|-environment. The same goes for the axis limits and labels.
+	\item Alternatively, one can scale the entire figure except the font sizes using the optional parameter
+		\begin{verbatim}
+		  scale=\scaleFactor
+		\end{verbatim}
+		in the \verb|axis|-environment. This assumes that \verb|scaleFactor| is a defined TeX ``variable''.
+		By writing
+		\begin{verbatim}
+		  \def \scaleFactor{fac}.
+		\end{verbatim}
+		in the \verb|.tex|-file just before \verb|\input{filename.tikz}|, this variable can be defined.
+	\item For small or large numbers, there is automated scaling by powers of 10. In order to prevent this, use the following optional parameters:
+		\begin{verbatim}
+		  yticklabel style={/pgf/number format/fixed,/pgf/number format/precision=N},
+		  scaled y ticks=false
+		\end{verbatim}
+		where \verb|N| is a large enough integer.
+	\item In order to push the label of the y-axis closer to the plot, use the optional parameter
+		\begin{verbatim}
+		  ylabel near ticks
+		\end{verbatim}
+		%
+		(analogously for the x-axis).
+	\item To write the title in boldface, use the optional parameter
+		\begin{verbatim}
+		  title style={font=\textbackslash bfseries}
+		\end{verbatim}
+	\item If you wish to have the label of the y-axis not rotated by 90 degrees, use the optional parameter
+		\begin{verbatim}
+		  ylabel style={rotate=-90}
+		\end{verbatim}
+	\item If you have macros for your colors, you have to replace the default colors \verb|mycolor1|, \verb|mycolor2|, etc. by these macros, again using the search-and-replace function of your LaTeX editor. Otherwise, altering the colors in your document would not alter those in the TikZ/pgfplots figures.
+	\item If desired, you can also get rid of many elements, such as axis labels, ticks, etc. (see the \linkto{https://ftp.agdsn.de/pub/mirrors/latex/dante/graphics/pgf/contrib/pgfplots/doc/pgfplots.pdf}{pgfplots manual} for details).
+	\item Within the \verb|tikzpicture|-environment, usual TikZ-commands can be written, e.g., for nodes or additional lines. If you want to add a \verb|\node| at a certain position in the plot (e.g. to add a descriptive label), this can be done by, e.g., adding
+		\begin{verbatim}
+		  \node[inner sep=0,pin={[anchor=center,inner sep=0,pin distance=1cm]180:$text$}]
+		    at (axis cs:20,0) {}
+		\end{verbatim}
+	somewhere inside the \verb|axis|-environment.
+	The given example draws a \SI{1}{\centi\meter} line from the point \verb|(20,0)| in the plot (with 0 seperation from that point) to the left 180 degrees, and places \verb|$text$| there.
+\end{itemize}
+
+
+\section{More plots in one figure}
+\label{sec:groupplots}
+
+There are instances with more than one plot in the same figure.
+For this, there are two options:
+%
+\begin{enumerate}
+	\item Using MATLAB's \verb|subplot| command: Each subplot is exported within its own \verb|axis|-environment. Thus, positioning via the optional parameter \verb|at| has to be done manually, depending also on the size (parameters \verb|width| and \verb|height|) of the individual \verb|axis|-environments.
+	\item Using the pfgplots feature \verb|groupplots| (requires \verb|\usepgfplotslibrary{groupplots}| in the preamble): The figure is constructed by one high-level file, grouping all individual subplots and defining axis settings, such as labels, titles etc., and the actual plot data. We recommend to put the plot data for each subplot into a separate file, i.e., only the \verb|\textbackslash addplot| commands that make up each subplot as everything else is now handled by the high-level group file, which is defined as
+		\begin{verbatim}
+		  \begin{groupplot}[$\bullet$]
+		\end{verbatim}
+		with the optional parameter
+		\begin{verbatim}
+		  group style = {group size = m by n, horizontal sep = x.ycm, vertical sep = x.ycm}
+		\end{verbatim}
+		specifying an \verb|n|-by-\verb|m| grid (\verb|n| rows, \verb|m| columns). The individual subplots are added by
+		\begin{verbatim}
+		  \nextgroupplot[$\bullet$]
+		\end{verbatim}
+		with optional parameter \verb|title=nameofsubplot|, and
+		\begin{verbatim}
+		  \input{nameofsubplot.tikz}
+		\end{verbatim}
+		is the file containing all plots for that specific subplot.
+	One advantage over the previous option---in addition to perfect alignment of all suplots within the grid---is the ability to write a single legend for multiple plots, i.e., using the TikZ library \verb|matrix| and the command
+		\begin{verbatim}
+		  \matrix[$\bullet$] at (x,y) {
+		    11 & ... & 1m \\
+		    ... \\
+		    n1 & ... & nm};
+		\end{verbatim}
+		where the optional parameters are
+		\begin{verbatim}
+		  matrix of nodes, nodes = {text width = x.ycm, align=left|center|right}, draw
+		\end{verbatim}
+	If one labels a specific plot, e.g.
+		\begin{verbatim}
+		  \addplot [...]{...};
+		  \label{ref:plot};
+		\end{verbatim}
+	the label symbol can be obtained. Within the legend matrix as shown above, write \verb|\ref{ref:plot}|.
+	The corresponding entry in the \verb|\matrix|-command can then be replaced by 
+		\begin{verbatim}
+		  \ref{ref:plot} description
+		\end{verbatim}
+		where \verb|description| is the text after the symbol.
+\end{enumerate}
+
+
+\pagebreak
+
+\section{Examples}
+\label{sec:examples}
+
+\subsection{Simple plot}
+\label{ssec:ex_simpleplot}
+
+The following MATLAB code generates two data graphs over time:
+
+\bigskip
+{\small \setstretch{1} \input{example1/simpleplot}}
+
+\noindent
+The resulting \verb|.tikz|-file looks as follows (omitting most lines of data):
+
+\bigskip
+{\small \setstretch{1} \input{example1/simpleplotvrb_before}}
+
+\noindent
+In order to obtain a clean figure, we perform the following steps:
+\begin{itemize}[itemsep=0pt]
+	\item Rewrite the labels: \verb|xlabel={t}| $\to$ \verb|xlabel={$t$}| and \verb|xlabel={xi}| $\to$ \verb|xlabel={$\xi$}|.
+	\item Resize the figure: \verb|width=4.521in| $\to$ \verb|width=5in| and \verb|height=3.566in| $\to$ \verb|height=3in|.
+	\item Display the ticks of the y-axis using decimal numbers by adding
+		\begin{verbatim}
+		  yticklabel style={/pgf/number format/fixed,/pgf/number format/precision=3},
+		  scaled y ticks=false
+		\end{verbatim}
+\end{itemize}
+%
+Then, we obtain (again, omitting most lines of data)
+
+\bigskip
+{\small \setstretch{1} \input{example1/simpleplotvrb_after}}
+
+\noindent
+Finally, the integration in LaTeX produces the follwing figure:
+
+\bigskip
+
+\begin{center}
+	\input{example1/simpleplot_after.tikz}
+\end{center}
+
+
+
+\pagebreak
+
+\subsection{Group plot}
+\label{ssec:ex_groupplot}
+
+For the group plot, we omit the generation of the plot and only show the \verb|.tikz|-files and the corresponding result.
+In this example, we have a 1-by-3 grid, where the file for the first plot just contains plots generated using the \verb|\addplot|-command.
+More specifically, there are:
+%
+\begin{itemize}[itemsep=0pt]
+	\item 1 plot using the \verb|IntReachStyle|
+	\item 1 plot using the \verb|X0Style|
+	\item 5 plots using the \verb|TpReachStyle|
+	\item 5 plots using the \verb|TpReachStyle|
+	\item 7 plots using the \verb|SimStyle|
+	\item 1 plot using the \verb|ShiftX0Style|
+	\item 1 plot using the \verb|FinalReachStyle|
+\end{itemize}
+
+The first file called \verb|groupplot1.tikz| looks like this:
+
+\bigskip
+{\small \setstretch{1} \input{example2/groupplot1vrb}}
+
+\noindent
+The optional parameters for the \verb|\addplot| commands are defined in the main file (see below), which provides the grid and legend for the three individual files \verb|groupplot1.tikz|, \verb|groupplot2.tikz|, and \verb|groupplot3.tikz|.
+It looks like this:
+
+\bigskip
+{\small \setstretch{1} \input{example2/groupplotmastervrb}}
+
+\noindent
+Finally, the resulting plot:
+
+\bigskip
+\begin{center}
+	\input{example2/groupplot.tikz}
+\end{center}
+
+\end{document}

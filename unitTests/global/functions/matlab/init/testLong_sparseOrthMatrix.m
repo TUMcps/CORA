@@ -36,9 +36,7 @@ for i=1:nrTests
     Q = sparseOrthMatrix(n);
 
     % check orthogonality
-    if ~all(withinTol(vecnorm(Q),1))
-        res = false; break
-    end
+    assertLoop(all(withinTol(vecnorm(Q),1)),i)
 
 end
 

@@ -12,7 +12,7 @@ function res = contains_(zB,S,type,tol,varargin)
 %    type - type of containment check:
 %           'exact': any exact evaluation (see below, default)
 %           'exact:zonotope': check containment for each zonotope
-%           'exact:polytope: convert zB to polytope
+%           'exact:polytope': convert zB to polytope
 %           'approx'
 %
 % Outputs:

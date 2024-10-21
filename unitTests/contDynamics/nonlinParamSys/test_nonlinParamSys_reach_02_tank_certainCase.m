@@ -29,6 +29,9 @@ function res = test_nonlinParamSys_reach_02_tank_certainCase
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 % Parameters --------------------------------------------------------------
@@ -72,6 +75,6 @@ IHcontParam = interval(R_Param.timeInterval.set{end});
 IHcontNoParam = interval(R_NoParam.timeInterval.set{end});
 
 %final result
-res = isequal(IHcontParam,IHcontNoParam,1e-8);
+assert(isequal(IHcontParam,IHcontNoParam,1e-8));
 
 % ------------------------------ END OF CODE ------------------------------

@@ -27,6 +27,9 @@ function res = testMosek_linearSysDT_observe_gain_03_PRadC()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % enable access to private function "observe_gain_PRadC"
 path = CORAROOT;
@@ -93,7 +96,7 @@ maxError = max(max(error));
 
 % error acceptable?
 %res = (maxError < 1e-8);
-res = 1; % this unit test uses the wrong algorithm; maybe add corresponding approach in a later version?
+assert(1); % this unit test uses the wrong algorithm);% this unit test uses the wrong algorithm; maybe add corresponding approach in a later version?
 
 
 % revoke access to private function "initReach_Krylov"

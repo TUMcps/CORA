@@ -1,14 +1,13 @@
-function [R,Rjump_,res] = reach(loc,R0,tStart,options)
+function [R,Rjump_,res] = reach(loc,params,options)
 % reach - computes the reachable set of the system within a location and
 %    determines the intersections with the guard sets
 %
 % Syntax:
-%    [R,Rjump_,res] = reach(loc,R0,tStart,options)
+%    [R,Rjump_,res] = reach(loc,params,options)
 %
 % Inputs:
 %    loc - location object
-%    R0 - initial reachable set
-%    tStart - start time
+%    params - model parameters
 %    options - struct containing the algorithm settings
 %
 % Outputs:
@@ -31,29 +30,21 @@ function [R,Rjump_,res] = reach(loc,R0,tStart,options)
 res = true;
 Rjump = struct('set',cell(1,0),'time',cell(1,0),...
     'loc',cell(1,0),'parent',cell(1,0));
-
-% split options into params and options for contDynamics/reach
-[params,options_] = splitIntoParamsOptions(options);
-% additional adaptations
-params.tStart = infimum(tStart);
-params.R0 = R0;
+tStart_interval = params.tStart;
+params.tStart = infimum(params.tStart);
 
 % adapt specifications
-spec = specification(loc.invariant,'invariant');
-
-if ~isempty(options.specification)
-    spec = add(options.specification,spec);
-end
+[specReach,specCheck] = aux_adaptSpecs(loc,options.specification);
 
 % since we require the reachable set for the guard intersection and not the
 % output set, we set the internal option 'compOutputSet' to false; the
 % output set will then be computed in hybridAutomaton/reach after all
 % computation in the location are finished
-options_.compOutputSet = false;
+options.compOutputSet = false;
 
 % compute reachable set for the continuous dynamics until the reachable
 % set is fully located outside the invariant set
-R = reach(loc.contDynamics,params,options_,spec);
+R = reach(loc.contDynamics,params,options,specReach);
 
 % loop over all reachable sets (the number of reachable sets may
 % increase if the sets are split during the computation)
@@ -61,11 +52,11 @@ for i=1:size(R,1)
 
     % determine all guard sets of the current location which any
     % reachable set intersects
-    [guards,setIndices,setType] = potInt(loc,R(i),options);
+    [guards,setIndices,setType] = potInt(loc,R(i),params.finalLoc);
 
     % compute intersections with the guard sets
     [Rguard,actGuards,minInd,maxInd] = ...
-            guardIntersect(loc,guards,setIndices,setType,R(i),options);
+            guardIntersect(loc,guards,setIndices,setType,R(i),params,options);
 
     % compute reset and get target location
     Rjump_ = struct('set',cell(1,0),'time',cell(1,0),...
@@ -76,7 +67,7 @@ for i=1:size(R,1)
         iGuard = actGuards(j);
         
         % compute reset
-        Rjump_(j,1).set = reset(loc.transition(iGuard),Rguard{j},options.U);  
+        Rjump_(j,1).set = evaluate(loc.transition(iGuard).reset,Rguard{j},params.U);
         
         % target location and parent reachable set
         Rjump_(j,1).loc = loc.transition(iGuard).target;
@@ -85,7 +76,7 @@ for i=1:size(R,1)
         % time interval for the guard intersection
         if strcmp(setType,'time-interval')
             tMin = infimum(R.timeInterval.time{minInd(j)});
-            tMax = supremum(R.timeInterval.time{maxInd(j)}) + 2*rad(tStart);
+            tMax = supremum(R.timeInterval.time{maxInd(j)}) + 2*rad(tStart_interval);
         else
             tMin = R.timePoint.time{minInd(j)};
             tMax = R.timePoint.time{maxInd(j)};
@@ -102,15 +93,44 @@ for i=1:size(R,1)
     end
     
     % update times of the reachable set due to uncertain initial time
-    R(i) = updateTime(R(i),tStart);
+    R(i) = updateTime(R(i),tStart_interval);
     
     % check if specifications are violated
-    if ~isempty(options.specification)
-        res = check(options.specification,R(i).timeInterval.set{end}); 
+    if ~isempty(specCheck)
+        res = check(specCheck,R(i).timeInterval.set{end});
         if ~res
             return; 
         end
     end
+end
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function [specReach,specCheck] = aux_adaptSpecs(loc,specs)
+
+% add the invariant as a specification so that reachability analysis of
+% continuous dynamics can exit once the reachable set fully leaves the
+% invariant
+specReach = specification(loc.invariant,'invariant');
+
+% add other specification to the list of specifications: note that unsafe
+% sets must intersect the invariant to be valid
+if ~isempty(specs)
+    % double check because numel(specification()) == 1
+    for i=1:numel(specs)
+        if ~strcmp(specs(i).type,'unsafeSet') ...
+                || isIntersecting(loc.invariant,specs(i).set)
+            specReach = add(specReach,specs(i));
+        end
+    end
+end
+
+% for the check, we skip the 'invariant' specification
+specCheck = specReach(2:end);
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

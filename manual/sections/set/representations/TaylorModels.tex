@@ -1,0 +1,66 @@
+\subsubsubsection{Taylor Models} \label{sec:taylorModels}
+
+Taylor models \cite{Berz1998, Makino1996, Makino2003, Makino2009} can be used to obtain rigorous bounds of functions that are often tighter than the ones obtained by interval arithmetic. A Taylor model $\mathcal{T}(x)$ is defined as
+\begin{equation}
+	\mathcal{T}(x) = \{ p(x) + y~|~ y \in \mathcal{I} \},
+\end{equation}
+where $p:~\R^p \to \Rn$ is a polynomial function and $\mathcal{I} \subset \Rn$ is an interval (see \cref{sec:interval}). For range bounding, the possible values for the variable $x$ are usually restricted by an interval domain $\mathcal{D} \subset \R^p$ (see \eqref{eq:rangeBounding}).
+
+To enclose a nonlinear function with a Taylor model, a Taylor series expansion of the function is computed:
+\begin{equation*}
+	f(x) \approx f(x^*) + \frac{\partial f}{\partial x} \bigg|_{x^*} (x - x^*) + \frac{\partial^2 f}{\partial x^2} \bigg|_{x^*} (x - x^*)^2 + \dots\ .
+\end{equation*}
+Let us consider the nonlinear function $f(x) = \cos(x)$ as an example. By computing a second-order Taylor series expansion at the expansion point $x^* = 0$, the function $f(x)$ on the domain $x \in [-1,1]$ can be enclosed by the Taylor model
+\begin{equation}
+		\mathcal{T}(x) := \big \{ 1 - 0.5 x^2 + y~\big|~ y \in [-0.15,0.15] \big \},
+		\label{eq:taylorExample}
+\end{equation}
+which is visualized in \cref{fig:taylorExample}.
+
+\begin{figure}[h]	
+	\centering
+	\includetikz{./figures/tikz/set-representations-range/example_taylm}
+	\caption{Function $f(x) = \cos(x)$ (black) and the enclosing Taylor model $\mathcal{T}(x)$ in \eqref{eq:taylorExample} (blue).}
+	\label{fig:taylorExample}
+\end{figure}
+
+Taylor models are represented by the class \texttt{taylm}. An object of class \texttt{taylm} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \mathcal{T}(x) = \operator{taylm}(\mathcal{D}), \\
+		& \mathcal{T}(x) = \operator{taylm}(\mathcal{D},\texttt{maxOrder},\texttt{name},\texttt{optMethod},\texttt{tolerance},\texttt{eps}),
+	\end{split}
+\end{equation*}
+where $\mathcal{D} \subset \R^p$ is the interval domain for the variable $x$. The domain $\mathcal{D}$ is defined by an object of class \operator{interval} (see \cref{sec:interval}). The additional optional parameters are defined as follows:
+\begin{itemize}
+	\item \texttt{maxOrder}: Maximum polynomial degree of the monomials in the polynomial part of the Taylor model. Monomials with a degree larger than \texttt{maxOrder} are enclosed and added to the interval remainder. Further, $q = $ \texttt{maxOrder} is used for the implementation of the formulas listed in \cite[Appendix~A]{Althoff2018b}. 
+	\item \texttt{name:} String or cell array of strings defining the names for the variables. Unique names are important since Taylor models explicitly consider dependencies between the variables.
+	\item \texttt{optMethod}: Method used to calculate the bounds of the Taylor model objects. The available methods are 'int' (interval arithmetic, default), 'bnb' (branch and bound algorithm, see \cite[Sec.~2.3.2]{Althoff2018b}), 'bnbAdv' (branch and bound with Taylor model re-expansion) and 'linQuad' (optimization with Linear Dominated Bounder and Quadratic Fast Bounder, see \cite[Sec.~2.3.3]{Althoff2018b})
+	\item \texttt{tolerance:} Minimum absolute value of the monomial coefficients in the polynomial part of the Taylor model. Monomials with a coefficient whose absolute value is smaller than \texttt{tolerance} are enclosed and added to the interval remainder.
+	\item \texttt{eps:} Termination tolerance $\epsilon$ for the branch and bound algorithm from \cite[Sec.~2.3.2]{Althoff2018b} and for the algorithm based on the Linear Dominated Bounder and the Quadratic Fast Bounder from \cite[Sec.~2.3.3]{Althoff2018b}.
+\end{itemize}
+CORA also supports to create Taylor models from symbolic functions. A detailed description of this is provided in \cref{sec:createTaylorModels}.
+
+\newpage
+Let us demonstrate Taylor models by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.50\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_rangeBoundingTay}
+\end{minipage}
+\begin{minipage}[t]{0.25\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}	
+	Command Window:
+	
+	res =
+
+  [-0.23256,4.90940]
+	\end{verbatim}
+\end{minipage}
+\end{center}
+
+A more detailed example for Taylor models is provided in \cref{sec:taylorModelExample} and in the file \textit{examples/contSet/example\_taylm.m} in the CORA toolbox. A detailed description of how Taylor models are treated in CORA can be found in \cite{Althoff2018b}. Furthermore, a list of operations that are implemented for the class \texttt{taylm} is provided in \cref{sec:taylorModelOperations}.

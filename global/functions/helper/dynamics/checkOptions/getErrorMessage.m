@@ -63,6 +63,8 @@ switch id
         msg = 'has to be an object of class zonotope';
     case 'isareachSet'
         msg = 'has to be an object of class reachSet';
+    case 'isapolytope'
+        msg = 'has to be an object of class polytope';
     case 'istestCase'
         msg = 'has to be an object of class testCase';
 
@@ -71,6 +73,8 @@ switch id
         msg = 'has to be a value greater than 0';
     case 'gezero'
         msg = 'has to be a value greater than or equal to 0';
+    case 'leone'
+        msg = 'has to be a value less than or equal to 1';
     case 'vectorgezero'
         msg = 'has to have a value greater than or equal to 0 in all entries';
     case 'geone'
@@ -93,9 +97,9 @@ switch id
 
     % not in list of admissible values specified in getMembers
     % (second input arg to appendErrMsg just dummy)
-    case {'memberR0','memberR0conf','memberU','memberUsim','memberV','memberW',...
+    case {'memberR0','memberRend','memberU','memberUsim','memberV','memberW',...
             'membersafeSet','memberunsafeSet','memberlinAlg',...
-            'memberlinAlg4HA','memberalg','memberalgInner',...
+            'memberlinAlg4HA','memberlinAlg4backward','memberalg','memberalgInner',...
             'memberalg4DT','memberalg4DA','memberalg4param',...
             'memberalg4observe','memberreductionTechnique',...
             'memberreductionTechnique4nlsys',...
@@ -104,8 +108,10 @@ switch id
             'memberlagrangeRem.zooMethods','memberlagrangeRem.optMethod',...
             'memberrestructureTechnique','membercontractor',...
             'memberguardIntersect','memberenclose','membertype',...
-            'membernorm','memberconfAlgSynth','memberconfAlgCheck',...
-            'memberreachAlg','memberarmaxAlg'}
+            'membernorm','memberconfAlgSynth','memberconfAlgSynthDyn',...
+            'memberconfAlgCheck','memberreachAlg','memberarmaxAlg',...
+            'memberY0','memberR0conf','membercs.cost','membercs.constraints',...
+            'membercs.method'}
         msg = ['has to match one of the following:\n      ' ...
             strjoin(getMembers(erase(id,'member')),', ')];
 
@@ -116,6 +122,10 @@ switch id
         msg ='has to be equal to the number of inputs';
     case 'eqoutput'
         msg ='has to be equal to the number of outputs';
+    case 'eqdists'
+        msg ='has to be equal to the number of disturbances';
+    case 'eqnoises'
+        msg ='has to be equal to the number of noises';
     case 'eqconstr'
         msg = 'has to be equal to the number of constraints';
     case 'eqparam'

@@ -21,7 +21,8 @@ classdef simResultAnalyzer < handle
 
 % Authors:       Benedikt Seidl
 % Written:       04-January-2022
-% Last update:   04-July-2024 (TL, updated analyze() due to new simResult)
+% Last update:   08-February-2024 (FL, rename from signal to finiteSignal)
+%                04-July-2024 (TL, updated analyze() due to new simResult)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -49,7 +50,7 @@ methods
 
         % prepare signals for all atomic propositions
         for m = 1:length(k)
-            sigs(k{m}) = signal(dur, false);
+            sigs(k{m}) = finiteSignal(dur, false);
         end
 
         for l = 1:length(obj.simRes(i).t{j})-1
@@ -74,8 +75,7 @@ methods
             % check all atomic propositions
             for m = 1:length(k)
                 if obj.aps(k{m}).evaluatePoint(point.', loc)
-                    sig = signal.indicator(dur, interval(from, to), true);
-
+                    sig = finiteSignal.indicator(dur, interval(from, to), true);
                     sigs(k{m}) = sigs(k{m}) | sig;
                 end
             end

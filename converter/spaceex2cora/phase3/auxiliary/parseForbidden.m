@@ -69,7 +69,7 @@ end
 configLine = configLine_split(2);
 
 % We start with an empty specification (empty unsafe set), and add onto it iteratively
-forbiddenSpecs = specification(halfspace.empty(length(state_names)),'unsafeSet');
+forbiddenSpecs = specification(polytope.empty(length(state_names)),'unsafeSet');
 
 % We assume the specification of "forbidden" to be in conjuntive normal
 % form, therefore we can get a set of specifications we can add on to each

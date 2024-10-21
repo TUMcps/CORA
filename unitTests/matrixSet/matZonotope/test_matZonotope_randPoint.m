@@ -26,7 +26,7 @@ function res = test_matZonotope_randPoint
 % empty matrix zonotope
 matZ = matZonotope();
 M = randPoint(matZ);
-res = isnumeric(M) && isempty(M);
+assert(isnumeric(M) && isempty(M));
 
 % instantiate matrix zonotope
 C = [0 2; 1 -1; 1 -2];
@@ -35,15 +35,15 @@ matZ = matZonotope(C,G);
 
 % try different syntaxes for runtime issues
 M = randPoint(matZ);
-res(end+1) = size(M,3) == 1;
+assert(size(M,3) == 1);
 M = randPoint(matZ,5);
-res(end+1) = size(M,3) == 5;
+assert(size(M,3) == 5);
 M = randPoint(matZ,5,'extreme');
-res(end+1) = size(M,3) == 5;
+assert(size(M,3) == 5);
 M = randPoint(matZ,5,'standard');
-res(end+1) = size(M,3) == 5;
+assert(size(M,3) == 5);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

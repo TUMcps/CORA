@@ -19,6 +19,9 @@ function res = testMP_Krylov_homogeneousSolution_projection(~)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % enable access to private function "initReach_Krylov"
 path = CORAROOT;
@@ -91,7 +94,7 @@ R_exact = expm(A*options.timeStep)*options.R0;
 R_proj = C*R_exact;
 
 % Is exact solution in zonotope?
-res = contains(Rnext.tp,R_proj);
+assert(contains(Rnext.tp,R_proj));
 
 % revoke access to private function "initReach_Krylov"
 delete(target);

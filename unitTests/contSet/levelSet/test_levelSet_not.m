@@ -23,9 +23,6 @@ function res = test_levelSet_not
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true;
-
 % init symbolic variables
 syms a b x y
 
@@ -41,7 +38,7 @@ eq = x^2 + y^2 - 5;
 ls_true = levelSet(eq,[x;y],'<');
 
 % check
-res(end+1,1) = isequal(ls_,ls_true);
+assert(isequal(ls_,ls_true));
 
 
 % another level set (<)
@@ -56,10 +53,10 @@ eq = -sin(a) - cos(b);
 ls_true = levelSet(eq,[a;b],'<=');
 
 % check
-res(end+1,1) = isequal(ls_,ls_true);
+assert(isequal(ls_,ls_true));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

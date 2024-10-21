@@ -42,8 +42,8 @@ G =  [1 2 0.5 -3; 1 -1 1 -1];
 Z_true = zonotope(c,G);
 
 % check for correctness
-if ~isequal(Z,Z_true)
-    res = false;
+assert(isequal(Z,Z_true))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

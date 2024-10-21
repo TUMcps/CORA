@@ -88,6 +88,6 @@ pZ2 = polyZonotope(S.c,S.G,S.GI,S.E,S.id);
 pZ = cartProd_(pZ1,pZ2,'exact');
 
 % update constraints
-cPZ = updateConstraints(conPolyZono(pZ),cPZ,S);
+cPZ = priv_updateConstraints(conPolyZono(pZ),cPZ,S);
 
 % ------------------------------ END OF CODE ------------------------------

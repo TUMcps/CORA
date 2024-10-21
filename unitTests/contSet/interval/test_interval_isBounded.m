@@ -23,26 +23,30 @@ function res = test_interval_isBounded
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % instantiate bounded intervals
 I = interval.empty(2);
-resvec(end+1) = isBounded(I);
+assert(isBounded(I));
 
 I = interval(1);
-resvec(end+1) = isBounded(I);
+assert(isBounded(I));
 
 I = interval([-2;-1;-3],[1;1;2]);
-resvec(end+1) = isBounded(I);
+assert(isBounded(I));
 
 % instantiate unbounded intervals
 I = interval([-2;-Inf;-3],[1;1;2]);
-resvec(end+1) = ~isBounded(I);
+assert(~isBounded(I));
 
 I = interval([-2;-Inf;-3],[1;Inf;2]);
-resvec(end+1) = ~isBounded(I);
+assert(~isBounded(I));
+
+% n-d arrays
+lb = reshape([ 1.000 3.000 2.000 5.000 -3.000 0.000 2.000 1.000 0.000 -2.000 -1.000 3.000 0.000 0.000 0.000 0.000 1.000 -1.000 1.000 0.000 0.000 0.000 0.000 0.000 ], [2,2,2,3]);
+ub = reshape([ 1.500 4.000 4.000 10.000 -1.000 0.000 3.000 2.000 1.000 0.000 2.000 4.000 0.000 0.000 0.000 0.000 2.000 -0.500 3.000 2.000 0.000 0.000 0.000 0.000 ], [2,2,2,3]);
+I = interval(lb,ub);
+assert(isBounded(I));
 
 % check results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

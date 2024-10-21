@@ -31,13 +31,11 @@ function pZ = subs(pZ,pZin,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,3);
+
 %% input argument check
 % default value
 idu = pZ.id;
-
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
 
 % parse input arguments
 if nargin == 3 && ~isempty(varargin{1})
@@ -133,7 +131,7 @@ else
     for i=1:nu
         for j=3:degs(i)+1
             Y{i,j} = cell(1,2);
-            [Y{i,j}{:}] = multiply(Y{i,2}{:},Y{i,j-1}{:});
+            [Y{i,j}{:}] = priv_multiply(Y{i,2}{:},Y{i,j-1}{:});
         end
     end
     % multiply old monomials with new eq from pZin substituted in
@@ -145,7 +143,7 @@ else
         Xprod = Y{1,eM(ismember(Id,Idu(1)),i)+1}; 
         for j=2:length(Idu)
             % multiply the result of each separate idu entry
-            [Xprod{:}] = multiply(Xprod{:},Y{j,eM(ismember(Id,Idu(j)),i)+1}{:});
+            [Xprod{:}] = priv_multiply(Xprod{:},Y{j,eM(ismember(Id,Idu(j)),i)+1}{:});
         end
         % the result of the monomial computation (so substituting the
         % dimensions of pZin into dep. factors of pZ) still
@@ -161,7 +159,7 @@ else
     end
 end
 [E,G] = removeRedundantExponents(E,G);
-[E,G,c] = removeZeroExponents(E,G);
+[E,G,c] = priv_removeZeroExponents(E,G);
 
 %% reverse order to original
 % make sure that id order is reversed again: otherwise if s.o. has some ids

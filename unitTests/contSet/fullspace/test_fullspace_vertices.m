@@ -22,6 +22,9 @@ function res = test_fullspace_vertices
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % init fullspace
 n = 2;
@@ -31,6 +34,6 @@ fs = fullspace(n);
 V = vertices(fs);
 
 % check result
-res = isnumeric(V) && all(contains(fs,V));
+assert(isnumeric(V) && all(contains(fs,V)));
 
 % ------------------------------ END OF CODE ------------------------------

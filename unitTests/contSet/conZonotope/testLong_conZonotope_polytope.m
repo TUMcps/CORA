@@ -70,22 +70,8 @@ for j=1:nrTests
     % note that tolerance is quite large since computation of vertices uses
     % support functions, i.e., linear programs, and 1e-4 relates to that
     % solver tolerance
-    if n == 3
-        if ~all(contains(P,V1,'exact',1e-4))
-            throw(CORAerror('CORA:testFailed'));
-        elseif ~all(contains(cZ,V2,'exact',1e-4))
-            throw(CORAerror('CORA:testFailed'));
-        end
-    elseif n == 2
-        % 2D check for correctness using polygons (more robust handling of
-        % collinear points, see projVertices)
-        poly = polygon(V); poly1 = polygon(V1); poly2 = polygon(V2);
-        if ~isequal(poly,poly1,1e-6)
-            throw(CORAerror('CORA:testFailed'));
-        elseif ~isequal(poly,poly2,1e-6)
-            throw(CORAerror('CORA:testFailed'));
-        end
-    end
+    assertLoop(all(contains(P,V1,'exact',1e-4)),j)
+    assertLoop(all(contains(cZ,V2,'exact',1e-4)),j)
 end
 
 % ------------------------------ END OF CODE ------------------------------

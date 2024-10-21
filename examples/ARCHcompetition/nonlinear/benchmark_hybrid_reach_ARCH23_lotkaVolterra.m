@@ -91,7 +91,7 @@ disp(['Computation time: ',num2str(tComp)]);
 % Verification ------------------------------------------------------------
 
 % hyperplane at tFinal
-hp = conHyperplane([0 0 1],params.tFinal);
+hp = polytope([],[],[0 0 1],params.tFinal);
 
 % get interval enclosures of final reachable sets
 Rfinal1 = R4.timePoint.set{end};
@@ -160,7 +160,7 @@ function [R,tFinal] = aux_reachRem(HA,R,params,options,tshift,flow)
     fun = @(x) (x(1)-1)^2 + (x(2)-1)^2 - 0.161^2;
     
     % compute interval enclosure
-    int = [];
+    I = interval.empty(3);
     w = [1;1;1/1000];
     
     for i = 1:length(R)
@@ -168,39 +168,39 @@ function [R,tFinal] = aux_reachRem(HA,R,params,options,tshift,flow)
             list = splitLongestGen(diag(w)*R{i});
             for j = 1:length(list)
                 if aux_isIntersectingPCA(fun,list{j})
-                    int = int | interval(diag(1./w)*list{j});
+                    I = I | interval(diag(1./w)*list{j});
                 end
             end
         end
     end
     
     % intersect with region x < 1 or x > 1 (depending on direction of flow)
-    lb = infimum(int);
-    ub = supremum(int);
+    lb = infimum(I);
+    ub = supremum(I);
     if strcmp(flow,'inf')
         lb(1) = 1;
     elseif strcmp(flow,'sup')
         ub(1) = 1;
     end
     
-    int = interval(lb,ub);
+    I = interval(lb,ub);
     
     % contract interval to tightly enclose guard set
-    int = tightenDomain(guard,int,'forwardBackward');
+    I = tightenDomain(guard,I,'forwardBackward');
 
     % compute intersection
-    Rjump = guard & polyZonotope(int);
+    Rjump = guard & polyZonotope(I);
     
     % compute reachable set
     sys = locs(1).contDynamics;
     
-    params.tFinal = params.tFinal - tshift - infimum(int(3));
+    params.tFinal = params.tFinal - tshift - infimum(I(3));
     params.R0 = Rjump;
     params = rmfield(params,'startLoc');
     options = rmfield(options,'guardIntersect');
     
     R = reach(sys,params,options);
-    tFinal = params.tFinal + infimum(int(3));
+    tFinal = params.tFinal + infimum(I(3));
 end
 
 function res = aux_isIntersectingPCA(fun,pZ)

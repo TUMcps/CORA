@@ -26,7 +26,7 @@ function res = test_ellipsoid_generators
 % empty ellipsoid
 E = ellipsoid.empty(2);
 G = generators(E);
-res = isempty(G) && isnumeric(G) && all(size(G) == [2,0]);
+assert(isempty(G) && isnumeric(G) && all(size(G) == [2,0]));
 
 % 2D zonotope
 c = [-2; 1];
@@ -34,7 +34,7 @@ G = [1 2 0;2 3 1];
 E = G * ellipsoid(eye(3)) + c;
 G_ = generators(E);
 E_ = G_ * ellipsoid(eye(size(G_, 2))) + c;
-res(end+1,1) = E == E_;
+assert(E == E_);
 
 % degenerate ellipsoid
 c = [-2; 1; 3];
@@ -42,9 +42,9 @@ G = [1 2 0 5;2 3 1 -1;0 0 0 0];
 E = G * ellipsoid(eye(4)) + c;
 G_ = generators(E);
 E_ = G_ * ellipsoid(eye(size(G_, 2))) + c;
-res(end+1,1) = E == E_;
+assert(E == E_);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -41,7 +41,7 @@ eq_true = b^2 + d^2 - 4;
 ls_true = levelSet(eq_true,[a;b;c;d],'<=');
 
 % compare
-res = isequal(ls_,ls_true);
+assert(isequal(ls_,ls_true));
 
 
 % multiple equations
@@ -58,7 +58,7 @@ ls_ = lift(ls,N,dims);
 ls_true = levelSet([eq1;eq2],[s1;a;b;s4;c;s6;d;s8],{'<=','<'});
 
 % compare
-res(end+1,1) = isequal(ls_,ls_true);
+assert(isequal(ls_,ls_true));
 
 
 % unused variable
@@ -74,10 +74,10 @@ ls_ = lift(ls,N,dims);
 ls_true = levelSet(eq,[a;s2;b;c;s5],'==');
 
 % compare
-res(end+1,1) = isequal(ls_,ls_true);
+assert(isequal(ls_,ls_true));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

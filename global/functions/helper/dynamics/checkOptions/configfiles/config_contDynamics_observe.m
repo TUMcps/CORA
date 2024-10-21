@@ -1,14 +1,12 @@
-function [paramsList,optionsList] = config_contDynamics_observe(sys,params,options)
+function [paramsList,optionsList] = config_contDynamics_observe
 % config_contDynamics_observe - configuration file for validation of
 %    model parameters and algorithm parameters
 %
 % Syntax:
-%    [paramsList,optionsList] = config_contDynamics_observe(sys,params,options)
+%    [paramsList,optionsList] = config_contDynamics_observe
 %
 % Inputs:
-%    sys - linearSysDT or nonlinearSysDT object
-%    params - user-defined model parameters
-%    options - user-defined algorithm parameters
+%    -
 %
 % Outputs:
 %    paramsList - list of model parameters

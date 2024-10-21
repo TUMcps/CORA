@@ -1,0 +1,242 @@
+\subsubsection{Predicates}
+
+Predicates check if sets fulfill certain properties and return either \operator{true} or \operator{false}.
+
+\subsubsubsection{contains}
+
+The method \operator{contains} checks if a set is contains another set.
+Given two sets $\mathcal{S}_1,\mathcal{S}_2 \subset \Rn$, the method \operator{contains} is defined as
+	\begin{equation*}
+		\operator{contains}(\mathcal{S}_1,\mathcal{S}_2) = 
+		\begin{cases}
+			\operator{true}, & \mathcal{S}_2 \subseteq \mathcal{S}_1, \\
+			\operator{false} & \mathrm{otherwise}.
+		\end{cases}
+	\end{equation*}
+In addition, the method \operator{contains} can be applied to check if a point or a point cloud (represented as a matrix whose columns are individual points) is located inside a set. For point clouds, we return the result of the containment check for each individual point in a matrix. Since containment checks can be computationally expensive, we implemented over-approximative algorithms for some set representations (see \cref{tab:in}). If the over-approximative algorithm returns \operator{true}, it is guaranteed that $\mathcal{S}_2$ is contained in $\mathcal{S}_1$. However, if the over-approximative algorithm returns \operator{false}, the set $\mathcal{S}_2$ could still be contained in $\mathcal{S}_1$. To execute the over-approximative instead of the exact algorithm, one has to add the flag 'approx':
+\begin{verbatim}
+	res = contains(S1,S2,'approx');
+\end{verbatim}
+
+Let us demonstrate the method $\operator{contains}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_in}
+\end{minipage}
+\begin{minipage}[t]{0.2\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}
+	Command Window:	
+		
+	res1 = true
+	
+res2 = true
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-predicates/example_contains}
+\end{minipage}
+\end{center}
+
+\begin{table}[htb]
+	\centering
+	\footnotesize
+	\caption{Containment checks $\mathcal{S}_2 \subseteq \mathcal{S}_1$ implemented by the method \operator{contains}($\mathcal{S}_1,\mathcal{S}_2$) in CORA. The column headers represent the set $\mathcal{S}_1$ and the row headers represent the set $\mathcal{S}_2$. The shortcuts e (exact check) and o (over-approximation) are used. If both, an exact and an over-approximative algorithm are implemented, we write e/o.}
+	\label{tab:in}
+	\begin{tabular}{ l c c c c c c c c c c c c}
+		\toprule
+					 & \textbf{I} & \textbf{Z} & \textbf{P} & \textbf{cZ} & \textbf{zB} & \textbf{E} & \textbf{C} & \textbf{pZ} & \textbf{cPZ} & \textbf{levelSet} \\
+		\midrule
+		\textbf{interval} (I)       		  & e & e/o & e & e/o & e/o & e	& e & o & o & o \\
+		\textbf{zonotope} (Z)      		    & e & e/o & e & e/o & e/o & e	& e & o & o & o \\
+		\textbf{polytope} (P)   	        & e & e/o & e & e/o & e/o & e	& e & o & o & o \\
+		\textbf{conZonotope} (cZ)		      & e & e/o & e & e/o & e/o & e	& e & o & o & o \\
+		\textbf{zonoBundle} (zB)  	      	  & e & e/o & e & e/o & e/o & e	& e & o & o & o \\
+		\textbf{ellipsoid} (E)       	      & e & e   & e & e   & e   & e & o & o & o & o \\
+		\textbf{capsule} (C)				  & e & e   & e & e   & e   & o	& e & o & o & o \\
+		\textbf{polyZonotope} (pZ)		 	  & o & o   & o & o   & o   & o	& o & o & o & o \\
+		\textbf{conPolyZono} (cPZ)			  & o & o   & o & o   & o   & o	& o & o & o & o \\
+		\textbf{taylm}     	                  & o & o   & o & o   & o   & o	& o & o & o & o \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
+
+\subsubsubsection{isIntersecting}
+
+The method \operator{isIntersecting} checks if two sets intersect. Given two sets $\mathcal{S}_1,\mathcal{S}_2 \subset \Rn$, the method \operator{isIntersecting} is defined as
+	\begin{equation*}
+		\operator{isIntersecting}(\mathcal{S}_1,\mathcal{S}_2) =
+		\begin{cases}
+			\operator{true}, & \mathcal{S}_1 \cap \mathcal{S}_2 \neq \emptyset, \\
+			\operator{false} & \mathrm{otherwise}.
+		\end{cases}
+	\end{equation*}	
+Since intersection checks can be computationally expensive, we implemented over-approximative algorithms for some set representations (see \cref{tab:isIntersecting}). If the over-approximative algorithm returns \operator{false}, it is guaranteed that the sets do not intersect. However, if the over-approximative algorithm returns \operator{true}, the sets could possibly not intersect. To execute the over-approximative instead of the exact algorithm, one has to add the flag 'approx':
+\begin{verbatim}
+	res = isIntersecting(S1,S2,'approx');
+\end{verbatim}
+
+Let us demonstrate the method $\operator{isIntersecting}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_isIntersecting}
+\end{minipage}
+\begin{minipage}[t]{0.2\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}
+	Command Window:
+		
+	res = true
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-predicates/example_isIntersecting}
+\end{minipage}
+\end{center}
+
+\begin{table}[htb]
+	\centering
+	\footnotesize
+	\caption{Intersection checks implemented by the function \operator{isIntersecting}($\mathcal{S}_1,\mathcal{S}_2$) in CORA. The shortcuts e (exact check) and o (over-approximation) are used. If both, an exact and an over-approximative algorithm are implemented, we write e/o.}
+	\label{tab:isIntersecting}
+	\begin{tabular}{ l c c c c c c c c c c c c c}
+		\toprule
+					 & \textbf{I} & \textbf{Z} & \textbf{P} & \textbf{cZ} & \textbf{zB} & \textbf{E} & \textbf{C} & \textbf{tay} & \textbf{pZ} & \textbf{cPZ} & \textbf{hs} & \textbf{cHp} & \textbf{ls} \\
+		\midrule
+		\textbf{interval} (I)       		  & e   & e/o & e/o & e/o & e/o & o & o & o & o & o & e & e/o & o\\
+		\textbf{zonotope} (Z)      		      & e/o & e/o & e/o & e/o & e/o & o & o & o & o & o & e & e/o & o\\
+		\textbf{polytope} (P)   	          & e/o & e/o & e   & e/o & e/o & o & o & o & o & o & e & e/o & o\\
+		\textbf{conZonotope} (cZ)		      & e/o & e/o & e/o & e/o & e/o & o & o & o & o & o & e & e/o & o\\
+		\textbf{zonoBundle} (zB)  	      	  & e/o & e/o & e/o & e/o & e/o & o & o & o & o & o & e & e/o & o\\
+		\textbf{ellipsoid} (E)       	      & o   & o   & o   & o   & o   & e & o & o & o & o & e & o & o\\
+		\textbf{capsule} (C)				  & o   & o   & o   & o   & o   & o & e & o & o & o & e & o & o\\
+		\textbf{taylm} (tay)    	          & o   & o   & o   & o   & o   &   &   &   & o & o & o & o & o\\
+		\textbf{polyZonotope} (pZ)		      & o   & o   & o   & o   & o   &   &   & o & o & o & o & o & o\\
+		\textbf{conPolyZono} (cPZ)		      & o   & o   & o   & o   & o   & o & o & o & o & o & o & o & o\\
+		\textbf{levelSet} (ls)		  		  & o   & o   & o   & o   & o   & o & o & o & o & o &   &  & \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
+
+\subsubsubsection{isFullDim}
+
+The method \operator{isFullDim} checks if a set is full-dimensional, that is, if the dimension of its affine hull is equal to the dimension of its ambient space. Given a set $\mathcal{S} \subset \Rn$, the method \operator{isFullDim} is defined as
+	\begin{equation*}
+		\operator{isFullDim}(\mathcal{S}) =
+		\begin{cases}
+			\operator{true}, & \exists x \in \mathcal{S}, \epsilon > 0: ~ x + \epsilon \mathcal{B} \subseteq \mathcal{S}, \\
+			\operator{false} & \mathrm{otherwise,}
+		\end{cases}
+	\end{equation*}	
+where $\mathcal{B} = \{x ~|~ ||x||_2 \leq 1 \} \subset \mathbb{R}^n$ is the unit ball. Let us demonstrate the method $\operator{isFullDim}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_isFullDim}
+\end{minipage}
+\begin{minipage}[t]{0.25\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}	
+	Command Window:
+	
+	res = true
+	
+	res = false
+	\end{verbatim}
+\end{minipage}
+\end{center}
+
+
+
+
+\subsubsubsection{isequal}
+
+The method \operator{isequal} checks if two sets are identical. Optionally, a tolerance can be set to reduce the effect of floating-point deviations. Given two sets $\mathcal{S}_1,\mathcal{S}_2 \subset \Rn$, the method \operator{isequal} is defined as
+	\begin{equation*}
+		\operator{isequal}(\mathcal{S}_1,\mathcal{S}_2,\operator{tol}) =
+		\begin{cases}
+			\operator{true}, & \mathcal{S}_1 = \mathcal{S}_2 \\
+			\operator{false} & \mathrm{otherwise}.
+		\end{cases}
+	\end{equation*}	
+Let us demonstrate the method $\operator{isequal}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_isequal}
+\end{minipage}
+\begin{minipage}[t]{0.25\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}	
+	Command Window:
+	
+	res = true
+	\end{verbatim}
+\end{minipage}
+\end{center}
+
+\vspace{1cm}
+
+\subsubsubsection{representsa} \label{sec:representsa}
+
+The method \operator{representsa} checks if a set can equivalently be represented by a different set, e.g. a special case.
+Given a set $\mathcal{S} \subset \Rn$ and a string \operator{type}, the method \operator{representsa} is defined as
+	\begin{equation*}
+		\operator{representsa}(\mathcal{S},\operator{type},\operator{tol}) =
+		\begin{cases}
+			\operator{true}, & \mathcal{S} \text{ can be represented by } \operator{type}, \\
+			\operator{false} & \mathrm{otherwise},
+		\end{cases}
+	\end{equation*}
+where \operator{type} is the class name of another set representation or a special case, e.g. \operator{'point'}.
+Let us demonstrate the method \operator{representsa} by an example to check if a given set is empty:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_isempty}
+\end{minipage}
+\begin{minipage}[t]{0.2\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}
+	Command Window:
+		
+	res = true
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-predicates/example_isempty}
+\end{minipage}
+\end{center}
+
+Note: This function replaces the function \operator{isempty}.
+The main reason is that \operator{isempty} is also called implicitly by MATLAB in various circumstances.
+For example, \operator{isempty} is called on each workspace variable at a breakpoint,
+which can lead to long loading times if the empty check is expensive for a given set representation.
+

@@ -15,8 +15,8 @@ function cPZ = conPolyZono(C)
 %    cPZ = conPolyZono(C);
 %
 %    figure; hold on; xlim([-4,4]); ylim([-4,4]);
-%    plot(C,[1,2],'FaceColor','r');
-%    plot(cPZ,[1,2],'FaceColor','b','Splits',12);
+%    plot(C,[1,2],'EdgeColor','r');
+%    plot(cPZ,[1,2],'EdgeColor','b','Splits',12);
 %
 % Other m-files required: none
 % Subfunctions: none

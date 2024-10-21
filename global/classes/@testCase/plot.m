@@ -36,6 +36,11 @@ function han = plot(obj,varargin)
 
 % convert to simRes object
 simRes = simResult(obj);
+if isempty(obj.x)
+    if ~any(strcmp(varargin,"Traj"))
+        varargin = [varargin {'Traj','y'}];
+    end
+end
 
 % call plot function of simRes object
 han = plot(simRes,varargin{:});

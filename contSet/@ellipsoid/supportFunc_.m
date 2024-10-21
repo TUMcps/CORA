@@ -24,7 +24,7 @@ function [val,x] = supportFunc_(E,dir,type,varargin)
 %   
 %    figure; hold on; box on;
 %    plot(E,[1,2],'b');
-%    plot(conHyperplane(dir,val),[1,2],'g');
+%    plot(polytope([],[],dir',val),[1,2],'g');
 %    plot(x(1),x(2),'.r','MarkerSize',20);
 %
 % References: 
@@ -48,8 +48,10 @@ function [val,x] = supportFunc_(E,dir,type,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % set is just a point
-if representsa_(E+(-E.q),'origin',eps)
-    val = dir'*E.q; x = E.q; return
+if representsa_(E,'point',eps)
+    val = dir'*E.q;
+    x = E.q;
+    return
 end
 
 if strcmp(type,'upper')

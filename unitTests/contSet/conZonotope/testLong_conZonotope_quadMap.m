@@ -29,7 +29,7 @@ function res = testLong_conZonotope_quadMap
 % ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
-
+tol = 1e-12;
 
 % TEST 1: Random Test (quadratic multiplication) --------------------------
 
@@ -74,8 +74,6 @@ for k = 1:3
 
     % extract inequality constraints
     constraints(P);
-    A = P.A;
-    b = P.b;
 
 %     % visualize result
 %     plot(points_(1,:),points_(2,:),'.k');
@@ -83,11 +81,7 @@ for k = 1:3
 %     plot(cZquad,[1,2],'r');
 
     % check if all points are located inside the resulting conZonotope
-    for i = 1:size(points_,2)
-       if ~all(A*points_(:,i) < b | withinTol(A*points_(:,i),b))
-           throw(CORAerror('CORA:testFailed'));
-       end
-    end
+    assert(all(contains_(P,points_,'exact',tol)));
 end
 
 
@@ -112,11 +106,9 @@ for k = 2:5
     cZquad = quadMap(cZ,Q);
     
     % compare the results
-    if ~compareMatrices( ...
-            [Zquad.c,Zquad.G], [cZquad.c,cZquad.G]) || ...
-        ~isempty(cZquad.A) || ~isempty(cZquad.b)
-        throw(CORAerror('CORA:testFailed'));
-    end  
+    assertLoop(compareMatrices([Zquad.c,Zquad.G], [cZquad.c,cZquad.G]),k)
+    assertLoop(isempty(cZquad.A),k)
+    assertLoop(isempty(cZquad.b),k)
 end
 
 
@@ -183,8 +175,6 @@ for k = 1:3
 
     % extract inequality constraints
     constraints(P);
-    A = P.A;
-    b = P.b;
 
 %     % visualize result
 %     plot(points_(1,:),points_(2,:),'.k');
@@ -192,11 +182,7 @@ for k = 1:3
 %     plot(cZquad,[1,2],'r');
 
     % check if all points are located inside the resulting conZonotope
-    for i = 1:size(points_,2)
-       if ~all(A*points_(:,i) < b | withinTol(A*points_(:,i),b))
-           throw(CORAerror('CORA:testFailed'));
-       end
-    end
+    assert(all(contains_(P,points_,'exact',tol)));
 end
 
 % ------------------------------ END OF CODE ------------------------------

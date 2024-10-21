@@ -24,25 +24,25 @@ function res = test_removeDuplicates()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
+res = true;
 
 % too few vertices
 V = [1 0]';
 V_ = removeDuplicates(V);
-res(end+1,1) = compareMatrices(V,V_);
+assert(compareMatrices(V,V_));
 
 % init vertices
 V = [-1 0; 0 0; 1 0; 1 0]';
 V_ = removeDuplicates(V);
-res(end+1,1) = compareMatrices(V_,[-1 0; 0 0; 1 0]');
+assert(compareMatrices(V_,[-1 0; 0 0; 1 0]'));
 
 % init vertices
 V = [-1 0 1; 0 0 1; 1 0 1; 0 0 1; 1 0 1; 2 0 0; 0 0 1]';
 V_ = removeDuplicates(V);
-res(end+1,1) = compareMatrices(V_,[-1 0 1; 0 0 1; 1 0 1; 2 0 0]');
+assert(compareMatrices(V_,[-1 0 1; 0 0 1; 1 0 1; 2 0 0]'));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,12 +1,12 @@
 function HA = lotkaVolterra()
-% lotkaVolterra - hybrid Lotka-Volterra model with tangential guard crossing
-%               (see Sec. 3.5 in [1])
+% lotkaVolterra - hybrid Lotka-Volterra model with tangential guard
+%    crossing (see Sec. 3.5 in [1])
 %
 % Syntax:  
 %    HA = lotkaVolterra()
 %
 % Inputs:
-%    ---
+%    -
 %
 % Outputs:
 %    HA - hybridAutomaton object
@@ -14,67 +14,72 @@ function HA = lotkaVolterra()
 % References:
 %    [1] L. Geretti et al., "ARCH-COMP20 Category Report: Continuous and
 %        Hybrid Systems with Nonlinear Dynamics", 2020
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       19-June-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-    % Location Outside ----------------------------------------------------
-    
-    % dynamics
-    sys = nonlinearSys(@lotkaVolterraDyn);
+% Location Outside --------------------------------------------------------
 
-    % invariant set
-    syms x y t
-    vars = [x;y;t];
-    eq = -(x-1)^2 - (y-1)^2 + 0.161^2;
+% dynamics
+sys = nonlinearSys(@lotkaVolterraDyn);
 
-    inv = levelSet(eq,vars,'<=');
+% invariant set
+syms x y t
+vars = [x;y;t];
+eq = -(x-1)^2 - (y-1)^2 + 0.161^2;
 
-    % transition
-    guard = levelSet(eq,vars,'==');
-    reset.A = eye(3); reset.c = zeros(3,1);
+inv = levelSet(eq,vars,'<=');
 
-    trans = transition(guard, reset, 2);
+% transition
+guard = levelSet(eq,vars,'==');
+reset = linearReset.eye(3);
 
-    % location
-    loc(1) = location('outside', inv, trans, sys);
+trans = transition(guard, reset, 2);
+
+% location
+loc(1) = location('outside', inv, trans, sys);
 
 
-    % Location Inside -----------------------------------------------------
+% Location Inside ---------------------------------------------------------
 
-    % dynamics
-    sys = nonlinearSys(@lotkaVolterraDyn);
+% dynamics
+sys = nonlinearSys(@lotkaVolterraDyn);
 
-    % invariant set
-    syms x y t
-    vars = [x;y;t];
-    eq = (x-1)^2 + (y-1)^2 - 0.161^2;
+% invariant set
+syms x y t
+vars = [x;y;t];
+eq = (x-1)^2 + (y-1)^2 - 0.161^2;
 
-    inv = levelSet(eq,vars,'<=');
+inv = levelSet(eq,vars,'<=');
 
-    % location
-    loc(2) = location('inside', inv, transition(), sys);
-    
-    % cannot model transition because of infinite switching
-    % transition
-%     guard = levelSet(eq,vars,'==');
-%     reset.A = eye(3); reset.c = zeros(3,1);
+% location
+loc(2) = location('inside', inv, transition(), sys);
+
+% cannot model transition because of infinite switching transition
+% guard = levelSet(eq,vars,'==');
+% reset = linearReset(eye(3),zeros(3,1),zeros(3,1));
 % 
-%     trans = transition(guard, reset, 1);
+% trans = transition(guard, reset, 1);
 % 
-%     % location
-%     loc(2) = location('inside', inv, trans, sys);
+% % location
+% loc(2) = location('inside', inv, trans, sys);
 
 
-    % Hybrid Automaton ----------------------------------------------------
-
-    HA = hybridAutomaton(loc);
+% compose hybrid automaton
+HA = hybridAutomaton('lotkaVolterra',loc);
     
 end
+
 
 % Auxiliary Functions -----------------------------------------------------
 
@@ -86,4 +91,4 @@ function f = lotkaVolterraDyn(x,u)
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

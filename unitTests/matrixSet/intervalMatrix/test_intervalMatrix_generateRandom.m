@@ -36,24 +36,24 @@ res = all(dim(intMat) == dims);
 % center given
 c = [2 3 4; 5 6 7];
 intMat = intervalMatrix.generateRandom('Center',c);
-res(end+1,1) = all(all(withinTol(center(intMat.int),c)));
+assert(all(all(withinTol(center(intMat.int),c))));
 
 % max radius given
 r = 1;
 intMat = intervalMatrix.generateRandom('MaxRadius',r);
-res(end+1,1) = all(all(rad(intMat.int) < r)) | all(all(withinTol(rad(intMat.int),r,1e-10)));
+assert(all(all(rad(intMat.int) < r)) | all(all(withinTol(rad(intMat.int),r,1e-10))));
 
 % dimension and center given
 intMat = intervalMatrix.generateRandom('Dimension',dims,'Center',c);
-res(end+1,1) = all(dim(intMat) == dims) && all(all(withinTol(center(intMat.int),c)));
+assert(all(dim(intMat) == dims) && all(all(withinTol(center(intMat.int),c))));
 
 % center and max radius given
 intMat = intervalMatrix.generateRandom('Center',c,'MaxRadius',r);
-res(end+1,1) = all(all(withinTol(center(intMat.int),c))) && ...
-    ( all(all(rad(intMat.int) < r)) | all(all(withinTol(rad(intMat.int),r,1e-10))) );
+assert(all(withinTol(center(intMat.int),c), "all"))
+assert( all(all(rad(intMat.int) < r)) | all(all(withinTol(rad(intMat.int),r,1e-10))) );
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

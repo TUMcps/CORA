@@ -1,17 +1,16 @@
-function han = getfcn(obj,options)
+function han = getfcn(sys,params)
 % getfcn - returns the function handle of the continuous function specified
 %    by the linear system object
 %
 % Syntax:
-%    han = getfcn(obj)
+%    han = getfcn(sys)
 %
 % Inputs:
-%    obj - linParamSys object
+%    sys - linParamSys object
+%    params - model parameters
 %
 % Outputs:
 %    han - function handle
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,8 +25,6 @@ function han = getfcn(obj,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-han = @(t,x) obj.sampleMatrix.A*x+double(obj.B*options.u);
-
-end
+han = @(t,x) sys.sampleMatrix.A*x+double(sys.B*params.u);
 
 % ------------------------------ END OF CODE ------------------------------

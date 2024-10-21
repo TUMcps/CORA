@@ -6,10 +6,10 @@ function [completed,res,tTotal] = example_neuralNet_reach_10_spacecraftDocking
 %    completed = example_neuralNet_reach_10_spacecraftDocking()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
-%    completed - boolean
+%    completed - true/false
 %    res - verification result
 %    tTotal - total time
 %
@@ -47,10 +47,10 @@ options.zonotopeOrder = 200;
 options.errorOrder = 10;
 options.intermediateOrder = 50;
 
-% Parameters for NN evaluation --------------------------------------------
+% Options for NN evaluation -----------------------------------------------
 
-evParams = struct();
-evParams.poly_method = "singh";
+options.nn = struct();
+options.nn.poly_method = "singh";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -61,7 +61,7 @@ sys = nonlinearSys(f);
 % load neural network controller
 % [4, 256, 256, 2]
 nn = neuralNetwork.readONNXNetwork('controller_spacecraftDocking.onnx');
-% nn.evaluate(params.R0, evParams);
+% nn.evaluate(params.R0, options);
 % nn.refine(2, "layer", "both", params.R0.c, true);
 
 
@@ -111,7 +111,7 @@ else
     % Reachability Analysis -----------------------------------------------
 
     tic
-    R = reach(sys, params, options, evParams);
+    R = reach(sys, params, options);
     tComp = toc;
     disp(['Time to compute reachable set: ', num2str(tComp)]);
 
@@ -137,14 +137,14 @@ else
     Rend_isSafe = quadMap(Rend_isSafe, Q);
     Rend_isSafe = [1 1 0 0; 0 0 1 1] * Rend_isSafe;
 
-    evParams_isSafe = struct();
-    evParams_isSafe.bound_approx = false;
-    evParams_isSafe.reuse_bounds = true;
-    evParams_isSafe.add_approx_error_to_GI = true;
-    evParams_isSafe.remove_GI = true;
-    evParams_isSafe.num_generators = 10000;
-    evParams_isSafe.max_bounds = 1;
-    % evParams_isSafe.force_approx_lin_at = 0;
+    options_isSafe = struct();
+    options_isSafe.nn.bound_approx = false;
+    options_isSafe.nn.reuse_bounds = true;
+    options_isSafe.nn.add_approx_error_to_GI = true;
+    options_isSafe.nn.remove_GI = true;
+    options_isSafe.nn.num_generators = 10000;
+    options_isSafe.nn.max_bounds = 1;
+    % options_isSafe.nn.force_approx_lin_at = 0;
 
     nn_isSafe = neuralNetwork({ ...
         nnRootLayer()} ...
@@ -153,7 +153,7 @@ else
     nn_isSafe.layers{1}.l = max([0;0], I.inf);
     nn_isSafe.layers{1}.u = I.sup;
     nn_isSafe.layers{1}.order = 2;
-    Rend_isSafe = nn_isSafe.evaluate(Rend_isSafe, evParams_isSafe);
+    Rend_isSafe = nn_isSafe.evaluate(Rend_isSafe, options_isSafe);
 
 %     Rend_isSafe = [v1 0; 0 1] * Rend_isSafe;
     Rend_isSafe = Rend_isSafe + [v0;0];

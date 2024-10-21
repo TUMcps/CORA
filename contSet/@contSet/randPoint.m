@@ -38,11 +38,7 @@ function x = randPoint(S,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
-if nargin < 1
-    throw(CORAerror('CORA:notEnoughInputArgs',1));
-elseif nargin > 4
-    throw(CORAerror('CORA:tooManyInputArgs',4));
-end
+narginchk(1,4);
 
 % set default values for number of samples, method, and probability
 [N,type,pr] = setDefaultValues({1,'standard',0.7},varargin);
@@ -56,7 +52,7 @@ end
 % check input arguments
 inputArgsCheck({{S,'att','contSet'};
                  checkN; % see above...
-                {type,'str',{'standard','extreme','gaussian','uniform','uniform:hitAndRun','uniform:billiardWalk','radius','boundary'}};
+                {type,'str',{'standard','extreme','gaussian','uniform','uniform:hitAndRun','uniform:ballWalk','uniform:billiardWalk','radius','boundary'}};
                 {pr,'att','numeric',{'<=',1,'>=',0}}});
 
 % if N = 'all', then type has to be 'extreme' (nargin ensures that type has

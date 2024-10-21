@@ -1,4 +1,4 @@
-function [res, R, simRes] = verify(obj, spec, params, options, evParams, varargin)
+function [res, R, simRes] = verify(obj, spec, params, options, varargin)
 % verify - tries to verify the specification with the given params/options
 %    1. simulation random rusn
 %    2. check violations in simulations
@@ -7,15 +7,14 @@ function [res, R, simRes] = verify(obj, spec, params, options, evParams, varargi
 %    3. compute reachable set
 %
 % Syntax:
-%    [res, R, simRes] = verify(obj, spec, params, options, evParams)
-%    res = verify(obj, spec, params, options, evParams)
+%    [res, R, simRes] = verify(obj, spec, params, options)
+%    res = verify(obj, spec, params, options)
 %
 % Inputs:
 %    obj - neurNetContrSys object
 %    spec - object of class specification
 %    params - parameter defining the reachability problem
-%    options - options for the computation of reachable sets
-%    evParams - parameters for neural network evaluation
+%    options - options for the computation of reachable sets and network evaluation
 %    verbose - verbose output
 %
 % Outputs:
@@ -31,16 +30,13 @@ function [res, R, simRes] = verify(obj, spec, params, options, evParams, varargi
 % Authors:       Tobias Ladner
 % Written:       22-March-2023
 % Last update:   20-July-2023 (TL, check early stop)
+%                02-May-2024 (TL, bug fix violating runs)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
-if nargin < 5
-    throw(CORAerror("CORA:notEnoughInputArgs", 5))
-elseif nargin > 6
-    throw(CORAerror('CORA:tooManyInputArgs', 6))
-end
+narginchk(4,5);
 verbose = setDefaultValues({false}, varargin);
 
 inputArgsCheck({ ...
@@ -48,7 +44,6 @@ inputArgsCheck({ ...
     {spec, 'att', 'specification'}; ...
     {params, 'att', 'struct'}; ...
     {options, 'att', 'struct'}; ...
-    {evParams, 'att', 'struct'}; ...
     {verbose, 'att', 'logical', 'scalar'}; ...
 })
 
@@ -83,14 +78,20 @@ end
 % Reachability Analysis ---------------------------------------------------
 
 tic
-R = reach(obj, params, options, evParams, spec);
+if isVio
+    % do not include spec while verifying violating run
+    R = reach(obj, params, options);
+else
+    % verify entire initial set; stop early in case of violation
+    R = reach(obj, params, options, spec);
+end
 tComp = toc;
 if verbose
     disp(['Time to compute reachable set: ', num2str(tComp)]);
 end
 
 RtFinal = R(end).timePoint.time{end};
-if RtFinal ~= params.tFinal
+if ~isVio && RtFinal ~= params.tFinal
     fprintf("Reachability analysis stopped early at t=%g.\n",RtFinal)
     res = 'UNKNOWN';
     return
@@ -108,7 +109,7 @@ end
 % Finish ------------------------------------------------------------------
 
 if isVio && ~isVeri
-    res = 'VIOLATED';
+    res = 'FALSIFIED';
 elseif isVeri
     res = 'VERIFIED';
 else

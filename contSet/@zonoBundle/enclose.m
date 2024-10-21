@@ -37,36 +37,33 @@ function zB = enclose(zB,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,3);
+
 % parse input arguments
 if nargin == 2
     S = varargin{1};
 elseif nargin == 3
     % evaluate M*zB + Splus
     S = (varargin{1}*zB) + varargin{2};
-else
-    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
-
 if isa(S,'zonoBundle')
-
     % compute enclosure for each zonotope pair
     for i=1:zB.parallelSets
         zB.Z{i} = enclose(zB.Z{i},S.Z{i});
     end
+    return
+end
 
-elseif isa(S,'zonotope')
-
+if isa(S,'zonotope')
     % compute enclosure for each zonotope
     for i=1:zB.parallelSets
         zB.Z{i} = enclose(zB.Z{i},S);
     end
-
-else
-
-    % not implemented for other contSet classes
-    throw(CORAerror('CORA:noops',zB,S));
-
+    return
 end
+
+% not implemented for other contSet classes
+throw(CORAerror('CORA:noops',zB,S));
 
 % ------------------------------ END OF CODE ------------------------------

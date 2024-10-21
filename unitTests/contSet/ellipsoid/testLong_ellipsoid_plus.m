@@ -48,9 +48,8 @@ for i=[2,10:5:15]
 %             end
             %check if Yi+Yj \in E
             Yres = sumPoints(Y1,Y2);
-            if ~contains(Eo,Yres)
-                res = false; return
-            end
+            assertLoop(contains(Eo,Yres),i,j)
+
         catch ME
             if strcmp(ME.identifier,'CORA:solverIssue')
                 disp('Randomly generated ellipsoids caused solver issues! Ignoring...');

@@ -1,0 +1,37 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent         
+ $$\color{mgreen}$% sets S1,S2, and point p$\color{black}$$\\
+ $S1 = zonotope([0 1 1 0;$\color{mblue}$ ...$\color{black}$$\\
+ $               0 1 0 1]);$\\
+ $S2 = interval([-1;-1],[1;1]);$\\
+ $p = [0.5;0.5];$\\
+ $$\\
+ $$\color{mgreen}$% containment check$\color{black}$$\\
+ $res1 = contains(S1,S2)$\\
+ $res2 = contains(S1,p)$\\ 
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

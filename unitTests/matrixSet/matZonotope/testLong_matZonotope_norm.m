@@ -23,6 +23,9 @@ function res = testLong_matZonotope_norm
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % create interval matrix
 % center
@@ -101,6 +104,6 @@ res_1 = all(n_1_sample <= n_1*1+1e-8);
 res_2 = all(n_inf_sample <= n_inf*1+1e-8);
 
 %result of different computation techniques
-res = res_1 && res_2;
+assert(res_1 && res_2);
 
 % ------------------------------ END OF CODE ------------------------------

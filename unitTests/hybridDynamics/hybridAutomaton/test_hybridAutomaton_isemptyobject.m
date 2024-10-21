@@ -24,20 +24,18 @@ function res = test_hybridAutomaton_isemptyobject
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty automaton
-res = isemptyobject(hybridAutomaton());
+assert(isemptyobject(hybridAutomaton()));
 
 % invariant
 inv_2D_poly = polytope([-1,0],0);
 inv_3D_int = interval([-1;0;0],[1;2;3]);
 
 % transitions
-c = [-1;0]; d = 0; C = [0,1]; D = 0;
-guard = conHyperplane(c,d,C,D);
-reset = struct('A',[1,0;0,-0.75;0,-1],'c',[0;0;0]);
+guard = polytope([0 1],0,[-1 0],0);
+reset = linearReset([1,0;0,-0.75;0,-1]);
 trans_2D_3D = transition(guard,reset,2);
-c = [-1;0;0]; d = 0; C = [0,0,1]; D = 0;
-guard = conHyperplane(c,d,C,D);
-reset = struct('A',zeros(2,3),'c',zeros(2,1));
+guard = polytope([0 0 1],0,[-1 0 0],0);
+reset = linearReset(zeros(2,3));
 trans_3D_2D = transition(guard,reset,1);
 
 % flow equation
@@ -50,13 +48,13 @@ loc2 = location(inv_3D_int,trans_3D_2D,dynamics_3D_lin);
 
 % non-empty hybrid automaton
 HA = hybridAutomaton([loc1;loc2]);
-res(end+1,1) = ~isemptyobject(HA);
+assert(~isemptyobject(HA));
 
 % array of hybrid automata
-res(end+1,1) = all(isemptyobject([hybridAutomaton(),HA]) == [true false]);
+assert(all(isemptyobject([hybridAutomaton(),HA]) == [true false]));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

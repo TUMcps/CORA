@@ -1,0 +1,61 @@
+\subsubsection{Linear Systems with Uncertain Parameters} \label{sec:linearParamSystems}
+
+This class extends linear systems by uncertain parameters. We provide two implementations, one for uncertain parameters that are fixed over time and one for parameters that can arbitrarily vary over time. For the case with fixed parameters, a linear parametric system is defined as
+\begin{equation*}
+	\dot{x}(t) = A(p)~x(t) + B(p)~u(t), ~~ p \in \mathcal{P},
+\end{equation*}
+which can be equivalently formulated as
+\begin{equation}
+	\begin{split} \label{eq:linParamSysConst}
+	& \dot{x}(t) = A x(t) + B u(t), ~~ A \in \mathcal{A},~B \in \mathcal{B}, \\
+	& \text{with} ~~ \mathcal{A} = \{ A(p) ~|~ p \in \mathcal{P} \},~ \mathcal{B} = \{ B(p) ~|~ p \in \mathcal{P} \},
+	\end{split}
+\end{equation}
+where $x(t) \in \Rn$ is the system state, $u(t)\in \R^m$ is the system input, $p \in \R^p$ is the parameter vector, and $\mathcal{P} \subset \R^p$ is the set of parameters. For the case with fixed parameters, a linear parametric system is defined as
+\begin{equation*}
+	\dot{x}(t) = A(t)~x(t) + B(t)~u(t), ~~ A(t) \in \mathcal{A},~B(t) \in \mathcal{B},
+\end{equation*}	
+where $\mathcal{A}$ and $\mathcal{B}$ are defined as in \eqref{eq:linParamSysConst}. Linear parametric systems are implemented by the class \texttt{linParamSys}. An object of class \texttt{linParamSys} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \texttt{sys} = \texttt{linParamSys}(\mathcal{A},\mathcal{B}), \\
+		& \texttt{sys} = \texttt{linParamSys}(\mathcal{A},\mathcal{B},\texttt{type}), \\
+		& \texttt{sys} = \texttt{linParamSys}(\texttt{name},\mathcal{A},\mathcal{B}), \\
+		& \texttt{sys} = \texttt{linParamSys}(\texttt{name},\mathcal{A},\mathcal{B},\texttt{type}),
+	\end{split}
+\end{equation*} 
+where \texttt{name} is a string specifying the name of the system, $\mathcal{A},\mathcal{B}$ are defined as in \eqref{eq:linParamSysConst}, and \texttt{type} is a string specifying whether the parameters are constant over time (\texttt{'constParam'}) or time-varying (\texttt{'varParam'}). The default value for \texttt{type} is \texttt{'constParam'}. The matrix sets $\mathcal{A}$ and $\mathcal{B}$ can be represented by any of the matrix set representations introduced in \cref{sec:matrixSetRepresentationsAndOperations}. Let us demonstrate the class \texttt{linParamSys} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.48\textwidth}
+	\vspace{22pt}
+	\begin{equation*}
+	\begin{bmatrix} \dot x_1 \\ \dot x_2 \end{bmatrix} = \begin{bmatrix} -2 & 0 \\ [1,2] & -3 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} + \begin{bmatrix} 1 \\ 1 \end{bmatrix} u
+\end{equation*}
+\end{minipage}
+\begin{minipage}[t]{0.48\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_linParamSys}
+\end{minipage}
+\end{center}
+
+An alternative for fixed parameters is to define each parameter as a state variable $\tilde{x}_i$ with the trivial dynamics $\dot{\tilde{x}}_i = 0$. For time-varying parameters, one can specify the parameter as an uncertain input. In both cases, the result is a nonlinear system that can be handled as described in \cref{sec:nonlinearSystems}. The question of whether to compute the solution with the dedicated approach presented in this section or with the approach for nonlinear systems has not yet been thoroughly investigated.
+
+
+\subsubsubsection{Operation \texttt{reach}}
+
+Reachability analysis for linear parametric  systems is very similar to reachability analysis of linear systems with known parameters. The main difference is that we have to take into account an uncertain state matrix $\mathcal{A}$ and an uncertain input matrix $\mathcal{B}$. We apply the algorithm from \cite{Althoff2007c} to calculate the reachable set of linear parametric systems.
+
+The settings for reachability analysis are specified as fields of the struct \texttt{options} (see \cref{sec:reach}). For linear systems, the following settings are available:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{11cm}}	
+	--~\texttt{.timeStep} & time step size for one reachability time step. \\
+	--~\texttt{.taylorTerms} & number of Taylor terms for the computation of the exponential matrix $e^{\mathcal{A}\Delta t}$ (see \cite[Theorem 3.2]{Althoff2010a}). \\
+	--~\texttt{.zonotopeOrder} & upper bound for the zonotope order $\rho$ (see \cref{sec:zonotope}).\\
+	--~\texttt{.reductionTechnique} & string specifying the method used to reduce the zonotope order (see \cref{tab:zono_reduction}). The default value is \texttt{'girard'}. \\
+	--~\texttt{.intermediateTerms} & upper bound for the zonotope order $\rho$ (see \cref{sec:zonotope}) in internal computations of the algorithm. \\
+	--~\texttt{.compTimePoint} & flag specifying whether the reachable sets should be computed for points in time  (\texttt{compTimePoint = 1}) or not (\texttt{compTimePoint = 0}). The default value is \texttt{0}.
+\end{tabular}
+\end{center}

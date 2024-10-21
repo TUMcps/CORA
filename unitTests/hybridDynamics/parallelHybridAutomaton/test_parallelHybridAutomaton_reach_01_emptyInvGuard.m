@@ -1,4 +1,4 @@
-function res = test_parallelHybridAutomaton_reach_01_emptyInvGuard()
+function res = test_parallelHybridAutomaton_reach_01_emptyInvGuard
 % test_parallelHybridAutomaton_reach_01_emptyInvGuard - test for
 %    reachability of hybrid dynamics, where the parallel hybrid automaton
 %    contains empty invariants and guard sets
@@ -7,7 +7,7 @@ function res = test_parallelHybridAutomaton_reach_01_emptyInvGuard()
 %    test_parallelHybridAutomaton_reach_01_emptyInvGuard
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - true/false
@@ -61,35 +61,36 @@ c_right = [1; 0];
 c_up = [0; 0.5];
 c_left = [-1; 0];
 c_down = [0; -0.5];
-linSys_right = linearSys('right',A,B,c_right);
-linSys_up = linearSys('up',A,B,c_up);
-linSys_left = linearSys('left',A,B,c_left);
-linSys_down = linearSys('down',A,B,c_down);
+linsys_right = linearSys('right',A,B,c_right);
+linsys_up = linearSys('up',A,B,c_up);
+linsys_left = linearSys('left',A,B,c_left);
+linsys_down = linearSys('down',A,B,c_down);
 
 % invariant set 
 inv = polytope(interval([-1;-1],[1;1]));
 inv_fullspace = fullspace(2);
 
 % guard sets (boundary of box)
-guard_right = conHyperplane([1,0],1);
-guard_left = conHyperplane([-1,0],1);
+guard_right = polytope([],[],[1,0],1);
+guard_left = polytope([],[],[-1,0],1);
 % guard set for instant transition
 guard_instant = fullspace(2);
 
 % reset functions: shift up/left
 resetA = [1, 0; 0, 1];
+resetB = [0; 0];
 resetc_up = [0; 0.15];
 resetc_left = [-0.15; 0];
-reset_up = struct('A',resetA,'c',resetc_up);
-reset_left = struct('A',resetA,'c',resetc_left);
+reset_up = linearReset(resetA,resetB,resetc_up);
+reset_left = linearReset(resetA,resetB,resetc_left);
 
 % HA1: transitions
 trans1 = transition(guard_right,reset_up,2,'hit_right');
 trans2 = transition(guard_left,reset_up,1,'hit_left');
 
 % HA1: locations
-loc = [location('right',inv,trans1,linSys_right);...
-        location('left',inv,trans2,linSys_left)];
+loc = [location('right',inv,trans1,linsys_right); ...
+       location('left',inv,trans2,linsys_left)];
 
 % instantiate first hybrid automaton
 HA1 = hybridAutomaton(loc);
@@ -99,8 +100,8 @@ trans1 = transition(guard_instant,reset_left,2,'hit_right');
 trans2 = transition(guard_instant,reset_left,1,'hit_left');
 
 % HA2: locations (invariants are full space)
-loc = [location('up',inv_fullspace,trans1,linSys_up);...
-        location('down',inv_fullspace,trans2,linSys_down)];
+loc = [location('up',inv_fullspace,trans1,linsys_up); ...
+       location('down',inv_fullspace,trans2,linsys_down)];
 
 % instantiate second hybrid automaton
 HA2 = hybridAutomaton(loc);
@@ -158,15 +159,14 @@ R_HA = reach(HA1,paramsHA,options);
 
 % since instant transitions do not effect additional branches in the
 % reachSet object, both reachSet objects have to have the same length
-res = length(R) == length(R_HA);
+assert(length(R) == length(R_HA));
 
 % ensure that start sets after transitions are equal
 for i=1:length(R)
-    if ~isequal(project(R(i).timePoint.set{1},[1,2]),...
-            R_HA(i).timePoint.set{1},1e-14)
-        res = false;
-        break
-    end
+    assertLoop(isequal(project(R(i).timePoint.set{1},[1,2]),R_HA(i).timePoint.set{1},1e-14),i)
 end
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

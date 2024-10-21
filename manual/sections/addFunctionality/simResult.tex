@@ -1,0 +1,74 @@
+\subsection{Class \texttt{simResult}}
+\label{sec:simResult}
+
+The results of simulations are stored in CORA as objects of the class \texttt{simResult}, which provides several methods to easily visualize the simulated trajectories. An object of class \texttt{simResult} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \texttt{simRes} = \texttt{simResult}(\texttt{x},\texttt{t}), \\
+		& \texttt{simRes} = \texttt{simResult}(\texttt{x},\texttt{t},\texttt{loc}),
+	\end{split}
+\end{equation*}
+with input arguments
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{x} & cell array storing the states of the simulated trajectories.\\
+	$\bullet$~\texttt{t} & cell array storing the time points for the simulated trajectories. \\
+	$\bullet$~\texttt{loc} & cell array storing the indices of the locations for the simulated trajectories (hybrid systems only).
+\end{tabular}
+\end{center}
+
+Next, we explain the methods of the class \texttt{simResult} in detail.
+
+\subsubsection{\texttt{add}}
+
+The method \texttt{add} combines two \texttt{simResult} objects \texttt{simRes1} and \texttt{simRes2}:
+\begin{equation*}
+	\texttt{simRes} = \texttt{add}(\texttt{simRes1},\texttt{simRes2}).
+\end{equation*}
+
+
+\subsubsection{\texttt{plot}}
+
+The method \texttt{plot} visualizes a two-dimensional projection of the obtained trajectories:
+
+\begin{equation*}
+	\begin{split}
+		&\texttt{han} = \operator{plot}(\texttt{simRes}), \\
+		&\texttt{han} = \operator{plot}(\texttt{simRes},\texttt{dims}), \\
+		&\texttt{han} = \operator{plot}(\texttt{simRes},\texttt{dims},\texttt{linespec}), \\
+		&\texttt{han} = \operator{plot}(\texttt{simRes},\texttt{dims},\texttt{namevaluepairs}),
+	\end{split}
+\end{equation*}
+where \texttt{simRes} is an object of class \texttt{simResult}, \texttt{han} is a handle to the plotted MATLAB graphics object, and the additional input arguments are defined as
+
+\begin{itemize}
+	\item \texttt{dims}: Integer vector $\texttt{dims} \in \mathbb{N}_{\leq n}^2$ specifying the dimensions for which the projection is visualized (default value: \texttt{dims = [1 2]}).
+	\item \texttt{linespec}: (optional) line specifications, e.g., \texttt{'--*r'}, as supported by MATLAB\footnote{\url{https://de.mathworks.com/help/matlab/ref/linespec.html}} (default value: \texttt{linespec = 'b'}).
+	\item \texttt{namevaluepairs}: (optional) further specifications as name-value pairs, e.g.,
+	\texttt{'LineWidth',2} and \texttt{'MarkerSize',1.5}, as supported by MATLAB.
+	They correspond to the Line Properties\footnote{\url{https://de.mathworks.com/help/matlab/ref/matlab.graphics.chart.primitive.line-properties.html}}.
+\end{itemize}
+
+
+\subsubsection{\texttt{plotOverTime}}
+
+The method \texttt{plotOverTime} visualizes a one-dimensional projection of the simulated trajectories over time:
+
+\begin{equation*}
+	\begin{split}
+		&\texttt{han} = \operator{plotOverTime}(\texttt{simRes}), \\
+		&\texttt{han} = \operator{plotOverTime}(\texttt{simRes},\texttt{dims}), \\
+		&\texttt{han} = \operator{plotOverTime}(\texttt{simRes},\texttt{dims},\texttt{linespec}), \\
+		&\texttt{han} = \operator{plotOverTime}(\texttt{simRes},\texttt{dims},\texttt{namevaluepairs}),
+	\end{split}
+\end{equation*}
+where \texttt{simRes} is an object of class \texttt{simResult}, \texttt{han} is a handle to the plotted MATLAB graphics object, and the additional input arguments are defined as
+
+\begin{itemize}
+	\item \texttt{dims}: Integer vector $\texttt{dims} \in \mathbb{N}_{\leq n}$ specifying the dimensions for which the projection is visualized (default value: \texttt{dims = 1}).
+	\item \texttt{linespec}: (optional) line specifications, e.g., \texttt{'--*r'}, as supported by MATLAB\footnote{\url{https://de.mathworks.com/help/matlab/ref/linespec.html}}.
+	\item \texttt{namevaluepairs}: (optional) further specifications as name-value pairs, e.g.,
+	\texttt{'LineWidth',2} and \texttt{'MarkerSize',1.5}, as supported by MATLAB.
+	They correspond to the Line Properties\footnote{\url{https://de.mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html}}.
+\end{itemize}

@@ -23,12 +23,12 @@ function res = test_atomicProposition
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
+res = true;
 
 % atomic propositions
-ap1 = atomicProposition(halfspace([0 1 0], 3));
-ap2 = atomicProposition(halfspace([-1 0 0], -2));
-ap3 = atomicProposition(halfspace([-1 0 -1], -9));
+ap1 = atomicProposition(polytope([0 1 0], 3));
+ap2 = atomicProposition(polytope([-1 0 0], -2));
+ap3 = atomicProposition(polytope([-1 0 -1], -9));
 ap4 = atomicProposition(ellipsoid([13 7; 7 5], [1; 2]), [1 3]);
 
 % sets
@@ -37,25 +37,25 @@ set2 = zonotope([-7; 1; 4], [1 1 1; 1 -1 0; 0 1 1]);
 set3 = zonotope([1; 1; 2], [0.5 1 0.2; 0.2 -1 0; 0 1 0.2]);
 
 % test
-res(end+1,1) = ap1.canBeTrue(set1,1);
-res(end+1,1) = ~ap1.canBeFalse(set1,1);
+assert(ap1.canBeTrue(set1,1));
+assert(~ap1.canBeFalse(set1,1));
 
-res(end+1,1) = ap2.canBeTrue(set1,1);
-res(end+1,1) = ap2.canBeFalse(set1,1);
+assert(ap2.canBeTrue(set1,1));
+assert(ap2.canBeFalse(set1,1));
 
-res(end+1,1) = ~ap3.canBeTrue(set1,1);
-res(end+1,1) = ap3.canBeFalse(set1,1);
+assert(~ap3.canBeTrue(set1,1));
+assert(ap3.canBeFalse(set1,1));
 
-res(end+1,1) = ap4.canBeTrue(set1,1);
-res(end+1,1) = ap4.canBeFalse(set1,1);
+assert(ap4.canBeTrue(set1,1));
+assert(ap4.canBeFalse(set1,1));
 
-res(end+1,1) = ~ap4.canBeTrue(set2,1);
-res(end+1,1) = ap4.canBeFalse(set2,1);
+assert(~ap4.canBeTrue(set2,1));
+assert(ap4.canBeFalse(set2,1));
 
-res(end+1,1) = ap4.canBeTrue(set3,1);
-res(end+1,1) = ~ap4.canBeFalse(set3,1);
+assert(ap4.canBeTrue(set3,1));
+assert(~ap4.canBeFalse(set3,1));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

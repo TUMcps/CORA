@@ -28,23 +28,23 @@ I = interval.empty(2);
 % reduce
 I_ = reduce(I);
 % should remain the same...
-res = isequal(I,I_);
+assert(isequal(I,I_));
 
 % init column interval
 I = interval([-2;-1],[1;3]);
 % reduce
 I_ = reduce(I);
 % check result
-res(end+1,1) = isequal(I,I_);
+assert(isequal(I,I_));
 
 % init matrix interval
 I = interval([-2 -1; -4 -2],[1 3; 5 2]);
 % reduce
 I_ = reduce(I);
 % check result
-res(end+1,1) = isequal(I,I_);
+assert(isequal(I,I_));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

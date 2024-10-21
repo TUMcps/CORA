@@ -32,11 +32,11 @@ function varargout = norm_(Z,type,mode,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 if strcmp(mode,'exact')
-    [varargout{1:2}] = norm_exact(Z,type);
+    [varargout{1:2}] = priv_norm_exact(Z,type);
 elseif strcmp(mode,'ub')
     varargout{1} = norm_(interval(Z),type);
 elseif strcmp(mode,'ub_convex')
-    varargout{1} = norm_ub(Z,type);
+    varargout{1} = priv_norm_ub(Z,type);
 end
 
 % ------------------------------ END OF CODE ------------------------------

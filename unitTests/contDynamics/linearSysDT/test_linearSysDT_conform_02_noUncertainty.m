@@ -27,13 +27,17 @@ function res = test_linearSysDT_conform_02_noUncertainty
 
 % Authors:       Matthias Althoff
 % Written:       12-July-2023
-% Last update:   ---
+% Last update:   25-March-2024 (LL, adapt to new conform function)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % initialize partial results
 resPartial = [];
+rng(1)
 
 %% System dynamics
 % create pedestrian model (see Lecture "Formal Methods for Cyber-Physical
@@ -43,57 +47,69 @@ dt = 0.4;
 % discrete time system matrix from continuous system matrix Ac
 Ac = [0 0 1 0; 0 0 0 1; 0 0 0 0; 0 0 0 0];
 A = expm(Ac*dt);
-B = [];
+B = [eye(4) zeros(4,2)];
 C = [1 0 0 0; 0 1 0 0];
-D = [];
+D = [zeros(2,4) eye(2)];
 
 % instantiate linear discrete-time dynamics
 pedestrian = linearSysDT(A,B,[],C,D,dt);
 params.tFinal = 2;
 
 % the system has no uncertainty
-W = zonotope(rand(4,1)-0.5*ones(4,1)); % disturbance 
-V = zonotope(rand(2,1)-0.5*ones(2,1)); % measurement uncertainty 
-R0 = zonotope(rand(4,1)-0.5*ones(4,1)); % initial state uncertainty 
+W = zonotope(10*randn(4,1)); % process disturbance 
+V = zonotope(10*rand(2,1)); % measurement uncertainty 
+U = cartProd(W,V); % combined ditrurbances
+R0 = zonotope(10*randn(4,1)); % initial state uncertainty 
 
 % store fixed disturbance, measurement error, and initial state in params
-params.W = W; % disturbance 
-params.V = V; % measurement uncertainty 
+params.U = U; % disturbance
 params.R0 = R0; % initial state uncertainty 
+params.tStart = 0;
 
 % options to weight cost function of different time steps
 maxNrOfTimeSteps = ceil(params.tFinal/dt); % maximum number of timeSteps
-options.w = ones(maxNrOfTimeSteps+1,1);
+options.cs.w = ones(maxNrOfTimeSteps+1,1);
+options.cs.constraints = 'half';
 
 %% Create test case
 % simulate system
 simOpt.points = 1;
 simRes = simulateRandom(pedestrian,params,simOpt);
 % construct input vector
-uVec = zeros(maxNrOfTimeSteps+1,1);
+uVec = zeros(maxNrOfTimeSteps+1,6);
 % save in test case
 sanityCheck{1} = testCase(simRes.y{1}, uVec, simRes.x{1}, dt);
-    
+
+
 %% Conformance synthesis (default: interval norm)
-options.confAlg = 'dyn';
 options.zonotopeOrder = 200;
 params.testSuite = sanityCheck;
-% add options for uncertainty templates
-params.W = zonotope(rand(4,10)); % disturbance 
-params.V = zonotope(rand(2,10)); % measurement uncertainty 
-params.R0conf = zonotope([rand(4,10)]); % initial state uncertainty 
-params_interval = conform(pedestrian,params,options); 
+
+% add uncertainty templates
+W_guess = zonotope(rand(4,10)); % disturbance 
+V_guess = zonotope(rand(2,10)); % measurement uncertainty 
+params.U = cartProd(W_guess, V_guess);
+params.R0 = zonotope([rand(4,10)]); % initial state uncertainty 
+tic
+params_new = conform(pedestrian,params,options);
 
 %% check whether all parameter sets have no uncertainty up to some floating point errors
-tol = 2e-8; % TL, seems to be numerically unstable in different matlab versions
-resPartial(end+1) = (max(rad(interval(params_interval.R0conf))) < tol); % R0
-resPartial(end+1) = (max(rad(interval(params_interval.W))) < tol); % W
-resPartial(end+1) = (max(rad(interval(params_interval.V))) < tol); % V
+accuracy = 1e-8;
 
-% check whether centers match up to accuracy
-resPartial(end+1) = (max(abs(center(params_interval.R0conf))) < tol); % R0conf is relative to x_0
-resPartial(end+1) = (max(abs(center(params_interval.W) - center(W))) < tol); % W
-resPartial(end+1) = (max(abs(center(params_interval.V) - center(V))) < tol); % V
+% check whether there is uncertainty in the identified R0 and U
+assert((max(rad(interval(params_new.R0))) < accuracy));% R0
+assert((max(rad(interval(params_new.U))) < accuracy));% U
+
+% check whether centers match up to accuracy (must not be true)
+%resPartial(end+1) = (max(abs(center(params_new.R0))) < accuracy); % R0 is relative to x_0
+%resPartial(end+1) = (max(abs(center(params_new.U) - center(U))) < accuracy); % U
+
+% check whether the measurements can be reconstructed from the
+% identification restults
+params_new.R0 = params_new.R0 + simRes.x{1}(1,:)'; 
+params_new = rmfield(params_new, 'testSuite');
+simRes_new = simulateRandom(pedestrian,params_new,simOpt);
+assert((max(abs(simRes_new.y{1} - simRes.y{1}),[],'all') < accuracy));
 
 % overall result
 res = all(resPartial);

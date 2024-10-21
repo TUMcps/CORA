@@ -1,11 +1,11 @@
-function display(obj)
-% display - Displays a contDynamics object on the command window
+function display(sys)
+% display - displays a contDynamics object on the command window
 %
 % Syntax:
-%    display(obj)
+%    display(sys)
 %
 % Inputs:
-%    obj - contDynamics object
+%    sys - contDynamics object
 %
 % Outputs:
 %    ---
@@ -32,17 +32,14 @@ function display(obj)
 % disp input if necessary
 dispInput(inputname(1))
 
-%display name and id
-disp("Continuous dynamics: '" + obj.name + "'");
-
-% display number of states
-disp("  number of states: " + obj.dim);
-
-% display number of inputs
-disp("  number of inputs: " + obj.nrOfInputs);
-
-% display number of outputs
-disp("  number of outputs: " + obj.nrOfOutputs);
+% display name and id
+disp("Continuous dynamics: '" + sys.name + "'");
+% display dynamic properties
+disp("  number of states: " + sys.nrOfStates);
+disp("  number of inputs: " + sys.nrOfInputs);
+disp("  number of outputs: " + sys.nrOfOutputs);
+disp("  number of disturbances: " + sys.nrOfDisturbances);
+disp("  number of noises: " + sys.nrOfNoises);
 
 fprintf(newline);
 

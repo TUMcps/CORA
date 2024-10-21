@@ -49,12 +49,21 @@ D = [0 0 1;
 % constant input: q x 1
 k = [0; 0.02];
 
+% disturbance matrix: n x r
+E = [1 0.5; 0 -0.5; 1 -1; 0 1];
+
+% noise matrix: q x s
+F = [1; 0.5];
+
+
 % initialize different linearSys-objects
 sys_A = linearSys(A,1)
 sys_AB = linearSys(A,B)
 sys_ABC = linearSys(A,B,[],C)
 sys_ABCD = linearSys(A,B,[],C,D)
 sys_ABcCDk = linearSys(A,B,c,C,D,k)
+sys_ABcCDkE = linearSys(A,B,c,C,D,k,E)
+sys_ABcCDkEF = linearSys(A,B,c,C,D,k,E,F)
 
 
 % code executed successfully

@@ -1,11 +1,11 @@
-function display(sys)
-% display - Displays a nonlinearSys object on the command window
+function display(nlnsys)
+% display - displays a nonlinearSys object on the command window
 %
 % Syntax:
-%    display(sys)
+%    display(nlnsys)
 %
 % Inputs:
-%    sys - nonlinearSys object
+%    nlnsys - nonlinearSys object
 %
 % Outputs:
 %    ---
@@ -13,7 +13,7 @@ function display(sys)
 % Example:
 %    f = @(x,u) [x(2); ...
 %               (1-x(1)^2)*x(2)-x(1)];
-%    sys = nonlinearSys('vanDerPol',f)
+%    nlnsys = nonlinearSys('vanDerPol',f)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -33,16 +33,16 @@ function display(sys)
 dispInput(inputname(1))
 
 %display parent object
-display@contDynamics(sys);
+display@contDynamics(nlnsys);
 
 %display type
 disp('Type: Nonlinear continuous-time system');
 
 %create symbolic variables
-vars = symVariables(sys);
+vars = symVariables(nlnsys);
 
 %insert symbolic variables into the system equations
-f = sys.mFile(vars.x,vars.u);
+f = nlnsys.mFile(vars.x,vars.u);
 
 %display state space equations
 disp('State-space equations:')
@@ -53,7 +53,7 @@ end
 fprintf(newline);
 
 %insert symbolic variables into the system equations
-y = sys.out_mFile(vars.x,vars.u);
+y = nlnsys.out_mFile(vars.x,vars.u);
 
 % display output equation
 disp('Output equations:')

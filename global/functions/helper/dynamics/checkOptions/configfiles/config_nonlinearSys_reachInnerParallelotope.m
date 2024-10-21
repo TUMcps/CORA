@@ -1,14 +1,12 @@
-function [paramsList,optionsList] = config_nonlinearSys_reachInnerParallelotope(sys,params,options)
-% config_nonlinearSys_reachInnerParallelotope - configuration file for validation of
-%    model parameters and algorithm parameters
+function [paramsList,optionsList] = config_nonlinearSys_reachInnerParallelotope
+% config_nonlinearSys_reachInnerParallelotope - configuration file for
+%    validation of model parameters and algorithm parameters
 %
 % Syntax:
-%    [paramsList,optionsList] = config_nonlinearSys_reachInnerParallelotope(sys,params,options)
+%    [paramsList,optionsList] = config_nonlinearSys_reachInnerParallelotope
 %
 % Inputs:
-%    sys - nonlinearSys object
-%    params - user-defined model parameters
-%    options - user-defined algorithm parameters
+%    -
 %
 % Outputs:
 %    paramsList - list of model parameters
@@ -63,6 +61,8 @@ optionsList(end+1,1) = add2list('verbose','default');
 optionsList(end+1,1) = add2list('reductionTechnique','default');
 optionsList(end+1,1) = add2list('reductionInterval','default');
 optionsList(end+1,1) = add2list('maxError','default');
+optionsList(end+1,1) = add2list('compOutputSet','default');
+optionsList(end+1,1) = add2list('tensorOrderOutput','default');
 % polyZono
 optionsList(end+1,1) = add2list('polyZono.maxDepGenOrder','default');
 optionsList(end+1,1) = add2list('polyZono.maxPolyZonoRatio','default');

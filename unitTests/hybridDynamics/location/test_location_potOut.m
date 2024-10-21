@@ -25,11 +25,11 @@ function res = test_location_potOut
 
 % init location
 inv = interval([-2;-1],[3;5]);
-guard = conHyperplane([1 0],3);
-reset = struct('A',eye(2),'c',[2;0]);
+guard = polytope([],[],[1 0],3);
+reset = linearReset(eye(2),[],[2;0]);
 trans(1) = transition(guard,reset,2);
-guard = conHyperplane([0 1],5);
-reset = struct('A',eye(2),'c',[0;2]);
+guard = polytope([],[],[0 1],5);
+reset = linearReset(eye(2),[],[0;2]);
 trans(2) = transition(guard,reset,2);
 flow = linearSys(zeros(2),0,[1;1]);
 loc = location(inv,trans,flow);
@@ -68,14 +68,14 @@ Rtp = R.timePoint.set(3:8);
 Rti = R.timeInterval.set(3:8);
 
 % all intersecting sets must be polytopes
-res = all(cellfun(@(x) isa(x,'polytope'),Rtp,'UniformOutput',true));
-res(end+1,1) = all(cellfun(@(x) isa(x,'polytope'),Rti,'UniformOutput',true));
+assert(all(cellfun(@(x) isa(x,'polytope'),Rtp,'UniformOutput',true)));
+assert(all(cellfun(@(x) isa(x,'polytope'),Rti,'UniformOutput',true)));
 % all intersecting sets must be contained in invariant
-res(end+1,1) = all(cellfun(@(x) contains(inv,x),Rtp,'UniformOutput',true));
-res(end+1,1) = all(cellfun(@(x) contains(inv,x),Rti,'UniformOutput',true));
+assert(all(cellfun(@(x) contains(inv,x),Rtp,'UniformOutput',true)));
+assert(all(cellfun(@(x) contains(inv,x),Rti,'UniformOutput',true)));
 
 
-% combine results
-res = all(res);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

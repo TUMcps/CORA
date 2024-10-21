@@ -23,15 +23,13 @@ function res = test_conZonotope_conZonotope
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty conZonotope
 n = 2;
 cZ = conZonotope.empty(n);
-res(end+1,1) = representsa_(cZ,'emptySet',eps) && dim(cZ) == n;
+assert(representsa_(cZ,'emptySet',eps) && dim(cZ) == n);
 cZ = conZonotope(zeros(3,0));
-res(end+1,1) = representsa_(cZ,'emptySet',eps) ...
-    && size(cZ.c,1) == 3 && size(cZ.G,1) == 3;
+assert(representsa_(cZ,'emptySet',eps))
+assert(size(cZ.c,1) == 3 && size(cZ.G,1) == 3);
 
 
 % init simple constrained zonotope
@@ -40,12 +38,12 @@ A = [1 0 1];
 b = 1;
 cZ = conZonotope(Z,A,b);
 
-res(end+1,1) = all(all(withinTol([cZ.c,cZ.G],Z))) ...
-        && all(all(withinTol(cZ.A,A))) ...
-        && all(withinTol(cZ.b,b));
+assert(all(withinTol([cZ.c,cZ.G],Z),'all') ...
+        && all(withinTol(cZ.A,A),'all') ...
+        && all(withinTol(cZ.b,b)));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

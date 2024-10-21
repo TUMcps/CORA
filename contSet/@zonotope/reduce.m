@@ -3,7 +3,10 @@ function [Z,varargout] = reduce(Z,method,varargin)
 %    over-approximation of the original zonotope
 %
 % Syntax:
+%    Z = reduce(Z,method)
 %    Z = reduce(Z,method,order)
+%    Z = reduce(Z,method,order,filterLength)
+%    Z = reduce(Z,method,order,filterLength,option)
 %
 % Inputs:
 %    Z - zonotope object
@@ -67,34 +70,12 @@ function [Z,varargout] = reduce(Z,method,varargin)
 % Written:       24-January-2007 
 % Last update:   15-September-2007
 %                27-June-2018
-% Last revision: ---
+% Last revision: 06-October-2024 (MW, refactor including priv_)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%2 inputs
-if nargin==2
-    order=1;
-    filterLength=[];
-%3 inputs
-elseif nargin==3
-    order=varargin{1};
-    filterLength=[];
-%4 inputs
-elseif nargin==4
-    order=varargin{1};
-    filterLength=varargin{2};
-%5 inputs
-elseif nargin==5
-    order=varargin{1};
-    filterLength=varargin{2};
-    option = varargin{3};
-%6 inputs
-elseif nargin==6
-    order=varargin{1};
-    filterLength=varargin{2};
-    option = varargin{3};
-    alg = varargin{4};
-end
+narginchk(2,5);
+[order,filterLength,option] = setDefaultValues({1,[],[]},varargin);
 
 % remove substring necessary for special reduction for polyZonotopes (not
 % needed here
@@ -103,71 +84,71 @@ if startsWith(method,'approxdep_')
 end
 
 % select option
-if strcmp(method,'girard')
-    Z=reduceGirard(Z,order);
+switch method
+    case 'girard'
+        Z = priv_reduceGirard(Z,order);
 
-%option='idx'
-elseif strcmp(method,'idx')
-    % note: var 'order' is not an order here
-    Z = reduceIdx(Z,order);
+    case 'idx'
+        % note: var 'order' is not an order here
+        Z = priv_reduceIdx(Z,order);
 
-elseif strcmp(method,'adaptive')
-    % note: var 'order' is not an order here!
-    [Z,dHerror,gredIdx] = reduceAdaptive(Z,order);
-    % additional output arguments
-    varargout{1} = dHerror;
-    varargout{2} = gredIdx;
-
-elseif strcmp(method,'combastel')
-    Z=reduceCombastel(Z,order);
-
-elseif strcmp(method,'pca')
-    Z = reducePCA(Z,order);
-
-elseif strcmp(method,'methA')
-    Z=reduceMethA(Z,order);
-
-elseif strcmp(method,'methB')
-    Z=reduceMethB(Z,order,filterLength); 
-
-elseif strcmp(method,'methC')
-    Z=reduceMethC(Z,order,filterLength);
-
-elseif strcmp(method,'methE')
-    Z=reduceMethE(Z,order);  
-
-elseif strcmp(method,'methF')
-    Z=reduceMethF(Z);   
-
-elseif strcmp(method,'redistribute')
-    Z=reduceRedistribute(Z,order);   
-
-elseif strcmp(method,'cluster')
-    Z=reduceCluster(Z,order, option);
-
-elseif strcmp(method,'scott')
-    Z=reduceScott(Z,order);
-
-elseif strcmp(method,'valero')
-    Z=reduceValero(Z,order);
-
-% elseif strcmp(method,'KclusterAllDim')
-%     % order must be 1
-%     Zred=reduceKclusterAllDim(Z,order);
-
-% elseif strcmp(method,'clusterIter')
-%     Zred=reduceClusterIter(Z,order); 
-
-elseif strcmp(method,'constOpt')
-    option = 'svd';
-    alg = 'interior-point';
-    Z = reduceConstOpt(Z,order, option, alg);  
-
-% wrong method
-else
-    throw(CORAerror('CORA:wrongValue','second',...
-        "'adaptive', 'cluster', 'combastel', 'constOpt', 'girard'" + ...
-        "'methA', 'methB', 'methC', 'pca', 'scott', 'redistribute', or 'valero'"));
+    case 'adaptive'
+        % note: var 'order' is not an order here!
+        [Z,dHerror,gredIdx] = priv_reduceAdaptive(Z,order);
+        % additional output arguments
+        varargout{1} = dHerror;
+        varargout{2} = gredIdx;
+    
+    case 'combastel'
+        Z = priv_reduceCombastel(Z,order);
+    
+    case 'pca'
+        Z = priv_reducePCA(Z,order);
+    
+    case 'methA'
+        Z = priv_reduceMethA(Z,order);
+    
+    case 'methB'
+        Z = priv_reduceMethB(Z,order,filterLength); 
+    
+    case 'methC'
+        Z = priv_reduceMethC(Z,order,filterLength);
+    
+    case 'methE'
+        Z = priv_reduceMethE(Z,order);  
+    
+    case 'methF'
+        Z = priv_reduceMethF(Z);   
+    
+    case 'redistribute'
+        Z = priv_reduceRedistribute(Z,order);   
+    
+    case 'cluster'
+        Z = priv_reduceCluster(Z,order, option);
+    
+    case 'scott'
+        Z = priv_reduceScott(Z,order);
+    
+    case 'valero'
+        Z = priv_reduceValero(Z,order);
+    
+    % case 'KclusterAllDim'
+    %     % order must be 1
+    %     Zred=reduceKclusterAllDim(Z,order);
+    
+    % case 'clusterIter'
+    %     Zred=reduceClusterIter(Z,order); 
+    
+    case 'constOpt'
+        option = 'svd';
+        alg = 'interior-point';
+        Z = priv_reduceConstOpt(Z,order, option, alg);  
+    
+    % wrong method
+        otherwise
+        throw(CORAerror('CORA:wrongValue','second',...
+            "'adaptive', 'cluster', 'combastel', 'constOpt', 'girard'" + ...
+            "'methA', 'methB', 'methC', 'pca', 'scott', 'redistribute', or 'valero'"));
 end
 
 % ------------------------------ END OF CODE ------------------------------

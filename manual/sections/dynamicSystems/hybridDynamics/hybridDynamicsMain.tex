@@ -1,0 +1,133 @@
+
+\subsection{Hybrid Dynamics} \label{sec:hybridDynamics}
+\logToConsole{HYBRID DYNAMICS}
+
+Hybrid systems consist of a finite number of state space regions for each of which specific continuous dynamics are defined. We refer to these regions as \textit{locations}. Besides a continuous state $x$, there consequently also exists a discrete state $v$ representing current location. The continuous initial state may take values within continuous sets while only a single initial discrete state is assumed without loss of generality\footnote{In the case of several initial discrete states, the reachability analysis can be performed for each discrete state separately.}. The switching of the continuous dynamics is triggered by \textit{guard sets}. Jumps in the continuous state are considered after the discrete state has changed. One of the most intuitive examples where jumps in the continuous state can occur, is the bouncing ball example (see \cref{fig:bouncingBall}), where the velocity of the ball changes instantaneously when hitting the ground.
+
+\vspace{0.2cm}
+
+In CORA, hybrid systems are modeled by hybrid automata. A hybrid automaton $HA = (L_1,\dots,L_p)$ as considered in CORA is defined by a finite list of locations $(L_1,\dots,L_p)$, where each location $L_i = (f_i(\cdot),\mathcal{S}_i,\mathbf{T}_i)$, $i = 1,\dots,p$ consists of
+\begin{itemize}
+    \item a differential equation $\dot{x}(t) = f_i(\cdot)$ describing the continuous dynamics,
+    \item an invariant set $\mathcal{S}_i \subset \Rn$ describing the region where the differential equation is valid,
+    \item a list $\mathbf{T}_i = ( T_1,\dots, T_q)$ of transitions $T_j = ( \mathcal{G}_j,r_j(\cdot),d_j )$, $j = \{1,\dots,q\}$ from the current location to other locations, where $\mathcal{G}_j \subset \Rn$ is a guard set, $r_j: \Rn \to \Rn$ is a reset function, and $d_j \in \{1,\dots,p\}$ is the index of the target mode.
+\end{itemize}
+
+\vspace{0.2cm}
+
+The evolution of the hybrid automaton is described informally as follows: Starting from an initial location $v(0) \in \{1,\dots,p\}$ and an initial state $x(0)\in \mathcal{S}_{v(0)}$, the continuous state evolves according to the flow function $\dot{x}(t) = f_{v(0)}(\cdot)$ that is assigned to the location $v(0)$. If the continuous state is within a guard set $\mathcal{G}_j$ of a transition $T_j$, the transition $T_j$ can be taken and has to be taken if the state would otherwise leave the invariant $\mathcal{S}_{v(0)}$. When the transition from the previous location $v(0)$ to the next location $d_j$ is taken, the system state is updated according to the reset function $r_j(\cdot)$. Afterwards, the continuous state evolves according to the flow function of the next location.
+
+\begin{center}
+    \begin{minipage}[l]{0.3\columnwidth}
+        \begin{center}
+            \includetikz{./figures/tikz/hybridDynamics/bouncing_ball}
+        \end{center}
+    \end{minipage}
+    \begin{minipage}[l]{0.6\columnwidth}
+        \begin{equation*}
+            \footnotesize
+            \begin{array}{ll}
+                HA            & = (L_1)                                                             \\
+                & {\tiny ~}                                                           \\
+                L_1           & = (f_1(\cdot),\mathcal{S}_1,(T_1))                                  \\
+                & {\tiny ~}                                                           \\
+                f_1(x,u)      & = \begin{bmatrix}
+                                      x_2 \\ -g
+                \end{bmatrix}, ~~ g = 9.81              \\
+                & {\tiny ~}          \\
+                \mathcal{S}_1              & = \Big \{ [x_1 ~x_2]^T \in \R^2~\Big |~ x_2 \geq 0 \Big \}                                                           \\
+                & {\tiny ~}                                      \\
+                T_1              & = (\mathcal{G}_1,r_1(\cdot),1)                                                           \\
+                & {\tiny ~} \\
+                \mathcal{G}_1              & = \Big \{ [x_1 ~x_2]^T \in \R^2~\Big |~ x_1 = 0,~x_2 \leq 0 \Big \}                                                           \\
+                & {\tiny ~}                                               \\
+                r(x)          & = \begin{bmatrix}
+                                      x_1 \\ -\alpha x_2
+                \end{bmatrix}, ~~ \alpha = 0.75
+            \end{array}
+        \end{equation*}
+    \end{minipage}
+    \captionof{figure}{Example for a hybrid system: bouncing ball.} \label{fig:bouncingBall}
+\end{center}
+
+A simple example for a hybrid system is the bouncing ball shown in \cref{fig:bouncingBall}, where the continuous system states are the vertical position $x_1 = s$ and the vertical velocity $x_2 = v$, and $\alpha \in [0,1]$ is the rebound factor that indirectly models the loss of energy during the collision with the ground. We will use the bouncing ball as a running example throughout this section.
+
+\vspace{0.2cm}
+
+Transitions between two locations are modeled in CORA by the class \texttt{transition}. An object of class transition can be constructed as follows:
+\begin{align}
+    \begin{split}
+        \label{eq:transition}
+        T &= \texttt{transition}(\mathcal{G},r(\cdot),d), \\
+        T &= \texttt{transition}(\mathcal{G},r(\cdot),d,\texttt{label}),
+    \end{split}
+\end{align}
+where
+\begin{itemize}
+    \item $\mathcal{G} \subset \mathbb{R}^n$ is the guard set. Guard sets can be modeled by all set representations described in \cref{sec:setRepresentations}.
+    Most commonly, guard sets are modeled as \texttt{polytope} or \texttt{levelSet} objects.
+    The guard set can also be left empty which results in an instantaneous transition, i.e., the guard set is active as soon as the location containing the transition of that guard set is entered. This feature is only advisable to be used in combination with synchronization labels (see below).
+    \item $r: \mathbb{R}^n \to \mathbb{R}^n$ is the reset function. CORA supports linear reset functions defined as
+    \begin{equation}
+        \label{eq:linearReset}
+        r(x,u) = A x + B u + c, ~~ A \in \R^{n \times n}, B \in \R^{n \times m}, c \in \mathbb{R}^n,
+    \end{equation}
+    as well as nonlinear reset functions.
+    The reset function is specified as a \texttt{linearReset} or \texttt{nonlinearReset} object.
+    For linear reset functions, one initializes a \texttt{linearReset(A,B,c)} object with the matrices $A$, $B$, and the vector $c$ in \eqref{eq:linearReset}.
+    For nonlinear reset functions, the \texttt{nonlinearReset(f)} object is initialized with \texttt{f} storing a MATLAB function handle that defines the nonlinear reset function $r(x,u)$.
+
+    \item $d \in \{1,\dots,p\}$ is the index of the target location.
+    \item \texttt{label} is the synchronization label (only class \texttt{parallelHybridAutomata}): All transitions with the same synchronization label are executed simulaneously under the condition that the corresponding guard sets of all transitions are triggered. Currently, CORA only allows one transition of the set of transitions with the same synchronization label to have a non-empty guard set.
+    Consequently, all transitions trigger if the one guard set is triggered.
+\end{itemize}
+
+For the bouncing ball example in \cref{fig:bouncingBall}, the transition $T_1$ can be constructed as follows:
+
+\begin{center}
+    \begin{minipage}[t]{0.1\textwidth}
+        \vspace{10pt}
+    \end{minipage}
+    \begin{minipage}[t]{0.8\textwidth}
+        \footnotesize
+        \input{./MATLABcode/example_transition}
+    \end{minipage}
+\end{center}
+
+\vspace{1cm}
+
+The locations of a hybrid automaton are modeled in CORA by the class \texttt{location}. An object of class \texttt{location} can be constructed as follows:
+\begin{equation}
+    \begin{split}
+        L &= \texttt{location}(\mathcal{S},\mathbf{T},f(\cdot)), \\
+        L &= \texttt{location}(\texttt{name},\mathcal{S},\mathbf{T},f(\cdot)),
+    \end{split}
+    \label{eq:location}
+\end{equation}
+where
+\begin{itemize}
+    \item \texttt{name} is a string that specifies the name of the location.
+    \item $\mathcal{S} \subset \mathbb{R}^n$ is the invariant set. Invariant sets can be modeled by all set representations described in \cref{sec:setRepresentations}. Most commonly, guard sets are modeled as \texttt{polytope} or \texttt{levelSet} objects.
+    \item $\mathbf{T} = (T_1,\dots,T_j)$ is the list of transitions from the current location to other locations represented as a MATLAB cell array. Transitions are modeled by the class \texttt{transition} (see \eqref{eq:transition}).
+    \item $\dot x = f(\cdot)$ is the differential equation that describes the continuous dynamics in the current location. The continous dynamics can be modeled by any of the system classes described in \cref{sec:continuousDynamics}.
+\end{itemize}
+
+For the bouncing ball example in \cref{fig:bouncingBall}, the location $L_1$ can be constructed as follows:
+
+\begin{center}
+    \begin{minipage}[t]{0.1\textwidth}
+        \vspace{10pt}
+    \end{minipage}
+    \begin{minipage}[t]{0.8\textwidth}
+        \footnotesize
+        \input{./MATLABcode/example_location}
+    \end{minipage}
+\end{center}
+
+\vspace{1cm}
+
+% hybrid automata
+\input{sections/dynamicSystems/hybridDynamics/hybridAutomata}
+
+% parallel hybrid automata
+\input{sections/dynamicSystems/hybridDynamics/parallelHybridAutomata}

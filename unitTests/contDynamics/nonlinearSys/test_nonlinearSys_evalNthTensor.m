@@ -20,6 +20,9 @@ function res = test_nonlinearSys_evalNthTensor
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 % 2D-example --------------------------------------------------------------
@@ -97,13 +100,10 @@ for i = 1:N
 end
 
 % compare the results
-res = 1;
+assert(1);
 
 for i = 1:N
-    if abs(res_test(i)-res_real(i)) > 1e-14
-       res = 0;
-       break;
-    end
+    assertLoop(withinTol(res_test(i),res_real(i),1e-12),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

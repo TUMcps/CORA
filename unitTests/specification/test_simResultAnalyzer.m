@@ -23,13 +23,13 @@ function res = test_simResultAnalyzer
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = [];
+res = true;
 
 % atomic propositions
 aps = containers.Map;
 
-aps('p1') = atomicProposition(halfspace([0 1], 7));
-aps('p2') = atomicProposition(halfspace([1 1], 9));
+aps('p1') = atomicProposition(polytope([0 1], 7));
+aps('p2') = atomicProposition(polytope([1 1], 9));
 
 % simulation result
 x = [1.1 1; 2.2 2; 3.3 3; 4.4 4; 5.5 5; 6.6 6; 7.7 7; 8.8 8; 9.9 9];
@@ -42,13 +42,13 @@ a1 = simResultAnalyzer(aps, simRes);
 s1 = a1.analyze(1,1);
 
 % test
-res(end+1,1) = isequal([7 8], s1('p1').time);
-res(end+1,1) = isequal([true false], s1('p1').value);
+assert(isequal([7 8], s1('p1').time));
+assert(isequal([true false], s1('p1').value));
 
-res(end+1,1) = isequal([4 8], s1('p2').time);
-res(end+1,1) = isequal([true false], s1('p2').value);
+assert(isequal([4 8], s1('p2').time));
+assert(isequal([true false], s1('p2').value));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

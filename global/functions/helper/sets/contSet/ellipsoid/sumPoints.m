@@ -26,9 +26,7 @@ function P = sumPoints(varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isempty(varargin)
-    throw(CORAerror('CORA:notEnoughInputArgs',1));
-end
+narginchk(1,Inf);
 
 if ~ismatrix(varargin{1}) 
     throw(CORAerror('CORA:wrongValue','first','Must be double matrix'));

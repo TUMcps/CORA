@@ -1,23 +1,29 @@
-function [vars,vars_der] = symVariables(varargin)
-% symVariables - generates symbolic variables of a continuous system 
+function [vars,vars_der] = symVariables(sys,varargin)
+% symVariables - generates symbolic variables of a continuous system; the
+%    symbolic variables are either set or a 0x1 sym object
 %
 % Syntax:
-%    [vars,vars_der] = symVariables(varargin)
+%    [vars,vars_der] = symVariables(sys)
+%    [vars,vars_der] = symVariables(sys,withBrackets)
 %
 % Inputs:
-%    obj - contDynamics object
-%    type - defines if 'LR' brackets should be used
+%    sys - contDynamics object
+%    withBrackets - true/false
+%       true:  variable 'x' results in symbolic variables x1, x2, ...
+%       false: variable 'x' results in symbolic variables xL1R, xL2R, ...
 %
 % Outputs:
-%    x - symbolic state variables
-%    u - symbolic input variables
-%    y - symbolic constraint variables
-%    o - symbolic output variables
-%    p - symbolic parameters
-%    dx - symbolic state deviation form linearization point
-%    du - symbolic input deviation form linearization point
-%    dy - symbolic constraint deviation form linearization point
-%    do - symbolic output deviation form linearization point
+%    vars - struct with fields
+%       .x - symbolic state variables
+%       .u - symbolic input variables
+%       .y - symbolic constraint variables
+%       .o - symbolic output variables
+%       .p - symbolic parameters
+%    vars_der - struct with fields
+%       .dx - symbolic state deviation from linearization point
+%       .du - symbolic input deviation from linearization point
+%       .dy - symbolic constraint deviation from linearization point
+%       .do - symbolic output deviation from linearization point
 %
 % Example: 
 %    sys = contDynamics('test',3,1,2);
@@ -27,164 +33,86 @@ function [vars,vars_der] = symVariables(varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: derivatives
 
-% Authors:       Matthias Althoff
+% Authors:       Matthias Althoff, Mark Wetzlinger, Tobias Ladner
 % Written:       18-January-2008
 % Last update:   06-July-2017
 %                05-November-2017
 %                14-January-2018
 %                19-November-2022 (MW, add outputs)
 %                03-February-2023 (SM, real symbolic variables)
+%                05-March-2024 (LL, consider nonlinearARX sys)
+%                07-October-2024 (MW, use auxiliary function)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin==1
-    obj=varargin{1};
-    type=[];
-elseif nargin==2
-    obj=varargin{1};
-    type=varargin{2};
-end
+narginchk(1,2);
+withBrackets = setDefaultValues({false},varargin);
 
-if strcmp(type,'LRbrackets')
-    %generate symbolic states
-    if isprop(obj,'dim') && obj.dim>0
-        for i=1:obj.dim
-            command=['x(',num2str(i),',1)=sym(''xL',num2str(i),'R'',''real'');'];
-            eval(command);
-            command=['dx(',num2str(i),',1)=sym(''dxL',num2str(i),'R'',''real'');'];
-            eval(command);
-        end
-    else
-        x = [];
-        dx = [];
-    end
+%%% TODO: fix possibly wrong usage of sys.nrOfStates for nonlinearARX and
+%%%       harmonize calls below
 
-    %generate symbolic inputs
-    if isprop(obj,'nrOfInputs') && obj.nrOfInputs>0
-        for i=1:obj.nrOfInputs 
-            command=['u(',num2str(i),',1)=sym(''uL',num2str(i),'R'',''real'');'];
-            eval(command);
-            command=['du(',num2str(i),',1)=sym(''duL',num2str(i),'R'',''real'');'];
-            eval(command);  
-        end  
-    else
-        u = [];
-        du = [];
-    end
-    
-    %generate symbolic constraint states
-    if isprop(obj,'nrOfConstraints') && obj.nrOfConstraints>0
-        for i=1:obj.nrOfConstraints
-            command=['y(',num2str(i),',1)=sym(''yL',num2str(i),'R'',''real'');'];
-            eval(command);
-            command=['dy(',num2str(i),',1)=sym(''dyL',num2str(i),'R'',''real'');'];
-            eval(command);
-        end 
-    else
-        y = [];
-        dy = [];
-    end
+% symbolic variables
+vars = struct('x',[],'u',[],'y',[],'o',[],'p',[]);
+% symbolic variables for deviation from linearization point
+vars_der = struct('x',[],'u',[],'y',[],'o',[]);
 
-    % generate symbolic outputs
-    if isprop(obj,'nrOfOutputs') && obj.nrOfOutputs>0
-        for i=1:obj.nrOfOutputs 
-            command=['o(',num2str(i),',1)=sym(''oL',num2str(i),'R'',''real'');'];
-            eval(command);
-            command=['do(',num2str(i),',1)=sym(''doL',num2str(i),'R'',''real'');'];
-            eval(command);  
-        end  
-    else
-        o = [];
-        do = [];
-    end
-    
-    %generate symbolic parameters
-    if isprop(obj,'nrOfParam') && obj.nrOfParam>0
-        for i=1:obj.nrOfParam
-            command=['p(',num2str(i),',1)=sym(''pL',num2str(i),'R'',''real'');'];
-            eval(command);
-        end 
-    else
-        p = [];
-    end
-    
+% states and inputs
+if isa(sys,'nonlinearARX')
+    vars.x = aux_symVector('x',sys.n_p*sys.nrOfOutputs,withBrackets);
+    vars_der.x = aux_symVector('dx',sys.n_p*sys.nrOfOutputs,withBrackets);
+    vars.u = aux_symVector('u',(sys.n_p+1)*sys.nrOfInputs,withBrackets);
+    vars_der.u = aux_symVector('du',(sys.n_p+1)*sys.nrOfInputs,withBrackets);
 else
-    %generate symbolic states
-    if isprop(obj,'dim') && obj.dim>0
-        for i=1:obj.dim
-            command=['x(',num2str(i),',1)=sym(''x',num2str(i),''',''real'');'];
-            eval(command);
-            command=['dx(',num2str(i),',1)=sym(''dx',num2str(i),''',''real'');'];
-            eval(command);
-        end
-    else
-        x = [];
-        dx = [];
-    end
-
-    %generate symbolic inputs
-    if isprop(obj,'nrOfInputs') && obj.nrOfInputs>0
-        for i=1:obj.nrOfInputs
-            command=['u(',num2str(i),',1)=sym(''u',num2str(i),''',''real'');'];
-            eval(command);
-            command=['du(',num2str(i),',1)=sym(''du',num2str(i),''',''real'');'];
-            eval(command);
-        end
-    else
-        u = [];
-        du = [];
-    end
-
-    %generate symbolic outputs
-    if isprop(obj,'nrOfOutputs') && obj.nrOfOutputs>0
-        for i=1:obj.nrOfOutputs
-            command=['o(',num2str(i),',1)=sym(''o',num2str(i),''',''real'');'];
-            eval(command);
-            command=['do(',num2str(i),',1)=sym(''do',num2str(i),''',''real'');'];
-            eval(command);
-        end
-    else
-        o = [];
-        do = [];
-    end
-    
-    %generate symbolic constraint states
-    if isprop(obj,'nrOfConstraints') && obj.nrOfConstraints>0
-        for i=1:obj.nrOfConstraints
-            command=['y(',num2str(i),',1)=sym(''y',num2str(i),''',''real'');'];
-            eval(command);
-            command=['dy(',num2str(i),',1)=sym(''dy',num2str(i),''',''real'');'];
-            eval(command);
-        end  
-    else
-        y = [];
-        dy = [];
-    end
-    
-    %generate symbolic parameters
-    if isprop(obj,'nrOfParam') && obj.nrOfParam
-        for i=1:obj.nrOfParam
-            command=['p(',num2str(i),',1)=sym(''p',num2str(i),''',''real'');'];
-            eval(command);
-        end   
-    else
-        p = [];
-    end  
+    vars.x = aux_symVector('x',sys.nrOfStates,withBrackets);
+    vars_der.x = aux_symVector('dx',sys.nrOfStates,withBrackets);
+    vars.u = aux_symVector('u',sys.nrOfInputs,withBrackets);
+    vars_der.u = aux_symVector('du',sys.nrOfInputs,withBrackets);
 end
 
-% combine variables
-vars.x = x;
-vars.u = u;
-vars.y = y;
-vars.o = o;
-vars.p = p;
+% algebraic constraints
+if isprop(sys,'nrOfConstraints')
+    vars.y = aux_symVector('y',sys.nrOfConstraints,withBrackets);
+    vars_der.y = aux_symVector('dy',sys.nrOfConstraints,withBrackets);
+else
+    vars.y = sym('y',[0,1]);
+    vars_der.y = sym('dy',[0,1]);
+end
 
-vars_der.x = dx;
-vars_der.u = du;
-vars_der.y = dy;
-vars_der.o = do;
+% outputs
+vars.o = aux_symVector('y',sys.nrOfOutputs,withBrackets);
+vars_der.o = aux_symVector('do',sys.nrOfOutputs,withBrackets);
+
+% parameters
+if isprop(sys,'nrOfParam')
+    vars.p = aux_symVector('p',sys.nrOfParam,withBrackets);
+else
+    vars.p = sym('p',[0,1]);
+end
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function symVars = aux_symVector(varName,nrVars,withBrackets)
+% withBrackets == true sandwiches the number in between 'L' and 'R'
+
+if withBrackets
+    % apparently, this case differentiation below is necessary...
+    if nrVars == 1
+        symVars = sym([varName 'L%dR'],[2,1],'real');
+        symVars = symVars(1);
+    else
+        symVars = sym([varName 'L%dR'],[nrVars,1],'real');
+    end
+else
+    symVars = sym(varName,[nrVars,1],'real');
+end
+
+end
+
 
 % ------------------------------ END OF CODE ------------------------------

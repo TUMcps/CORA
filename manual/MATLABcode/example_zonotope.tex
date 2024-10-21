@@ -1,0 +1,47 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                   
+ \hspace*{-1.6em}{\scriptsize 1}$  Z1 = zonotope([1 1 1; 1 -1 1]); $\color{mgreen}$% create zonotope Z1$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 2}$  Z2 = zonotope([-1 1 0; 1 0 1]); $\color{mgreen}$% create zonotope Z2$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 3}$  A = [0.5 1; 1 0.5]; $\color{mgreen}$% numerical matrix A$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 4}$  $\\
+ \hspace*{-1.6em}{\scriptsize 5}$  Z3 = Z1 + Z2; $\color{mgreen}$% Minkowski addition$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 6}$  Z4 = A*Z3; $\color{mgreen}$% linear map$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 7}$  $\\
+ \hspace*{-1.6em}{\scriptsize 8}$  figure; hold $\color{mred}$on$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 9}$  plot(Z1,[1 2],$\color{mred}$'b'$\color{black}$); $\color{mgreen}$% plot Z1 in blue$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 10}$  plot(Z2,[1 2],$\color{mred}$'g'$\color{black}$); $\color{mgreen}$% plot Z2 in green$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 11}$  plot(Z3,[1 2],$\color{mred}$'r'$\color{black}$); $\color{mgreen}$% plot Z3 in red$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 12}$  plot(Z4,[1 2],$\color{mred}$'k'$\color{black}$); $\color{mgreen}$% plot Z4 in black$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 13}$  $\\
+ \hspace*{-2em}{\scriptsize 14}$  P = polytope(Z4) $\color{mgreen}$% convert to and display halfspace representation$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 15}$  I = interval(Z4) $\color{mgreen}$% convert to and display interval$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 16}$  $\\
+ \hspace*{-2em}{\scriptsize 17}$  figure; hold $\color{mred}$on$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 18}$  plot(Z4); $\color{mgreen}$% plot Z4$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 19}$  plot(I,[1 2],$\color{mred}$'g'$\color{black}$); $\color{mgreen}$% plot intervalhull in green$\color{black}$$\\ 
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

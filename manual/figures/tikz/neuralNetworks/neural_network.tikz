@@ -1,0 +1,70 @@
+
+\begin{tikzpicture}[scale=0.9]
+    \footnotesize
+    \definecolor{CORAcolorBlue}{rgb}{0, 0.4470, 0.7410}
+
+    \tikzset{
+        every label/.style={font=\tiny,fill=white, inner sep=1pt, outer sep=0pt},
+        neuron/.style={circle,fill=CORAcolorBlue!75,draw=CORAcolorBlue,thick,inner sep={0.225cm}},
+        relu/.pic = {
+            \draw[black,thick] (-0.2,-0.1) -- (0,-0.1) -- (0.2,0.1);
+        },
+        weight/.style={fill=white, font=\tiny, inner sep=1pt, outer sep=0pt},
+        bias/.style={font=\tiny, inner sep=1pt, outer sep=0pt}
+    }
+
+    % draw neurons
+    % Layer 1
+    \node[neuron] (n1-1) at (0.000000,1.800000) {};
+    \node[neuron] (n1-2) at (0.000000,0.600000) {};
+    % Layer 2
+    \node[neuron] (n2-1) at (3.000000,2.800000) {}; \path (n2-1.center) pic {relu};
+    \node[neuron] (n2-2) at (3.000000,1.200000) {}; \path (n2-2.center) pic {relu};
+    \node[neuron] (n2-3) at (3.000000,-0.400000) {};  \path (n2-3.center) pic {relu};
+    % Layer 3
+    \node[neuron] (n3-1) at (6.000000,1.800000) {};  \path (n3-1.center) pic {relu};
+    \node[neuron] (n3-2) at (6.000000,0.600000) {};  \path (n3-2.center) pic {relu};
+
+    % draw biases
+    % Layer 1
+    \node[bias] (b1-1) at (0.5,-1) {$b_{1(1)}$};
+    \draw (b1-1) -- (n2-1);
+    \node[bias] (b1-2) at (1.5,-1) {$b_{1(2)}$};
+    \draw (b1-2) -- (n2-2);
+    \node[bias] (b1-3) at (2.5,-1) {$b_{1(3)}$};
+    \draw (b1-3) -- (n2-3);
+    % Layer 2
+    \node[bias] (b2-1) at (4.0,-1) {$b_{2(1)}$};
+    \draw (b2-1) -- (n3-1);
+    \node[bias] (b2-2) at (5.0,-1) {$b_{2(2)}$};
+    \draw (b2-2) -- (n3-2);
+
+    %% draw edges
+    % Layer 1
+    \draw (n1-1) -- (n2-1) node[weight,pos=0.25] {$W_{1(1,1)}$};
+    \draw (n1-1) -- (n2-2) node[weight,pos=0.75] {$W_{1(2,1)}$};
+    \draw (n1-1) -- (n2-3) node[weight,pos=0.75] {$W_{1(3,1)}$};
+    \draw (n1-2) -- (n2-1) node[weight,pos=0.75] {$W_{1(1,2)}$};
+    \draw (n1-2) -- (n2-2) node[weight,pos=0.75] {$W_{1(2,2)}$};
+    \draw (n1-2) -- (n2-3) node[weight,pos=0.25] {$W_{1(3,2)}$};
+    % Layer 2
+    \draw (n2-1) -- (n3-1) node[weight,pos=0.75] {$W_{2(1,1)}$};
+    \draw (n2-2) -- (n3-1) node[weight,pos=0.25] {$W_{2(1,2)}$};
+    \draw (n2-3) -- (n3-1) node[weight,pos=0.25] {$W_{2(1,3)}$};
+    \draw (n2-1) -- (n3-2) node[weight,pos=0.25] {$W_{2(2,1)}$};
+    \draw (n2-2) -- (n3-2) node[weight,pos=0.25] {$W_{2(2,2)}$};
+    \draw (n2-3) -- (n3-2) node[weight,pos=0.75] {$W_{2(2,3)}$};
+
+    % draw input
+    \node (x-1) at (-1.25,1.8) {$\nnInput_{(1)}$};
+    \draw[->] (x-1) -- (n1-1);
+    \node (x-2) at (-1.25,0.6) {$\nnInput_{(2)}$};
+    \draw[->] (x-2) -- (n1-2);
+
+    % draw output
+    \node (y-1) at (7.25,1.8) {$\nnOutput_{(1)}$};
+    \draw[->] (n3-1) -- (y-1);
+    \node (y-2) at (7.25,0.6) {$\nnOutput_{(2)}$};
+    \draw[->] (n3-2) -- (y-2);
+
+\end{tikzpicture}

@@ -1,0 +1,40 @@
+\subsection{Verified Global Optimization}
+
+For general nonlinear functions $f(x)$ it is often impossible to compute the global minimum or maximum. However, if the values for the variable $x$ are restricted to a certain domain, the approach from \cite{Makino2005} can be applied to compute the minimum or maximum on the domain with a certain precision. In CORA, the approach from \cite{Makino2005} is implemented in the method \texttt{globVerMinimization}: Given a nonlinear function $f: \Rn \to \R$ and an interval domain $\mathcal{D} \subset \Rn$, the method \texttt{globVerMinimization} computes the global minimum of $f(x)$ on $\mathcal{D}$ with precision~$\epsilon$:
+\begin{align*}
+	\begin{split}
+	& [\hat{f}^{opt},\hat{x}^{opt},\mathcal{D}^{opt}] = \texttt{globVerMinimization}(f,\mathcal{D},\epsilon), \\
+	& ~ \\
+	& \text{with} ~~ \hat{f}^{opt} \in f^{opt} \oplus [-\epsilon,\epsilon], ~~f^{opt} =  \min_{x \in \mathcal{D}} f(x), \\
+	& ~~~~~~~~ x^{opt} \in \mathcal{D}^{opt}, ~~ x^{opt} = \argmin_{x \in \mathcal{D}} f(x),
+	\end{split}
+\end{align*}
+where $\hat{x}^{opt} \in \mathcal{D}^{opt}$ is the most likely position of the global minimum, the function $f(x)$ is provided as a MATLAB function handle, and the domain $\mathcal{D}$ is represented as an object of class \texttt{interval} (see \cref{sec:interval}).
+
+Note that for computing the global maximum, one can just minimize the negated function $-f(x)$. To compute both, the minimum and the maximum, one can use the method \texttt{globVerBounds}.
+
+To demonstrate verified global optimization in CORA, we consider the example of the Beale function (see \cite[Sec.~6]{Makino2005}), which has the global minimum $f^{opt} = 0$ at the point $x^{opt} = [3,0.5]^T$:
+
+\begin{center}
+\begin{minipage}[t]{0.65\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_verGlobOpt}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{10pt}
+	\begin{verbatim}
+		Command Window:	
+	
+val =
+  -2.7163e-06
+  
+domOpt =
+
+  [3.00037,3.00092]
+  [0.49966,0.50011]
+  
+  
+	\end{verbatim}
+\end{minipage}
+\end{center}

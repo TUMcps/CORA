@@ -48,9 +48,7 @@ for i=1:nTests
     sym_res = simplify(f_val-fres_val);
     for j=1:n
         cj = coeffs(sym_res(j),x(~ind_res));
-        if any(cj>1e-8)
-            res = false; return
-        end
+        assertLoop(all(cj <= 1e-8),i,j)
     end
 end
 

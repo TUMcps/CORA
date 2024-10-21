@@ -1,13 +1,13 @@
-function R = observe_interval(obj,options)
+function R = observe_interval(linsysDT,params,options)
 % observe_interval - computes the guaranteed state estimation 
-% approach according to the interval approach, see Alg. 1 in [1].
-%
+%    approach according to the interval approach, see Alg. 1 in [1].
 %
 % Syntax:
-%    R = observe_interval(obj,options)
+%    R = observe_interval(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -17,8 +17,6 @@ function R = observe_interval(obj,options)
 %    [1] M. Althoff and J. J. Rath. Comparison of Set-Based Techniques 
 %        for Guaranteed State Estimation of Linear Disturbed Systems, 
 %        in preparation.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -36,22 +34,20 @@ function R = observe_interval(obj,options)
 %%initialize computation
 
 %time period
-tVec = options.tStart:options.timeStep:options.tFinal-options.timeStep;
+tVec = params.tStart:options.timeStep:params.tFinal-options.timeStep;
 timeSteps = length(tVec);
 
 % initialize parameter for the output equation
 R = cell(length(tVec),1);
 
 % store first reachable set
-R{1} = options.R0;
-
+R{1} = params.R0;
 
 %% initialize
-x = center(options.R0);
-D = -options.L*options.V + options.W;
-R_x = options.R0;
+x = center(params.R0);
+D = -options.L*params.V + params.W;
+R_x = params.R0;
 R_wv = zeros(length(x),1);
-
 
 %% loop over all time steps
 for i = 1:timeSteps-1
@@ -63,13 +59,13 @@ for i = 1:timeSteps-1
     R{i+1} = x + E;
     
     % update state
-    x = obj.A*x + obj.B*options.uTransVec(:,i) + options.L*(options.y(:,i) - obj.C*x);
+    x = linsysDT.A*x + linsysDT.B*params.uTransVec(:,i) ...
+        + options.L*(params.y(:,i) - linsysDT.C*x);
 
     % Update auxiliary sets
-    R_x = (obj.A - options.L*obj.C)*R_x; 
+    R_x = (linsysDT.A - options.L*linsysDT.C)*R_x; 
     R_wv = R_wv + box(D);
-    D = (obj.A - options.L*obj.C)*D;
+    D = (linsysDT.A - options.L*linsysDT.C)*D;
 end
-
 
 % ------------------------------ END OF CODE ------------------------------

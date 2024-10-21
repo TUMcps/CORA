@@ -77,29 +77,28 @@ for i=1:nrOfTests
 
     % checks
     % no generator matrix (no A,b)
-    if size(cZ_noG_,2) ~= 0
-        res = false; break;
-    end
+    assertLoop(size(cZ_noG_,2) == 0,i)
+
     % full G, no A,b
-    if size(cZ_noAb_,2) ~= nrGens || ~compareMatrices(G,cZ_noAb_)
-        res = false; break;
-    end
+    assertLoop(size(cZ_noAb_,2) == nrGens,i)
+    assertLoop(compareMatrices(G,cZ_noAb_),i)
+
     % full G,A,b
-    if size(cZ_,2) ~= nrGens || ~compareMatrices(G,cZ_)
-        res = false; break;
-    end
+    assertLoop(size(cZ_,2) == nrGens,i)
+    assertLoop(compareMatrices(G,cZ_),i)
+
     % G with zeros, no A,b
-    if size(cZ_Gzeros_noAb_,2) ~= nrGens || ~compareMatrices(Gzeros,cZ_Gzeros_noAb_)
-        res = false; break;
-    end
+    assertLoop(size(cZ_Gzeros_noAb_,2) == nrGens,i)
+    assertLoop(compareMatrices(Gzeros,cZ_Gzeros_noAb_),i)
+
     % full G, A,b with zeros
-    if size(cZ_Abzeros_,2) ~= nrGens || ~compareMatrices(G,cZ_Abzeros_)
-        res = false; break;
-    end
+    assertLoop(size(cZ_Abzeros_,2) == nrGens,i)
+    assertLoop(compareMatrices(G,cZ_Abzeros_),i)
+
     % G,A,b with zeros
-    if size(cZ_GAbzeros_,2) ~= nrGens || ~compareMatrices(Gzeros,cZ_GAbzeros_)
-        res = false; break;
-    end
+    assertLoop(size(cZ_GAbzeros_,2) == nrGens,i)
+    assertLoop(compareMatrices(Gzeros,cZ_GAbzeros_),i)
+
 
 end
 

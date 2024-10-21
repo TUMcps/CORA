@@ -57,10 +57,8 @@ for i=1:nrTests
     Zproj = project(Z,projDims);
     
     % check projections return the same result
-    if ~compareMatrices(cproj,center(Zproj)) ...
-            || ~compareMatrices(Gproj,generators(Zproj))
-        res = false; return
-    end
+    assertLoop(compareMatrices(cproj,center(Zproj)),i)
+    assertLoop(compareMatrices(Gproj,generators(Zproj)),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

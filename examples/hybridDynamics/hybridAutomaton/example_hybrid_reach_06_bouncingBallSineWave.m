@@ -62,19 +62,20 @@ inv = levelSet(eq,[x;y;vx;vy],'<=');
 guard = levelSet(-eq,[x;y;vx;vy],'==');
 
 % reset function
-reset.f = @(x,u) [x(1); ...
-         x(2); ... 
-         ((1-0.8*cos(x(1))^2)*x(3)+1.8*cos(x(1))*x(4))/(1+cos(x(1))^2); ...
-         (1.8*cos(x(1))*x(3)+(-0.8+cos(x(1))^2)*x(4))/(1+cos(x(1))^2)];
+reset = nonlinearReset(...
+    @(x,u) [x(1); ...
+            x(2); ... 
+            ((1-0.8*cos(x(1))^2)*x(3)+1.8*cos(x(1))*x(4))/(1+cos(x(1))^2); ...
+            (1.8*cos(x(1))*x(3)+(-0.8+cos(x(1))^2)*x(4))/(1+cos(x(1))^2)]);
 
 % transitions
 trans = transition(guard,reset,1);
 
 % location object
-loc = location(inv,trans,sys); 
+loc = location(inv,trans,sys);
 
 % hybrid automaton
-HA = hybridAutomaton(loc);
+HA = hybridAutomaton('bouncingBallSineWave',loc);
 
 
 % Reachability Analysis ---------------------------------------------------

@@ -23,32 +23,21 @@ function res = test_ellipsoid_isIntersecting
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-load cases.mat E_c
+% init cases
+E1 = ellipsoid([ 5.4387811500952807 12.4977183618314545 ; 12.4977183618314545 29.6662117284481646 ], [ -0.7445068341257537 ; 3.5800647524843665 ], 0.000001);
+E0 = ellipsoid([ 0.0000000000000000 0.0000000000000000 ; 0.0000000000000000 0.0000000000000000 ], [ 1.0986933635979599 ; -1.9884387759871638 ], 0.000001);
+
 res = true;
 
 % empty set: rewrite using emptySet class
-% res = ~ isIntersecting(E_c{1}.E1,ellipsoid.empty(2));
+assert(~isIntersecting(E1,ellipsoid.empty(2)));
 
-% loop over cases
-for i=1:length(E_c)
-    E1 = E_c{i}.E1;
-    Ed1 = E_c{i}.E1;
-    E0 = E_c{i}.E0;
-    
-    E0 = ellipsoid(E0.Q,E1.q);
-    
-    if ~isIntersecting(E1,E0)
-        res = false;
-        break;
-    end
-    
-    r1 = rad(interval(E1));
-    rd1 = rad(interval(Ed1));
-    Ed1 = ellipsoid(Ed1.Q,Ed1.q+r1+rd1);
-    if isIntersecting(Ed1,E1)
-        res = false;
-        break;
-    end
+E0 = ellipsoid(E0.Q,E1.q);
+assert(isIntersecting(E1,E0))
+
+r1 = rad(interval(E1));
+E2 = ellipsoid(E1.Q,E1.q+2*r1);
+assert(~isIntersecting(E2,E1))
     
 end
 

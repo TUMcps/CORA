@@ -1,15 +1,15 @@
-function linSys = generateRandom(varargin)
+function linsys = generateRandom(varargin)
 % generateRandom - Generates a random linear system of the form
 %    x' = Ax + Bu
 %    y  = Cx
 %
 % Syntax:
-%    linSys = linearSys.generateRandom()
-%    linSys = linearSys.generateRandom('Dimension',n)
-%    linSys = linearSys.generateRandom('Dimension',n,...
+%    linsys = linearSys.generateRandom()
+%    linsys = linearSys.generateRandom('Dimension',n)
+%    linsys = linearSys.generateRandom('Dimension',n,...
 %               'InputDimension',nrInputs,'OutputDimension',nrOutputs)
-%    linSys = linearSys.generateRandom('Dimension',n,'RealInterval',realInt)
-%    linSys = linearSys.generateRandom('Dimension',n,'RealInterval',realInt,...
+%    linsys = linearSys.generateRandom('Dimension',n,'RealInterval',realInt)
+%    linsys = linearSys.generateRandom('Dimension',n,'RealInterval',realInt,...
 %               'ImaginaryInterval',imagInt)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function linSys = generateRandom(varargin)
 %       <'ImaginaryInterval',imagInt> - interval for imaginary part of eigenvalues
 %
 % Outputs:
-%    linSys - random linear system
+%    linsys - random linear system
 %
 % Example: 
-%    linSys1 = linearSys.generateRandom();
-%    linSys2 = linearSys.generateRandom('StateDimension',3);
-%    linSys3 = linearSys.generateRandom('StateDimension',5,...
+%    linsys1 = linearSys.generateRandom();
+%    linsys2 = linearSys.generateRandom('StateDimension',3);
+%    linsys3 = linearSys.generateRandom('StateDimension',5,...
 %       'RealInterval',interval(-5,-1),'ImaginaryInterval',interval(-1,1));
 %
 % Other m-files required: none
@@ -133,6 +133,6 @@ B = randn(n,nrInputs);
 C = randn(nrOutputs,n);
 
 % instantiate linear system​
-linSys = linearSys(A,B,[],C);
+linsys = linearSys(A,B,[],C);
 
 % ------------------------------ END OF CODE ------------------------------

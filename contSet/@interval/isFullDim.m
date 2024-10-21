@@ -34,7 +34,7 @@ function res = isFullDim(I)
 if representsa_(I,'emptySet',eps)
     res = false;
 else
-    res = ~any(withinTol(rad(I),0)); 
+    res = ~any(withinTol(rad(I),0),"all"); 
 end
 
 % ------------------------------ END OF CODE ------------------------------

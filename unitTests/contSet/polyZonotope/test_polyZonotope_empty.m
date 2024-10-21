@@ -23,19 +23,17 @@ function res = test_polyZonotope_empty
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % 1D
 n = 1;
 pZ = polyZonotope.empty(n);
-res(end+1,1) = representsa(pZ,'emptySet') && dim(pZ) == 1;
+assert(representsa(pZ,'emptySet') && dim(pZ) == 1);
 
 % 5D
 n = 5;
-pZ = halfspace.empty(n);
-res(end+1,1) = representsa(pZ,'emptySet') && dim(pZ) == 5;
+pZ = polyZonotope.empty(n);
+assert(representsa(pZ,'emptySet') && dim(pZ) == 5);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

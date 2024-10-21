@@ -4,6 +4,7 @@ function I = interval(pZ,varargin)
 % Syntax:
 %    I = interval(pZ)
 %    I = interval(pZ,method)
+%    I = interval(pZ,'split',splits)
 %
 % Inputs:
 %    pZ - polyZonotope object
@@ -14,6 +15,7 @@ function I = interval(pZ,varargin)
 %              'bnbAdv': taylor models with advandced bnb-algorithm
 %              'globOpt': verified global optimization 
 %              'bernstein': conversion to a bernstein polynomial
+%    splits - number of splits for 'split'
 %
 % Outputs:
 %    I - interval object
@@ -45,8 +47,8 @@ function I = interval(pZ,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% parse input arguemnts
-method = setDefaultValues({'interval'},varargin);
+% parse input arguments
+[method,splits] = setDefaultValues({'interval',8},varargin);
 
 % check input arguments
 inputArgsCheck({{pZ,'att','polyZonotope'};
@@ -87,7 +89,7 @@ else
     for i = 1:n
         e_ = e;
         e_(i) = 1;
-        I(i) = supportFunc_(pZ,e_,'range',method,8,1e-3);
+        I(i) = supportFunc_(pZ,e_,'range',method,splits,1e-3);
     end
 
 end

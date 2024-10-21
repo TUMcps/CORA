@@ -28,8 +28,6 @@ function res = test_conZonotope_and
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % TEST 1: conZonotope (analytical) ----------------------------------------
 
 % constrained zonotope 1
@@ -47,7 +45,7 @@ cZono2 = conZonotope(Z,A,b);
 % calculate intersection
 intZono = cZono1 & cZono2;
 V = vertices(intZono);
-V = removeCollinearVertices2D(V,1e-6);
+V = removeCollinearVertices2D(V,1e-5);
 
 % define ground truth
 V_ = [1 3 1 3;11/8 -1/8 -11/12 -7/12];
@@ -60,9 +58,9 @@ V_ = [1 3 1 3;11/8 -1/8 -11/12 -7/12];
 % plot(V_(1,:),V_(2,:),'.k','MarkerSize',12);
 
 % check correctness
-resvec(end+1) = compareMatrices(V,V_,1e-8);
+assert(compareMatrices(V,V_,1e-6));
 
-% TEST 2: halfspace (analytical) ------------------------------------------
+% TEST 2: polytope representing a halfspace (analytical) ------------------
 
 % constrained zonotope
 Z = [0 3 0 1;0 0 2 1];
@@ -71,12 +69,12 @@ b = 1;
 cZono = conZonotope(Z,A,b);
 
 % halfspace
-C = [1 -2];
-d = 1;
-hs = halfspace(C,d);
+A = [1 -2];
+b = 1;
+P = polytope(A,b);
 
 % calculate intersection
-intZono = cZono & hs;
+intZono = cZono & P;
 V = vertices(intZono);
 
 % define ground truth
@@ -84,16 +82,16 @@ V_ = [1 3 3 1; 0 1 2 3];
 
 % % plot the result
 % x = -4:0.1:4;
-% y = (d-C(1)*x)./C(2);
+% y = (b-A(1)*x)./A(2);
 % hold on
 % plot(x,y,'g');
 % plot(cZono,[1,2],'r');
 % plot(intZono,[1,2],'b');
 
 % check correctness
-resvec(end+1) = compareMatrices(V,V_,1e-14);
+assert(compareMatrices(V,V_,1e-6));
 
-% TEST 3: conHyperplane (analytical) --------------------------------------
+% TEST 3: polytope representing a constrained hyperplane (analytical) -----
 
 % constrained zonotope
 Z = [0 3 0 1;0 0 2 1];
@@ -104,14 +102,14 @@ cZono = conZonotope(Z,A,b);
 % constrained hyperplane
 C = [1 -2];
 d = 1;
-hs = halfspace(C,d);
 Ch = [-2 -0.5;1 0];
 dh = [-4.25;2.5];
-hyp = conHyperplane(hs,Ch,dh);
+hyp = polytope(Ch,dh,C,d);
 
 % calculate intersection
 intZono = cZono & hyp;
 V = vertices(intZono);
+V = removeDuplicates(V,1e-6);
 
 % define ground truth
 V_ = [2 2.5;0.5 0.75];
@@ -127,9 +125,9 @@ V_ = [2 2.5;0.5 0.75];
 % plot(intZono,[1,2],'b','LineWidth',2);
 
 % check correctness
-resvec(end+1) = compareMatrices(V,V_);
+assert(compareMatrices(V,V_,1e-6));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,0 +1,50 @@
+\subsection{Neural Networks in CORA}
+\label{sec:neuralNetworkInit}
+
+Neural networks are represented in CORA as objects of the class \texttt{neuralNetwork}.
+They can be initialized directly in CORA or imported from a file using various formats, e.g., ONNX.
+Currently, CORA mainly supports feed-forward neural networks (see \cref{fig:neuralNetwork}) with various activation functions.
+
+\begin{figure}[htb]
+  \centering	
+    \footnotesize
+  	\includetikz{./figures/tikz/neuralNetworks/neural_network}
+    \caption{Feed-forward neural network with $\numLayers = 2$ layers.}
+    \label{fig:neuralNetwork}
+\end{figure}
+
+An object of class \texttt{neuralNetwork} can be constructed as follows:
+\begin{center}
+	\texttt{nn = neuralNetwork(layers)},
+\end{center}
+where \texttt{layers} is a cell array of length $\numLayers$ filled with objects of type \texttt{nnLayer}.
+For a network~$\NN\colon\R^{\numNeurons_0}\to\R^{\numNeurons_{\numLayers}}$ with input~$\nnInput\in\R^{\numNeurons_0}$ and output~$\nnOutput\in\R^{\numNeurons_\numLayers}$,
+each layer $k\in[\numLayers]$ computes $\nnHidden_k = \nnLayer{k}{}{\nnHidden_k-1}\in\R^{\numNeurons_k}$,
+where $\nnHidden_0 = \nnInput$ and $\nnOutput = \nnHidden_\numLayers$ and thus obtaining $\nnOutput=\NN(\nnInput)$.
+Currently, the following layers are supported in CORA:
+
+\begin{center}
+	\renewcommand{\arraystretch}{1.3}
+	\begin{tabular}[t]{l p{11cm} }
+		$\bullet$~\textbf{\texttt{nnLinearLayer(W, b)}} & Linear layer computing $\nnLayer{k}{LIN}{\nnHidden_{k-1}}=W_k\nnHidden_{k-1} + b_k$ with weight matrix $W \in \R^{\numNeurons_k \times \numNeurons_{k-1}}$ and bias $b\in\R^{\numNeurons_k}$ (\cref{fig:neuralNetwork}).\\
+		$\bullet$~\textbf{\texttt{nnActivationLayer()}} & Abstract activation layer computing $\nnLayer{k}{ACT}{\nnHidden_{k-1}}=\nnActFun(\nnHidden_{k-1})$, where $\nnActFun$ is the corresponding element-wise activation function. \\
+		$\bullet$~\textbf{\texttt{nnLeakyReLULayer()}} & \texttt{nnActivationLayer()} with $\nnActFun(\nnHidden_{k-1}) = \max(\alpha \nnHidden_{k-1}, \nnHidden_{k-1}),\ \alpha\in\R$ with default $\alpha=0.01$. \\
+		$\bullet$~\textbf{\texttt{nnReLULayer()}} & \texttt{nnLeakyReLULayer()} with $\alpha=0$, thus $\nnActFun(\nnHidden_{k-1}) = \max(0, \nnHidden_{k-1})$. \\
+		$\bullet$~\textbf{\texttt{nnSigmoidLayer()}} & \texttt{nnActivationLayer()} with $\nnActFun(\nnHidden_{k-1}) = \text{sigmoid}(\nnHidden_{k-1})$. \\
+		$\bullet$~\textbf{\texttt{nnTanhLayer()}} & \texttt{nnActivationLayer()} with $\nnActFun(\nnHidden_{k-1}) = \tanh(\nnHidden_{k-1})$. \\
+	\end{tabular}
+\end{center}
+
+Let us demonstrate the \texttt{neuralNetwork} class by the following example, which constructs a neural network with the same structure as the one shown in \cref{fig:neuralNetwork}:
+
+\begin{center}
+\begin{minipage}[t]{0.9\textwidth}
+{\footnotesize  \input{./MATLABcode/example_neuralNetwork}}
+\end{minipage}
+\end{center}
+
+While the example initializes a random neural network, one can also import neural networks into CORA from various common neural network formats.
+CORA currently supports ONNX, NNet, YML, Sherlock, and the conversion for neural networks coming from the Deep Learning Toolbox.
+Please note that additional toolboxes are required for the ONNX import (see \cref{sec:installation}).
+
+Please visit \texttt{./cora/nn} for further details.

@@ -1,5 +1,5 @@
 function res = isequal(P,S,varargin)
-% isequal - check ifs two polytopes are equal
+% isequal - checks if a polytope is equal to another set or point
 %
 % Syntax:
 %    res = isequal(P,S)
@@ -39,36 +39,52 @@ function res = isequal(P,S,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,3);
+
 % set default values
 tol = setDefaultValues(1e-6,varargin);
 
-% check dimensions
-try
-    equalDimCheck(P,S);
-catch ME
-    % P and S have a different ambient dimension
-    res = false; return
+% check input arguments
+inputArgsCheck({{P,'att',{'polytope','numeric'}};
+                {S,'att',{'contSet','numeric'}};
+                {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
+
+% ensure that numeric is second input argument
+[P,S] = reorderNumeric(P,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < P.precedence
+    res = isequal(S,P,tol);
+    return
+end
+
+% ambient dimensions must match
+if ~equalDimCheck(P,S,true)
+    res = false;
+    return
 end
 
 % handle fully empty polytope objects
 if representsa_(P,'fullspace',0)
-    res = representsa_(S,'fullspace',0); return;
+    res = representsa_(S,'fullspace',0);
+    return
 elseif representsa_(S,'fullspace',0)
     % if P were fullspace, we would have entered to if-branch above
-    res = false; return
+    res = false;
+    return
 end
 
-% one-dimensional case
+% general one-dimensional case
 if dim(P) == 1
     res = aux_isequal_1D(P,S,tol); return
 end
 
-% quick check for polytopes: check emptiness, boundedness, and degeneracy
-if isa(S,'polytope') && aux_diffProperties(P,S)
-    res = false; return
-end
-
 if isa(S,'polytope')
+    % quick check: check emptiness, boundedness, and degeneracy
+    if aux_diffProperties(P,S)
+        res = false; return
+    end
+
     % fast check if both are V-polytopes
     if P.isVRep.val && S.isVRep.val
         res = aux_isequal_Vpoly_Vpoly(P,S);
@@ -80,7 +96,7 @@ if isa(S,'polytope')
     S_isnondeg = isFullDim(S);
 
     if P_isnondeg ~= S_isnondeg
-        res = false; return;
+        res = false;
     elseif P_isnondeg % S_isnondeg == true, too
         % both are non-degenerate
         res = aux_isequal_nondeg(P,S,tol);
@@ -88,28 +104,29 @@ if isa(S,'polytope')
         % for degenerate polytopes, we check mutual containment
         res = contains_(P,S,'exact',tol) && contains_(S,P,'exact',tol);
     end
+    return
+end
 
-elseif isnumeric(S)
-    % avoid comparison with matrices (we do not assume that matrices are
-    % point clouds representing V-polytopes here!)
-    if size(S,2) > 1
-        throw(CORAerror('CORA:noops',P,S));
-    end
-
-    % S is a single point
+% numeric
+if isnumeric(S) && size(S,2) == 1
+    % polytope must represent a single point
     if ~representsa_(P,'point',tol)
         res = false;
     else
-        % compute vertex
+        % compute that single point and check for equality up to tolerance
         V = vertices(P);
         res = all(withinTol(V,S,tol));
     end
-
-else
-    % check mutual containment for all other set representations
-    res = contains_(P,S,'exact',tol) && contains_(S,P,'exact',tol);
-
+    return
 end
+
+% check mutual containment for all other set representations
+if isa(S,'contSet')
+    res = contains_(P,S,'exact',tol) && contains_(S,P,'exact',tol);
+    return
+end
+
+throw(CORAerror('CORA:noops',P,S));
 
 end
 
@@ -177,11 +194,11 @@ function res = aux_isequal_Vpoly_Vpoly(P,S)
 % Quickhull algorithm instead of checking for the mutual containment of all
 % points using LPs
 tol = 1e-10;
-P = compact_(P,'V',tol);
-S = compact_(S,'V',tol);
+P_V = priv_compact_V(P.V_.val,tol);
+S_V = priv_compact_V(S.V_.val,tol);
 
 % the matrices storing the vertices must be equal up to permutation
-res = compareMatrices(P.V_.val, S.V_.val, tol, "equal");
+res = compareMatrices(P_V, S_V, tol, "equal");
 
 end
 
@@ -189,17 +206,19 @@ function res = aux_isequal_nondeg(P,S,tol)
 % quicker check for set equality between two non-degenerate polytopes
 
 % ensure that both have H representation
-constraints(P);
-constraints(S);
+[P_A,P_b,P_Ae,P_be] = constraints(P);
+[S_A,S_b,S_Ae,S_be] = constraints(S);
 
 % row-wise normalization
-P = normalizeConstraints(P,'A');
-S = normalizeConstraints(S,'A');
+[P_A,P_b,P_Ae,P_be] = priv_normalizeConstraints(P_A,P_b,P_Ae,P_be,'A');
+[S_A,S_b,S_Ae,S_be] = priv_normalizeConstraints(S_A,S_b,S_Ae,S_be,'A');
 
 % rewrite equalities as inequalities (otherwise we'd have to cross check)
 % and unify with offset vector
-P_Ab = [[P.A_.val; P.Ae_.val; -P.Ae_.val], [P.b_.val; P.be_.val; P.be_.val]];
-S_Ab = [[S.A_.val; S.Ae_.val; -S.Ae_.val], [S.b_.val; S.be_.val; S.be_.val]];
+[P_A,P_b] = priv_equalityToInequality(P_A,P_b,P_Ae,P_be);
+[S_A,S_b] = priv_equalityToInequality(S_A,S_b,S_Ae,S_be);
+P_Ab = [P_A,P_b];
+S_Ab = [S_A,S_b];
 
 % loop over all halfspaces of P
 % save indices of matched rows in S_Ab

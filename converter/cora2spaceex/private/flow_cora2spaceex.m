@@ -28,7 +28,7 @@ function flow_cora2spaceex(obj, location, docNode)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-x = sym('x',[obj.dim,1]);
+x = sym('x',[obj.nrOfStates,1]);
 u = sym('u',[obj.nrOfInputs,1]);
 
 % ---------------------------------------------------------------------
@@ -59,11 +59,11 @@ end
 % ---------------------------------------------------------------------
 % convert the equation to a character sequence
 eqs ='';
-for idx = 1:obj.dim
+for idx = 1:obj.nrOfStates
     x = sprintf('x%d''', idx); % first derivative of x_n
     eq_c = char(eq(idx));
     eq_c = [x, ' == ', eq_c];
-    if idx ~= obj.dim;  eq_c = [eq_c,newline,' & ']; end
+    if idx ~= obj.nrOfStates;  eq_c = [eq_c,newline,' & ']; end
     eqs = [eqs,eq_c];
 end
 

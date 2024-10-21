@@ -23,11 +23,9 @@ function res = test_taylm_dim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % scalar case
 tay = taylm(interval(1));
-resvec(end+1) = dim(tay) == 1;
+assert(dim(tay) == 1);
     
 % higher-dimensional case
 lb = [-3; -2; -5];
@@ -36,9 +34,9 @@ I = interval(lb,ub);
 tay = taylm(I);
 
 % compute dimension
-resvec(end+1) = dim(tay) == 3;
+assert(dim(tay) == 3);
 
 % combine results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,0 +1,44 @@
+\subsubsection{cora2spaceex} \label{sec:cora2spaceex}
+
+The operation \texttt{cora2spaceex} convertes a dynamical system represented as a CORA object to a SpaceEx model \cite{Donze2013}. The syntax is as follows:
+\begin{equation*}
+	\texttt{cora2spaceex}(\texttt{sys},\texttt{fileName}),
+\end{equation*} 
+with the input arguments
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{sys} &  dynamic system represented as an object of class \texttt{linearSys} (see \cref{sec:linearSystems}), \texttt{nonlinearSys} (see \cref{sec:nonlinearSystems}), or \texttt{hybridAutomaton} (see \cref{sec:hybridAutomaton}). \\
+	$\bullet$~\texttt{fileName} & name of the converted SpaceEx file.
+\end{tabular}
+\end{center}
+
+Let us demonstrate the operation \texttt{cora2spaceex} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.45\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_cora2spaceex}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+	\vspace{0pt}
+	\centering
+	\footnotesize
+	\begin{verbatim}
+		<?xml version="1.0" encoding="utf-8"?>
+<sspaceex math="spaceex" version="2.0">
+   <component id="model">
+      <param name="x1" type="real"/>
+      <param name="x2" type="real"/>
+      <location id="1">
+         <invariant/>
+         <flow>
+            x1' == x2 &amp; 
+            x2' == - x1 - x2*(x1^2 - 1)
+         </flow>
+      </location>
+   </component>
+</sspaceex>
+	\end{verbatim}
+\end{minipage}
+\end{center}

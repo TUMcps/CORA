@@ -37,45 +37,38 @@ function Z = and_(Z,S,method,varargin)
 %                11-November-2019 (NK, added algorithm for general case)
 %                12-February-2020 (AA, adding averaging option)
 % Last revision: 27-March-2023 (MW, rename and_)
+%                28-September-2024 (MW, integrate precedence)
 
 % ------------------------------ BEGIN CODE -------------------------------
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < Z.precedence
+    Z = and_(S,Z,method,varargin{:});
+    return
+end
+
+% only zonotope/interval
 
 % quick check: simpler function for intervals
 if representsa_(Z,'interval',eps) && representsa_(S,'interval',eps)
     % conversion to intervals exact
-    Z = zonotope(and_(interval(Z),interval(S),'exact')); return
+    Z = zonotope(and_(interval(Z),interval(S),'exact'));
+    return
 end
 
-% special algorithm for two parallelotopes with the same center
-if isa(S,'levelSet') || isa(S,'conZonotope') || ...
-   isa(S,'zonoBundle') || isa(S,'conPolyZono')
-    
-    Z = and_(S,Z,'exact');
-    
-elseif strcmp(method,'conZonotope')
-    
-    % convert sets to constrained zonotopes
-    Z = conZonotope(Z);
-    
-    if ~isa(S,'halfspace') && ~isa(S,'conHyperplane')
-        S = conZonotope(S);
-    end
-    
-    % compute intersection
-    Z = and_(Z,S,'exact');
-    
-    % conclose resulting constrained zonotope by a zonotope
-    Z = zonotope(Z);
-
-elseif strcmp(method,'averaging')
-    
-    list{1} = Z;
-    list{2} = S;
-    Z = andAveraging(list);
-    
-else
-    % throw error for given arguments
-    throw(CORAerror('CORA:noops',Z,S));
+if strcmp(method,'conZonotope')
+    % convert sets to constrained zonotopes, enclose the resulting
+    % intersection by a zonotope
+    Z = zonotope(and_(conZonotope(Z),conZonotope(S),'exact'));
+    return
 end
+
+if strcmp(method,'averaging')
+    Z = priv_andAveraging({Z,S},varargin{:});
+    return    
+end
+
+% throw error for given arguments
+throw(CORAerror('CORA:noops',Z,S));
 
 % ------------------------------ END OF CODE ------------------------------

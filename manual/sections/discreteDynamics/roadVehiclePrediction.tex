@@ -1,0 +1,31 @@
+\subsection{Stochastic Prediction of Road Vehicles} \label{sec:roadVehiclePrediction}
+
+An important application of abstracting hybrid dynamics to Markov chains is the probabilistic prediction of traffic participants as presented in, e.g., \cite{Althoff2009a,Althoff2011d}. The probabilistic information allows one not only to check if a planned path of an autonomous vehicle may result in a crash, but also with which probability. Consequently, possible driving strategies of autonomous cars can be evaluated according to their safety. Traffic participants are abstracted by Markov chains as presented in \cref{sec:MarkovChains}. There are three properties which are in favor of the Markov chain approach: The approach can handle the hybrid dynamics of traffic participants, the number of continuous state variables (position and velocity) is low, and Markov chains are computationally inexpensive when they are not too large.
+
+We provide all numerical examples presented in \cite[Sec.~5]{Althoff2010a}. Please note that the code is not as clean as for the core CORA classes since this part of the code is not a foundation for other implementations, but rather a demonstration of probabilistic predictions of road traffic. To replicate the braking scenario in \cite[Sec.~5]{Althoff2010a}, perform the following steps:
+\begin{enumerate}
+ \item Run \texttt{/discrDynamics/}\allowbreak\texttt{ProbOccupancyPrediction/}\allowbreak\texttt{intersection/}\allowbreak \\ \texttt{start\_intersectionDatabase} to obtain an intersection database. The result is a structure \texttt{fArray}. Caution: Executing this function can take several hours.
+ \item Run \texttt{start\_carReach} to compute the Markov chain of a traffic participant. You have to select the corresponding \texttt{fArray} file to make sure that the segment length of the path is consistent. The type of traffic participant is exchanged by exchanging the loaded hybrid automaton model, e.g., to load the bicycle model use \texttt{[HA,...]~=~}\texttt{initBicycle(}\texttt{fArray.} \\ \texttt{segmentLength)}. Finally, save the resulting probabilistic model. Caution: Executing this function can take several hours.
+ \item (optional) Instead of computing the Markov chain by simulations, one can compute it using reachability analysis by using \texttt{carReach\_reach}.
+ \item Select the scenario; each scenario requires to load a certain amount of MC models. The following set of scenarios are currently available:
+ \begin{itemize}
+  \item braking
+  \item intersectionCrossing
+  \item knownBehavior
+  \item laneChange
+  \item merging
+  \item overtaking
+  \item straightVScurved
+ \end{itemize}
+\end{enumerate}
+
+As an example, the outcome of the braking scenario is described subsequently. The interaction between vehicles in a lane is demonstrated for $3$ cars driving one after the other. The cars are denoted by the capital letters $A$, $B$, and $C$, where $A$ is the first and $C$ the last vehicle in driving direction. Vehicle $A$ is not computed based on a Markov chain, but predicted with a constant velocity of $3$~m/s so that the faster vehicles $B$ and $C$ are forced to brake. The probability distributions for a selected time interval is plotted in \cref{fig:brakingScenario}. For visualization reasons, the position distributions are plotted in separate plots, although the vehicles drive in the same lane. Darker regions indicate high probability, while brighter regions represent areas of low probability. In order to improve the visualization, the colors are separately normalized for each vehicle.
+
+\begin{center}
+\begin{figure}[htb]
+\centering
+	\includegraphics[width=0.6\columnwidth]{./figures/braking_09August2018.eps}
+	\caption{Probabilistic occupancy prediction of the braking scenario.}
+	\label{fig:brakingScenario}
+\end{figure}
+\end{center}

@@ -104,7 +104,8 @@ for iComp = 1:nrComp
             targetStr = num2str(trans.destination);
 
             % describe reset equation
-            resetStr = aux_resetStr(trans,iComp,iLoc,iTrans,isFlatHA,resultpath,functionName);
+            resetStr = aux_resetStr(trans,numel(comp.states),numel(comp.inputs),...
+                iComp,iLoc,iTrans,isFlatHA,resultpath,functionName);
             
             % describe guard set
             guardStr = aux_guardStr(trans,loc);
@@ -242,31 +243,31 @@ if isfield(loc.Flow,'A')
     % only enters here if both flow equation and output equation are linear
 
     % read out state equation of linear system
-    linSys_A = printMatrixConverter(loc.Flow.A);
-    linSys_AStr = "dynA = ..." + newline + linSys_A + ";" + newline;
-    linSys_B = printMatrixConverter(loc.Flow.B);
-    linSys_BStr = "dynB = ..." + newline + linSys_B + ";" + newline;
-    linSys_c = printMatrixConverter(loc.Flow.c);
-    linSys_cStr = "dync = ..." + newline + linSys_c + ";" + newline;
+    linsys_A = printMatrixConverter(loc.Flow.A);
+    linsys_AStr = "dynA = ..." + newline + linsys_A + ";" + newline;
+    linsys_B = printMatrixConverter(loc.Flow.B);
+    linsys_BStr = "dynB = ..." + newline + linsys_B + ";" + newline;
+    linsys_c = printMatrixConverter(loc.Flow.c);
+    linsys_cStr = "dync = ..." + newline + linsys_c + ";" + newline;
     
     % outputs (which can only be inputs to other components) are
     % defined in the invariant of the location
     if (isFlatHA && isempty(comp.outputsGlobal)) || ...
         (~isFlatHA && isempty(comp.outputsLocal) && isempty(comp.outputsGlobal))
         % no outputs -> only state equation x' = Ax + Bu + c
-        dynamicsStr = dynamicsCommFlow + linSys_AStr + linSys_BStr + linSys_cStr + ...
+        dynamicsStr = dynamicsCommFlow + linsys_AStr + linsys_BStr + linsys_cStr + ...
             "dynamics = linearSys(dynA, dynB, dync);" + aux_newlines(2);
     else
         % read out output equation of linear system
-        linSys_C = printMatrixConverter(loc.Flow.C);
-        linSys_CStr = "dynC = ..." + newline + linSys_C + ";" + newline;
-        linSys_D = printMatrixConverter(loc.Flow.D);
-        linSys_DStr = "dynD = ..." + newline + linSys_D + ";" + newline;
-        linSys_k = printMatrixConverter(loc.Flow.k);
-        linSys_kStr = "dynk = ..." + newline + linSys_k + ";" + newline;
+        linsys_C = printMatrixConverter(loc.Flow.C);
+        linsys_CStr = "dynC = ..." + newline + linsys_C + ";" + newline;
+        linsys_D = printMatrixConverter(loc.Flow.D);
+        linsys_DStr = "dynD = ..." + newline + linsys_D + ";" + newline;
+        linsys_k = printMatrixConverter(loc.Flow.k);
+        linsys_kStr = "dynk = ..." + newline + linsys_k + ";" + newline;
         % two equations: x' = Ax + Bu + c and y = Cx + Du + k
-        dynamicsStr = dynamicsCommFlow + linSys_AStr + linSys_BStr + linSys_cStr + ...
-            newline + dynamicsCommOutput + linSys_CStr + linSys_DStr + linSys_kStr + ...
+        dynamicsStr = dynamicsCommFlow + linsys_AStr + linsys_BStr + linsys_cStr + ...
+            newline + dynamicsCommOutput + linsys_CStr + linsys_DStr + linsys_kStr + ...
             "dynamics = linearSys(dynA, dynB, dync, dynC, dynD, dynk);" + aux_newlines(2);
     end
 else
@@ -331,17 +332,15 @@ invariantStr = invariantComm + str1 + "inv = " + str2 + aux_newlines(2);
 
 end
 
-function resetStr = aux_resetStr(trans,iComp,iLoc,iTrans,isFlatHA,resultpath,functionName)
+function resetStr = aux_resetStr(trans,n,m,iComp,iLoc,iTrans,isFlatHA,resultpath,functionName)
 
 % linear or nonlinear reset function?
 if isfield(trans.reset,'A')
     % linear reset
     reset_A = printMatrixConverter(trans.reset.A);
     reset_AStr = "resetA = ..." + newline + reset_A + ";" + newline;
-    if isfield(trans.reset,'B')
-        reset_B = printMatrixConverter(trans.reset.B);
-        reset_BStr = "resetB = ..." + newline + reset_B + ";" + newline;
-    end
+    reset_B = printMatrixConverter(trans.reset.B);
+    reset_BStr = "resetB = ..." + newline + reset_B + ";" + newline;
     reset_c = printMatrixConverter(trans.reset.c);
     reset_cStr = "resetc = ..." + newline + reset_c + ";" + newline;
     
@@ -351,13 +350,8 @@ if isfield(trans.reset,'A')
         tranResetText = "no reset equation given";
     end
     resetComm = aux_text2comment("reset equation:" + newline + tranResetText) + newline;
-    if isfield(trans.reset,'B')
-        resetStr = resetComm + reset_AStr + reset_BStr + reset_cStr + ...
-            "reset = struct('A', resetA, 'B', resetB, 'c', resetc);" + aux_newlines(2);
-    else
-        resetStr = resetComm + reset_AStr + reset_cStr + ...
-            "reset = struct('A', resetA, 'c', resetc);" + aux_newlines(2);
-    end
+    resetStr = resetComm + reset_AStr + reset_BStr + reset_cStr + ...
+        "reset = linearReset(resetA,resetB,resetc);" + aux_newlines(2);
 else
     % nonlinear reset
                    
@@ -382,8 +376,8 @@ else
     % Write Reset String
     resetComm = aux_text2comment("reset equation:" + ...
         newline + tranResetText) + newline;
-    resetStr = resetComm + "reset = struct('f', @" + ...
-            resetFuncName + ");" + aux_newlines(2);
+    resetStr = resetComm + "reset = nonlinearReset(@" + ...
+            resetFuncName + "," + n + "," + m + "," + n + ");" + aux_newlines(2);
 end
 
 end
@@ -406,26 +400,15 @@ if isa(trans.guard.set,'fullspace')
 elseif isa(trans.guard.set,'polytope')
     % intersect guard with invariant
     try
-        G = loc.Invariant.set & trans.guard.set;                    
+        G = loc.Invariant.set & trans.guard.set;
     catch
         G = trans.guard.set;
-    end
-
-    % check if guard can be represented as hyperplane
-    res = false;
-    if isa(G,'polytope')
-        G = compact_(G,'all',1e-9);
-        [res,hyp] = representsa_(G,'conHyperplane',eps);
     end
     
     if isa(G,'levelSet')
         [str1,str2] = aux_levelSetString(G);
     elseif isa(G,'polytope')
-        if res
-            [str1,str2] = aux_conHyperplaneString(hyp);
-        else
-            [str1,str2] = aux_polytopeString(G);
-        end
+        [str1,str2] = aux_polytopeString(G);
     else
         throw(CORAerror('CORA:converterIssue',...
             'Unexpected set representation in conversion of guard set.'));
@@ -443,8 +426,7 @@ elseif isa(trans.guard.set,'levelSet')
 else
     % throw error in case unexpected set representation comes up
     throw(CORAerror('CORA:converterIssue',...
-        ['Guard set has to be empty, a conHyperplane, '...
-        'a polytope or a levelSet.'])); 
+        'Guard set has to be empty, a polytope or a levelSet.')); 
 end
 
 % write guard string
@@ -592,18 +574,20 @@ end
 
 end
 
-function [str1,str2] = aux_polytopeString(set)
+function [str1,str2] = aux_polytopeString(P)
 % generates the string that constructs the polytope
 
-    A = printMatrixConverter(set.A);
+    P = compact_(P,'AtoAe',1e-12);
+
+    A = printMatrixConverter(P.A);
     AStr = "P_A = ..." + newline + A + ";" + newline;
-    b = printMatrixConverter(set.b);
+    b = printMatrixConverter(P.b);
     bStr = "P_b = ..." + newline + b + ";" + newline;
-    if ~isempty(set.Ae)
+    if ~isempty(P.Ae)
         % if invariant is a polyhedron, add additional parameters
-        Ae = printMatrixConverter(set.Ae);
+        Ae = printMatrixConverter(P.Ae);
         AeStr = "P_Ae = ..." + newline + Ae + ";" + newline;
-        be = printMatrixConverter(set.be);
+        be = printMatrixConverter(P.be);
         beStr = "P_be = ..." + newline + be + ";" + newline;
         str2 = 'polytope(P_A,P_b,P_Ae,P_be);';
     else
@@ -614,15 +598,15 @@ function [str1,str2] = aux_polytopeString(set)
     str1 = AStr + bStr + AeStr + beStr + newline;
 end
 
-function [str1,str2] = aux_levelSetString(set)
+function [str1,str2] = aux_levelSetString(ls)
 % generates the string that constructs the levelSet
     
     % generate string for constructing the variable vector
-    varStr = "vars = sym('x',[" + num2str(length(set.vars)) + ",1]);" + newline;
+    varStr = "vars = sym('x',[" + num2str(length(ls.vars)) + ",1]);" + newline;
     
     varStr = varStr + "syms ";
-    for i = 1:length(set.vars)
-        if i ~= length(set.vars)
+    for i = 1:length(ls.vars)
+        if i ~= length(ls.vars)
             varStr = varStr + "x" + num2str(i) + " ";
         else
             varStr = varStr + "x" + num2str(i) + ";";
@@ -630,8 +614,8 @@ function [str1,str2] = aux_levelSetString(set)
     end
     
     % generate string for constructing the symbolic equations
-    x = sym('x',[length(set.vars),1]);
-    eq = set.funHan(x);
+    x = sym('x',[length(ls.vars),1]);
+    eq = ls.funHan(x);
     
     if length(eq) == 1
         eqStr = "eq = " + string(eq) + ";";
@@ -648,15 +632,15 @@ function [str1,str2] = aux_levelSetString(set)
     end
     
     % generate string for the comparison operators
-    if ~iscell(set.compOp)
-        compStr = "compOp = '" + set.compOp + "';"; 
+    if ~iscell(ls.compOp)
+        compStr = "compOp = '" + ls.compOp + "';"; 
     else
         compStr = "compOp = {";
-        for i = 1:length(set.compOp)
-           if i ~= length(set.compOp)
-                compStr = compStr + "'" + set.compOp{i} + "',";
+        for i = 1:length(ls.compOp)
+           if i ~= length(ls.compOp)
+                compStr = compStr + "'" + ls.compOp{i} + "',";
            else
-                compStr = compStr + "'" + set.compOp{i} + "'};";
+                compStr = compStr + "'" + ls.compOp{i} + "'};";
            end
         end
     end
@@ -665,29 +649,6 @@ function [str1,str2] = aux_levelSetString(set)
     str1 = varStr + newline + eqStr + newline + compStr + aux_newlines(2);
     str2 = "levelSet(eq,vars,compOp);";
 
-end
-
-function [str1,str2] = aux_conHyperplaneString(set)
-% generates the string that constructs the conHyperplane object
-
-    % hyperplane equation c*x = d
-    c = printMatrixConverter(set.a');
-    cStr = "c = " + c + ";" + newline;
-    dStr = "d = " + num2str(set.b) + ";";
-    
-    % inequality constraints C*x <= D
-    if ~isempty(set.C)
-        C = printMatrixConverter(set.C);
-        Cstr = "C = ..." + newline + C + ";" + newline;
-        D = printMatrixConverter(set.d);
-        Dstr = "D = " + D + ";";
-        
-        str1 = cStr + dStr + Cstr + Dstr + aux_newlines(2);
-        str2 = "conHyperplane(c,d,C,D);";
-    else
-        str1 = cStr + dStr + aux_newlines(2);
-        str2 = "conHyperplane(c,d);";
-    end
 end
 
 

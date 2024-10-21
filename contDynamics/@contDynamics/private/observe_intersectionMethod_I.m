@@ -1,12 +1,12 @@
-function Rint = observe_intersectionMethod_I(obj,R,y,options)
+function Rint = observe_intersectionMethod_I(sys,R,y,options)
 % observe_intersectionMethod_I - intersects the reachable set with
 %    measurement strips according to intersection method I in [1]. 
 %
 % Syntax:
-%    Rint = observe_intersectionMethod_I(obj,R,y,options)
+%    Rint = observe_intersectionMethod_I(sys,R,y,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    sys - discrete-time linear system object
 %    R - reachable set
 %    y - current measurement
 %    options - options for the computation
@@ -47,7 +47,7 @@ for iStrip = 1:length(y)
     end
         
     % intersection of zonotope with strip
-    Rint = intersectStrip(Rint,obj.C(iStrip,:),options.sigma(iStrip),...
+    Rint = intersectStrip(Rint,sys.C(iStrip,:),options.sigma(iStrip),...
         y(iStrip),technique);
 end
 

@@ -25,13 +25,13 @@ function res = test_parallelHybridAutomaton_isemptyobject
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty parallel hybrid automata
-res = isemptyobject(parallelHybridAutomaton());
+assert(isemptyobject(parallelHybridAutomaton()));
 
 % full automaton
 pHA = roomHeatingParallel();
-res(end+1,1) = ~isemptyobject(pHA);
+assert(~isemptyobject(pHA));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

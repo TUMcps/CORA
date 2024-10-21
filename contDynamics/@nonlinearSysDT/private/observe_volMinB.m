@@ -1,20 +1,18 @@
-function [R,tcomp] = observe_volMinB(obj,options)
+function [R,tcomp] = observe_volMinB(nlnsysDT,params,options)
 % observe_volMinB - computes the guaranteed state estimation approach
 %    from [1]; the approach is extended here for nonlinear systems.
 %
 % Syntax:
-%    [R,tcomp] = observe_volMinB(obj,options)
+%    [R,tcomp] = observe_volMinB(nlnsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time nonlinear system object
+%    nlnsysDT - nonlinearSysDT object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
 %    R - observed set of points in time
 %    tcomp - computation time
-%
-% Example:
-%    -
 %
 % Reference:
 %    [1] J. M. Bravo, T. Alamo, and E. F. Camacho. Bounded error
@@ -39,8 +37,8 @@ options.intersectionType = 1;
 options.intersectionTechnique = 'bravo'; % unclear whether method is an intersection method
 
 % apply set-membership approach
-tic
-R = observe_stripBased(obj,options);
+tic;
+R = observe_stripBased(nlnsysDT,params,options);
 tcomp = toc;
 
 % ------------------------------ END OF CODE ------------------------------

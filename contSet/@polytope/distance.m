@@ -66,7 +66,11 @@ constraints(P);
     
 % select case
 if isnumeric(S)
-    val = aux_distancePointCloud(P,S);
+    if size(S,2) == 1 && representsa_(P,'hyperplane',1e-12)
+        val = abs(P.be-P.Ae*S) / (P.Ae*P.Ae');
+    else
+        val = aux_distancePointCloud(P,S);
+    end
 
 elseif isa(S,'ellipsoid')
     % call ellipsoid function

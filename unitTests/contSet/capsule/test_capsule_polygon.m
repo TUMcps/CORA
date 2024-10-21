@@ -16,20 +16,39 @@ function res = test_capsule_polygon
 %
 % See also: -
 
-% Authors:       Mark Wetzlinger
-% Written:       24-April-2023
+% Authors:       Tobias Ladner
+% Written:       16-October-2024
 % Last update:   ---
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% init 2D capsule
-C = capsule([1;-1],[4;2],1);
+% empty case
+C = capsule.empty(2);
+pgon = polygon(C);
+assert(representsa(pgon,"emptySet"));
 
-% compute polygon (inner-approximation)
-p = polygon(C);
+% init cases
+c = [1;2];
+g = [2;1];
+r = 1;
 
-% check whether all points are contained in the capsule
-res = all(contains(C,p));
+% center
+C = capsule(c);
+pgon = polygon(C);
+[res,p] = representsa(pgon,'point');
+assert(res & all(withinTol(p,c)));
+
+% full set
+C = capsule(c,g,r);
+pgon = polygon(C);
+
+% conversion is inner-approximative
+assert(C.contains(pgon));
+
+% test completed
+res = true;
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

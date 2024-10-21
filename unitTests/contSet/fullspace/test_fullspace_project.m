@@ -31,27 +31,18 @@ fs = fullspace(n);
 projDims = [1,4];
 fs_ = project(fs,projDims);
 fs_true = fullspace(length(projDims));
-res = isequal(fs_true,fs_);
+assert(isequal(fs_true,fs_));
 
 % subspace out of range
 projDims = [-1,2];
-try
-    fs_ = project(fs,projDims);
-    res(end+1,1) = false;
-catch
-    res(end+1,1) = true;
-end
+assertThrowsAs(@project,'CORA:outOfDomain',fs,projDims);
 
 % subspace out of range
 projDims = [3,5];
-try
-    fs_ = project(fs,projDims);
-    res(end+1,1) = false;
-catch
-    res(end+1,1) = true;
-end
+assertThrowsAs(@project,'CORA:outOfDomain',fs,projDims);
 
-% combine results
-res = all(res);
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,0 +1,28 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                    $close $\color{mred}$all; clear;$\color{black}$$\\ $$\\ $$\color{mgreen}$% equidistant time step vector$\color{black}$$\\ $numPoints = 50;$\\ $timeStepVector = linspace(0,1,numPoints)';$\\ $$\\ $$\color{mgreen}$% generate random data$\color{black}$$\\ $data1 = 0.001*rand(1,numPoints);$\\ $data2 = 0.001*randn(1,numPoints);$\\ $$\\ $$\color{mgreen}$% plot data$\color{black}$$\\ $figure; $\color{mred}$hold on; box on;$\color{black}$$\\ $h1 = plot(timeStepVector,data1);$\\ $h2 = plot(timeStepVector,data2);$\\ $xlabel($\color{mred}$'t'$\color{black}$);$\\ $ylabel($\color{mred}$'xi'$\color{black}$);$\\ $legend([h1,h2],$\color{mred}$'Data1'$\color{black}$,$\color{mred}$'Data2'$\color{black}$,$\color{mred}$'Location'$\color{black}$,$\color{mred}$'northwest'$\color{black}$);$\\ $$\\ $matlab2tikz($\color{mred}$'simpleplot.tikz'$\color{black}$);$\\ 
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

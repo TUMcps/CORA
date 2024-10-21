@@ -1,0 +1,138 @@
+\newcommand*{\tikzscale}{1.5}
+\newcommand*{\s}{0.075cm*\tikzscale}
+
+% TODO: removed redundant colors / move to cora package
+\definecolor{lightblue}{rgb}{0.7529,0.8118,0.9333}
+\definecolor{TUMpantone285C}{rgb}{0.00, 0.45, 0.81}
+\definecolor{TUMpantone300C}{RGB}{27, 94, 170} %uncorrected TUMpantone300C
+\definecolor{CORAcolorBlue}{rgb}{0, 0.4470, 0.7410}
+
+\colorlet{myred}{red!80!yellow}
+\colorlet{mylightblue}{lightblue}
+\colorlet{myblue}{TUMpantone285C} % {blue!75!white!75!green}
+\colorlet{mydarkblue}{TUMpantone300C} % {blue!90!white!75!green}
+\colorlet{mygreen}{green!80!blue}
+\colorlet{mybluegreen}{blue!50!green!70!white}
+\colorlet{myyellow}{yellow!70!red}
+% \colorlet{myorange}{red!70!yellow}
+\definecolor{myorange}{HTML}{f47100}
+\colorlet{mypurple}{red!50!blue!70!white}
+\colorlet{mygrey}{black!30!white}
+\colorlet{mydarkgrey}{black!60!white}
+
+\tikzset{
+  >={Stealth[length=1.5mm]},
+  input/.style={circle,fill=black,inner sep=0.05cm*\tikzscale},
+  input set/.style={mydarkgrey,thick,fill=mygrey,fill opacity=0.5},
+  worst case/.style={circle,fill=myorange,inner sep=0.05cm*\tikzscale},
+  output/.style={circle,fill=mydarkblue,inner sep=0.05cm*\tikzscale},
+  output set/.style={mydarkblue,dashed,thick,fill=myblue,fill opacity=0.3},
+  target/.style={circle,fill=black,inner sep=0.05cm*\tikzscale},
+  loss arrow/.style={<-,thick,myorange},
+  pics/nn/.style n args={4}{code={ % args: number of layers, list of hidden neurons, size of neuron, distance between neurons
+    \pgfmathsetmacro{\d}{#4};
+    \pgfmathsetmacro{\hn}{#1};
+    \foreach[count=\i] \h in {#2} { % draw network
+      \foreach \ii in {1,...,\h} { % draw layer
+        \node[circle,fill=CORAcolorBlue!75,draw=CORAcolorBlue,thick,inner sep={#3}] (l\i-\ii) at ({1.0cm*(\i-1-0.5*(\hn-1))},{\d*(\ii-0.5*(\h+1))}) {}; % \d*(\ii-1+0.5*Mod(\h,2))
+      };
+    };
+    % connect neurons
+    \foreach[count=\i] \hi in {#2} { %
+      \foreach[count=\j] \hj in {#2} { %
+        \pgfmathtruncatemacro{\dji}{\j-\i};
+        \ifnum\dji=1
+        \foreach \ii in {1,...,\hi} { %
+          \foreach \jj in {1,...,\hj} { %
+            \draw (l\i-\ii.east) -- (l\j-\jj.west); %
+          };
+        };
+        \else
+          \fi
+      };
+    };
+  },
+  },
+  neuron label/.style n args={1}{label={[font=\footnotesize,text=white]center:#1}},
+  pics/zono3/.style n args={2}{code={\filldraw (0,-{#1}) -- (-{#2},-{#1}) -- (-{#2},0) -- (0,{#1}) -- ({#2},{#1}) -- ({#2},0) -- cycle;}},
+  pics/lossArrows3/.style n args={2}{code={\draw (0,0) -- ({0.5*#2},{0.5*#1}) -- ({0.5*#2},{#1}) -- ({#2},{#1});}},
+}
+
+\begin{tikzpicture}[scale=\tikzscale]
+  \footnotesize
+
+  % ________________________________________________________________________
+  % Input Set
+  % ------------------------------------------------------------------------
+
+  \draw[input set] (-0.35,-0.35) rectangle (0.35,0.35);
+  \node[input] (x1) at (0,0) {};
+  % \node[worst case] (wc1-input) at (-0.35,0.35) {};
+
+  \draw[thin] (-0.35,-0.4) -- (-0.35,-0.5) -- (-0.35,-0.45) -- (0,-0.45) -- (0,-0.4) -- (0,-0.5);
+  \node[] at (-0.175,-0.55) {$\mathstrut \epsilon$};
+
+  \node (inputi) at (0,1) {Input $\nnInput_i$};
+  \draw[->] (inputi.south) to[bend right] (x1);
+
+  \node (inputi) at (0,-1) {\phantom{Perturbation $\ell_\infty$}};
+
+  % ________________________________________________________________________
+  % Neural Network
+  % ------------------------------------------------------------------------
+
+  \draw[-{Stealth[length=2mm]},very thick] (0.75,0) -- (1.25,0);
+
+  \pic[] at (2.5,0) { nn={3}{3,4,3}{0.075cm}{0.0125cm} };
+
+  \draw[-{Stealth[length=2mm]},very thick] (3.75,0) -- (4.25,0);
+
+  % ________________________________________________________________________
+  % Output Set
+  % ------------------------------------------------------------------------
+
+  % \draw[output set] (3.6,-0.5) -- (3.25,-0.5) -- (3.25,-0.15) -- (3.6,0.2) -- (3.95,0.2) -- (3.95,-0.15) -- cycle;
+  \pic[mydarkblue,thick,fill=myblue,fill opacity=0.3] at (5,0) {zono3={0.75*\tikzscale}{0.5*\tikzscale}};
+  \node[output] (output-c) at (5,0) {};
+  % \draw[output set] plot [smooth cycle,tension=0.75] coordinates { (5,0) (4.85,0.35) (5.25,0.5) (5.25,-0.25) (4.75,-0.5) };
+  % \node[output] (y1) at (5,0.3) {};
+  \node[target] (t1) at (5.8,0.55) {};
+  \draw[loss arrow] (t1) -- (output-c);
+  % \node[worst case] (wc1-output) at (4.75,-0.5) {};
+  % \draw[loss arrow] (wc1-output) -- (t1);
+
+  \node (targeti) at (6.25,-0.25) {\strut Target $\nnTarget_i$};
+  \draw[->] (targeti.north) to[bend right] (t1);
+
+  \draw[loss arrow,shorten <= 3.3mm] (output-c) -- ($(output-c) + (-0,-0.75)$);
+  \draw[loss arrow,shorten <= 3.5mm] (output-c) -- ($(output-c) + (-0.25,-0.75)$);
+  \draw[loss arrow,shorten <= 4.0mm] (output-c) -- ($(output-c) + (-0.5,-0.75)$);
+  \draw[loss arrow,shorten <= 2.29mm] (output-c) -- ($(output-c) + (0.125,-0.5)$);
+  \draw[loss arrow,shorten <= 2.29mm] (output-c) -- ($(output-c) + (-0.125,-0.5)$);
+  \draw[loss arrow,shorten <= 2.77mm] (output-c) -- ($(output-c) + (-0.375,-0.5)$);
+  \draw[loss arrow,shorten <= 1.57mm] (output-c) -- ($(output-c) + (0.25,-0.25)$);
+  \draw[loss arrow,shorten <= 1.11mm] (output-c) -- ($(output-c) + (-0,-0.25)$);
+  \draw[loss arrow,shorten <= 1.57mm] (output-c) -- ($(output-c) + (-0.25,-0.25)$);
+  \draw[loss arrow,shorten <= 2.48mm] (output-c) -- ($(output-c) + (-0.5,-0.25)$);
+  \draw[loss arrow,shorten <= 1.66mm] (output-c) -- ($(output-c) + (-0.375,0)$);
+  \draw[loss arrow,shorten <= 0.55mm] (output-c) -- ($(output-c) + (-0.125,0)$);
+  \draw[loss arrow,shorten <= 0.55mm] (output-c) -- ($(output-c) + (0.125,0)$);
+  \draw[loss arrow,shorten <= 1.66mm] (output-c) -- ($(output-c) + (0.375,0)$);
+  \draw[loss arrow,shorten <= 3.3mm] (output-c) -- ($(output-c) + (0,0.75)$);
+  \draw[loss arrow,shorten <= 3.5mm] (output-c) -- ($(output-c) + (0.25,0.75)$);
+  \draw[loss arrow,shorten <= 4.0mm] (output-c) -- ($(output-c) + (0.5,0.75)$);
+  \draw[loss arrow,shorten <= 2.29mm] (output-c) -- ($(output-c) + (-0.125,0.5)$);
+  \draw[loss arrow,shorten <= 2.29mm] (output-c) -- ($(output-c) + (0.125,0.5)$);
+  \draw[loss arrow,shorten <= 2.77mm] (output-c) -- ($(output-c) + (0.375,0.5)$);
+  \draw[loss arrow,shorten <= 1.57mm] (output-c) -- ($(output-c) + (-0.25,0.25)$);
+  \draw[loss arrow,shorten <= 1.11mm] (output-c) -- ($(output-c) + (0,0.25)$);
+  \draw[loss arrow,shorten <= 1.57mm] (output-c) -- ($(output-c) + (0.25,0.25)$);
+  \draw[loss arrow,shorten <= 2.48mm] (output-c) -- ($(output-c) + (0.5,0.25)$);
+
+  % \node[align=center] (wc1-output-label) at (4.5,1.25) {\strut Worst case\\Output};
+  % \draw[->] (wc1-output-label.south) to[bend left] (wc1-output);
+  % \node at (5.1,-1) {Output Set};
+
+  \node (loss) at (5,-1) {\strut Loss {\color{myorange}$E_\text{point}(\nnTarget_i,\nnOutputSet)$} $+$ {\color{myorange}$E_\text{volume}(\nnOutputSet)$}};
+
+\end{tikzpicture}

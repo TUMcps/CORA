@@ -25,6 +25,9 @@ function writeTestResultsForCI(varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% assume unsuccessful test suite
+failed = true;
+
 % default format: last run
 testSuite = setDefaultValues({'short'},varargin);
 % check if correct identifier provided
@@ -33,8 +36,7 @@ inputArgsCheck({{testSuite,'str',{'short','long','flaky','intlab','mosek','mp','
 % load data
 unitTestsFile = [CORAROOT filesep 'unitTests' filesep 'unitTestsStatus.mat'];
 if ~isfile(unitTestsFile)
-    throw(CORAerror('CORA:specialError',...
-        "No data provided. Run '''runTestSuite''' to acquire data."));
+    disp("No data provided. Run '''runTestSuite''' to acquire data.");
 else
     % latest test results are stored in the variable 'testResults' in
     % unitTestsStatus.mat
@@ -42,22 +44,24 @@ else
     % read out data from map
     if ~ismember(testResults.keys,testSuite)
         disp("No results for test suite with identifier '" + testSuite + "'");
-        return
     else
+        % read results table
         resultsTestSuite = testResults(testSuite);
+        results = resultsTestSuite.results; 
+        if strcmp(testSuite,'flaky')
+            failed = sum(~[results.ok]) > 2; 
+        else
+            failed = any(~[results.ok]); 
+        end
     end
 end
 
-% read results table
-results = resultsTestSuite.results; 
-
 % result of test suite used as exit code
 fileID = fopen('failed.txt','w');
-if strcmp(testSuite,'flaky')
-    fprintf(fileID, "%d", sum(~[results.ok]) > 2); 
-else
-    fprintf(fileID, "%d", any(~[results.ok])); 
-end
+% EXIT_CODE = 0 means successful test suite
+fprintf(fileID, "%d", failed); 
 fclose(fileID);
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

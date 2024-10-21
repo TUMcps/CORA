@@ -31,11 +31,7 @@ function [res,indSpec,indObj] = check(spec,S,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
-if nargin < 2
-    throw(CORAerror("CORA:notEnoughInputArgs", 2))
-elseif nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs', 3))
-end
+narginchk(2,3);
 time = setDefaultValues({[]}, varargin);
 
 % init outputs
@@ -211,7 +207,7 @@ else % contSet ------------------------------------------------------------
                 'Timed specifications require a time interval.')); 
         end
 
-        if isemptyobject(spec_i.time) || isIntersecting_(spec_i.time,time,'exact')
+        if isemptyobject(spec_i.time) || isIntersecting_(spec_i.time,time,'exact',1e-8)
 
             % different types of specifications
             switch spec_i.type
@@ -251,9 +247,9 @@ function res = aux_checkUnsafeSet(set,S)
         res = true;
         for i = 1:length(S)
             try
-                res = ~isIntersecting_(set,S{i},'exact');
+                res = ~isIntersecting_(set,S{i},'exact',1e-8);
             catch
-                res = ~isIntersecting_(set,S{i},'approx'); 
+                res = ~isIntersecting_(set,S{i},'approx',1e-8); 
             end
             if ~res
                return; 
@@ -261,9 +257,9 @@ function res = aux_checkUnsafeSet(set,S)
         end   
     else
         try
-            res = ~isIntersecting_(set,S,'exact');
+            res = ~isIntersecting_(set,S,'exact',1e-8);
         catch
-            res = ~isIntersecting_(set,S,'approx'); 
+            res = ~isIntersecting_(set,S,'approx',1e-8); 
         end
     end
 end
@@ -306,13 +302,13 @@ function res = aux_checkInvariant(set,S)
     if iscell(S)
         res = false;
         for i = 1:length(S)
-            res = isIntersecting_(set,S{i},'approx');
+            res = isIntersecting_(set,S{i},'approx',1e-8);
             if res
                return; 
             end
         end
     else
-        res = isIntersecting_(set,S,'approx');
+        res = isIntersecting_(set,S,'approx',1e-8);
     end
 end
 

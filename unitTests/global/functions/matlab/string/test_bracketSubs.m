@@ -28,22 +28,22 @@ function res = test_bracketSubs
 str = 'xL1R';
 str_ = bracketSubs(str);
 str_true = 'x(1)';
-res = strcmp(str_,str_true);
+assert(strcmp(str_,str_true));
 
 % input string
 str = 'uL16R';
 str_ = bracketSubs(str);
 str_true = 'u(16)';
-res(end+1,1) = strcmp(str_,str_true);
+assert(strcmp(str_,str_true));
 
 % longer name
 str = 'abcdeL99R';
 str_ = bracketSubs(str);
 str_true = 'abcde(99)';
-res(end+1,1) = strcmp(str_,str_true);
+assert(strcmp(str_,str_true));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

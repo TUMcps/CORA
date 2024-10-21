@@ -1,13 +1,13 @@
-function res = isequal(C1,C2,varargin)
+function res = isequal(C,S,varargin)
 % isequal - checks if two capsules are equal
 %
 % Syntax:
-%    res = isequal(C1,C2)
-%    res = isequal(C1,C2,tol)
+%    res = isequal(C,S)
+%    res = isequal(C,S,tol)
 %
 % Inputs:
-%    C1 - capsule object
-%    C2 - capsule object
+%    C - capsule object
+%    S - capsule object, numeric
 %    tol - tolerance (optional)
 %
 % Outputs:
@@ -32,27 +32,49 @@ function res = isequal(C1,C2,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% too many input arguments
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(2,3);
 
 % default values
 tol = setDefaultValues({eps},varargin);
 
 % check input arguments
-inputArgsCheck({{C1,'att','capsule'};
-                {C2,'att','capsule'};
+inputArgsCheck({{C,'att',{'capsule','numeric'}};
+                {S,'att',{'contSet','numeric'}};
                 {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
 
-% check ambient dimension
-if dim(C1) ~= dim(C2)
-    res = false; return
+% ensure that numeric is second input argument
+[C,S] = reorderNumeric(C,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < C.precedence
+    res = isequal(S,C,tol);
+    return
 end
 
+% ambient dimensions must match
+if ~equalDimCheck(C,S,true)
+    res = false;
+    return
+end
+
+% capsule-capsule case
+if isa(S,'capsule')
+    res = aux_isequal_capsule(C,S,tol);
+    return
+end
+
+throw(CORAerror('CORA:noops',C,S));
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_isequal_capsule(C,S,tol)
+
 % check emptiness
-C1_empty = representsa_(C1,'emptySet',tol);
-C2_empty = representsa_(C2,'emptySet',tol);
+C1_empty = representsa_(C,'emptySet',tol);
+C2_empty = representsa_(S,'emptySet',tol);
 if xor(C1_empty,C2_empty)
     res = false; return
 elseif C1_empty && C2_empty
@@ -60,8 +82,10 @@ elseif C1_empty && C2_empty
 end
 
 % check for equality
-res = all(abs(center(C1) - center(C2)) < tol) && ... % center
-    all(abs(C1.g - C2.g) < tol) && ... % generator
-    abs(C1.r - C2.r) < tol; % radius
+res = all(abs(center(C) - center(S)) < tol) && ... % center
+    all(abs(C.g - S.g) < tol) && ... % generator
+    abs(C.r - S.r) < tol; % radius
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

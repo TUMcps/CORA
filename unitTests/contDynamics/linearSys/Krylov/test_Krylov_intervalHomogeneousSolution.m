@@ -17,6 +17,9 @@ function res = test_Krylov_intervalHomogeneousSolution(~)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % system matrix
 A = [...
@@ -105,20 +108,20 @@ x_appr = norm(b_c)*V_c*expMatrix_c(:,1) + interval(-mu, mu);
 x_exact = expm(A*options.timeStep)*zonotope(x0);
 
 % Is exact solution in zonotope?
-res = (interval(x_exact) <= x_appr);
+assert((interval(x_exact) <= x_appr));
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function epsilon = aux_computeEpsilon(linSys, redOrder, options)
+function epsilon = aux_computeEpsilon(linsys, redOrder, options)
     %obtain time step, rho_A
     tau = options.timeStep;
-    rho_A = normest(linSys.A);
+    rho_A = normest(linsys.A);
     
     % auxiliary value for Wang
-    [m,lambda,a] = aux_auxValues_Wang(linSys.A);
+    [m,lambda,a] = aux_auxValues_Wang(linsys.A);
     q = aux_optimize_q_Wang(redOrder,tau,lambda,m);
     epsilon = aux_errorBound_Wang_normalized(rho_A,tau,q,a,lambda,redOrder);
 end
@@ -169,14 +172,14 @@ function q = aux_optimize_q_Wang(k,tau,lambda,m)
     q = 0.5;
     q_min = 0;
     q_max = 1;
-    res = inf;
+    r = inf;
     
     % compute C
     C = tau/(2*lambda);
     
-    while abs(res) > 1e-10
-        res = (k-1)*q + (2-k)*q^2 - C*(1-q)*sqrt((1-q^2)^2 + 4*m*q^2);
-        if res < 0
+    while abs(r) > 1e-10
+        r = (k-1)*q + (2-k)*q^2 - C*(1-q)*sqrt((1-q^2)^2 + 4*m*q^2);
+        if r < 0
             q_min = q;
             q = 0.5*(q + q_max);
         else

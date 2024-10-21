@@ -47,18 +47,14 @@ for i=1:nrTests
     Zres = Z1 + Z2;
 
     % check center
-    if ~compareMatrices(c1+c2,center(Zres))
-        res = false; return
-    end
+    assertLoop(compareMatrices(c1+c2,center(Zres)),i)
     
     % check generators
     Gres = generators(Zres);
     G1inGres = nnz(all(ismember(Gres,G1),1));
     G2inGres = nnz(all(ismember(Gres,G2),1));
     
-    if size(Gres,2) ~= G1inGres+G2inGres
-        res = false; return
-    end
+    assertLoop(size(Gres,2) == G1inGres+G2inGres,i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

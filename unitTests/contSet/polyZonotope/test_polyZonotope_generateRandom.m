@@ -34,45 +34,45 @@ nrIndGens = 5;
 
 % only dimension
 pZ = polyZonotope.generateRandom('Dimension',n);
-res = dim(pZ) == n;
+assert(dim(pZ) == n);
 
 % only number of generators (no check)
 pZ = polyZonotope.generateRandom('NrGenerators',nrGens);
 
 % only number of factors
 pZ = polyZonotope.generateRandom('NrFactors',nrFac);
-res(end+1,1) = size(pZ.E,1) == nrFac;
+assert(size(pZ.E,1) == nrFac);
 
 % only number of independent generators
 pZ = polyZonotope.generateRandom('NrIndGenerators',nrIndGens);
-res(end+1,1) = size(pZ.GI,2) == nrIndGens;
+assert(size(pZ.GI,2) == nrIndGens);
 
 % dimension and number of generators
 pZ = polyZonotope.generateRandom('Dimension',n,'NrGenerators',nrGens);
-res(end+1,1) = dim(pZ) == n;
+assert(dim(pZ) == n);
 
 % dimension and number of factors
 pZ = polyZonotope.generateRandom('Dimension',n,'NrFactors',nrFac);
-res(end+1,1) = dim(pZ) == n && size(pZ.E,1) == nrFac;
+assert(dim(pZ) == n && size(pZ.E,1) == nrFac);
 
 % dimension, number of generators, and number of factors
 pZ = polyZonotope.generateRandom('Dimension',n,'NrGenerators',nrGens,'NrFactors',nrFac);
-res(end+1,1) = dim(pZ) == n && size(pZ.E,1) == nrFac;
+assert(dim(pZ) == n && size(pZ.E,1) == nrFac);
 
 % dimension, number of factors, and number of independent generators
 pZ = polyZonotope.generateRandom('Dimension',n,'NrIndGenerators',nrIndGens,'NrFactors',nrFac);
-res(end+1,1) = dim(pZ) == n && size(pZ.E,1) == nrFac;
+assert(dim(pZ) == n && size(pZ.E,1) == nrFac);
 
 % dimension, number of generators, and number of independent generators
 pZ = polyZonotope.generateRandom('Dimension',n,'NrGenerators',nrGens,'NrIndGenerators',nrIndGens);
-res(end+1,1) = dim(pZ) == n && size(pZ.GI,2) == nrIndGens;
+assert(dim(pZ) == n && size(pZ.GI,2) == nrIndGens);
 
 % dimension, number of generators, number of factors, and number of independent generators
 pZ = polyZonotope.generateRandom('Dimension',n,'NrGenerators',nrGens,...
     'NrFactors',nrFac,'NrIndGenerators',nrIndGens);
-res(end+1,1) = dim(pZ) == n && size(pZ.E,1) == nrFac && size(pZ.GI,2) == nrIndGens;
+assert(dim(pZ) == n && size(pZ.E,1) == nrFac && size(pZ.GI,2) == nrIndGens);
 
 % unify results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

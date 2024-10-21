@@ -23,8 +23,6 @@ function res = test_conPolyZono_uplus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = true(0);
-
 % init
 c = [0;0];
 G = [2 0 2; 0 2 2];
@@ -38,12 +36,12 @@ cPZ = conPolyZono(c,G,E,A,b,EC,GI);
 pcPZ = +cPZ;
 
 % compare with cPZ
-resvec(end+1) = isequal(pcPZ, cPZ);
+assert(isequal(pcPZ, cPZ));
 
 % test empty case
-resvec(end+1) = isemptyobject(+conPolyZono.empty(2));
+assert(isemptyobject(+conPolyZono.empty(2)));
 
 % add results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

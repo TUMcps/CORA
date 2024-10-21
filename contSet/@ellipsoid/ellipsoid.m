@@ -50,7 +50,7 @@ classdef ellipsoid < contSet
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-properties (SetAccess = protected, GetAccess = public)
+properties (SetAccess = {?contSet, ?matrixSet}, GetAccess = public)
     Q;      % shape matrix
     q;      % center
     TOL;    % tolerance
@@ -64,6 +64,7 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor(1:3,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'ellipsoid')
@@ -84,6 +85,9 @@ methods
         obj.q = q;
         obj.TOL = TOL;
 
+        % 6. set precedence (fixed)
+        obj.precedence = 50;
+
     end
 end
 
@@ -92,6 +96,16 @@ methods (Static=true)
     E = enclosePoints(points,method) % enclose point cloud with ellipsoid
     E = array(varargin)
     E = empty(n) % instantiates an empty ellipsoid
+    E = origin(n) % instantiates an ellipsoid representing the origin
+end
+
+methods (Access = protected)
+    [abbrev,printOrder] = getPrintSetInfo(S)
+end
+
+% plotting
+methods (Access = {?contSet})
+    han = plot3D(S,varargin);
 end
 
 end
@@ -101,11 +115,6 @@ end
 
 function [Q,q,TOL] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    if nargin > 3
-        % too many input arguments
-        throw(CORAerror('CORA:tooManyInputArgs',3));
-    end
 
     % assign shape matrix
     Q = varargin{1};

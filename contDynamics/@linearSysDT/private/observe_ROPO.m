@@ -1,13 +1,13 @@
-function [R,tcomp] = observe_ROPO(obj,options)
+function [R,tcomp] = observe_ROPO(linsysDT,options)
 % observe_ROPO - computes the guaranteed state estimation approach
 %    according to the set membership approach, see [1]. This is a strip
 %    method.
 %
 % Syntax:
-%    [R,tcomp] = observe_ROPO(obj,options)
+%    [R,tcomp] = observe_ROPO(linsysDT,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -19,9 +19,6 @@ function [R,tcomp] = observe_ROPO(obj,options)
 %        feasible parameter sets for identification with set membership 
 %        uncertainty. IEEE Transactions on Automatic Control, 41(6), 774-785.
 %
-% Example:
-%    -
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
@@ -30,46 +27,46 @@ function [R,tcomp] = observe_ROPO(obj,options)
 
 % Authors:       Carlos Valero
 % Written:       09-March-2021
-% Last update:   09-March-2021
+% Last update:   ---
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 tic
 %time period
-tVec = options.tStart:options.timeStep:options.tFinal-options.timeStep;
+tVec = params.tStart:options.timeStep:params.tFinal-options.timeStep;
 
 % initialize parameter for the output equation
 R = cell(length(tVec),1);
 
 % width of strips
-options.sigma = supremum(abs(interval(options.V)));
+options.sigma = supremum(abs(interval(params.V)));
 
 
 % Intersection
-y = options.y(:,1);
-R{1} = options.R0;
+y = params.y(:,1);
+R{1} = params.R0;
 Rnext=R{1};
 % loop over all time steps
 for k = 1:length(tVec)-1
     % Intersection
-    y = options.y(:,k+1);
+    y = params.y(:,k+1);
     % Update uncertain input
-    Uadd = obj.B*options.uTransVec(:,k) + options.W;
+    Uadd = linsysDT.B*params.uTransVec(:,k) + params.W;
     % Prediction
-    Rnext = obj.A*Rnext+Uadd+obj.c;
+    Rnext = linsysDT.A*Rnext+Uadd+linsysDT.c;
     % Reduction to parallelotope
     Rnext=reduce(Rnext,options.reductionTechnique,1);
     % Strips Contruction
-    p0=(obj.C./options.sigma)';
+    p0=(linsysDT.C./options.sigma)';
     c0=y./options.sigma;
     T = Rnext.generators;
     thetac = Rnext.center;
     no=size(p0,2);
     for i=1:no
-        [T, thetac,~,~]=aux_Parallelotope(T,thetac,c0(i),p0(:,i));
+        [T,thetac,~,~] = aux_Parallelotope(T,thetac,c0(i),p0(:,i));
     end
-    Rnext=zonotope([thetac,T]);
+    Rnext=zonotope(thetac,T);
     % Store result
     R{k+1} = Rnext;
 end
@@ -79,7 +76,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [T, thetac,p0,c0]=aux_Parallelotope(t,thetac,c0,p0)
+function [T,thetac,p0,c0]=aux_Parallelotope(t,thetac,c0,p0)
     %This function make one iteration and find the 
     %minimum parallelotope for n+1 strips
     %t E to R(nxn)

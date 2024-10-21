@@ -1,18 +1,16 @@
-function han = getfcn(obj,options)
+function han = getfcn(nlnsys,params)
 % getfcn - returns the function handle of the continuous function specified
 %    by the linear system object
 %
 % Syntax:
-%    han = getfcn(obj)
+%    han = getfcn(nlnsys)
 %
 % Inputs:
-%    obj - nonlinearSys object
-%    options - reachability settings
+%    nlnsys - nonlinearSys object
+%    params - model parameters
 %
 % Outputs:
 %    han - function handle
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,7 +26,7 @@ function han = getfcn(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
     function dxdt = f(t,x)
-        dxdt = obj.mFile(x,options.u);
+        dxdt = nlnsys.mFile(x,params.u);
     end
     
     han = @f;

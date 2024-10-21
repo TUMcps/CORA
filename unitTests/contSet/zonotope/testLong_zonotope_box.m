@@ -50,9 +50,8 @@ for i=1:nrTests
     Gint = generators(Zint);
 
     % check if axis-aligned box same as interval
-    if ~compareMatrices(cbox,cint,1e-14) || ~compareMatrices(Gbox,Gint,1e-14)
-        res = false; return
-    end
+    assertLoop(compareMatrices(cbox,cint,1e-14),i)
+    assertLoop(compareMatrices(Gbox,Gint,1e-14),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

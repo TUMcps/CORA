@@ -1,12 +1,13 @@
-function [timeInt,timePoint,res] = reach_wrappingfree(obj,options)
+function [timeInt,timePoint,res] = reach_wrappingfree(linsys,params,options)
 % reach_wrappingfree - computes the reachable set for linear systems using
 %    the wrapping-free reachability algorithm for linear systems [1]
 %
 % Syntax:
-%    [timeInt,timePoint,res] = reach_wrappingfree(obj,options)
+%    [timeInt,timePoint,res] = reach_wrappingfree(linsys,params,options)
 %
 % Inputs:
-%    obj - continuous system object
+%    linsys - linearSys object
+%    params - model parameters
 %    options - options for the computation of reachable sets
 %
 % Outputs:
@@ -36,37 +37,18 @@ function [timeInt,timePoint,res] = reach_wrappingfree(obj,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%obtain factors for initial state and input solution
-for i=1:(options.taylorTerms+1)
-    %compute initial state factor
-    options.factor(i) = options.timeStep^(i)/factorial(i);    
-end
-
-% if a trajectory should be tracked
-if isfield(options,'uTransVec')
-    options.uTrans = options.uTransVec(:,1);
-    tracking = true;
+% put system into canonical form
+if isfield(params,'uTransVec')
+    [linsys,U,u,V,v] = canonicalForm(linsys,params.U,params.uTransVec,...
+        params.W,params.V,zeros(linsys.nrOfNoises,1));
 else
-    inputCorr = 0;
-    tracking = false;
+    [linsys,U,u,V,v] = canonicalForm(linsys,params.U,params.uTrans,...
+        params.W,params.V,zeros(linsys.nrOfNoises,1));
 end
-
-% log information
-verboseLog(1,options.tStart,options);
-
-% initialize reachable set computations
-[Rnext, options] = initReach_Euclidean(obj, options.R0, options);
-Rtrans = options.Rtrans;
-Rhom   = options.Rhom;
-Rhom_tp = options.Rhom_tp;
-Rpar   = options.Rpar;
-Raux   = options.Raux;
-eAt    = obj.taylor.eAt;
 
 % time period and number of steps
-tVec = options.tStart:options.timeStep:options.tFinal;
+tVec = params.tStart:options.timeStep:params.tFinal;
 steps = length(tVec) - 1;
-options.i = 1;
 
 % initialize output variables for reachable sets and output sets
 timeInt.set = cell(steps,1);
@@ -74,74 +56,92 @@ timeInt.time = cell(steps,1);
 timePoint.set = cell(steps+1,1);
 timePoint.time = num2cell(tVec');
 
-% compute output set of first step
-timePoint.set{1} = outputSet(obj,options,options.R0);
-timeInt.set{1} = outputSet(obj,options,Rnext.ti);
+% log information
+verboseLog(options.verbose,1,params.tStart,params.tStart,params.tFinal);
+
+% compute reachable sets for first step
+[Rtp,Rti,Htp,Hti,PU,Pu,~,C_input] = oneStep(linsys,...
+    params.R0,U,u(:,1),options.timeStep,options.taylorTerms);
+
+% read out propagation matrix and base particular solution
+eAdt = getTaylor(linsys,'eAdt',struct('timeStep',options.timeStep));
+% save particular solution
+PU_next = PU;
+PU = interval(PU);
+if isa(Pu,'contSet')
+    Pu_c = center(Pu);
+    Pu_int = interval(Pu) - Pu_c;
+else
+    Pu_int = zeros(linsys.nrOfStates,1);
+    Pu_c = Pu;
+end
+
+% compute output set of start set and first time-interval solution
+timePoint.set{1} = outputSet_canonicalForm(linsys,params.R0,V,v,1);
+timeInt.set{1} = outputSet_canonicalForm(linsys,Rti,V,v,1);
 timeInt.time{1} = interval(tVec(1),tVec(2));
-Rstart = Rnext.tp;
+timePoint.set{2} = outputSet_canonicalForm(linsys,Rtp,V,v,2);
 
 % safety property check
 if isfield(options,'specification')
     [res,timeInt,timePoint] = checkSpecification(...
-        options.specification,Rnext.ti,timeInt,timePoint,1);
+        options.specification,Rti,timeInt,timePoint,1);
     if ~res; return; end
 end
 
 
 % loop over all reachability steps
-for i = 2:steps
-    
-    options.i = i;
-    
-    % post: (wrapping free) ----------
+for k = 2:steps
     
     % method implemented from Algorithm 2 in [1]
     
-    % if a trajectory should be tracked
-    if tracking
-        options.uTrans = options.uTransVec(:,i);
-        options.Rhom_tp = Rhom_tp;
-        [Rhom,Rhom_tp,Rtrans,inputCorr] = inputInducedUpdates(obj,options);
+    % re-compute particular solution due to constant input if we have a
+    % time-varying input trajectory, since the constant input is included
+    % in our affine solution, we recompute Htp, Hti, and Pu, incl. errors
+    if isfield(params,'uTransVec')
+        Htp_start = Htp;
+        [Htp,Pu,~,C_state,C_input] = affineSolution(...
+            linsys,Htp_start,u(:,k),options.timeStep,options.taylorTerms);
+        Hti = enclose(Htp_start,Htp) + C_state;
+        if isa(Pu,'contSet')
+            Pu_c = center(Pu);
+            Pu_int = interval(Pu) - Pu_c;
+        else
+            Pu_int = zeros(linsys.nrOfStates,1);
+            Pu_c = Pu;
+        end
     else
-        Rhom = eAt*Rhom + center(Rtrans);
-        Rhom_tp = eAt*Rhom_tp + center(Rtrans);
+        % propagate affine solution
+        Hti = eAdt * Hti + Pu_c;
+        Htp = eAdt * Htp + Pu_c;
     end
-    Raux = eAt*Raux;
-    Rpar = Rpar + interval(Raux) + interval(Rtrans) + (-center(Rtrans));
-    
-    %write results to reachable set struct Rnext
-    if isa(Rhom,'polytope')
-        Rnext.ti = Rhom + polytope(Rpar) + polytope(inputCorr);
-        Rnext.tp = Rhom_tp + polytope(Rpar);
-    else
-        Rnext.ti = Rhom + zonotope(Rpar) + inputCorr;
-        Rnext.tp = Rhom_tp + zonotope(Rpar);
-    end
-    
-    % ----------
 
-    % compute output set
-    timePoint.set{i} = outputSet(obj,options,Rstart);
-    timeInt.set{i} = outputSet(obj,options,Rnext.ti);
-    timeInt.time{i} = interval(tVec(i),tVec(i+1));
+    % propagate particular solution (interval)
+    PU_next = eAdt * PU_next;
+    PU = PU + interval(PU_next) + Pu_int;
     
-    % save reachable set
-    Rstart = Rnext.tp;
+    % full solution
+    Rti = Hti + PU + C_input;
+    Rtp = Htp + PU;
+
+    % compute output sets
+    timeInt.set{k} = outputSet_canonicalForm(linsys,Rti,V,v,k);
+    timeInt.time{k} = interval(tVec(k),tVec(k+1));
+
+    % compute output set for start set of next step
+    timePoint.set{k+1} = outputSet_canonicalForm(linsys,Rtp,V,v,k+1);
     
     % safety property check
     if isfield(options,'specification')
         [res,timeInt,timePoint] = checkSpecification(...
-            options.specification,Rnext.ti,timeInt,timePoint,i);
+            options.specification,Rti,timeInt,timePoint,k);
         if ~res; return; end
     end
     
     % log information
-    verboseLog(i,tVec(i),options);
+    verboseLog(options.verbose,k,tVec(k),params.tStart,params.tFinal);
     
 end
-
-% compute output set of last set
-timePoint.set{end} = outputSet(obj,options,Rstart);
 
 % specification fulfilled
 res = true;

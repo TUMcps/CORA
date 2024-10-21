@@ -54,11 +54,7 @@ for ch = 1:num_channels
     diff = x(:,ch) - xSX(:,ch);
     error = norm(diff); %length of the difference vector
 
-    if(error > 1e-5)
-        disp('Failed Conversion: error = ' + string(error));
-        res = false;
-        return
-    end
+    assert(error <= 1e-5,ch)
 end
 
 disp('Successful Conversion: error = ' + string(error))

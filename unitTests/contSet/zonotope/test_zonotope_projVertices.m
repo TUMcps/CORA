@@ -37,9 +37,7 @@ V = vertices(Z);
 V_proj = projVertices(Z);
 
 % check vertices
-if ~compareMatrices(V,V_proj,1e-14)
-    res = false;
-end
+assert(compareMatrices(V,V_proj,1e-14))
 
 
 % 3D zonotope
@@ -58,9 +56,7 @@ for i=1:length(dims)
     V_proj = projVertices(Z,dims{i});
 
     % check vertices
-    if ~compareMatrices(V_proj,V(dims{i},:),1e-14,'subset')
-        res = false;
-    end
+    assertLoop(compareMatrices(V_proj,V(dims{i},:),1e-14,'subset'),i)
 end
 
 
@@ -72,9 +68,7 @@ V = [2 0; 0 2]';
 V_proj = projVertices(Z);
 
 % check vertices
-if ~compareMatrices(V,V_proj,1e-14)
-    res = false;
-end
+assert(compareMatrices(V,V_proj,1e-14))
 
 % degenerate zonotope (point)
 Z = zonotope([1;1]);
@@ -84,8 +78,8 @@ V = [1;1];
 V_proj = projVertices(Z);
 
 % check vertices
-if ~compareMatrices(V,V_proj,1e-14)
-    res = false;
+assert(compareMatrices(V,V_proj,1e-14))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -23,7 +23,7 @@ function res = testLong_spaceex2cora_hybrid_bouncingball()
 A = [0 1; 0 0];
 B = [0; 0];
 c = [0; -9.81];
-linSys = linearSys('linearSys',A,B,c);
+linsys = linearSys('linearSys',A,B,c);
 
 % system parameters
 alpha = -0.75;                  % rebound factor
@@ -32,16 +32,16 @@ alpha = -0.75;                  % rebound factor
 inv = polytope([-1,0],0);
 
 % guard sets
-guard = conHyperplane([1,0],0,[0,1],0);
+guard = polytope([0,1],0,[1,0],0);
 
 % reset function
-reset.A = [0, 0; 0, alpha]; reset.c = zeros(2,1);
+reset = linearReset([0, 0; 0, alpha], zeros(2,1), zeros(2,1));
 
 % transitions
 trans = transition(guard,reset,1);
 
 % location object
-loc = location('loc1',inv,trans,linSys); 
+loc = location('loc1',inv,trans,linsys); 
 
 % hybrid automata
 HA = hybridAutomaton(loc);
@@ -74,11 +74,7 @@ for cell = 1:length(x)
     diff = x{cell} - x_SX{cell};
     error = vecnorm(diff); %has two values: one for each channel
     
-    if any(error > 1e-5) 
-        disp('Failed Conversion: error = ' + string(error));
-        res = false;
-        return
-    end 
+    assertLoop(error <= 1e-5,cell) 
 end
 
 disp('Successful Conversion: error = ' + string(sum(error)));

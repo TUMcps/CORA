@@ -26,22 +26,22 @@ function res = test_zonotope_generators
 % empty zonotope
 Z = zonotope.empty(2);
 G = generators(Z);
-res = isempty(G) && isnumeric(G) && all(size(G) == [2,0]);
+assert(isempty(G) && isnumeric(G) && all(size(G) == [2,0]));
 
 % 2D zonotope
 c = [-2; 1];
 G = [2 4 5 3 3; 0 3 5 2 3];
 Z = zonotope(c,G);
 G_ = generators(Z);
-res(end+1,1) = compareMatrices(G,G_);
+assert(compareMatrices(G,G_));
 
 % zonotope without generators
 c = [1;0;0;-2];
 Z = zonotope(c);
 G_ = generators(Z);
-res(end+1,1) = all(size(G_) == [4,0]);
+assert(all(size(G_) == [4,0]));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

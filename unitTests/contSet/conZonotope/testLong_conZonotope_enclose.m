@@ -89,9 +89,7 @@ for h = 1:5
 
     % check if all points are located inside the resulting conZonotope
     for i = 1:size(points,2)
-       if ~all(A*points(:,i) < b | withinTol(A*points(:,i),b))
-          throw(CORAerror('CORA:testFailed'));
-       end
+       assertLoop(all(A*points(:,i) < b | withinTol(A*points(:,i),b)),h,i)
     end
 end
 
@@ -157,9 +155,7 @@ for h = 1:5
 
     % check if all points are located inside the resulting conZonotope
     for i = 1:size(points,2)
-       if ~all(A*points(:,i) < b | withinTol(A*points(:,i),b))
-          throw(CORAerror('CORA:testFailed'));
-       end
+       assertLoop(all(A*points(:,i) < b | withinTol(A*points(:,i),b)),h,i)
     end
 end
 

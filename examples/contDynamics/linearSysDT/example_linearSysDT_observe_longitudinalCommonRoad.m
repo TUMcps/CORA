@@ -27,8 +27,10 @@ function completed = example_linearSysDT_observe_longitudinalCommonRoad
 A = [0 1; 0 0];
 B = [0;1];
 C = [1 0];
+E = [1 0; 0 1];
+F = 1;
 
-sys = linearSys(A,B,[],C);
+sys = linearSys(A,B,[],C,[],[],E,F);
 
 % convert to discrete-time system
 Ts = 0.1;                           % sampling time

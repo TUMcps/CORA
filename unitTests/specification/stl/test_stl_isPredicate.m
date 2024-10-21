@@ -38,18 +38,18 @@ n4 = stl(false);
 
 
 % test
-res = [];
-res(end+1,1) = isPredicate(p1);
-res(end+1,1) = isPredicate(p2);
-res(end+1,1) = isPredicate(p3);
-res(end+1,1) = isPredicate(p4);
+res = true;
+assert(isPredicate(p1));
+assert(isPredicate(p2));
+assert(isPredicate(p3));
+assert(isPredicate(p4));
 
-res(end+1,1) = ~isPredicate(n1);
-res(end+1,1) = ~isPredicate(n2);
-res(end+1,1) = ~isPredicate(n3);
-res(end+1,1) = ~isPredicate(n4);
+assert(~isPredicate(n1));
+assert(~isPredicate(n2));
+assert(~isPredicate(n3));
+assert(~isPredicate(n4));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

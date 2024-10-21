@@ -1,17 +1,18 @@
 function [Z_error, errorInt, errorInt_x, errorInt_y, R_y, options] = ...
-            	abstractionError_adaptive(obj, options, R, Verror_y)
+            	abstractionError_adaptive(nlnsysDA, R, Verror_y, params, options)
 % abstractionError_adaptive - computes the abstraction error
 % note: no Taylor Model or zoo integration
 %
 % Syntax:
 %    [Verror, errorInt, errorInt_x, errorInt_y, R_y] = ...
-%              abstractionError_adaptive(obj, options, R, Verror_y)
+%              abstractionError_adaptive(nlnsysDA, options, R, Verror_y)
 %
 % Inputs:
-%    obj - nonlinDASys object
-%    options - options struct
+%    nlnsysDA - nonlinDASys object
 %    R - reachable set
 %    Verror_y - set of algebraic linearization error
+%    params - model parameters
+%    options - options struct
 %
 % Outputs:
 %    Z_error - zonotope over-approximating the linearization error
@@ -19,8 +20,6 @@ function [Z_error, errorInt, errorInt_x, errorInt_y, R_y, options] = ...
 %    errorInt_x - interval over-approximating the linearization error (dynamic part)
 %    errorInt_y - interval over-approximating the linearization error (constraint part)
 %    R_y - reachable set of the algebraic part
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -41,18 +40,18 @@ function [Z_error, errorInt, errorInt_x, errorInt_y, R_y, options] = ...
 % ------------------------------ BEGIN CODE -------------------------------
 
 % read out variables
-f0_con = obj.linError.f0_con;
-D = obj.linError.D;
-E = obj.linError.E;
-F_inv = obj.linError.F_inv;
+f0_con = nlnsysDA.linError.f0_con;
+D = nlnsysDA.linError.D;
+E = nlnsysDA.linError.E;
+F_inv = nlnsysDA.linError.F_inv;
 
 % intervals for reachable set and input
 dx = interval(R);
-du = interval(options.U);
+du = interval(params.U);
 
 % shift by linearization point
-totalInt_x = dx + obj.linError.p.x;
-totalInt_u = du + obj.linError.p.u;
+totalInt_x = dx + nlnsysDA.linError.p.x;
+totalInt_u = du + nlnsysDA.linError.p.u;
 
 
 % LIN; TENSOR 2 -----------------------------------------------------------
@@ -60,21 +59,21 @@ if strcmp(options.alg,'lin') && options.tensorOrder == 2
     % approach in [Sec. IV, 1]
     
     % set handle to correct file
-    obj = setHessian(obj,'int');
+    nlnsysDA = setHessian(nlnsysDA,'int');
 
     % compute set of algebraic variables
-    F_inv = obj.linError.F_inv;
-    R_y = -F_inv*(f0_con + D*R + E*options.U + Verror_y); % see [1, eq.(12)]
+    F_inv = nlnsysDA.linError.F_inv;
+    R_y = -F_inv*(f0_con + D*R + E*params.U + Verror_y); % see [1, eq.(12)]
 
     % obtain interval of algebraic states and combined interval z
     dy = interval(R_y);
     dz = [dx; dy; du];
 
     % shift interval of algebraic states by linearization point
-    totalInt_y = dy + obj.linError.p.y;
+    totalInt_y = dy + nlnsysDA.linError.p.y;
     
     % evaluate Hessian
-    [Hf, Hg] = obj.hessian(totalInt_x, totalInt_y, totalInt_u);
+    [Hf, Hg] = nlnsysDA.hessian(totalInt_x, totalInt_y, totalInt_u);
 
     % error_x
     for i=1:length(Hf)
@@ -89,10 +88,10 @@ if strcmp(options.alg,'lin') && options.tensorOrder == 2
     % final error
     Z_error_x = zonotope(interval(infimum(Z_error_x),supremum(Z_error_x)));
     Z_error_y = zonotope(interval(infimum(Z_error_y),supremum(Z_error_y)));
-    Z_error = Z_error_x + obj.linError.CF_inv*Z_error_y;
+    Z_error = Z_error_x + nlnsysDA.linError.CF_inv*Z_error_y;
 
     % update R_y, see [1, eq.(19)]
-    R_y =  obj.linError.p.y + (-F_inv)*(f0_con + D*R + E*options.U + Z_error_y);
+    R_y =  nlnsysDA.linError.p.y + (-F_inv)*(f0_con + D*R + E*params.U + Z_error_y);
 
     % error intervals
     errorIHabs = abs(interval(Z_error));
@@ -109,24 +108,24 @@ if strcmp(options.alg,'lin') && options.tensorOrder == 2
 elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
     
     % set handles to correct files
-    obj = setHessian(obj,'standard');
-    obj = setThirdOrderTensor(obj,'int');
+    nlnsysDA = setHessian(nlnsysDA,'standard');
+    nlnsysDA = setThirdOrderTensor(nlnsysDA,'int');
     
     % compute set of algebraic variables, see [1, eq.(19)], split into two
     % parts acc. to [1, Prop. 2]
     R_y_cor = -F_inv*(f0_con + D*R); % x-y-correlated part
-    R_y_add = -F_inv*(E*options.U + Verror_y); % uncorrelated part
+    R_y_add = -F_inv*(E*params.U + Verror_y); % uncorrelated part
     
     % obtain intervals and combined interval z
     dy = interval(R_y_cor + R_y_add);
     dz = [dx; dy; du];
     
     % shift interval of algebraic states by linearization point
-    totalInt_y = dy + obj.linError.p.y;
+    totalInt_y = dy + nlnsysDA.linError.p.y;
     
     % evaluate Hessian (matrices) and third-order tensor (interval matrices)
-    [Hf, Hg] = obj.hessian(obj.linError.p.x, obj.linError.p.y, obj.linError.p.u);
-    [Tf, Tg] = obj.thirdOrderTensor(totalInt_x, totalInt_y, totalInt_u);
+    [Hf, Hg] = nlnsysDA.hessian(nlnsysDA.linError.p.x, nlnsysDA.linError.p.y, nlnsysDA.linError.p.u);
+    [Tf, Tg] = nlnsysDA.thirdOrderTensor(totalInt_x, totalInt_y, totalInt_u);
     
     % compute zonotope of state, constraint variables, and input
     Z_x = [R.c,R.G];
@@ -134,7 +133,7 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
     Z_y_add = [R_y_add.c,R_y_add.G];
     Z_0 = zeros(length(Z_x(:,1)), length(Z_y_add(1,:)));
     R_xy = zonotope([Z_x, Z_0; Z_y_cor, Z_y_add]);     % see [1, Prop. 2]
-    R_xyu = cartProd(R_xy, options.U);
+    R_xyu = cartProd(R_xy, params.U);
     % order reduction before application of quadMap operation
     if isfield(options,'gredIdx')
         if length(options.gredIdx.xyu) == options.i
@@ -156,7 +155,7 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
     % compute full second-order error
     % including correlation: exactplus (bug if quadMap used!)
     Z_err_x = [error_x_secondOrder.c,error_x_secondOrder.G];
-    Z_err_x_add = obj.linError.CF_inv*error_y_secondOrder;
+    Z_err_x_add = nlnsysDA.linError.CF_inv*error_y_secondOrder;
     Z_err_x_add = [Z_err_x_add.c,Z_err_x_add.G];
     error_secondOrder = zonotope(Z_err_x + Z_err_x_add);
     % remove 0-generators here... (remove zonotope-constructor above)
@@ -188,7 +187,7 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
     
     % compute final error
     error_thirdOrder = error_thirdOrder_x_zono + ...
-        obj.linError.CF_inv * error_thirdOrder_y_zono;
+        nlnsysDA.linError.CF_inv * error_thirdOrder_y_zono;
     Z_error = error_secondOrder + error_thirdOrder;
     
     % combine results
@@ -213,7 +212,7 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
     end
     
     % update R_y (time-interval)
-    R_y = obj.linError.p.y + (-F_inv)*(f0_con + D*R + E*options.U + Z_error_y);
+    R_y = nlnsysDA.linError.p.y + (-F_inv)*(f0_con + D*R + E*params.U + Z_error_y);
     
     % error intervals
     errorIHabs_x = abs(interval(Z_error_x));

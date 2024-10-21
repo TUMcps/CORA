@@ -1,21 +1,20 @@
-function Y = outputSet(obj,options,R)
-% outputSet - calculates output set based on a (non-)linear output equation
+function [Y, Verror] = outputSet(sys,R,params,options)
+% outputSet - computes output set based on a (non-)linear output equation
 %
 % Syntax:
-%    Y = outputSet(obj,options,R)
+%    Y = outputSet(sys,R,params,options)
 %
 % Inputs:
-%    obj - contDynamics object
-%    options - options for the computation of reachable sets
+%    sys - contDynamics object
 %    R - reachable set (either time point [i] or time interval [i,i+1])
+%    params - model parameters
+%    options - options for the computation of reachable sets
 %
 % Outputs:
 %    Y - output set (either time point [i] or time interval [i,i+1])
+%    Verror - linearization error
 %
 % Example:
-%    -
-%
-% References:
 %    -
 %
 % Other m-files required: none
@@ -28,6 +27,7 @@ function Y = outputSet(obj,options,R)
 % Written:       19-November-2022
 % Last update:   07-December-2022 (MW, allow to skip output set)
 %                23-June-2023 (LL, consider inputs in first-order term)
+%                06-November-2023 (LL, add Verror as output)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -38,7 +38,7 @@ if ~options.compOutputSet
 end
 
 % linParamSys or linProbSys
-if isa(obj,'linParamSys') || isa(obj,'linProbSys')
+if isa(sys,'linParamSys') || isa(sys,'linProbSys')
     % ...adapt this when these classes also support output functions
     Y = R; return
 end
@@ -52,20 +52,22 @@ end
 % only nonlinear systems from here on...
 
 if ~iscell(R)
-    Y = aux_outputSet(obj,options,R,obj.out_isLinear);
+    [Y, Verror] = aux_outputSet(sys,options.tensorOrderOutput,R,params);
 else
     Y = cell(length(R),1);
     for i=1:length(R)
         if isstruct(R{i})
             % time-point solution
-            Y{i}.set = aux_outputSet(obj,options,R{i}.set,obj.out_isLinear);
+            [Y{i}.set, Verror] = aux_outputSet(sys,...
+                options.tensorOrderOutput,R{i}.set,params);
             Y{i}.prev = R{i}.prev;
             if isfield(R{i},'parent')
                 Y{i}.parent = R{i}.parent;
             end
         else
             % time-interval solution
-            Y{i} = aux_outputSet(obj,options,R{i},obj.out_isLinear);
+            [Y{i}, Verror] = aux_outputSet(sys,...
+                options.tensorOrderOutput,R{i},params);
         end
     end
 end
@@ -75,26 +77,26 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function Y = aux_outputSet(obj,options,R,all_linear)
+function [Y, Verror] = aux_outputSet(sys,tensorOrderOutput,R,params)
 % output set computation for a given reachable set
 
 % dimension of state and inputs
-n = obj.dim;
-m = obj.nrOfInputs;
-r = obj.nrOfOutputs;
+n = sys.nrOfStates;
+m = sys.nrOfInputs;
+r = sys.nrOfOutputs;
 
 % input set
-U = options.U + options.uTrans;
+U = params.U;
 
 % expansion points
 p_x = center(R);
 p_u = center(U);
 p = [p_x;p_u];
-if isa(obj,'nonlinParamSys')
-    if isa(options.paramInt,'interval')
-        p_p = center(options.paramInt);
+if isa(sys,'nonlinParamSys')
+    if isa(params.paramInt,'interval')
+        p_p = center(params.paramInt);
     else
-        p_p = options.paramInt;
+        p_p = params.paramInt;
     end
 end
 
@@ -104,19 +106,21 @@ I_u = interval(U);
 I = cartProd(I_x,I_u);
 
 % evaluate reset function and Jacobian at expansion point
-D_lin = zeros(obj.nrOfOutputs,obj.nrOfInputs);
-if isa(obj,'nonlinearSys') || isa(obj,'nonlinearSysDT')
-    zerothorder = obj.out_mFile(p_x,p_u);
-    [J,D_lin] = obj.out_jacobian(p_x,p_u);
-elseif isa(obj,'nonlinParamSys')
-    if isa(options.paramInt,'interval')
+D_lin = zeros(sys.nrOfOutputs,sys.nrOfInputs);
+if isa(sys,'nonlinearSys') || isa(sys,'nonlinearSysDT')
+    zerothorder = sys.out_mFile(p_x,p_u);
+    [J,D_lin] = sys.out_jacobian(p_x,p_u);
+elseif isa(sys,'nonlinParamSys')
+    if isa(params.paramInt,'interval')
         % ...copied from nonlinParamSys/linearize
         % constant
-        f0cell = obj.out_parametricDynamicFile(p_x,p_u);
+        f0_3D = sys.out_parametricDynamicFile(p_x,p_u);
+        f0cell = arrayfun(@(i) f0_3D(:,:,i),1:sys.nrOfParam+1,...
+            'UniformOutput',false);
         % normalize cells
         for i=2:length(f0cell)
-            f0cell{1} = f0cell{1} + center(options.paramInt(i-1))*f0cell{i};
-            f0cell{i} = rad(options.paramInt(i-1))*f0cell{i};
+            f0cell{1} = f0cell{1} + center(params.paramInt(i-1))*f0cell{i};
+            f0cell{i} = rad(params.paramInt(i-1))*f0cell{i};
         end
         % create constant input zonotope
         f0Mat(length(f0cell{1}(:,1)),length(f0cell)) = 0;
@@ -126,34 +130,34 @@ elseif isa(obj,'nonlinParamSys')
         zerothorder = zonotope(f0Mat);
 
         % Jacobian
-        J = obj.out_jacobian(p_x,p_u);
+        J = sys.out_jacobian(p_x,p_u);
         % create matrix zonotopes, convert to interval matrix for Jacobian
         J = intervalMatrix(matZonotope(J(:,:,1),J(:,:,2:end)));
 
-    else % options.paramInt is numeric
-        zerothorder = obj.out_mFile(p_x,p_u,p_p);
-        J = obj.out_jacobian_freeParam(p_x,p_u,p_p);
+    else % params.paramInt is numeric
+        zerothorder = sys.out_mFile(p_x,p_u,p_p);
+        J = sys.out_jacobian_freeParam(p_x,p_u,p_p);
     end
 end
 
 % first-order
 firstorder = J * (R + (-p_x)) + D_lin * (U + (-p_u));
 
-if all_linear
+if sys.out_isLinear
     % only affine map
-    secondorder = 0;
+    secondorder = zonotope(zeros(size(J,1),1));
     thirdorder = 0;
 
-elseif options.tensorOrderOutput == 2
+elseif tensorOrderOutput == 2
 
     % assign correct hessian (using interval arithmetic)
-    obj = setOutHessian(obj,'int');
+    sys = setOutHessian(sys,'int');
 
     % evaluate Hessian using interval arithmetic
-    if isa(obj,'nonlinParamSys')
-        H = obj.out_hessian(I_x,I_u,options.paramInt);
+    if isa(sys,'nonlinParamSys')
+        H = sys.out_hessian(I_x,I_u,params.paramInt);
     else
-        H = obj.out_hessian(I_x,I_u);
+        H = sys.out_hessian(I_x,I_u);
     end
 
     % obtain maximum absolute values within Z
@@ -169,19 +173,19 @@ elseif options.tensorOrderOutput == 2
     secondorder = zonotope(zeros(r,1),diag(secondorder));
 
     % no third-order computation
-    thirdorder = 0;
+    thirdorder = zeros(r,1);
 
-elseif options.tensorOrderOutput == 3
+elseif tensorOrderOutput == 3
 
     % set handles to correct files
-    obj = setOutHessian(obj,'standard');
-    obj = setOutThirdOrderTensor(obj,'int');
+    sys = setOutHessian(sys,'standard');
+    sys = setOutThirdOrderTensor(sys,'int');
 
     % evaluate Hessians at expansion point
-    if isa(obj,'nonlinParamSys')
-        H = obj.out_hessian(p_x,p_u,p_p);
+    if isa(sys,'nonlinParamSys')
+        H = sys.out_hessian(p_x,p_u,p_p);
     else
-        H = obj.out_hessian(p_x,p_u);
+        H = sys.out_hessian(p_x,p_u);
     end
 
     % Cartesian product of given set of states and inputs
@@ -191,7 +195,7 @@ elseif options.tensorOrderOutput == 3
     secondorder = 0.5*quadMap(Z+(-p),H);
     
     % evaluate third-order tensors over entire set
-    [T,ind] = obj.out_thirdOrderTensor(I_x,I_u);
+    [T,ind] = sys.out_thirdOrderTensor(I_x,I_u);
     
     % compute Lagrange remainder
     I = I - p;
@@ -199,7 +203,7 @@ elseif options.tensorOrderOutput == 3
     
     for i = 1:r
         for j = 1:n+m
-            if ~isempty(T{i,j}) % same as: ~isempty(ind(i,j)) ?
+            if ~representsa(T{i,j},'emptySet') % same as: ~isempty(ind(i,j)) ?
                 thirdorder(i) = thirdorder(i) ...
                     + I(j) * transpose(I) * T{i,j} * I;
             end
@@ -212,7 +216,8 @@ elseif options.tensorOrderOutput == 3
 end
 
 % compute output set
-Y = zerothorder + firstorder + secondorder + thirdorder;
+Verror = secondorder + thirdorder;
+Y = zerothorder + firstorder + Verror;
 
 end
 

@@ -1,0 +1,50 @@
+\subsubsection{Linear Probabilistic Systems} \label{sec:linearProbSystems}
+
+In contrast to all other systems, we consider stochastic properties in the class \texttt{linProbSys}. The system under consideration is defined by the following linear stochastic differential equation (SDE), which is also known as the multivariate Ornstein-Uhlenbeck process \cite{Gardiner1983}:
+\begin{align}
+\begin{split} \label{eq:linProbSys}
+	&\dot{x} = A x(t) + u(t) + C \xi(t), \\
+	&x(0) \in \mathbb{R}^{n}, \, u(t)\in \mathcal{U} \subset \mathbb{R}^n, \, \xi \in \mathbb{R}^{m},
+\end{split}
+\end{align} 
+where $A$ and $C$ are matrices of proper dimension and $A$ has full rank. There are two kinds of inputs: the first input $u$ is Lipschitz continuous and can take any value in $\mathcal{U} \subset \mathbb{R}^n$ for which no probability distribution is known. The second input $\xi\in\mathbb{R}^m$ is white Gaussian noise. The combination of both inputs can be seen as a white Gaussian noise input, where the mean value is unknown within the set $\mathcal{U}$. 
+
+In contrast to the other system classes, we compute enclosing probabilistic hulls, i.e., a hull over all possible probability distributions when some parameters are uncertain and do not have a probability distribution. We denote the probability density function (PDF) of the random process $\mathbf{X}(t)$ defined by \eqref{eq:linProbSys} for a specific trajectory $u(t) \in \mathcal{U}$ at time $t=r$ by $f_{\mathbf{X}}(x,r)$. The \textit{enclosing probabilistic hull} (EPH) of all possible probability density functions $f_{\mathbf{X}}(x,r)$ is denoted by $\bar{f}_{\mathbf{X}}(x,r)$ and defined as:
+$\bar{f}_{\mathbf{X}}(x,r)=\sup\{f_{\mathbf{X}}(x,r) | \mathbf{X}(t)$ $ \text{is a solution of \eqref{eq:linProbSys} } \forall t\in[0,r]$, $u(t)\in \mathcal{U}$, $f_{\mathbf{X}}(x,0)=f_0 \}$.
+The enclosing probabilistic hull for a time interval is defined as $\bar{f}_{\mathbf{X}}(x,[0,r])=\sup\{\bar{f}_{\mathbf{X}}(x,t)|t\in[0,r]\}$. 
+
+Let us demonstrate the class \texttt{linearSys} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.58\textwidth}
+	\begin{equation*}
+\begin{split}
+	& \begin{bmatrix} \dot x_1 \\ \dot x_2 \end{bmatrix} = \begin{bmatrix} -1 & -4 \\ 4 & -1 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} + \begin{bmatrix} 1 & 0\\ 0 & 1 \end{bmatrix} u + \begin{bmatrix} 0.7 & 0\\ 0 & 0.7 \end{bmatrix} \xi 
+\end{split}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[t]{0.38\textwidth}
+	\vspace{5pt}
+	\footnotesize
+	\input{./MATLABcode/example_linProbSys}
+\end{minipage}
+\end{center}
+
+\vspace{1cm}
+
+\subsubsubsection{Operation \texttt{reach}}
+
+Reachability analysis for linear probabilistic systems is  similar to reachability analysis of linear systems without stochastic uncertainty. The main difference is that the solution for time intervals has to be enclosed by the aforementioned \textit{enclosing probabilistic hulls} \cite{Althoff2009d}.
+
+The settings for reachability analysis are specified as fields of the struct \texttt{options} (see \cref{sec:reach}). For stochastic linear systems, the following settings are available:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}[t]{l p{11cm}}	
+	--~\texttt{.timeStep} & time step size. \\
+	--~\texttt{.taylorTerms} & number of Taylor terms for the computation of the exponential matrix $e^{A \Delta t}$ (see \cite[Sec.~4.2.4]{Althoff2010a}). \\
+	--~\texttt{.zonotopeOrder} & upper bound for the zonotope order $\rho$ (see \cref{sec:zonotope}).\\
+	--~\texttt{.reductionTechnique} & string specifying the method used to reduce the zonotope order (see \cref{tab:zono_reduction}). The default value is \texttt{'girard'}. \\
+	--~\texttt{.gamma} & scalar value specifying the size of the confidence set of normal distributions. The probability outside the confidence set is not computed, but added as a global probability of entering an unsafe set as discussed in \cite[Sec.~4.2.3]{Althoff2010a}. 
+\end{longtable}
+\end{center}

@@ -1,0 +1,47 @@
+\subsubsection{Parallel Hybrid Automata} \label{sec:parallelHybridAutomata}
+
+Complex systems can often be modeled as a connection of multiple distinct subcomponents, where each of these subcomponents represents a hybrid automaton. A naive approach to analyze these type of systems would be to construct a flat hybrid automaton from the interconnection of subcomponents (parallel composition, see e.g., \cite[Def.~2.9]{Frehse2005}). This technique, however, requires calculating all possible combinations of subsystem locations, and therefore suffers from the curse of dimensionality: Consider for example a system consisting of 15 subcomponents, where each subcomponent has 10 discrete locations. The flat hybrid automaton for this system would consist of $10^{15}$ discrete locations.
+
+This exponential increase in the number of locations can be avoided if the overall system is modeled as a parallel hybrid automaton. In this case, the system is described by a list of \texttt{hybridAutomaton} objects representing the subcomponents and by connections between these components. The flow function, the invariant set, and the guard sets for a location of the composed system are computed on-demand as soon as a simulated solution or the reachable set enters the corresponding part of the state space. Since usually only a small part of the state space is explored by simulation or reachability analysis, it is possible to significantly reduce the computational costs of the analysis if the system is modeled as a parallel hybrid automaton \cite{Lee2015}. 
+
+Parallel hybrid automata are implemented in CORA by the class \texttt{parallelHybridAutomaton}. An object of class \texttt{parallelHybridAutomaton} can be constructed as follows:
+\begin{equation*}
+	\texttt{obj} = \texttt{parallelHybridAutomaton}(\texttt{components},\texttt{inputBinds}),
+\end{equation*}
+with input arguments 
+\begin{itemize}
+  \item \texttt{components} -- cell array containing all subcomponents of the system. Each subcomponent has to be represented as a \texttt{hybridAutomaton} object (see \cref{sec:hybridAutomaton}). Currently, only hybrid automata for which the continuous dynamics are modeled as a linear system (see \cref{sec:linearSystems}) are supported.
+  \item \texttt{inputBinds} -- cell array containing matrices that describe the connections between the subcomponents. Each matrix has two columns: the first column represents the component the signal comes from and the second column the output number, e.g., $[2, 3]$ refers to output 3 of component 2. When an input to a component is also an input to the composed system, we use index 0, e.g., $[0,1]$. For each input of the subcomponent, we specify a new row and the row number corresponds to the input index of the considered component. 
+\end{itemize}
+  
+For better illustration of the required information, we introduce the example presented in \cref{fig:parallelHybridAutomaton} consisting of three components. For the parallel hybrid automaton in this example, the input binds have to be specified as follows:
+  {\small \input{./MATLABcode/example_parallelHybridAutomata_inputBinds.tex}}
+  Let us briefly discuss the solution for component 1, which has three inputs and thus \texttt{inputBinds\{1\}} has three rows: The first input (first row) is the second input of the composed system; the second input is the first input of the composed system; and the third input is the first output of component 2. 
+
+Since the modeling of hybrid automata is tedious and error-prone, we provide a method to read models of parallel hybrid automata using the SpaceEx format \cite{Donze2013}. For modeling and modifying SpaceEx models, one can use the freely-available SpaceEx model editor downloadable from \href{http://spaceex.imag.fr/download-6}{spaceex.imag.fr/download-6}. Details on converting SpaceEx models to models as defined in this section can be found in \cref{sec:loadingModels}.
+
+
+\begin{figure}[htb]
+  \centering	
+    \includegraphics[width=0.9\columnwidth]{./figures/parallelHybridAutomaton.eps}
+    \caption{Example of a parallel hybrid automaton that consists of three subcomponents.}
+    \label{fig:parallelHybridAutomaton}		
+\end{figure}
+
+
+
+\subsubsubsection{Operation \texttt{reach}}
+
+The settings for reachability analysis are specified as fields of the struct \texttt{options} (see \cref{sec:reach}). For parallel hybrid automata, the settings are identical to the ones for hybrid automata (see \cref{sec:hybridAutomatonReach}).
+
+The initial location \texttt{params.startLoc} and the final location \texttt{params.finalLoc} (see \cref{sec:reach}) are specified as a vector $l \in \mathbb{N}_{\geq 0}^s$, where each entry of the vector represents the index of the location for one of the $s$ subcomponents.
+
+For the set of uncertain inputs specified by \texttt{params.U} (see \cref{sec:reach}), there exist two different cases for parallel hybrid automata:
+\begin{enumerate}
+	\item The input set is identical for each component and location. In this case, a single set $\mathcal{U} \subset \R^m$ represented as a zonotope (see \cref{sec:zonotope}) is provided.
+	\item The input set is different for each component and location. In this case, \texttt{params.U} can be specified as a cell array, where each entry represents the input set for one component. Since each component can have multiple locations, the input set for each component is again a cell array whose entries represent the input sets for all locations. The input set for the overall system is then constructed on demand for each visited location according to
+	\begin{equation*}
+		\mathcal{U} = \texttt{params.U\{}i_{(1)}\texttt{\}\{}l_{(i_{(1)})} \texttt{\}} \times \dots \times \texttt{params.U\{}i_{(m)}\texttt{\}\{}l_{(i_{(m)})} \texttt{\}} ,
+	\end{equation*}
+	where the vector $l \in \mathbb{N}_{\geq 0}^s$ stores the index of the current location for all $s$ components, and the vector $i \in \mathbb{N}_{\geq 0}^m$ maps the input sets for the single components to the global input set. The vector $i$ can be specified with an additional setting $\texttt{params.inputCompMap} = i$. 
+\end{enumerate}

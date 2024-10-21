@@ -1,0 +1,29 @@
+\begin{tikzpicture}
+    [%
+    markovstate/.style={
+        circle,
+        minimum size=1.25cm,
+        draw=black,
+        thick,
+        fill=white,
+        align=left
+    },
+    annotation/.style={
+        circle,
+        fill=white
+    }
+    ]
+
+    \draw (0,0) node[markovstate] (n1) {$1$};
+    \draw (-2,-2) node[markovstate] (n2) {$2$};
+    \draw (2,-2) node[markovstate] (n3) {$3$};
+
+    \draw (6,-1) node (n4) {$\Phi=\begin{bmatrix} 0.6 & 0.9 & 1 \\ 0 & 0.1 & 0 \\ 0.4 & 0 & 0 \end{bmatrix}$};
+
+    \draw (n1.west) edge[out=180,in=90,->,looseness=4] node[annotation] {$0.6$} (n1.north);
+    \draw (n1.east) edge[out=0,in=90,->] node[annotation] {$0.4$} (n3.north);
+    \draw (n2) edge[->] node[annotation] {$0.9$} (n1);
+    \draw (n2.west) edge[out=180,in=90,->,looseness=4] node[annotation] {$0.1$} (n2.north);
+    \draw (n3.west) edge[out=180,in=270,->] node[annotation] {$1$} (n1.south);
+
+\end{tikzpicture}%

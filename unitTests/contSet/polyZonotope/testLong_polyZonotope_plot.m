@@ -25,8 +25,6 @@ function res = testLong_polyZonotope_plot
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % instantiate polynomial zonotope
 c = rand(4,1)-0.5*ones(4,1);
 G = rand(4,6)-0.5*ones(4,6);
@@ -42,39 +40,32 @@ try
     
     % one argument: object
     plot(pZ);
-    resvec(end+1) = true;
     
     % two arguments: object, dimensions
     plot(pZ,1);
     plot(pZ,[1,2]);
     plot(pZ,[2,3]);
-    resvec(end+1) = true;
     
     % three arguments: object, dimensions, linespec
     plot(pZ,[1,2],'r+');
-    resvec(end+1) = true;
     
     % three arguments: object, dimensions, NVpairs
     plot(pZ,[1,2],'LineWidth',2);
     plot(pZ,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
-    resvec(end+1) = true;
     
     % three arguments: object, dimensions, NVpair 'Splits'
     plot(pZ,[1,2],'Splits',0);
     plot(pZ,[1,2],'Splits',6);
     plot(pZ,[1,2],'Splits',6,'LineWidth',2);
     plot(pZ,[1,2],'Splits',6,'EdgeColor','k','FaceColor',[.8 .8 .8]);
-    resvec(end+1) = true;
     
     % four arguments: object, dimensions, linespec, NVpairs
     plot(pZ,[1,2],'FaceColor','r','LineWidth',2);
     plot(pZ,[1,2],'FaceColor','r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
-    resvec(end+1) = true;
 
     % 3d plot
     plot(pZ,[1,2,3],'Splits',4);
     plot(pZ,[1,2,3],'Splits',4,'FaceColor',CORAcolor("CORA:next"),'FaceAlpha',0.2);
-    resvec(end+1) = true;
 
     % the polyZonotope
     c = [4;4];
@@ -89,33 +80,35 @@ try
     
     % plot set
     plot(pZ,[1,2]);
-    V = [8.0341 8.7500 4.0784 1.8035 2.6281 5.7534 8.0341;
-        7.6591 7.0000 0.7659 2.7770 5.4406 6.2534 7.6591];
+    V = [ ...
+     7.6320190429687500, 8.0000000000000000, 6.3209228515623499, 5.4114990234375000, 3.8965148925780624, 3.2341918945312500, 1.7291564941406250, 1.8480533676285997, 1.2078215279029001, 1.4117870330807998, 3.0229568481445312, 5.0312500000000000, 7.5898437500000000, 7.6320190429687500 ; ...
+     7.3820190429687500, 6.0000000000000000, 3.7584228515624498, 2.5364990234375000, 0.5215148925781625, 1.7341918945312500, 2.2291564941406250, 3.2767874295594002, 3.9538536071778001, 4.6617870330807998, 5.6479568481445312, 6.0312500000000000, 7.3398437500000000, 7.3820190429687500 ; ...
+    ];
     % check points
-    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'subset',true);
+    assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'subset',true));
     % test color
-    resvec(end+1) = isequal(colorOrder(1,:), ax.Children(1).Color);
+    assert(isequal(colorOrder(1,:), ax.Children(1).Color));
 
     % test line polyZonotope
     plot(polyZonotope([1;1], [1; 1]))
     ax = gca();
-    resvec(end+1) = compareMatrices([0 2 0; 0 2 0], ...
-        [ax.Children(1).XData; ax.Children(1).YData], 1e-8,"equal");
+    assert(compareMatrices([0 2 0; 0 2 0], ...
+        [ax.Children(1).XData; ax.Children(1).YData], 1e-8,"equal"));
 
     % test almost line polyZonotope
     plot(polyZonotope([1;1], [1 0; 0 0.000000000000001]))
     ax = gca();
-    resvec(end+1) = compareMatrices([0 2 2 0 0; 1 1 1 1 1], ...
-        [ax.Children(1).XData; ax.Children(1).YData], 1e-8,"equal");
+    assert(compareMatrices([0 2 0; 1 1 1], ...
+        [ax.Children(1).XData; ax.Children(1).YData], 1e-8,"equal"));
     
     % close figure
     close;
 catch ME
     close;
-    resvec(end+1) = false;
+    rethrow(ME)
 end
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

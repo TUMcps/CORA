@@ -1,12 +1,13 @@
-function [timeInt,timePoint,res] = reach_krylov(obj,options)
+function [timeInt,timePoint,res] = reach_krylov(linsys,params,options)
 % reach_krylov - computes the reachable set for linear systems using
 % 	 the krylov reachability algorithm for linear systems [1]
 %
 % Syntax:
-%    [timeInt,timePoint,res] = reach_krylov(obj,options)
+%    [timeInt,timePoint,res] = reach_krylov(linsys,params,options)
 %
 % Inputs:
-%    obj - linearSys object
+%    linsys - linearSys object
+%    params - model parameters
 %    options - options for the computation of reachable sets
 %
 % Outputs:
@@ -14,7 +15,8 @@ function [timeInt,timePoint,res] = reach_krylov(obj,options)
 %    timePoint - array of time-point output sets
 %    res - true/false (only if specification given)
 %
-% Example: 
+% Example:
+%    -
 %
 % References:
 %    [1] M. Althoff. "Reachability analysis of large linear systems with
@@ -43,18 +45,18 @@ for i=1:(options.taylorTerms+1)
 end
 
 % if a trajectory should be tracked
-if isfield(options,'uTransVec')
-    options.uTrans = options.uTransVec(:,1);
+if isfield(params,'uTransVec')
+    params.uTrans = params.uTransVec(:,1);
 end
 
 % log information
-verboseLog(1,options.tStart,options);
+verboseLog(options.verbose,1,params.tStart,params.tStart,params.tFinal);
 
 %initialize reachable set computations
-[Rnext,options] = initReach_Krylov(obj,options.R0,options);
+[Rnext,options] = initReach_Krylov(linsys,params.R0,options);
 
 %time period
-tVec = options.tStart:options.timeStep:options.tFinal;
+tVec = params.tStart:options.timeStep:params.tFinal;
 steps = length(tVec)-1;
 
 %create options.t
@@ -68,30 +70,30 @@ timePoint.time = num2cell(tVec');
 
 
 % loop over all reachability steps
-for i=2:steps
+for k=2:steps
     
     % calculate the output set
-    timeInt.set{i-1} = Rnext.ti;
-    timeInt.time{i-1} = interval(tVec(i-1),tVec(i));
-    timePoint.set{i-1} = Rnext.tp;
+    timeInt.set{k-1} = Rnext.ti;
+    timeInt.time{k-1} = interval(tVec(k-1),tVec(k));
+    timePoint.set{k-1} = Rnext.tp;
     
     % safety property check
     if isfield(options,'specification')
         [res,timeInt,timePoint] = checkSpecification(...
-            options.specification,[],timeInt,timePoint,i-1);
+            options.specification,[],timeInt,timePoint,k-1);
         if ~res; return; end
     end
     
     % log information
-    verboseLog(i,tVec(i),options);
+    verboseLog(options.verbose,k,tVec(k),params.tStart,params.tFinal);
     
     % if a trajectory should be tracked
-    if isfield(options,'uTransVec')
-        options.uTrans = options.uTransVec(:,i);
+    if isfield(params,'uTransVec')
+        params.uTrans = params.uTransVec(:,k);
     end
     
     %compute next reachable set
-    [Rnext,options] = post_Krylov(obj,options);
+    [Rnext,options] = post_Krylov(linsys,params,options);
     
     % increment time
     options.t = options.t + options.timeStep;
@@ -110,7 +112,7 @@ if isfield(options,'specification')
 end
 
 % log information
-verboseLog(length(tVec),tVec(end),options);
+verboseLog(options.verbose,length(tVec),tVec(end),params.tStart,params.tFinal);
 
 % specification fulfilled
 res = true;

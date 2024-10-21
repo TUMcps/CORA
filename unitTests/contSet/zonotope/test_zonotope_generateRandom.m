@@ -34,41 +34,41 @@ type = 'exp';
 
 % only dimension
 Z = zonotope.generateRandom('Dimension',n);
-res = dim(Z) == n;
+assert(dim(Z) == n);
 
 % only center
 Z = zonotope.generateRandom('Center',c);
-res(end+1,1) = compareMatrices(c,Z.c);
+assert(compareMatrices(c,Z.c));
 
 % only number of generators
 Z = zonotope.generateRandom('NrGenerators',nrGens);
-res(end+1,1) = size(Z.G,2) == nrGens;
+assert(size(Z.G,2) == nrGens);
 
 % only type (no check)
 Z = zonotope.generateRandom('Distribution',type);
 
 % dimension and number of generators
 Z = zonotope.generateRandom('Dimension',n,'NrGenerators',nrGens);
-res(end+1,1) = dim(Z) == n && size(Z.G,2) == nrGens;
+assert(dim(Z) == n && size(Z.G,2) == nrGens);
 
 % center and number of generators
 Z = zonotope.generateRandom('Center',c,'NrGenerators',nrGens);
-res(end+1,1) = compareMatrices(c,Z.c) && size(Z.G,2) == nrGens;
+assert(compareMatrices(c,Z.c) && size(Z.G,2) == nrGens);
 
 % center and type
 Z = zonotope.generateRandom('Center',c,'Distribution',type);
-res(end+1,1) = compareMatrices(c,Z.c);
+assert(compareMatrices(c,Z.c));
 
 % number of generators and type
 Z = zonotope.generateRandom('NrGenerators',nrGens,'Distribution',type);
-res(end+1,1) = size(Z.G,2) == nrGens;
+assert(size(Z.G,2) == nrGens);
 
 % center, number of generators, and type
 Z = zonotope.generateRandom('Center',c,'NrGenerators',nrGens,'Distribution',type);
-res(end+1,1) = compareMatrices(c,Z.c) && size(Z.G,2) == nrGens;
+assert(compareMatrices(c,Z.c) && size(Z.G,2) == nrGens);
 
 
 % unify results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

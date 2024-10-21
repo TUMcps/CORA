@@ -1,9 +1,9 @@
 function example_manual_bouncing_ball_construction()
 % example_manual_bouncing_ball_construction - example from the manual 
-% demonstrating the construction of the bouncing ball example
+%    demonstrating the construction of the bouncing ball example
 %
 % Syntax:
-%   example_manual_bouncing_ball_construction()
+%    example_manual_bouncing_ball_construction()
 %
 % Inputs:
 %    -
@@ -15,7 +15,7 @@ function example_manual_bouncing_ball_construction()
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also:
+% See also: none
 
 % Authors:       Tobias Ladner
 % Written:       27-September-2023
@@ -25,10 +25,10 @@ function example_manual_bouncing_ball_construction()
 % ------------------------------ BEGIN CODE -------------------------------
 
 % guard set
-guard = conHyperplane([1 0],0,[0 1],0);
+guard = polytope([0 1],0,[1 0],0);
 
 % reset function
-reset.A = [1 0; 0 -0.75]; reset.B = [0; 0]; reset.c = [0;0];
+reset = linearReset([1 0; 0 -0.75],[0;0],[0;0]);
 
 % transtition object
 trans = transition(guard,reset,1);
@@ -46,6 +46,6 @@ loc = location(inv,trans,sys);
 locs(1) = loc;
 
 % hybrid automaton object
-HA = hybridAutomaton(locs);
+HA = hybridAutomaton('bouncingBall',locs);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -17,9 +17,6 @@ function res = test_hybridAutomaton_hybridAutomaton
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true;
-
 % empty object
 hybridAutomaton()
 
@@ -28,13 +25,11 @@ inv_2D = polytope([-1,0],0);
 inv_3D = polytope([-1,0,0],0);
 
 % transition
-c = [-1;0]; d = 0; C = [0,1]; D = 0;
-guard = conHyperplane(c,d,C,D);
-reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
+guard = polytope([0 1],0,[-1 0],0);
+reset = linearReset([1,0;0,-0.75]);
 trans_2D = transition(guard,reset,2);
-c = [-1;0;0]; d = 0; C = [0,0,1]; D = 0;
-guard = conHyperplane(c,d,C,D);
-reset = struct('A',eye(3),'c',zeros(3,1));
+guard = polytope([0,0,1],0,[-1 0 0],0);
+reset = linearReset.eye(3);
 trans_3D = transition(guard,reset,1);
 
 % flow equation
@@ -47,28 +42,26 @@ loc_2 = location('S2',inv_3D,trans_3D,dynamics_3D);
 
 % init hybrid automaton
 HA = hybridAutomaton([loc_1;loc_1]);
+% init with name
+HA = hybridAutomaton('HA',[loc_1;loc_1]);
 
 
 % wrong initializations
-if CHECKS_ENABLED
 
-try
-    % dimensions of reset functions do not match
-    loc = [loc_1;loc_2];
-    HA = hybridAutomaton(loc);
-    res = false;
-end
-try
-    % too many input arguments
-    HA = hybridAutomaton(loc_1,loc_1);
-    res = false;
-end
-try
-    % not a location array
-    HA = hybridAutomaton({loc_1,loc_2});
-    res = false;
-end
+% wrong name
+assertThrowsAs(@hybridAutomaton,'CORA:wrongValue',2,[loc_1;loc_1]);
 
-end
+% dimensions of reset functions do not match
+assertThrowsAs(@hybridAutomaton,'CORA:wrongInputInConstructor',[loc_1;loc_2]);
+
+% too many input arguments
+assertThrowsAs(@hybridAutomaton,'CORA:numInputArgsConstructor','HA',loc_1,loc_1);
+
+% not a location array
+assertThrowsAs(@hybridAutomaton,'CORA:wrongInputInConstructor',{loc_1,loc_2});
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

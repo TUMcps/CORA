@@ -31,15 +31,15 @@ function pZ = replaceId(pZ,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(1,3);
+
 % parse input arguments
-if length(varargin) == 1
+if nargin == 2
     id_part_old = pZ.id;
     id_part_new = varargin{1};
-elseif length(varargin) == 2
+elseif nargin == 3
     id_part_old = varargin{1};
     id_part_new = varargin{2};
-else
-    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
 % check input arguments

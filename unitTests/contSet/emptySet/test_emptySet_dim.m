@@ -22,12 +22,15 @@ function res = test_emptySet_dim
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % init empty set
 n = 2;
 O = emptySet(n);
 
 % check dimension
-res = dim(O) == n;
+assert(dim(O) == n);
 
 % ------------------------------ END OF CODE ------------------------------

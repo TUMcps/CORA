@@ -1,19 +1,18 @@
-function [Rfirst,options] = initReach(obj,Rinit,options)
+function [Rfirst,options] = initReach(sys,Rinit,params,options)
 % initReach - computes the reachable continuous set for the first time step
 %
 % Syntax:
-%    [Rfirst,options] = initReach(obj,Rinit,options)
+%    [Rfirst,options] = initReach(sys,Rinit,params,options)
 %
 % Inputs:
-%    obj - linParamSys object
+%    sys - linParamSys object
 %    Rinit - initial reachable set
+%    params - model parameters
 %    options - options for the computation of the reachable set
 %
 % Outputs:
 %    Rfirst - first reachable set 
 %    options - options for the computation of the reachable set
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,35 +31,35 @@ function [Rfirst,options] = initReach(obj,Rinit,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % store taylor terms and time step as object properties
-obj.stepSize = options.timeStep;
-obj.taylorTerms = options.taylorTerms;
+sys.stepSize = options.timeStep;
+sys.taylorTerms = options.taylorTerms;
 
 % compute mapping matrix
-mappingMatrix(obj,options);
+mappingMatrix(sys,params,options);
 % compute time interval error (tie)
-tie(obj);
+tie(sys);
 % compute reachable set due to input
-inputSolution(obj,options);
+inputSolution(sys,params,options);
 %change the time step size
-obj.stepSize=options.timeStep;
+sys.stepSize=options.timeStep;
 
 %compute reachable set of first time interval
 %first time step homogeneous solution
-Rhom_tp = obj.mappingMatrixSet.zono*Rinit + obj.mappingMatrixSet.int*Rinit;
+Rhom_tp = sys.mappingMatrixSet.zono*Rinit + sys.mappingMatrixSet.int*Rinit;
 if isa(Rinit,'zonoBundle')
-    Rhom = enclose(Rinit,Rhom_tp+obj.Rtrans) ...
-    + obj.F*Rinit.Z{1} + obj.inputCorr + (-1*obj.Rtrans);
+    Rhom = enclose(Rinit,Rhom_tp+sys.Rtrans) ...
+    + sys.F*Rinit.Z{1} + sys.inputCorr + (-1*sys.Rtrans);
 else
-    Rhom = enclose(Rinit,Rhom_tp+obj.Rtrans) ...
-    + obj.F*Rinit + obj.inputCorr + (-1*obj.Rtrans);
+    Rhom = enclose(Rinit,Rhom_tp+sys.Rtrans) ...
+    + sys.F*Rinit + sys.inputCorr + (-1*sys.Rtrans);
 end
 
 % total solution
-Rtotal = Rhom + obj.Rinput;
+Rtotal = Rhom + sys.Rinput;
 Rfirst.ti = reduce(Rtotal,options.reductionTechnique,options.zonotopeOrder);
 
 if options.compTimePoint
-    Rtotal_tp = Rhom_tp + obj.Rinput;
+    Rtotal_tp = Rhom_tp + sys.Rinput;
     Rfirst.tp = reduce(Rtotal_tp,options.reductionTechnique,options.zonotopeOrder);
 else
     Rfirst.tp = [];

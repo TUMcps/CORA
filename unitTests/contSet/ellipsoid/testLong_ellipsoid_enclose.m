@@ -37,9 +37,9 @@ for i=10:5:15
             E2 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
             %%%
             E = enclose(E1,E2);
-            if ~contains(E,E1) || ~contains(E,E2)
-                res = false; return
-            end
+            assertLoop(contains(E,E1),i,j,k)
+            assertLoop(contains(E,E2),i,j,k)
+
             catch ME
                 if strcmp(ME.identifier,'CORA:solverIssue')
                     disp('Randomly generated ellipsoids caused solver issues! Ignoring...');

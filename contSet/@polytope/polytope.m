@@ -19,7 +19,7 @@ classdef polytope < contSet
 %    P = polytope(A,b,Ae,be)
 %
 % Inputs:
-%    V - (n x p) array of vertices (gets converted to halfspace representation)
+%    V - (n x p) array of vertices
 %    A - (n x m) matrix for the inequality representation
 %    b - (n x 1) vector for the inequality representation
 %    Ae - (k x l) matrix for the equality representation
@@ -31,7 +31,7 @@ classdef polytope < contSet
 % Example: 
 %    A = [1 0 -1 0 1; 0 1 0 -1 1]';
 %    b = [3; 2; 3; 2; 1];
-%    poly = polytope(A,b);
+%    P = polytope(A,b);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -51,7 +51,7 @@ classdef polytope < contSet
 % ------------------------------ BEGIN CODE -------------------------------
 
 % halfspace representation and vertex representation
-properties (SetAccess = protected, GetAccess = protected)
+properties (SetAccess = private, GetAccess = private)
 
     % Inequality description { x | A*x <= b }
     A_ = [];
@@ -110,6 +110,7 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor([1,2,4],nargin);
 
         % 0. init setproperty properties
         obj.A_ = setproperty();
@@ -135,6 +136,7 @@ methods
             obj.A_.val = P.A_.val; obj.b_.val = P.b_.val;
             obj.Ae_.val = P.Ae_.val; obj.be_.val = P.be_.val;
             obj.V_.val = P.V_.val;
+            obj.precedence = P.precedence;
 
             % copy set properties
             obj.isHRep.val = P.isHRep.val;
@@ -172,6 +174,9 @@ methods
         obj.fullDim.val = fullDim;
         obj.minHRep.val = minHRep;
         obj.minVRep.val = minVRep;
+
+        % 5. set precedence (fixed)
+        obj.precedence = 80;
         
     end
 
@@ -225,6 +230,11 @@ methods (Static = true)
     P = enclosePoints(points,varargin) % enclose point cloud with polytope
     P = empty(n) % instantiate empty polytope
     P = Inf(n) % instantiate polytope representing R^n
+    P = origin(n) % instantiate polytope representing the origin in R^n
+end
+
+methods (Access = protected)
+    [abbrev,printOrder] = getPrintSetInfo(S)
 end
 
 end
@@ -234,15 +244,6 @@ end
 
 function [A,b,Ae,be,V] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin > 4
-        throw(CORAerror('CORA:tooManyInputArgs',4));
-    elseif nargin == 3
-        % no syntax for three input arguments
-        throw(CORAerror('CORA:wrongInputInConstructor',...
-            'Constructor for class polytope requires 0, 1, 2, or 4 input arguments.'));
-    end
 
     % no input arguments
     if nargin == 0

@@ -1,15 +1,16 @@
-function E = plus(E,S,varargin)
+function S_out = plus(E,S,varargin)
 % plus - Overloaded '+' operator for approximating the Minkowski sum of an
-%    ellipsoid and another set 
+%    ellipsoid and another set or point
 %
 % Syntax:
-%    E = plus(E,S)
-%    E = plus(E,S,mode)
-%    E = plus(E,S,mode,L)
+%    S_out = E + S
+%    S_out = plus(E,S)
+%    S_out = plus(E,S,mode)
+%    S_out = plus(E,S,mode,L)
 %
 % Inputs:
-%    E - ellipsoid object
-%    S - set representation/double matrix
+%    E - ellipsoid object, numeric
+%    S - contSet object (or cell array), numeric
 %    mode - (optional) type of approximation
 %               'inner'
 %               'outer':
@@ -17,7 +18,7 @@ function E = plus(E,S,varargin)
 %    L - (optional) directions to use for approximation
 %
 % Outputs:
-%    E - ellipsoid object after Minkowski sum
+%    S_out - set after Minkowski sum
 %
 % Example: 
 %    E1 = ellipsoid(eye(2),[1;-1]);
@@ -36,24 +37,23 @@ function E = plus(E,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: priv_plusEllipsoid
 
 % Authors:       Victor Gassmann
 % Written:       09-March-2021
 % Last update:   04-July-2022 (VG, class array instead of cell array)
 %                17-March-2023 (MW, simplify argument pre-processing)
+%                05-October-2024 (MW, remove class array)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% check number of input arguments
-if nargin > 4
-    throw(CORAerror('CORA:tooManyInputArgs',4));
-end
+narginchk(2,4);
 
-% make sure first argument is class argument 
-[E,S] = findClassArg(E,S,'ellipsoid');
+% ensure that numeric is second input argument
+[E,S] = reorderNumeric(E,S);
 
+% default values
 if isa(S,'ellipsoid')
     [mode,L] = setDefaultValues({'outer:halder',zeros(dim(E),0)},varargin);
 else
@@ -61,70 +61,59 @@ else
 end
 
 % check input arguments
-inputArgsCheck({{E,'att','ellipsoid','scalar'};
-                {S,'att',{'contSet','numeric'}}; ...
+inputArgsCheck({{E,'att','ellipsoid'};
+                {S,'att',{'cell','contSet','numeric'}}; ...
                 {mode,'str',{'outer','outer:halder','inner'}}; ...
                 {L,'att','numeric'}});
 
-% ind mask for which ellipsoids are empty
-ind_empty = representsa_(E,'emptySet',eps);
-E(ind_empty) = [];
 % Minkowski addition with empty set
-if representsa_(E,'emptySet',eps)
-    return;
-elseif representsa_(S,'origin',eps)
+if representsa_(E,'emptySet',eps) || (~iscell(S) && representsa_(S,'emptySet',eps))
+    S_out = ellipsoid.empty(dim(E));
+    return
+elseif ~iscell(S) && representsa_(S,'origin',eps)
     % adding the origin does not change the set...
-    return;
-elseif representsa_(S,'emptySet',eps)
-    E = ellipsoid.empty(dim(E)); return
+    S_out = E;
+    return
 end
 
-% dimension check
+% dimension checks
 equalDimCheck(E,S);
+equalDimCheck(E,L);
 
-% check arguments
-if strcmp(mode,'outer:halder') && ~isa(S,'ellipsoid')
-    throw(CORAerror('CORA:notSupported',['The method ''outer:halder'' ',...
-        'is only implemented for the Minkowski sum of two ellipsoids.']))
-end
-
-% check for dimension mismatch...
-if size(L,1) ~= dim(E)
-    throw(CORAerror('CORA:dimensionMismatch',E,L));
-end
-
-N = length(S);
-
-%% different Minkowski additions
-if isa(S,'double')
-    s = sum(S,2);
-    E = ellipsoid(E.Q,E.q+s);
+% addition of vector
+if isnumeric(S) && iscolumn(S)
+    S_out = ellipsoid(E.Q, E.q+S);
     return;
-end
-
-if isa(S,'conPolyZono')
-    E = S(1) + E; 
-    for i=2:N
-        E = S(i) + E; 
-    end
-    return; 
 end
 
 if isa(S,'ellipsoid')
-   E = plusEllipsoid([E;S(:)],L,mode);
-   return;
+    S_out = priv_plusEllipsoid({E,S},L,mode);
+    return;
 end
 
 if isa(S,'interval')
     % convert to ellipsoid
-    E = E + ellipsoid(S);
+    S_out = priv_plusEllipsoid({E,ellipsoid(S)},L,'outer:halder');
     return;
 end
 
 if isa(S,'zonotope')
-    % convert to interval (then to ellipsoid)
-    E = E + interval(S);
+    % convert to ellipsoid via interval enclosure
+    S_out = priv_plusEllipsoid({E,ellipsoid(interval(S))},L,'outer:halder');
     return;
+end
+
+if isa(S,'conPolyZono')
+    S_out = S + E;
+    return; 
+end
+
+% all supported Minkowski sums convert second input argument to an
+% ellipsoid (see above)
+if iscell(S) && all(cellfun(@(S_i) isa(S_i,'ellipsoid') || isa(S_i,'interval') || isa(S_i,'zonotope'),'UniformOutput',true))
+    S = cellfun(@(S_i) ellipsoid(S_i),S,'UniformOutput',false);
+    S_out = priv_plusEllipsoid([E;S],L,mode);
+    return
 end
 
 % throw error for all other combinations

@@ -35,27 +35,17 @@ O_ = project(O,projDims);
 O_true = emptySet(length(projDims));
 
 % compare solutions
-res = O_ == O_true;
+assert(O_ == O_true);
 
 % subspace out of range
 projDims = [-1,2];
-try
-    O_ = project(O,projDims);
-    res(end+1,1) = false;
-catch
-    res(end+1,1) = true;
-end
+assertThrowsAs(@project,'CORA:outOfDomain',O,projDims);
 
 % subspace out of range
 projDims = [3,5];
-try
-    O_ = project(O,projDims);
-    res(end+1,1) = false;
-catch
-    res(end+1,1) = true;
-end
+assertThrowsAs(@project,'CORA:outOfDomain',O,projDims);
 
-% combine results
-res = all(res);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

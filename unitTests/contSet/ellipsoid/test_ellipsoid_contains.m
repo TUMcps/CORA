@@ -1,5 +1,5 @@
 function res = test_ellipsoid_contains
-% test_ellipsoid_contains - unit test function of contains
+% test_ellipsoid_contains - unit test function of containment checks
 %
 % Syntax:
 %    res = test_ellipsoid_contains
@@ -14,56 +14,83 @@ function res = test_ellipsoid_contains
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
-% Authors:       Victor Gassmann
+% Authors:       Victor Gassmann, Mark Wetzlinger
 % Written:       26-July-2021
 % Last update:   ---
-% Last revision: ---
+% Last revision: 22-September-2024 (MW, explicit cases)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-load cases.mat E_c
-
-% empty set: rewrite using emptySet class
-% E_e = ellipsoid.empty(2);
-% res = contains(E_c{1}.E1,E_e) && ~contains(E_e,E_c{1}.E1);
-
-% loop over cases
-for i=1:length(E_c)
-    E1 = E_c{i}.E1; % non-deg
-    Ed1 = E_c{i}.Ed1; % deg
-    E0 = E_c{i}.E0; % all zero
-    n = length(E1.q);
-    
-    Yd = randPoint(Ed1,2*n);
-    if contains(E1,Ed1) && ~contains(E1,Yd)
-        res = false;
-        break;
-    end
-    
-    if contains(E1,E0) && ~contains(E1,E0)
-        res = false;
-        break;
-    end
-    % rewrite using emptySet class
-%     E_e = ellipsoid();
-%     if contains(E_e,E1) || ~contains(E1,E_e)
-%         res = false;
-%     end
-end
-
-
-% ellipsoid and zonotope
-Q = [13 7; 7 5];
-q = [1; 2];
+%%% all-zero shape matrix
+Q = zeros(3,3); q = [3;2;1];
 E = ellipsoid(Q,q);
 
-c = [1;1];
-G = [1 1 1; 1 -1 0];
-Z = zonotope(c,G);
+% empty set
+O = emptySet(3);
+assert(contains(E,O));
 
-res = res && ~contains(E,Z);
+% fullspace
+fs = fullspace(3);
+assert(~contains(E,fs));
+
+% points
+assert(contains(E,q));
+assert(~contains(E,q+q));
+
+% zonotope
+Z = zonotope(q);
+assert(contains(E,Z));
+
+% polytope
+P = polytope(q);
+assert(contains(E,P));
+
+
+%%% non-degenerate ellipsoid
+Q = [2 0; 0 1]; q = [2;-1];
+M = [2 -1; 1 1];
+E = M * ellipsoid(Q,q);
+
+% points
+p = [4 0; 3 1; 5 1; 6 2; 8 2]';
+assert(all(contains(E,p)));
+
+% zonotope
+c = [5;1]; G_inside = [0.2 0.3 0.5; 0 -0.3 0.2]; G_outside = [1 1 0.5; 0 -1 1];
+Z_inside = zonotope(c,G_inside);
+assert(contains(E,Z_inside));
+Z_outside = zonotope(c,G_outside); 
+assert(~contains(E,Z_outside));
+
+% interval
+I_inside = interval([3;0.5],[6;1]);
+assert(contains(E,I_inside));
+I_outside = interval([3;0],[7;2]);
+assert(~contains(E,I_outside));
+
+% polytope
+P_inside = polytope([1 0; -1 1; -1 -1],[4;-2.2;-4]);
+assert(contains(E,P_inside));
+P_outside = polytope([1 0; -1 1; -1 -1],[7;-2;-4]);
+assert(~contains(E,P_outside));
+
+
+%%% degenerate ellipsoid
+Q = [2 0 0; 0 3 0; 0 0 1]; q = [2;-1;4];
+M = [2 -1 1; 1 1 2; -1 3 2];
+E = M * ellipsoid(Q,q);
+
+% points
+p = M * (q + [0.5 0.2 -0.5; -0.8 -1.2 0.2; 1.2 1.5 -0.5]');
+assert(all(contains(E,p)));
+
+% zonotope
+Z = M * zonotope(q,[0.1 0.2 0.3; -0.2 0.2 0.1; 0.0 0.1 -0.1]);
+assert(contains(E,Z));
+
+% combine results
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

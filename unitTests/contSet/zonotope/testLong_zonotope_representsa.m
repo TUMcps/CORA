@@ -14,7 +14,7 @@ function res = testLong_zonotope_representsa
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       09-August-2020
@@ -22,9 +22,6 @@ function res = testLong_zonotope_representsa
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-
-% assume true
-res = true;
 
 % number of tests
 nrTests = 1000;
@@ -46,7 +43,7 @@ for i=1:nrTests
     % non-negative row for each generator
     idx = randi([1,n],1,nrOfGens);
     % linear indexing
-    idx = idx + [0:n:n*(nrOfGens-1)];
+    idx = idx + (0:n:n*(nrOfGens-1));
     % random values
     vals = -1+2*rand(1,nrOfGens);
     % write random values in matrix
@@ -55,10 +52,12 @@ for i=1:nrTests
     ZInt = zonotope(c,GInt);
 
     % check zonotopes
-    if ~(representsa(ZInt,'interval') && (n == 1 || ~representsa(ZnonInt,'interval')))
-        res = false; return
-    end
+    assertLoop(representsa(ZInt,'interval'),i);
+    assertLoop(n == 1 || ~representsa(ZnonInt,'interval'),i);
     
 end
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

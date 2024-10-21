@@ -1,24 +1,25 @@
-function [allErr] = allowedError(obj,linSys,options)
+function [allErr] = allowedError(nlnsys,linsys,options)
 % allowedError - computes the allowed linearization error
 %
 % Syntax:
-%    [allErr] = allowedError(obj,linSys,options)
+%    [allErr] = allowedError(nlnsys,linsys,options)
 %
 % Inputs:
-%    obj - nonlinear system object
-%    linSys - linear system object
+%    nlnsys - nonlinear system object
+%    linsys - linear system object
 %    options - options struct
 %
 % Outputs:
-%    obj - nonlinear system object
+%    allErr - allowed error
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       29-October-2007 
@@ -28,11 +29,11 @@ function [allErr] = allowedError(obj,linSys,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 %retrieve data
-f0=obj.linError.f0;
+f0=nlnsys.linError.f0;
 deltaT=options.timeStep;
-expFactor=obj.expFactor;
+expFactor=nlnsys.expFactor;
 
-A=linSys.A;
+A=linsys.A;
 eAt=expm(A*deltaT);
 dim=length(f0);
 I=eye(dim);

@@ -43,11 +43,7 @@ function varargout = supportFunc(S,dir,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
-if nargin < 2
-    throw(CORAerror('CORA:notEnoughInputArgs',2));
-elseif nargin > 6
-    throw(CORAerror('CORA:tooManyInputArgs',6));
-end
+narginchk(2,6);
 
 % parse input arguments
 [type,method,maxOrderOrSplits,tol] = ...
@@ -108,7 +104,7 @@ catch ME
         elseif strcmp(type,'lower')
             varargout{1} = +Inf;
         elseif strcmp(type,'range')
-            varargout{1} = [-Inf,+Inf];
+            varargout{1} = interval(-Inf,+Inf);
         end
         varargout{2} = [];
         varargout{3} = [];

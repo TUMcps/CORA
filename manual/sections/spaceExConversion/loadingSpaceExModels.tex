@@ -1,0 +1,111 @@
+
+\section{Loading Simulink and SpaceEx Models} \label{sec:loadingModels}
+\logToConsole{LOADING SPACEEX MODELS}
+
+Since CORA 2018 it is possible load SpaceEx models. This not only has the advantage that one can use the SpaceEx model editor to create models for CORA (see \cref{sec:spaceexModelEditor}), but also makes it possible to indirectly load Simulink models through the SL2SX converter \cite{Minopoli2016,Kekatos2017} (see \cref{sec:sl2sxConverter}). Since CORA 2020 it is furthermore possible to export CORA models as SpaceEx models (see  \cref{sec:cora2spaceex}), which closes the loop between the two formats. We also plan to make the conversion to CORA available within HYST in the future \cite{Bak2015}. We first present how to create SpaceEx models and then how one can convert them to CORA models.
+
+% \begin{framed}
+%  Please note that the loading of SpaceEx models is not yet much tested. Since this feature works already for models typically created, we have decided to already include it in CORA 2018. 
+% \end{framed}
+ 
+\subsection{Creating SpaceEx Models} \label{sec:creatingSpaceExModels}
+
+We present two techniques to create SpaceEx models: a) converting Simulink models to SpaceEx models and b) creating models using the SpaceEx model editor.
+
+\subsubsection{Converting Simulink Models to SpaceEx Models} \label{sec:sl2sxConverter}
+
+The SL2SX converter generates SpaceEx models from Simulink models and can be downloaded from \href{https://github.com/nikos-kekatos/SL2SX}{github.com/nikos-kekatos/SL2SX}.
+
+After downloading the SL2SX converter or cloning it using the command \\[0.3cm]
+\texttt{git clone https://github.com/nikos-kekatos/SL2SX.git}, \\[0.3cm]
+one can run the tool using the Java Runtime Environment, which is pre-installed on most systems. You can check whether it is pre-installed by typing \texttt{java -version} in your terminal. To run the tool, type \texttt{java -jar SL2SX.jar}. One can also run the converter directly in the MATLAB command window by typing \\[0.3cm]
+\texttt{system(sprintf('java -jar path\_to\_converter/SL2SX\_terminal.jar \%s', ...}\\
+$~~~~~~~~~~~~~~~~~~~~~~~~$ \texttt{'path\_to\_model/model\_name.xml'))} \\[0.3cm]
+{\raggedright
+after adding the files of the converter to the MATLAB path, where the placeholders \texttt{path\_to\_converter} and \texttt{path\_to\_model} represent the corresponding file paths.
+\par}
+
+To use the converter, you have to save your Simulink model in XML format by typing in the MATLAB command window:
+\begin{verbatim}
+load_system('model_name') 
+save_system('model_name.slx','model_name.xml','ExportToXML',true) 
+\end{verbatim}
+When the model is saved as \texttt{*.mdl} instead of \texttt{*.slx}, please replace \texttt{'model\_name.slx'} by \texttt{'model\_name.mdl'} above. A screenshot of an example to save a model in XML format together with the corresponding Simulink model of a DC motor is shown in \cref{fig:MatlabDCmotor}.
+
+\begin{figure}[htb]
+  \centering									 
+    \includegraphics[width=0.7\columnwidth]{./figures/spaceEx/MatlabDCmotor.eps}
+    \caption{Screenshot of MATLAB/Simulink showing how to save Simulink models in XML format.}
+    \label{fig:MatlabDCmotor}		
+\end{figure}
+
+Please note that the SL2SX converter cannot convert any Simulink model to SpaceEx. A detailed description of limitations can be found in \cite{Minopoli2016,Kekatos2017}.
+
+
+\subsubsection{SpaceEx Model Editor} \label{sec:spaceexModelEditor}
+
+To create SpaceEx models in an editor, one can use the SpaceEx model editor downloadable from \href{http://spaceex.imag.fr/download-6}{spaceex.imag.fr/download-6}. 
+
+To use the editor, save the file (e.g., spaceexMOE.0.9.4.jar) and open a terminal. To execute the model editor, type \texttt{java -jar filename.jar} and in the case of the example file, type \texttt{java -jar spaceexMOE.0.9.4.jar}. If it does not work, you might want to check if you have java installed: type \texttt{java -version} in your terminal.
+
+A screenshot of the model editor can be found in \cref{fig:spaceExModelEditor}. Further information on the SpaceEx modeling language can be found in \cite{Donze2013} and further documents can be downloaded from: \\ \href{http://spaceex.imag.fr/documentation/user-documentation}{spaceex.imag.fr/documentation/user-documentation}.
+
+Examples of SpaceEx models can be loaded in CORA from \texttt{/models/SpaceEx}. 
+
+\subsection{Converting SpaceEx Models} \label{sec:convertingSpaceExModels}
+
+To load SpaceEx models (stored as XML files) into CORA, one only has to execute a simple command:
+
+\texttt{spaceex2cora('model.xml');} \\
+
+This command creates a CORA model in \texttt{/models/SpaceExConverted} under a folder with the identical name as the SpaceEx model. If the SpaceEx model contains nonlinear differential equations, additional dynamics files are stored in the same folder. Below, we present as an example the converted model of the bouncing ball from SpaceEx:
+
+\newpage
+{\footnotesize
+\input{./MATLABcode/bball.tex}}
+
+At the beginning of each automatically-created model, we list the states and inputs so that the created models can be interpreted more easily using the variable names from the SpaceEx model. These variable names are later replaced by the state vector $x$ and the input vector $u$ to make use of matrix multiplications in MATLAB for improved efficiency. Next, the dynamic equations, guard sets, invariants, transitions, and locations are created (the semantics of these components is explained in \cref{sec:hybridDynamics}).
+
+A hand-written version of the bouncing ball example can be found in \cref{sec:bouncingBallExample} for comparison.
+
+\begin{figure}[htb]
+  \centering									 
+    \includegraphics[width=0.7\columnwidth]{./figures/spaceEx/spaceExModelEditor.eps}
+    \caption{Screenshot of the SpaceEx model editor showing the bouncing ball example.}
+    \label{fig:spaceExModelEditor}		
+\end{figure}
+
+\paragraph{Remarks}
+
+\begin{enumerate}
+ \item The converter makes heavy use of operations of strings, which have been modified since MATLAB 2017a. We have developed the converter using MATLAB 2017b. It is thus recommended to update to the latest MATLAB version to use the converter. It cannot be used if you have a version older than 2017a.
+ \item It is not yet possible to convert all possible models that can be modeled in SpaceEx. This is mostly due to unfinished development of the converter. Some cases, however, are due to the less strict hybrid automaton definition used by SpaceEx, which allows for models that currently cannot be represented in CORA. Hybrid models (see \cref{sec:hybridDynamics}) that do not violate the following restrictions can be converted:
+\begin{itemize}
+  \item \textbf{Uncertain parameters}: CORA supports models with varying parameters, but our converter cannot produce such models yet. Parameters must be fixed in the SpaceEx model or will be treated as time-varying inputs. This may result in nonlinear differential equations even when the system is linear time-varying. %, or cause violations of the following restrictions.
+  \item \textbf{Reset Functions}: Resets can be linear: $x' = Ax + Bu + c$, where $x'$ is the state after the reset, $A\in \mathbb{R}^{n \times n}$, $x\in\mathbb{R}^n$ is the state before the reset, and $B\in \mathbb{R}^{n \times m}$, $d\in\mathbb{R}^n$. They may also be nonlinear functions $x' = f(x,u)$. Resets violating this restriction are ignored and trigger a warning.
+  \item \textbf{Local Variables}: Our parser can currently not detect local variables that are defined in bound components but not in the root component (detailed definitions of local variables, bound components, and root components can be found in \cite{Cotton2010}). Therefore all relevant variables are required to be non-local in all components.
+  \item \textbf{Labels}: Synchronization labels (variables of type \texttt{label}) are also supported.
+\end{itemize}
+\item SX2CORA does not keep all inputs of the SpaceEx Model, if they have no effect on the generated model (i.e., inputs/uncertain parameters that were only used in invariants/guards/resets).
+\item Variable names \textbf{i j I J} are renamed to \textbf{ii jj II JJ}, since the MATLAB Symbolic Toolbox would interpret them as the imaginary number. Variables such as \textbf{ii III JJJJ} are also lengthened by a letter to preserve name uniqueness.
+\end{enumerate}
+
+\paragraph{Optional arguments} To better control the conversion, one can use additional arguments:
+
+\texttt{spaceex2cora('model.xml','rootID','outputName','outputDir','cfgFile');} \\
+
+The optional arguments are:
+\begin{itemize}
+ \item \texttt{'rootID'} -- ID of SpaceEx component to be used as root component (specified as a string).
+ \item \texttt{'outputName'} -- name of the generated CORA model (specified as a string).
+ \item \texttt{'outputDir'} -- path to the desired output directory where all generated files are stored (specified as a string).
+ \item \texttt{'cfgFile'} -- path to the file containing the SpaceEx configuration (specified as a string).
+\end{itemize}
+
+The implementation of the SX2CORA converter is described in detail in \cref{sx2coradocu}.
+
+
+
+
+
+

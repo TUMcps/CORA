@@ -48,9 +48,7 @@ for i=1:nrTests
     P = polytope.enclosePoints(points);
 
     % check if polytope contains points
-    if ~all(contains(P,points))
-        res = false; return
-    end
+    assertLoop(all(contains(P,points)),i)
 
 end
 

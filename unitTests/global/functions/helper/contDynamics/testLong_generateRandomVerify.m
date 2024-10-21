@@ -18,7 +18,7 @@ function res = testLong_generateRandomVerify
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
+res = true;
 
 % dimensions
 n = 2;
@@ -43,7 +43,7 @@ sat = true;
 
 % call verification algorithm
 options.verifyAlg = 'reachavoid:zonotope';
-res(end+1,1) = verify(sys,params,options,spec) == sat;
+assert(verify(sys,params,options,spec) == sat);
 
 % random generation - unsatisfiable
 setRepSpec = 'halfspace';
@@ -60,10 +60,10 @@ sat = false;
 
 % call verification algorithm
 options.verifyAlg = 'reachavoid:supportFunc';
-res(end+1,1) = verify(sys,params,options,spec) == sat;
+assert(verify(sys,params,options,spec) == sat);
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

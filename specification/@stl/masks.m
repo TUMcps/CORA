@@ -23,14 +23,14 @@ function out = masks(phi,dom,val)
 
 % Authors:       Benedikt Seidl
 % Written:       23-January-2023
-% Last update:   ---
+% Last update:   08-February-2024 (FL, rename from signal to finiteSignal and use interval of stl class)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 arguments
     phi stl
-    dom interval = interval(0,0)
+    dom stlInterval = stlInterval(0)
     val string = "any"
 end
 
@@ -46,11 +46,11 @@ for i = 1:length(k)
     ints = c{1};
     dirs = c{2};
 
-    out(k{i}) = signal(dur, false);
+    out(k{i}) = finiteSignal(dur, false);
 
     for j = 1:length(ints)
         if val == "any" || val == string(dirs(j))
-            out(k{i}) = out(k{i}) | signal.indicator(dur, ints(j), true);
+            out(k{i}) = out(k{i}) | finiteSignal.indicator(dur, ints(j), true);
         end
     end
 end
@@ -84,18 +84,18 @@ function out = aux_collectIntervals(phi, dom, dir)
         out = aux_collectIntervals(phi.lhs, dom, ~dir);
     elseif strcmp(phi.type, 'until')
         m1 = aux_collectIntervals(phi.lhs, dom + interval(0, phi.to), dir);
-        m2 = aux_collectIntervals(phi.rhs, dom + interval(phi.from, phi.to), dir);
+        m2 = aux_collectIntervals(phi.rhs, dom + phi.interval, dir);
 
         out = aux_combineMaps(m1, m2);
     elseif strcmp(phi.type, 'release')
         m1 = aux_collectIntervals(phi.lhs, dom + interval(0, phi.to), dir);
-        m2 = aux_collectIntervals(phi.rhs, dom + interval(phi.from, phi.to), dir);
+        m2 = aux_collectIntervals(phi.rhs, dom + phi.interval, dir);
 
         out = aux_combineMaps(m1, m2);
     elseif strcmp(phi.type, 'finally')
-        out = aux_collectIntervals(phi.lhs, dom + interval(phi.from, phi.to), dir);
+        out = aux_collectIntervals(phi.lhs, dom + phi.interval, dir);
     elseif strcmp(phi.type, 'globally')
-        out = aux_collectIntervals(phi.lhs, dom + interval(phi.from, phi.to), dir);
+        out = aux_collectIntervals(phi.lhs, dom + phi.interval, dir);
     end
 end
 

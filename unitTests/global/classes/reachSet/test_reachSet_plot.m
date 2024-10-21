@@ -30,10 +30,8 @@ figure;
 
 % empty reachSet
 R = reachSet();
-try
-    plot(R);
-    res = false;
-end
+assertThrowsAs(@plot,'MATLAB:structRefFromNonStruct',R);
+
 
 % discrete-time system
 A = [0.9810    0.0143    0.0262   -0.0140;
@@ -53,20 +51,15 @@ options.zonotopeOrder = 50;
 % compute (only time-point!) reachable set
 R = reach(sys,params,options);
 
-try
-    % plot
-    plot(R);
-    plot(R,[2,3]);
+% plot
+plot(R);
+plot(R,[2,3]);
 
-    % with linespec
-    plot(R,[1,2],'r');
+% with linespec
+plot(R,[1,2],'r');
 
-    % with name-value pairs
-    plot(R,[1,2],'Order',10);
-
-catch
-    res = false;
-end
+% with name-value pairs
+plot(R,[1,2],'Order',10);
 
 % linear continuous-time system
 A = [-1 -4 0 0 0; 4 -1 0 0 0; 0 0 -3 1 0; 0 0 -1 -3 0; 0 0 0 0 -2];
@@ -80,23 +73,18 @@ options.error = 0.1;
 % compute reachable set
 R = reach(sys,params,options);
 
-try
-    % plot
-    plot(R);
-    plot(R,[1,2]);
+% plot
+plot(R);
+plot(R,[1,2]);
 
-    % with linespec
-    plot(R,[1,2],'r');
+% with linespec
+plot(R,[1,2],'r');
 
-    % with name-value pairs
-    plot(R,[1,2],'Order',10);
+% with name-value pairs
+plot(R,[1,2],'Order',10);
 
-    % explicitly, time-point solution
-    plot(R,[1,2],'Set','tp');
-
-catch
-    res = false;
-end
+% explicitly, time-point solution
+plot(R,[1,2],'Set','tp');
 
 % close figure
 close

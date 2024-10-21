@@ -1,27 +1,27 @@
-function writeSparseMatrixOptimized(ind,var,fid,tayMod)
+function empty = writeSparseMatrixOptimized(fid,ind,var,tayMod)
 % writeSparseMatrixOptimized - ???
 %
 % Syntax:
-%    writeSparseMatrixOptimized(ind,var,fid,tayMod)
+%    empty = writeSparseMatrixOptimized(fid,ind,var,tayMod)
 %
 % Inputs:
+%    fid - identifier of the file to which the matrix is written
 %    ind - ???
 %    var - name of the matrix that is written
-%    fid - identifier of the file to which the matrix is written
 %    tayMod - ???
 %
 % Outputs:
-%    ---
+%    empty - true/false whether index is empty
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: writeSparseMatrix, writeMatrix
 
 % Authors:       ???
 % Written:       ---
-% Last update:   ---
+% Last update:   09-October-2024 (MW, add output argument, sprintf)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -35,16 +35,16 @@ else % for third-order tensors
     out = 'out';
 end
 
+empty = isempty(ind.row);
 % loop over all non-empty entries
-for i = 1:length(ind.row)
-    if ~tayMod
-        str = [var,'(',num2str(ind.row(i)),',',num2str(ind.col(i)), ...
-               ') = ',out,'(',num2str(ind.index(i)),');'];
+for i=1:length(ind.row)
+    if tayMod
+        str = sprintf('%s(%i,%i) = interval(%s(%i));',...
+            var,ind.row(i),ind.col(i),out,ind.index(i));
     else
-        str = [var,'(',num2str(ind.row(i)),',',num2str(ind.col(i)), ...
-               ') = interval(',out,'(',num2str(ind.index(i)),'));'];
+        str = sprintf('%s(%i,%i) = %s(%i);',...
+            var,ind.row(i),ind.col(i),out,ind.index(i));
     end
-      
     fprintf(fid, '%s\n', str);
 end
 

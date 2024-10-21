@@ -36,6 +36,9 @@ function completed = example_linearSysDT_conform_03_gray
 %% System
 % set seed for determinism 
 rng(2023);
+n_m = 20; 
+n_s = 10;
+n_k = 10; % number of prediction time steps for one test case
 
 % define state space system 
 dt = 0.1;
@@ -55,13 +58,9 @@ sys = linearSysDT(linearSys(A,B,[],C,D), dt);
 
 % parameters of the system
 params.tStart       = 0;
-params.tFinal       = 2;
-params.R0conf       = zonotope([ones(2,1),0.1*eye(2)]);
-params.R0           = params.R0conf;
-params.W            = zonotope(zeros(2, 1), eye(2));
-params.V            = zonotope(zeros(2, 1), eye(2));
-params.getMatricesFromP = @getMatricesFromP_twoDimExample;
-maxNrOfTimeSteps = ceil(params.tFinal/dt); % maximum number of timeSteps
+params.tFinal       = dt * (n_k-1);
+params.R0           = zonotope([ones(2,1),0.1*eye(2)]);
+params.U            = zonotope(zeros(2, 1), eye(2));
 
 % Initial estimations of system matrices, e.g., obtained from a system
 % identification
@@ -81,28 +80,49 @@ dim_x = 2;
 dim_u = 2;
 dim_y = 2;
 n_params = dim_x^2 + dim_x*dim_u + dim_y*dim_x + dim_y*dim_u;
+
+% reachability and conformance options
+options = struct();
+options.zonotopeOrder = 50; %zonotope order
+options.tensorOrder = 3;
+options.tensorOrderOutput = 3;
+options.errorOrder = 3;
+options.cs.cost = 'interval';
+options.cs.constraints = 'half';
+options.cs.timeout = 300; %timeout for fmincon when estimating c
+options.cs.set_p = @(p,params) aux_set_p(p, params, [2 2 2], dt);
+options.cs.p0 = p_0;
 options.p_min               = -100*ones(n_params, 1);
 options.p_max               = 100*ones(n_params, 1);
 options.p_min(1:dim_x^2)    = -1*ones(dim_x^2 , 1); % bounds for system matrices are chosen tighter
 options.p_max(1:dim_x^2)    = 1*ones(dim_x^2 , 1); % bounds for system matrices are chosen tighter
-options.p_free              = true(n_params, 1);      
-options.p_0                 = p_0;
-options.confAlg             = 'gray';
+confAlg = 'graySeq';
 
 % options to weight cost function of different time steps
-options.w = ones(maxNrOfTimeSteps+1,1);
+options.cs.w = ones(1,n_k);
 
 %% Create test cases
-params.testSuite = aux_createTestCases(sys, params);
+% options for creating the test data
+options_testS.p_extr = 0.4;
+options_testS.p_biased = 0;
+options_testS.stateSet = interval(-10 * ones(2,1), 10 * ones(2,1));
+params.testSuite = createTestSuite(sys, params, n_k, n_m, ...
+        n_s, options_testS);
 
 %% Conformance synthesis
 % Perform conformance synthesis for gray-box model
-[params_conform, ~, ~, unifiedOutputs, sys] = conform(sys,params,options);
+[params_gray, results] = conform(sys,params,options,confAlg);
+sys_gray = results.sys; 
+
+% compute output deviation y_a
+testCase_ya = params.testSuite{1}.compute_ya(sys_gray);
+y_a = testCase_ya.y_a;
 
 %% Compute reachable set using obtained parameters
 options.zonotopeOrder = inf;
-params_conform.R0 = params_conform.R0conf;
-R = reach(sys, params_conform, options);
+
+% compute reachable set of output deviations y_a
+R_gray = reach(sys_gray, params_gray, options);
 
 %% Plot results
 % select projections
@@ -110,16 +130,19 @@ dims = {[1 2]};
 
 for k = 1:length(dims)
     % create separate plot for each time step
-    for iStep = 1:min(length(R.timePoint.time),6)
+    figure;
+
+    for iStep = 1:min(length(R_gray.timePoint.time),6)
     
         subplot(3,2,iStep); hold on; box on
         projDims = dims{k};
 
         % plot reachable set
-        plot(R.timePoint.set{iStep},projDims);
+        plot(R_gray.timePoint.set{iStep},projDims, 'Color','r');
         
         % plot unified outputs
-        plot(unifiedOutputs{iStep}(:,projDims(1)),unifiedOutputs{iStep}(:,projDims(2)),'Marker','.','LineStyle', 'none');
+        plot(squeeze(y_a(iStep,projDims(1),:)),...
+            squeeze(y_a(iStep,projDims(2),:)),'Marker','.','LineStyle', 'none');
 
         % label plot
         xlabel(['x_{',num2str(projDims(1)),'}']);
@@ -136,7 +159,13 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
+function [sys,params] = aux_set_p(p, params, dims, dt)
+[A, B, C, D] = getMatricesFromP_twoDimExample(p,dims);
+sys = linearSysDT(A,B,[],C,D,[],dt);
+end
+
 function synthesizedTests = aux_createTestCases(sys, params)
+params = rmfield(params, 'getMatricesFromP');
     % because the system has no imaginary eigenvalues, the extreme cases
     % suffice to reproduce the actual uncertainties
     % combine zonotopes for R0, W, and V in a single zonotope

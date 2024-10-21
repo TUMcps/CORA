@@ -1,18 +1,18 @@
 function res = isBadDir(E1,E2,L)
 % isBadDir - checks if specified directions are bad directions for
-%               Minkowski difference of E1 and E2
+%    the Minkowski difference of E1 and E2
 %
 % Syntax:
 %    res = isBadDir(E1,E2,L)
 %
 % Inputs:
-%    L  - (n x N) matrix, where n must be dim(E1)=dim(E2), and N is the
-%           number of directions to check
 %    E1 - ellipsoid object
 %    E2 - ellipsoid object
+%    L  - (n x N) matrix of directions, where n is the set dimension, and N
+%         is the number of directions to check
 %
 % Outputs:
-%    res - boolean (vector; length(res)=size(L,2))
+%    res - true/false for each direction
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -34,10 +34,7 @@ inputArgsCheck({{E1,'att','ellipsoid','scalar'};
                 {L,'att','numeric',{'nrows',dim(E1)}}});
 
 % check dimension
-if dim(E1)~=dim(E2)
-    throw(CORAerror('CORA:wrongValue','second',...
-                        '"E1" and "E2" need have the same dimension.'));
-end
+equalDimCheck(E1,E2);
 
 TOL = min(E1.TOL,E2.TOL);
 [~,D] = simdiag(E1.Q,E2.Q,TOL);

@@ -29,7 +29,10 @@ function [val,x,fac] = supportFunc_(Z,dir,type,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if representsa_(Z,'emptySet',0)
+% zonotope is empty if and only if the center is empty (same as call to
+%   representsa_(Z,'emptySet',0)
+% but much faster...)
+if isempty(Z.c)
     x = [];
     if strcmp(type,'upper')
         val = -Inf;

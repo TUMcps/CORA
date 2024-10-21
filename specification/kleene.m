@@ -3,6 +3,9 @@ classdef kleene < uint32
 %
 % Syntax:
 %    phi = kleene.True & ~ (kleene.False | kleene.Unknown)
+%    ff = kleene(0) % kleene.False
+%    uu = kleene(1) % kleene.Unknown
+%    tt = kleene(2) % kleene.True
 %
 % Inputs:
 %    none
@@ -16,9 +19,9 @@ classdef kleene < uint32
 %
 % See also:
 
-% Authors:       Benedikt Seidl
+% Authors:       Benedikt Seidl, Florian Lercher
 % Written:       10-August-2022
-% Last update:   ---
+% Last update:   09-February-2024 (FL, make operators work with arrays and add fromBool)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -31,37 +34,56 @@ methods
 
     % conjunction
     function out = and(lhs, rhs)
-        if kleene.True == lhs && kleene.True == rhs
-            out = kleene.True;
-        elseif kleene.False == lhs || kleene.False == rhs
-            out = kleene.False;
-        else
-            out = kleene.Unknown;
+        if ~isequal(size(lhs), size(rhs))
+            throw(CORAerror('CORA:dimensionMismatch', lhs, rhs));
         end
+
+        % true if both are true
+        trueMask = (lhs == kleene.True) & (rhs == kleene.True);
+        out(trueMask) = kleene.True;
+        
+        % false if one is false
+        falseMask = (lhs == kleene.False) | (rhs == kleene.False);
+        out(falseMask) = kleene.False;
+
+        % rest is unknown
+        out(~trueMask & ~falseMask) = kleene.Unknown;
     end
 
     % disjunction
     function out = or(lhs, rhs)
-        if kleene.True == lhs || kleene.True == rhs
-            out = kleene.True;
-        elseif kleene.False == lhs && kleene.False == rhs
-            out = kleene.False;
-        else
-            out = kleene.Unknown;
+        if ~isequal(size(lhs), size(rhs))
+            throw(CORAerror('CORA:dimensionMismatch', lhs, rhs));
         end
+
+        % true if one is true
+        trueMask = (lhs == kleene.True) | (rhs == kleene.True);
+        out(trueMask) = kleene.True;
+        
+        % false if both are false
+        falseMask = (lhs == kleene.False) & (rhs == kleene.False);
+        out(falseMask) = kleene.False;
+
+        % rest is unknown
+        out(~trueMask & ~falseMask) = kleene.Unknown;
     end
 
     % negation
     function out = not(phi)
-        if kleene.True == phi
-            out = kleene.False;
-        elseif kleene.False == phi
-            out = kleene.True;
+        out(phi == kleene.True) = kleene.False;
+        out(phi == kleene.False) = kleene.True;
+        out(phi == kleene.Unknown) = kleene.Unknown;
+    end
+end
+
+methods (Static)
+    function val = fromBool(b)
+        if b
+            val = kleene.True;
         else
-            out = kleene.Unknown;
+            val = kleene.False;
         end
     end
-
 end
 end
 

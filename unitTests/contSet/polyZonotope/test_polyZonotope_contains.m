@@ -24,9 +24,6 @@ function res = test_polyZonotope_contains
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true(0);
-
 % define polynomial zonotopes and points
 pZ = polyZonotope([0;0],[2 0 1;0 2 1],[0.5;0],[1 0 3;0 1 1]);
 p1 = [1;1];
@@ -37,17 +34,32 @@ box = polyZonotope([0;0],[1 0; 0.0 1],[],[1 0;0 1]);
 smallBox = 0.5*box;
 
 % containment checks
-res(end+1,1) = contains(pZ,p1,'approx');
-res(end+1,1) = ~contains(pZ,p2,'approx');
-res(end+1,1) = contains(pZ,pZ1,'approx');
-res(end+1,1) = ~contains(pZ,pZ2,'approx');
-res(end+1,1) = contains(box,smallBox,'approx');
+assert(contains(pZ,p1,'approx'));
+assert(~contains(pZ,p2,'approx'));
+assert(contains(pZ,pZ1,'approx'));
+assert(~contains(pZ,pZ2,'approx'));
+assert(contains(box,smallBox,'approx'));
 
 % empty set
 % pZ_empty = polyZonotope.empty(2);
 % res(end+1,1) = ~contains(pZ_empty,pZ1) && contains(pZ1,pZ_empty);
 
+
+% exact algorithm
+c = [2;-1]; G = [1;-1]; GI = [2 0 1; -1 1 0];
+pZ = polyZonotope(c);
+assert(contains(pZ,c,'exact'));
+
+pZ = polyZonotope(c,G);
+p_contained = c + 0.5*G;
+assert(contains(pZ,p_contained,'exact'));
+
+pZ = polyZonotope(c,G,GI);
+p_contained = c + 0.5*G + sum(0.3*GI,2);
+assert(contains(pZ,p_contained,'exact'));
+
+
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

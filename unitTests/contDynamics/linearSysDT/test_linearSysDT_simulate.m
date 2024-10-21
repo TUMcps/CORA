@@ -23,15 +23,13 @@ function res = test_linearSysDT_simulate
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = false;
-
 % define linearSysDT ------------------------------------------------------
 
 % stable system matrix: n x n
-A = [-0.3780    0.2839    0.5403   -0.2962
-    0.1362    0.2742    0.5195    0.8266
-    0.0502   -0.1051   -0.6572    0.3874
-    1.0227   -0.4877    0.8342   -0.2372];
+A = [0.9810    0.0143    0.0262   -0.0140
+    0.0079    1.0133    0.0267    0.0416
+    0.0029   -0.0054    0.9680    0.0188
+    0.0503   -0.0242    0.0411    0.9877];
 n = length(A);
 
 % input matrix: n x m
@@ -56,21 +54,25 @@ D = [0 0 1;
 % constant input: q x 1
 k = [0; 0.02];
 
-% initialize different linearSys-objects
-sys_A = linearSys(A,1);
-sys_AB = linearSys(A,B);
-sys_ABC = linearSys(A,B,[],C);
-sys_ABCD = linearSys(A,B,[],C,D);
-sys_ABcCDk = linearSys(A,B,c,C,D,k);
+% disturbance matrix: n x r
+E = [1 0.5; 0 -0.5; 1 -1; 0 1];
+dists = size(E,2);
+
+% noise matrix: q x s
+F = [1; 0.5];
+noises = size(F,2);
 
 % initialize different linearSysDT-objects
 dt = 0.05;
-sysDT_A = linearSysDT(sys_A,dt);
-sysDT_AB = linearSysDT(sys_AB,dt);
-sysDT_ABC = linearSysDT(sys_ABC,dt);
-sysDT_ABCD = linearSysDT(sys_ABCD,dt);
-sysDT_ABcCDk = linearSysDT(sys_ABcCDk,dt);
-list = {sysDT_A, sysDT_AB, sysDT_ABC, sysDT_ABCD, sysDT_ABcCDk};
+sysDT_A = linearSysDT(A,dt);
+sysDT_AB = linearSysDT(A,B,dt);
+sysDT_ABC = linearSysDT(A,B,[],C,dt);
+sysDT_ABCD = linearSysDT(A,B,[],C,D,dt);
+sysDT_ABcCDk = linearSysDT(A,B,c,C,D,k,dt);
+sysDT_ABcCDkE = linearSysDT(A,B,c,C,D,k,E,dt);
+sysDT_ABcCDkEF = linearSysDT(A,B,c,C,D,k,E,F,dt);
+list = {sysDT_A, sysDT_AB, sysDT_ABC, sysDT_ABCD, sysDT_ABcCDk, ...
+    sysDT_ABcCDkE, sysDT_ABcCDkEF};
 
 % model parameters --------------------------------------------------------
 
@@ -87,10 +89,9 @@ u_n_noD = randn(n,dt_steps);
 u_m = randn(m,dt_steps+1);
 u_m_noD = randn(m,dt_steps);
 % disturbance set
-W = zonotope(0.02+zeros(n,1),0.02*diag(ones(n,1)));
+W = zonotope(0.02+zeros(dists,1),0.02*diag(ones(dists,1)));
 % sensor noise set
-V_n = zonotope(zeros(n,1),diag(ones(n,1)));
-V_y = zonotope(-0.01+zeros(y,1),0.01*diag(ones(y,1)));
+V = zonotope(-0.01+zeros(noises,1),0.01*diag(ones(noises,1)));
 
 
 % simulate ----------------------------------------------------------------
@@ -99,9 +100,9 @@ for j = 1:length(list)
     sys = list{j};
 
     % vectors for u, w, and v
-    u_sys = aux_get_u(sys,n,m,u_n,u_m,u_n_noD,u_m_noD);
+    u_sys = aux_get_u(sys,n,m,u_n,u_m,u_n_noD,u_m_noD,dt_steps);
     w_sys = aux_get_w(sys,W,dt_steps);
-    v_sys = aux_get_v(sys,n,y,V_n,V_y,dt_steps);
+    v_sys = aux_get_v(sys,V,dt_steps);
 
     % no input set, disturbance, or sensor noise
     simulate(sys,params);
@@ -125,22 +126,28 @@ for j = 1:length(list)
     params.u = u_sys;
     params.w = w_sys;
     simulate(sys,params);
+    params = rmfield(params,'u');
     params = rmfield(params,'w');
 
     % u, no w, v
+    params.u = u_sys;
     params.v = v_sys;
     simulate(sys,params);
     params = rmfield(params,'u');
+    params = rmfield(params,'v');
 
     % no u, w, v
     params.w = w_sys;
+    params.v = v_sys;
     simulate(sys,params);
+    params = rmfield(params,'w');
+    params = rmfield(params,'v');
 
     % u, w, v
     params.u = u_sys;
+    params.w = w_sys;
+    params.v = v_sys;
     simulate(sys,params);
-
-    % remove all
     params = rmfield(params,'u');
     params = rmfield(params,'w');
     params = rmfield(params,'v');
@@ -155,37 +162,43 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function u = aux_get_u(sys,n,m,u_n,u_m,u_n_noD,u_m_noD)
+function u = aux_get_u(sys,states,inputs,u_n,u_m,u_n_noD,u_m_noD,dt_steps)
 % return corresponding u based on system
 
-    if sys.nrOfInputs == n
+    if sys.nrOfInputs == states
         if any(any(sys.D))
             u = u_n;
         else
             u = u_n_noD;
         end
-    elseif sys.nrOfInputs == m
+    elseif sys.nrOfInputs == inputs
         if any(any(sys.D))
             u = u_m;
         else
             u = u_m_noD;
         end
+    else
+        u = randn(1,dt_steps+1);
     end
 
 end
 
-function w = aux_get_w(sys,W,dt_steps)
+function w_sys = aux_get_w(sys,W,dt_steps)
 
-    w = randPoint(W,dt_steps);
+    if sys.nrOfDisturbances == 1
+        w_sys = randn(1,dt_steps);
+    else
+        w_sys = randPoint(W,dt_steps);
+    end
 
 end
 
-function v = aux_get_v(sys,n,y,V_n,V_y,dt_steps)
+function v_sys = aux_get_v(sys,V,dt_steps)
 
-    if sys.nrOfOutputs == n
-        v = randPoint(V_n,dt_steps+1);
-    elseif sys.nrOfOutputs == y
-        v = randPoint(V_y,dt_steps+1);
+    if sys.nrOfDisturbances == 1
+        v_sys = randn(1,dt_steps+1);
+    else
+        v_sys = randPoint(V,dt_steps+1);
     end
 
 end

@@ -33,9 +33,9 @@ cZ = conZonotope(I);
 % check equality of vertices
 V_I = vertices(I);
 V_cZ = vertices(cZ);
-res = compareMatrices(V_I,V_cZ);
+assert(compareMatrices(V_I,V_cZ));
 % check set equality
-res(end+1,1) = isequal(cZ,I);
+assert(isequal(cZ,I));
 
 
 % degenerate interval
@@ -47,12 +47,12 @@ cZ = conZonotope(I);
 % check equality of vertices
 V_I = vertices(I);
 V_cZ = vertices(cZ);
-res(end+1,1) = compareMatrices(V_I,V_cZ);
+assert(compareMatrices(V_I,V_cZ));
 % check set equality
-res(end+1,1) = isequal(cZ,I);
+assert(isequal(cZ,I));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

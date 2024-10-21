@@ -1,0 +1,31 @@
+\subsubsubsection{Zonotope Bundles} \label{sec:zonoBundle}
+
+\normalsize
+A disadvantage of zonotopes is that they are not closed under intersection, i.e., the intersection of two zonotopes does not return a zonotope in general. In order to overcome this disadvantage, zonotope bundles are introduced in \cite{Althoff2011f}. Given a finite set of zonotopes $\mathcal{Z}_i \subset \Rn$, a zonotope bundle is defined as 
+\begin{equation} 
+\mathcal{ZB} := \bigcap_{i=1}^{s} \mathcal{Z}_i,
+\end{equation}
+i.e., the intersection of the zonotopes $\mathcal{Z}_i$. Note that the intersection is not computed, but the zonotopes $\mathcal{Z}_i$ are stored in a list, which we write as $\mathcal{ZB} = \{ \mathcal{Z}_1, \ldots, \mathcal{Z}_s\}$.
+
+Zonotope bundles are represented in CORA by the class \texttt{zonoBundle}. An object of class \texttt{zonoBundle} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \mathcal{ZB} = \texttt{zonoBundle}(\{ \mathcal{Z}_1, \ldots, \mathcal{Z}_s\}),
+	\end{split}
+\end{equation*} 
+where the list of zonotopes $\{ \mathcal{Z}_1, \ldots, \mathcal{Z}_s\}$ is represented as a MATLAB cell array. Let us demonstrate the construction of a \texttt{zonoBundle} object by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.5\textwidth}
+	\vspace{15pt}
+	\footnotesize
+	\input{./MATLABcode/example_setRep_zonoBundle}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-representations/example_zonoBundle}
+\end{minipage}
+\end{center} 
+
+A more detailed example for zonotope bundles is provided in \cref{sec:zonoBundleExample} and in the file \textit{examples/contSet/example\_zonoBundle.m} in the CORA toolbox. In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), the class \texttt{zonoBundle} supports additional methods, which are listed in \cref{sec:zonoBundleOperations}.

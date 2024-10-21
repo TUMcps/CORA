@@ -19,11 +19,10 @@ function res = isequal(loc1,loc2,varargin)
 %    inv = polytope([-1,0],0);
 %    
 %    % transition
-%    c = [-1;0]; d = 0; C = [0,1]; D = 0;
-%    guard = conHyperplane(c,d,C,D);
+%    guard = polytope([-1,0],0,[0,1],0);
 %
 %    % reset function
-%    reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
+%    reset = linearReset([1,0;0,-0.75]);
 %
 %    % transition
 %    trans = transition(guard,reset,2);
@@ -53,9 +52,7 @@ function res = isequal(loc1,loc2,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(2,3);
 
 % default values
 tol = setDefaultValues({eps},varargin);
@@ -94,16 +91,13 @@ res = true;
 %     res = false; return
 % end
 
-% compare invariants: 
-% note: we use 'eq' instead of 'isequal' as long as the polytope class
-% exists, once the switch to the polytope class is done, use 'isequal' in
-% accordance with other calls
+% compare invariants
 if any([isnumeric(loc1.invariant),isnumeric(loc2.invariant)])
     % empty location object may have .invariant = []
     if xor(isnumeric(loc1.invariant),isnumeric(loc2.invariant))
         res = false; return
     end
-elseif ~eq(loc1.invariant,loc2.invariant,tol)
+elseif ~isequal(loc1.invariant,loc2.invariant,tol)
     res = false; return
 end
 

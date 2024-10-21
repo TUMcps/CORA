@@ -52,20 +52,20 @@ function [H,H_str] = addedTermsHessian(pZ,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isempty(varargin)
+narginchk(0,4);
+
+if nargin == 1
     tol = 0;
-    [id_diff,id_param] = checkDiffParamIds(pZ);
-elseif length(varargin)==1
+    [id_diff,id_param] = priv_checkDiffParamIds(pZ);
+elseif nargin == 2
     tol = varargin{1};
-    [id_diff,id_param] = checkDiffParamIds(pZ);
-elseif length(varargin)==2
-    [id_diff,id_param] = checkDiffParamIds(pZ,varargin{:});
+    [id_diff,id_param] = priv_checkDiffParamIds(pZ);
+elseif nargin == 3
+    [id_diff,id_param] = priv_checkDiffParamIds(pZ,varargin{:});
     tol = 0;
-elseif length(varargin)==3
-    [id_diff,id_param] = checkDiffParamIds(pZ,varargin{1:2});
+elseif nargin == 4
+    [id_diff,id_param] = priv_checkDiffParamIds(pZ,varargin{1:2});
     tol = varargin{3};
-else
-    throw(CORAerror('CORA:tooManyInputArgs',4));
 end
 
 inputArgsCheck({{tol,'att',{'double'},{'scalar','nonnegative','nonnan'}}});

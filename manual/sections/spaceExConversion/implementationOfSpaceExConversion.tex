@@ -1,0 +1,261 @@
+\section{Implementation of Loading SpaceEx Models} \label{sx2coradocu}
+
+This section describes the implementation details of the spaceex2cora converter. We will first briefly describe the SpaceEx format in \cref{sec:spaceExFormat}, followed by an overview of the conversion in \cref{sec:spaceExConversionOverview}. Details of the conversion are presented in \cref{sec:parsingSpaceExComponents,sec:creatingCoraModel}.
+
+\subsection{The SpaceEx Format} \label{sec:spaceExFormat}
+
+The SpaceEx format \cite{Cotton2010} has similarities to statecharts \cite{Harel1987}. A SpaceEx model is composed of network and base components. Base components resemble XOR states in statecharts, which in essence describe a monolithic hybrid automaton (see \cref{sec:hybridDynamics}) of which not all components have to be specified, e.g., one does not have to specify a flow function if a base component is a static controller. Analogously to XOR states, only one base component can be active at the same time. Network components resemble AND states of statecharts and bind base components. As in AND states of statecharts, several base components can be active at the same time. SpaceEx models can be seen as a tree of components, where base components are the leaves and the root of the tree defines the interface (i.e., states \& inputs) of the complete model consisting of all components.
+
+When a component is bound by a network component, all variables of the bound component (states, inputs, constant parameters) must be mapped to variables of the binding component or to numerical values. If a component is bound multiple times, each bind creates a new instance of that component with independent variables. This makes it convenient to reuse existing model structures, e.g., when one requires several heaters in a building, but the dynamics of each heater has the same structure but different parameters.
+
+The SpaceEx modeling language is described in greater detail on the SpaceEx website\footnote{\href{http://spaceex.imag.fr/sites/default/files/spaceex\_modeling\_language\_0.pdf}{http://spaceex.imag.fr/sites/default/files/spaceex\_modeling\_language\_0.pdf}}.
+
+\subsection{Overview of the Conversion} \label{sec:spaceExConversionOverview}
+
+The conversion of SpaceEx models to CORA models is achieved in two phases. In the first phase, the XML structure is parsed and a MATLAB struct of the model is generated. This is realized in the converter function \texttt{spaceex2cora.m} when it calls
+
+\texttt{structHA = SX2structHA('model.xml','mainComponent')} 
+
+returning the MATLAB structure \texttt{structHA}. The optional second argument specifies the \textit{highest-ranking network component}, from which the model is loaded. In XML files containing just one model that is always the last defined component (default component). Please note that the function \texttt{SX2structHA} has verbose output. Please check any warnings issued, as they might indicate an incomplete conversion. For details see the restrictions mentioned in \cref{sec:convertingSpaceExModels}.
+
+In the second phase, the computed \texttt{structHA} is used to create a MATLAB function that when executed instantiates the CORA model. This MATLAB function is created by
+
+\texttt{StructHA2file(structHA,'myModel','my/cora/files').} 
+
+Calling \texttt{myModel()} instantiates the CORA model converted from the original SpaceEx model; this is demonstrated for a bouncing ball example in \cref{sec:convertingSpaceExModels}.
+
+
+\subsection{Parsing the SpaceEx Components (Phase 1)} \label{sec:parsingSpaceExComponents}
+
+Parsing the SpaceEx components is performed in five steps:
+\begin{enumerate}
+ \item Accessing XML files (\cref{sec:accessingXMLFiles});
+ \item Parsing component templates (\cref{sec:parsingComponentDefinitions});
+ \item Building component instances (\cref{sec:buildingComponentInstances});
+ \item Merging component instances (\cref{sec:mergingComponentInstances});
+ \item Conversion to state-space form (\cref{sec:conversionToStateSpaceForm}).
+\end{enumerate}
+
+These steps are described in detail subsequently.
+
+\subsubsection{Accessing XML Files} \label{sec:accessingXMLFiles}
+
+We use the popular function \texttt{xml2struct} (Falkena, Wanner, Smirnov) from the MATLAB File Exchange to conveniently analyze XML files.
+The function converts XML structures such as 
+\begin{lstlisting}
+<mynode id="1" note="foobar">
+	<foo>FOO</foo>
+	<bar>BAR</bar>
+</mynode> 
+\end{lstlisting}
+to a nested MATLAB struct:
+\begin{nestedlist}
+  \textit{MATLAB struct}
+  \begin{nestedlist}
+    mynode
+    \begin{nestedlist}
+      Attributes
+      \begin{nestedlist}
+        id: \textit{'1'}\\
+        description: \textit{'foobar'}
+      \end{nestedlist}
+      foo
+      \begin{nestedlist}
+        Text: \textit{'FOO'}
+      \end{nestedlist}
+      bar
+      \begin{nestedlist}
+        Text: \textit{'BAR'}
+      \end{nestedlist}
+    \end{nestedlist}
+  \end{nestedlist}
+\end{nestedlist}
+The resulting MATLAB struct realizes an intuitive access to attributes and an easy extraction of sub-nodes in MATLAB. %As a consequence, our parser can access sub-nodes in sub-functions.
+
+\subsubsection{Parsing Component Templates} \label{sec:parsingComponentDefinitions}
+
+Before we begin with the semantic evaluation, base components and network components are parsed into a more convenient format.
+
+\paragraph{Base components} For base components we convert equations stored as strings specifying flow, invariants, guards, and resets, to a more compact and manipulatable format. Furthermore, we split the global list of transitions to individual lists for each location of outgoing transitions.
+
+Flow or reset functions are provided in SpaceEx as a list of equations separated by ampersands, as demonstrated in the subsequent example taken from the \textit{platoon\_hybrid} model:
+\begin{lstlisting}
+<flow>
+  x1' == x2 &
+  x2' == -x3 + u &
+  x3' == 1.605*x1 + 4.868*x2 -3.5754*x3 -0.8198*x4 + 0.427*x5 - 
+         0.045*x6 - 0.1942*x7 + 0.3626*x8 - 0.0946*x9 &
+  x4' == x5 &
+  x5' == x3 - x6 &
+  x6' == 0.8718*x1 + 3.814*x2 -0.0754*x3 + 1.1936*x4 + 3.6258*x5 - 
+         3.2396*x6 - 0.595*x7+ 0.1294*x8 -0.0796*x9 &
+  x7' == x8 &
+  x8' == x6 - x9 &
+  x9' == 0.7132*x1 + 3.573*x2 - 0.0964*x3 + 0.8472*x4 + 3.2568*x5 - 
+         0.0876*x6 + 1.2726*x7 + 3.072*x8 - 3.1356*x9 &
+  t' == 1
+</flow>
+\end{lstlisting}
+We separate the equations and represent each one as a tuple of the left-hand side variable name and the right-hand side expression. Variable names are stored as MATLAB strings, while the right-hand-side expressions are stored as \textit{symbolic} expressions of the \textit{Symbolic Math Toolbox}. The Symbolic Math Toolbox also provides powerful manipulation tools such as variable substitution (command \texttt{subs}), which are heavily used during the conversion process. The result of the above example is the following struct (symbolic expressions are indicated by curly brackets):
+\begin{nestedlist}
+  Flow
+  \begin{nestedlist}
+    varNames: [ \textit{"x1" "x2" "x3" "x4" "x5" "x6" "x7" "x8" "x9" "t"} ] \\
+    expressions: [ \{$x2$\} \{$-x3 + u$\} \dots \{$1$\} ]
+  \end{nestedlist}
+\end{nestedlist}
+Invariant and guard sets are similarly defined by a list of equations or inequalities:
+\begin{lstlisting}
+<invariant>
+  t <= 20 &
+  min <= u <= max
+</invariant>
+\end{lstlisting}
+For invariants and guard sets, we convert both sides of each equation or inequality to symbolic expressions. The left side is subtracted by the right side of the equations/inequalities to receive expressions of the form $expr \leq 0$ or $expr = 0$.
+The result of the above example is
+\begin{nestedlist}
+  Invariant
+  \begin{nestedlist}
+    inequalities: [ \{$t - 20$\} \{$min - u$\} \{$u - max$\} ] \\
+    equalities: [ ]
+  \end{nestedlist}
+\end{nestedlist}
+
+As a result, base components are reformatted into the format shown in \cref{fig:baseComponentStructure}.
+\begin{figure}[htb] % packing list in a float, to prevent ugly pagebreak
+\begin{nestedlist}
+  \begin{nestedlist}
+    id \\
+    \textbf{listOfVar(i)} \\
+    \textbf{States(i)}
+    \begin{nestedlist}
+      name \\
+      \textbf{Flow} \\
+      \textbf{Invariant} \\
+      \textbf{Trans(i)}
+      \begin{nestedlist}
+        destination \\
+        \textbf{guard} \\
+        \textbf{reset}
+      \end{nestedlist}
+    \end{nestedlist}
+  \end{nestedlist}
+\end{nestedlist}
+\caption{Parsed base component template (indexed fields indicate struct arrays).}
+\label{fig:baseComponentStructure}
+\end{figure}
+
+
+\paragraph{Network components} For network components we need to parse the references to other components and perform a variable mapping for each referenced component. Analogously to differential equations in base components, variable mappings in network components are stored using strings and symbolic expressions. We also parse the variables of all components and store their attributes. Please note that \textit{label}-variables are currently ignored, since synchronization label logic is not yet implemented in CORA.
+
+As a result, network components are reformatted into the format shown in \cref{fig:networkComponentStructure}.
+
+\begin{figure}[htb] % packing list in a float, to prevent ugly pagebreak
+\begin{nestedlist}
+  \begin{nestedlist}
+    id \\
+    \textbf{listOfVar(i)} \\
+    \textbf{Binds(i)}
+    \begin{nestedlist}
+      id \\
+      keys \\
+      values \\
+      values\_text
+    \end{nestedlist}
+  \end{nestedlist}
+\end{nestedlist}
+\caption{Parsed network component template (indexed fields indicate struct arrays).}
+\label{fig:networkComponentStructure}
+\end{figure}
+
+While loading models with variables named \texttt{i, j, I or J}, we discovered that our string to symbolic parser (\texttt{str2sym}) automatically replaces them by the constant $\sqrt{-1}$ since MATLAB interprets those as the imaginary unit. As a workaround, we pre-parse all our equations and variable definitions to rename those variables. All names fulfilling the regular expression \texttt{i+|j+|I+|J+} are lengthened by a letter. The Symbolic Math Toolbox can also substitute other common constants such as \texttt{pi}, but does not do so while parsing. It is still recommended to avoid them as variable names.
+
+\subsubsection{Building Component Instances} \label{sec:buildingComponentInstances}
+
+In the next step, we build the component tree, which represents the hierarchy of all network and base components. An example that demonstrates this process is shown in \cref{fig:SpaceExTreeStructure}. The result from the previous conversion step is a list of network and base component templates, where the connections between the list elements are represented as references (binds) between these component templates. To build the component tree, we start from the root component and resolve all of the references to other components. This process is repeated recursively until all leafs of the tree consist of base components, which per definition do not contain any references to other components.
+
+Each time we resolve a reference, we create a base or network component instance from the corresponding template. Note that it is possible that templates are referenced multiple times. In order to create an instance, we have to replace the variable names in the template with the variable names that the parent component specifies for this reference. If the template represents a base component, we rename the variables in the flow function as well as in the equations for the invariant set, the guard sets and the reset functions. Otherwise, if the template represents a network component, we rename the corresponding variables in the outgoing references of the component. Once the component tree is completely build, all instances in the tree use only variables that are defined in the root component, which is crucial for the operations performed in that step.   
+
+\begin{figure}[htb]
+  \centering									 
+    \includegraphics[width=0.95\columnwidth]{./figures/spaceEx/treeStructure.eps}
+    \caption{Example for the composition of the component tree. The red nodes represent Network components (NC) and the blue nodes base components (BC). Dashed arrows depict references, while solid arrows represent instantiations.}
+    \label{fig:SpaceExTreeStructure}		
+\end{figure}
+
+
+\subsubsection{Merging Component Instances} \label{sec:mergingComponentInstances}
+
+In the component tree that was created in the conversion step, each base component instance defines the system dynamics for a subset of the system states. The state vector for the overall system therefore represents a concatenation of the states from the different base component instances. For the component tree that is shown in \cref{fig:SpaceExTreeStructure}, the state vector could for example look as follows:
+
+\begin{equation}
+ \vec{x} = (\underbrace{x_1,~x_2}_{BC_{1(1)}}, ~ \underbrace{x_3,~x_4}_{BC_{1(2)}}, ~ \underbrace{x_5,~x_6}_{BC_{1(3)}}, ~ \underbrace{x_7,~x_8,~x_9}_{BC_{2(1)}})^T 
+\end{equation}
+The component tree therefore represents the overall system as a Compositional Hybrid Automaton. At this point, there exist two different options for the further conversion: Since the 2018 release, CORA provides the class \texttt{parallelHybridAutomaton} for the efficient storage and analysis of Compositional Hybrid Automata (see \cref{sec:parallelHybridAutomata}). So the SpaceEx model can either be converted to a \texttt{parallelHybridAutomaton} object, or to a flat hybrid automaton represented as a \texttt{hybridAutomaton} object. In the second case, we have to perform the automaton product, which is shortly described in the remainder of this section.
+
+We have implemented the parallel composition for two base components, which can be applied iteratively to compose a flat hybrid automaton from all components. The product of two instances with discrete state sets $S_1$ and $S_2$ has the state set $S_1 \times S_2$. Thus, we have to compute a new representation for the combined states $\{(s1,s2) | s1 \in S1, s2 \in S2\}$ by combining flow functions, invariants, and transitions. A detailed description of the automaton product and the required operations is provided in \cite[Chapter 5]{Ashford2016} as well as in \cite[Def.~2.9]{Frehse2005}.
+
+\subsubsection{Conversion to State-Space Form} \label{sec:conversionToStateSpaceForm}
+
+Once the composed automaton has been created, we have to convert the descriptions of flow functions, invariant sets, guard sets, and reset functions to a format that can be directly used to create the corresponding CORA objects in the second phase of the conversion process. Subsequently, we describe the required operations for the different parts.
+
+\paragraph{Flow Functions}
+
+Depending of the type of the flow function, we create different CORA objects. Currently, the converter supports the creation of \texttt{linearSys} objects for linear flow functions and \texttt{nonlinearSys} objects for nonlinear flow functions. We plan to also include linear as well as nonlinear systems with constant parameters in the future. Up to now, we stored the flow functions as general nonlinear symbolic equations of the form $\dot x = f(x,u)$ in the corresponding base components. If the flow function is linear, we have to represent it in the form $\dot{x} = Ax + Bu + c$ in order to be able to construct the \texttt{linearSys} object later on.
+The coefficients for the matrices $A\in\mathbb{R}^{n\times n}$ and $B\in\mathbb{R}^{n\times m}$ can be obtained from the symbolic expressions by computing their partial derivatives:
+\[a_{ij} = \frac{\partial f_i(x,u)}{\partial x_j}\]
+\[b_{ij} = \frac{\partial f_i(x,u)}{\partial u_j}\]
+We compute the partial derivatives with the \texttt{jacobian} command from MATLAB's Symbolic Math Toolbox.
+The constant part $c \in \mathbb{R}^n$ can be easily obtained by substituting all variables with $0$:
+\[c_i = f_i(0,0)\]
+
+These computations can also be used to check the linearity of a flow function: If the function is linear, then all partial derivatives have to be constant. 
+If a flow fails the linearity test, we create a \texttt{nonlinearSys} object instead of a \texttt{linearSys} object.
+This requires the flow equation to be stored in a MATLAB function, which we can easily create by converting symbolic expressions to strings.
+
+
+\paragraph{Reset Functions}
+
+Analogously to linear flow functions, reset functions $r(x)$ are evaluated to obtain the form $r(x) = Ax + b$.
+A failure of the linearity test causes an error here, since CORA currently does not support nonlinear reset functions.
+
+
+
+\paragraph{Guard Sets and Invariant Sets}
+
+The SpaceEx modeling language uses polyhedra for continuous sets. CORA can store polyhedra with the class \texttt{polytope}, which is based on the \texttt{Polyhedron} class of the Multi-Parametric Toolbox 3 for MATLAB\footnote{\href{http://people.ee.ethz.ch/~mpt/3/}{people.ee.ethz.ch/~mpt/3/}}.
+
+Polyhedra can be specified by the coefficients $C\in\mathbb{R}^{p \times n}$, $d \in \mathbb{R}^{p}$, $C_e\in\mathbb{R}^{q \times n}$, and $d_e\in \mathbb{R}^{q}$ forming the equation system $C x \leq d \wedge C_e x = d_e$.
+We previously stored guards and invariants as symbolic expressions $expr \leq 0$ or $expr = 0$. As for flow functions, the coefficients of $C x \leq d$ and $C_e x = d_e$ are obtained via partial derivatives and insertion of zeros. Nonlinearity causes an error, since only linear sets are supported by CORA.
+
+
+
+
+\subsection{Creating the CORA model (Phase 2)} \label{sec:creatingCoraModel}
+
+{\raggedright
+In the second phase of the conversion, we generate a MATLAB function that creates a \texttt{hybridAutomaton} or \texttt{parallelHybridAutomaton} MATLAB object from the parsed SpaceEx model. This function has an identical name as that of the SpaceExModel and is created in \texttt{/models/SpaceExConverted/}. 
+\par}
+
+In order to interpret the CORA model in state-space form, each model function starts with an interface specification, presenting which entry of a state or input vector corresponds to which variable in the SpaceEx model. Please find below the example of a chaser spacecraft:
+\begin{lstlisting}[language=matlab]
+%% Interface Specification:
+%   This section clarifies the meaning of state & input dimensions
+%   by showing their mapping to SpaceEx variable names. 
+
+% Component 1 (ChaserSpacecraft):
+%  state x := [x; y; vx; vy; t]
+%  input u := [uDummy]
+\end{lstlisting}
+It is worth noting that CORA does not support zero-input automata. For this reason, we have added a dummy input in the example above.
+
+%All numeric parameters (i.e. flow matrices, polyhedra, etc.) are stored in the function as literals.
+
+
+\subsection{Open Problems}
+
+The spaceex2cora converter has already been used in previous ARCH friendly competitions. However, its development is far from being finished. We suggest addressing the following issues in the future:
+\begin{itemize}
+   \item \textbf{Input constraints:} Input constraints are specified in the SpaceEx format as a part of the invariant set. The input constraints for the converted CORA model should therefore be automatically extracted from the SpaceEx model.
+   \item \textbf{Uncertain parameters:} Uncertain system parameters are currently converted to uncertain system inputs for the CORA model. In the future we plan to automatically create \texttt{linParamSys} or \texttt{nonlinParamSys} objects if uncertain system parameters are present.
+\end{itemize}

@@ -46,9 +46,7 @@ for i = 1:5
         cZ = conZonotope(cPZ,methods{j});
         
         % check for correctness
-        if ~contains(cZ,points,'exact',tol)
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(contains(cZ,points,'exact',tol),i,j)
     end
 end
 

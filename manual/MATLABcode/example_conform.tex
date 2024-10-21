@@ -1,0 +1,50 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                                                                      
+ $$\color{mgreen}#%% Parameters#\color{black}$$\\
+$dt = 1; $\color{mgreen}$%sampling time$\color{black}$$\\
+$params.tFinal = 5; $\color{mgreen}$%final time$\color{black}$$\\
+$params.R0 = zonotope(zeros(2,1),eye(2)); $\color{mgreen}$%initial set$\color{black}$$\\
+$params.V = zonotope([0,1]); $\color{mgreen}$% sensor noise set$\color{black}$$\\
+$params.W = [-6; 1]*zonotope([0,1]); $\color{mgreen}$% disturbance set$\color{black}$$\\
+$y = [0.79; 5.00; 4.35; 1.86; -0.11; -1.13]; $\color{mgreen}$%measurement vector$\color{black}$$\\
+$delta = [0.1; 0.2; 0.1; 0; -0.1; -0.2]; $\color{mgreen}$%deviation of measurement vector$\color{black}$$\\
+$params.testSuite{1} = testCase(y, zeros(6,2), [1,1], dt); $\color{mgreen}$%test case 1$\color{black}$$\\
+$params.testSuite{2} = testCase(y + delta, zeros(6,2), [1,1], dt); $\color{mgreen}$%test case 2$\color{black}$$\\
+$params.testSuite{3} = testCase(y - delta, zeros(6,2), [1,1], dt); $\color{mgreen}$%test case 3$\color{black}$$\\
+$$\\
+$$\\
+$$\color{mgreen}#%% Algorithmic Settings#\color{black}$$\\
+$options.cs.cost = $\color{mred}$'interval'$\color{black}$; $\color{mgreen}$% interval norm$\color{black}$$\\
+$options.cs.constraints = $\color{mred}$'gen'$\color{black}$; $\color{mgreen}$% generator constraints$\color{black}$$\\
+$$\\
+$$\color{mgreen}#%% System Dynamics#\color{black}$$\\
+$reactor = linearSysDT($\color{mred}$'reactor'$\color{black}$,[0 -0.5; 1 1],  eye(2), zeros(2,1), [-2 1], dt); $\\
+$$\\
+$$\color{mgreen}$% conformance synthesis$\color{black}$$\\
+$paramsConform = conform(reactor,params,options);$\\
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

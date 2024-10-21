@@ -53,11 +53,10 @@ sysInv = linearSys(-A,-B);
 
 R_i = Rin.timePoint.set{end};
 N = 20;
-points = zeros(sys.dim,N);
+points = zeros(sys.nrOfStates,N);
 
 R0 = polytope(params.R0);
 
-res1 = true;
 for i = 1:N
 
     % draw random point from inner-approximation
@@ -77,11 +76,7 @@ for i = 1:N
     p = x(end,:)';
     points(:,i) = p;
 
-    if ~contains(R0,p,'exact',1e-4)
-        % not a valid inner-approximation
-        res1 = false;
-        break
-    end
+    assert(contains(R0,p,'exact',1e-4));
 end
 
 %     figure; hold on;
@@ -95,10 +90,10 @@ I_saved = interval([-0.013937383819512;-0.570761541921580;0.061914997162599;-0.0
                    [0.089837441984412;-0.466986716117656;0.075673885420954;-0.008114861479455;0.148868811560274]);
 I = interval(R_i);
 
-res2 = isequal(I,I_saved,1e-12);
+assert(isequal(I,I_saved,1e-12));
 
 % combine results
-res = res1 && res2;
+res = true;
     
 end
     

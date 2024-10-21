@@ -32,16 +32,13 @@ function zB = reduceCombined(zB,option,varargin)
 
 % check input arguments
 inputArgsCheck({{zB,'att','zonoBundle'};
+                {option,'str','methC'};
                 {order,'att','numeric','nonnan'};
                 {filterLength,'att','numeric','nonnan'}});
 
-%option='methC'
-if strcmp(option,'methC')
-    [zB,t] = reduceMethC(zB,filterLength);
-%wrong argument
-else
-    throw(CORAerror('CORA:wrongValue','second','methC'));
+switch option
+    case 'methC'
+        zB = priv_reduceMethC(zB,filterLength);
 end
-
 
 % ------------------------------ END OF CODE ------------------------------

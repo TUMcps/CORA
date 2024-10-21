@@ -23,8 +23,6 @@ function res = test_linearSys_nonlinearSys
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true;
 
 % stable system matrix: n x n
 A = [-0.3780    0.2839    0.5403   -0.2962
@@ -64,10 +62,7 @@ for i=1:length(sys)
     nonlinsys = nonlinearSys(sys{i});
 
     % compare to linearSys
-    if ~isequal(sys{i},nonlinsys,1e-14)
-        res = false; break
-    end
-
+    assert(isequal(sys{i},nonlinsys,1e-14))    
 end
 
 sys_lin = linearSys([0 1 -1; 1 0 0; 0 1 0],[0;-1;0],[],[0 0 0.05; 0.05 0.05 0]);
@@ -78,8 +73,10 @@ g = @(x,u) [0.05*x(3);0.05*x(1)+0.05*x(2)];
 sys_nonlin_ = nonlinearSys('linearSys',f,g);
 
 % compare results
-if ~isequal(sys_nonlin,sys_nonlin_,1e-14)
-    res = false;
+assert(isequal(sys_nonlin,sys_nonlin_,1e-14));
+
+% assume true if no error thrown
+res = true;
 end
 
 % ------------------------------ END OF CODE ------------------------------

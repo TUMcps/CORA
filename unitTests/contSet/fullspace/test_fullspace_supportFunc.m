@@ -32,13 +32,13 @@ dir = [1;0.5];
 
 % compute support function
 [val,x] = supportFunc(fs,dir);
-res = val == Inf && all(x == [Inf;Inf]);
+assert(val == Inf && all(x == [Inf;Inf]));
 [val,x] = supportFunc(fs,dir,'lower');
-res(end+1,1) = val == -Inf && all(x == [-Inf;-Inf]);
+assert(val == -Inf && all(x == [-Inf;-Inf]));
 [val,x] = supportFunc(fs,dir,'range');
-res(end+1,1) = val == interval(-Inf,Inf) && all(all(x == [-Inf Inf;-Inf Inf]));
+assert(val == interval(-Inf,Inf) && all(all(x == [-Inf Inf;-Inf Inf])));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

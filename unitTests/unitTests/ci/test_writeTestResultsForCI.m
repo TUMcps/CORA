@@ -24,19 +24,17 @@ function res = test_writeTestResultsForCI
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 writeTestResultsForCI('short');
 
 % test exit code
 text = fileread('failed.txt');
 % just single number
-resvec(end+1) = ~isnan(str2double(text));
+assert(~isnan(str2double(text)));
 
 % delete files
 delete failed.txt;
 
 % return result
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

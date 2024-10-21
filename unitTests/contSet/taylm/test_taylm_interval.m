@@ -21,8 +21,6 @@ function res = test_taylm_interval
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % init Taylor model
 tx = taylm(interval(1,4),4,'x');
 ty = taylm(interval(1,4),4,'y');
@@ -32,17 +30,17 @@ tay = sin(tx + ty);
 
 % test all options
 I = interval(tay); % default 'int'
-resvec(end+1) = isequal(I,interval(-10.5053,9.1269),1e-4);
+assert(isequal(I,interval(-10.5053,9.1269),1e-4));
 I = interval(tay,'int');
-resvec(end+1) = isequal(I,interval(-10.5053,9.1269),1e-4);
+assert(isequal(I,interval(-10.5053,9.1269),1e-4));
 I = interval(tay,'bnb');
-resvec(end+1) = isequal(I,interval(-5.5094,4.3090),1e-4);
+assert(isequal(I,interval(-5.5094,4.3090),1e-4));
 I = interval(tay,'bnbAdv');
-resvec(end+1) = isequal(I,interval(-3.3641,2.8901),1e-4);
+assert(isequal(I,interval(-3.3641,2.8901),1e-4));
 I = interval(tay,'bernstein');
-resvec(end+1) = isequal(I,interval(-4.2425,3.5428),1e-4);
+assert(isequal(I,interval(-4.2425,3.5428),1e-4));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

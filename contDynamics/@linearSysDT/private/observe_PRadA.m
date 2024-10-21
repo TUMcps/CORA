@@ -1,13 +1,13 @@
-function [R,tcomp] = observe_PRadA(obj,options)
+function [R,tcomp] = observe_PRadA(linsysDT,params,options)
 % observe_PRadA - computes the guaranteed state estimation approach
-% from Sec. 4.1 in [1].
-%
+%    from Sec. 4.1 in [1].
 %
 % Syntax:
-%    [R,tcomp] = observe_PRadA(obj,options)
+%    [R,tcomp] = observe_PRadA(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -18,8 +18,6 @@ function [R,tcomp] = observe_PRadA(obj,options)
 %    [1] V. T. H. Le, C. Stoica, T. Alamo, E. F. Camacho, and
 %        D. Dumur. Zonotopic guaranteed state estimation for
 %        uncertain systems. Automatica, 49(11):3418–3424, 2013.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -36,8 +34,7 @@ function [R,tcomp] = observe_PRadA(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % obtain offline gains
-
-OGain = observe_gain_PRadA(obj,options);
+OGain = observe_gain_PRadA(linsysDT,params,options);
 
 % set intersection procedure
 options.intersectionType = 1;
@@ -45,7 +42,7 @@ options.intersectionTechnique = OGain; % gain directly provided
 
 % apply set-membership approach
 tic
-R = observe_stripBased(obj,options);
+R = observe_stripBased(linsysDT,params,options);
 tcomp = toc;
 
 % ------------------------------ END OF CODE ------------------------------

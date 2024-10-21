@@ -1,20 +1,18 @@
-function [OGain,tComp]= observe_gain_PRadC(obj,options)
+function [OGain,tComp]= observe_gain_PRadC(linsysDT,params,options)
 % observe_gain_PRadC - computes the gain for the guaranteed state estimation
 %    approach from [1] and [2].
 %
 % Syntax:
-%    [OGain,tComp] = observe_gain_PRadC(obj,options)
+%    [OGain,tComp] = observe_gain_PRadC(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
 %    OGain - observer gain
 %    tComp - computation time
-%
-% Example: 
-%    -
 %
 % Reference:
 %    [1] Ye Wang, Teodoro Alamo, Vicenc Puig, and Gabriela
@@ -48,12 +46,12 @@ tic;
 % E and F in [1] are chosen such that they are multiplied with unit
 % uncertainties; thus, E and F can be seen as generators of zonotopes
 % representing the disturbance and noise set
-E = generators(options.W);
-F = generators(options.V);
+E = generators(params.W);
+F = generators(params.V);
 
 % obtain system dimension and nr of outputs
-n = obj.dim; 
-nrOfOutputs = obj.nrOfOutputs;
+n = linsysDT.nrOfStates; 
+nrOfOutputs = linsysDT.nrOfOutputs;
 
 %% define YALMIPs symbolic decision variables
 % weight of F_P radius
@@ -93,8 +91,8 @@ while(beta_up-beta_lo)> beta_tol
     SM(1,1) = beta_tst*P;
     SM(2,2) = G;
     SM(3,3) = O;
-    SM(4,1) = (P-Y*obj.C)*obj.A;
-    SM(4,2) = (P-Y*obj.C)*E;
+    SM(4,1) = (P-Y*linsysDT.C)*linsysDT.A;
+    SM(4,2) = (P-Y*linsysDT.C)*E;
     SM(4,3) = Y*F;
     SM(4,4) = P;
     SM = sdpvar(SM);

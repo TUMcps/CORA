@@ -1,11 +1,11 @@
 function vol = volume_(E,varargin)
-% volume_ - Computes the volume of an ellipsoid acc. to Sec. 2 in [1]
+% volume_ - computes the volume of an ellipsoid acc. to Sec. 2 in [1]
 %
 % Syntax:
 %    vol = volume_(E)
 %
 % Inputs:
-%    E - ellipsoid object/array
+%    E - ellipsoid object
 %
 % Outputs:
 %    vol - volume
@@ -27,28 +27,22 @@ function vol = volume_(E,varargin)
 % Written:       28-August-2019
 % Last update:   04-July-2022 (VG, allow class array input)
 %                18-August-2022 (MW, include standardized preprocessing)
+%                05-October-2024 (MW, remove class array)
 % Last revision: 27-March-2023 (MW, rename volume_)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% instantiate volume for each ellipsoid
-vol = zeros(size(E));
-
-% compute volume of empty ellipsoids
-ind = representsa_(E(:),'emptySet',eps);
-vol(ind) = 0;
-
-% indices of remaining ellipsoids
-tmp = 1:numel(E);
-ii_rem = tmp(~ind);
-
-% loop over remaining ellipsoids
-for i=ii_rem
-    % dimension
-    n = length(E(i).Q);
-    % use volume for n-ball
-    Vball = pi^(n/2)/gamma(n/2+1);
-    vol(i) = Vball*sqrt(det(E(i).Q));
+% empty ellipsoid
+if representsa_(E,'emptySet',eps)
+    vol = 0;
+    return
 end
+
+% dimension
+n = dim(E);
+
+% use volume for n-ball
+Vball = pi^(n/2)/gamma(n/2+1);
+vol = Vball*sqrt(det(E.Q));
 
 % ------------------------------ END OF CODE ------------------------------

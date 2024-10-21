@@ -23,14 +23,12 @@ function res = test_conPolyZono_empty
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % instantiate constrained polynomial zonotope
 n = 2;
 cPZ = conPolyZono.empty(n);
-res(end+1,1) = isempty(cPZ.c) && isnumeric(cPZ.c) && size(cPZ.c,1) == n;
+assert(isempty(cPZ.c) && isnumeric(cPZ.c) && size(cPZ.c,1) == n);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

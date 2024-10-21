@@ -1,15 +1,16 @@
-function [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_mixed_noInt(obj, options, R, Verror_y)
+function [error,errorInt,errorInt_x,errorInt_y,R_y] = linError_mixed_noInt(nlnsysDA,R,Verror_y,params,options)
 % linError_mixed_noInt - computes the linearization error
 %
 % Syntax:
-%    [error, errorInt, errorInt_x, errorInt_y, R_y] = ...
-%           linError_mixed_noInt(obj, options, R, Verror_y)
+%    [error,errorInt,errorInt_x,errorInt_y,R_y] = ...
+%           linError_mixed_noInt(nlnsysDA,options,R,Verror_y)
 %
 % Inputs:
-%    obj - nonlinear differential algebraic system object
-%    options - options struct
+%    nlnsysDA - nonlinDASys object
 %    R - actual reachable set
 %    Verror_y - set of algebraic linearization error
+%    params - model parameters
+%    options - options struct
 %
 % Outputs:
 %    error - zonotope overapproximating the linearization error
@@ -18,13 +19,11 @@ function [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_mixed_noInt(o
 %    errorInt_y - interval overapproximating the linearization error (constraint part)
 %    R_y - reachable set of the algebraic part
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       21-November-2011
@@ -35,31 +34,31 @@ function [error, errorInt, errorInt_x, errorInt_y, R_y] = linError_mixed_noInt(o
 % ------------------------------ BEGIN CODE -------------------------------
 
 %compute set of algebraic variables
-f0_con = obj.linError.f0_con;
-D = obj.linError.D;
-E = obj.linError.E;
-F_inv = obj.linError.F_inv;
+f0_con = nlnsysDA.linError.f0_con;
+D = nlnsysDA.linError.D;
+E = nlnsysDA.linError.E;
+F_inv = nlnsysDA.linError.F_inv;
 R_y_cor = -F_inv*(f0_con + D*R); %correlated part
-R_y_add = -F_inv*(E*options.U + Verror_y); %uncorrelated part
+R_y_add = -F_inv*(E*params.U + Verror_y); %uncorrelated part
 
 %obtain intervals and combined interval z
 dx = interval(R);
 dy = interval(R_y_cor + R_y_add);
-du = interval(options.U);
+du = interval(params.U);
 dz = [dx; dy; du];
 
 %compute interval of reachable set
-totalInt_x = dx + obj.linError.p.x;
+totalInt_x = dx + nlnsysDA.linError.p.x;
 
 %compute interval of algebraic states
-totalInt_y = dy + obj.linError.p.y;
+totalInt_y = dy + nlnsysDA.linError.p.y;
 
 %compute intervals of input
-totalInt_u = du + obj.linError.p.u;
+totalInt_u = du + nlnsysDA.linError.p.u;
 
 %obtain hessian tensor
-obj.setHessian('int');
-[Hf, Hg] = obj.hessian(totalInt_x, totalInt_y, totalInt_u);
+nlnsysDA.setHessian('int');
+[Hf, Hg] = nlnsysDA.hessian(totalInt_x, totalInt_y, totalInt_u);
 
 %compute zonotope of state, constarint variables, and input
 Z_x = [R.c,R.G];
@@ -67,7 +66,7 @@ Z_y_cor = [R_y_cor.c,R_y_cor.G];
 Z_y_add = [R_y_add.c,R_y_add.G];
 Z_0 = zeros(length(Z_x(:,1)), length(Z_y_add(1,:)));
 R_xy = zonotope([Z_x, Z_0; Z_y_cor, Z_y_add]);
-R_xyu = cartProd(R_xy, options.U);
+R_xyu = cartProd(R_xy, params.U);
 R_xyu = reduce(R_xyu,options.reductionTechnique,options.errorOrder);
 
 %obtain absolute values
@@ -104,9 +103,9 @@ error_y = error_y_mid + error_y_rad_zono;
 
 %compute final error: to be CHECKED IF CORRELATION APPLIES
 Z_err_x_mid = [error_x_mid.c,error_x_mid.G];
-Z_err_x_add_mid = obj.linError.CF_inv*[error_y_mid.c,error_y_mid.G];
+Z_err_x_add_mid = nlnsysDA.linError.CF_inv*[error_y_mid.c,error_y_mid.G];
 error_mid = zonotope(Z_err_x_mid + Z_err_x_add_mid);
-error_rad = error_x_rad_zono + obj.linError.CF_inv*error_y_rad_zono;
+error_rad = error_x_rad_zono + nlnsysDA.linError.CF_inv*error_y_rad_zono;
 error = error_mid + error_rad;
 %error = error_x + obj.linError.CF_inv*error_y;
 
@@ -115,7 +114,7 @@ error = reduce(error,options.reductionTechnique,options.zonotopeOrder);
 error_y = reduce(error_y,options.reductionTechnique,options.zonotopeOrder);
 
 %update R_y
-R_y =  obj.linError.p.y + (-F_inv)*(f0_con + D*R + E*options.U + error_y);
+R_y =  nlnsysDA.linError.p.y + (-F_inv)*(f0_con + D*R + E*params.U + error_y);
 
 %error intervals
 errorIHabs = abs(interval(error));

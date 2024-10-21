@@ -23,23 +23,21 @@ function res = test_interval_ellipsoid
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = true(0);
-
 % check outer approximation ---
 
 I = interval([-1; -2; 1], [3; 1; 4]);
 E = ellipsoid(I);
-resvec(end+1) = contains(E,I);
+assert(contains(E,I));
 
 E = ellipsoid(I, 'outer');
-resvec(end+1) = contains(E,I);
+assert(contains(E,I));
 
 % check inner approximation ---
 
 E = ellipsoid(I, 'inner');
-resvec(end+1) = contains(I,E);
+assert(contains(I,E));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -31,12 +31,12 @@ function vol = volume_(I,varargin)
 % compute half of the diameter
 r = rad(I);
 
-if isempty(r) || ~all(r)
+if isempty(r) || ~all(r,"all")
     % empty or degenerate
     vol = 0;
 else
     % simple volume formula
-    vol = prod(2*r);
+    vol = prod(2*r,"all");
 end
 
 % ------------------------------ END OF CODE ------------------------------

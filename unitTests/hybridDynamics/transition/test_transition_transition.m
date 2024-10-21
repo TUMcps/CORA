@@ -24,17 +24,14 @@ function res = test_transition_transition
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = [];
-
 % empty object
 trans = transition();
 
 % guard set
-guard_2D = conHyperplane([1,0],0,[0,1],0);
+guard_2D = polytope([0,1],0,[1,0],0);
 
 % reset function (linear)
-reset_2D.A = [0, 0; 0, 0.2]; 
-reset_2D.c = zeros(2,1);
+reset_2D = linearReset([0, 0; 0, 0.2],[1;0],[0;-1]);
 
 % target location
 target = 2;
@@ -45,59 +42,39 @@ syncLabel = 'on';
 % check standard instantiation
 trans = transition(guard_2D,reset_2D,target,syncLabel);
 
-res(end+1,1) = isequal(trans.guard,guard_2D);
-res(end+1,1) = all(all(withinTol(trans.reset.A,reset_2D.A))) ...
-        && all(withinTol(trans.reset.c,reset_2D.c)) ...
-        && trans.reset.stateDim == 2 ...
-        && trans.reset.inputDim == 0 ...
-        && ~trans.reset.hasInput;
-res(end+1,1) = trans.target == target;
-res(end+1,1) = strcmp(trans.syncLabel,syncLabel);
+assert(isequal(trans.guard,guard_2D));
+assert(all(withinTol(trans.reset.A,reset_2D.A),"all"));
+assert(all(withinTol(trans.reset.c,reset_2D.c)));
+assert(trans.reset.preStateDim == 2);
+assert(trans.reset.inputDim == 1);
+assert(trans.target == target);
+assert(strcmp(trans.syncLabel,syncLabel));
 
-% combine results
-res = all(res);
 
 % check wrong instantiations
-try
-    % not enough input arguments
-    trans = transition(guard_2D);
-    res = false;
-end
-try
-    % not enough input arguments
-    trans = transition(guard_2D,reset_2D);
-    res = false;
-end
-try
-    % too many input arguments
-    trans = transition(guard_2D,reset_2D,target,syncLabel,syncLabel);
-    res = false;
-end
-try
-    % guard set is defined using a wrong set representation
-    trans = transitions(zonotope([2;1],eye(2)),reset_2D,target);
-    res = false;
-end
-try
-    % reset function has wrong fields
-    reset_wrong.g = @(x,u) x(1)+u(1);
-    trans = transitions(guard_2D,reset_wrong,target);
-    res = false;
-end
-try
-    % target not an integer
-    trans = transition(guard_2D,reset_2D,1.5);
-    res = false;
-end
-try
-    % target negative
-    trans = transition(guard_2D,reset_2D,-1);
-    res = false;
-end
-try
-    % sync label is numeric
-    trans = transition(guard_2D,reset_2D,target,1);
-    res = false;
-end
+% one input argument, but not copy constructor
+assertThrowsAs(@transition,'CORA:wrongValue',guard_2D);
+
+% not enough input arguments
+assertThrowsAs(@transition,'CORA:numInputArgsConstructor',guard_2D,reset_2D);
+
+% too many input arguments
+assertThrowsAs(@transition,'CORA:numInputArgsConstructor',guard_2D,reset_2D,target,syncLabel,syncLabel);
+
+% guard set is defined using a wrong set representation
+assertThrowsAs(@transition,'CORA:wrongValue',zonotope([2;1],eye(2)),reset_2D,target);
+
+% target not an integer
+assertThrowsAs(@transition,'CORA:wrongValue',guard_2D,reset_2D,1.5);
+
+% target negative
+assertThrowsAs(@transition,'CORA:wrongValue',guard_2D,reset_2D,-1);
+
+% sync label is numeric
+assertThrowsAs(@transition,'CORA:wrongValue',guard_2D,reset_2D,target,1);
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

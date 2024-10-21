@@ -1,0 +1,52 @@
+\subheading{Input and output arguments}
+
+The naming convention from \tabref{tab:contSet} also applies to input and output arguments.
+(Currently, many functions still use the generic \verb|obj|.)
+
+If a function \verb|fun| within a class \verb|class| does not take an object from that same class as one of their input arguments, it must be declared in the constructor as follows:
+\begin{Verbatim}
+methods (static=true)
+	argout = fun(argin);
+end
+\end{Verbatim}
+Then, these functions can be called using \verb|class.fun|.
+Examples include \verb|generateRandom| or \verb|enclosePoints|.
+
+\smallskip
+
+Name-value pairs are a convenient method to integrate an unordered and incomplete list of optional input arguments.
+MATLAB uses these name-value pairs generically for functions such as \verb|plot|.
+Name-value pairs are comprised of a name (char-array) and a value (any single variable).
+As the name suggests, they always come in a multiple of $2$.
+Name-value pairs are not checked in the input argument validation via \verb|inputArgsCheck| (see below).
+The variable name convention for the entire list of name-value pairs is \verb|NVpairs|.
+The function \verb|readNameValuePair| goes through the list in search of a desired name and outputs the corresponding value as well as the redacted list.
+Furthermore, one can define a check function and a default value which should be used in case the name-value pair is not provided.
+Moreover, the function \verb|checkNameValuePairs| checks whether there are any name-value pairs that do not belong to the calling function.
+In that case, an error is thrown.
+
+\smallskip
+
+For optional input arguments, we consistently use \verb|varargin|.
+This has to do with the input argument check, see below.
+
+\smallskip
+
+To ensure correctness of input arguments, there is a standardized way to check input arguments comprised of a two-step process:
+\begin{enumerate}
+	\item Setting default values:
+		All variables (except name-value pairs) defined via \verb|varargin| are first processed via the function \verb|setDefaultValues|.
+		This function takes in the entire list of variable input arguments.
+		All unprovided optional variables are overwritten by default values.
+		Thus, all optional variables are defined after calling \verb|setDefaultValues|.
+	\item The function \verb|inputArgsCheck| checks all input arguments for correctness.
+	In case an input argument is considered 'wrong', an error is thrown.
+	There are two different checks, attribute checks and string checks.
+	Attribute checks correspond to \verb|isXYZ| checks, all of which need to be true.
+	String checks correspond to \verb|any(strcmp(argin,{...}))| checks, where \verb|{...}| is a list of suitable strings.
+\end{enumerate}
+
+\smallskip
+
+In general, aim to call constructors as little as possible.
+Notably, output arguments in classes can overwrite any input arguments.

@@ -1,14 +1,12 @@
-function [paramsList,optionsList] = config_nonlinParamSys_reach(sys,params,options)
+function [paramsList,optionsList] = config_nonlinParamSys_reach
 % config_nonlinParamSys_reach - configuration file for validation of
 %    model parameters and algorithm parameters
 %
 % Syntax:
-%    [paramsList,optionsList] = config_nonlinParamSys_reach(sys,params,options)
+%    [paramsList,optionsList] = config_nonlinParamSys_reach
 %
 % Inputs:
-%    sys - nonlinParamSys object
-%    params - user-defined model parameters
-%    options - user-defined algorithm parameters
+%    -
 %
 % Outputs:
 %    paramsList - list of model parameters

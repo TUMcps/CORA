@@ -60,7 +60,7 @@ end
 checks_enabled = CHECKS_ENABLED();
 
 % check every second entry
-for i=1:2:length(NVpairs)-1
+for i=length(NVpairs)-1:-2:1
     
     % has to be a char/string (safety check) and match NVpairs
     % note: case-insensitive!

@@ -37,7 +37,7 @@ Rfirst = obj.mappingMatrixSet.zono*Rinit + obj.mappingMatrixSet.int*Rinit + obj.
 % 
 % %obtain order vector for reduction
 % nEval(1) = norm(matZ.center);
-% for i=1:matZ.gens
+% for i=1:numgens(matZ)
 %     nEval(i+1) = norm(matZ.generator{i});
 % end
 % 
@@ -56,7 +56,7 @@ Rfirst = obj.mappingMatrixSet.zono*Rinit + obj.mappingMatrixSet.int*Rinit + obj.
 % 
 % %zonotope matrix computation
 % Rzono = matZ.center*Rred{1};
-% for i = 1:matZ.gens
+% for i = 1:numgens(matZ)
 %     Rzono = Rzono + matZ.generator{i}*Rred{i+1};
 % end
 % 

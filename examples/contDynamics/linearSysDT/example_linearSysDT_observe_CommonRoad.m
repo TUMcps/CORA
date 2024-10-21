@@ -25,8 +25,10 @@ function completed = example_linearSysDT_observe_CommonRoad
 A = [0 0 1 0;0 0 0 1;0 0 0 0;0 0 0 0];
 B = [0 0;0 0;1 0;0 1];
 C = [1 0 0 0;0 1 0 0];
+E = eye(4);
+F = eye(2);
 
-sys = linearSys(A,B,[],C);
+sys = linearSys(A,B,[],C,[],[],E,F);
 
 % convert to discrete-time system
 Ts = 0.01;                           % sampling time

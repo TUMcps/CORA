@@ -1,0 +1,51 @@
+\subsubsubsection{Constrained Zonotopes} \label{sec:conZonotope}
+
+An extension of zonotopes described in \cref{sec:zonotope} are constrained zonotopes, which are introduced in \cite{Scott2016}. A constrained zonotope is defined as a zonotope with additional equality constraints on the factors $\beta_i$:
+\begin{equation} \label{eq:constrainedZonotope}
+	\mathcal{Z}_c := \Big\{ c + G \beta ~\Big|~ \lVert \beta \rVert_{\infty} \leq 1, A \beta = b \Big\}, 
+\end{equation}
+where $c \in \mathbb{R}^n$ is the zonotope center, $G \in \mathbb{R}^{n \times p}$ is the zonotope generator matrix and $\beta \in \mathbb{R}^p$ is the vector of zonotope factors. The equality constraints are parametrized by the matrix $A \in \mathbb{R}^{q \times p}$ and the vector $b \in \mathbb{R}^q$. Constrained zonotopes are able to describe arbitrary polytopes, and are therefore a more general set representation than zonotopes. The main advantage compared to a polytope representation using inequality constraints (see \cref{sec:polytopes}) is that constrained zonotopes inherit the excellent scaling properties of zonotopes for increasing state-space dimensions, since constrained zonotopes are also based on a generator representation for sets.
+
+Constrained zonotopes are represented in CORA by the class \texttt{conZonotope}. An object of class \texttt{conZonotope} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \mathcal{Z}_c = \texttt{conZonotope}(c,G,A,b), \\
+		& \mathcal{Z}_c = \texttt{conZonotope}(Z,A,b),
+	\end{split}
+\end{equation*} 
+where $Z = [c,G]$, and $c,G,A,b$ are defined as in \eqref{eq:constrainedZonotope}. Let us demonstrate the construction of a constrained zonotope by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.5\textwidth}
+	\vspace{20pt}
+	\footnotesize
+	\input{./MATLABcode/example_setRep_conZonotope}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+    \vspace{0pt}
+    \centering
+    \includetikz{./figures/tikz/set-representations/example_conZonotope}
+\end{minipage}
+\end{center}
+
+The unconstrained zonotope from this example is visualized in \cref{fig:conZonotope1}, and the equality constraints in \cref{fig:conZonotope2}.
+
+\begin{figure}[h!tb]
+\begin{minipage}{0.45\columnwidth}
+  \centering
+  %\footnotesize
+  \includetikz{./figures/tikz/set-representations/example_conZonotope_zonotope}
+  \caption{Zonotope (red) and the corresponding constrained zonotope (blue).}
+  \label{fig:conZonotope1}
+\end{minipage}
+\hspace{0.08\columnwidth}
+\begin{minipage}{0.45\columnwidth}
+  \centering
+  %\footnotesize
+  \includetikz{./figures/tikz/set-representations/example_conZonotope_constraints}
+  \caption{Visualization of the equality constraints of the constrained zonotope.}
+  \label{fig:conZonotope2}
+\end{minipage}
+\end{figure}
+
+A more detailed example for constrained zonotopes is provided in \cref{sec:conZonotopeExample} and in the file \textit{examples/contSet/example\_conZonotope.m} in the CORA toolbox. In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), the class \texttt{conZonotope} supports additional methods, which are listed in \cref{sec:conZonotopeOperations}.

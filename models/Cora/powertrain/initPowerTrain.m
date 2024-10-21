@@ -1,4 +1,4 @@
-function [HA, Zcenter, Zdelta, B1, B2, B3, c1, c2, c3] = initPowerTrain(dim)
+function [HA,Zcenter,Zdelta,B1,B2,B3,c1,c2,c3] = initPowerTrain(dim)
 % initPowerTrain - power train example described in Sec. 6 in [1]
 %
 % Syntax:  
@@ -17,12 +17,12 @@ function [HA, Zcenter, Zdelta, B1, B2, B3, c1, c2, c3] = initPowerTrain(dim)
 %   [1] M. Althoff et al. "Avoiding Geometic Intersection Operations in 
 %       Reachability Analysis of Hybrid Systems"
 
-% Author:       Matthias Althoff
-% Written:      21-September-2011
-% Last update:  23-December-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-September-2011
+% Last update:   23-December-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set parameters of the powertrain
 [p,omega_ref_center,omega_ref_delta,x1_0,delta_x1_0,xy_0,delta_xy_0,delta_T_m0] = powertrainParameters();
@@ -99,71 +99,71 @@ p.alpha = p.alphaTmp;
 
 
 %specify linear systems
-linSys1 = linearSys('linearSys1',A1,eye(dim));
-linSys2 = linearSys('linearSys2',A2,eye(dim));
-linSys3 = linearSys('linearSys3',A3,eye(dim));
+linsys1 = linearSys('linearSys1',A1,eye(dim));
+linsys2 = linearSys('linearSys2',A2,eye(dim));
+linsys3 = linearSys('linearSys3',A3,eye(dim));
 
 %define distant
 dist = 1e3;
 eps = 1e-6;
 
 %specify hyperplanes
-n = [1;zeros(dim-1,1)];
+n = [1,zeros(1,dim-1)];
 
 %1st
-h1 = conHyperplane(n,p.alpha); 
+h1 = polytope([],[],n,p.alpha); 
 
 %2nd
-h2 = conHyperplane(n,-p.alpha); 
+h2 = polytope([],[],n,-p.alpha); 
 
 
 %loc1:
 %invariant
-inv = polytope(-n',-p.alpha);
+inv = polytope(-n,-p.alpha);
 %guard sets
 guard1 = h1;
 %resets
-reset1.A = eye(dim);
-reset1.c = zeros(dim,1);
+reset1 = linearReset(eye(dim),zeros(dim),zeros(dim,1));
 %transitions
 trans = transition(guard1,reset1,2); %--> next loc: 2
 %specify location
-loc = location('loc1',inv,trans,linSys1);
+loc = location('loc1',inv,trans,linsys1);
 
 %loc2:
 %invariant
-inv = polytope([n';-n'],[p.alpha;p.alpha]);
+inv = polytope([n;-n],[p.alpha;p.alpha]);
 %guard set 1
 guard1 = h1;
 guard2 = h2;
 %reset 1
-reset1.A=eye(dim);
-reset1.c=zeros(dim,1);
+reset1 = linearReset(eye(dim),zeros(dim),zeros(dim,1));
 %transition 1
 clear trans
 trans(1)=transition(guard1,reset1,1); %--> next loc: 1
 trans(2)=transition(guard2,reset1,3); %--> next loc: 3
 %specify location
-loc(2)=location('loc2',inv,trans,linSys2);
+loc(2)=location('loc2',inv,trans,linsys2);
 
 %loc3:
 %invariant
-inv = polytope(n',-p.alpha);
+inv = polytope(n,-p.alpha);
 %guard set 1
 guard1 = h2;
 %reset 1
-reset1.A=eye(dim);
-reset1.c=zeros(dim,1);
+reset1 = linearReset(eye(dim),zeros(dim),zeros(dim,1));
 %transition 1
 clear trans
 trans=transition(guard1,reset1,2); %--> next loc: 2
 %specify location
-loc(3)=location('loc3',inv,trans,linSys3);
+loc(3)=location('loc3',inv,trans,linsys3);
 
 %specify hybrid automaton
-HA=hybridAutomaton(loc);
+HA = hybridAutomaton('powertrain',loc);
+
 end
 
+
+% Auxiliary functions -----------------------------------------------------
 
 function [f, c1] = fetchDynamics(dim,x,u,p)
 
@@ -203,8 +203,11 @@ function [f, c1] = fetchDynamics(dim,x,u,p)
     elseif dim==101
         f = powertrain101Eq(x,u,p);
         c1 = powertrain101Eq(zeros(length(x),1),zeros(length(u),1),p);     
+    else
+        throw(CORAerror('CORA:wrongValue','first',...
+            'must be 7, 9, 11, 13, 15, 17, 21, 31, 41, 51, 61, 101'));
     end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

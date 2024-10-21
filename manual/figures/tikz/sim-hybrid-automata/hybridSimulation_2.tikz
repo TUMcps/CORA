@@ -1,0 +1,16 @@
+\begin{tikzpicture}
+\footnotesize
+
+\node[inner sep=0pt] (v) at (0,0) {\includegraphics[width=0.7\columnwidth]{./figures/hybridSimulation_2.eps}};
+\node[anchor=west] at (-4, -3.5) {$x_{(1)}$};
+\node[anchor=west] at (-5.1, -2.5) {$x_{(2)}$};
+
+\node[anchor=west] at (4, 0.85) {initial state};
+\node[anchor=west] at (4, 0.2) {first halfspace hit (not in guard set)};
+\node[anchor=west] at (4, -2.2) {second halfspace hit (in guard set)};
+
+\node[anchor=east] at (4, 3.35) {halfspace of guard set:};
+\node[anchor=east] at (4, 2.6) {halfspace of invariant:};
+\node[anchor=center] at (5.5, 1.9) {part belonging to halfspace};
+
+\end{tikzpicture}%

@@ -1,0 +1,86 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                                                          
+ $$\color{mgreen}$% Parameter  --------------------------------------------------------------$\color{black}$$\\
+ $$\\
+ $params.tFinal = 0.15;$\\
+ $params.R0 = zonotope([[-0.15;-45],diag([0.005;3])]);$\\
+ $params.U = zonotope([zeros(2,1),diag([0.1;2])]);$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% Reachability Settings  --------------------------------------------------$\color{black}$$\\
+ $$\\
+ $options.zonotopeOrder = 100;$\\
+ $options.tensorOrder = 3;$\\
+ $options.errorOrder = 5;$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% System Dynamics  --------------------------------------------------------$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$% sampling time$\color{black}$$\\
+ $dt = 0.015;$\\
+ $$\\
+ $fun = @(x,u) cstrDiscr(x,u,dt);$\\
+ $$\\
+ $sysDisc = nonlinearSysDT($\color{mred}$'stirredTankReactor'$\color{black}$,fun,0.015);$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% Reachability Analysis ---------------------------------------------------$\color{black}$$\\
+ $$\\
+ $tic$\\
+ $R = reach(sysDisc,params,options);$\\
+ $tComp = toc;$\\
+ $disp($\color{mred}$"Computation time: "$\color{black}$ + tComp);$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% Simulation --------------------------------------------------------------$\color{black}$$\\
+ $$\\
+ $simOpt.points = 100;$\\
+ $simOpt.fracVert = 0.5;$\\
+ $simOpt.fracInpVert = 0.5;$\\
+ $simOpt.nrConstInp = 3;$\\
+ $$\\
+ $simRes = simulateRandom(sysDisc, params, simOpt);$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% Visualization -----------------------------------------------------------$\color{black}$$\\
+ $$\\
+ $figure; hold $\color{mred}$on$\color{black}$; box $\color{mred}$on$\color{black}$;$\\
+ $$\\
+ $$\color{mgreen}$% plot initial set$\color{black}$$\\
+ $plot(params.R0,[1,2],$\color{mred}$'FaceColor'$\color{black}$,[.8 .8 .8]);$\\
+ $$\\
+ $$\color{mgreen}$% plot reachable set$\color{black}$$\\
+ $plot(R,[1 2],$\color{mred}$'FaceColor'$\color{black}$,[.8 .8 .8]);$\\
+ $$\\
+ $$\color{mgreen}$% plot simulation$\color{black}$$\\
+ $plot(simRes,[1,2],$\color{mred}$'.k'$\color{black}$);$\\
+ $$\\
+ $$\color{mgreen}$% formatting$\color{black}$$\\
+ $xlabel($\color{mred}$'T-T_0'$\color{black}$);$\\
+ $ylabel($\color{mred}$'C-C_0'$\color{black}$);$\\ 
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

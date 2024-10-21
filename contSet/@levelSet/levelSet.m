@@ -36,7 +36,7 @@ classdef levelSet < contSet
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: halfspace, conHyperplane
+% See also: polytope
 
 % Authors:       Niklas Kochdumper
 % Written:       19-July-2019
@@ -45,7 +45,7 @@ classdef levelSet < contSet
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-properties (SetAccess = private, GetAccess = public)
+properties (SetAccess = {?contSet, ?matrixSet}, GetAccess = public)
     
     eq = [];            % symbolic equation
     vars = [];          % symbolic variables
@@ -69,6 +69,7 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor(1:4,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'levelSet')
@@ -94,6 +95,9 @@ methods
         obj.der = der;
         obj.dim = dim;
         obj.solvable = solvable;
+
+        % 6. set precedence (fixed)
+        obj.precedence = 20;
         
     end
 end
@@ -111,11 +115,6 @@ end
 
 function [eq,vars,compOp,solved] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin > 4
-        throw(CORAerror('CORA:tooManyInputArgs',4));
-    end
 
     % no input arguments
     if nargin == 0

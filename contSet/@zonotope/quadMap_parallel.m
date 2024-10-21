@@ -40,7 +40,7 @@ function Z = quadMap_parallel(Z,Q)
 % get center and generator matrix of zonotope
 Zmat = [Z.c,Z.G];
 dimQ = length(Q);
-gens = size(Zmat,2) - 1;
+gens = size(Z.G,2);
 
 %for each dimension, compute generator elements
 parfor i = 1:dimQ

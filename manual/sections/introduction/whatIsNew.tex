@@ -1,0 +1,56 @@
+\subsection{What's new compared to CORA \lastCORAVERSION?}
+
+It is our pleasure to present many new features for CORA \CORAVERSION.
+The subsequent list is non-exhaustive and unsorted:
+
+\begin{itemize}
+
+	\item \textbf{New reachability algorithms:}
+		We have added a novel set-based reachability algorithm for computing inner approximations of nonlinear systems~\cite{Wetzlinger2024CSL}.
+		Furthermore, we have integrated recently proposed backward reachability algorithms for linear continuous-time systems~\cite{Wetzlinger2024arXiv}.
+
+	\item \textbf{New spectrahedral shadow class:}
+		We added a new set representation \texttt{spectraShadow} to CORA (\cref{sec:spectraShadow}):
+		Spectrahedral shadows can be seen as the semidefinite generalization of polytopes,
+		and can represent a large variety of convex sets.
+		In particular, every convex set representation implemented in CORA can be represented as a spectrahedral shadow.
+
+	\item \textbf{Improved neural network verification and new set-based training:}
+		We improved the code to verify neural networks and harmonized it with all other CORA modules.
+		Additionally, we added a novel approach to train verifiably robust networks both in the supervised~\cite{koller2024a} and in the reinforcement learning~\cite{Wendl2024a} setting.
+		Please visit \cref{sec:neuralNetworks} for more information.
+
+	\item \textbf{Reachset-conformance identification:}
+		We added several new functionalities to the reachset-conformance identification in CORA.
+		Please visit \cref{sec:conform} and~\cite{Luetzow2024a,Luetzow2024b} for details.
+
+	\item \textbf{Verification of dynamic systems using signal temporal logic:}
+		Improvements have been made how signal temporal logic can be used to verify dynamic systems (\cref{tab:signalTemporalLogic}),
+		in particular using a new incremental algorithm to verify hybrid systems~\cite{Lercher2024}.
+
+	\item \textbf{Overhaul of dynamic systems:}
+		We overhauled all dynamics system classes to ensure the correctness of our implementation and improve maintainability.
+		This also comes with an updated syntax for hybrid systems as described in \cref{sec:hybridDynamics},
+		in particular how reset functions are constructed.
+
+	% CORA v2024.4.0
+	\item \textbf{Polytopes:}
+	Our \texttt{polytope} class got a massive overhaul with several new functionalities~\cite{Wetzlinger2024a}.
+	Vertex representation and halfspace representation can now also be instantiated independently from another,
+	making the usage more flexible. Visit \cref{sec:polytopes} for details.
+
+	% CORA v2024.2.0
+	\item \textbf{Matrix sets:}
+		We improved the performance of matrix sets by restructuring their properties as multi-dimensional matrices instead of cell arrays.
+		Please visit \cref{sec:matrixSetRepresentationsAndOperations} for the new syntax.
+
+	% always keep; CORA v2024.1.0 (contSet) / CORA v2024.3.0 (ci, better testing)
+	\item \textbf{Miscellaneous:}
+ 		Minor improvements have been made in various parts of the code:
+		Some basic functionality runs more efficiently,
+		standardized input argument validation and more accurate error messages enhance the responsiveness,
+		and more unit tests ensure greater reliability.
+		Please also have a look at \cref{sec:deprecated-functionality} for deprecated functionality and their replacements.
+
+
+\end{itemize}

@@ -36,9 +36,10 @@ options.alg = 'lin';
 options.tensorOrder = 2;
 
 % Parameters for NN evaluation --------------------------------------------
-evParams = struct();
-evParams.bound_approx = true;
-evParams.poly_method = "singh";
+
+options.nn = struct();
+options.nn.bound_approx = true;
+options.nn.poly_method = "singh";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -81,7 +82,7 @@ sys = neurNetContrSys(sys, nn, dt);
 simRes = simulateRandom(sys, params);
 
 % compute reachable set
-R = reach(sys, params, options, evParams);
+R = reach(sys, params, options);
 
 % plot
 % figure; hold on;

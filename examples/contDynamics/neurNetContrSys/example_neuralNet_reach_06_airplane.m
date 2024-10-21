@@ -23,12 +23,12 @@ function [completed,res,tTotal] = example_neuralNet_reach_06_airplane
 % Written:       08-November-2021
 % Last update:   23-May-2022 (TL, ARCH'22 revisions)
 %                30-March-2023 (TL, verify violated runs, ARCH'23 revisions)
+%                02-May-2024 (TL, ARCH'24 revisions)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 disp("BENCHMARK: Airplane")
-rng(84)
 
 % Parameters --------------------------------------------------------------
 
@@ -60,10 +60,10 @@ options.tensorOrder = 2;
 options.taylorTerms = 4;
 options.zonotopeOrder = 50;
 
-% Parameters for NN evaluation --------------------------------------------
+% Options for NN evaluation -----------------------------------------------
 
-evParams = struct();
-evParams.poly_method = "singh";
+options.nn = struct();
+options.nn.poly_method = "singh";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -79,12 +79,9 @@ sys = neurNetContrSys(sys,nn,0.1);
 
 % Specification -----------------------------------------------------------
 
-% A1 = [0 1 0; 0 -1 0]; b1 = [0.5; 0.5];
-% A2 = [eye(3); -eye(3)]; b2 = ones(6,1);
-% set = polytope([blkdiag(A1,A2),zeros(8,6)],[b1;b2]);
 safeSet = [
   -inf, inf; % x
-  -0.5, 0.5; % y
+  -1, 1; % y
   -inf, inf; % z
   -inf, inf; % u
   -inf, inf; % v
@@ -103,7 +100,7 @@ spec = specification(safeSet,'safeSet');
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, evParams, true);
+[res, R, simRes] = verify(sys, spec, params, options, true);
 tTotal = toc(t);
 disp(['Result: ' res])
 

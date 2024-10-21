@@ -27,9 +27,6 @@ function c = center(E)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% make sure it is not a class array
-inputArgsCheck({{E,'att','ellipsoid','scalar'}});
-
 c = E.q;
 
 % ------------------------------ END OF CODE ------------------------------

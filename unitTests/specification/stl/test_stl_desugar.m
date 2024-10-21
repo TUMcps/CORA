@@ -37,11 +37,11 @@ p3 = implies(x(1) < 4, finally(x(2) > 5, interval(1,2)));
 r3 = ~(x(1) < 4) | until(stl(true), x(2) > 5, interval(1,2));
 
 % test
-res = isequal(r1, desugar(p1));
-res(end+1,1) = res && isequal(r2, desugar(p2));
-res(end+1,1) = isequal(r3, desugar(p3));
+assert(isequal(r1, desugar(p1)));
+assert(isequal(r2, desugar(p2)));
+assert(isequal(r3, desugar(p3)));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

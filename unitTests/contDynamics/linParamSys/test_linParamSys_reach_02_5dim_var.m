@@ -22,6 +22,9 @@ function res = test_linParamSys_reach_02_5dim_var()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 % Parameters --------------------------------------------------------------
@@ -81,6 +84,6 @@ IH_saved_int = interval( ...
         [0.253670265974255; 0.265394513562644; 0.054032634687992; 0.054080076731048; 0.058918625877829]);
 
 %final result
-res = isequal(IH_zono,IH_saved_zono,1e-8) && isequal(IH_int,IH_saved_int,1e-8);
+assert(isequal(IH_zono,IH_saved_zono,1e-8) && isequal(IH_int,IH_saved_int,1e-8));
 
 % ------------------------------ END OF CODE ------------------------------

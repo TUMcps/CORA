@@ -40,9 +40,7 @@ V = [-4 -2; -4 3; 4 3; 4 -2]';
 V_proj = projVertices(I,projDims);
 
 % check vertices
-if ~compareMatrices(V,V_proj,1e-14)
-    res = false;
-end
+assert(compareMatrices(V,V_proj,1e-14))
 
 
 % degenerate interval (line)
@@ -58,9 +56,7 @@ V = [-3 3; 1 3]';
 V_proj = projVertices(I,projDims);
 
 % check vertices
-if ~compareMatrices(V,V_proj,1e-14)
-    res = false;
-end
+assert(compareMatrices(V,V_proj,1e-14))
 
 
 % degenerate interval (point)
@@ -76,8 +72,8 @@ V = [-4;3];
 V_proj = projVertices(I,projDims);
 
 % check vertices
-if ~compareMatrices(V,V_proj,1e-14)
-    res = false;
+assert(compareMatrices(V,V_proj,1e-14))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

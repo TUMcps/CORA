@@ -37,6 +37,7 @@ function P_out = mtimes(factor1,factor2)
 %                14-November-2023 (MW, handling for V-rep, scaling method)
 %                04-March-2024 (TL, allow right multiplication with scalar)
 %                14-July-2024 (MW, implement projective multiplication)
+%                28-August-2024 (MW, implement lifting multiplication)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -88,7 +89,12 @@ if isnumeric(matrix)
         P_out = polytope(matrix*P_out.V);
     else
         % method for general mappings
-        P_out = aux_mtimes_projection(P_out,matrix);
+        [m,n] = size(matrix);
+        if m < n
+            P_out = aux_mtimes_projection(P_out,matrix);
+        else
+            P_out = aux_mtimes_lifting(P_out,matrix);
+        end
     end
     
 elseif isa(matrix,'interval') || isa(matrix,'intervalMatrix')
@@ -176,14 +182,9 @@ end
 end
 
 function P = aux_mtimes_projection(P,M)
-% general matrix multiplication, either projection of lifting, see [1, (24)]
+% general matrix multiplication with projection, see [1, (24)]
 
-% get sizes
-[m,n] = size(M);
-% only projection for now
-if n < m
-    throw(CORAerror('CORA:notSupported','Only projections supported.'));
-end
+n = dim(P);
 
 % compute singular value decomposition of the matrix
 [U,S,V] = svd(M);
@@ -201,6 +202,30 @@ P = project(P,1:r);
 
 % multiply with orthogonal matrix
 P = U*P;
+
+end
+
+function P = aux_mtimes_lifting(P,M)
+
+n = dim(P);
+m = size(M,1);
+
+% number of inequality constraints and equality constraints
+nrIneq = length(P.b_.val);
+nrEq = length(P.be_.val);
+
+% compute singular value decomposition of the matrix
+[U,S,V] = svd(M);
+% number of singular values
+r = nnz(S > 1e-10);
+% get inverted diagonal matrix with non-zero singular values
+D_inv = diag(1./diag(S(1:r,1:r)));
+
+% init polytope before projection
+P.A_.val = [P.A_.val * V * D_inv, zeros(nrIneq,m-r)] * U';
+P.Ae_.val = [P.Ae_.val * V * D_inv, zeros(nrEq,m-r); zeros(m-r,n), eye(m-r)] * U';
+
+P.be_.val = [P.be_.val; zeros(m-r,1)];
 
 end
 

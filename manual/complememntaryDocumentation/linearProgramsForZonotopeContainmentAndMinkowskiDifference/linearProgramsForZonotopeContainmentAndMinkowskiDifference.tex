@@ -1,0 +1,247 @@
+\documentclass[10pt,a4paper]{article}
+
+% Sample optional packages to use
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{epsf}
+\usepackage[a4paper,margin=1.7cm]{geometry}
+
+\usepackage{amsmath,amsfonts}
+\usepackage{mathrsfs} %for \mathscr
+\usepackage{psfrag}
+\usepackage{algorithm}  %for algorithm environment
+\usepackage{algpseudocode}
+\usepackage{subfigure}
+\usepackage{pifont}
+\usepackage{color}
+%\usepackage[amsmath,hyperref,thmmarks]{ntheorem}  %better package for proof environment
+\usepackage{cite}
+\usepackage{url}
+
+\usepackage{chngcntr} %for changing the paragraph counter
+
+\newtheorem{definition}{Definition}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{property}{Property}[section]
+\newtheorem{specification}{Specification}[section]
+\newtheorem{remark}{Remark}[section]
+
+%Indexing elements----------------------
+\renewcommand{\^}[1]{^{(#1)}}
+\renewcommand{\th}[1]{#1^\text{th}}
+%---------------------------------------
+
+
+\counterwithout{paragraph}{subsubsection} % removes paragraph from the subsubsections
+\counterwithin{paragraph}{section} % makes paragraph depend on section
+
+
+
+
+
+\begin{document}
+
+
+\mbox{} \vspace{0.8cm} \mbox{}
+\begin{center} {\huge\textbf{Linear Programs for Zonotope Containment \\[0.2cm] and Minkowski Difference}} \end{center}
+\vspace{0.2cm}
+\begin{center} {\large Matthias Althoff} \\[0.2cm] Technische Universit\"at M\"unchen, 85748 Garching, Germany
+\end{center}
+\vspace{0.2cm}
+
+
+
+\begin{abstract}
+ This brief presents how to convert linear programs for the zonotope containment and Minkowski difference of zonotopes to the standard form of linear programs. This makes it possible to avoid using programs like YALMIP for converting these problems, which saves computational time.
+\end{abstract}
+
+
+\section{Notation and Conventions}
+
+We will use $I_n$ to denote an identity matrix of dimension $n$ and $\mathbf{1}_n$ is a vector of ones of dimension $n$. A matrix of zeros with $n$ rows and m columns is denoted by $\mathbf{0}_{n,m}$. The Kronecker product of two matrices is denoted by $A \otimes B$. Elements of a matrix $A$ are accessed by $A_{(i,j)}$, the $\th{i}$ row is denoted by $A_{(i,:)}$, and the $\th{j}$ column is denoted by $A_{(:,j)}$. The notation $A_{(:)}$ indicates a column-wise vectorization of a matrix, e.g., 
+\begin{equation*}
+ A =
+ \begin{bmatrix}
+  1 & 3 \\ 2 & 4
+ \end{bmatrix}, \qquad
+ A_{(:)} = \begin{bmatrix} 1 \\ 2 \\ 3 \\ 4 \end{bmatrix}.
+\end{equation*}
+A zonotope with center $c$ and generator matrix $G$ is denoted by $\mathcal{Z}=(c,G)$. An inequality between matrices (vectors are considered as a special case) is evaluated elementwise:
+\begin{equation*}
+ \underline{A} \leq \overline {A} \Leftrightarrow \forall i,j: \underline{A}_{(i,j)} \leq \overline {A}_{(i,j)}.
+\end{equation*}
+The absolute value is also computed elementwise:
+\begin{equation*}
+ |A| \Leftrightarrow \forall i,j: |A|_{(i,j)} = |A_{(i,j)}|.
+\end{equation*}
+
+
+\section{Problem Statement}
+
+We want to reformulate two linear programs for zonotope containment and Minkowski difference of zonotopes into the form
+\begin{equation} \label{eq:standardForm}
+\begin{split}
+ & \min_x f^T x \\
+ \text{such that } & Ax \leq b \\
+ & A_{eq} x = b_{eq} \\
+ & \underline{x} \leq x \leq \overline{x}.
+\end{split}
+\end{equation}
+This avoids using tools such as YALMIP to transform linear programs, which cause computational overhead.
+
+\section{Zonotope Containment}
+
+According to \cite[Corollary 4]{Sadraddini2019}, a small zonotope $\mathcal{Z}\^s = (c\^s, G\^s)$ with $G\^s \in \mathbb{R}^{n \times n_s}$ is contained in a large zonotope $\mathcal{Z}\^l = (c\^l, G\^l)$ with $G\^l \in \mathbb{R}^{n \times n_l}$ ($\mathcal{Z}\^s \subseteq \mathcal{Z}\^l$) if there exists $\Gamma \in \mathbb{R}^{n_l \times n_s}$, $\beta \in \mathbb{R}^{n_l}$, such that:
+\begin{equation} \label{eq:zonotopeContainmentProblem}
+\begin{split}
+  G\^s &= G\^l \Gamma, \\
+  c\^l -  c\^s &= G\^l \beta, \\
+  \|[\Gamma, \beta]\|_\infty &\leq 1.
+\end{split}
+\end{equation}
+The goal is to bring \eqref{eq:zonotopeContainmentProblem} into the form \eqref{eq:standardForm}. In a first step, we vectorize \eqref{eq:zonotopeContainmentProblem} and use the definition of the infinity norm:
+\begin{equation} \label{eq:vectorizedZonotopeContainmentProblem}
+\begin{split}
+  G\^s_{(:)} &= (I_{n_s} \otimes G\^l) \Gamma_{(:)}, \\
+  c\^l -  c\^s &= G\^l \beta, \\
+  \max_{1 \leq i \leq n_l} \sum_{j=1}^{n_s + 1} |[\Gamma, \beta]_{(i,j)}| &\leq 1, \quad 1 \leq i \leq n_l.
+\end{split}
+\end{equation}
+Let us now focus on the above inequality:
+\begin{equation} \label{eq:equivalenceInequality}
+ \begin{split}
+  \max_{1 \leq i \leq n_l} \sum_{j=1}^{n_s + 1} |[\Gamma, \beta]_{(i,j)}| & \leq 1, \quad 1 \leq i \leq n_l \\
+  \Leftrightarrow \max_{1 \leq i \leq n_l} \sum_{j=1}^{n_s + 1} Z_{(i,j)} & \leq 1, \quad 1 \leq i \leq n_l \\
+  [\Gamma, \beta]_{(:)} & \leq Z_{(:)} \\
+  -[\Gamma, \beta]_{(:)} & \leq Z_{(:)} \\
+  \Leftrightarrow Z \mathbf{1}_{n_s+1} & \leq \mathbf{1}_{n_l}, \\
+  [\Gamma, \beta]_{(:)} & \leq Z_{(:)} \\
+  -[\Gamma, \beta]_{(:)} & \leq Z_{(:)} \\
+  \Leftrightarrow \begin{bmatrix} \mathbf{1}_{n_s+1}^T \otimes I_{n_l} \end{bmatrix} Z_{(:)} & \leq \mathbf{1}_{n_l}, \\
+  [\Gamma, \beta]_{(:)} & \leq Z_{(:)} \\
+  -[\Gamma, \beta]_{(:)} & \leq Z_{(:)} 
+ \end{split}
+\end{equation}
+After inserting \eqref{eq:equivalenceInequality} in \eqref{eq:vectorizedZonotopeContainmentProblem} and introducing 
+$x=[\Gamma, \beta, Z]_{(:)} \in \mathbb{R}^{2 n_l(n_s+1)}$, we obtain
+\begin{equation*} 
+\begin{split}
+  \begin{bmatrix} I_{n_s} \otimes G\^l & \mathbf{0}_{(n_s n) , n_l} & \mathbf{0}_{(n_s n) , n_l(s_l+1)} \\ 
+  \mathbf{0}_{n , (n_s n_l)} & G\^l & \mathbf{0}_{n , n_l(n_s+1)} \end{bmatrix} x &= \begin{bmatrix} G\^s_{(:)} \\ c\^l -  c\^s \end{bmatrix}  \\
+  \begin{bmatrix} \mathbf{0}_{n_l , n_l(n_s+1)} & \mathbf{1}_{n_s+1}^T \otimes I_{n_l}  \\
+  I_{n_l(n_s+1)} & - I_{n_l(n_s+1)} \\
+  - I_{n_l(n_s+1)} & - I_{n_l(n_s+1)}
+  \end{bmatrix} x &\leq \begin{bmatrix} \mathbf{1}_{n_l} \\ \mathbf{0}_{n_l(n_s+1) , 1} \\ \mathbf{0}_{n_l(n_s+1) , 1} \end{bmatrix}.
+\end{split}
+\end{equation*}
+Thus, the linear program can be written in the form \eqref{eq:standardForm} using the following matrices and vectors:
+\begin{equation*}
+ \begin{split}
+  A &= \begin{bmatrix} \mathbf{0}_{n_l, n_l(n_s+1)} & \mathbf{1}_{n_s+1}^T \otimes I_{n_l}  \\
+  I_{n_l(n_s+1)} & - I_{n_l(n_s+1)} \\
+  - I_{n_l(n_s+1)} & - I_{n_l(n_s+1)}
+  \end{bmatrix}, \quad b = \begin{bmatrix} \mathbf{1}_{n_l} \\ \mathbf{0}_{n_l(n_s+1) , 1} \\ \mathbf{0}_{n_l(n_s+1) , 1} \end{bmatrix}, \\
+  A_{eq} &= \begin{bmatrix} I_{n_s} \otimes G\^l & \mathbf{0}_{(n_s n) , n_l} & \mathbf{0}_{(n_s n) , n_l(s_l+1)} \\ 
+  \mathbf{0}_{n , (n_s n_l)} & G\^l & \mathbf{0}_{n , n_l(n_s+1)} \end{bmatrix}, \quad b_{eq}= \begin{bmatrix} G\^s_{(:)} \\ c\^l -  c\^s \end{bmatrix}
+ \end{split}
+\end{equation*}
+
+
+
+
+
+\section{Minkowski Difference of Zonotopes}
+
+Given the minuend $\mathcal{Z}_m = (c\^m, G\^m)$ with $G\^m \in \mathbb{R}^{n \times n_m}$ and the subtrahend $\mathcal{Z}_s = (c\^s, G\^s)$ with $G\^s \in \mathbb{R}^{n \times n_s}$, the Minkowski difference is defined as (see \cite{Montejano1996})
+\begin{equation*} 
+ \mathcal{Z}_m\ominus \mathcal{Z}_s = \{x \in \mathbb{R}^n | x \oplus \mathcal{Z}_s \subseteq \mathcal{Z}_m \},
+\end{equation*}
+such that $(\mathcal{Z}_m\ominus \mathcal{Z}_s) \oplus \mathcal{Z}_s \subseteq \mathcal{Z}_m$. Let us further introduce $\tilde{\Gamma}\in \mathbb{R}^{n_m \times (n_m + 2n_s)}$ and $\tilde{\beta} \in \mathbb{R}^{n_m}$. An under-approximation $\mathcal{Z}_d = (c\^d,[G\^m G\^s]\mathrm{diag}(\phi))$, $\phi \in \mathbb{R}_+^{n_m+n_s}$ can be obtained according to \cite[Theorem~7]{Raghuraman2022} if a solution to the following linear program exists:
+\begin{equation} \label{eq:minkowskiDifferenceProblem}
+\begin{split}
+  \begin{bmatrix} [G\^m, \, G\^s] \mathrm{diag}(\phi) & G\^s \end{bmatrix} &= G\^m \tilde{\Gamma}, \\
+  c\^m -  (c\^d + c\^s) &= G\^m \tilde{\beta}, \\
+  \|[\tilde{\Gamma}, \tilde{\beta}]\|_\infty &\leq 1.
+\end{split}
+\end{equation}
+Please note that the inequality in \cite[Theorem~7]{Raghuraman2022} is written as $|\tilde{\Gamma}| \mathbf{1} + |\beta| \leq \mathbf{1}$. However, for consistency, we use the same form as in \eqref{eq:zonotopeContainmentProblem}. The inequality can be rewritten as in \eqref{eq:equivalenceInequality} and the equalities can be analogously re-written as for the zonotope containment problem. Let us split $\tilde{\Gamma} = \begin{bmatrix} \tilde{\Gamma}\^1 & \tilde{\Gamma}\^2 \end{bmatrix}$, where $\tilde{\Gamma}\^1 \in \mathbb{R}^{n_m \times (n_m + n_s)}$, $\tilde{\Gamma}\^2 \in \mathbb{R}^{n_m \times n_s}$, and introduce the matrices
+\begin{equation*}
+\begin{split}
+ M &= [G\^m, \, G\^s] \\
+ \tilde{M} &= 
+ \begin{bmatrix} M_{(:,1)} & \mathbf{0}_{n \times 1} & \ldots & \mathbf{0}_{n \times 1} & \mathbf{0}_{n \times 1} \\
+ \mathbf{0}_{n \times 1} & M_{(:,2)} & \mathbf{0}_{n \times 1} & \ldots & \mathbf{0}_{n \times 1} \\
+ \vdots & \vdots & \vdots & \vdots & \vdots \\
+ \mathbf{0}_{n \times 1} & \mathbf{0}_{n \times 1} & \ldots & \mathbf{0}_{n \times 1} & M_{(:,n_m + n_s)}
+\end{bmatrix}.
+\end{split}
+\end{equation*}
+.so that we obtain
+\begin{equation} \label{eq:equalityEquivalences}
+\begin{split}
+ \begin{bmatrix} M \mathrm{diag}(\phi) & G\^s \end{bmatrix} &= G\^m \tilde{\Gamma}, \\
+ \Leftrightarrow M \mathrm{diag}(\phi)  &= G\^m \tilde{\Gamma}\^1, \\
+ G\^s &= G\^m \tilde{\Gamma}\^2, \\
+ \Leftrightarrow \tilde{M} \phi  &= (I_{n_m + n_s} \otimes G\^m) \tilde{\Gamma}\^1_{(:)}, \\
+ G\^s_{(:)} &= (I_{n_s} \otimes G\^m) \tilde{\Gamma}\^2_{(:)}.
+\end{split}
+\end{equation}
+After inserting \eqref{eq:equalityEquivalences} in \eqref{eq:minkowskiDifferenceProblem} and introducing 
+\begin{equation*}
+ \tilde{x}= \begin{bmatrix}
+             \phi \\
+             \tilde{\Gamma}\^1_{(:)} \\
+             \tilde{\Gamma}\^2_{(:)} \\
+             \tilde{\beta} \\
+             \tilde{Z}_{(:)} \\
+             c_d
+            \end{bmatrix} \in \mathbb{R}^{n_m + n_s + 2n_m(n_m+2n_s+1) + n}
+\end{equation*}
+we obtain
+\begin{equation*}
+ \begin{split}
+  &\begin{bmatrix} \tilde{M} & -  (I_{n_m + n_s} \otimes G\^m) & \mathbf{0}_{n(n_m + n_s),n_m \, n_s} & \mathbf{0}_{n(n_m + n_s),n_m} & \mathbf{0}_{n(n_m + n_s),n_m(n_m + 2n_s)} & \mathbf{0}_{n(n_m + n_s),n} \\
+  \mathbf{0}_{n \, n_s,n_m+n_s} & \mathbf{0}_{n\, n_s,n_m(n_m + n_s)} & -(I_{n_s} \otimes G\^m) & \mathbf{0}_{n \, n_s,n_m} & \mathbf{0}_{n \, n_s,n_m(n_m + 2n_s)} & \mathbf{0}_{n \, n_s,n} \\
+  \mathbf{0}_{n,n_m + n_s} & \mathbf{0}_{n,n_m(n_m + n_s)} & \mathbf{0}_{n,n_m \, n_s} & -G\^m & \mathbf{0}_{n,n_m(n_m + 2n_s)} & -I_n 
+  \end{bmatrix} \tilde{x} \\
+  =&
+  \begin{bmatrix}
+   \mathbf{0}_{n(n_m + n_s),1} \\
+   G\^s_{(:)} \\
+   c\^m - c\^s
+  \end{bmatrix}
+ \end{split}
+\end{equation*}
+Thus, the linear program can be written in the form \eqref{eq:standardForm} using the following matrices and vectors:
+\begin{equation*}
+ \begin{split}
+  A &= \begin{bmatrix} \mathbf{0}_{n_m,n_m+n_s} & \mathbf{0}_{n_m , n_m(n_m+2n_s+1)} & \mathbf{1}_{n_m+2n_s+1}^T \otimes I_{n_m} & \mathbf{0}_{n_m,n} \\
+  \mathbf{0}_{n_m(n_m+2n_s+1),n_m + n_s} & I_{n_m(n_m+2n_s+1)} & - I_{n_m(n_m+2n_s+1)} & \mathbf{0}_{n_m(n_m+2n_s+1),n} \\
+  \mathbf{0}_{n_m(n_m+2n_s+1),n_m+n_s} & - I_{n_m(n_m+2n_s+1)} & - I_{n_m(n_m+2n_s+1)} & \mathbf{0}_{n_m(n_m+2n_s+1),n}
+  \end{bmatrix}, \\
+  b &= \begin{bmatrix} \mathbf{1}_{n_m} \\ \mathbf{0}_{n_m(n_m+2n_s+1) , 1} \\ \mathbf{0}_{n_m(n_m+2n_s+1), 1} \end{bmatrix}, \\
+  A_{eq} &= \begin{bmatrix} \tilde{M} & -  (I_{n_m + n_s} \otimes G\^m) & \mathbf{0}_{n(n_m + n_s),n_m \, n_s} & \mathbf{0}_{n(n_m + n_s),n_m} & \mathbf{0}_{n(n_m + n_s),n_m(n_m + 2n_s + 1)} & \mathbf{0}_{n(n_m + n_s),n} \\
+  \mathbf{0}_{n \, n_s,n_m+n_s} & \mathbf{0}_{n\, n_s,n_m(n_m + n_s)} & -(I_{n_s} \otimes G\^m) & \mathbf{0}_{n \, n_s,n_m} & \mathbf{0}_{n \, n_s,n_m(n_m + 2n_s + 1)} & \mathbf{0}_{n \, n_s,n} \\
+  \mathbf{0}_{n,n_m + n_s} & \mathbf{0}_{n,n_m(n_m + n_s)} & \mathbf{0}_{n,n_m \, n_s} & -G\^m & \mathbf{0}_{n,n_m(n_m + 2n_s + 1)} & -I_n 
+  \end{bmatrix}, \\
+  b_{eq} &= \begin{bmatrix}
+   \mathbf{0}_{n(n_m + n_s),1} \\
+   -G\^s_{(:)} \\
+   c\^s - c\^m
+  \end{bmatrix}
+ \end{split}
+\end{equation*}
+
+
+\bibliography{althoff_own,althoff_other}
+\bibliographystyle{plain}
+
+
+\end{document}
+
+

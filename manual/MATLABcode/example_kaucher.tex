@@ -1,0 +1,46 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                  
+ $$\color{mgreen}$% function f$\color{black}$$\\
+ $f = @(x) x^2 - x;$\\
+ $$\\
+ $$\color{mgreen}$% compute gradient$\color{black}$$\\
+ $syms $\color{mred}$x;$\color{black}$$\\
+ $df = gradient(f(x));$\\
+ $df = matlabFunction(df);$\\
+ $$\\
+ $$\color{mgreen}$% compute bounds for gradient$\color{black}$$\\
+ $I = interval(2,3);$\\
+ $c = center(I);$\\
+ $gr = df(I);$\\
+ $$\\
+ $$\color{mgreen}$% compute inner-approximation of the range$\color{black}$$\\
+ $x = intKaucher(3,2);$\\
+ $gr = intKaucher(infimum(gr),supremum(gr));$\\
+ $$\\
+ $res = f(c) + gr*(x - c);$\\ 
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

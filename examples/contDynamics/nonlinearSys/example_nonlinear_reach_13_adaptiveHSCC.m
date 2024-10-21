@@ -65,7 +65,7 @@ projDims = {[1,2],[2,3]};
 sysaxis = {[-0.5,10.5,-0.5,6.5],[-0.5,6.5,-0.5,10.5]};
 sysxticks = {[0,5,10],[0,3,6]};
 sysyticks = {[0,3,6],[0,5,10]};
-for p=1:ceil(sys.dim/2)
+for p=1:ceil(sys.nrOfStates/2)
     subplot(rows,cols,p); hold on; box on;
     useCORAcolors("CORA:contDynamics")
     plot(R,projDims{p});
@@ -99,42 +99,13 @@ ax = gca; ax.FontSize = 11;
 xlabel('t','FontSize',fontsize,'interpreter','latex');
 ylabel('$\Delta t$','FontSize',fontsize,'interpreter','latex');        
 
-% taylor terms (Rlin and Rerr)
-fig7b = figure; hold on; box on;
-title("Figure 7b");
-useCORAcolors("CORA:default")
-plot(tVecSteps,repelem(opt.tt_lin,2));
-plot(tVecSteps,repelem(opt.tt_err,2));
-axis([0,params.tFinal,0,max([opt.tt_lin;opt.tt_err])+1]);
-ax = gca; ax.FontSize = 11;
-legend('$\eta_{lin}$','$\eta_{abs}$','Location','northeast','Orientation','horizontal',...
-    'FontSize',fontsize-2,'interpreter','latex');
-legend box off;
-xlabel('t','FontSize',fontsize,'interpreter','latex');
-ylabel('$\eta$','FontSize',fontsize,'interpreter','latex');
-
-% zonotope order
-fig7c = figure; hold on; box on;
-title("Figure 7c");
-useCORAcolors("CORA:default")
-fullzonorderRtp = sum(opt.zonordersRtp,2);
-plot(tVecSteps,repelem(fullzonorderRtp,2));
-% axes and labels
-axis([0,params.tFinal,0,ceil(1.1*max(fullzonorderRtp))]);
-ax = gca; ax.FontSize = 11;
-xlabel('t','FontSize',fontsize,'interpreter','latex');
-if strcmp(options.alg,'lin')
-    ylabel('$\rho$','FontSize',fontsize,'interpreter','latex');
-elseif strcmp(options.alg,'poly')
-    ylabel('$\rho$','FontSize',fontsize,'interpreter','latex');
-end
 end
 
 % Poly. approach
 options.alg = 'poly-adaptive';
 
 adapTime = tic;
-[R,~,~] = reach(sys,params,options);
+R = reach(sys,params,options);
 endset = R.timePoint.set{end};
 tComp = toc(adapTime);
 tab2(2,1) = tComp;
@@ -167,7 +138,7 @@ tab2(1,4) = max(2*rad(interval(endset)));
 options.alg = 'poly-adaptive';
 
 adapTime = tic;
-[R,~,opt] = reach(sys,params,options);
+R = reach(sys,params,options);
 endset = R.timePoint.set{end};
 tComp = toc(adapTime);
 tab2(2,3) = tComp;
@@ -175,8 +146,8 @@ tab2(2,4) = max(2*rad(interval(endset)));
 
 if makePlots
 % time step size
-fig8 = figure; sgtitle("Figure 8");
-subplot(2,1,1); hold on; box on;
+fig8 = figure; title("Figure 8");
+hold on; box on;
 useCORAcolors("CORA:default")
 tVec = query(R,'tVec');
 cumsumtVec = cumsum(tVec);
@@ -187,22 +158,6 @@ plot(tVecSteps,repelem(tVec,2));
 ax = gca; ax.FontSize = 11;
 xlabel('t','FontSize',fontsize,'interpreter','latex');
 ylabel('$\Delta t$','FontSize',fontsize,'interpreter','latex');
-
-
-% zonotope order
-subplot(2,1,2); hold on; box on;
-useCORAcolors("CORA:default")
-fullzonorderRtp = sum(opt.zonordersRtp,2);
-plot(tVecSteps,repelem(fullzonorderRtp,2));
-% axes and labels
-axis([0,params.tFinal,0,ceil(1.1*max(fullzonorderRtp))]);
-ax = gca; ax.FontSize = 11;
-xlabel('t','FontSize',fontsize,'interpreter','latex');
-if strcmp(options.alg,'lin')
-    ylabel('$\rho$','FontSize',fontsize,'interpreter','latex');
-elseif strcmp(options.alg,'poly')
-    ylabel('$\rho$','FontSize',fontsize,'interpreter','latex');
-end
 end
 
 end

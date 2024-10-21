@@ -1,12 +1,12 @@
-function [Rin,Rout] = reachInnerParallelotope(sys,params,options)
+function [Rin,Rout] = reachInnerParallelotope(nlnsys,params,options)
 % reachInnerParallelotope - compute an inner-approximation of the reachable 
-%                           set using the algorithm in [1].
+%    set using the algorithm in [1].
 %
 % Syntax:
-%    [Rin,Rout] = reachInnerParallelotope(sys,options)
+%    [Rin,Rout] = reachInnerParallelotope(nlnsys,options)
 %
 % Inputs:
-%    sys - nonlinearSys object
+%    nlnsys - nonlinearSys object
 %    params - parameters defining the reachability problem
 %    options - struct containting the algorithm settings
 %
@@ -37,32 +37,33 @@ function [Rin,Rout] = reachInnerParallelotope(sys,params,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
     % options preprocessing
-    options = validateOptions(sys,mfilename,params,options);
+    [params,options] = validateOptions(nlnsys,params,options);
 
     % compute outer-approximation of the reachable set for the center of
     % the initial set
-    [params_outer,options_outer] = aux_getOuterReachOptions(options);
+    [params_outer,options_outer] = aux_getOuterReachOptions(params,options);
     
-    name = ['reachInnerParallelo1',sys.name];
-    sysCen = nonlinearSys(name,@(x,u) sys.mFile(x,u));
+    name = ['reachInnerParallelo1',nlnsys.name];
+    sysCen = nonlinearSys(name,@(x,u) nlnsys.mFile(x,u));
     
     R = reach(sysCen,params_outer,options_outer);
     
     % compute outer-approximation of the Jacobian function as defined in
     % Sec. 3.1 in [2]
-    f = aux_dynamicFunctionJacobian(sys);
-    name = ['reachInnerParallelo2',sys.name];
+    f = aux_dynamicFunctionJacobian(nlnsys);
+    name = ['reachInnerParallelo2',nlnsys.name];
     sysJac = nonlinearSys(name,f);
      
     n = dim(params.R0); I = eye(n);
-    params.R0 = cartProd(zonotope(options.R0),zonotope(I(:)));
-    options_outer = rmfield(options_outer,'maxError');
+    paramsJac = params;
+    paramsJac.R0 = cartProd(zonotope(params.R0),zonotope(I(:)));
+    options_outer = rmiffield(options_outer,'maxError');
     
-    Rjac = reach(sysJac,params,options_outer);
+    Rjac = reach(sysJac,paramsJac,options_outer);
 
     % compute inner-approximation using Theorem 3 in [1]
     list = cell(length(R.timePoint.set),1);
-    list{1} = params.R0;
+    list{1} = paramsJac.R0;
     listOuter = list;
     listCont = cell(length(R.timeInterval.set),1);
     listContOuter = cell(length(R.timeInterval.set),1);
@@ -70,7 +71,7 @@ function [Rin,Rout] = reachInnerParallelotope(sys,params,options)
     for i = 1:length(R.timeInterval.set)
 
         % log
-        verboseLog(i,options.timeStep*(i-1),options);
+        verboseLog(options.verbose,i,options.timeStep*(i-1),params.tStart,params.tFinal);
        
         % compute inner-approximation of the time-point reachable set
         f0 = R.timePoint.set{i+1};
@@ -79,7 +80,7 @@ function [Rin,Rout] = reachInnerParallelotope(sys,params,options)
         
         listOuter{i+1} = project(Rjac.timePoint.set{i+1},1:n);
         
-        list{i+1} = aux_innerApproxPrecond(f0,J,options.R0);
+        list{i+1} = aux_innerApproxPrecond(f0,J,params.R0);
         
         % compute inner-approximation of the time-interval reachable set
         f0 = R.timeInterval.set{i};
@@ -88,11 +89,12 @@ function [Rin,Rout] = reachInnerParallelotope(sys,params,options)
         
         listContOuter{i} = project(Rjac.timeInterval.set{i},1:n);
         
-        listCont{i} = aux_innerApproxPrecond(f0,J,options.R0);
+        listCont{i} = aux_innerApproxPrecond(f0,J,params.R0);
     end
 
     % log
-    verboseLog(length(R.timeInterval.set),options.tFinal,options);
+    verboseLog(options.verbose,length(R.timeInterval.set),params.tFinal,...
+        params.tStart,params.tFinal);
 
     % construct reachSet object for inner-approximation
     timePoint.set = list;
@@ -116,23 +118,20 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [params,options] = aux_getOuterReachOptions(options)
+function [params,options] = aux_getOuterReachOptions(params,options)
 
     % set center of initial set as initial set
-    params.R0 = zonotope(center(options.R0));
-    % copy relevant fields to the params struct
-    params.tStart = options.tStart;
-    params.tFinal = options.tFinal;
+    params.R0 = zonotope(center(params.R0));
     
-    % remove params fields from the options struct
-    list = {'R0','U','u','tStart','tFinal','algInner','linAlg',...
+    % remove fields from the options struct
+    list = {'algInner','linAlg',...
         'polyZono.maxDepGenOrder','polyZono.maxPolyZonoRatio',...
         'polyZono.restructureTechnique'};
-    for i = 1:length(list)
-        if isfield(options,list{i})
-            options = rmfield(options,list{i}); 
-        end
-    end
+    options = rmiffield(options,list);
+
+    % reset validation flag since we use these options for another
+    % reachability algorithm
+    options = rmiffield(options,'VALIDATED');
 
 end
 
@@ -144,10 +143,10 @@ function res = aux_innerApproxPrecond(f0,J,X)
     % compute pre-conditioning matrix
     Cinv = center(interval(J));
     if cond(Cinv) < 100
-       C = inv(Cinv);
+        C = inv(Cinv);
     else
-       C = eye(n);
-       Cinv = eye(n);
+        C = eye(n);
+        Cinv = eye(n);
     end
     
     % compute inner-approximation
@@ -216,15 +215,15 @@ function res = aux_innerApproxScalar(f0,J,X,ind)
     end
 end
 
-function fun = aux_dynamicFunctionJacobian(sys)
+function fun = aux_dynamicFunctionJacobian(nlnsys)
 % construct the dynamic function for the Jacobian matrix according to
 % Equation (9) in [2]
 
     % construct function handle for dynamic function
-    fun = @(x,u) sys.mFile(x,u);
+    fun = @(x,u) nlnsys.mFile(x,u);
 
     % construct dynamic function for the jacobian
-    n = sys.dim;
+    n = nlnsys.nrOfStates;
     
     x = sym('x',[n,1]);
     J = sym('J',[n,n]);

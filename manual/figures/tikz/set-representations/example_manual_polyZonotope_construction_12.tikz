@@ -1,0 +1,38 @@
+\addplot [plotstyle3]
+  table[row sep=crcr]{%
+1	2\\
+5	2\\
+7	6\\
+3	6\\
+1	2\\
+};
+\addplot[gray] table[row sep=crcr]{%
+  x	y\\
+  2	4\\
+  6	4\\
+};
+\addplot[gray] table[row sep=crcr]{%
+  x	y\\
+  3	2\\
+  5	6\\
+};
+\addplot[plotstyle1] table[row sep=crcr]{%
+x	y\\
+4	4\\
+};
+\addplot[plotstyle2] table[row sep=crcr]{%
+x	y	u	v\\
+7	6	1.8	1.8\\
+};
+\addplot[plotstyle2] table[row sep=crcr]{%
+x	y	u	v\\
+1	2	1.8	1.8\\
+};
+\addplot[plotstyle2] table[row sep=crcr]{%
+x	y	u	v\\
+3	6	-1.8	-1.8\\
+};
+\addplot[plotstyle2] table[row sep=crcr]{%
+x	y	u	v\\
+5	2	-1.8	-1.8\\
+};

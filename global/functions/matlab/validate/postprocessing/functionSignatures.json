@@ -114,25 +114,16 @@
   {
      "inputs":
      [
-        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:notEnoughInputArgs'}"], "purpose":"ID of error"},
-        {"name":"num", "kind":"required", "type":["numeric"], "purpose":"minimum required input arguments"}
-     ]
-  },
-  
-  "CORAerror":
-  {
-     "inputs":
-     [
-        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:tooManyInputArgs'}"], "purpose":"ID of error"},
-        {"name":"num", "kind":"required", "type":["numeric"], "purpose":"maximum required input arguments"}
-     ]
-  },
-  
-  "CORAerror":
-  {
-     "inputs":
-     [
         {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:evenNumberInputArgs'}"], "purpose":"ID of error"}
+     ]
+  },
+
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:numInputArgsConstructor'}"], "purpose":"ID of error"},
+        {"name":"numValidArgs", "kind":"required", "type":["numeric"], "purpose":"ordered list of admissible numbers of input arguments"}
      ]
   },
   
@@ -226,14 +217,6 @@
      "inputs":
      [
         {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:reachSetExplosion'}"], "purpose":"ID of error"}
-     ]
-  },
-  
-  "CORAerror":
-  {
-     "inputs":
-     [
-        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:testFailed'}"], "purpose":"ID of error"}
      ]
   },
   

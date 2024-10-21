@@ -23,9 +23,6 @@ function res = testFlaky_polytope_vertices
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true;
-
 % tolerance (similar to solver tolerance since we use linear programs)
 tol = 1e-6;
 
@@ -37,14 +34,11 @@ for i=1:nrTests
     % random dimension
     n = randi(5);
 
-    % only n halfspaces -> unbounded (should throw an error)
+    % only n halfspaces -> unbounded
     if n > 1
         % we can compute -+Inf vertices in 1D
         P = polytope(randn(n,n),ones(n,1));
-        try
-            V = vertices(P);
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertThrowsAs(@vertices,'CORA:notSupported',P);
     end
 
     % sample semi-random vertices (no redundancies)
@@ -58,9 +52,7 @@ for i=1:nrTests
     V_ = vertices(P);
 
     % check result
-    if ~compareMatrices(V,V_,tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(compareMatrices(V,V_,tol),i,n)
 
 
     % init random zonotope
@@ -82,9 +74,7 @@ for i=1:nrTests
     V = vertices(Z);
     V_ = vertices(P);
 
-    if ~compareMatrices(V,V_,tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(compareMatrices(V,V_,tol),i,n)
 
 
     % degenerate polytopes: compute the vertices of a non-degenerate
@@ -98,10 +88,11 @@ for i=1:nrTests
     V_ = vertices(P_);
 
     % compare vertices
-    if ~compareMatrices(V,V_(1:n,:),tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(compareMatrices(V,V_(1:n,:),tol),i,n)
 
 end
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

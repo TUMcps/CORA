@@ -1,0 +1,158 @@
+\documentclass{article}
+
+\usepackage{amsmath,amssymb}
+\usepackage{natbib}
+\usepackage{bibentry}
+\usepackage{accents}
+\usepackage{mathtools}
+\usepackage{etoolbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+\nobibliography*
+
+\newcommand{\myparagraph}[1]{\paragraph{#1}\mbox{}\\ \mbox{} \\}
+
+\newtheorem{definition}{Definition}%alles neu
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumption}
+\newtheorem{example}{Example}
+\newtheorem{corollary}{Corollary}
+\newtheorem{problem}{Problem}
+
+%%%%%%%%%commands
+\newcommand{\f}[2]{#1\left(#2\right)}
+\newcommand{\setdef}[2][]{
+	\left\{
+	\ifblank{#1}{}{#1 \hspace{.1cm} \middle| \hspace{.1cm}}
+	#2
+	\right\}
+}
+\newcommand{\var}[2]{{#1}_{\mathrm{#2}}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\set}[1]{\mathcal{#1}}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\argmin}[1]{\underset{#1}{\hspace{.1cm}\mathrm{arg}\hspace{.05cm}\mathrm{min}} \hspace{.1cm}}
+\newcommand{\argmax}[1]{\underset{#1}{\mathrm{arg}\hspace{.05cm}\mathrm{max}} \hspace{.1cm}}
+\newcommand{\rank}[1]{\f{\text{rank}}{#1}}
+\newcommand{\diag}[1]{\f{\text{diag}}{#1}}
+\newcommand{\inv}[1]{#1^{-1}}
+\newcommand{\rv}[1]{\mathrm{#1}}
+\newcommand{\trace}[1]{\left\langle #1\right\rangle}
+\newcommand{\vol}[1]{\f{\text{vol}}{#1}}
+
+\newcommand{\ubar}[1]{\underaccent{\bar}{#1}}
+
+\crefname{figure}{Fig.}{Figs.}
+\crefname{equation}{}{}
+\crefname{section}{Sec.}{Secs.}
+\crefname{definition}{Def.}{Defs.}
+\crefname{example}{Ex.}{Exs.}
+
+\begin{document}
+	\section{Primal to Dual}
+	MOSEK solves problems of the form
+	\begin{subequations}\label{eqs:SDP_primal}
+		\begin{align}
+			p^* = \min_{x,X}\quad	&c^Tx + \sum_{i=1}^{N} \trace{C^{(j)},X^{(i)}},\\
+			\text{s.t.}\quad&\ubar{b}_j \leq a^{(j),T}x+\sum_{i=1}^{N}\trace{A^{(ij)},X^{(i)}} \leq \bar{b}_j, \ j\in\setdef{1,...,M},\label{eq:ineq_primal}\\
+			&\ubar{d} \leq x \leq \bar{d},\\
+			&x \in \set{K},\\
+			&X_i \succeq 0, \ i\in\setdef{1,...,N},
+		\end{align}
+	\end{subequations}
+	where $x\in\mathbb{R}^n$ contains $n$ scalar optimization variables, $X^{(i)}\in\mathbb{R}^{n\times n}$, $X^{(i)} = X^{(i,T)}\succeq 0$, are $N$ positive semi-definite optimization matrices (each matrix has $\frac{n (n-1)}{2}$ free optimization variables), $c\in\mathbb{R}^n$, $C^{(i)}\in\mathbb{R}^{n\times n}$, $\ubar{b}\in\mathbb{R}^{M}$, $\bar{b}\in\mathbb{R}^{M}$, $A^T = \begin{bmatrix}a^{(1)},&...,&a^{(M)}\end{bmatrix}$, $a^{(i)}\in\mathbb{R}^{n}$, $A^{(ij)}\in\mathbb{R}^{n\times n}$, $\ubar{d}\in\mathbb{R}^{n}$, and $\bar{d}\in\mathbb{R}^n$, and $\set{K} = \var{\set{K}}{quad}\times ...$, where $\var{\set{K}}{\cdot}$ are convex cones supported by MOSEK.
+	
+	We now derive the corresponding dual problem, since most (if not all) problems in CORA can be more efficiently modeled using the dual formulation of \cref{eqs:SDP_primal}. The lagrange dual function is given by
+	\begin{equation}\label{eq:dual_not_simplifed}
+		\begin{aligned}
+			&\f{\Theta}{\ubar{\mu},\bar{\mu},\ubar{\eta},\bar{\eta},s,S^{(i)}} = \\
+			&\inf_{x,X} \Big\{ c^Tx + \sum_{i=1}^{N} \trace{C^{(i)},X^{(i)}} + \Big.\\
+			&\Big.\sum_{j=1}^{M} \ubar{\mu}_j\left(\ubar{b}_j - a^{(j),T}x-\sum_{i=1}^{N}\trace{A^{(ij)},X^{(i)}}\right)+\sum_{j=1}^{M} \bar{\mu}_j\left(-\bar{b}_j + a^{(j),T}x+\sum_{i=1}^{N}\trace{A^{(ij)},X^{(i)}}\right)+\Big.\\
+			&\Big. \ubar{\eta}^T\left(\ubar{d}-x\right) + \bar{\eta}^T\left(x-\bar{d}\right)+\Big.\\ &\Big. -s^Tx+\Big.\\
+			&\Big. -\sum_{i=1}^{N}\trace{S^{(i)},X^{(i)}} \Big\},
+		\end{aligned}
+	\end{equation}
+	where $\ubar{\mu}\in\mathbb{R}^M$, $\bar{\mu}\in\mathbb{R}^M$, $\ubar{\eta}\in\mathbb{R}^n$, $\bar{\eta}\in\mathbb{R}^n$, $s\in\mathbb{R}^n$, and $S^{(i)}\in\mathbb{R}^{n\times n}$, $i\in\setdef{1,...,N}$.
+	The first 3 equations follow from standard duality theory. Worth mentioning here are probably $s$ and $S^{(i)}$: Since we are transforming into the dual space for a minimum, we want $\f{\Theta}{\ubar{\mu},\bar{\mu},\ubar{\eta},\bar{\eta},s,S^{(i)}}\leq p^*$ (weak duality). The dual cone is given by $\f{\text{dual}}{\set{K}} = \setdef[z\in\mathbb{R}^n]{z^Tx\geq 0, \ x\in\set{K}}$. Thus, we subtract $s^Tx$, where $s\in\f{\text{dual}}{\set{K}}$. The dual cone of the positive semi-definite cone $\var{\set{K}}{psd}$ is given by $\f{\text{dual}}{\var{\set{K}}{psd}}=\setdef[Z\in\mathbb{S}_+^{n\times n}]{\trace{Z,X}\geq 0,\ X\in\var{\set{K}}{psd}}$, where $Z\in\mathbb{S}_+^{n\times n}$ since the cone of SDP matrices is self-dual. Thus we subtract for the same reason mentioned above.
+	
+	As a next step, we simplify \cref{eq:dual_not_simplifed} to
+	\begin{equation}
+		\begin{aligned}
+			&\f{\Theta}{\ubar{\mu},\bar{\mu},\ubar{\eta},\bar{\eta},s,S^{(i)}} =\\
+			&\inf_{x,X} \Big\{\left(c - A^T\ubar{\mu} + A^T\bar{\mu} -\ubar{\eta}+\bar{\eta} - s\right)x+ \Big.\\
+			&\Big. \sum_{i=1}^{N}\trace{C^{(i)}-\sum_{j=1}^{M}A^{(ij)}\left(\ubar{\mu}_i-\bar{\mu}_i\right) -S^{(i)},X^{(i)}}\Big\}\\
+			&+\ubar{b}^T\ubar{\mu} - \bar{b}^T\bar{\mu} +\ubar{\eta}^T\ubar{d}-\bar{\eta}\bar{d}.
+		\end{aligned}
+	\end{equation}
+	Thus
+	\begin{equation}
+		\f{\Theta}{\ubar{\mu},\bar{\mu},\ubar{\eta},\bar{\eta},s,S^{(i)}} =
+		\begin{cases}
+			\ubar{b}^T\ubar{\mu} - \bar{b}^T\bar{\mu} +\ubar{\eta}^T\ubar{d}-\bar{\eta}\bar{d}, &\begin{bmatrix}
+				c - A^T\ubar{\mu} + A^T\bar{\mu} -\ubar{\eta}+\bar{\eta} - s=0\\
+				C^{(i)}-\sum_{j=1}^{M}A^{(ij)}\left(\ubar{\mu}_i-\bar{\mu}_i\right) \succeq 0, \ i\in\setdef{1,...,N},
+			\end{bmatrix},\\
+			-\infty,& \text{otherwise}
+		\end{cases}.
+	\end{equation}
+	Hence, the dual problem is given by $\max_{\ubar{\mu}\geq 0,\bar{\mu}\geq 0,\ubar{\eta}\geq 0,\bar{\eta}\geq 0,s} \f{\Theta}{\ubar{\mu},\bar{\mu},\ubar{\eta},\bar{\eta},s}$, i.e.
+	\begin{subequations}\label{eqs:SDP_dual}
+		\begin{align}
+			\max_{\ubar{\mu},\bar{\mu},\ubar{\eta},\bar{\eta},s} &\ubar{b}^T\ubar{\mu} - \bar{b}^T\bar{\mu} +\ubar{d}^T\ubar{\eta}-\bar{d}^T\bar{\eta},\\
+			\text{s.t.} \quad 	&c - A^T\left(\ubar{\mu}-\bar{\mu}\right) -\ubar{\eta}+\bar{\eta} - s=0,\\
+								&C^{(i)}-\sum_{j=1}^{M}A^{(ij)}\left(\ubar{\mu}_i-\bar{\mu}_i\right) \succeq 0, \ i\in\setdef{1,...,N},\\
+								&s\in\f{\text{dual}}{\set{K}},\\
+								&\begin{bmatrix}\ubar{\mu}^T,&\bar{\mu}^T,&\ubar{\eta}^T,&\bar{\eta}^T\end{bmatrix}\geq 0.
+		\end{align}
+	\end{subequations}
+
+	\section{Special Dual Cases}
+	For certain functions in CORA, special cases of \cref{eqs:SDP_dual} are used, which we will quickly discuss here.
+		
+		\subsection{Equality Constraint}
+		If \cref{eq:ineq_primal} is actually an equality constraint, we have $\ubar{b} = \bar{b} = b$, and \cref{eqs:SDP_dual} simplifies to 
+		\begin{subequations}\label{eqs:SDP_dual_equality}
+			\begin{align}
+				\max_{\mu,\ubar{\eta},\bar{\eta},s} &\bar{b}^T\mu +\ubar{d}^T\ubar{\eta}-\bar{d}^T\bar{\eta},\\
+				\text{s.t.} \quad 	&c - A^T\mu -\ubar{\eta}+\bar{\eta} - s=0, \label{eq:SDP_dual_eq_equality}\\
+				&C^{(i)}-\sum_{j=1}^{M}A^{(ij)}\mu_i \succeq 0, \ i\in\setdef{1,...,N},\\
+				&s\in\f{\text{dual}}{\set{K}},\\
+				&\begin{bmatrix}\ubar{\eta}^T,&\bar{\eta}^T\end{bmatrix}\geq 0.
+			\end{align}
+		\end{subequations}
+	
+		\subsection{No State Bounds}
+		If \cref{eqs:SDP_primal} does not have any state bounds, $\bar{d} = -\ubar{d} = \infty$, and \cref{eqs:SDP_dual} simplifies to
+		\begin{subequations}
+			\begin{align}
+				\max_{\ubar{\mu},\bar{\mu},s},\ &\ubar{b}^T\ubar{\mu} - \bar{b}^T\bar{\mu},\\
+				\text{s.t.} \quad 	&c - A^T\left(\ubar{\mu}-\bar{\mu}\right) - s=0,\\
+				&C^{(i)}-\sum_{j=1}^{M}A^{(ij)}\left(\ubar{\mu}_i-\bar{\mu}_i\right) \succeq 0, \ i\in\setdef{1,...,N},\\
+				&s\in\f{\text{dual}}{\set{K}},\\
+				&\begin{bmatrix}\ubar{\mu}^T,&\bar{\mu}^T\end{bmatrix}\geq 0.
+			\end{align}
+		\end{subequations}
+		
+		\subsection{Greater Zero Constraint}
+		Assume that we identified $A$, $A^{(ij)}$, $c$, $C^{(ij)}$ from \cref{eqs:SDP_dual_equality} ($\ubar{b}=\bar{b}=b$), but additionally require the constraint $\mu_k = \ubar{\mu}_k-\bar{\mu}_k \geq 0$, where $k\leq K\leq M$. Substituting $c$, $A^T$, $\ubar{d}$, $\bar{d}$, $\ubar{\eta}$, $\bar{\eta}$, $s$ in \cref{eq:SDP_dual_eq_equality} by $\begin{bmatrix}c\\0_K\end{bmatrix}$, $\begin{bmatrix}A^T\\-I_{K\times K},&0\end{bmatrix}$, $\begin{bmatrix}\ubar{d}\\0_K\end{bmatrix}$, $ \begin{bmatrix}\bar{d}\\\infty_K\end{bmatrix}$, $\begin{bmatrix}\ubar{\eta}\\\ubar{\tilde{\eta}}\end{bmatrix}$, $\begin{bmatrix}\bar{\eta}\\\bar{\tilde{\eta}}\end{bmatrix}$ transforms \cref{eqs:SDP_dual_equality} into
+		\begin{subequations}
+			\begin{align}
+				\max_{\mu,\ubar{\eta},\bar{\eta},s} &\bar{b}^T\mu +\ubar{d}^T\ubar{\eta}-\bar{d}^T\bar{\eta},\\
+				\text{s.t.} \quad 	&c - A^T\mu -\ubar{\eta}+\bar{\eta} - s=0,\\
+									&-\mu_k+\tilde{\bar{\eta}}_k -\tilde{s}_k = 0, \ k\in\setdef{1,...,K},\label{eq:geq_0_dual}\\
+				&C^{(i)}-\sum_{j=1}^{M}A^{(ij)}\mu_i \succeq 0, \ i\in\setdef{1,...,N},\\
+				&s\in\f{\text{dual}}{\set{K}},\\
+				&\begin{bmatrix}\ubar{\eta}^T,&\bar{\eta}^T\end{bmatrix}\geq 0,
+			\end{align}
+		\end{subequations} 
+		because $\bar{\tilde{\eta}}=0$ (since it is multiplied by $\infty$ in the objective function). Further, if we do not constrain the primal scalar variables (that we introduced by this extension of $c$, $A^T$ etc.), i.e., constrain them to be in $\var{\set{K}}{added}=\setdef[\tilde{x}]{\tilde{x}\in\mathbb{R}^K}$, the corresponding dual cone $\f{\text{dual}}{\var{\set{K}}{add}} = \setdef[\tilde{s}]{\tilde{s}^T\tilde{x}\geq 0, \ \tilde{x}\in\var{\set{K}}{add}} = \setdef{0}$ constrains $\tilde{s}$ to $0$. Thus \cref{eq:geq_0_dual} becomes $\mu_k=\tilde{\bar{\eta}}_k \geq 0$.
+		
+		Helpful links\footnote{\url{https://math.stackexchange.com/questions/4104095/largest-eigenvalue-as-semidefinite-program-in-standard-form}}
+		
+	\section{Geomean in SDP Dual Standard Form}
+	Often, SDP problems for ellipsoids include a volume-optimizing objective function such as $\log\det \inv{Q}$, where $Q\in\mathbb{S}_+^{n\times n}$ is, e.g., a positive-definite matrix defining an ellipsoid. This can be transformed into standard form as explained in \footnote{Sec. 4.2.2, \url{https://docs.mosek.com/MOSEKModelingCookbook-v2.pdf}}.
+\end{document}

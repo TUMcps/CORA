@@ -1,0 +1,46 @@
+\subsubsubsection{Polynomial Zonotopes} \label{sec:polynomialZonotopes}
+
+Polynomial zonotopes, which were first introduced in \cite{Althoff2013a}, are a non-convex set representation. In CORA we implemented the sparse representation of polynomial zonotopes described in \cite{Kochdumper2021a}. A polynomial zonotope $\mathcal{PZ} \subset \Rn$ is defined as
+\begin{equation}
+    \mathcal{PZ} := \bigg\{ c + \sum _{i=1}^h \bigg( \prod _{k=1}^p \alpha _k ^{E_{(k,i)}} \bigg) G_{(\cdot,i)} + \sum _{j=1}^{q} \beta _j G_{I(\cdot,j)} ~ \bigg| ~ \alpha_k, \beta_j \in [-1,1] \bigg\},
+  \label{eq:polyZonotope}
+\end{equation}
+where $c \in \Rn$ is the center, $G \in \mathbb{R}^{n \times h}$ the matrix of dependent generators, $G_I \in \mathbb{R}^{n \times q}$ the matrix of independent generators, and  $E \in \mathbb{N}_{0}^{p \times h}$ the exponent matrix. Since polynomial zonotopes can represent non-convex sets, and since they are closed under quadratic and higher-order maps, they are a good choice for reachability analysis.
+
+Polynomial zonotopes are represented in CORA by the class \texttt{polyZonotope}. An object of class \texttt{polyZonotope} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+	& \mathcal{PZ} = \texttt{polyZonotope}(c,G,G_I,E), \\
+	& \mathcal{PZ} = \texttt{polyZonotope}(c,G,G_I,E,id), \\
+	\end{split}
+\end{equation*} 
+where $c,G,G_I,E$ are defined as in \eqref{eq:polyZonotope}. The vector $id \in \mathbb{N}^p_{> 0}$ stores unambiguous identifiers for the dependent factors $\alpha_k$, which is important for dependency preservation as described in \cite{Kochdumper2020c}. Let us demonstrate the construction of a polynomial zonotope by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.55\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_setRep_polyZonotope}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-representations/example_polyZonotope}
+\end{minipage}
+\end{center}
+
+This example defines the polynomial zonotope
+\begin{equation*}
+	\mathcal{PZ} = \bigg \{ \begin{bmatrix} 4 \\ 4 \end{bmatrix} + \alpha_1 \begin{bmatrix} 2 \\ 0 \end{bmatrix} + \alpha_2 \begin{bmatrix} 1 \\ 2 \end{bmatrix} + \alpha_1^3 \alpha_2 \begin{bmatrix} 2 \\ 2 \end{bmatrix} + \beta_1\begin{bmatrix} 1 \\ 0 \end{bmatrix}~\bigg|~ \alpha_1,\alpha_2,\beta_1 \in [-1,1] \bigg \}.
+\end{equation*}
+The construction of this polynomial zonotope is visualized in \cref{fig:polyZonotope}: (a) shows the set spanned by the constant offset vector and the first and second dependent generator, (b) shows the addition of the dependent generator with the mixed term $\alpha_1^3 \alpha_2$, (c) shows the addition of the independent generator, and (d) visualizes the final set.
+
+\begin{figure}[htb]	
+	\begin{center}
+	\includetikz{./figures/tikz/set-representations/example_manual_polyZonotope_construction}
+	\caption{Step-by-step construction of a polynomial zonotope.}
+	\label{fig:polyZonotope}
+	\end{center}
+\end{figure}
+
+A more detailed example for polynomial zonotopes is provided in \cref{sec:polyZonotopeExample} and in the file \textit{examples/contSet/example\_polyZonotope.m} in the CORA toolbox.

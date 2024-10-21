@@ -29,6 +29,7 @@ function res = testLong_conZonotope_plus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+tol = 1e-12;
 
 % TEST 1: Random Test (zonotope 2D) ---------------------------------------
 
@@ -68,8 +69,6 @@ P = polytope(cZ_);
 
 % extract inequality constraints
 constraints(P);
-A = P.A;
-b = P.b;
 
 % % visualize result
 % plot(points(1,:),points(2,:),'.k');
@@ -77,11 +76,7 @@ b = P.b;
 % plot(cZ_,[1,2],'r');
 
 % check if all points are located inside the resulting conZonotope
-for i = 1:size(points,2)
-   if ~all(A*points(:,i) < b | withinTol(A*points(:,i),b))
-       throw(CORAerror('CORA:testFailed'));
-   end
-end
+assert(all(contains_(P,points,'exact',tol)));
 
 
 % TEST 2: Random Test (interval 2D) ---------------------------------------
@@ -125,8 +120,6 @@ P = polytope(cZ_);
 
 % extract inequality constraints
 constraints(P);
-A = P.A;
-b = P.b;
 
 % % visualize result
 % plot(points(1,:),points(2,:),'.k');
@@ -134,11 +127,7 @@ b = P.b;
 % plot(cZ_,[1,2],'r');
 
 % check if all points are located inside the resulting conZonotope
-for i = 1:size(points,2)
-   if ~all(A*points(:,i) < b | withinTol(A*points(:,i),b))
-       throw(CORAerror('CORA:testFailed'));
-   end
-end
+assert(all(contains_(P,points,'exact',tol)));
 
 
 % TEST 3: Random Test (conZonotope 2D) ------------------------------------
@@ -183,8 +172,6 @@ P = polytope(cZ_);
 
 % extract inequality constraints
 constraints(P);
-A = P.A;
-b = P.b;
 
 % % visualize result
 % plot(points(1,:),points(2,:),'.k');
@@ -192,11 +179,7 @@ b = P.b;
 % plot(cZ_,[1,2],'r');
 
 % check if all points are located inside the resulting conZonotope
-for i = 1:size(points,2)
-   if ~all(A*points(:,i) < b | withinTol(A*points(:,i),b,1e-6))
-       throw(CORAerror('CORA:testFailed'));
-   end
-end
+assert(all(contains_(P,points,'exact',tol)));
 
 
 % TEST 4: Random Test (vector 2D) -----------------------------------------
@@ -227,8 +210,6 @@ P = polytope(cZ_);
 
 % extract inequality constraints
 constraints(P);
-A = P.A;
-b = P.b;
 
 % % visualize result
 % plot(points(1,:),points(2,:),'.k');
@@ -236,12 +217,7 @@ b = P.b;
 % plot(cZ_,[1,2],'r');
 
 % check if all points are located inside the resulting conZonotope
-Tol = 1e-12;
-for i = 1:size(points,2)
-   if any(A*points(:,i) - b > Tol)
-       throw(CORAerror('CORA:testFailed'));
-   end
-end
+assert(all(contains_(P,points,'exact',tol)));
 
 res = true;
 

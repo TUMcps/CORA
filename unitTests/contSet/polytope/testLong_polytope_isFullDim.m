@@ -38,14 +38,13 @@ for i=1:nrTests
     P = polytope(Z);
 
     % check if zonotope was full-dimensional
-    if ~isFullDim(Z)
+    tol = 1e-4;
+    if ~isFullDim(Z,tol)
         continue
     end
 
-    % assert non-degeneracy
-    if ~isFullDim(P)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    % assert non-degeneracy (tol in Z is less strict?)
+    assertLoop(isFullDim(P,tol/10),i);
 
     % add randomly-oriented inequality of type ax <= b, -ax <= -b
     con_ = randn(1,n);
@@ -53,23 +52,18 @@ for i=1:nrTests
     P_ = polytope([P.A; con_; -con_],[P.b; offset_; -offset_]);
 
     % assert degeneracy
-    if isFullDim(P_)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(~isFullDim(P_),i);
 
     % lift dimension via equality constraint x_n+1 = 0
     P_ = polytope([P.A,zeros(length(P.b),1)],P.b,[zeros(1,n),1],0);
     [res_,subspace] = isFullDim(P_);
     % has to be degenerate and live in subspace of n basis vectors
-    if res_ || size(subspace,2) ~= n
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(~res_ && size(subspace,2) == n,i);
+
     % same but using two inequalities instead of equality
     P_ = polytope(blkdiag(P.A,[1;-1]),[P.b;0;0]);
     [res_,subspace] = isFullDim(P_);
-    if res_ || size(subspace,2) ~= n
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(~res_ && size(subspace,2) == n,i)
 
 end
 

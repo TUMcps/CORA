@@ -96,19 +96,19 @@ end
 % Implementation for a scalar
 function res = aux_s_times_tt(factor1, factor2)
             
-    [factor1, factor2] = rescale_dim(factor1, factor2);
+    [factor1, factor2] = priv_rescale_dim(factor1, factor2);
     res = factor1;
 
     % Multiplication
-    [res.coefficients, res.monomials] = aux_multiply ( ...
+    [res.coefficients, res.monomials] = aux_multiply( ...
                         factor1.coefficients, factor1.monomials, ...
                         factor2.coefficients, factor2.monomials);
 
     % Merge the properties of the two taylor models
-    res = mergeProperties(res,factor1,factor2);
+    res = priv_mergeProperties(res,factor1,factor2);
                     
     % Reduce number of terms of resulting Taylor Model
-    [res,rest] = compress(res);
+    [res,rest] = priv_compress(res);
 
     % Calculate remainder
     remainder1 = factor1.remainder;

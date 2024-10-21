@@ -52,14 +52,14 @@ function cZ = enclose(cZ,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,3);
+
 % parse input arguments
 if nargin == 2
     cZ2 = varargin{1};
 elseif nargin == 3
     % compute M*cZ1 + cZplus
     cZ2 = (varargin{1}*cZ) + varargin{2};
-else
-    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
 % retrieve number of generators of the zonotopes

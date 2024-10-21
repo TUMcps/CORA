@@ -1,0 +1,28 @@
+
+# CORA MANUAL
+# How to build on windows
+# Author: Tobias Ladner
+# Date: 25-September-2023
+
+# first remove all intermediate LaTeX output files
+del *.aux *.log *.dvi *.ps *.bbl *.blg *.out *.toc
+
+# consider deleting converted eps figures and externalized tikz figures
+# del ./figures/*-eps-converted-to.pdf
+# rmdir /s ./figures/externalize
+
+# run pdflatex
+# Important: This can take a while (<30 minutes) the first time you run it.
+# After the first call, execution should be much faster (<20 seconds).
+pdflatex CoraManual --shell-escape
+
+# run bibtex
+bibtex CoraManual
+
+# run pdflatex twice
+pdflatex CoraManual --shell-escape
+pdflatex CoraManual --shell-escape
+
+# ---
+# from now on, a single pdflatex call should be sufficient to see updates
+

@@ -1,4 +1,4 @@
-function [t,x,ind,y] = simulate(obj,options)
+function [t,x,ind,y] = simulate(obj,params,options)
 % simulate - simulates the linear interval system within a location
 %
 % Syntax:
@@ -8,21 +8,21 @@ function [t,x,ind,y] = simulate(obj,options)
 %
 % Inputs:
 %    obj - linProbSys object
-%    options - struct containing the parameters for the simulation
+%    params - struct containing the parameters for the simulation
 %       .tStart initial time t0
 %       .tFinal final time tf
 %       .x0 initial point x0
 %       .u piecewise constant input signal u(t) specified as a matrix
 %           for which the number of rows is identical to the number of
 %           system input
+%    options - settings
+%       .timeStep time step size
 %
 % Outputs:
 %    t - time vector
 %    x - state vector
 %    ind - returns the event which has been detected
 %    y - output vector
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -48,12 +48,12 @@ end
 
 %self-programmed euler solver
 h = options.timeStep/5;
-nrOfTimeSteps = ceil((options.tFinal-options.tStart)/h);
-t = linspace(options.tStart, options.tFinal, nrOfTimeSteps);
-x(:,1) = options.x0;
+nrOfTimeSteps = ceil((params.tFinal-params.tStart)/h);
+t = linspace(params.tStart, params.tFinal, nrOfTimeSteps);
+x(:,1) = params.x0;
 
 %obtain dimension
-n = obj.dim;
+n = obj.nrOfStates;
 
 for i=1:nrOfTimeSteps-1
     % compute random value from the noise signal
@@ -63,7 +63,7 @@ for i=1:nrOfTimeSteps-1
     
     % next state: initial solution + input solution
     x(:,i+1) = expm(obj.A*h)*x(:,i) + ...
-        inv(obj.A)*(expm(obj.A*h) - eye(length(obj.A)))*(options.u+u);
+        inv(obj.A)*(expm(obj.A*h) - eye(length(obj.A)))*(params.u+u);
 end
 x=x';
 

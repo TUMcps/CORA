@@ -23,9 +23,6 @@ function res = test_levelSet_ne
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true;
-
 % init symbolic variables
 syms a b c x y z
 
@@ -42,15 +39,15 @@ eqs = -a^2 - b^2 + 5;
 ls1__ = levelSet(eqs,[a;b],'<=');
 
 % compare equal sets
-res(end+1,1) = ~(ls1 ~= ls1_);
-res(end+1,1) = ~ne(ls1,ls1__);
+assert(~(ls1 ~= ls1_));
+assert(~ne(ls1,ls1__));
 
 
 % different level set function
 eqs = sin(a) + cos(b);
 ls2 = levelSet(eqs,[a;b],'<=');
 
-res(end+1,1) = ls1 ~= ls2;
+assert(ls1 ~= ls2);
 
 
 % multiple equations
@@ -65,10 +62,10 @@ eq2 = 2*c;
 eq3 = b^2 - 5 - a^2;
 ls2 = levelSet([eq1;eq2;eq3],[a;b;c],{'<','<=','<='});
 
-res(end+1,1) = ~(ls1 ~= ls2);
+assert(~(ls1 ~= ls2));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

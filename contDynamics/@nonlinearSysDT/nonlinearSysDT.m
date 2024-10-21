@@ -5,16 +5,16 @@ classdef nonlinearSysDT < contDynamics
 %
 % Syntax:
 %    % only dynamic equation
-%    obj = nonlinearSysDT(fun,dt)
-%    obj = nonlinearSysDT(name,fun,dt)
-%    obj = nonlinearSysDT(fun,dt,states,inputs)
-%    obj = nonlinearSysDT(name,fun,dt,states,inputs)
+%    nlnsysDT = nonlinearSysDT(fun,dt)
+%    nlnsysDT = nonlinearSysDT(name,fun,dt)
+%    nlnsysDT = nonlinearSysDT(fun,dt,states,inputs)
+%    nlnsysDT = nonlinearSysDT(name,fun,dt,states,inputs)
 %
 %    % dynamic equation and output equation
-%    obj = nonlinearSysDT(fun,dt,out_fun)
-%    obj = nonlinearSysDT(name,fun,dt,out_fun)
-%    obj = nonlinearSysDT(fun,dt,states,inputs,out_fun,outputs)
-%    obj = nonlinearSysDT(name,fun,dt,states,inputs,out_fun,outputs)
+%    nlnsysDT = nonlinearSysDT(fun,dt,out_fun)
+%    nlnsysDT = nonlinearSysDT(name,fun,dt,out_fun)
+%    nlnsysDT = nonlinearSysDT(fun,dt,states,inputs,out_fun,outputs)
+%    nlnsysDT = nonlinearSysDT(name,fun,dt,states,inputs,out_fun,outputs)
 %
 % Inputs:
 %    fun - function handle to the dynamic equation
@@ -26,7 +26,7 @@ classdef nonlinearSysDT < contDynamics
 %    outputs - number of outputs
 %
 % Outputs:
-%    obj - generated nonlinearSysDT object
+%    nlnsysDT - generated nonlinearSysDT object
 %
 % Example:
 %    f = @(x,u) [x(1) + u(1);x(2) + u(2)*cos(x(1));x(3) + u(2)*sin(x(1))];
@@ -79,7 +79,10 @@ end
 methods
     
     % class constructor
-    function obj = nonlinearSysDT(varargin)
+    function nlnsysDT = nonlinearSysDT(varargin)
+
+        % 0. check number of input arguments
+        assertNarginConstructor([0,2:7],nargin);
 
         % 1. copy constructor: not allowed due to obj@contDynamics below
         %         if nargin == 1 && isa(varargin{1},'nonlinearSysDT')
@@ -97,66 +100,95 @@ methods
             aux_computeProperties(fun,states,inputs,out_fun,outputs);
         
         % 5. instantiate parent class
-        obj@contDynamics(name,states,inputs,outputs);
+        % note: currently, we only support unit disturbance matrices
+        %       (same as number of states) and unit noise matrices (same as
+        %       number of outputs)
+        nlnsysDT@contDynamics(name,states,inputs,outputs,states,outputs);
         
         % 6a. assign object properties: dynamic equation
-        obj.dt = dt;
+        nlnsysDT.dt = dt;
         
-        obj.mFile = fun;
-        obj.jacobian = eval(['@jacobian_',name]);
-        obj.hessian = eval(['@hessianTensor_' obj.name]);
-        obj.thirdOrderTensor = eval(['@thirdOrderTensor_' obj.name]);
+        nlnsysDT.mFile = fun;
+        nlnsysDT.jacobian = eval(['@jacobian_',name]);
+        nlnsysDT.hessian = eval(['@hessianTensor_' nlnsysDT.name]);
+        nlnsysDT.thirdOrderTensor = eval(['@thirdOrderTensor_' nlnsysDT.name]);
 
         % 6b. assign object properties: output equation
-        obj.out_mFile = out_fun;
-        obj.out_isLinear = out_isLinear;
+        nlnsysDT.out_mFile = out_fun;
+        nlnsysDT.out_isLinear = out_isLinear;
         if all(all(out_isLinear)) && rewriteAsC
             C = aux_rewriteOutFunAsMatrix(out_fun,states,outputs);
         end
-        obj.C = C;
-        obj.out_jacobian = eval(['@out_jacobian_',name]);
-        obj.out_hessian = eval(['@out_hessianTensor_',name]);
-        obj.out_thirdOrderTensor = eval(['@out_thirdOrderTensor_',name]);
+        nlnsysDT.C = C;
+        nlnsysDT.out_jacobian = eval(['@out_jacobian_',name]);
+        nlnsysDT.out_hessian = eval(['@out_hessianTensor_',name]);
+        nlnsysDT.out_thirdOrderTensor = eval(['@out_thirdOrderTensor_',name]);
         
+    end
+
+
+    % update system dynamics for the new augmented input [u; w] where w is
+    % the process noise acting on all states 
+    function nlnsysDT = augment_u_with_w(nlnsysDT)
+        dim_x = nlnsysDT.nrOfStates;
+        fun = @(x,u) nlnsysDT.mFile(x,u(1:nlnsysDT.nrOfInputs)) + u(nlnsysDT.nrOfInputs+1:nlnsysDT.nrOfInputs+dim_x);
+        nlnsysDT.mFile = fun;
+        nlnsysDT.nrOfInputs = nlnsysDT.nrOfInputs + dim_x;
+        %nlnsysDT = nonlinearSysDT(nlnsysDT.name,fun, obj.dt, obj.nrOfStates, obj.nrOfInputs+dim_x, obj.out_mFile, obj.nrOfOutputs);
+    end
+
+    % update system dynamics for the new augmented input [u; v] where v is
+    % the measurement noise acting on all outputs 
+    function nlnsysDT = augment_u_with_v(nlnsysDT)
+        dim_y = nlnsysDT.nrOfOutputs;
+        outfun = @(x,u) nlnsysDT.out_mFile(x,u(1:nlnsysDT.nrOfInputs)) + u(nlnsysDT.nrOfInputs+1:nlnsysDT.nrOfInputs+dim_y);
+        nlnsysDT.out_mFile = outfun;
+        nlnsysDT.nrOfInputs = nlnsysDT.nrOfInputs + dim_y;
+        %nlnsysDT = nonlinearSysDT(nlnsysDT.name, obj.mFile, obj.dt, obj.nrOfStates, obj.nrOfInputs+dim_y, outfun, dim_y);
     end
     
     % set tensors to either numeric or interval arithmetic
     % (required in computation of Lagrange remainder)
-    function obj = setHessian(obj,version)
+    function nlnsysDT = setHessian(nlnsysDT,version)
         % allow switching between standard and interval arithmetic
         if strcmp(version,'standard')
-            obj.hessian = eval(['@hessianTensor_' obj.name]);
+            nlnsysDT.hessian = eval(['@hessianTensor_' nlnsysDT.name]);
         elseif strcmp(version,'int')
-            obj.hessian = eval(['@hessianTensorInt_' obj.name]);
+            nlnsysDT.hessian = eval(['@hessianTensorInt_' nlnsysDT.name]);
         end
     end
-    function obj = setOutHessian(obj,version)
+    function nlnsysDT = setOutHessian(nlnsysDT,version)
         % allow switching between standard and interval arithmetic
         if strcmp(version,'standard')
-            obj.out_hessian = eval(['@out_hessianTensor_' obj.name]);
+            nlnsysDT.out_hessian = eval(['@out_hessianTensor_' nlnsysDT.name]);
         elseif strcmp(version,'int')
-            obj.out_hessian = eval(['@out_hessianTensorInt_' obj.name]);
+            nlnsysDT.out_hessian = eval(['@out_hessianTensorInt_' nlnsysDT.name]);
         end
     end
 
-    function obj = setThirdOrderTensor(obj,version)
+    function nlnsysDT = setThirdOrderTensor(nlnsysDT,version)
         % allow switching between standard and interval arithmetic
         if strcmp(version,'standard')
-            obj.thirdOrderTensor = eval(['@thirdOrderTensor_' obj.name]);
+            nlnsysDT.thirdOrderTensor = eval(['@thirdOrderTensor_' nlnsysDT.name]);
         elseif strcmp(version,'int')
-            obj.thirdOrderTensor = eval(['@thirdOrderTensorInt_' obj.name]);
+            nlnsysDT.thirdOrderTensor = eval(['@thirdOrderTensorInt_' nlnsysDT.name]);
         end
     end
-    function obj = setOutThirdOrderTensor(obj,version)
+    function nlnsysDT = setOutThirdOrderTensor(nlnsysDT,version)
         % allow switching between standard and interval arithmetic
         if strcmp(version,'standard')
-            obj.out_thirdOrderTensor = eval(['@out_thirdOrderTensor_' obj.name]);
+            nlnsysDT.out_thirdOrderTensor = eval(['@out_thirdOrderTensor_' nlnsysDT.name]);
         elseif strcmp(version,'int')
-            obj.out_thirdOrderTensor = eval(['@out_thirdOrderTensorInt_' obj.name]);
+            nlnsysDT.out_thirdOrderTensor = eval(['@out_thirdOrderTensorInt_' nlnsysDT.name]);
         end
     end
     
 end
+
+methods (Access = protected)
+    [printOrder] = getPrintSystemInfo(S)
+end
+
 end
 
 
@@ -164,15 +196,9 @@ end
 
 function [name,fun,dt,states,inputs,out_fun,outputs] = aux_parseInputArgs(varargin)
 
-    if nargin ~= 0 && nargin < 2
-        throw(CORAerror('CORA:notEnoughInputArgs',2));
-    elseif nargin > 7
-        throw(CORAerror('CORA:tooManyInputArgs',7));
-    end
-
     % default values
-    name = []; states = []; inputs = [];
-    out_fun = []; outputs = [];
+    name = []; fun = @(x,u)[]; states = []; inputs = [];
+    out_fun = []; outputs = []; dt = 0;
 
     % no input arguments
     if nargin == 0
@@ -182,58 +208,32 @@ function [name,fun,dt,states,inputs,out_fun,outputs] = aux_parseInputArgs(vararg
     % parse input arguments
     if nargin == 2
         % syntax: obj = nonlinearSysDT(fun,dt)
-        fun = varargin{1};
-        dt = varargin{2};
+        [fun,dt] = varargin{:};
     elseif nargin == 3
         if ischar(varargin{1})
             % syntax: obj = nonlinearSysDT(name,fun,dt)
-            name = varargin{1};
-            fun = varargin{2};
-            dt = varargin{3};
+            [name,fun,dt] = varargin{:};
         elseif isa(varargin{1},'function_handle')
 	        % syntax: obj = nonlinearSysDT(fun,dt,out_fun)
-            fun = varargin{1};
-            dt = varargin{2};
-            out_fun = varargin{3};
+            [fun,dt,out_fun] = varargin{:};
         end
     elseif nargin == 4
         if ischar(varargin{1})
             % syntax: obj = nonlinearSysDT(name,fun,dt,out_fun)
-            name = varargin{1};
-            fun = varargin{2};
-            dt = varargin{3};
-            out_fun = varargin{4};
+            [name,fun,dt,out_fun] = varargin{:};
         elseif isa(varargin{1},'function_handle')
             % syntax: obj = nonlinearSysDT(fun,dt,states,inputs)
-            fun = varargin{1};
-            dt = varargin{2};
-            states = varargin{3};
-            inputs = varargin{4};
+            [fun,dt,states,inputs] = varargin{:};
         end
     elseif nargin == 5
         % syntax: obj = nonlinearSysDT(name,fun,dt,states,inputs)
-        name = varargin{1};
-        fun = varargin{2};
-        dt = varargin{3};
-        states = varargin{4};
-        inputs = varargin{5};
+        [name,fun,dt,states,inputs] = varargin{:};
     elseif nargin == 6
         % syntax: obj = nonlinearSysDT(fun,dt,states,inputs,out_fun,outputs)
-        fun = varargin{1};
-        dt = varargin{2};
-        states = varargin{3};
-        inputs = varargin{4};
-        out_fun = varargin{5};
-        outputs = varargin{6};
+        [fun,dt,states,inputs,out_fun,outputs] = varargin{:};
     elseif nargin == 7
         % syntax: obj = nonlinearSysDT(name,fun,dt,states,inputs,out_fun,outputs)
-        name = varargin{1};
-        fun = varargin{2};
-        dt = varargin{3};
-        states = varargin{4};
-        inputs = varargin{5};
-        out_fun = varargin{6};
-        outputs = varargin{7};
+        [name,fun,dt,states,inputs,out_fun,outputs] = varargin{:};
     end
 
     % get name from function handle

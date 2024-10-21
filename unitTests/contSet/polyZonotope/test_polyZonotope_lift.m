@@ -23,8 +23,6 @@ function res = test_polyZonotope_lift
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % init
 pZ = polyZonotope([0;0],[2 0 1;0 2 1],[0.5;0],[1 0 3;0 1 1]);
 
@@ -32,17 +30,19 @@ pZ = polyZonotope([0;0],[2 0 1;0 2 1],[0.5;0],[1 0 3;0 1 1]);
 try
     pZ_lift = lift(pZ,5,[2,1]);
     % should fail
-    resvec(end+1) = false;
+    assert(false);
 catch ME
-    resvec(end+1) = strcmp(ME.identifier,'CORA:notDefined');
+    if ~strcmp(ME.identifier,'CORA:notDefined')
+        rethrow(ME)
+    end
 end
 
 % except no new dimensions are created
 pZ_lift = lift(pZ,2,[2,1]);
 pZ_proj = project(pZ,[2,1]);
-resvec(end+1) = isequal(pZ_proj,pZ_lift);
+assert(isequal(pZ_proj,pZ_lift));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

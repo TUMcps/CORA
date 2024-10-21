@@ -22,6 +22,9 @@ function res = testSDPT3_linearSysDT_observe_01_vehicle()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 %% Load vehicle model
 load vehicleModel_dim2 vehicle params options
@@ -140,7 +143,7 @@ for iEst = 7:length(Estimator)
     end
 
     %check if slightly bloated versions enclose each other
-    resPartial(end+1) = isequal(IH,IH_saved,1e-6);
+    assert(isequal(IH,IH_saved,1e-6));
 end
 
 % final result

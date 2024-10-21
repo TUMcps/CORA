@@ -28,16 +28,16 @@ E = ellipsoid.empty(2);
 % reduce
 E_ = reduce(E);
 % should remain the same...
-res = isequal(E,E_);
+assert(isequal(E,E_));
 
 % init column interval
 E = ellipsoid([2 0; 0 1],[1;-1]);
 % reduce
 E_ = reduce(E);
 % check result
-res(end+1,1) = isequal(E,E_);
+assert(isequal(E,E_));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

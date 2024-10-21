@@ -1,6 +1,6 @@
 <img src="./app/images/coraLogo_readme.svg" alt="CORA"/>
 
-A Tool for COntinuous Reachability Analysis.
+A Tool for COntinuous Reachability Analysis. 
 
 <a href='https://cora.in.tum.de' target='_blank'>cora.in.tum.de</a> - <a href='https://cora.in.tum.de/manual' target='_blank'>Manual</a>
 
@@ -47,6 +47,7 @@ Please check Section 1.3 in the <a target='_blank' href="https://cora.in.tum.de/
 | `./hybridDynamics`| hybrid dynamics classes |
 | `./matrixSet`| matrix set classes |
 | `./models`| model files |
+| `./nn`| neural network verification and robust training |
 | `./specification`| specification classes for verification |
 | `./unitTests`| unit tests |
 

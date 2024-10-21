@@ -23,8 +23,6 @@ function res = test_capsule_project
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % instantiate capsule
 c = [1; 0; -1; 2; 1];
 g = [0; 0; -1; 1; 2];
@@ -43,11 +41,11 @@ c_true = c(projDim);
 g_true  = g(projDim);
 C_true = capsule(c_true, g_true, r);
 
-res(end+1,1) = isequal(C_proj1,C_true);
-res(end+1,1) = isequal(C_proj2,C_true);
+assert(isequal(C_proj1,C_true));
+assert(isequal(C_proj2,C_true));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

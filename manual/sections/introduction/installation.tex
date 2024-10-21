@@ -1,0 +1,35 @@
+\subsection{Installation}\label{sec:installation}
+
+We provide a script to guide you through the installation process.
+To run it, clone the git repository, add CORA to the MATLAB path, and type \texttt{installCORA} in the command window.
+Some toolbox installations require a restart of MATLAB, and you have to manually rerun the installation script afterward.
+
+CORA requires the following MATLAB toolboxes:
+\begin{itemize}
+	\item \textbf{Symbolic Math Toolbox}
+	\item \textbf{Optimization Toolbox}
+	\item \textbf{Statistics and Machine Learning Toolbox}
+	\item (Optional) \textbf{Multiple precision toolbox} from the Mathworks File Exchange (only required for Krylov sub-space methods)
+\end{itemize}
+
+In addition, CORA uses the following third-party toolboxes that have to be installed:
+\begin{itemize}
+	\item \textbf{YALMIP}: The YALMIP toolbox \cite{Lofberg2004} is designed for solving optimization problems of various types.
+		CORA requires the YALMIP toolbox along with at least one supported Semi-Definite Program (SDP) solver.
+	\item (Optional) \textbf{MOSEK}\footnote{\url{https://www.mosek.com/}}, \textbf{SDPT3}\footnote{\url{https://blog.nus.edu.sg/mattohkc/softwares/sdpt3/}}: To use the ellipsoid set representation more efficiently, consider installing either the MOSEK or SDPT3 solver. Note: If you want to use MOSEK, please make sure that you do not override the built-in MATLAB optimization routines (\texttt{linprog}, \texttt{quadprog}, etc.), as this will break certain parts of CORA.
+\end{itemize}
+
+The installation of all required toolboxes can be checked individually by running \newline \texttt{test\_requiredToolboxes}.
+To check whether the core functionality of CORA has been set up correctly, run the standard test suite \texttt{runTestSuite} which should take about 5 minutes.
+
+For the verification of neural networks (\cref{sec:neuralNetContrSys} and \cref{sec:neuralNetworks}),
+the following toolboxes are required to import neural networks trained in MATLAB or read neural networks from the widely used ONNX format.
+\begin{itemize}
+	\item \textbf{Deep learning toolbox}
+	\item \textbf{Deep learning toolbox converter for ONNX model format}
+\end{itemize}
+
+These toolboxes can also be installed via the installation script.
+To check whether the neural network functionality has been set up correctly, run \texttt{testnn\_requiredToolboxes} or the neural network test suite \texttt{runTestSuite('nn')}.
+
+Please visit our website to get started: \url{https://cora.in.tum.de}

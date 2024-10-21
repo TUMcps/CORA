@@ -1,0 +1,41 @@
+% This file was created by matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+%
+\begin{tikzpicture}
+\footnotesize
+
+\begin{axis}[%
+width=4cm,
+height=4cm,
+at={(0in,0in)},
+scale only axis,
+xmin=-3,
+xmax=2,
+xlabel style={font=\color{white!15!black}},
+xlabel={$x_{(1)}$},
+ymin=-3,
+ymax=2,
+ylabel style={font=\color{white!15!black}},
+ylabel={$x_{(2)}$},
+axis background/.style={fill=white},
+title style={font=\bfseries},
+title={$\mathcal{S}$ and $V$}
+]
+\addplot [color=mycolor1, forget plot]
+  table[row sep=crcr]{%
+-2	-2\\
+1	-2\\
+1	1\\
+-2	1\\
+-2	-2\\
+};
+\addplot[only marks, mark=*, mark options={}, mark size=1.0000pt, draw=black, forget plot] table[row sep=crcr]{%
+x	y\\
+-2	-2\\
+-2	1\\
+1	-2\\
+1	1\\
+};
+\end{axis}
+\end{tikzpicture}%

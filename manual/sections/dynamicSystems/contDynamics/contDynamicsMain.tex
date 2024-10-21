@@ -1,0 +1,52 @@
+
+\subsection{Continuous Dynamics} \label{sec:continuousDynamics}
+\logToConsole{CONTINUOUS DYNAMICS}
+
+This section introduces various classes to represent different types of continuous dynamics. CORA supports the following continuous dynamics:
+\begin{itemize}
+    \item Linear systems (\cref{sec:linearSystems})
+    \item Linear systems with uncertain parameters (\cref{sec:linearParamSystems})
+    \item Linear discrete-time systems (\cref{sec:linearSysDT})
+    \item Linear probabilistic systems (\cref{sec:linearProbSystems})
+    \item Linear ARX models (\cref{sec:linearARX})
+    \item Nonlinear systems (\cref{sec:nonlinearSystems})
+    \item Nonlinear systems with uncertain parameters (\cref{sec:nonlinearParamSystems})
+    \item Nonlinear discrete-time systems (\cref{sec:nonlinearSystemsDT})
+    \item Nonlinear ARX models (\cref{sec:nonlinearSystems_ARX})
+    \item Nonlinear differential-algebraic systems (\cref{sec:nonlinearDASystems})
+    \item Neural network controlled systems (\cref{sec:neuralNetContrSys})
+\end{itemize}
+Each class for continuous dynamics inherits from the parent class \texttt{contDynamics} (see \cref{fig:classDiagram}). Next, we explain all classes in detail.
+
+% linear systems
+\input{./sections/dynamicSystems/contDynamics/linearSystems}
+
+% linear systems with uncertain parameters
+\input{./sections/dynamicSystems/contDynamics/linearSystems_param}
+
+% linear discrete-time systems
+\input{./sections/dynamicSystems/contDynamics/linearSystems_discreteTime}
+
+% linear probabilistic systems
+\input{./sections/dynamicSystems/contDynamics/linearSystems_probabilistic}
+
+% linear ARX systems
+\input{./sections/dynamicSystems/contDynamics/linearSystems_ARX}
+
+% nonlinear systems
+\input{./sections/dynamicSystems/contDynamics/nonlinearSystems}
+
+% nonlinear systems with uncertain parameters
+\input{./sections/dynamicSystems/contDynamics/nonlinearSystems_param}
+
+% nonlinear discrete-time systems
+\input{./sections/dynamicSystems/contDynamics/nonlinearSystemsDT}
+
+% nonlinear ARX systems
+\input{./sections/dynamicSystems/contDynamics/nonlinearSystems_ARX}
+
+% nonlinear differential-algebraic systems
+\input{./sections/dynamicSystems/contDynamics/nonlinearDASystems}
+
+% neural network control systems
+\input{./sections/dynamicSystems/contDynamics/neuralNetworkControlSystems}

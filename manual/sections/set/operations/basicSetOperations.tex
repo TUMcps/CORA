@@ -1,0 +1,224 @@
+\subsubsection{Basic Set Operations}
+
+We first consider basic operations on sets.
+
+\subsubsubsection{mtimes}
+\label{sec:mtimes}
+
+The method \operator{mtimes}, which overloads the * operator, implements the linear map of a set. Given a set $\mathcal{S} \subset \R^n$, the linear map is defined as 
+\begin{equation*}
+	\operator{mtimes}(M,\mathcal{S}) = M \otimes \mathcal{S} = \{ M s ~|~ s \in \mathcal{S} \},~ M \in \mathbb{R}^{w \times n}.
+\end{equation*}
+It is also possible to consider a set of matrices $\mathcal{M} \subset \R^{w \times n}$ instead of a fixed-value matrix $M \in \R^{w \times n}$ (see \cref{sec:mtimesMatSet}). Let us demonstrate the method $\operator{mtimes}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_mtimes}
+\end{minipage}
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations/example_mtimes}
+\end{minipage}
+\end{center}
+
+
+\subsubsubsection{plus}
+\label{sec:plus}
+
+The method \operator{plus}, which overloads the + operator, implements the Minkowski sum of two sets. Given two sets $\mathcal{S}_1,\mathcal{S}_2 \subset \Rn$, the Minkowski sum is defined as 
+\begin{equation*}
+	\operator{plus}(\mathcal{S}_1,\mathcal{S}_2) = \mathcal{S}_1 \oplus \mathcal{S}_2 = \{ s_1 + s_2 ~|~ s_1 \in \mathcal{S}_1,~ s_2 \in \mathcal{S}_2 \}.
+\end{equation*}
+Let us demonstrate the method $\operator{plus}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_plus}
+\end{minipage}
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations/example_plus}
+\end{minipage}
+\end{center}
+
+
+
+\subsubsubsection{cartProd}
+\label{sec:cartProd}
+
+The method \operator{cartProd} implements the Cartesian product of two sets. Given two sets $\mathcal{S}_1 \subset \Rn$ and $\mathcal{S}_2 \subset \R^w$, the Cartesian product is defined as 
+\begin{equation*}
+	\operator{cartProd}(\mathcal{S}_1,\mathcal{S}_2) = \mathcal{S}_1 \times \mathcal{S}_2 = \{ [s_1 ~ s_2 ]^T ~|~ s_1 \in \mathcal{S}_1,~ s_2 \in \mathcal{S}_2 \}.
+\end{equation*}
+Let us demonstrate the method $\operator{cartProd}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_cartProd}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{10pt}
+	\begin{verbatim}
+		Command Window:	
+	
+		res = 
+ [-2.00000,1.00000]
+ [-1.00000,2.00000]
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations/example_cartProd}
+\end{minipage}
+\end{center}
+
+
+\subsubsubsection{convHull}
+\label{sec:convHull}
+
+The method \operator{convHull} implements the convex hull of two sets. Given two sets $\mathcal{S}_1,\mathcal{S}_2 \subset \Rn$, the convex hull is defined as 
+\begin{equation*}
+	\operator{convHull}(\mathcal{S}_1,\mathcal{S}_2) = \left \{ \lambda s_1 + (1-\lambda) s_2 ~|~ s_1,s_2 \in \mathcal{S}_1 \cup \mathcal{S}_2,~\lambda \in [0,1] \right\}.
+\end{equation*}
+Furthermore, given a single non-convex set $\mathcal{S} \subset \Rn$, $\operator{convHull}(\mathcal{S})$ computes the convex hull of the set. Let us demonstrate the method $\operator{convHull}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_convHull}
+\end{minipage}
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations/example_convHull}
+\end{minipage}
+\end{center}
+
+
+
+\subsubsubsection{quadMap}
+\label{sec:quadMap}
+
+The method \operator{quadMap} implements the quadratic map of a set. Given a set $\mathcal{S} \subset \Rn$, the quadratic map is defined as 
+\begin{equation*}
+	\operator{quadMap}(\mathcal{S},Q) = \{ x ~|~ x_{(i)} = s^T Q_i s, ~s \in \mathcal{S},~ i = 1 \dots w \}, ~ Q_i \in \R^{n \times n},
+\end{equation*}
+where $x_{(i)}$ is the $i$-th value of the vector $x$. If \operator{quadMap} is called with two different sets $\mathcal{S}_1,\mathcal{S}_2 \subset \Rn$ as input arguments, the method computes the mixed quadratic map:
+\begin{equation*}
+	\operator{quadMap}(\mathcal{S}_1,\mathcal{S}_2,Q) = \{ x ~|~ x_{(i)} = s_1^T Q_i s_2, ~s_1 \in \mathcal{S}_1,~s_2 \in \mathcal{S}_2,~ i = 1 \dots w \}, ~ Q_i \in \R^{n \times n}.
+\end{equation*}
+Let us demonstrate the method $\operator{quadMap}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_quadMap}
+\end{minipage}
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations/example_quadMap}
+\end{minipage}
+\end{center}
+
+\vspace{1cm}
+
+\subsubsubsection{and}
+\label{sec:and}
+
+The method \operator{and}, which overloads the \& operator, implements the intersection of two sets. Given two sets $\mathcal{S}_1,\mathcal{S}_2 \subset \Rn$, the intersection is defined as 
+\begin{equation*}
+	\operator{and}(\mathcal{S}_1,\mathcal{S}_2) = \mathcal{S}_1 \cap \mathcal{S}_2 = \{ s ~|~ s \in \mathcal{S}_1,~ s \in \mathcal{S}_2 \}.
+\end{equation*}
+Let us demonstrate the method $\operator{and}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_and}
+\end{minipage}
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations/example_and}
+\end{minipage}
+\end{center}
+
+\subsubsubsection{or}
+\label{sec:or}
+
+The method \operator{or}, which overloads the $|$ operator, implements the union of two sets. Given two sets $\mathcal{S}_1,\mathcal{S}_2 \subset \Rn$, their union is defined as 
+\begin{equation*}
+	\operator{or}(\mathcal{S}_1,\mathcal{S}_2) = \mathcal{S}_1 \cup \mathcal{S}_2 = \{ s ~|~ s \in \mathcal{S}_1 \vee s \in \mathcal{S}_2 \}.
+\end{equation*}
+Let us demonstrate the method $\operator{or}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_or}
+\end{minipage}
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations/example_or}
+\end{minipage}
+\end{center}
+
+
+\begin{table*}
+\centering
+	\caption{Relations between set representations and set operations. The shortcuts e (exact computation) and o (over-approximation) are used. The symbol e* indicates that the operation is exact if no independent generators (see \cref{sec:polynomialZonotopes} and \cref{sec:conPolyZono} for details) are used.}
+	\label{tab:basicOperations}
+	\begin{tabular}{ p{2.5cm} C{1.4cm} C{1.4cm} C{1.4cm} C{1.4cm} C{1.4cm} C{1.4cm} C{1.4cm}}
+		 \toprule
+		 \textbf{Set Rep.} & \textbf{Lin. Map} & \textbf{Mink. Sum} & \textbf{Cart. Prod.} & \textbf{Conv. Hull} & \textbf{Quad. Map} & \textbf{Inter- section} & \textbf{Union} \\
+		 \midrule
+		 \operator{interval} & o & e & e & o &  & e & o \\
+		 \operator{zonotope} & e & e & e & o & o & o & o  \\
+		 \operator{polytope} & e & e & e & e &  & e & o \\
+		 \operator{conZonotope} & e & e & e & e & o & e & o \\
+		 \operator{zonoBundle} & e & e & e & e & o & e & o \\
+		 \operator{ellipsoid} & e  & o & o & o &  & o &  \\
+		 \operator{capsule} & e & o & & & & & \\
+		 \operator{taylm} & e & e & e & & & & \\
+		 \operator{polyZonotope} & e & e & e & e* & e* &  & \\
+		 \operator{conPolyZono} & e & e & e & e* & e* & e* & e* \\
+		 \bottomrule
+	\end{tabular}
+\end{table*}
+
+\subsubsubsection{minkDiff}
+\label{sec:minkDiff}
+
+The method \operator{minkDiff} implements the Minkowski difference of two sets. Given two sets $\mathcal{S}_1,\mathcal{S}_2 \subset \Rn$, their Minkowski difference is defined as 
+\begin{equation*}
+	\operator{minkDiff}(\mathcal{S}_1,\mathcal{S}_2) = \{ s \in \R^n ~|~ s \oplus \mathcal{S}_2 \subseteq \mathcal{S}_1 \}.
+\end{equation*}
+Let us demonstrate the method $\operator{minkDiff}$ by an example:
+
+\begin{center}
+	\begin{minipage}[t]{0.35\textwidth}
+		\vspace{10pt}
+		\footnotesize
+		\input{./MATLABcode/example_minkDiff}
+	\end{minipage}
+	\begin{minipage}[t]{0.6\textwidth}
+		\vspace{0pt}
+		\centering
+		\includetikz{./figures/tikz/set-operations/example_minkDiff}
+	\end{minipage}
+\end{center}

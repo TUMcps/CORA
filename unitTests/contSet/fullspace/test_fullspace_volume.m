@@ -22,6 +22,9 @@ function res = test_fullspace_volume
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % init fullspace
 n = 2;
@@ -31,6 +34,6 @@ fs = fullspace(n);
 val = volume(fs);
 
 % check result
-res = val == Inf;
+assert(val == Inf);
 
 % ------------------------------ END OF CODE ------------------------------

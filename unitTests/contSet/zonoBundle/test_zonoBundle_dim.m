@@ -26,22 +26,22 @@ function res = test_zonoBundle_dim
 % fully-empty zonoBundle
 n = 2;
 zB = zonoBundle.empty(n);
-res = dim(zB) == 2;
+assert(dim(zB) == 2);
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);
 Z2 = zonotope([0;0], [2 2; 2 -2]);
 zB = zonoBundle({Z1,Z2});
 n = dim(zB);
-res(end+1,1) = n == 2;
+assert(n == 2);
 
 % empty intersection
 Z2 = zonotope([-4;1],[0.5 1; 1 -1]);
 zB = zonoBundle({Z1,Z2});
 n = dim(zB);
-res(end+1,1) = n == 2;
+assert(n == 2);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

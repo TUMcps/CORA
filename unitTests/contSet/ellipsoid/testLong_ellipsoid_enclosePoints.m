@@ -47,10 +47,8 @@ for i=3:5:10
                     % test both methods
                     E_cov = ellipsoid.enclosePoints(V,'cov');
                     E_mv = ellipsoid.enclosePoints(V,'min-vol');
-                    if ~all(contains(E_cov,V)) || ~all(contains(E_mv,V))
-                        res = false;
-                        return;
-                    end
+                    assertLoop(all(contains(E_cov,V)),i,j,k,m)
+                    assertLoop(all(contains(E_mv,V)),i,j,k,m)
                 end
             catch ME
                 if strcmp(ME.identifier,'CORA:solverIssue')

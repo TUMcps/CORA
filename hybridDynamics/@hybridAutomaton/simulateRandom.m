@@ -38,13 +38,13 @@ if nargin == 3 && isstruct(varargin{1})
 end
 
 % options preprocessing
-options = validateOptions(HA,mfilename,params,options);
+[params,options] = validateOptions(HA,params,options);
 
 % initialize random inputs
-u = cell(size(options.Uloc));
+u = cell(size(params.Uloc));
 
 for j = 1:length(u)
-    u{j} = randPoint(options.Uloc{j});
+    u{j} = randPoint(params.Uloc{j});
 end
 
 % determine random points inside the initial set
@@ -52,14 +52,14 @@ nrEx = ceil(options.points*options.fracVert);
 nrNor = options.points - nrEx;
 points = [];
 if nrEx > 0
-    points = [points, randPoint(options.R0,nrEx,'extreme')]; 
+    points = [points, randPoint(params.R0,nrEx,'extreme')]; 
 end
 if nrNor > 0
-    points = [points, randPoint(options.R0,nrNor,'standard')];
+    points = [points, randPoint(params.R0,nrNor,'standard')];
 end
 
-time = linspace(options.tStart,options.tFinal,options.nrConstInp+1);
-startLoc = options.startLoc;
+time = linspace(params.tStart,params.tFinal,options.nrConstInp+1);
+startLoc = params.startLoc;
 
 % initialization
 simRes = [];
@@ -78,9 +78,9 @@ for i = 1:options.points
         optsSim.u = u;
         
         if counter < options.nrConstInp * options.fracInpVert 
-            optsSim.u{locCur} = randPoint(options.Uloc{locCur},1,'extreme');
+            optsSim.u{locCur} = randPoint(params.Uloc{locCur},1,'extreme');
         else
-            optsSim.u{locCur} = randPoint(options.Uloc{locCur});
+            optsSim.u{locCur} = randPoint(params.Uloc{locCur});
         end              
         
         % simulate hybrid automaton
@@ -90,7 +90,7 @@ for i = 1:options.points
         end
         optsSim.tFinal = time(g+1);
         optsSim.startLoc = locCur;
-        optsSim.finalLoc = options.finalLoc;
+        optsSim.finalLoc = params.finalLoc;
         
         [tTemp,xTemp,locTemp] = simulate(HA,optsSim);
         

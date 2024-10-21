@@ -1,0 +1,19 @@
+\subsection{Conversion of CommonRoad Models}
+\label{sec:commonroad2cora}
+
+CommonRoad\footnote{\url{commonroad.in.tum.de}} is a collection of composable benchmarks for motion planning on roads.
+The syntax for loading a CommonRoad file with the function \texttt{commonroad2cora} is as follows:
+\begin{equation*}
+	[\texttt{statObs},\texttt{dynObs},\texttt{x0},\texttt{goalSet},\texttt{lanelets}] = \texttt{commonroad2cora}(\texttt{filename}),
+\end{equation*}
+where \texttt{filename} is a string with the file name of the CommonRoad file that should be loaded, and the output arguments are defined as:
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{statObs} & MATLAB cell-array storing the static obstacles for the planning problem as objects of class \texttt{polygon} (wrapper class for MATLAB class \texttt{polyshape}). \\
+	$\bullet$~\texttt{dynObs} & MATLAB cell-array storing the dynamic obstacles for the planning problem as objects of class \texttt{polygon} (wrapper class for MATLAB class \texttt{polyshape}). In addition, the corresponding time interval for each obstacle is stored. \\
+	$\bullet$~\texttt{x0} & struct with fields \texttt{.x}, \texttt{.y}, \texttt{.time}, \texttt{.velocity} and \texttt{.orientation} storing the initial state for the planning problem. \\
+	$\bullet$~\texttt{goalSet} & struct with fields \texttt{.set}, \texttt{.time}, \texttt{.velocity} and \texttt{.orientation} storing the goal set for the planning problem. \\
+	$\bullet$~\texttt{lanelets} & MATLAB cell-array storing the lanelets for the traffic scenario as objects of class \texttt{polygon} (wrapper class for MATLAB class \texttt{polyshape}).
+\end{tabular}
+\end{center}

@@ -43,14 +43,13 @@ for i=1:nrOfTests
     dir = randn(n,1);
     [val,x] = supportFunc(I,dir,'upper');
     [valZ,xZ] = supportFunc(zonotope(I),dir,'upper');
-    if ~withinTol(val,valZ,1e-14) || ~all(withinTol(x,xZ,1e-14))
-        res = false; break
-    end
+    assertLoop(withinTol(val,valZ,1e-14),i)
+    assertLoop(all(withinTol(x,xZ,1e-14)),i)
+
     [val,x] = supportFunc(I,dir,'lower');
     [valZ,xZ] = supportFunc(zonotope(I),dir,'lower');
-    if ~withinTol(val,valZ,1e-14) || ~all(withinTol(x,xZ,1e-14))
-        res = false; break
-    end
+    assertLoop(withinTol(val,valZ,1e-14),i)
+    assertLoop(all(withinTol(x,xZ,1e-14)),i)
 
     % support function in axis aligned directions
     id = eye(n);
@@ -59,16 +58,12 @@ for i=1:nrOfTests
         % upper direction
         s_upper = supportFunc(I,dir,'upper');
         % check with correct solution
-        if abs(s_upper - I.sup(d)) > tol
-            res = false; break;
-        end
+        assertLoop(abs(s_upper - I.sup(d)) <= tol,i,d)
 
         % lower direction
         s_lower = supportFunc(I,dir,'lower');
         % check with correct solution
-        if abs(s_lower - I.inf(d)) > tol
-            res = false; break;
-        end
+        assertLoop(abs(s_lower - I.inf(d)) <= tol,i,d)
     end
 
     % special cases...
@@ -81,10 +76,8 @@ for i=1:nrOfTests
     vertex_upper = supportFunc(I,dir,'upper');
     vertex_lower = supportFunc(I,dir,'lower');
     % check with correct result
-    if abs(vertex_upper - sqrt(n)) > tol || ...
-            abs(vertex_lower + sqrt(n)) > tol
-        res = false; break;
-    end
+    assertLoop(abs(vertex_upper - sqrt(n)) <= tol,i)
+    assertLoop(abs(vertex_lower + sqrt(n)) <= tol,i)
 
     % interval is not full-dimensional
     randDim = randi(n);
@@ -100,9 +93,8 @@ for i=1:nrOfTests
     s_lower = supportFunc(I,dir_zero,'lower');
 
     % check with correct result
-    if s_upper ~= 0 || s_lower ~= 0
-        res = false; break;
-    end
+    assertLoop(s_upper == 0,i)
+    assertLoop(s_lower == 0,i)
 
 end
 

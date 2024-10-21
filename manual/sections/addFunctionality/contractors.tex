@@ -1,0 +1,54 @@
+\subsection{Contractors}
+\label{sec:contractors}
+
+Contractor programming \cite[Chapter~4]{Jaulin2006} can be used to contract an interval domain of possible values with respect to one or multiple nonlinear constraints, which is useful for many applications. In CORA, contractor programming is implemented by the method \texttt{contract}: Given a constraint $f(x) = \mathbf{0}$ defined by a nonlinear function $f: \Rn \to \R^m$ and an interval domain $\mathcal{D} \subset \R^n$, the method \texttt{contract} returns a contracted interval
+\begin{equation*}
+	\begin{split}
+		& \widehat{\mathcal{D}} = \texttt{contract}(f,\mathcal{D},\texttt{method}), \\
+		& \widehat{\mathcal{D}} = \texttt{contract}(f,\mathcal{D},\texttt{method},\texttt{iter}), \\
+		& \widehat{\mathcal{D}} = \texttt{contract}(f,\mathcal{D},\texttt{method},\texttt{splits}), \\
+	\end{split}
+\end{equation*}
+that satisfies
+\begin{equation*}
+	\big \{x \in \Rn~|~f(x) = \mathbf{0}, x \in \mathcal{D} \big \} \subseteq \widehat{\mathcal{D}},
+\end{equation*}
+where the function $f(x)$ is specified as a MATLAB function handle and $\mathcal{D},\widehat{\mathcal{D}}$ are both represented as object of class \texttt{interval} (see \cref{sec:interval}). The additional input arguments are as follows:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\textbf{\texttt{method}} & string specifying the contractor that is used. The available contractors are listed in \cref{tab:contractors}. If set to \texttt{'all'}, all available contractors are applied one after another. \\
+	$\bullet$~\textbf{\texttt{iter}} & number of consequtive contractions. The default value is $1$, so that the contractor is applied only once.\\
+	$\bullet$~\textbf{\texttt{splits}} & number of iterative splits applied to the domain $\mathcal{D}$ in order to refine the result of the contraction. The default value is $0$, so that no splitting is applied.
+\end{tabular}
+\end{center}
+
+\begin{table}
+\centering
+\caption{Contractors implemented in CORA.}
+\label{tab:contractors}
+\begin{tabular}{ l l l}	
+\toprule
+\textbf{Contractor} & \textbf{Description} & \textbf{Reference} \\
+\midrule
+\texttt{forwardBackward} & forward-backward traversion of the syntax tree & \cite[Chapter~4.2.4]{Jaulin2006}\\
+\texttt{linearize} & parallel linearization of constraints & \cite[Chapter~4.3.4]{Jaulin2006}\\
+\texttt{polyBox} & extremal functions of polynomial constraints & \cite{Trombettoni2010} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Let us demonstrate contractor programming in CORA by an example:
+\begin{center}
+\begin{minipage}[t]{0.55\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_contract}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/add-functionality/example_contract}
+\end{minipage}
+\end{center}

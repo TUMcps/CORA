@@ -40,7 +40,7 @@ for i = 1:5
 
     % calculate zonotope over-approximation
     Z = zonotope(pZ);
-    Z = halfspace(Z);
+    P = polytope(Z);
 
     % determine random point and extreme points inside the original polynomial
     % zonotope
@@ -52,9 +52,7 @@ for i = 1:5
 
     % check if the all points from the original polynomial zonotope are
     % enclosed by the reduced polynomial zonotope
-    if ~contains(Z, points)
-        res = false; return
-    end
+    assertLoop(contains(P, points),i)
 end
 
 
@@ -73,7 +71,7 @@ for i = 1:5
 
     % calculate zonotope over-approximation
     Z = zonotope(pZ);
-    Z = halfspace(Z);
+    P = polytope(Z);
 
     % determine random point and extreme points inside the original
     % polynomial zonotope
@@ -85,9 +83,7 @@ for i = 1:5
 
     % check if the all points from the original polynomial zonotope are
     % enclosed by the reduced polynomial zonotope
-    if ~contains(Z, points)
-        res = false; return
-    end
+    assertLoop(contains(P, points),i)
     
 end
 

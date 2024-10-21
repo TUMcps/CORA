@@ -58,7 +58,7 @@ function cPZ = minkDiff(cPZ1,cPZ2,varargin)
         if strcmp(type,'exact') && ~isempty(cPZ1.GI)
             cPZ1 = aux_removeIndepGens(cPZ1);
         else
-            cPZ1.GI = [];
+            cPZ1.GI = zeros(dim(cPZ1),0);
         end
         
         % different cases for different set representations

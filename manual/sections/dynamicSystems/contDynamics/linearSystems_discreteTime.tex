@@ -1,0 +1,135 @@
+\subsubsection{Linear Discrete-Time Systems} \label{sec:linearSysDT}
+
+In addition to continuous-time linear systems, CORA also supports discrete-time linear systems defined as
+\begin{equation}\label{eq:linearSystemDT}
+\begin{split}
+	& x[i+1] = A x[i] + B u[i] + c  + w[i], \\
+	& y[i] = C x[i] + D u[i] + k + v[i],
+\end{split}
+\end{equation} 
+where $x[i] \in \Rn$ is the system state, $u[i] \in \R^m$ is the system input, $w[i] \in \Rn$ is the disturbance, $y[i] \in \R^p$ is the system output, $v[i] \in \R^p$ is the sensor noise, and $A \in \mathbb{R}^{n \times n}$, $B \in \mathbb{R}^{n \times m}$, $c \in \mathbb{R}^n$, $C \in \mathbb{R}^{p \times n}$, $D \in \mathbb{R}^{p \times m}$, $k \in \mathbb{R}^p$.
+Discrete-time linear systems are implemented by the class \texttt{linearSysDT}. An object of class \texttt{linearSysDT} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \texttt{sys} = \texttt{linearSysDT}(A,B,\Delta t), \\
+		& \texttt{sys} = \texttt{linearSysDT}(A,B,c,C,D,k,\Delta t), \\
+		& \texttt{sys} = \texttt{linearSysDT}(\texttt{name},A,B,\Delta t), \\
+		& \texttt{sys} = \texttt{linearSysDT}(\texttt{name},A,B,c,C,D,k,\Delta t),
+	\end{split}
+\end{equation*} 
+where \texttt{name} is a string specifying the name of the system, $A,B,c,C,D,k$ are defined as in \eqref{eq:linearSystemDT}, and $\Delta t$ is the sampling time specifying the time difference between $x[i+1]$ and $x[i]$. 
+
+Let us demonstrate the class \texttt{linearSysDT} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.55\textwidth}
+	\vspace{10pt}
+	\begin{equation*}
+\begin{split}
+	& \begin{bmatrix} x_1[i+1] \\ x_2[i+1] \end{bmatrix} = \begin{bmatrix} -0.4 & 0.6 \\ 0.6 & -0.4 \end{bmatrix} \begin{bmatrix} x_1[i] \\ x_2[i] \end{bmatrix} + \begin{bmatrix} 0 \\ 1 \end{bmatrix} u[i] \\
+	& y[i] = \begin{bmatrix} 1 & 0 \end{bmatrix} \begin{bmatrix} x_1[i] \\ x_2[i] \end{bmatrix} 
+\end{split}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[t]{0.40\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_linearSysDT}
+\end{minipage}
+\end{center}
+
+
+
+\subsubsubsection{Operation \texttt{reach}}
+
+The reachable set for a linear discrete-time system can be computed by set-based evaluation of \eqref{eq:linearSystemDT}. After each time step, the zonotope order of the reachable set is reduced to a user-specified order.
+
+The settings for reachability analysis are specified as fields of the struct \texttt{options} (see \cref{sec:reach}). For linear discrete-time systems, the following settings are available:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{11cm}}	
+	--~\texttt{.zonotopeOrder} & upper bound for the zonotope order $\rho$ (see \cref{sec:zonotope}). \\
+	--~\texttt{.reductionTechnique} & string specifying the method used to reduce the zonotope order (see \cref{tab:zono_reduction}). The default value is \texttt{'girard'}.
+\end{tabular}
+\end{center}
+
+
+\subsubsubsection{Operation \texttt{observe}}
+
+The current list of observers for discrete-time linear systems implemented in CORA is shown in \cref{tab:implementedObserversLinear}. The implemented observers are categorized as \textit{strip-based observers}, \textit{set-propagation observers}, and \textit{interval observers} according to \cite{Althoff2021c,Althoff2021d}. While some reachability analysis approaches are agnostic with respect to the set representation, most approaches for set-based observers are specifically designed for a specific set representation.
+
+Because strip-based observers can only finish their computation of the estimated set after the measurement, their result is always delayed. When a set-propagation observer or interval observer is real-time capable, the estimated set is obtained ahead of time. This issue can be fixed for strip-based observers when additionally computing a one-step prediction and use this set as the initial set as shown in \cite[Sec.~III]{Schuermann2018a}. For this reason, we list these algorithms as not ready for control in \cref{tab:implementedObserversLinear}.
+
+\begin{table*}[tb]
+	\caption{Algorithms for set-based estimation for discrete-time linear systems.}
+	\centering
+	\label{tab:implementedObserversLinear}
+	\begin{tabular}{llllc}
+		\toprule
+		& & {\bf Ready} \\
+		& {\bf Set repre-} & {\bf for} & {\bf Supported} \\
+		{\bf Technique} & {\bf sentation} & {\bf control} & {\bf Reference} \\
+		\midrule
+		\multicolumn{4}{c}{strip-based observers} \\
+		\midrule
+		VolMin-A &  zonotope &      \xmark & \cite{Alamo2005} \\
+		VolMin-B &  zonotope &      \xmark & \cite{Bravo2006a} \\
+		FRad-A &    zonotope &      \xmark & \cite{Alamo2005} \\
+		FRad-B &    zonotope &      \xmark & \cite{Wang2018a} \\
+		PRad-A &    zonotope &      \xmark & \cite{Le2013} \\
+		PRad-B &    zonotope &      \xmark & \cite{Le2013a} \\
+		PRad-C &    zonotope &      \xmark & \cite{Wang2018} \\
+		PRad-D &    zonotope &      \xmark & \cite{Wang2019} \\
+		CZN-A &     constr. zono. & \xmark & \cite{Scott2016} \\
+		CZN-B &     constr. zono. & \xmark & \cite{Alanwar2020b} \\
+		ESO-A &     ellipsoid &     \xmark & \cite{Gollamudi1996,Liu2016} \\
+		ESO-B &     ellipsoid &     \xmark & \cite{Liu2016} \\
+		\midrule
+		\multicolumn{4}{c}{set-propagation observers} \\
+		\midrule
+		FRad-C &    zonotope &      \cmark & \cite{Combastel2015} \\
+		PRad-E &    zonotope &      \cmark & \cite{Wang2017b} \\
+		Nom-G &     zonotope &      \cmark & \cite{Wang2018a} \\
+		ESO-C &     ellipsoid &     \cmark & \cite{Loukkas2017} \\
+		ESO-D &     ellipsoid &     \cmark & \cite{Martinez2020} \\
+		\midrule
+		\multicolumn{4}{c}{interval observer} \\
+		\midrule
+		Hinf-G &    zonotope &      \cmark & \cite{Tang2019} \\
+		\bottomrule
+	\end{tabular}
+\end{table*}
+
+
+The settings for set-based estimation are specified as fields of the struct \texttt{options} (see \cref{sec:reach}). For linear discrete-time systems, the following settings are available:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{11cm}}	
+    --~\texttt{.alg} & string specifying the algorithm that is used (see \cref{tab:implementedObserversLinear}). \\
+	--~\texttt{.zonotopeOrder} & upper bound for the zonotope order $\rho$ (see \cref{sec:zonotope}). \\
+	--~\texttt{.reductionTechnique} & string specifying the method used to reduce the zonotope order (see \cref{tab:zono_reduction}). The default value is \texttt{'girard'}.
+\end{tabular}
+\end{center}
+
+
+\subsubsubsection{Operation \texttt{isconform}}
+
+The operator \texttt{isconform} checks reachset conformance. The list of currently available algorithms is listed in \cref{tab:linAlgConform} (the algorithm \texttt{RRT} is not recommended for linear systems, while \texttt{BF} is mostly used for unit testing).
+
+\begin{table}[h]
+	\caption{Conformance algorithms for discrete-time linear systems.}
+	\centering
+	\label{tab:linAlgConform}
+	\begin{tabular}{lll}
+		\toprule
+		\textbf{Algorithm} & \textbf{Description} & \textbf{Reference} \\
+		\midrule
+		\texttt{RRT} & checks conformance using RRTs & \cite{Althoff2012b} \\
+		\texttt{BF} & brute-force conformance check & \cite{Roehm2016} \\
+		\texttt{dyn} & conformance check for linear systems & \cite{Liu2023,Althoff2023a} \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+The settings for reachset conformance checking are as for reachability analysis and rapidly-exploring random trees (see \cref{sec:reach}).

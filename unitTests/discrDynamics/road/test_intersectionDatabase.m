@@ -24,6 +24,9 @@ function res = test_intersectionDatabase(~)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 % obtain uncertain center intervalhull
@@ -66,7 +69,7 @@ for iAngleSeg = 1:length(fArray.val.bicycle)
 end
 
 % have all partial tests passed?
-res = prod(res_partial);
+assert(prod(res_partial));
 %--------------------------------------------------------------------------
 
 

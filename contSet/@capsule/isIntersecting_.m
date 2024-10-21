@@ -1,14 +1,14 @@
-function res = isIntersecting_(C,S,varargin)
+function res = isIntersecting_(C,S,type,tol,varargin)
 % isIntersecting_ - determines if a capsule intersects a set
 %
 % Syntax:
-%    res = isIntersecting_(C,S)
-%    res = isIntersecting_(C,S,type)
+%    res = isIntersecting_(C,S,type,tol)
 %
 % Inputs:
 %    C - capsule object
 %    S - contSet object
 %    type - type of check ('exact' or 'approx')
+%    tol - tolerance
 %
 % Outputs:
 %    res - true/false
@@ -41,29 +41,65 @@ function res = isIntersecting_(C,S,varargin)
 % Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
 % ------------------------------ BEGIN CODE -------------------------------
-    
-    % check for intersection
-    if isa(S,'capsule')
-        res = aux_intersectionCapsule(C,S);
 
-    elseif isa(S,'conHyperplane')
-        res = isIntersecting_(S,C,type);
+% ensure that numeric is second input argument
+[C,S] = reorderNumeric(C,S);
 
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < C.precedence
+    res = isIntersecting_(S,C,type,tol);
+    return
+end
+
+% numeric case: check containment
+if isnumeric(S)
+    res = contains_(C,S,type,tol);
+    return
+end
+
+% sets must not be empty
+if representsa_(C,'emptySet',0) || representsa_(S,'emptySet',0)
+    res = false;
+    return
+end
+
+% capsule-capsule intersection check via shortest distance
+if isa(S,'capsule')
+    res = aux_isIntersecting_capsule(C,S);
+    return
+end
+
+if isa(S,'polytope') && representsa_(S,'hyperplane',1e-12)
+    res = aux_isIntersecting_hyperplane(C,S,type,tol);
+    return
+end
+
+% for other sets, no exact algorithm supported
+if isa(S,'contSet') && strcmp(type,'exact')
+    throw(CORAerror('CORA:noExactAlg',C,S));
+end
+
+% approximate algorithm
+if isa(S,'contSet') && strcmp(type,'approx')
+
+    % enclose by zonotope and try again
+    Z_C = zonotope(C);
+    if S.precedence > Z_C.precedence
+        res = isIntersecting_(S,Z_C,type,tol); 
     else
-        % exact or over-approximative algorithm
-        if strcmp(type,'exact')
-            throw(CORAerror('CORA:noExactAlg',C,S));
-        else
-            res = isIntersecting_(zonotope(C),S,type); 
-        end
+        res = isIntersecting_(Z_C,S,type,tol); 
     end
+    return
+end
+
+throw(CORAerror('CORA:noops',C,S));
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function res = aux_intersectionCapsule(C1,C2)
+function res = aux_isIntersecting_capsule(C1,C2)
 % check if two capsules C1 and C2 intersect
 
     % get object properties
@@ -105,6 +141,19 @@ function res = aux_intersectionCapsule(C1,C2)
     tmp = C1.r + C2.r;
     res = dist < tmp | withinTol(dist,tmp);
     
+end
+
+function res = aux_isIntersecting_hyperplane(C,P,type,tol)
+
+res = true;
+
+% check intersection with hyperplane
+I = supportFunc_(C,P.Ae(1,:)','range');
+if ~contains_(I,P.be(1),'exact',tol)
+    res = false;
+    return
+end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

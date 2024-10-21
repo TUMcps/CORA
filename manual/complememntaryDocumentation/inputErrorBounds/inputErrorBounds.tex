@@ -1,0 +1,216 @@
+% Note that the a4paper option is mainly intended so that authors in
+% countries using A4 can easily print to A4 and see how their papers will
+% look in print - the typesetting of the document will not typically be
+% affected with changes in paper size (but the bottom and side margins will).
+% Use the testflow package mentioned above to verify correct handling of
+% both paper sizes by the user's LaTeX system.
+%
+% Also note that the "draftcls" or "draftclsnofoot", not "draft", option
+% should be used if it is desired that the figures are to be displayed in
+% draft mode.
+%
+\documentclass{amsproc}
+
+% Sample optional packages to use
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{epsf}
+
+\usepackage{amsmath,amsfonts}
+\usepackage{mathrsfs} %for \mathscr
+\usepackage{psfrag}
+\usepackage{algorithm}  %for algorithm environment
+\usepackage{algpseudocode}
+\usepackage{subfigure}
+\usepackage{pifont}
+\usepackage{color}
+%\usepackage[amsmath,hyperref,thmmarks]{ntheorem}  %better package for proof environment
+\usepackage{cite}
+\usepackage{url}
+
+\usepackage{chngcntr} %for changing the paragraph counter
+
+\newtheorem{definition}{Definition}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{property}{Property}[section]
+\newtheorem{specification}{Specification}[section]
+\newtheorem{remark}{Remark}[section]
+
+%Indexing elements----------------------
+\renewcommand{\^}[1]{^{(#1)}}
+\renewcommand{\th}[1]{#1^\text{th}}
+%---------------------------------------
+
+
+\counterwithout{paragraph}{subsubsection} % removes paragraph from the subsubsections
+\counterwithin{paragraph}{section} % makes paragraph depend on section
+
+
+
+% *** ALIGNMENT PACKAGES ***
+%
+%\usepackage{array}
+% Frank Mittelbach's and David Carlisle's array.sty patches and improves
+% the standard LaTeX2e array and tabular environments to provide better
+% appearance and additional user controls. As the default LaTeX2e table
+% generation code is lacking to the point of almost being broken with
+% respect to the quality of the end results, all users are strongly
+% advised to use an enhanced (at the very least that provided by array.sty)
+% set of table tools. array.sty is already installed on most systems. The
+% latest version and documentation can be obtained at:
+% http://www.ctan.org/tex-archive/macros/latex/required/tools/
+
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+
+\begin{document}
+
+
+\title[Input Error Bounds in Reachability Analysis]{Input Error Bounds in Reachability Analysis}
+
+
+%    author one information
+\author{Matthias~Althoff}
+\address{Department of Computer Science, Technische Universit\"at M\"unchen, 85748 Garching, Germany}
+\email{althoff@tum.de}
+
+
+
+\begin{abstract}
+ This brief presents two different approaches for computing truncation errors in the computation of input solutions of linear systems for reachability analysis.
+\end{abstract}
+
+
+% make the title area
+\maketitle
+
+
+
+
+% % Note that keywords are not normally used for peerreview papers.
+% \begin{IEEEkeywords}
+% Reachability analysis, linear systems, Krylov subspace, uncertain inputs, large-scale systems.
+% \end{IEEEkeywords}
+
+%\IEEEpeerreviewmaketitle
+
+
+\section{Truncation Error of Exponential Matrix} 
+
+We wish to over-approximate the exponential matrix $e^{At}$ by a finite Taylor expansion of $e^{At}$ of $\eta^{\text{th}}$ order with error matrix $E$ 
+
+\begin{equation}\label{eq:taylorSeries}
+\begin{split}
+	e^{A \, t} =& \sum_{i=0}^{\eta} \frac{1}{i!}(A \, t)^i + E(t).
+\end{split}
+\end{equation}
+Two enclosures for $E(t)$ have been proposed. The first one is presented in \cite[eq.~(3.3)]{Althoff2010a}:
+\begin{gather}\label{eq:matrixExponentialRemainder_thesis}
+ E(t) \in \mathcal{E}(t)  = \mathbf{[-1,1]}^{n \times n} \Phi(t), \\
+ \Phi(t) = \frac{(\|A\|_{\infty}t)^{\eta+1}}{(\eta+1)!}\frac{1}{1-\epsilon}, \quad \epsilon=\frac{\|A\|_{\infty}t}{\eta+2}\overset{!}{<}1. \notag
+\end{gather}
+The second enclosure is presented in \cite[Prop.~2]{Althoff2011a}:
+\begin{equation}\label{eq:matrixExponentialRemainder_hscc}
+ \mathcal{E}(t)= [-W(t),W(t)], \quad W(t)=e^{|A|t} - \sum_{i=0}^{\eta} \frac{t^i}{i!}|A|^i.
+\end{equation}
+Since the approach in \cite[Prop.~2]{Althoff2011a} converges much faster, while not adding much computation time, only \eqref{eq:matrixExponentialRemainder_hscc} is implemented in CORA. There might exist cases, where \eqref{eq:matrixExponentialRemainder_thesis} has a better compromise of accuracy and computation time, but this is rarely the case and in those cases, the difference is marginal.
+
+\section{Truncation Error of Integrated Exponential Matrix}
+
+We also require the input solution for constant input $u_{\mathtt{const}}$:
+\begin{equation*}
+  x_{p,\mathtt{const}}(t) :=  \int_{0}^{t} e^{A (t - \tau)} \mathtt{d}\tau \, u_{\mathtt{const}}.
+\end{equation*}
+When $A$ is invertiable, the solution can be obtained as presented in \cite[eq.~(3.6)]{Althoff2010a}:
+\begin{equation} \label{eq:constInputSolution}
+  x_{p,\mathtt{const}}(t) =  A^{-1} (e^{A t} - I) u_{\mathtt{const}}.
+\end{equation}
+Since $A$ is not always invertible, one can insert \eqref{eq:taylorSeries} into \eqref{eq:constInputSolution}:
+\begin{equation} \label{eq:constInputSolution_Taylor}
+  x_{p,\mathtt{const}}(t) =  \sum_{i=0}^{\eta} \frac{1}{(i+1)!}A^i \, t^{i+1} + \hat{E}(t),
+\end{equation}
+where (see \cite[Appendix~A.1]{Althoff2010a})
+\begin{gather}\label{eq:matrixExponentialRemainderIntegrated_thesis}
+ \hat{E}(t) \in \hat{\mathcal{E}}(t)  = \mathbf{[-1,1]}^{n \times n} \hat{\Phi}(t), \\
+ \hat{\Phi}(t) = \Phi(t) \, t. \notag
+\end{gather}
+The result for $\hat{\mathcal{E}}(t)$ can be generalized:
+\begin{proposition}
+ For any monotonic $\mathcal{E}(t)$, i.e., $\forall \underline{t}, \overline{t}, \underline{t} \leq \overline{t}: \mathcal{E}(\underline{t}) \subseteq \mathcal{E}(\overline{t})$, we have that
+ \begin{equation*}
+  \hat{E}(t) = \int_{0}^{t} E(\tau) \mathtt{d}\tau \in \mathcal{E}(t) \, t.
+ \end{equation*}
+\end{proposition}
+\begin{proof}
+ Since $\forall \tau < t: \mathcal{E}(\tau) \subseteq \mathcal{E}(t)$ it directly follows that 
+ \begin{equation*}
+  \hat{E}(t) = \int_{0}^{t} E(\tau) \mathtt{d}\tau \in \int_{0}^{t} \mathcal{E}(\tau) \mathtt{d}\tau \subseteq \int_{0}^{t} \mathcal{E}(t) \mathtt{d}\tau = \mathcal{E}(t) \, t = \hat{\mathcal{E}}(t).
+ \end{equation*}
+\end{proof}
+
+A further option is to rewrite the integration of the exponential matrix as a different exponential matrix:
+\begin{proposition}
+ \begin{equation*}
+ x_\mathtt{int}(t) = \int_0^\delta e^{A (\delta - t)} \mathtt{d}t \, u_{\mathtt{const}}.
+\end{equation*}
+is the solution of
+\begin{equation} \label{eq:ODEinputSol}
+ \begin{bmatrix} \dot{x}_\mathtt{int} \\ \dot{x} \end{bmatrix} = \underbrace{\begin{bmatrix} 0 & I \\ 0 & A \end{bmatrix}}_{=:A_\mathtt{int}} \begin{bmatrix} x_\mathtt{int} \\ x \end{bmatrix}, x(0) = \underbrace{\begin{bmatrix} 0 \\ u_{\mathtt{const}} \end{bmatrix}}_{=: u_\mathtt{int}}
+\end{equation}
+\end{proposition}
+\begin{proof}
+ Eq.~\eqref{eq:ODEinputSol} can be interpreted as two multivariate differential equations: The solution of $\dot{x} = A x$ is $x(t) = e^{A \delta} u$ and the one of $\dot{x}_\mathtt{int}(\delta) = x$ is $\int_0^\delta x(t) \mathtt{d}t = \int_0^\delta e^{A \delta} u \mathtt{d}t \overset{u=\mathtt{const}}{=} \int_0^\delta e^{A \delta} \mathtt{d}t \, u$.
+\end{proof}
+The disadvantage of this technique is that the exponential matrix has to be computed with twice as many dimensions.
+
+
+\section{Truncation Error of Time Interval Solutions of Inputs}
+
+We consider the computation of $\tilde{\mathcal{F}}$ as defined in \cite[eq.~(3.9)]{Althoff2010a}:
+\begin{equation*}
+  t\in[0,r] : \tilde{\mathcal{F}} = A^{-1}(e^{A \, t}-I) - \frac{t}{r}A^{-1}(e^{A \, r} - I) = A^{-1}\underbrace{\left[e^{At}-I - \frac{t}{r}(e^{Ar}-I)\right]}_{\in\mathcal{F}}.
+\end{equation*}
+Since $A^{-1}$ does not always exist, we derive the error differently. Inserting \eqref{eq:taylorSeries} results in 
+\begin{equation*}
+\begin{split}
+  t\in[0,r] : \tilde{\mathcal{F}} &= \sum_{i=0}^{\eta} \frac{1}{(i+1)!}A^i \, t^{i+1} + \hat{E}(t) - \frac{t}{r}(\frac{1}{(i+1)!}A^i \, r^{i+1} + \hat{E}(r)) \\
+  &= \sum_{i=2}^{\eta} (t^{i+1} - tr^{i} )\frac{1}{(i+1)!}A^i  + \hat{E}(t) - \frac{t}{r}\hat{E}(r) 
+\end{split}
+\end{equation*}
+As shown in \cite[Prop.~3.1]{Althoff2010a}, one can bound $\{t^{i} - tr^{i-1}|t\in[0,r]\}$ by $[(i^{\frac{-i}{i-1}}-i^{\frac{-1}{i-1}})r^i,0]$ so that we can bound $\{t^{i+1} - tr^{i}|t\in[0,r]\}$ by $[((i+1)^{\frac{-i-1}{i}}-(i+1)^{\frac{-1}{i}})r^{i+1},0]$. We also need the following proposition that applies to symmetric bounds:
+\begin{proposition}
+ For any symmetric $\mathcal{E}(t)=[-W,W]$, which is also monotonically increasing, we have that
+ \begin{equation*}
+  \Big\{\hat{E}(t) - \frac{t}{r}\hat{E}(r) \Big| t\in[0,r], \hat{E}(t) \in \hat{\mathcal{E}}(t) \Big\} \subseteq \hat{\mathcal{E}}(r).
+ \end{equation*}
+\end{proposition}
+\begin{proof}
+We first bound $\hat{E}(t) - \frac{t}{r} \hat{E}(r)$ for $t\in[0,r]$. Using \eqref{eq:matrixExponentialRemainder_hscc}{eq:matrixExponentialRemainder} we have that (see \cite[Lemma III.3]{Althoff2020c})
+\begin{equation*}
+ \begin{split}
+  & \hat{E}(t) - \frac{t}{r} \hat{E}(r) \\
+  \leq & \bigg|\hat{E}(t) - \frac{t}{r} \hat{E}(r)\bigg| \\
+  = & \bigg|\int_0^t E(\tau) \mathtt{d}\tau - \frac{t}{r} \int_0^r E(\tau) \mathtt{d}\tau \bigg| \\
+  \overset{\eqref{eq:matrixExponentialRemainder_hscc}}{=} & \bigg|\sum_{i=\eta+1}^{\infty} \frac{t^{i+1}}{(i+1)!}|A|^i - \frac{t}{r}\sum_{i=\eta+1}^{\infty} \frac{r^{i+1}}{(i+1)!}|A|^i\bigg| \\
+  = & \bigg|\sum_{i=\eta+1}^{\infty} (t^{i+1} - tr^{i})\frac{|A|^i}{(i+1)!} \bigg| \\
+  = & \sum_{i=\eta+1}^{\infty} \Big|t^{i+1} - tr^{i}\Big|\frac{|A|^i}{(i+1)!}  \\
+  \leq & \sum_{i=\eta+1}^{\infty} r^{i+1} \frac{|A|^i}{(i+1)!} = \hat{E}(r).
+ \end{split}
+\end{equation*}
+Thus, $\forall t\in[0,r]: \, \hat{E}(t) - \frac{t}{r} \hat{E}(r) \leq \hat{E}(r)$, which completes the proof.
+\end{proof}
+
+\bibliography{althoff_own,althoff_other}
+\bibliographystyle{plain}
+
+
+\end{document}
+
+

@@ -21,8 +21,6 @@ function res = testLong_nonlinParamSys_tensorCreation
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = false;
-
 % Parameters --------------------------------------------------------------
 
 params.R0 = zonotope([[2; 4; 4; 2; 10; 4],0.2*eye(6)]);
@@ -40,9 +38,6 @@ options.intermediateTerms = 5;
 options.errorOrder = 1;
 options.intermediateOrder = 1;
 
-options.alg = 'poly';
-options.tensorOrder = 3;
-
 
 % Test Cases --------------------------------------------------------------
 
@@ -54,6 +49,7 @@ for i = 1:2
         for k = 1:2
             for h = 1:2
                 for m = 1:2
+                    % fprintf("%i/%i/%i/%i/%i: \n",i,j,k,h,m);
             
                     options_ = options;
 
@@ -79,7 +75,11 @@ for i = 1:2
                         options_.lagrangeRem.method = 'taylorModel';
                     end
                     % tensor order
-                    if m == 1 && ~strcmp(options_.alg,'poly')
+                    if m == 1
+                        if strcmp(options_.alg,'poly')
+                            % tensorOrder = 2 not valid for poly -> skip
+                            continue
+                        end
                         options_.tensorOrder = 2;
                     else
                         options_.tensorOrder = 3; 

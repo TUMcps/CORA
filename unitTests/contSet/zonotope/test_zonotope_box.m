@@ -36,6 +36,8 @@ Zbox = box(Z);
 Ztrue = zonotope([1;0],[3 0; 0 5]);
 
 % check if axis-aligned box same as interval
-res = compareMatrices([Zbox.c, Zbox.G],[Ztrue.c, Ztrue.G],tol);
+assert(compareMatrices([Zbox.c, Zbox.G],[Ztrue.c, Ztrue.G],tol));
+
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

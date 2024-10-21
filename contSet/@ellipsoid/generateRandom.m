@@ -31,6 +31,7 @@ function E = generateRandom(varargin)
 %                19-March-2021 (complete rewrite)
 %                30-July-2021 (removed "makedist" (to remove toolbox dep.))
 %                19-May-2022 (MW, name-value pair syntax)
+%                22-September-2024 (MW, cap absolute value of entries in Q)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -105,6 +106,13 @@ end
 
 % make sure shape matrix is symmetric
 Q = 1/2*(Q+Q');
+
+% scale so that min/max entries are at most -10/10
+maxAbsValue = 10;
+if (any(any(Q > maxAbsValue | Q < -maxAbsValue))) 
+    factor = 10 * 1/max([abs(min(min(Q))), max(max(Q))]);
+    Q = Q * factor;
+end
 
 % instantiate ellipsoid
 E = ellipsoid(Q,q);

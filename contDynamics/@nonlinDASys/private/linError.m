@@ -1,11 +1,11 @@
-function [Z_error, errorInt, errorInt_x, errorInt_y, R_y] = linError(obj, options, R, Verror_y)
+function [Z_error,errorInt,errorInt_x,errorInt_y,R_y] = linError(nlnsysDA,options,R,Verror_y)
 % linError - computes the linearization error
 %
 % Syntax:
-%    [obj] = linError(obj,options)
+%    [Z_error,errorInt,errorInt_x,errorInt_y,R_y] = linError(nlnsysDA,options)
 %
 % Inputs:
-%    obj - nonlinear differential algebraic system object
+%    nlnsysDA - nonlinDASys object
 %    options - options struct
 %    R - actual reachable set
 %    Verror_y - set of algebraic linearization error
@@ -23,7 +23,7 @@ function [Z_error, errorInt, errorInt_x, errorInt_y, R_y] = linError(obj, option
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       29-October-2007 
@@ -38,13 +38,13 @@ function [Z_error, errorInt, errorInt_x, errorInt_y, R_y] = linError(obj, option
 % ------------------------------ BEGIN CODE -------------------------------
 
 % set handle to correct file
-obj = setHessian(obj,'int');
+nlnsysDA = setHessian(nlnsysDA,'int');
 
 %compute set of algebraic variables
-f0_con = obj.linError.f0_con;
-D = obj.linError.D;
-E = obj.linError.E;
-F_inv = obj.linError.F_inv;
+f0_con = nlnsysDA.linError.f0_con;
+D = nlnsysDA.linError.D;
+E = nlnsysDA.linError.E;
+F_inv = nlnsysDA.linError.F_inv;
 R_y = -F_inv*(f0_con + D*R + E*options.U + Verror_y);
 
 %obtain intervals and combined interval z
@@ -54,16 +54,16 @@ du = interval(options.U);
 dz = [dx; dy; du];
 
 %compute interval of reachable set
-totalInt_x = dx + obj.linError.p.x;
+totalInt_x = dx + nlnsysDA.linError.p.x;
 
 %compute interval of algebraic states
-totalInt_y = dy + obj.linError.p.y;
+totalInt_y = dy + nlnsysDA.linError.p.y;
 
 %compute intervals of input
-totalInt_u = du + obj.linError.p.u;
+totalInt_u = du + nlnsysDA.linError.p.u;
 
 %obtain Hessian
-[Hf, Hg] = obj.hessian(totalInt_x, totalInt_y, totalInt_u);
+[Hf, Hg] = nlnsysDA.hessian(totalInt_x, totalInt_y, totalInt_u);
 
 %error_x
 for i=1:length(Hf)
@@ -105,10 +105,10 @@ end
 %compute final error
 Z_error_x = zonotope(interval(infimum(error_x),supremum(error_x)));
 Z_error_y = zonotope(interval(infimum(error_y),supremum(error_y)));
-Z_error = Z_error_x + obj.linError.CF_inv*Z_error_y;
+Z_error = Z_error_x + nlnsysDA.linError.CF_inv*Z_error_y;
 
 %update R_y
-R_y =  obj.linError.p.y + (-F_inv)*(f0_con + D*R + E*options.U + Z_error_y);
+R_y =  nlnsysDA.linError.p.y + (-F_inv)*(f0_con + D*R + E*options.U + Z_error_y);
 
 %error intervals
 errorIHabs = abs(interval(Z_error));

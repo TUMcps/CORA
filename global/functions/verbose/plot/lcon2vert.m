@@ -41,13 +41,10 @@ function V = lcon2vert(A,b,varargin)
     end
   
     % check number of input arguments
-    if nargin == 0
-        throw(CORAerror('CORA:notEnoughInputArgs',1));
-    elseif nargin == 3
+    narginchk(1,6);
+    if nargin == 3
         throw(CORAerror('CORA:specialError',...
             'Since argument Aeq specified, beq must also be specified'));
-    elseif nargin > 6
-        throw(CORAerror('CORA:tooManyInputArgs',6));
     end
   
     % flatten vectors

@@ -1,4 +1,4 @@
-function R = guardIntersect_zonoGirard(loc,R,guard,options)
+function R = guardIntersect_zonoGirard(loc,R,guard,B)
 % guardIntersect_zonoGirard - implementation of the zonotope-hyperplane
 %    intersection approach described in [1]
 %
@@ -9,7 +9,7 @@ function R = guardIntersect_zonoGirard(loc,R,guard,options)
 %    loc - location object
 %    R - list of intersections between the reachable set and the guard
 %    guard - guard set (class: constrained hyperplane)
-%    options - struct containing the algorithm settings
+%    B - basis
 %
 % Outputs:
 %    R - set enclosing the guard intersection
@@ -35,17 +35,14 @@ function R = guardIntersect_zonoGirard(loc,R,guard,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
     % check if guard set is a constrained hyperplane
-    if ~isa(guard,'conHyperplane')
+    if ~(isa(guard,'polytope') || representsa_(guard,'conHyperplane',1e-12))
         throw(CORAerror('CORA:specialError',...
-            "The method 'zonoGirard' only supports guards given as conHyperplane objects!")); 
+            "The method 'zonoGirard' only supports guards given as polytope objects that represent constrained hyperplanes!")); 
     end
-
-    % calc. orthogonal basis with the methods described in Sec. V.A in [2]
-    B = calcBasis(loc,R,guard,options);
     
     % construct polytope from guard set inequality constraints C*x <= d
-    if ~isempty(guard.C)
-        poly = polytope(guard.C,guard.d);
+    if ~isempty(guard.b)
+        poly = polytope(guard.A,guard.b);
     else
         poly = [];
     end
@@ -108,12 +105,12 @@ function I = aux_enclosingInterval(guard,B,Z)
     end
 
     % get hyperplane normal vector and offset
-    n = guard.a';
-    gamma = guard.b;
+    n = guard.Ae';
+    gamma = guard.be;
 
     % initialization
-    lb = ones(length(n),1)*-inf;
-    ub = ones(length(n),1)*inf;
+    lb = -Inf(length(n),1);
+    ub = Inf(length(n),1);
 
     % loop over all basis vectors l 
     for i=1:length(B(1,:))
@@ -380,7 +377,7 @@ function Z = aux_tightenSet(Z,P)
 % constraints C*x <= d of the constrained hyperplane
 
     % check if the zonotope fullfills the constraints
-    if ~isIntersecting_(P,Z,'approx')
+    if ~isIntersecting_(P,Z,'approx',1e-8)
         Z = [];
         return;
     end

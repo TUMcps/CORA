@@ -85,10 +85,12 @@ if interactive
 end
 if installNNV
     disp('- [CORA NNV] Installing required toolboxes..')
-    fprintf('  [1/2] %s\n', 'Deep Learning Toolbox')
+    fprintf('  [1/3] %s\n', 'Deep Learning Toolbox')
     aux_install_toolbox('Neural_Network_Toolbox','Deep Learning Toolbox','NN');
-    fprintf('  [2/2] %s\n', 'Deep Learning Toolbox Converter for ONNX Model Format')
+    fprintf('  [2/3] %s\n', 'Deep Learning Toolbox Converter for ONNX Model Format')
     aux_install_supportpkg('Deep Learning Toolbox Converter for ONNX Model Format','ONNXCONVERTER');
+    fprintf('  [3/3] %s\n', 'Parallel Computing Toolbox')
+    aux_install_toolbox('Parallel_Computing_Toolbox','Parallel Computing Toolbox','DM');
 end
 
 catch ME
@@ -188,7 +190,6 @@ function aux_install_yalmip(interactive,defaultpath)
             tbxmanager install yalmip sedumi
             
         catch ME
-            
             % for mac users, sedumi cannot be installed via the tbxmanager
             % trying to install only yalmip
 
@@ -198,8 +199,23 @@ function aux_install_yalmip(interactive,defaultpath)
             % and tell user to install e.g. SDPT3
             errortext = ['Unfortunately, the sdpt solver ''sedumi'' could not be installed automatically together with yalmip.\n' ...
                 'Please install another solver manually, e.g. SDPT3 https://blog.nus.edu.sg/mattohkc/softwares/sdpt3/'];
-
         end
+
+        % also install mp
+        % mppath = [fileparts(tbxpath),filesep,'MultiPrecisionToolbox'];
+        % try
+        %     fprintf('\nInstalling "MultiPrecision" toolbox to: %s\n\n',mppath);
+        %     % download mp toolbox
+        %     mkdir(mppath)
+        %     mpzip = [mppath filesep 'mp.zip'];
+        %     websave(mpzip,'https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/e54ba25f-4a80-11e4-9553-005056977bd0/4b93a1ca-e163-425c-a70e-345faa48d6bc/packages/zip');
+        %     % unzip
+        %     unzip(mpzip);
+        %     % delete zip
+        %     delete(mpzip);
+        % catch ME
+        %     fprintf('    MultiPrecision toolbox could not be installed automatically: %s', ME.message)
+        % end
 
         % modify startup file
         startuppaths = {
@@ -226,23 +242,40 @@ function aux_install_yalmip(interactive,defaultpath)
         startuptext = fileread(startuppath);
         lines = splitlines(startuptext);
 
-        % delete end of function in existing startup files
-        if ~isempty(lines) && startsWith(lines{1},'function')
-            for i=0:(length(lines)-1)
-                if strcmp(lines{end-i},'end')
-                    lines{end-i} = '';
+        % adapt existing startup files
+        isFunction = false;
+        if ~isempty(lines) 
+            % check if startup file starts with "function"
+            for i=1:numel(lines)
+                if startsWith(lines{i},'function startup')
+                    % remove "end" at the end of function
+                    isFunction = true;
                     break
+                end
+            end
+
+            % remove "end"
+            if isFunction
+                for i=0:(length(lines)-1)
+                    if contains(lines{end-i},'end')
+                        lines{end-i} = '';
+                        break
+                    end
                 end
             end
         end
 
-        % write startup file
-        lines{end+1,1} = '%% startup';
+        % write CORA startup file
+        lines{end+1,1} = sprintf('%% startup (written by %s)',CORAVERSION);
         lines{end+1,1} = 'fprintf(''Startup file: %s\n'',which(mfilename))';
         lines{end+1,1} = '';
         lines{end+1,1} = '%% init tbxmanager';
-        lines{end+1,1} = sprintf('addpath(genpath(''%s''))\n',tbxpath);
+        lines{end+1,1} = sprintf('addpath(genpath(''%s''))',tbxpath);
         lines{end+1,1} = 'tbxmanager restorepath';
+        lines{end+1,1} = '';
+        % lines{end+1,1} = '%% init MultiPrecision toolbox';
+        % lines{end+1,1} = sprintf('addpath(genpath(''%s''))',mppath);
+        % lines{end+1,1} = 'fprintf(''Toolbox "mp" added to the Matlab path.\n'');';
         lines{end+1,1} = '';
         lines{end+1,1} = '%% init cora';
         lines{end+1,1} = sprintf('addpath(genpath(''%s''));', CORAROOT);
@@ -255,14 +288,22 @@ function aux_install_yalmip(interactive,defaultpath)
         end
         lines{end+1,1} = 'end';
         lines{end+1,1} = '';
+        % restrict number of CPU threads
         if ~interactive
             lines{end+1,1} = '%% Restrict number of CPU threads';
             maxThreads = 4;
-            lines{end+1,1} = sprintf('disp(''Limiting the number of cpu threads to %i. Change using maxNumCompThreads(N).\n'')', maxThreads);
+            lines{end+1,1} = sprintf('disp(''Limiting the number of cpu threads to %i. Change using maxNumCompThreads(N).'')', maxThreads);
             lines{end+1,1} = sprintf('maxNumCompThreads(%i);', maxThreads);
             lines{end+1,1} = '';
         end
         lines{end+1,1} = 'disp(''Done.'')';
+        % finish startup function
+        if isFunction
+            lines{end+1,1} = '';
+            lines{end+1,1} = 'end';
+        end
+        % end startup file
+        lines{end+1,1} = '';
 
         % write lines back to file
         writecell(lines, startuppath, 'FileType', 'text', 'QuoteStrings', 'none');

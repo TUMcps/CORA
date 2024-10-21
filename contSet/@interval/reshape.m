@@ -28,7 +28,7 @@ function I = reshape(I,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%apply reshaping for infimum and supremum
+% apply reshaping for infimum and supremum
 inf = reshape(I.inf, varargin{1:end});
 sup = reshape(I.sup, varargin{1:end});
 

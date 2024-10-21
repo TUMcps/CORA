@@ -23,22 +23,20 @@ function res = test_capsule_dim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty case
 n = 2;
 C = capsule.empty(n);
-res(end+1,1) = dim(C) == n;
+assert(dim(C) == n);
 
 % 2D capsule
 c = [1;1]; g = [1;1]; r = 0.5;
 C = capsule(c);
-res(end+1,1) = dim(C) == 2;
+assert(dim(C) == 2);
 C = capsule(c,g,r);
-res(end+1,1) = dim(C) == 2;
+assert(dim(C) == 2);
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

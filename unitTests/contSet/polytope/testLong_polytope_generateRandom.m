@@ -44,61 +44,53 @@ for i = 1:nrTests
 
     % only dimension
     P = polytope.generateRandom('Dimension',n);
-    if dim(P) ~= n
-        res = false; return
-    end
+    assertLoop(dim(P) == n,i)
+
     % should not be empty
-    if representsa(P, 'emptySet')
-        res = false; return
-    end
+    assertLoop(~representsa(P, 'emptySet'),i)
 
     % dimension and number of constraints
     P = polytope.generateRandom('Dimension',n,'NrConstraints',nrCon);
-    if dim(P) ~= n || size(P.A,1) ~= nrCon || representsa(P, 'emptySet')
-        res = false; return
-    end
+    assertLoop(dim(P) == n,i)
+    assertLoop(size(P.A,1) == nrCon,i)
+    assertLoop(~representsa(P, 'emptySet'),i)
 
     % not enough constraints for bounded polytope
     P = polytope.generateRandom('Dimension',n,'NrConstraints',n);
-    if isBounded(P) || representsa(P, 'emptySet')
-        res = false; return
-    end
+    assertLoop(~isBounded(P),i)
+    assertLoop(~representsa(P, 'emptySet'),i)
 
     % boundedness
     P = polytope.generateRandom('IsBounded',false);
-    if isBounded(P) || representsa(P, 'emptySet')
-        res = false; return
-    end
+    assertLoop(~isBounded(P),i)
+    assertLoop(~representsa(P, 'emptySet'),i)
+
     P = polytope.generateRandom('Dimension',n,'IsBounded',false);
-    if isBounded(P) || representsa(P, 'emptySet')
-        res = false; return
-    end
+    assertLoop(~isBounded(P),i)
+    assertLoop(~representsa(P, 'emptySet'),i)
+
     P = polytope.generateRandom('Dimension',n,'NrConstraints',2*n,...
         'IsBounded',false);
-    if isBounded(P) || representsa(P, 'emptySet')
-        res = false; return
-    end
+    assertLoop(~isBounded(P),i)
+    assertLoop(~representsa(P, 'emptySet'),i)
 
     % degeneracy
     P = polytope.generateRandom('IsDegenerate',true);
-    if isFullDim(P) || representsa(P, 'emptySet')
-        res = false; return
-    end
+    assertLoop(~isFullDim(P),i)
+    assertLoop(~representsa(P, 'emptySet'),i)
+
     P = polytope.generateRandom('Dimension',n,'IsDegenerate',true);
-    if isFullDim(P) || representsa(P, 'emptySet')
-        res = false; return
-    end
-    P = polytope.generateRandom('Dimension',n,'NrConstraints',2*n,...
-        'IsDegenerate',true);
-    if isFullDim(P) || representsa(P, 'emptySet')
-        res = false; return
-    end
+    assertLoop(~isFullDim(P),i)
+    assertLoop(~representsa(P, 'emptySet'),i)
+
+    P = polytope.generateRandom('Dimension',n,'NrConstraints',2*n,'IsDegenerate',true);
+    assertLoop(~isFullDim(P),i)
+    assertLoop(~representsa(P, 'emptySet'),i)
+
     % polytope with 2 constraints can be unbounded, but degenerate
-    P = polytope.generateRandom('Dimension',n,'NrConstraints',2,...
-        'IsDegenerate',true);
-    if isFullDim(P) || representsa(P, 'emptySet')
-        res = false; return
-    end
+    P = polytope.generateRandom('Dimension',n,'NrConstraints',2,'IsDegenerate',true);
+    assertLoop(~isFullDim(P),i)
+    assertLoop(~representsa(P, 'emptySet'),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

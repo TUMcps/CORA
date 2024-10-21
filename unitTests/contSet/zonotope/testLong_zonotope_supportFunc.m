@@ -51,11 +51,8 @@ for i=dims
         L = randn(n,2*n);
         L = L./vecnorm(L);
         for k=1:size(L,2)
-            if supportFunc(Z0,L(:,k))<r_min-TOL || ...
-                    supportFunc(Z0,L(:,k))>r_max+TOL
-                res = false;
-                return;
-            end
+            assertLoop(supportFunc(Z0,L(:,k)) >= r_min-TOL,i,j,k)
+            assertLoop(supportFunc(Z0,L(:,k)) <= r_max+TOL,i,j,k)
         end
     end
 end

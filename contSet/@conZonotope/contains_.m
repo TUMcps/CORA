@@ -173,8 +173,8 @@ function res = aux_containsSet(cZ1,cZ2)
 % check polytope in polytope containment according to Theorem 1 in [1]
 
     % convert to AH polytopes
-    [Y,y,Hy,hy] = AHpolytope(cZ1);
-    [X,x,Hx,hx] = AHpolytope(cZ2);
+    [Y,y,Hy,hy] = priv_AHpolytope(cZ1);
+    [X,x,Hx,hx] = priv_AHpolytope(cZ2);
     
     nx = size(X,2);
     ny = size(Y,2);

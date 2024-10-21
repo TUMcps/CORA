@@ -1,0 +1,69 @@
+\subsection{Training Verifiably Robust Neural Networks}
+\label{sec:neuralNetworkTraining}
+
+CORA also enables the training of verifiably robust neural networks both in the supervised~\cite{koller2024a}
+and in the reinforcement learning~\cite{Wendl2024a} setting.
+This is realized by integrating reachability analysis into the training process.
+In particular, we propagate zonotopes through a neural network and compute a set-based gradient based on the computed output set~$\nnOutputSet$, target~$\nnTarget$, and loss function~$E$.
+This is done efficiently in CORA by propagating the sets batch-wise through the network and every computation can be done on a GPU.
+
+The set-based loss function is defined as
+\begin{equation}
+    E_\text{set}(\nnTarget,\nnOutputSet) = (1-\tau) E_\text{point}(\nnTarget,\nnOutputSet) + \tau E_\text{volume}(\nnOutputSet),
+\end{equation}
+where $E_\text{point}$ refers to the standard (point-based) loss, e.g., mean squared error or cross-entropy loss,
+and $E_\text{volume}$ to a volume loss to reduce the size of the output set.
+The parameter $\tau\in[0,1]$ is a hyperparameter to weight the two terms.
+The process of this set-based training is schematically shown in \cref{fig:set-training}.
+The resulting networks are verifiably more robust against input perturbations as these were considered during the training process.
+
+\begin{figure}[htb]
+    \centering
+    \footnotesize
+    \includetikz{./figures/tikz/neuralNetworks/set-training-new}
+    \caption{Set-based training of a neural network to make it verifiably robust against input perturbations.}
+    \label{fig:set-training}
+\end{figure}
+
+In the supervised setting, this is done via the function \texttt{train}:
+\begin{center}
+    \texttt{[loss,trainTime] = nn.train(trainX, trainT, valX, valT, options, verbose)},
+\end{center}
+where \texttt{trainX, trainT, valX, valT} are the training and validation dataset, respectively,
+algorithm options for training are stored in \texttt{options.nn.train},
+and \texttt{verbose} is a logical flag for verbose outputs to the command window during training.
+The training options specify all hyperparameters for training,
+e.g., the number of epochs, the optimizer, the batch size, and the loss.
+See the code below for an example and further details can be found in the documentation of the \texttt{train} function.
+
+\begin{center}
+    \begin{minipage}[t]{0.9\textwidth}
+    {\footnotesize  \input{./MATLABcode/example_neuralNetwork_train}}
+    \end{minipage}
+\end{center}
+
+Please visit \texttt{./cora/nn} for details and \texttt{./cora/examples/nn} for examples.
+
+CORA also enables the training of verifiably robust agents in an actor-critic settings,
+which is depicted in \cref{fig:rl-DDPG}:
+After defining a control environment specifying the dynamic of the model,
+and actor $\mu_\phi$, critic $Q_\theta$ networks with parameters $\phi,\,\theta$, respectively,
+one can also use set-based training in reinforcement learning using CORA.
+
+\begin{figure}[htb]
+    \centering
+    \footnotesize
+    \includetikz{./figures/tikz/neuralNetworks/rl-DDPG}
+    \caption{Illustration of the structure of the deep deterministic policy gradient algorithm: \ding{192} and \ding{193} show the components that are augmented through set-based training.}
+    \label{fig:rl-DDPG}
+\end{figure}
+
+The respective classes in CORA are \texttt{ctrlEnvironment}, \texttt{actor}, and \texttt{critic},
+where both, agents based on the DDPG (\texttt{DDPGagent}) and TD3 (\texttt{TD3agent}) algorithm can be trained.
+The options for the agent and critic are as described above for the supervised settings,
+which are stored in \texttt{options.rl.actor.nn.train} and \texttt{options.rl.critic.nn.train}, respectively.
+Additional options are available for the environment, such as initial set and time steps, which are stored in \texttt{options.rl.env}.
+Forther details can be found in the documentation of the respective classes.
+Please note that either the actor and critic can be trained set-based (\ding{192} in \cref{fig:rl-DDPG}), or only the actor (\ding{193} in \cref{fig:rl-DDPG}).
+
+Please visit \texttt{./cora/nn/rl} for details and \texttt{./cora/examples/nn} for examples.

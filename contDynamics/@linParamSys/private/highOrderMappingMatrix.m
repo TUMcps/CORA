@@ -40,16 +40,16 @@ E = obj.E;
 r=obj.stepSize;
 
 %zonotope computations
-eZ = zeros(obj.dim);
-eZ_input = zeros(obj.dim);
+eZ = zeros(obj.nrOfStates);
+eZ_input = zeros(obj.nrOfStates);
 for i=3:intermediateTerms
     eZ = eZ + zPow{i}*(1/factorial(i));
     eZ_input = eZ_input + zPow{i}*(r/factorial(i+1));
 end
 
 %interval computations
-eI = zeros(obj.dim);
-eI_input = zeros(obj.dim);
+eI = zeros(obj.nrOfStates);
+eI_input = zeros(obj.nrOfStates);
 for i=(intermediateTerms+1):obj.taylorTerms
     eI = eI + iPow{i}*(1/factorial(i));
     eI_input = eI_input + iPow{i}*(r/factorial(i+1));

@@ -1,0 +1,8 @@
+\addlegendimage{plotstyle1}
+\addlegendentry{Interval matrix}
+\addlegendimage{plotstyle3}
+\addlegendentry{Matrix zonotope}
+\addlegendimage{plotstyle5}
+\addlegendentry{Initial set}
+\addlegendimage{plotstyle6}
+\addlegendentry{Simulations}

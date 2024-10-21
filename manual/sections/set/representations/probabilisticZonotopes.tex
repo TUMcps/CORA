@@ -1,0 +1,53 @@
+\subsubsubsection{Probabilistic Zonotopes} \label{sec:probabilisticZonotopes}
+
+Probabilistic zonotopes have been introduced in \cite{Althoff2009d} for stochastic verification. A probabilistic zonotope has the same structure as a zonotope, except that the values of some $\beta_i$ in \eqref{eq:zonotope} are bounded by the interval $[-1,1]$, while others are subject to a normal distribution\footnote{Other distributions are conceivable, but not implemented.}. Given pairwise independent Gaussian-distributed random variables $\mathcal{N}(\mu, \Sigma)$ with expected value $\mu$ and covariance matrix $\Sigma$, one can define a Gaussian zonotope with certain mean:
+\begin{equation*}
+ \mathcal{Z}_g=c+\sum_{i=1}^{q} \mathcal{N}^{(i)}(0,1)\cdot \mathpzc{g}^{(i)},
+\end{equation*}
+where $\mathpzc{g}^{(1)},\ldots,\mathpzc{g}^{(q)}\in\mathbb{R}^n$ are the generators, which are underlined in order to distinguish them from generators of regular zonotopes. Gaussian zonotopes are denoted by a subscripted g: $\mathcal{Z}_g=(c,\mathpzc{g}^{(1\ldots q)})$.
+
+A Gaussian zonotope with uncertain mean $\mathscr{Z}$ is defined as a Gaussian zonotope $\mathcal{Z}_g$, where the center is uncertain and can have any value within a zonotope $\mathcal{Z}$, which is denoted by
+\begin{equation}
+ \mathscr{Z} := \mathcal{Z}\boxplus\mathcal{Z}_g, \quad \mathcal{Z}=(c,g^{(1\ldots p)}), \, \mathcal{Z}_g=(0,\mathpzc{g}^{(1\ldots q)}),
+ \label{eq:probZonotope}
+\end{equation}
+or in short by $\mathscr{Z}=(c,g^{(1\ldots p)},\mathpzc{g}^{(1\ldots q)})$. If the probabilistic generators can be represented by the covariance matrix $\Sigma$ ($q>n$) as shown in \cite[Proposition 1]{Althoff2009d}, one can also write $\mathscr{Z}=(c,g^{(1\ldots p)},\Sigma)$. 
+
+Probabilistic zonotopes are represented in CORA by the class \texttt{probZonotope}. An object of class \texttt{probZonotope} can be constructed as follows:
+\begin{equation*}
+		\mathscr{Z} = \texttt{probZonotope}(Z,\underline{G}),
+\end{equation*} 
+where $Z = [c,g^{(1)},\dots,g^{(p)}]$, $\underline{G} = [\underline{g}^{(1)},\dots,\underline{g}^{(q)}]$, and $c,g^{(i)},\underline{g}^{(i)}$ are defined as in \eqref{eq:probZonotope}. Let us demonstrate the construction of a probabilistic zonotope by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.5\textwidth}
+	\vspace{25pt}
+	\footnotesize
+	\input{./MATLABcode/example_setRep_probZonotope}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-representations/example_probZonotope}
+\end{minipage}
+\end{center}
+
+A more detailed example for probabilistic zonotopes is provided in \cref{sec:probZonotopeExample} and in the file \textit{examples/contSet/example\_probZonotope.m} in the CORA toolbox.
+
+As a probabilistic zonotope $\mathscr{Z}$ is neither a set nor a random vector, there does not exist a probability density function describing $\mathscr{Z}$. However, one can obtain an enclosing probabilistic hull which is defined as $\bar{f}_{\mathscr{Z}}(x)=\sup\big\{f_{\mathcal{Z}_g}(x)\big|E[\mathcal{Z}_g]\in Z \big\}$, where $E[\hspace{0.1cm}]$ returns the expectation and $f_{\mathcal{Z}_g}(x)$ is the probability density function (PDF) of $\mathcal{Z}_g$. Combinations of sets with random vectors have also been investigated, e.g., in \cite{Berleant1993}. Analogously to a zonotope, it is shown in \cref{fig_probZonotopesEx} how the enclosing probabilistic hull (EPH) of a Gaussian zonotope with two non-probabilistic and two probabilistic generators is built step-by-step from left to right.
+
+\begin{center}
+\begin{figure}[htb]	
+		\centering					
+			\subfigure[PDF of $(0,\mathpzc{g}^{(1)})$.]
+				 {\includegraphics[width=0.31\columnwidth]{./figures/pZplotEX1cCorr.eps}}
+			\subfigure[PDF of $(0,\mathpzc{g}^{(1, 2)})$.]
+				 {\includegraphics[width=0.31\columnwidth]{./figures/pZplotEX2c.eps}}
+			\subfigure[EPH of $(0,g^{(1\ldots 2)},$ $\mathpzc{g}^{(1\ldots 2)})$.]
+				 {\includegraphics[width=0.31\columnwidth]{./figures/pZplotEX3c.eps}}			 
+      \caption{Construction of a probabilistic zonotope.}
+      \label{fig_probZonotopesEx}	
+\end{figure}
+\end{center}
+
+In addition to the standard set operations described in \cref{sec:setOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), the class \texttt{probZonotope} supports additional methods, which are listed in \cref{sec:probZonotopeOperations}.

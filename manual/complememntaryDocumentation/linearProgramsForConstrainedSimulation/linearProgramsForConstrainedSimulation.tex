@@ -1,0 +1,159 @@
+\documentclass[10pt,a4paper]{article}
+
+% Sample optional packages to use
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{amscd}
+\usepackage{amssymb}
+\usepackage{epsf}
+\usepackage[a4paper,margin=1.7cm]{geometry}
+
+\usepackage{amsmath,amsfonts}
+\usepackage{mathrsfs} %for \mathscr
+\usepackage{psfrag}
+\usepackage{algorithm}  %for algorithm environment
+\usepackage{algpseudocode}
+\usepackage{subfigure}
+\usepackage{pifont}
+\usepackage{color}
+%\usepackage[amsmath,hyperref,thmmarks]{ntheorem}  %better package for proof environment
+\usepackage{cite}
+\usepackage{url}
+
+\usepackage{chngcntr} %for changing the paragraph counter
+
+\newtheorem{definition}{Definition}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{property}{Property}[section]
+\newtheorem{specification}{Specification}[section]
+\newtheorem{remark}{Remark}[section]
+
+%Indexing elements----------------------
+\renewcommand{\^}[1]{^{(#1)}}
+\renewcommand{\th}[1]{#1^\text{th}}
+%---------------------------------------
+
+
+\counterwithout{paragraph}{subsubsection} % removes paragraph from the subsubsections
+\counterwithin{paragraph}{section} % makes paragraph depend on section
+
+
+
+
+
+\begin{document}
+
+
+\mbox{} \vspace{0.8cm} \mbox{}
+\begin{center} {\huge\textbf{Linear Programs for Constrained Simulation}} \end{center}
+\vspace{0.2cm}
+\begin{center} {\large Matthias Althoff} \\[0.2cm] Technische Universit\"at M\"unchen, 85748 Garching, Germany
+\end{center}
+\vspace{0.2cm}
+
+
+
+\begin{abstract}
+ This brief derives the linear program for the implemented constrained simulation. Constrained simulation within a backward reachable set also serves as an method for controller synthesis.
+\end{abstract}
+
+\section{Notation}
+
+We will use $I_n$ to denote an identity matrix of dimension $n$ and $\mathbf{1}_n$ is a vector of ones of dimension $n$. A matrix of zeros with $n$ rows and m columns is denoted by $\mathbf{0}_{n,m}$. 
+
+
+\section{Problem Statement}
+
+Given an initial set $\mathcal{X}_0$, we want to find an input sequence for the discrete-time linear system
+\begin{equation} \label{eq:dynamics}
+ x(k+1) = A x(k) + B u(k) + w(k) + \tilde{k}
+\end{equation}
+so that all states are bounded by a given sequence of zonotopes $\mathcal{Z}_i$ despite disturbances $w(k) \in \mathcal{W}$. A zonotope $\mathcal{Z}$ is defined as
+\begin{equation*}
+ \mathcal{Z} = \{ c + G\beta | \|\beta\|_\infty \leq 1 \}.
+\end{equation*}
+For each time step, the input should be determined by the following linear program 
+\begin{equation} \label{eq:standardForm}
+\begin{split}
+ & \min_x f^T x \\
+ \text{such that } & Ax \leq b \\
+ & A_{eq} x = b_{eq} \\
+ & \underline{x} \leq x \leq \overline{x}.
+\end{split}
+\end{equation}
+
+
+\section{Feasible Inputs Through Linear Programming}
+
+The state for the next time step is constrained by
+\begin{equation} \label{eq:stateConstraint}
+ x(k+1) = c + G \beta, \quad \|\beta\|_\infty \leq 1, \beta \in \mathbb{R}^{n_s}
+\end{equation}
+and the input is constrained by
+\begin{equation} \label{eq:inputConstraint}
+ u(k) = c_u + G_u \beta_u, \quad \|\beta_u\|_\infty \leq 1, \beta_u \in \mathbb{R}^{n_u}
+\end{equation}
+After equating \eqref{eq:dynamics} with \eqref{eq:stateConstraint}, we obtain
+\begin{equation} \label{eq:stateConstraint_2}
+ A x(k) + B u(k) + w(k) + \tilde{k} = c + G \beta.
+\end{equation}
+Next, we insert \eqref{eq:inputConstraint} in \eqref{eq:stateConstraint_2}:
+\begin{equation} \label{eq:equalityConstraint}
+ A x(k) + B(c_u + G_u \beta_u) + w(k) + \tilde{k} = c + G \beta.
+\end{equation}
+After introducing the variable 
+\begin{equation*}
+ \tilde{x} = \begin{bmatrix} 
+              \beta_u \\
+              \beta
+             \end{bmatrix}
+\end{equation*}
+we can rewrite \eqref{eq:equalityConstraint} as
+\begin{equation}
+ \begin{bmatrix}
+  B G_u & -G
+ \end{bmatrix}
+ \begin{bmatrix}
+  \beta_u \\
+  \beta
+ \end{bmatrix} =
+ c - Ax(k) - B c_u - w(k) - \tilde{k}.
+\end{equation}
+Given that we want to minimize the control effort, the linear program can be written in the form \eqref{eq:standardForm} using the following matrices and vectors:
+
+\begin{equation*}
+ \begin{split}
+  f &= \begin{bmatrix} \mathbf{1}_{n_u} \\ \mathbf{0}_{n_s}
+  \end{bmatrix} \\
+  A &= \begin{bmatrix} I_{n_s + n_u} \\ -I_{n_s + n_u}
+  \end{bmatrix}, \\
+  b &= \begin{bmatrix} \mathbf{1}_{n_s + n_u} \\ \mathbf{1}_{n_s + n_u} \end{bmatrix}, \\
+  A_{eq} &= \begin{bmatrix} B G_u & -G
+  \end{bmatrix}, \\
+  b_{eq} &= c - Ax(k) - B c_u - w(k) - \tilde{k}
+ \end{split}
+\end{equation*}
+
+% objective: 
+%   min \beta_u
+% constraints: 
+%   B G_u \beta_u - G \beta + c* = 0
+%   \beta_i \in [-1,1]
+%   \beta_{u,i} \in [-1,1]
+
+
+\section{Minkowski Difference of Zonotopes}
+
+
+
+
+\bibliography{althoff_own,althoff_other}
+\bibliographystyle{plain}
+
+
+\end{document}
+
+

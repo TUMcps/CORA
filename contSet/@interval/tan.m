@@ -47,9 +47,9 @@ lb = I.inf;
 ub = I.sup;
 
 % init interval with -Inf/Inf
-[n,m] = size(I);
-I.inf = -Inf(n,m);
-I.sup = Inf(n,m);
+dims = size(I);
+I.inf = -Inf(dims);
+I.sup = Inf(dims);
 
 % only dimensions with a diameter larger smaller than pi or where
 % tan(inf) < tan(sup) have non-Inf values

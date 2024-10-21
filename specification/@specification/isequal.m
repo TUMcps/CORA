@@ -14,7 +14,7 @@ function res = isequal(spec1,spec2,varargin)
 %    res - true/false
 %
 % Example:
-%    set = halfspace([1 0],2);
+%    set = polytope([1 0],2);
 %    spec1 = specification(set,'unsafeSet');
 %    spec2 = specification(set,'safeSet');
 %    res = isequal(spec1,spec2);

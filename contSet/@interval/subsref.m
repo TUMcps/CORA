@@ -1,5 +1,5 @@
 function newObj = subsref(I,S)
-% subsref - Overloads the operator that selects elements, e.g. I(1,2),
+% subsref - Overloads the operator that selects elements, e.g., I(1,2),
 %    where the element of the first row and second column is referred to.
 %
 % Syntax:
@@ -13,8 +13,8 @@ function newObj = subsref(I,S)
 %    newObj - element or elemets of the interval matrix
 %
 % Example: 
-%    a=interval([-1 1], [1 2]);
-%    a(1,2)
+%    I = interval([-1; 1], [1; 2]);
+%    I(2,1)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -22,47 +22,26 @@ function newObj = subsref(I,S)
 %
 % See also: none
 
-% Authors:       Matthias Althoff, Niklas Kochdumper
+% Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
 % Written:       19-June-2015 
 % Last update:   22-June-2015 
 %                12-November-2018 (NK, default to build in for other cases)
 %                04-April-2023 (TL, reorganized if/else)
+%                13-October-2024 (MW, simplify using builtin-subsref)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-
-%check if parantheses are used to select elements
-if length(S) == 1 
+%check if parentheses are used to select elements
+if length(S) == 1
     if strcmp(S.type,'()')
-        %obtain sub-intervals from the interval object
+        % obtain sub-intervals from the interval object
         newObj = I;
-        % only one index specified
-        if length(S.subs)==1
-            newObj.inf=I.inf(S.subs{1});
-            newObj.sup=I.sup(S.subs{1});
-        %two indices specified
-        elseif length(S.subs)==2
-            %Select column of obj
-            if strcmp(S.subs{1},':')
-                column=S.subs{2};
-                newObj.inf=I.inf(:,column);
-                newObj.sup=I.sup(:,column);
-            %Select row of V    
-            elseif strcmp(S.subs{2},':')
-                row=S.subs{1};
-                newObj.inf=I.inf(row,:);
-                newObj.sup=I.sup(row,:);
-            %Select single element of V    
-            elseif isnumeric(S.subs{1})
-                row=S.subs{1};
-                column=S.subs{2};
-                newObj.inf=I.inf(row,column);
-                newObj.sup=I.sup(row,column);
-            end
-        end
+        newObj.inf = builtin('subsref', newObj.inf, S);
+        newObj.sup = builtin('subsref', newObj.sup, S);
         return
-    elseif strcmp(S.type,'.') 
+
+    elseif strcmp(S.type,'.')
         if strcmp(S.subs,'inf')
             newObj = I.inf;
             return
@@ -70,12 +49,10 @@ if length(S) == 1
             newObj = I.sup;
             return
         end
-    end   
+    end
 end
 
-% call build in subsref function as a default
+% call built-in subsref function as a default
 newObj = builtin('subsref', I, S);
-
-end
 
 % ------------------------------ END OF CODE ------------------------------

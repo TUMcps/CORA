@@ -42,16 +42,12 @@ for n = dims
         [~,x1] = supportFunc(Z1,dir);
         [~,x2] = supportFunc(Z2,-dir);
         offset = center(Z1) - x1;
+
         Z2_intersects = Z2 + (x1 + offset/100 - x2);
+        assertLoop(GJKalgorithm(Z1,Z2_intersects),n,i);
+
         Z2_notintersects = Z2 + (x1 - offset/100 - x2);
-
-        if ~GJKalgorithm(Z1,Z2_intersects)
-            throw(CORAerror('CORA:testFailed'));
-        end
-
-        if GJKalgorithm(Z1,Z2_notintersects)
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(~GJKalgorithm(Z1,Z2_notintersects),n,i);
     end
 end
 

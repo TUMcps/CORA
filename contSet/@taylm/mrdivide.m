@@ -11,7 +11,7 @@ function res = mrdivide(numerator,denominator)
 % Outputs:
 %    res - resulting taylm object
 %
-% Other m-files required: inverse
+% Other m-files required: priv_minverse
 % Subfunctions: none
 % MAT-files required: none
 %
@@ -24,11 +24,10 @@ function res = mrdivide(numerator,denominator)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    if isscalar(denominator)
-        res = numerator ./ denominator;
-    else
-        res = numerator * minverse(denominator);
-    end
+if isscalar(denominator)
+    res = numerator ./ denominator;
+else
+    res = numerator * priv_minverse(denominator);
 end
 
 % ------------------------------ END OF CODE ------------------------------

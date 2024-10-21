@@ -23,30 +23,25 @@ function res = test_printStruct
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % empty
 printStruct(struct)
-resvec(end+1) = true;
 
 % scalar
 printStruct(struct('a',1))
 printStruct(struct('b','text'))
 printStruct(struct('a',1,'b','text'))
 printStruct(struct('a',1,'b','text','c',[1 2 3; 4 5 6]))
-resvec(end+1) = true;
+printStruct(struct('a',1,'b','text','c',[1 2 3; 4 5 6],'S',interval(2,3)))
 
-S = struct('a',1,'b','text','c',[1 2 3; 4 5 6]);
+S = struct('a',1,'b','text','c',[1 2 3; 4 5 6],'S',interval(2,3));
 
 % row vector
 printStruct([S,S])
 printStruct([S,S,S,S,S])
-resvec(end+1) = true;
 
 % column vector
 printStruct([S;S])
 printStruct([S;S;S;S;S])
-resvec(end+1) = true;
 
 % matrix
 printStruct([S S;S S])
@@ -58,14 +53,12 @@ printStruct(S,'high');
 printStruct(S,'high',true);
 printStruct(S,'high',false);
 fprintf('\n')
-resvec(end+1) = true;
 
 % example
 S = struct('a',[1 2 3],'b','text');
 printStruct(S)
-resvec(end+1) = true;
 
 % combine results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

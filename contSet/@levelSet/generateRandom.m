@@ -1,5 +1,5 @@
 function ls = generateRandom(varargin)
-% generateRandom - Generates a random halfspace
+% generateRandom - Generates a random level set
 %
 % Syntax:
 %    ls = levelSet.generateRandom()

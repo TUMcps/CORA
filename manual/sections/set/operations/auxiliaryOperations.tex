@@ -1,0 +1,334 @@
+\subsubsection{Auxiliary Operations}
+
+In this subsection, we describe useful auxiliary operations.
+
+\subsubsubsection{cubMap}
+
+The method \operator{cubMap} implements the cubic map of a set. Given a set $\mathcal{S} \subset \Rn$, the cubic map is defined as 
+\begin{equation*}
+	\operator{cubMap}(\mathcal{S},Q) = \bigg \{ x ~ \bigg | ~ x_{(i)} = \sum_{j=1}^n s_{(j)} ~(s^T ~T_{i,j}~ s), ~s \in \mathcal{S},~ i = 1 \dots w \bigg \}, ~ T_{i,j} \in \R^{n \times n},
+\end{equation*}
+where $x_{(i)}$ is the $i$-th value of the vector $x$. If the corresponding set representation is not closed under cubic maps, \operator{cubMap} returns an over-approximation. If \operator{cubMap} is called with three different sets $\mathcal{S}_1,\mathcal{S}_2,\mathcal{S}_3 \subset \Rn$ as input arguments, the method computes the mixed cubic map:
+\begin{equation*}
+\begin{split}
+	\operator{cubMap}(\mathcal{S}_1,\mathcal{S}_2,\mathcal{S}_3,Q) = \bigg \{ x ~ \bigg | ~ & x_{(i)} = \sum_{j=1}^n s_{1(j)} ~(s_2^T ~T_{i,j}~ s_3), ~s_1 \in \mathcal{S}_1,~s_2 \in \mathcal{S}_2,~s_3 \in \mathcal{S}_3, \\
+	& i = 1 \dots w \bigg \}, ~ T_{i,j} \in \R^{n \times n},
+\end{split}
+\end{equation*}
+Let us demonstrate the method $\operator{cubMap}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_cubMap}
+\end{minipage}
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations-aux/example_cubMap}
+\end{minipage}
+\end{center}
+
+
+\subsubsubsection{enclose}
+
+The method \operator{enclose} computes an enclosure of a set and its linear transformation. Given the sets $\mathcal{S}_1,\mathcal{S}_2 \in \Rn$ and the matrix $M \in \R^{n \times n}$, \operator{enclose} computes the set
+\begin{equation}
+	\operator{enclose}(\mathcal{S}_1,M,\mathcal{S}_2) = \left \{ \lambda s_1 + (1-\lambda) (Ms_1 +s_2) ~|~ s_1 \in \mathcal{S}_1,~s_2 \in \mathcal{S}_2,~\lambda \in [0,1] \right\}.
+	\label{eq:enclose}
+\end{equation}
+If the set as defined in \eqref{eq:enclose} cannot be computed exactly for the corresponding set representation, \operator{enclose} returns an over-approximation. For convenience, the method can also be called with only two input arguments:
+\begin{equation*}
+	\operator{enclose}(\mathcal{S}_1,\mathcal{S}_3) = \operator{enclose}(\mathcal{S}_1,M,\mathcal{S}_2), ~~~ \mathcal{S}_3 = (M \otimes \mathcal{S}_1) \oplus \mathcal{S}_2.
+\end{equation*}
+Let us demonstrate the method $\operator{enclose}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.37\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_enclose}
+\end{minipage}
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations-aux/example_enclose}
+\end{minipage}
+\end{center}
+
+\vspace{1cm}
+
+\subsubsubsection{enclosePoints}
+
+Given a point cloud $P = [p_1,\dots,p_m]$, $p_i \in \Rn$, the static method \operator{enclosePoints} computes a set $\mathcal{S} \subset \Rn$ that tightly encloses the point cloud:
+\begin{equation*}
+	\mathcal{S} = \operator{enclosePoints}\big([p_1,\dots,p_m]\big), ~~ \forall i = 1,\dots,m: ~ p_i \in \mathcal{S}.
+\end{equation*}
+
+Let us demonstrate the method \operator{enclosePoints} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.50\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_enclosePoints}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations-aux/example_enclosePoints}
+\end{minipage}
+\end{center}
+
+\vspace{1cm}
+
+\subsubsubsection{generateRandom}
+
+The static method \operator{generateRandom} randomly generates a set of the given set representation. If no input arguments are provided, the method generates a random set of arbitrary dimension. The desired dimension and other specifications for the set can be provided by name-value pairs:
+\begin{equation*}
+	\mathcal{S} = \operator{generateRandom}(\texttt{'Dimension'},n), ~~~ \mathcal{S} \subset \R^{\texttt{n}}.
+\end{equation*}
+The additionally supported name-value pairs of the method \operator{generateRandom} for each class are detailed in their respective function description. Let us demonstrate the method \operator{generateRandom} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_generateRandom}
+\end{minipage}
+\begin{minipage}[t]{0.25\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}
+	Command Window:
+		
+	S = 
+  [-1.4113, 0.8993]
+  [-2.6153, -1.1773]
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations-aux/example_generateRandom}
+\end{minipage}
+\end{center}
+
+\vspace{1cm}
+
+\subsubsubsection{linComb}
+\label{sec:linComb}
+
+The method \operator{linComb} implements the linear combination of two sets. Given two sets $\mathcal{S}_1,\mathcal{S}_2 \subset \Rn$, their linear combination is defined as 
+\begin{equation*}
+	\operator{linComb}(\mathcal{S}_1,\mathcal{S}_2) = \left \{ \lambda s_1 + (1-\lambda) s_2 ~|~ s_1 \in \mathcal{S}_1,~s_2 \in \mathcal{S}_2,~\lambda \in [0,1] \right\}.
+\end{equation*}
+Note that for convex sets the linear combination is identical to the convex hull (see \cref{sec:convHull}). For non-convex sets, however, the two operations differ.
+Let us demonstrate the method $\operator{linComb}$ by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.38\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_linComb}
+\end{minipage}
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations-aux/example_linComb}
+\end{minipage}
+\end{center}
+
+\subsubsubsection{randPoint}
+
+The method \operator{randPoint} returns random points located inside a set. Given a set $\mathcal{S} \subset \Rn$, the method \operator{randPoint} generates random points $p = [p_1,\dots,p_N] \in \R^{n \times N}$ with $p_1,\dots, p_N \in \mathcal{S}$:
+\begin{equation*}
+	\begin{split}
+		& p = \operator{randPoint}(\mathcal{S}), \\
+		& p = \operator{randPoint}(\mathcal{S},N), \\
+		& p = \operator{randPoint}(\mathcal{S},N,\texttt{type}),
+   \end{split}
+\end{equation*}
+where $N \in \mathbb{N}_{> 0}$ is the desired number of points, and \texttt{type} specifies the desired type random points. The setting \texttt{type = 'extreme'} aims to generate points close to or on the boundary of the set, while \texttt{type = 'standard'} generates arbitrary points within the set. In contrast, the setting \texttt{type = 'uniform'} generates uniformly distributed points within the set, potentially at the cost of a longer runtime. The default values are $N = 1$ and \texttt{type = 'standard'}. Let us demonstrate the method \operator{randPoint} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_randPoint}
+\end{minipage}
+\begin{minipage}[t]{0.2\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}
+	Command Window:
+		
+	p =
+
+    0.2747
+   -1.1657
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations-aux/example_randPoint}
+\end{minipage}
+\end{center}
+
+\vspace{1cm}
+
+\subsubsubsection{reduce}
+
+The method \operator{reduce} encloses a set by another set with a smaller representation size. Given a set $\mathcal{S} \subset \Rn$, the method \operator{reduce} computes
+\begin{equation}
+	\operator{reduce}(\mathcal{S},\texttt{method},\texttt{order}) = \overline{\mathcal{S}}, ~~~ \mathcal{S} \subseteq \overline{\mathcal{S}},
+	\label{eq:reduce}
+\end{equation}
+where the representation size of $\overline{\mathcal{S}}$ is smaller than the one of $\mathcal{S}$. The parameter \texttt{method} in \eqref{eq:reduce} is a string that specifies the algorithm to be applied, see \cref{tab:zono_reduction}. The parameter \texttt{order} in \eqref{eq:reduce} is a measure for the desired representation size of the resulting set $\overline{\mathcal{S}}$. Currently, the method \operator{reduce} is implemented for the zonotopic set representations \texttt{zonotope} (see \cref{sec:zonotope}), \texttt{conZonotope} (see \cref{sec:conZonotope}), \texttt{polyZonotope} (see \cref{sec:polynomialZonotopes}), and \texttt{probZonotope} (see \cref{sec:probabilisticZonotopes}), where $\texttt{order} = \frac{p}{n}$ is defined as the division of the number of generator vectors $p$ by the system dimension $n$. Let us demonstrate the method \operator{reduce} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.35\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_reduce}
+\end{minipage}
+\begin{minipage}[t]{0.6\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations-aux/example_reduce}
+\end{minipage}
+\end{center}
+
+
+\begin{table}[h]
+	\caption{Reduction techniques for zonotopic set representations.}
+	\centering
+	\label{tab:zono_reduction}
+	\begin{tabular}{lll}
+		\toprule
+		\textbf{Technique} & \textbf{Primary use} & \textbf{Reference} \\
+		\midrule
+		\texttt{cluster} & Reduction to low order by clustering generators & \cite[Sec.~III.B]{Kopetzki2017} \\
+		\texttt{combastel} & Reduction of high to medium order & \cite[Sec.~3.2]{Combastel2003} \\
+		\texttt{constOpt} & Reduction to low order by optimization & \cite[Sec.~III.D]{Kopetzki2017} \\
+		\texttt{girard} & Reduction of high to medium order & \cite[Sec. ~.4]{Girard2005} \\
+		\texttt{methA} & Reduction to low order by volume minimization (A) & Meth. A, \cite[Sec.~2.5.5]{Althoff2010a} \\
+		\texttt{methB} & Reduction to low order by volume minimization (B) & Meth. B, \cite[Sec.~2.5.5]{Althoff2010a} \\
+		\texttt{methC} & Reduction to low order by volume minimization (C) & Meth. C, \cite[Sec.~2.5.5]{Althoff2010a} \\
+		\texttt{scott} & Reduction to low order  & \cite[Appendix]{Scott2016} \\
+		\texttt{pca} & Reduction of high to medium order using PCA & \cite[Sec.~III.A]{Kopetzki2017} \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
+\subsubsubsection{supportFunc}
+
+The method \operator{supportFunc} computes the support function for a specific direction. Given a set $\mathcal{S} \in \Rn$ and a vector $l \in \Rn$, the support function is defined as
+\begin{equation*}
+	\operator{supportFunc}(\mathcal{S},l) = \max_{x \in \mathcal{S}} ~l^T~x.
+\end{equation*}
+The function also supports the computation of the lower bound, which can be calculated using the flag \texttt{'lower'}:
+\begin{equation*}
+	\operator{supportFunc}(\mathcal{S},l,\texttt{'lower'}) = \min_{x \in \mathcal{S}} ~l^T~x.
+\end{equation*}
+Additionally, one can return both the lower and upper bounds by using the flag \texttt{'range'}.
+Let us demonstrate the method \operator{supportFunc} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_supportFunc}
+\end{minipage}
+\begin{minipage}[t]{0.2\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}
+	Command Window:
+		
+	res = 6
+	\end{verbatim}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations-aux/example_supportFunc}
+\end{minipage}
+\end{center}
+
+
+\subsubsubsection{plot}
+
+The method \operator{plot} visualizes a 2-dimensional projection of the boundary of a set. Given a set $\mathcal{S} \subset \Rn$, the method \operator{plot} supports the following syntax:
+\begin{equation*}
+	\begin{split}
+		&\texttt{han} = \operator{plot}(\mathcal{S}), \\
+		&\texttt{han} = \operator{plot}(\mathcal{S},\texttt{dims}), \\
+		&\texttt{han} = \operator{plot}(\mathcal{S},\texttt{dims},\texttt{linespec}), \\
+		&\texttt{han} = \operator{plot}(\mathcal{S},\texttt{dims},\texttt{namevaluepairs}), \\
+	\end{split}
+\end{equation*}
+where \texttt{han} is a handle to the plotted MATLAB graphics object and the additional input arguments are defined as
+
+\begin{itemize}
+	\item \texttt{dims}: Integer vector $\texttt{dims} \in \mathbb{N}_{\leq n}^2$ specifying the dimensions for which the projection is visualized (default value: \texttt{dim = [1 2]}).
+	\item \texttt{linespec}: (optional) line specifications, e.g., \texttt{'--*r'}, as supported by MATLAB\footnote{\url{https://de.mathworks.com/help/matlab/ref/linespec.html}}.
+	\item \texttt{namevaluepairs}: (optional) further specifications as name-value pairs, e.g.,
+	\texttt{'LineWidth',2} and \texttt{'FaceColor',[.5 .5 .5]}, as supported by MATLAB.
+	If the plot is not filled, these are the built-in
+	Line Properties\footnote{\url{https://de.mathworks.com/help/matlab/ref/matlab.graphics.chart.primitive.line-properties.html}},
+	if the plot is filled, they correspond to the Patch Properties\footnote{\url{https://de.mathworks.com/help/matlab/ref/matlab.graphics.primitive.patch-properties.html}}.
+\end{itemize}
+
+Let us demonstrate the method  \operator{plot} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_plot}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-operations-aux/example_plot}
+\end{minipage}
+\end{center}
+
+
+\vspace{1cm}
+
+\subsubsubsection{project}
+
+The method \operator{project} projects a set to a lower-dimensional, axis-aligned subspace. Given a set $\mathcal{S} \subset \Rn$ and a vector of subspace indices $\texttt{dims} \in \mathbb{N}_{\leq n}^m$, the method \operator{project} returns
+\begin{equation*}
+	\operator{project}(\mathcal{S},\texttt{dims}) = \Big \{ [s_{(\texttt{dims}_{(1)})},\dots,s_{(\texttt{dims}_{(m)})}]^T ~\Big |~ s \in \mathcal{S} \Big \} \subset \R^m,
+\end{equation*}
+where $s_{(i)}$ denotes the i-th entry of vector $s$. Let us demonstrate the method  \operator{project} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_project}
+\end{minipage}
+\begin{minipage}[t]{0.25\textwidth}
+	\vspace{10pt}
+
+	\begin{verbatim}	
+	Command Window:
+	
+	res = 
+ [1.00000,3.00000]
+ [5.00000,7.00000]
+ [0.00000,2.00000]
+	\end{verbatim}
+\end{minipage}
+\end{center}
+
+A set can be projected into a higher-dimensional space using the function \operator{projectHighDim},
+where the new dimensions are bounded at 0.
+On the other hand, the function \operator{lift} lifts the set into a higher-dimensional space with unbounded new dimensions.

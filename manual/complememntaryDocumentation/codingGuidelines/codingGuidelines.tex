@@ -1,0 +1,73 @@
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+
+%% Sets page size and margins
+\usepackage[a4paper,top=2.5cm,bottom=2cm,left=2cm,right=2.5cm,%
+marginparwidth=1.75cm]{geometry}
+
+%\setlength\parindent{0pt}
+\usepackage{setspace}
+\setstretch{1.44}%  default
+\setlength{\parindent}{0pt}
+
+% header
+\newcommand{\subheading}[1]{\bigskip \textbf{\textsc{#1.~~}}}
+
+% references
+\newcommand{\tabref}[1]{\cref{#1}}
+
+% colors and code
+\usepackage{xcolor}
+\usepackage{fancyvrb}
+\usepackage{listings}
+\lstset
+{
+	language=[LaTeX]TeX,
+	breaklines=true,
+	basicstyle=\tt,
+	keywordstyle=\color{blue},
+	identifierstyle=\color{black},
+}
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333}
+\usepackage{cprotect}
+\newcommand{\mcomment}[1]{\textcolor{mgreen}{\texttt{#1}}}
+
+% for tables
+\usepackage{booktabs}
+
+\usepackage{cleveref}
+
+\begin{document}
+	
+\begin{center}
+	\Large
+	\textbf{
+		CORA - Coding Guidelines
+	} \\ \medskip
+	\small Mark Wetzlinger; June 8 -- \today
+\end{center}
+
+
+The following coding guidelines originate from years of experience in CORA development, maintenance, and support.
+Following these guidelines ensures a more robust and sustainable development of new functionality as well as seamless integration of other code into CORA.
+
+% HEADERS
+\input{headerfooter.tex}
+
+% INPUT ARGUMENT VALIDATION
+\input{IO.tex}
+
+% ERRORS MESSAGES
+\input{errors.tex}
+
+% NAMING CONVENTIONS
+\input{namingconventions.tex}
+
+% EXAMPLES AND UNIT TESTS
+\input{examplesunittests.tex}
+
+	
+\end{document}

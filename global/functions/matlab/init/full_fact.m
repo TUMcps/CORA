@@ -35,6 +35,8 @@ function des_mat = full_fact(varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,Inf);
+
 for i=1:nargin
     levels(i)=length(varargin{i});
     % Converting row vector to column vector
@@ -42,11 +44,9 @@ for i=1:nargin
         varargin{i}=varargin{i}';
     end
 end
-% Check number of variables and levels of each variable
-if nargin<2
-    throw(CORAerror('CORA:notEnoughInputArgs',2));
-end
-if ~all(levels >1)
+
+% check number of variables and levels of each variable
+if ~all(levels > 1)
     throw(CORAerror('CORA:wrongValue','first',...
         'Each variable should have minimum 2 levels'));
 end

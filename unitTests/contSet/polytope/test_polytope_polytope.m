@@ -25,9 +25,7 @@ function res = test_polytope_polytope
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
 tol = 1e-12;
-
 
 % instantiate from H-representation ---------------------------------------
 
@@ -35,43 +33,43 @@ tol = 1e-12;
 A = [1 0 -1 0 1; 0 1 0 -1 1]';
 b = [3; 2; 3; 2; 1];
 P = polytope(A,b);
-res(end+1,1) = compareMatrices([A,b]',[P.A,P.b]',tol);
+assert(compareMatrices([A,b]',[P.A,P.b]',tol));
 
 % only equalities
 Ae = [1 1]; be = 1;
 P = polytope([],[],Ae,be);
-res(end+1,1) = compareMatrices([Ae,be]',[P.Ae,P.be]',tol);
+assert(compareMatrices([Ae,be]',[P.Ae,P.be]',tol));
 
 % inequalities and equalities
 A = [1 0 1; -1 0 0; 0 -1 0]; b = [1; 2; 1];
 Ae = [0 1 1]; be = 0;
 P = polytope(A,b,Ae,be);
-res(end+1,1) = compareMatrices([A,b]',[P.A,P.b]',tol);
-res(end+1,1) = compareMatrices([Ae,be]',[P.Ae,P.be]',tol);
+assert(compareMatrices([A,b]',[P.A,P.b]',tol));
+assert(compareMatrices([Ae,be]',[P.Ae,P.be]',tol));
 
 % inequalities with Inf
 A = [1 0; 0 1];
 b = [Inf; 3];
 P = polytope(A,b);
-res(end+1,1) = compareMatrices([0,1,3]',[P.A,P.b]',tol);
+assert(compareMatrices([0,1,3]',[P.A,P.b]',tol));
 
 % inequalities with -Inf
 A = [1 0 0; -1 1 0; -1 -1 0; 0 0 1; 0 0 -1];
 b = [3;2;3;-Inf;1];
 P = polytope(A,b);
-res(end+1,1) = representsa(P,'emptySet') ...
-                && ~isempty(P.emptySet.val) && P.emptySet.val ...
+assert(representsa(P,'emptySet'))
+assert(~isempty(P.emptySet.val) && P.emptySet.val ...
                 && ~isempty(P.bounded.val) && P.bounded.val ...
-                && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+                && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % equalities with Inf
 A = [1 0; -1 1; -1 -1]; b = [1;1;1];
 Ae = [1 1]; be = Inf;
 P = polytope(A,b,Ae,be);
-res(end+1,1) = representsa(P,'emptySet') ...
-                && ~isempty(P.emptySet.val) && P.emptySet.val ...
+assert(representsa(P,'emptySet'))
+assert(~isempty(P.emptySet.val) && P.emptySet.val ...
                 && ~isempty(P.bounded.val) && P.bounded.val ...
-                && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+                && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 
 % instantiate from V-representation ---------------------------------------
@@ -80,41 +78,41 @@ res(end+1,1) = representsa(P,'emptySet') ...
 V = zeros(1,0);
 P = polytope(V);
 % check emptiness and boundedness
-res(end+1,1) = ~isempty(P.emptySet.val) && P.emptySet.val ...
-    && ~isempty(P.bounded.val) && P.bounded.val;
+assert(~isempty(P.emptySet.val) && P.emptySet.val ...
+    && ~isempty(P.bounded.val) && P.bounded.val);
 
 % 1D
 V = [-2 1 5 4 2 2];
 P = polytope(V);
 % true solution
 P_true = polytope([1;-1],[5;2]);
-res(end+1,1) = P == P_true ...
-    && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
-    && ~isempty(P.bounded.val) && P.bounded.val;
+assert(P == P_true)
+assert(~isempty(P.emptySet.val) && ~P.emptySet.val ...
+    && ~isempty(P.bounded.val) && P.bounded.val);
 
 % 1D: only one point
 V = -5;
 P = polytope(V);
 % true solution
 P_true = polytope([],[],1,-5);
-res(end+1,1) = P == P_true;
+assert(P == P_true);
 
 % 1D: only one point
 V = 3;
 P = polytope(V);
 % true solution
 P_true = polytope([1;-1],[3;-3]);
-res(end+1,1) = P == P_true;
+assert(P == P_true);
 
 % 1D, with Inf
 V = [-Inf, 2];
 P = polytope(V);
 % true solution
 P_true = polytope(1,2);
-res(end+1,1) = P == P_true ...
-    && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
+assert(P == P_true)
+assert(~isempty(P.emptySet.val) && ~P.emptySet.val ...
     && ~isempty(P.bounded.val) && ~P.bounded.val ...
-    && ~isempty(P.fullDim.val) && P.fullDim.val;
+    && ~isempty(P.fullDim.val) && P.fullDim.val);
 
 
 % 2D: non-degenerate
@@ -122,9 +120,9 @@ V = [1 -1 -1 1; 1 -1 1 -1];
 P = polytope(V);
 % true solution
 P_true = polytope([1 0; 0 1;-1 0;0 -1],ones(4,1));
-res(end+1,1) = P == P_true ...
-    && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
-    && ~isempty(P.bounded.val) && P.bounded.val;
+assert(P == P_true)
+assert(~isempty(P.emptySet.val) && ~P.emptySet.val ...
+    && ~isempty(P.bounded.val) && P.bounded.val);
 
 % 2D: only one point
 V = [1;-2];
@@ -132,7 +130,7 @@ P = polytope(V);
 
 % true solution
 P_true = polytope([1 0; 0 1;-1 0;0 -1],[1;-2;-1;2]);
-res(end+1,1) = P == P_true;
+assert(P == P_true);
 
 % 2D: degenerate #1
 V = [2 2; 2 6]';
@@ -140,7 +138,7 @@ P = polytope(V);
 
 % true solution (scale offset accordingly)
 P_true = polytope([1 0; 0 1; -1 0; 0 -1],[2;6;-2;-2]);
-res(end+1,1) = P == P_true;
+assert(P == P_true);
 
 % 2D: degenerate #2
 V = [2 3; -5 3]';
@@ -148,9 +146,9 @@ P = polytope(V);
 
 % true solution (scale offset accordingly)
 P_true = polytope([1 0; 0 1; -1 0; 0 -1],[2;3;5;-3]);
-res(end+1,1) = P == P_true ...
-    && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
-    && ~isempty(P.bounded.val) && P.bounded.val;
+assert(P == P_true)
+assert(~isempty(P.emptySet.val) && ~P.emptySet.val ...
+    && ~isempty(P.bounded.val) && P.bounded.val);
 
 % 2D: degenerate #2
 V = [-3 4; 0 0; 3 -4]';
@@ -158,9 +156,9 @@ P = polytope(V);
 
 % true solution (scale offset accordingly)
 P_true = polytope([3 -4; -3 4; 4 3; -4 -3],[25;25;0;0]);
-res(end+1,1) = P == P_true ...
-    && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
-    && ~isempty(P.bounded.val) && P.bounded.val;
+assert(P == P_true)
+assert(~isempty(P.emptySet.val) && ~P.emptySet.val ...
+    && ~isempty(P.bounded.val) && P.bounded.val);
 
 
 % 3D: degenerate set (rotated square + translation)
@@ -170,9 +168,9 @@ P = polytope(V);
 
 % another true solution (non-unique)
 P_true = polytope([1 1 0; -1 1 0; -1 -1 0; 1 -1 0],ones(4,1),[0 0 1],0) + shift;
-res(end+1,1) = isequal(P,P_true,1e-8) ...
-    && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
-    && ~isempty(P.bounded.val) && P.bounded.val;
+assert(isequal(P,P_true,1e-8))
+assert(~isempty(P.emptySet.val) && ~P.emptySet.val ...
+    && ~isempty(P.bounded.val) && P.bounded.val);
 
 % 3D: single vertex
 V = [1; 1; 1];
@@ -180,9 +178,9 @@ P = polytope(V);
 
 % another true solution (non-unique)
 P_true = polytope([eye(3); -eye(3)],[ones(3,1);-ones(3,1)]);
-res(end+1,1) = P == P_true ...
-    && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
-    && ~isempty(P.bounded.val) && P.bounded.val;
+assert(P == P_true)
+assert(~isempty(P.emptySet.val) && ~P.emptySet.val ...
+    && ~isempty(P.bounded.val) && P.bounded.val);
 
 % 5D: 3D cube
 V = vertices(interval(-ones(3,1),ones(3,1)));
@@ -196,7 +194,7 @@ A_true = [eye(3) zeros(3,2); -eye(3) zeros(3,2)];
 b_true = ones(6,1);
 Ae_true = [0 0 0 1 0; 0 0 0 0 1]; be_true = [0;0];
 P_true = M * polytope(A_true,b_true,Ae_true,be_true);
-res(end+1,1) = isequal(P,P_true,1e-8); % && ~P.emptySet.val && P.bounded.val; % add empty property checks!
+assert(isequal(P,P_true,1e-8)); % && ~P.emptySet.val && P.bounded.val
 
 
 % copy constructor (empty)
@@ -204,19 +202,15 @@ A = [1 0; -1 0]; b = [2; -4];
 P = polytope(A,b);
 representsa_(P,'emptySet',1e-10);
 P_copy = polytope(P);
-res(end+1,1) = ~isempty(P_copy.emptySet.val) && ~isempty(P_copy.bounded.val) ...
-    && ~isempty(P_copy.fullDim.val);
+assert(~isempty(P_copy.emptySet.val) && ~isempty(P_copy.bounded.val) ...
+    && ~isempty(P_copy.fullDim.val));
 
 % copy constructor (bounded)
 A = [1 0; -1 1; -1 -1]; b = [2; 2; 1];
 P = polytope(A,b);
 isBounded(P);
 P_copy = polytope(P);
-res(end+1,1) = ~isempty(P_copy.bounded.val);
-
-
-% combine results
-res = all(res);
+assert(~isempty(P_copy.bounded.val));
 
 
 % wrong initializations
@@ -227,31 +221,20 @@ Vinf = [1 Inf 0; 0 -1 1];
 Vnan = [1 NaN 0; 0 -1 1];
 
 % dimension mismatch
-try
-    P = polytope(A,b_);
-    throw(CORAerror('CORA:testFailed'));
-end
+assertThrowsAs(@polytope,'CORA:wrongInputInConstructor',A,b_);
 
 % empty argument
-try
-    P = polytope([],b);
-    throw(CORAerror('CORA:testFailed'));
-end
+assertThrowsAs(@polytope,'CORA:wrongInputInConstructor',[],b);
 
 % too many arguments
-try
-    P = polytope(A,b,A,b,A);
-    throw(CORAerror('CORA:testFailed'));
-end
+assertThrowsAs(@polytope,'CORA:numInputArgsConstructor',A,b,A,b,A);
 
 % non-finite vertices
-try
-    P = polytope(Vinf);
-    throw(CORAerror('CORA:testFailed'));
-end
-try
-    P = polytope(Vnan);
-    throw(CORAerror('CORA:testFailed'));
-end
+assertThrowsAs(@polytope,'CORA:wrongInputInConstructor',Vinf);
+assertThrowsAs(@polytope,'CORA:wrongInputInConstructor',Vnan);
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

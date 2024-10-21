@@ -20,12 +20,13 @@ function result = expmDifferentAlgorithms(intMat,maxOrder,styleOfCalculation,var
 %
 % Example: 
 %
-% Other m-files required: hornerTaylorSeries.m, taylorSeries.m,
-%           intervalMatrixRemainder.m, scalingSquaringHornerTaylorSeries
+% Other m-files required: priv_hornerTaylorSeries.m, priv_taylorSeries.m,
+%    priv_intervalMatrixRemainder.m,
+%    priv_scalingSquaringHornerTaylorSeries.m
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: none
 
 % Authors:       Ivan Brkan
 % Written:       23-April-2019
@@ -34,40 +35,36 @@ function result = expmDifferentAlgorithms(intMat,maxOrder,styleOfCalculation,var
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-try
+switch styleOfCalculation
 
-    switch styleOfCalculation
-   
-        case 0 
-            % case of truncated Taylor series
-            result = taylorSeries(intMat,maxOrder);
-        case 1 
-            % case of truncated Taylor series using horner scheme
-            result = hornerTaylorSeries(intMat,maxOrder);
-        case 2 
-            % case of truncated Taylor series using horner scheme and the
-            switch length(varargin)
-                case 0       
-                    % no potential was given as attribute,
-                    % so 1 is used as the default value
-                    result = scalingSquaringHornerTaylorSeries(intMat,maxOrder,1);
-                case 1
-                    tmp = cell2mat(varargin);
-                    result = scalingSquaringHornerTaylorSeries(intMat,maxOrder,tmp(1));
-                otherwise 
-                    result = [];
-            end
+    case 0 
+        % case of truncated Taylor series
+        result = priv_taylorSeries(intMat,maxOrder);
 
-        case 4 
-            r = 1;
-            result = expm(intMat,r,maxOrder);
+    case 1 
+        % case of truncated Taylor series using horner scheme
+        result = priv_hornerTaylorSeries(intMat,maxOrder);
 
-        otherwise
-            result = [];        
-    end
-    
-catch
-    result = [];
+    case 2 
+        % case of truncated Taylor series using horner scheme and the
+        switch length(varargin)
+            case 0       
+                % no potential was given as attribute,
+                % so 1 is used as the default value
+                result = priv_scalingSquaringHornerTaylorSeries(intMat,maxOrder,1);
+            case 1
+                tmp = cell2mat(varargin);
+                result = priv_scalingSquaringHornerTaylorSeries(intMat,maxOrder,tmp(1));
+            otherwise 
+                result = [];
+        end
+
+    case 4
+        r = 1;
+        result = expm(intMat,r,maxOrder);
+
+    otherwise
+        result = [];
 end
 
 % ------------------------------ END OF CODE ------------------------------

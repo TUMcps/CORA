@@ -1,19 +1,19 @@
-function zB = or(zB1, varargin)
+function S_out = or(zB,S,varargin)
 % or - Computes an over-approximation for the union of zonoBundle objects
 %
 % Syntax:
-%    zB = or(zB1, zB2)
-%    zB = or(zB1, ... , zBm)
-%    zB = or(zB1, ... , zBm, alg)
-%    zB = or(zB1, ... , zBm, alg, order)
+%    zB = zB | S
+%    zB = or(zB,S)
+%    zB = or(zB,S,alg,order)
 %
 % Inputs:
-%    zB1,...,zBm - zonoBundle objects
-%    alg - algorithm used to compute the union ('linProg' or 'tedrake')
+%    zB - zonoBundle object
+%    S - contSet object, numeric
+%    alg - algorithm used to compute the union ('linprog' or 'tedrake')
 %    order - zonotope order of the enclosing zonotope
 %
 % Outputs:
-%    zB - resulting zonoBundle object enclosing the union
+%    S_out - resulting zonoBundle object enclosing the union
 %
 % Example: 
 %    Z1 = zonotope([0 1 2 0;0 1 0 2]);
@@ -32,7 +32,7 @@ function zB = or(zB1, varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval/or, zonotope/or
+% See also: conZonotope/or
 
 % Authors:       Niklas Kochdumper
 % Written:       26-November-2019
@@ -41,9 +41,9 @@ function zB = or(zB1, varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% convert to conZonotope and call conZonotope method
-zB1 = conZonotope(zB1);
-cZ = or(zB1, varargin{:});
-zB = zonoBundle(cZ);
+% convert to constrained zonotope, call conZonotope method
+S_out = or(conZonotope(zB),S,varargin{:});
+% convert back to zonotope bundle
+S_out = zonoBundle(S_out);
     
 % ------------------------------ END OF CODE ------------------------------

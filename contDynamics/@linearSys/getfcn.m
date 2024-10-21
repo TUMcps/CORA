@@ -1,17 +1,16 @@
-function [handle] = getfcn(obj,options)
+function han = getfcn(linsys,params)
 % getfcn - returns the function handle of the continuous function specified
-% by the linear system object
+%    by the linear system object
 %
 % Syntax:
-%    [handle] = getfcn(obj)
+%    han = getfcn(linsys,params)
 %
 % Inputs:
-%    obj - linearSys object
+%    linsys - linearSys object
+%    params - model parameters
 %
 % Outputs:
-%    handle - function handle
-%
-% Example: 
+%    han - function handle
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,14 +26,6 @@ function [handle] = getfcn(obj,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if ~isempty(obj.c)
-    c = obj.c;
-else
-    c = 0;
-end
-
-handle = @(t,x) obj.A*x + obj.B*options.u + c + options.w;
-
-end
+han = @(t,x) linsys.A*x + linsys.B*params.u + linsys.c + linsys.E*params.w;
 
 % ------------------------------ END OF CODE ------------------------------

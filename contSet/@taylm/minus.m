@@ -53,7 +53,7 @@ function res = aux_s_minus(factor1, factor2)
     if isa(factor1, 'taylm') && isa(factor2, 'taylm')
 
         % find the common variables 
-        [factor1, factor2] = rescale_dim(factor1, factor2);
+        [factor1, factor2] = priv_rescale_dim(factor1, factor2);
         res = factor1;
 
         % Addition
@@ -61,10 +61,10 @@ function res = aux_s_minus(factor1, factor2)
         res.monomials = [factor1.monomials; factor2.monomials];
         
         % Merge the properties of the two taylor models
-        res = mergeProperties(res,factor1,factor2);
+        res = priv_mergeProperties(res,factor1,factor2);
 
         % Reduce number of terms of the resulting Taylor model
-        [res] = compress(res);
+        res = priv_compress(res);
 
         res.remainder = factor1.remainder - factor2.remainder;
 

@@ -38,12 +38,12 @@ function val = supportFunc_(pZ,dir,type,method,maxOrderOrSplits,tol,varargin)
 %    dir = [1;2];
 %    
 %    b1 = supportFunc(pZ,dir,'range','interval');
-%    ub1 = conHyperplane(dir,supremum(b1));
-%    lb1 = conHyperplane(dir,infimum(b1));
+%    ub1 = polytope([],[],dir',supremum(b1));
+%    lb1 = polytope([],[],dir',infimum(b1));
 %
 %    b2 = supportFunc(pZ,dir,'range','globOpt');
-%    ub2 = conHyperplane(dir,supremum(b2));
-%    lb2 = conHyperplane(dir,infimum(b2));
+%    ub2 = polytope([],[],dir',supremum(b2));
+%    lb2 = polytope([],[],dir',infimum(b2));
 %
 %    figure; hold on;
 %    plot(pZ,[1,2],'FaceColor','r');

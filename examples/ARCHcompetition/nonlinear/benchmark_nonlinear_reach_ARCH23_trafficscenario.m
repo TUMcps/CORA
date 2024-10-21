@@ -328,17 +328,17 @@ function aux_exportOccupancySet(fileSol,O)
     
     % loop over all occupancy sets
     for i = 1:length(O)
-       V = O{i}.set.set.Vertices;
+       V = vertices_(O{i}.set);
        fprintf(fid,'%f;',infimum(O{i}.time)); 
-       for j = 1:size(V,1)-1
-           fprintf(fid,'%f;',V(j,1)); 
+       for j = 1:size(V,2)-1
+           fprintf(fid,'%f;',V(1,j)); 
        end
-       fprintf(fid,'%f\n',V(end,1)); 
+       fprintf(fid,'%f\n',V(1,end)); 
        fprintf(fid,'%f;',supremum(O{i}.time));
-       for j = 1:size(V,1)-1
-           fprintf(fid,'%f;',V(j,2)); 
+       for j = 1:size(V,2)-1
+           fprintf(fid,'%f;',V(2,j)); 
        end
-       fprintf(fid,'%f\n',V(end,2)); 
+       fprintf(fid,'%f\n',V(2,end)); 
     end
 
     fclose(fid);
@@ -351,7 +351,7 @@ function res = aux_checkInputConstraints(R,u,K)
     U = interval([-0.7;-11],[0.7;11]);
     
     % set of applied control input
-    U_ = [];
+    U_ = interval.empty(2);
     
     for i = 1:length(K)
         for j = 1:length(R(i).timeInterval.set)

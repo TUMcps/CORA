@@ -28,9 +28,8 @@ function varargout = size(intMat,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin > 2
-    throw(CORAerror('CORA:tooManyInputArgs',2));
-elseif nargin > 1
+narginchk(1,2);
+if nargin > 1
     [varargout{1:nargout}] = size(intMat.int.inf,varargin{1});
 else
     [varargout{1:nargout}] = size(intMat.int.inf);

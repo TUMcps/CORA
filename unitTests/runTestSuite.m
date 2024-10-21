@@ -16,6 +16,9 @@ function runTestSuite(varargin)
 %                   'mosek': prefix = 'testMOSEK'
 %                   'sdpt3': prefix = 'testSDPT3'
 %                   'nn': prefixes 'test_nn', 'test_neurNetContrSys', 'testnn'
+%                   'examples': prefix 'example'
+%                   'benchmark': prefix 'benchmark'
+%                   'testHeader': examples in docstring headers
 %                 adding ':failed', only tests that failed in the last run
 %                 are executed
 %    verbose - (optional) true/false for logging results on command window

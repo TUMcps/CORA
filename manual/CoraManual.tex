@@ -1,0 +1,142 @@
+\documentclass[11pt,a4paper]{article}
+
+% meta data
+\input{./sections/metadata}
+
+% packages etc.
+\input{./sections/preamble}
+
+% uncomment the following line to only build a specific section (works only with \include!)
+% \includeonly{./sections/neuralNetworks/neuralNetworksMain.tex} % specify respective source file
+
+% ------------------------------------------------------------------------
+% BEGIN DOCUMENT
+% ------------------------------------------------------------------------
+\logToConsole{BEGIN DOCUMENT}
+
+\begin{document}
+
+    % cover page
+    \input{./sections/cover}
+
+    \newpage
+    \pagecolor{white}
+
+    % abstract
+    \include{./sections/abstract}
+
+    \newpage
+
+    % table of contents
+    \tableofcontents
+
+    \newpage
+
+% ------------------------------------------------------------------------
+% INTRODUCTION
+% ------------------------------------------------------------------------
+
+    \include{./sections/introduction/introductionMain}
+    \newpage
+
+% ------------------------------------------------------------------------
+% SET REPRESENTATIONS AND OPERATIONS
+% ------------------------------------------------------------------------
+
+    \include{./sections/set/setMain}
+    \newpage
+
+% ------------------------------------------------------------------------
+% MATRIX SET REPRESENTATIONS
+% ------------------------------------------------------------------------
+
+    \include{./sections/matrixSets/matrixSetMain}
+    \newpage
+
+% ------------------------------------------------------------------------
+% DYNAMICAL SYSTEMS
+% ------------------------------------------------------------------------
+
+    \include{./sections/dynamicSystems/dynamicSystemMain}
+    \newpage
+
+% ------------------------------------------------------------------------
+% DISCRETE SYSTEMS
+% ------------------------------------------------------------------------ 
+
+    \include{./sections/discreteDynamics/discreteDynamicsMain}
+    \newpage
+
+% -----------------------------------------------------------------------
+% ADDITIONAL FUNCTIONALITY
+% -----------------------------------------------------------------------
+
+    \include{./sections/neuralNetworks/neuralNetworksMain}
+    \newpage
+
+% -----------------------------------------------------------------------
+% ADDITIONAL FUNCTIONALITY
+% -----------------------------------------------------------------------
+
+    \include{./sections/addFunctionality/addFunctionalityMain}
+    \newpage
+
+% ------------------------------------------------------------------------
+% LOADING SPACEEX MODELS
+% ------------------------------------------------------------------------ 
+
+    \include{./sections/spaceExConversion/loadingSpaceExModels}
+    \newpage
+
+% ------------------------------------------------------------------------
+% GRAPHICAL USER INTERFACE
+% ------------------------------------------------------------------------ 
+
+    \include{./sections/gui/guiMain}
+    \newpage
+
+% ------------------------------------------------------------------------
+% EXAMPLES
+% ------------------------------------------------------------------------ 
+
+    \include{./sections/examples/examplesMain}
+    \newpage
+
+% ------------------------------------------------------------------------
+% CONCLUSION
+% ------------------------------------------------------------------------ 
+
+    \include{./sections/conclusion/conclusionMain}
+    \newpage
+
+% ------------------------------------------------------------------------
+% APPENDIX
+% ------------------------------------------------------------------------ 
+
+    \appendix
+    \include{./sections/appendix/appendixMain}
+    \newpage
+
+% ------------------------------------------------------------------------
+% REFERENCES
+% ------------------------------------------------------------------------
+
+    \addcontentsline{toc}{section}{References}
+    \small
+    \bibliography{althoff_own,althoff_other,grebenyuk}
+    %\bibliographystyle{plain}
+    \bibliographystyle{IEEEtran}
+    \newpage
+
+% ------------------------------------------------------------------------
+% END OF DOCUMENT
+% ------------------------------------------------------------------------
+
+    \input{./sections/cover_back}
+
+    \logToConsole{END OF DOCUMENT}
+
+
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% End CV Document %%%%%%%%%%%%%%%%%%%%%%%%%%%%%

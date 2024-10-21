@@ -22,6 +22,9 @@ function res = test_fullspace_generateRandom
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % without input arguments
 fs = fullspace.generateRandom();
@@ -29,6 +32,6 @@ fs = fullspace.generateRandom();
 % dimension given
 n = 2;
 fs = fullspace.generateRandom('Dimension',n);
-res = dim(fs) == n;
+assert(dim(fs) == n);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,0 +1,57 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                                                                                                                   
+
+ $$\\
+ $$\color{mgreen}$% Initialize neural network $\color{black}$$\\
+ $nn = neuralNetwork(layers);$\\
+ $nn.initWeights();$\\
+ $$\\
+ $$\color{mgreen}$% Train neural network $\color{black}$$\\
+ $options.nn = struct(...$\\
+ $    $\color{mred}$'use_approx_error'$\color{black}$,true,...$\\
+ $    $\color{mred}$'poly_method'$\color{black}$,$\color{mred}$'bounds'$\color{black}$,...$\\
+ $    $\color{mred}$'train'$\color{black}$,struct($\color{mblue}$ ...$\color{black}$$\\
+ $        $\color{mred}$'optim'$\color{black}$,nnSGDOptimizer(lr,beta),...$\\
+ $        $\color{mred}$'max_epoch'$\color{black}$,maxEpoch,...$\\
+ $        $\color{mred}$'mini_batch_size'$\color{black}$,miniBatchSize,...$\\
+ $        $\color{mred}$'loss'$\color{black}$,$\color{mred}$'mse'$\color{black}$,...$\\
+ $        $\color{mred}$'method'$\color{black}$,$\color{mred}$'set'$\color{black}$,...$\\
+ $        $\color{mred}$'noise'$\color{black}$,0.5,...$\\
+ $        $\color{mred}$'input_space_inf'$\color{black}$,xl,...$\\
+ $        $\color{mred}$'input_space_sup'$\color{black}$,xu,...$\\
+ $        $\color{mred}$'tau'$\color{black}$,0.5,...$\\
+ $        $\color{mred}$'volume_heuristic'$\color{black}$,$\color{mred}$'f-radius'$\color{black}$,...$\\
+ $        $\color{mred}$'zonotope_weight_update'$\color{black}$,$\color{mred}$'sum'$\color{black}$,...$\\
+ $        $\color{mred}$'num_approx_err'$\color{black}$,inf,...$\\
+ $        $\color{mred}$'init_gens'$\color{black}$,$\color{mred}$'l_inf'$\color{black}$,...$\\
+ $        $\color{mred}$'num_init_gens'$\color{black}$,inf...$\\
+ $    )...$\\
+ $);$\\
+ $loss = nn.train(trainX,trainY,valX,valY,options,true);$\\
+ $$\\
+
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

@@ -1,0 +1,47 @@
+\subsubsubsection{Constrained Polynomial Zonotopes} \label{sec:conPolyZono}
+
+Constrained polynomial zonotopes as introduced in \cite{Kochdumper2021c} extend the polynomial zonotopes in \cref{sec:polynomialZonotopes} by polynomial equality constraints on the dependent factors. Since constrained zonotopes are closed under all relevant set operations including intersection and union (see \cref{tab:basicOperations}), they are advantageous for many set-based algorithms. Furthermore, as shown in \cref{tab:setConversion}, most other set representations can be equivalently represented as constrained polynomial zonotopes, which further substantiates their importance. A constrained polynomial zonotope $\mathcal{CPZ} \subset \Rn$ is defined as
+\begin{equation}
+	\begin{split}
+    \mathcal{CPZ} := \bigg\{ & c + \sum _{i=1}^h \bigg( \prod _{k=1}^p \alpha _k ^{E_{(k,i)}} \bigg) G_{(\cdot,i)} + \sum _{j=1}^{d} \beta _j G_{I(\cdot,j)} ~ \bigg| \\
+    &  \sum _{i=1}^q \bigg( \prod _{k=1}^p \alpha _k ^{R_{(k,i)}} \bigg) A_{(\cdot,i)} = b, ~\alpha_k, \beta_j \in [-1,1] \bigg\},
+    \end{split}
+  \label{eq:conPolyZono}
+\end{equation}
+where $c \in \Rn$ is the constant offset, $G \in \mathbb{R}^{n \times h}$ the matrix of dependent generators, $G_I \in \mathbb{R}^{n \times d}$ the matrix of independent generators,  $E \in \mathbb{N}_{0}^{p \times h}$ the exponent matrix, $A \in \R^{m \times q}$ is the matrix of constraint generators, $b \in \R^m$ is the constraint offset, and $R \in \mathbb{N}_{0}^{p \times q}$ is the constraint exponent matrix. 
+
+Constrained polynomial zonotopes are represented in CORA by the class \texttt{conPolyZono}. An object of class \texttt{conPolyZono} can be constructed as follows:
+\begin{equation*}
+\begin{split}
+	& \mathcal{CPZ} = \texttt{conPolyZono}(c,G,E), \\
+    & \mathcal{CPZ} = \texttt{conPolyZono}(c,G,E,G_I), \\
+    & \mathcal{CPZ} = \texttt{conPolyZono}(c,G,E,G_I,id), \\
+    & \mathcal{CPZ} = \texttt{conPolyZono}(c,G,E,A,b,R), \\
+    & \mathcal{CPZ} = \texttt{conPolyZono}(c,G,E,A,b,R,G_I), \\
+    & \mathcal{CPZ} = \texttt{conPolyZono}(c,G,E,A,b,R,G_I,id),
+\end{split}
+\end{equation*} 
+where $c,G,G_I,E,A,b,R$ are defined as in \eqref{eq:conPolyZono}. The vector $id \in \mathbb{N}^p_{> 0}$ stores unambiguous identifiers for the dependent factors $\alpha_k$, which is important for dependency preservation as described in \cite{Kochdumper2020c}. Let us demonstrate constrained polynomial zonotopes with an example:
+
+\begin{center}
+\begin{minipage}[t]{0.55\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_setRep_conPolyZono}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/set-representations/example_conPolyZono}
+\end{minipage}
+\end{center}
+
+This example defines the constrained polynomial zonotope
+\begin{equation*}
+\begin{split}
+		\mathcal{CPZ} = \bigg \{ & \begin{bmatrix} 0 \\ 0 \end{bmatrix} + \begin{bmatrix} 1 \\ 0 \end{bmatrix} \alpha_1 + \begin{bmatrix} 0 \\ 1 \end{bmatrix} \alpha_2 + \begin{bmatrix} 1 \\ 1 \end{bmatrix} \alpha_1 \alpha_2 \alpha_3 + \begin{bmatrix} -1 \\ 1 \end{bmatrix} \alpha_1^2 \alpha_3 ~ \bigg |  \\
+		& ~ \alpha_2 - 0.5 \alpha_1 \alpha_3 + 0.5 \alpha_1^2 = 0.5, ~ \alpha_1,\alpha_2,\alpha_3 \in [-1,1] \bigg \}.
+	\end{split}
+\end{equation*}
+
+A more detailed example for constrained polynomial zonotopes is provided in \cref{sec:conPolyZonoExample} and in the file \textit{examples/contSet/example\_conPolyZono.m} in the CORA toolbox.

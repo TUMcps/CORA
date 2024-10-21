@@ -1,14 +1,15 @@
-function res = isIntersecting_(cZ,S,type,varargin)
+function res = isIntersecting_(cZ,S,type,tol,varargin)
 % isIntersecting_ - determines if a constrained zonotope intersects a set
 %
 % Syntax:
 %    res = isIntersecting_(cZ,S)
-%    res = isIntersecting_(cZ,S,type)
+%    res = isIntersecting_(cZ,S,type,tol)
 %
 % Inputs:
 %    cZ - conZonotope object
 %    S - contSet object
 %    type - type of check ('exact' or 'approx')
+%    tol - (optional) tolerance
 %
 % Outputs:
 %    res - true/false
@@ -53,38 +54,51 @@ function res = isIntersecting_(cZ,S,type,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% intersection with halfspace, hyperplane or polytope
-if isa(S,'halfspace') || isa(S,'conHyperplane') || ...
-   isa(S,'polytope') || isa(S,'ellipsoid')
+% ensure that numeric is second input argument
+[cZ,S] = reorderNumeric(cZ,S);
 
-    res = isIntersecting_(S,cZ,type);
-
-else
-    
-    % exact or over-approximative algorithm
-    if strcmp(type,'exact')
-        
-        % convert objects to constrained zonotopes
-        if isa(S,'zonotope') || isa(S,'interval')
-           S = conZonotope(S); 
-        end
-        
-        % conZonotope and conZonotope intersection
-        if isa(S,'conZonotope')
-           res = ~representsa_(and_(cZ,S,'exact'),'emptySet',eps);
-        elseif isa(S,'zonoBundle')
-           res = isIntersecting_(S,cZ,type); 
-        else
-            throw(CORAerror('CORA:noops',cZ,S));
-        end
-        
-    else       
-        if isa(S,'inverval')
-           res = isIntersecting_(S,cZ,type); 
-        else
-           res = isIntersecting_(interval(cZ),S,type); 
-        end
-    end
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < cZ.precedence
+    res = isIntersecting_(S,cZ,type,tol);
+    return
 end
+
+% numeric case: check containment
+if isnumeric(S)
+    res = contains_(cZ,S,type,tol);
+    return
+end
+
+% % sets must not be empty (LPs too costly...)
+% if representsa_(cZ,'emptySet',0) || representsa_(S,'emptySet',0)
+%     res = false;
+%     return
+% end
+
+% exact algorithm: check for non-empty intersection
+if isa(S,'contSet') && strcmp(type,'exact')
+
+    if isa(S,'conZonotope')
+        res = ~representsa_(and_(cZ,S,'exact'),'emptySet',eps);
+        return
+    end
+    if isa(S,'zonotope') || isa(S,'interval') || isa(S,'zonoBundle')
+        res = ~representsa_(and_(cZ,conZonotope(S),'exact'),'emptySet',eps);
+        return
+    end
+    
+    throw(CORAerror('CORA:noExactAlg',cZ,S));
+end
+    
+if isa(S,'contSet') && strcmp(type,'approx')
+    if isa(S,'interval')
+        res = isIntersecting_(polytope(S),cZ,type,tol);
+    else
+        res = isIntersecting_(polytope(interval(cZ)),S,type,tol);
+    end
+    return
+end
+
+throw(CORAerror('CORA:noops',cZ,S));
 
 % ------------------------------ END OF CODE ------------------------------

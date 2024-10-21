@@ -1,4 +1,4 @@
-classdef (InferiorClasses = {?mp}) matZonotope
+classdef (InferiorClasses = {?mp}) matZonotope < matrixSet
 % matZonotope class 
 %
 % Syntax:
@@ -23,7 +23,7 @@ classdef (InferiorClasses = {?mp}) matZonotope
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: intervalMatrix, matPolytope
+% See also: matrixSet, intervalMatrix, matPolytope
 
 % Authors:       Matthias Althoff, Tobias Ladner
 % Written:       14-September-2006 
@@ -49,6 +49,9 @@ methods
     
     % class constructor
     function obj = matZonotope(varargin)
+
+        % 0. check number of input arguments
+        assertNarginConstructor(0:2,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'matZonotope')
@@ -117,6 +120,10 @@ methods
 
 end
 
+methods (Access = protected)
+    [printOrder] = getPrintSystemInfo(S)
+end
+
 end
 
 
@@ -135,8 +142,6 @@ elseif nargin == 1
     C = varargin{1};
 elseif nargin == 2
     [C,G] = varargin{:};
-elseif nargin > 2
-    throw(CORAerror('CORA:tooManyInputArgs',2));
 end
 
 % fix generators to allow [] for no generators

@@ -1,23 +1,23 @@
-function res = eq(sys1,sys2,varargin)
+function res = eq(linsys1,linsys2,varargin)
 % eq - overloads '==' operator to check if two linear systems are equal
 %
 % Syntax:
-%    res = sys1 == sys2
-%    res = eq(sys1,sys2)
-%    res = eq(sys1,sys2,tol)
+%    res = linsys1 == linsys2
+%    res = eq(linsys1,linsys2)
+%    res = eq(linsys1,linsys2,tol)
 %
 % Inputs:
-%    sys1 - linearSys object
-%    sys2 - linearSys object
+%    linsys1 - linearSys object
+%    linsys2 - linearSys object
 %    tol - tolerance (optional)
 %
 % Outputs:
 %    res - true/false
 %
 % Example: 
-%    sys1 = linearSys(1,0);
-%    sys2 = linearSys(1,1);
-%    res = sys1 == sys2
+%    linsys1 = linearSys(1,0);
+%    linsys2 = linearSys(1,1);
+%    res = linsys1 == linsys2
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,6 +32,6 @@ function res = eq(sys1,sys2,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = isequal(sys1,sys2,varargin{:});
+res = isequal(linsys1,linsys2,varargin{:});
 
 % ------------------------------ END OF CODE ------------------------------

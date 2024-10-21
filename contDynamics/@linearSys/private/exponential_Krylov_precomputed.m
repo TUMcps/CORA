@@ -1,13 +1,13 @@
-function [R,R_Krylov] = exponential_Krylov_precomputed(obj,R0,options,stateFlag)
+function [R,R_Krylov] = exponential_Krylov_precomputed(linsys,R0,options,stateFlag)
 % exponential_Krylov_precomputed - computes the overapproximation of the 
 %    exponential of a system matrix up to a certain accuracy using a Krylov 
 %    subspace; the subspace is already precomputed
 %
 % Syntax:
-%    [R,R_Krylov] = exponential_Krylov_precomputed(obj,options)
+%    [R,R_Krylov] = exponential_Krylov_precomputed(linsys,R0,options,stateFlag)
 %
 % Inputs:
-%    obj - linearSys object
+%    linsys - linearSys object
 %    R0 - initial set
 %    options - reachability options
 %    stateFlag - true if computation is for the state solution
@@ -23,7 +23,7 @@ function [R,R_Krylov] = exponential_Krylov_precomputed(obj,R0,options,stateFlag)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       02-November-2018
@@ -32,23 +32,17 @@ function [R,R_Krylov] = exponential_Krylov_precomputed(obj,R0,options,stateFlag)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% Multiply previous reachable set with exponential matrix------------------
+% Multiply previous reachable set with exponential matrix
+
 % obtain center and generators of previous reachable set
-c = sparse(center(R0));
-G = sparse(generators(R0));
+c = sparse(R0.c);
+G = sparse(R0.G);
 
 % retrieve V_c and H_c from Arnoldi
-if stateFlag % for state solution
-    V_c = obj.krylov.state.V_c;
-    H_c = obj.krylov.state.H_c;
-    V_g = obj.krylov.state.V_g;
-    H_g = obj.krylov.state.H_g;
-else % for input solution
-    V_c = obj.krylov.state.V_c;
-    H_c = obj.krylov.state.H_c;
-    V_g = obj.krylov.state.V_g;
-    H_g = obj.krylov.state.H_g;
-end
+V_c = linsys.krylov.state.V_c;
+H_c = linsys.krylov.state.H_c;
+V_g = linsys.krylov.state.V_g;
+H_g = linsys.krylov.state.H_g;
 
 % check if center is zero
 c_norm = norm(c);
@@ -62,7 +56,7 @@ end
 
 
 % preallocation
-nrOfGens = length(G(1,:));
+nrOfGens = size(G,2);
 g_norm = zeros(nrOfGens,1);
 
 % obtain generators using the Arnoldi iteration
@@ -85,18 +79,16 @@ end
 
 if options.krylovError > 2*eps
     % Krylov error computation
-    error_normalized = obj.krylov.errorBound_normalized;
-    error = norm(Rinit)*error_normalized*options.t;
-    Krylov_interval = interval(-1,1)*ones(obj.dim,1)*error;
+    error_normalized = linsys.krylov.errorBound_normalized;
+    err = norm(Rinit)*error_normalized*options.t;
+    Krylov_interval = interval(-1,1)*ones(linsys.nrOfStates,1)*err;
     R_Krylov = zonotope(Krylov_interval);
 
     % initial-state-solution zonotope
-    R = zonotope([c_new,G_new,error*eye(obj.dim)]);
-    %--------------------------------------------------------------------------
+    R = zonotope(c_new,G_new,err*eye(linsys.nrOfStates));
 else
     R_Krylov = 0;
-    R = zonotope([c_new,G_new]);
+    R = zonotope(c_new,G_new);
 end
-
   
 % ------------------------------ END OF CODE ------------------------------

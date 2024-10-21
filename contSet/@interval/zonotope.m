@@ -27,6 +27,12 @@ function Z = zonotope(I)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% check if not a matrix set
+n = dim(I);
+if numel(n) > 1
+    throw(CORAerror('CORA:wrongValue','first','Interval must not be an n-d array with n > 1.'))
+end
+
 % obtain center
 c = center(I);
 

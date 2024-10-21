@@ -1,16 +1,22 @@
-function res = testMP_Krylov_initReach(~)
-% testMP_Krylov_initReach - unit_test_function for checking
-%    the Krylov method for the solution of the first time interval.
+function res = testMP_Krylov_initReach
+% testMP_Krylov_initReach - unit_test_function for checking the Krylov
+%    method for the solution of the first time interval.
 %    This test requires the multiple precision toolbox.
 %
 % Syntax:
-%    res = testMP_Krylov_initReach(~)
+%    res = testMP_Krylov_initReach
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - true/false
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       14-November-2018
@@ -101,8 +107,8 @@ linDyn = linearSys('KrylovTest',A,B,[],C); %initialize quadratic dynamics
 linDyn_Krylov = linDyn;
 options_Krylov = options;
 
-% compute overapproximation using Krylov methods
-[~, options] = initReach_Euclidean(linDyn, options.R0, options);
+% compute overapproximation using standard methods
+[~, options] = initReach(linDyn, options.R0, options);
 
 % compute overapproximation using Krylov methods
 [~, options_Krylov] = initReach_Krylov(linDyn_Krylov, options_Krylov.R0, options_Krylov);
@@ -111,25 +117,25 @@ options_Krylov = options;
 
 % homogeneous solution; time point
 epsilonBox = 1e-4*interval(-ones(length(C(:,1)),1),ones(length(C(:,1)),1));
-res(1) = contains(options_Krylov.Rhom_tp_proj + epsilonBox, C*options.Rhom_tp);
+assert(contains(options_Krylov.Rhom_tp_proj + epsilonBox, C*options.Rhom_tp));
 
 % homogeneous solution; time interval
-res(2) = contains(options_Krylov.Rhom_proj, C*options.Rhom);
+assert(contains(options_Krylov.Rhom_proj, C*options.Rhom));
 
 % input solution (without Rtrans)
-res(3) = contains(options_Krylov.Raux_proj + epsilonBox, C*options.Raux);
+assert(contains(options_Krylov.Raux_proj + epsilonBox, C*options.Raux));
 
 % input solution (with Rtrans); errors for Rtrans added to Raux in Krylov computations to
 % avoid new generators
 epsilonBox = 1e-3*interval(-ones(length(C(:,1)),1),ones(length(C(:,1)),1)); % check if Krylov method can be that much tighter
-res(4) = contains(options_Krylov.Rtrans_proj + options_Krylov.Raux_proj  + epsilonBox, C*(options.Raux + options.Rtrans));
-
-% All tests passed?
-res = all(res);
+assert(contains(options_Krylov.Rtrans_proj + options_Krylov.Raux_proj  + epsilonBox, C*(options.Raux + options.Rtrans)));
 
 % revoke access to private function "initReach_Krylov"
 delete(target);
 rmpath(genpath(path));
 addpath(genpath(path));
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

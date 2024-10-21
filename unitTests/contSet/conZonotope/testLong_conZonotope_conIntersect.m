@@ -27,6 +27,9 @@ function res = testLong_conZonotope_conIntersect
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 % first constrained zonotope Z
@@ -84,6 +87,6 @@ res3 = isIntersecting(polytope(R*Z_zono), polytope(Y_zono));
 res4 = polytope(R*Z_zono) & polytope(Y_zono);
 
 % combine checks
-res = res2 && res3;
+assert(res2 && res3);
 
 % ------------------------------ END OF CODE ------------------------------

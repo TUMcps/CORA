@@ -27,75 +27,51 @@ res = true;
 
 % empty ellipsoid
 E = ellipsoid.empty(2);
-if ~representsa_(E,'emptySet',eps)
-    res = false;
-end
+assert(representsa_(E,'emptySet',eps))
 
 tol = 1e-12;
-load cases.mat E_c
-for i=1:length(E_c)
-    E1 = E_c{i}.E1; % non-deg
-    Q = E1.Q;
-    q = center(E1);
-    n = length(q);
-    
-    % only shape matrix
-    E = ellipsoid(Q);
-    if ~all(all(withinTol(E.Q,Q,tol)))
-        res = false; break;
-    end
 
-    % shape matrix and center
-    E = ellipsoid(Q,q);
-    if ~all(all(withinTol(E.Q,Q,tol))) || ~all(all(withinTol(E.q,q,tol)))
-        res = false; break;
-    end
-    
-    
-    % wrong instantiations
-    if CHECKS_ENABLED
+% init cases
+E1 = ellipsoid([ 5.4387811500952807 12.4977183618314545 ; 12.4977183618314545 29.6662117284481646 ], [ -0.7445068341257537 ; 3.5800647524843665 ], 0.000001);
 
-    % shape matrix non-psd (only n > 1)
-    if n > 1
-        try
-            % random non-psd matrix
-            Q_nonpsd = randn(n);
-            [U,S,V] = svd(Q_nonpsd);
-            ind_p = diag(S)>0;
-            if sum(ind_p)==n
-                i_r = randi([1,n]);
-                S(i_r,i_r) = -S(i_r,i_r);
-            end
-            E = ellipsoid(U*S*V'); % <- should throw error here
-            res = false; break;
-        end
-    end
-    
-    % shape matrix and center of different dimensions
-    try
-        E = ellipsoid(Q,[q;1]); % <- should throw error here
-        res = false; break;
-    end
-    try
-        E = ellipsoid(blkdiag(Q,1),q); % <- should throw error here
-        res = false; break;
-    end
-    
-    % center is a matrix
-    if n ~= 1
-        try
-            E = ellipsoid(Q,repmat(q,1,2)); % <- should throw error here
-            res = false; break;
-        end
-    end
-    
-    % too many input arguments
-    try
-        E = ellipsoid(Q,q,eps,q); % <- should throw error here
-        res = false; break;
-    end
+Q = E1.Q;
+q = center(E1);
+n = length(q);
 
+% only shape matrix
+E = ellipsoid(Q);
+assert(all(all(withinTol(E.Q,Q,tol))))
+
+% shape matrix and center
+E = ellipsoid(Q,q);
+assert(all(all(withinTol(E.Q,Q,tol))))
+assert(all(all(withinTol(E.q,q,tol))))    
+
+% wrong instantiations
+% shape matrix non-psd (only n > 1)
+if n > 1
+    % random non-psd matrix
+    Q_nonpsd = randn(n);
+    [U,S,V] = svd(Q_nonpsd);
+    ind_p = diag(S)>0;
+    if sum(ind_p)==n
+        i_r = randi([1,n]);
+        S(i_r,i_r) = -S(i_r,i_r);
     end
+    assertThrowsAs(@ellipsoid,'CORA:wrongInputInConstructor',U*S*V');
+end
+
+% shape matrix and center of different dimensions
+assertThrowsAs(@ellipsoid,'CORA:wrongInputInConstructor',Q,[q;1]);
+assertThrowsAs(@ellipsoid,'CORA:wrongInputInConstructor',blkdiag(Q,1),q);
+
+% center is a matrix
+if n ~= 1
+    assertThrowsAs(@ellipsoid,'CORA:wrongValue',Q,repmat(q,1,2));
+end
+
+% too many input arguments
+assertThrowsAs(@ellipsoid,'CORA:numInputArgsConstructor',Q,q,eps,q);
     
 end
 

@@ -33,27 +33,20 @@ b = 1;
 cZ1 = conZonotope(Z,A,b);
 
 % check equality with itself
-if ~isequal(cZ1,cZ1)
-    res = false;
-end
+assert(isequal(cZ1,cZ1))
+
 
 % shift by a small offset
-if isequal(cZ1,cZ1+1e-8*ones(2,1))
-    res = false;
-end
+assert(~isequal(cZ1,cZ1+1e-8*ones(2,1)))
 
 % compensate for small offset by tolerance
-if ~isequal(cZ1,cZ1+1e-8*ones(2,1),1e-6)
-    res = false;
-end
+assert(isequal(cZ1,cZ1+1e-8*ones(2,1),1e-6))
 
 % shift constraints by a small offset
 b_ = 1+eps;
 cZ1_ = conZonotope(Z,A,b_);
 
-if ~isequal(cZ1,cZ1_)
-    res = false;
-end
+assert(isequal(cZ1,cZ1_))
 
 % completely different constrained zonotope
 Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
@@ -62,8 +55,8 @@ b = 1;
 cZ2 = conZonotope(Z,A,b);
 
 % should not be equal
-if isequal(cZ1,cZ2)
-    res = false;
+assert(~isequal(cZ1,cZ2))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

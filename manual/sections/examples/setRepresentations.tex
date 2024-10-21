@@ -1,0 +1,587 @@
+\subsection{Set Representations}
+\logToConsole{EXAMPLES: SET REPRESENTATIONS}
+
+We first provide examples for set-based computation using the different set representations in \cref{sec:setRepresentationsAndOperations}.
+
+% Zonotopes -------------------------------------------------------------------
+
+\subsubsection{Zonotopes} \label{sec:zonotopeExample}
+
+The following MATLAB code demonstrates how to perform set-based computations on zonotopes (see \cref{sec:zonotope}):
+
+{\small
+	\input{./MATLABcode/example_zonotope.tex}}
+
+This produces the workspace output
+\begin{verbatim}
+Normalized, minimal representation polytope in R^2
+H: [8x2 double]
+K: [8x1 double]
+normal: 1
+minrep: 1
+xCheb: [2x1 double]
+RCheb: 1.4142
+
+[ 0.70711     0.70711]      [  6.364]
+[ 0.70711    -0.70711]      [ 2.1213]
+[ 0.89443    -0.44721]      [ 3.3541]
+[ 0.44721    -0.89443]      [ 2.0125]
+[-0.70711    -0.70711] x <= [ 2.1213]
+[-0.70711     0.70711]      [0.70711]
+[-0.89443     0.44721]      [0.67082]
+[-0.44721     0.89443]      [ 2.0125]
+
+Intervals: 
+[-1.5,5.5]
+[-2.5,4.5]
+\end{verbatim}
+
+The plots generated in lines 9-12 are shown in \cref{fig:zonotopeExample_1} and the ones generated in lines 18-19 are shown in \cref{fig:zonotopeExample_2}.
+
+\begin{figure}[h!tb]
+	\begin{minipage}{0.45\columnwidth}
+		\centering
+		%\footnotesize
+        \includetikz{./figures/tikz/examples/set-representations/example_zonotope_1}
+		\caption{Zonotopes generated in lines 9-12 of the zonotope example in \cref{sec:zonotopeExample}.}
+		\label{fig:zonotopeExample_1}
+	\end{minipage}
+	\hspace{0.08\columnwidth}
+	\begin{minipage}{0.45\columnwidth}
+		\centering
+		%\footnotesize
+        \includetikz{./figures/tikz/examples/set-representations/example_zonotope_2}
+		\caption{Sets generated in lines 18-19 of the zonotope example in \cref{sec:zonotopeExample}.}
+		\label{fig:zonotopeExample_2}
+	\end{minipage}
+\end{figure}
+
+
+
+
+
+
+
+
+
+% Intervals -------------------------------------------------------------------
+
+\subsubsection{Intervals}	\label{sec:intervalExample}
+
+The following MATLAB code demonstrates how to perform set-based computations on intervals (see \cref{sec:interval}):
+
+{\small
+\input{./MATLABcode/example_interval.tex}}
+
+This produces the workspace output
+\begin{verbatim}
+r =
+
+     1.5000
+     1.0000
+
+
+is_intersecting =
+
+     1
+
+
+c =
+
+    0.5000
+   -0.7500
+\end{verbatim}
+
+The plot generated in lines 11-14 is shown in \cref{fig:intervalExample}.
+
+\begin{figure}[h!tb]
+  \centering
+  %\footnotesize
+  \includetikz{./figures/tikz/examples/set-representations/example_interval}
+  \caption{Sets generated in lines 11-14 of the interval example in \cref{sec:intervalExample}.}
+  \label{fig:intervalExample}
+\end{figure}
+
+
+
+% Ellipsoids ------------------------------------------------------------------
+
+\subsubsection{Ellipsoids}	\label{sec:ellipsoidExample}
+
+The following MATLAB code demonstrates how to perform set-based computations on ellipsoids (see \cref{sec:ellipsoids}):
+
+
+{\small
+	\input{./MATLABcode/example_ellipsoid.tex}}
+
+This produces the workspace output
+\begin{verbatim}
+E1 =
+
+ellipsoid:
+- dimension: 2
+
+q: 
+0
+0
+
+Q: 
+0.5000         0
+0         2.0000
+
+dimension: 
+2
+
+degenerate: 
+0
+
+E1 in E2?: 0
+E1 in E3?: 1
+\end{verbatim}
+The plots generated in lines 12-15 are shown in \cref{fig:ellipsoidExample_1} and the ones generated in lines 22-24 are shown in \cref{fig:ellipsoidExample_2}.
+
+\begin{figure}[h!tb]
+	\begin{minipage}{0.45\columnwidth}
+		\centering
+		%\footnotesize
+        \includetikz{./figures/tikz/examples/set-representations/example_ellipsoid_1}
+		\caption{Ellipsoids generated in lines 12-15 of the ellipsoid example in \cref{sec:ellipsoidExample}.}
+		\label{fig:ellipsoidExample_1}
+	\end{minipage}
+	\hspace{0.08\columnwidth}
+	\begin{minipage}{0.45\columnwidth}
+		\centering
+		%\footnotesize
+        \includetikz{./figures/tikz/examples/set-representations/example_ellipsoid_2}
+		\caption{Sets generated in lines 22-24 of the ellipsoid example in \cref{sec:ellipsoidExample}.}
+		\label{fig:ellipsoidExample_2}
+	\end{minipage}
+\end{figure}
+
+
+
+
+% Polytopes -------------------------------------------------------------------
+
+\newpage
+\subsubsection{Polytopes}	\label{sec:polytopeExample}
+
+The following MATLAB code demonstrates how to perform set-based computations on polytopes (see \cref{sec:polytopes}):
+
+{\small
+\input{./MATLABcode/example_polytope.tex}}
+
+This produces the workspace output
+\begin{verbatim}
+P3 =
+
+polytope:
+- dimension: 2
+
+Vertex representation: (not computed)
+Inequality constraints (A*x <= b):
+
+A =
+
+         0    1.0000
+    0.7071    0.7071
+    1.0000         0
+         0   -1.0000
+    0.7071   -0.7071
+   -0.7071    0.7071
+   -1.0000         0
+   -0.7071   -0.7071
+
+
+b =
+
+    5.0000
+    4.2426
+    3.0000
+    1.0000
+    1.4142
+    4.2426
+    3.0000
+    1.4142
+
+Equality constraints (Ae*x = be): (none)
+
+Bounded?                          true
+Empty set?                        Unknown
+Full-dimensional set?             Unknown
+Minimal halfspace representation? Unknown
+Minimal vertex representation?    Unknown
+
+V: 
+         0   -1.0000         0
+         0    1.0000    2.0000
+\end{verbatim}
+
+The plot generated in lines 13-16 is shown in \cref{fig:polytopeExample}.
+
+\begin{figure}[h!tb]
+  \centering
+  %\footnotesize
+  \includetikz{./figures/tikz/examples/set-representations/example_polytope}
+  \caption{Sets generated in lines 13-16 of the polytope example in \cref{sec:polytopeExample}.}
+  \label{fig:polytopeExample}
+\end{figure}
+
+
+
+
+% Polynomial Zonotopes --------------------------------------------------------
+
+\newpage
+\subsubsection{Polynomial Zonotopes}	\label{sec:polyZonotopeExample}
+
+The following MATLAB code demonstrates how to perform set-based computations on polynomial zonotopes (see \cref{sec:polynomialZonotopes}):
+
+{\small
+\input{./MATLABcode/example_polyZonotope.tex}}
+
+The plot generated in lines 19-21 is shown in \cref{fig:polyZonotopeExample}.
+
+\begin{figure}[h!tb]
+  \centering
+  %\footnotesize
+  \includetikz{./figures/tikz/examples/set-representations/example_polyZonotope}
+  \caption{Quadratic map calculated with zonotopes (red) and polynomial zonotopes (blue).}
+  \label{fig:polyZonotopeExample}
+\end{figure}
+
+
+% Constrained Polynomial Zonotopes --------------------------------------------------------
+
+\newpage
+\subsubsection{Constrained Polynomial Zonotopes}	\label{sec:conPolyZonoExample}
+
+The following MATLAB code demonstrates how to perform set-based computations on constrained polynomial zonotopes (see \cref{sec:conPolyZono}):
+
+{\small
+\input{./MATLABcode/example_conPolyZono.tex}}
+
+The plot generated in lines 37-41 is shown in \cref{fig:conPolyZonoExample1} and \cref{fig:conPolyZonoExample2}.
+
+\begin{figure}[h!tb]
+\begin{minipage}{0.45\columnwidth}
+  \centering
+  %\footnotesize
+  \includetikz{./figures/tikz/examples/set-representations/example_conPolyZono_1}
+  \caption{Constrained polynomial zonotope generated in lines 21-28 of the constrained polynomial zonotope example in \cref{sec:conPolyZonoExample}}
+  \label{fig:conPolyZonoExample1}
+\end{minipage}
+\hspace{0.08\columnwidth}
+\begin{minipage}{0.45\columnwidth}
+  \centering
+  %\footnotesize
+  \includetikz{./figures/tikz/examples/set-representations/example_conPolyZono_2}
+  \caption{Quadratic map computed in lines 31-34 of the constrained polynomial zonotope example in \cref{sec:conPolyZonoExample}.}
+  \label{fig:conPolyZonoExample2}
+\end{minipage}
+\end{figure}
+
+
+
+
+
+% Capsules --------------------------------------------------------------------
+
+\subsubsection{Capsules}	\label{sec:capsuleExample}
+
+The following MATLAB code demonstrates how to perform set-based computations on capsules (see \cref{sec:capsules}):
+
+{\small
+\input{./MATLABcode/example_capsule.tex}}
+
+This produces the workspace output
+\begin{verbatim}
+id: 0
+dimension: 2
+center: 
+     1
+     2
+
+generator: 
+     2
+     1
+
+radius: 
+     1
+
+C2 in C1?: 0
+C3 in C1?: 1
+\end{verbatim}
+
+The plot generated in lines 25-28 is shown in \cref{fig:capsuleExample}.
+
+\begin{figure}[h!tb]
+  \centering
+  %\footnotesize
+  \includetikz{./figures/tikz/examples/set-representations/example_capsule}
+  \caption{Capsules generated in lines 6, 10, and 14 of the capsule example in \cref{sec:capsuleExample}.}
+  \label{fig:capsuleExample}
+\end{figure}
+
+
+
+
+% Zonotope Bundles ------------------------------------------------------------
+
+\newpage
+\subsubsection{Zonotope Bundles}	\label{sec:zonoBundleExample}
+
+The following MATLAB code demonstrates how to perform set-based computations on zonotope bundles (see \cref{sec:zonoBundle}):
+
+{\small
+\input{./MATLABcode/example_zonotopeBundle.tex}}
+
+This produces the workspace output
+\begin{verbatim}
+vol =
+
+    1.0000
+\end{verbatim}
+
+The plot generated in lines 7-9 is shown in \cref{fig:zonoBundleExample}.
+
+\begin{figure}[h!tb]
+  \centering
+  %\footnotesize
+  \includetikz{./figures/tikz/examples/set-representations/example_zonoBundle}
+  \caption{Sets generated in lines 7-9 of the zonotope bundle example in \cref{sec:zonoBundleExample}.}
+  \label{fig:zonoBundleExample}
+\end{figure}
+
+
+
+
+
+
+% Constrained Zonotopes -------------------------------------------------------
+
+\subsubsection{Constrained Zonotopes}	\label{sec:conZonotopeExample}
+
+The following MATLAB code demonstrates how to perform set-based computations on constrained zonotopes (see \cref{sec:conZonotope}):
+
+{\small
+\input{./MATLABcode/example_conZonotope.tex}}
+
+This produces the workspace output
+\begin{verbatim}
+id: 0
+dimension: 2
+c: 
+     0
+     0
+
+g_i: 
+     1     0     1
+     1     2    -1
+
+A: 
+    -2     1    -1
+
+b: 
+     2
+\end{verbatim}
+
+The plot generated in line 9 is shown in \cref{fig:conZonoExample_1}. \cref{fig:conZonoExample_2} displays a visualization of the constraints for the \texttt{conZonotope} object that is shown in \cref{fig:conZonoExample_1}.
+
+\begin{figure}[h!tb]
+\begin{minipage}{0.45\columnwidth}
+  \centering
+  %\footnotesize
+  \includetikz{./figures/tikz/examples/set-representations/example_conZonotope_zonotope}
+  \caption{Zonotope (red) and the corresponding constrained zonotope (blue) generated in the constrained zonotope example in \cref{sec:conZonotopeExample}}
+  \label{fig:conZonoExample_1}
+\end{minipage}
+\hspace{0.08\columnwidth}
+\begin{minipage}{0.45\columnwidth}
+  \centering
+  %\footnotesize
+  \includetikz{./figures/tikz/examples/set-representations/example_conZonotope_constraints}
+  \caption{Visualization of the constraints for the \texttt{conZonotope} object generated in the constrained zonotope example in \cref{sec:conZonotopeExample}.}
+  \label{fig:conZonoExample_2}
+\end{minipage}
+\end{figure}
+
+% Spectrahedral Shadows ------------------------------------------------------------
+
+\newpage
+\subsubsection{Spectrahedral Shadows}	\label{sec:spectraShadowExample}
+
+The following MATLAB code demonstrates how to perform set-based computations on spectrahedral shadows (see \cref{sec:spectraShadow}):
+
+{\small
+	\input{./MATLABcode/example_spectraShadow.tex}}
+
+The plot generated in lines 21-25 is shown in \cref{fig:spectraShadowExample}.
+
+\begin{figure}[h!tb]
+	\centering
+	%\footnotesize
+	\includetikz{./figures/tikz/examples/set-representations/example_spectraShadow}
+	\caption{Sets generated in lines 21-25 of the spectrahedral shadow example in \cref{sec:spectraShadowExample}.}
+	\label{fig:spectraShadowExample}
+\end{figure}
+
+
+
+% Probabilistic Zonotopes ------------------------------------------------------
+
+\subsubsection{Probabilistic Zonotopes}		\label{sec:probZonotopeExample}
+
+The following MATLAB code demonstrates how to compute with probabilistic zonotopes (see \cref{sec:probabilisticZonotopes}):
+
+
+
+{\small
+\input{./MATLABcode/example_probZonotope.tex}}
+
+The plot generated in lines 8-21 is shown in \cref{fig:probZonotopeExample}.
+
+\begin{figure}[h!tb]
+  \centering
+  %\footnotesize
+  \includetikz{./figures/tikz/examples/set-representations/example_probZonotope}
+  \caption{Sets generated in lines 10-15 of the probabilistic zonotope example in \cref{sec:probZonotopeExample}.}
+  \label{fig:probZonotopeExample}
+\end{figure}
+
+
+
+% Level Sets ------------------------------------------------------------------
+
+\newpage
+\subsubsection{Level Sets}	\label{sec:levelSetExample}
+
+The following MATLAB code demonstrates how to compute with level sets (see \cref{sec:levelSet}):
+
+{\small
+	\input{./MATLABcode/example_levelSet.tex}}
+
+The generated plot is shown in \cref{fig:levelSet}.
+
+\begin{figure}[h!tb]
+	\centering
+    \includetikz{./figures/tikz/examples/set-representations/example_manual_example_levelSet}
+		\caption{Level sets from the example in \cref{sec:levelSetExample} defined as in \eqref{eq:defLevelSet1} (left) and as in \eqref{eq:defLevelSet3} (rigth).}
+		\label{fig:levelSet}
+\end{figure}
+
+
+
+
+% Taylor Models ---------------------------------------------------------------
+
+\newpage
+\subsubsection{Taylor Models}	\label{sec:taylorModelExample}
+
+The following MATLAB code demonstrates how to compute with Taylor models (see \cref{sec:taylorModels}):
+
+{\small
+\input{./MATLABcode/example_taylm.tex}}
+
+The resulting workspace output is:
+\footnotesize
+\begin{Verbatim}
+B1 = 
+ 	 0.5 + 1.5*a1 + [0.00000,0.00000]
+ 	 2.5 + 0.5*a2 + [0.00000,0.00000]
+
+B2 = 
+ 	 -5.0 + a3 + [0.00000,0.00000]
+ 	 5.0 + a4 + [0.00000,0.00000]
+
+B1 + B2 = 
+ 	 -4.5 + 1.5*a1 + a3 + [0.00000,0.00000]
+ 	 7.5 + 0.5*a2 + a4 + [0.00000,0.00000]
+
+B1' * B2 = 
+ 	 10.0 - 7.5*a1 + 2.5*a2 + 0.5*a3 + 2.5*a4 + 1.5*a1*a3 + 0.5*a2*a4 + [0.00000,0.00000]
+
+B1 .* B2 = 
+ 	 -2.5 - 7.5*a1 + 0.5*a3 + 1.5*a1*a3 + [0.00000,0.00000]
+ 	 12.5 + 2.5*a2 + 2.5*a4 + 0.5*a2*a4 + [0.00000,0.00000]
+
+B1 / 2 = 
+ 	 0.25 + 0.75*a1 + [0.00000,0.00000]
+ 	 1.25 + 0.25*a2 + [0.00000,0.00000]
+
+B1 ./ B2 = 
+ 	 -0.1 - 0.3*a1 - 0.02*a3 - 0.06*a1*a3 - 0.004*a3^2 - 0.012*a1*a3^2 
+	  - 0.0008*a3^3 - 0.0024*a1*a3^3 - 0.00016*a3^4 - 0.00048*a1*a3^4 
+	  - 0.000032*a3^5 - 0.000096*a1*a3^5 - 6.4e-6*a3^6 + [-0.00005,0.00005]
+	  
+ 	 0.5 + 0.1*a2 - 0.1*a4 - 0.02*a2*a4 + 0.02*a4^2 + 0.004*a2*a4^2 
+	  - 0.004*a4^3 - 0.0008*a2*a4^3 + 0.0008*a4^4 + 0.00016*a2*a4^4 
+	  - 0.00016*a4^5 - 0.000032*a2*a4^5 + 0.000032*a4^6 + [-0.00005,0.00005]
+
+B1.^3 = 
+ 	 0.125 + 1.125*a1 + 3.375*a1^2 + 3.375*a1^3 + [0.00000,0.00000]
+ 	 15.625 + 9.375*a2 + 1.875*a2^2 + 0.125*a2^3 + [0.00000,0.00000]
+
+sin(B1) = 
+ 	 0.47943 + 1.3164*a1 - 0.53935*a1^2 - 0.49364*a1^3 + 0.10113*a1^4 
+	  + 0.055535*a1^5 - 0.0075847*a1^6 + [-0.00339,0.00339]
+	  
+ 	 0.59847 - 0.40057*a2 - 0.074809*a2^2 + 0.01669*a2^3 + 0.0015585*a2^4 
+	  - 0.00020863*a2^5 - 0.000012988*a2^6 + [-0.00000,0.00000]
+
+sin(B1(1,1)) + B1(2,1).^2 - B1' * B2 = 
+ 	 -3.2706 + 8.8164*a1 - 0.5*a3 - 2.5*a4 - 0.53935*a1^2 + 0.25*a2^2 
+	  - 1.5*a1*a3 - 0.5*a2*a4 - 0.49364*a1^3 + 0.10113*a1^4 
+	  + 0.055535*a1^5 - 0.0075847*a1^6 + [-0.00339,0.00339]
+\end{Verbatim}
+\normalsize
+
+
+
+
+% Affine ----------------------------------------------------------------------
+
+\subsubsection{Affine}	\label{sec:affineExample}
+
+The following MATLAB code demonstrates how to use affine arithmetics in CORA (see \cref{sec:affine}):
+
+{\small
+\input{./MATLABcode/example_affine.tex}}
+
+The resulting workspace output is:
+%\footnotesize
+\begin{Verbatim}
+intAff = 
+ [-1.84147,2.84147]
+intTay = 
+ [-1.84147,2.84147]
+\end{Verbatim}
+
+
+
+
+
+
+
+% Zoo -------------------------------------------------------------------------
+
+\subsubsection{Zoo}		\label{sec:zooExample}
+
+The following MATLAB code demonstrates how to use the class \texttt{zoo} in CORA (see \cref{sec:zoo}):
+
+{\small
+\input{./MATLABcode/example_zoo.tex}}
+
+The resulting workspace output is:
+%\footnotesize
+\begin{Verbatim}
+intZoo = 
+ [-1.34206,1.68294]
+intTay = 
+ [-1.34207,2.18354]
+\end{Verbatim}
+
+
+
+
+

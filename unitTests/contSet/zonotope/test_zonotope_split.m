@@ -30,7 +30,7 @@ tol = 1e-14;
 Z1 = zonotope([-4, -3, -2, -1; 1, 2, 3, 4]);
 
 % create halfspace
-h = halfspace([1; -1], -2);
+hs = polytope([1, -1], -2);
 
 % obtain result 1
 Zsplit_1 = split(Z1);
@@ -42,7 +42,7 @@ Zsplit_2 = split(Z1,2);
 Zsplit_3 = split(Z1,[1; 1]);
 
 % obtain result 4
-Zsplit_4 = split(Z1,h);
+Zsplit_4 = split(Z1,hs);
 
 %SPLIT FUNCTIONS WITH 3 OPERANDS NOT YET TESTED
 
@@ -135,6 +135,8 @@ for i=1:length(G_4)
 end
 
 % combined check
-res = res_1 & res_2 & res_3 & res_4;
+assert(res_1 & res_2 & res_3 & res_4);
+
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

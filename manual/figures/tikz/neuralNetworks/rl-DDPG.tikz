@@ -1,0 +1,42 @@
+\tikzset{fit margins/.style={/tikz/afit/.cd,#1,
+/tikz/.cd,
+inner xsep=\pgfkeysvalueof{/tikz/afit/left}+\pgfkeysvalueof{/tikz/afit/right},
+inner ysep=\pgfkeysvalueof{/tikz/afit/top}+\pgfkeysvalueof{/tikz/afit/bottom},
+xshift=-\pgfkeysvalueof{/tikz/afit/left}+\pgfkeysvalueof{/tikz/afit/right},
+yshift=-\pgfkeysvalueof{/tikz/afit/bottom}+\pgfkeysvalueof{/tikz/afit/top}},
+    afit/.cd,left/.initial=2pt,right/.initial=2pt,bottom/.initial=2pt,top/.initial=2pt}
+
+\definecolor{sasc}{rgb}{0.15300,0.41960,0.72740}%
+\definecolor{sapc}{rgb}{0.69020,0.82350,1.00000}%
+
+
+\begin{tikzpicture}[auto, node distance=1.5cm,
+    plate1/.style={draw, shape=rectangle, rounded corners=0.5ex, thick,minimum width=1cm, text width=1cm, align=right, inner sep=4, inner ysep=4,label={[xshift=14pt,yshift=14pt]south west:#1}},
+    plate2/.style={draw, shape=rectangle, rounded corners=0.5ex, thick,minimum width=1cm, text width=1cm, align=right, inner sep=4, inner ysep=4,label={[xshift=14pt,yshift=14pt]south west:#1}}]
+    % Nodes
+    \node (buffer) [draw, rectangle, minimum width=1cm, minimum height=0.75cm]{$\mathcal{B}$};
+    \node (actor) [draw, rectangle, minimum width=1cm, minimum height=0.75cm, right=of buffer] {$\mu_\phi$};
+    \node (critic) [draw, rectangle, minimum width=1cm, minimum height=0.75cm, right=of actor] {$Q_\theta$};
+    \node (q) [minimum height=0.75cm, right=0.5cm of critic] {$q_t$};
+    \node (stored) [above = 0cm of buffer] {$(s_t, a_t, r_t, s_{t+1})$};
+
+    % Arrows
+    \draw[->] (buffer) -- node(st)[above] {$s_t$} (actor);
+    \draw[->] (actor) -- node(at)[above] {$a_t$} (critic);
+
+    \node (env) [draw, rectangle, minimum width=1cm, minimum height=0.5cm, above =1cm of st]{Environment};
+
+    \draw[->] (critic) -- (q);
+    \draw[->] (st) |- ++(0,-1.475cm) -| (critic);
+    \draw[->, dotted] (at) |- (env);
+    \draw[->, dotted] (st) -- (env);
+    \draw[->, dotted] (env) -| (stored);
+
+    % Policies
+    \draw[->, densely dotted, transform canvas={yshift=-7.5pt}] (critic) -- node(pgradient)[below] {$\nablaOperator_{a_t} J$} (actor);
+    \draw[->, densely dotted, transform canvas={yshift=-7.5pt}] (q) -- node(Lloss)[below] {$L$}  (critic);
+
+    \node[plate2=\ding{192}, fit margins={left=0.4cm,right=0.0cm,bottom=0.5cm,top=0.4cm}, fit=(actor) (pgradient) (critic) (buffer) (Lloss) (q), draw=sasc] (plate1) {};
+    \node[plate1=\ding{193}, fit margins={left=0.2cm,right=0.04cm,bottom=0.2cm,top=0.1cm}, fit=(actor) (pgradient),draw=sapc] (plate2) {};
+
+\end{tikzpicture}

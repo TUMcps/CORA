@@ -1,0 +1,52 @@
+\section{Matrix Set Representations and Operations} \label{sec:matrixSetRepresentationsAndOperations}
+\logToConsole{MATRIX SET REPRESENTATIONS AND OPERATIONS}
+
+Besides vector sets as introduced in the previous section, it is often useful to represent sets of possible matrices. This occurs for instance when a linear system has uncertain parameters as described later in \cref{sec:linearParamSystems}. CORA supports the following matrix set representations:
+\begin{itemize}
+    \item Matrix polytope (\cref{sec:polytopeMatrix}).
+    \item Matrix zonotope (\cref{sec:zonotopeMatrix}, specialization of a matrix polytope).
+    \item Interval matrix (\cref{sec:intervalMatrix}, specialization of a matrix zonotope).
+\end{itemize}
+Note that we use the term \textit{matrix polytope} instead of \textit{polytope matrix}. The reason is that the analogous term \textit{vector polytope} makes sense, while \textit{polytope vector} can be misinterpreted as a vertex of a polytope. We do not use the term \textit{matrix interval} since the term \textit{interval matrix} is already established.
+
+For each matrix set representation, the conversion to all other matrix set computations is implemented. Of course, conversions to specializations are realized in an over-approximative way, while the other direction is computed exactly (see \cref{tab:matSetConversion}). In order to convert a matrix set, it is sufficient to pass the current matrix set object to the class constructor of the target matrix set representation, as demonstrated by the following example:
+
+    {\footnotesize \input{./MATLABcode/example_matSetConversion}}
+
+\begin{table}[htb]
+    \centering
+    \caption{Matrix set conversions supported by CORA. The row headers represent the original matrix set representation and the column headers the target matrix set representation after conversion. The shortcuts e (exact conversion) and o (over-approximation) are used.}
+    \label{tab:matSetConversion}
+    \begin{tabular}{ l c c c}
+        \toprule
+        & \textbf{matPolytope} & \textbf{matZonotope} & \textbf{intervalMatrix} \\
+        \midrule
+        \textbf{matPolytope} (\cref{sec:polytopeMatrix})    & -                    & o                    & o                       \\
+        \textbf{matZonotope} (\cref{sec:zonotopeMatrix})    & e                    & -                    & o                       \\
+        \textbf{intervalMatrix} (\cref{sec:intervalMatrix}) & e                    & e                    & -                       \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+We first introduce importrant operations for matrix sets in \cref{sec:matSetOperations} before we describe the matrix set representations implemented in detail in \cref{sec:matSetRepresentations}.
+
+
+\newpage
+
+% matrix set operations
+\input{./sections/matrixSets/matSetOperations}
+
+\newpage
+
+\subsection{Matrix Set Representations} \label{sec:matSetRepresentations}
+
+This section describes the different matrix set representations implemented in CORA.
+
+% matrix polytopes
+\input{./sections/matrixSets/matrixPolytopes}
+
+% matrix zonotopes
+\input{./sections/matrixSets/matrixZonotopes}
+
+% interval matrix
+\input{./sections/matrixSets/intervalMatrices}

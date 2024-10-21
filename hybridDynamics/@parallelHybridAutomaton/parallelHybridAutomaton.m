@@ -4,8 +4,10 @@ classdef parallelHybridAutomaton < hybridDynamics
 % Syntax:
 %    pHA = parallelHybridAutomaton()
 %    pHA = parallelHybridAutomaton(components,inputBinds)
+%    pHA = parallelHybridAutomaton(name,components,inputBinds)
 %
 % Inputs:
+%    name - name of the parallel hybrid automaton
 %    components - class array of hybridAutomaton objects representing the
 %                 subcomponents
 %    inputBinds - cell array of nx2 int arrays. Maps component inputs to 
@@ -22,37 +24,37 @@ classdef parallelHybridAutomaton < hybridDynamics
 %
 %    % first component, first location
 %    inv = polytope(1,T_off);
-%    guard = conHyperplane(1,T_off);
-%    reset = struct('A',1,'c',0);
+%    guard = polytope([],[],1,T_off);
+%    reset = linearReset(1);
 %    trans(1) = transition(guard,reset,2);
-%    linSys = linearSys(-(a1 + b1),[b1,a1],c1,1);
-%    loc(1) = location('on',inv,trans,linSys);
+%    linsys = linearSys(-(a1 + b1),[b1,a1],c1,1);
+%    loc(1) = location('on',inv,trans,linsys);
 %
 %    % first component, second location
 %    inv = polytope(-1,-T_on);
-%    guard = conHyperplane(1,T_on);
-%    reset = struct('A',1,'c',0);
+%    guard = polytope([],[],1,T_on);
+%    reset = linearReset(1);
 %    trans(1) = transition(guard,reset,1);
-%    linSys = linearSys(-(a1 + b1),[b1,a1],[],1);
-%    loc(2) = location('off',inv,trans,linSys);
+%    linsys = linearSys(-(a1 + b1),[b1,a1],[],1);
+%    loc(2) = location('off',inv,trans,linsys);
 %
 %    HA1 = hybridAutomaton(loc);
 %
 %    % second component, first location
 %    inv = polytope(1,T_off);
-%    guard = conHyperplane(1,T_off);
-%    reset = struct('A',1,'c',0);
+%    guard = polytope([],[],1,T_off);
+%    reset = linearReset(1);
 %    trans(1) = transition(guard,reset,2);
-%    linSys = linearSys(-(a2 + b2),[b2,a2],c2,1);
-%    loc(1) = location('on',inv,trans,linSys);
+%    linsys = linearSys(-(a2 + b2),[b2,a2],c2,1);
+%    loc(1) = location('on',inv,trans,linsys);
 %
 %    % second component, second location
 %    inv = polytope(-1,-T_on);
-%    guard = conHyperplane(1,T_on);
-%    reset = struct('A',1,'c',0);
+%    guard = polytope([],[],1,T_on);
+%    reset = linearReset(1);
 %    trans(1) = transition(guard,reset,1);
-%    linSys = linearSys(-(a2 + b2),[b2,a2],[],1);
-%    loc(2) = location('off',inv,trans,linSys);
+%    linsys = linearSys(-(a2 + b2),[b2,a2],[],1);
+%    loc(2) = location('off',inv,trans,linsys);
 %
 %    HA2 = hybridAutomaton(loc);
 %
@@ -62,7 +64,7 @@ classdef parallelHybridAutomaton < hybridDynamics
 %                     2 1];      % first output of component 2
 %    inputBinds{2} = [0 1; ...   % first global input
 %                     1 1];      % first output of component 1
-%    pHA = parallelHybridAutomaton(components,inputBinds);
+%    pHA = parallelHybridAutomaton('thermostat',components,inputBinds);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -75,37 +77,34 @@ classdef parallelHybridAutomaton < hybridDynamics
 % Last update:   16-June-2022 (MW, add input argument checks)
 %                06-June-2023 (MW, add mergedTrans property)
 %                21-June-2023 (MW, add/rename dim/nrOfInputs/nrOfOutputs)
+%                15-October-2024 (MW, add name property)
+%                16-October-2024 (TL, renames dim to nrOfStates)
 % Last revision: 21-June-2023 (MW, restructure, integrate validateBinds)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = protected, GetAccess = public)
     
-    % list of hybridAutomaton objects representing the subcomponents of the
-    % system
-    components = hybridAutomaton();
+    % --- properties provided by user ---
+    name = '';                          % name of the automaton
+    components = hybridAutomaton();     % subcomponents of the system
+    bindsInputs = {};                   % connection of subcomponents
+
+    % --- properties computed from user inputs ---
+    bindsStates = {};                   % mapping local -> global state
+    nrOfStates;                         % number of states of composed automaton
+    nrOfInputs;                         % number of global inputs
+    nrOfOutputs;                        % number of global outputs of composed automaton
+    nrOfDisturbances;                   % number of global disturbances of composed automaton
+    nrOfNoises;                         % number of global noises of composed automaton
+
+    % --- properties stored on-the-fly for faster evaluation ---
+    locProd;                            % computed location products
+    mergedTrans;                        % merged transitions
+
+    % legacy
+    dim;                % (also) state dimension
     
-    % description of the connection of the single subcomponents
-    bindsInputs = {};
-
-    % --- the remaining properties are set internally ---
-    % description of the composition of the single subcomponents
-    bindsStates = {};
-
-    % number of states of composed automaton
-    dim;
-
-    % number of global inputs
-    nrOfInputs;
-
-    % number of global outputs of composed automaton
-    nrOfOutputs;
-
-    % computed location products (used for speed up)
-    locProd;
-
-    % merged transitions (used for speed up)
-    mergedTrans;
 end
 
 methods
@@ -113,58 +112,92 @@ methods
     % Class Constructor
     function pHA = parallelHybridAutomaton(varargin)
 
+        % 0. empty
+        assertNarginConstructor(0:3,nargin);
+        if nargin == 0
+            return;
+        end
+
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'parallelHybridAutomaton')
             pHA = varargin{1}; return
         end
 
         % 2. parse input arguments: varargin -> vars
-        if nargin == 0
-            return;
-        elseif nargin < 2
-            throw(CORAerror('CORA:notEnoughInputArgs',2));
-        elseif nargin > 2
-            throw(CORAerror('CORA:tooManyInputArgs',2));
-        else
-            comps = varargin{1};
-            % assign input binds
-            if size(varargin{2},2) > 1
-                inputBinds = varargin{2}.';
-            else
-                inputBinds = varargin{2};
-            end
-        end
+        [name,comps,inputBinds] = aux_parseInputArgs(varargin{:});
             
         % 3. check correctness of input arguments
-        aux_checkInputArgs(comps,inputBinds,nargin);
+        aux_checkInputArgs(name,comps,inputBinds,nargin);
             
         % 4. compute internal properties
-        [stateBinds,n,m,r] = aux_computeProperties(comps,inputBinds);
+        [name,comps,inputBinds,stateBinds,states,inputs,outputs,dists,noises] = ...
+            aux_computeProperties(name,comps,inputBinds);
 
         % 5. assign properties
+        pHA.name = name;
         pHA.components = comps;
         pHA.bindsInputs = inputBinds;
         pHA.bindsStates = stateBinds;
-        pHA.dim = n;
-        pHA.nrOfInputs = m;
-        pHA.nrOfOutputs = r;
+        pHA.nrOfStates = states;
+        pHA.nrOfInputs = inputs;
+        pHA.nrOfOutputs = outputs;
+        pHA.nrOfDisturbances = dists;
+        pHA.nrOfNoises = noises;
 
         % init structs for computed location products/merged transitions
         pHA.locProd = struct('location',cell(0),'locID',cell(0));
         pHA.mergedTrans = struct('transition',cell(0),'locID',cell(0),'transID',cell(0));
     end
+
 end
+
+
+% getter & setter ---------------------------------------------------------
+
+methods 
+    function dim = get.dim(sys)
+        CORAwarning('CORA:deprecated', 'property', 'contDynamics.dim', 'CORA v2025', ...
+            'Please use contDynamics.nrOfStates instead.', ...
+            'This change was made to be consistent with the other properties.')
+        dim = sys.nrOfStates;
+    end
+    function sys = set.dim(sys,dim)
+        CORAwarning('CORA:deprecated', 'property', 'contDynamics.dim', 'CORA v2025', ...
+            'Please use contDynamics.nrOfStates instead.', ...
+            'This change was made to be consistent with the other properties.')
+        sys.nrOfStates = dim;
+    end
+end
+
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function aux_checkInputArgs(comps,inputBinds,n_in)
+function [name,comps,inputBinds] = aux_parseInputArgs(varargin)
+    
+    narginchk(2,3);
+
+    % default name
+    name = 'parallelHybridAutomaton';
+    if nargin == 2
+        [comps,inputBinds] = varargin{:};
+    elseif nargin == 3
+        [name,comps,inputBinds] = varargin{:};
+    end
+
+end
+
+function aux_checkInputArgs(name,comps,inputBinds,n_in)
 
     if CHECKS_ENABLED && n_in > 0
 
+        inputArgsCheck({{name,'att',{'char','string'}};...
+                        {comps,'att','hybridAutomaton','vector'};...
+                        {inputBinds,'att','cell'}});
+
         % read out number of components
-        numComps = length(comps);
+        numComps = numel(comps);
         
         % check whether each component is a hybrid automaton
         if ~all(arrayfun(@(x) isa(x,'hybridAutomaton'),comps,...
@@ -177,7 +210,7 @@ function aux_checkInputArgs(comps,inputBinds,n_in)
         % check locations of each component
         for i=1:numComps
             % each location has to have same number of states
-            states = arrayfun(@(x) length(x.contDynamics.dim),...
+            states = arrayfun(@(x) length(x.contDynamics.nrOfStates),...
                 comps(i).location,'UniformOutput',true);
             if ~all(states == states(1))
                 throw(CORAerror('CORA:wrongInputInConstructor',...
@@ -188,7 +221,7 @@ function aux_checkInputArgs(comps,inputBinds,n_in)
 
             % each location has to have same number of inputs
             inputs = arrayfun(@(x) length(x.contDynamics.nrOfInputs),...
-                comps(1).location,'UniformOutput',true);
+                comps(i).location,'UniformOutput',true);
             if ~all(inputs == inputs(1))
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     ['Within a component of the parallel hybrid automaton, '...
@@ -198,17 +231,37 @@ function aux_checkInputArgs(comps,inputBinds,n_in)
 
             % each location has to have same number of outputs
             outputs = arrayfun(@(x) length(x.contDynamics.nrOfOutputs),...
-                comps(1).location,'UniformOutput',true);
+                comps(i).location,'UniformOutput',true);
             if ~all(outputs == outputs(1))
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     ['Within a component of the parallel hybrid automaton, '...
                     'the continuous dynamics of each location have to '...
                     'have the same number of outputs.']));
             end
+
+            % each location has to have the same number of disturbances
+            dists = arrayfun(@(x) length(x.contDynamics.nrOfDisturbances),...
+                comps(i).location,'UniformOutput',true);
+            if ~all(dists == dists(1))
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    ['Within a component of the parallel hybrid automaton, '...
+                    'the continuous dynamics of each location have to '...
+                    'have the same number of disturbances.']));
+            end
+
+            % each location has to have the same number of noises
+            noises = arrayfun(@(x) length(x.contDynamics.nrOfNoises),...
+                comps(i).location,'UniformOutput',true);
+            if ~all(noises == noises(1))
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    ['Within a component of the parallel hybrid automaton, '...
+                    'the continuous dynamics of each location have to '...
+                    'have the same number of noises.']));
+            end
         end
 
         % check input binds (nx2 array, integer, ...)
-        for i=1:length(inputBinds)
+        for i=1:numel(inputBinds)
             % nrOfInputs(max)-by-2 array
             % (we can use any location since all must have same nrOfInputs)
             if xor(isempty(inputBinds{i}), ...
@@ -237,14 +290,19 @@ function aux_checkInputArgs(comps,inputBinds,n_in)
 
 end
 
-function [stateBinds,n,m,r] = aux_computeProperties(comps,inputBinds)
+function [name,comps,inputBinds,stateBinds,states,inputs,outputs,dists,noises] = ...
+    aux_computeProperties(name,comps,inputBinds)
 % determines the internal properties stateBinds, number of states/global
 % inputs/global outputs of the composed automaton
 % note: parts were previously handled in validateBinds (now removed)
 
+    % reshape to column vectors
+    comps = reshape(comps,[],1);
+    inputBinds = reshape(inputBinds,[],1);
+
     % determine number of states of composed automaton
-    n_comp = arrayfun(@(x) x.location(1).contDynamics.dim,comps,'UniformOutput',true)';
-    n = sum(n_comp);
+    n_comp = arrayfun(@(x) x.location(1).contDynamics.nrOfStates,comps,'UniformOutput',true)';
+    states = sum(n_comp);
 
     % compute state binds
     stateBinds = cell(length(comps),1);
@@ -267,13 +325,20 @@ function [stateBinds,n,m,r] = aux_computeProperties(comps,inputBinds)
     inputIndices = concatInputs(:,2);
     
     % get number of global inputs
-    temp = unique(inputIndices(inputComps == 0));
-    m = length(temp);
+    uniqueIndices = unique(inputIndices(inputComps == 0));
+    inputs = length(uniqueIndices);
 
     % determine number of global outputs to composed automaton: since CORA
     % does not support output equations for composed parallel hybrid
-    % automata, we use the state dimension instead
-    r = n;
+    % automata, we assume an identity output matrix, i.e., y = x
+    outputs = states;
+
+    % determine number of global disturbances and global noises:
+    % both disturbances and noises per component are independent from one
+    % another; also, they are by input argument check forced to be the same
+    % for each location, so we can just use the first one for each comp
+    dists = sum(arrayfun(@(x) x.location(1).contDynamics.nrOfDisturbances, comps));
+    noises = sum(arrayfun(@(x) x.location(1).contDynamics.nrOfNoises, comps));
 
 end
 

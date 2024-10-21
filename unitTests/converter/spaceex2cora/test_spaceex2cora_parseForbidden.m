@@ -73,15 +73,13 @@ for i = 5:length(test_case)
         [result_specs,result_mapping] = parseForbidden(test_case(i),...
             state_names{i},component_names{i},location_names{i});
         % compare result to expected result
-        if ~( aux_compSpecs(result_specs(2:end),solution{i}.specs) ...
-                && isequal(result_mapping,solution{i}.mapping) )
-            res = false;
-        end
+        assertLoop(( aux_compSpecs(result_specs(2:end),solution{i}.specs) ...
+                && isequal(result_mapping,solution{i}.mapping) ),i)
 
     catch ME
         % check whether the test_case was supposed to throw an error
         if ~error_expected(i)
-            res = false;
+            rethrow(ME)
         end
     end
 end

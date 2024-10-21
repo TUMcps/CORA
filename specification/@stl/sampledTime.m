@@ -39,7 +39,7 @@ function res = sampledTime(obj,dt,varargin)
 
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   08-February-2024 (FL, use interval property of stl instead of from and to)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -167,7 +167,7 @@ function res = aux_rewrite(obj,pred)
         % 3rd rule in Lemma 4 in [1]
         if strcmp(obj.lhs.type,'next')
     
-            I_ = interval(obj.from,obj.to);
+            I_ = obj.interval;
 
             res = aux_rewrite(next(finally(obj.lhs.lhs,I_),1),pred);
 
@@ -251,27 +251,27 @@ function res = aux_rewrite(obj,pred)
         elseif obj.from ~= 0 || obj.to ~= 1
 
             res = aux_rewrite(until(true,obj.lhs, ...
-                                interval(obj.from,obj.to)),pred);
+                                obj.interval),pred);
 
         elseif strcmp(obj.lhs.type,'finally') && obj.lhs.from == 0 && ...
                 obj.lhs.to == 1 && obj.from == 0 && obj.to == 1
 
-            I1 = interval(obj.from,obj.to);
-            I2 = interval(obj.lhs.from,obj.lhs.to);
+            I1 = obj.interval;
+            I2 = obj.lhs.interval;
 
             res = aux_rewrite(finally(until(true,obj.lhs.lhs,I2),I1),pred);
 
         elseif strcmp(obj.lhs.type,'globally') && obj.lhs.from == 0 && ...
                 obj.lhs.to == 1 && obj.from == 0 && obj.to == 1
 
-            I1 = interval(obj.from,obj.to);
-            I2 = interval(obj.lhs.from,obj.lhs.to);
+            I1 = obj.interval;
+            I2 = obj.lhs.interval;
 
             res = aux_rewrite(finally(release(false,obj.lhs.lhs,I2),I1),pred);
 
         elseif obj.lhs.temporal
 
-            I_ = interval(obj.from,obj.to);
+            I_ = obj.interval;
 
             res = aux_rewrite(finally(aux_rewrite(obj.lhs,pred),I_),pred);
 
@@ -284,7 +284,7 @@ function res = aux_rewrite(obj,pred)
         % 4th rule in Lemma 4 in [1]
         if strcmp(obj.lhs.type,'next')
     
-            I_ = interval(obj.from,obj.to);
+            I_ = obj.interval;
 
             res = aux_rewrite(next(globally(obj.lhs.lhs,I_),1),pred);
 
@@ -367,27 +367,27 @@ function res = aux_rewrite(obj,pred)
         elseif obj.from ~= 0 || obj.to ~= 1
 
             res = aux_rewrite(release(false,obj.lhs, ...
-                            interval(obj.from,obj.to)),pred);
+                            obj.interval),pred);
 
         elseif strcmp(obj.lhs.type,'globally') && obj.lhs.from == 0 && ...
                 obj.lhs.to == 1 && obj.from == 0 && obj.to == 1
 
-            I1 = interval(obj.from,obj.to);
-            I2 = interval(obj.lhs.from,obj.lhs.to);
+            I1 = obj.interval;
+            I2 = obj.lhs.interval;
 
             res = aux_rewrite(globally(release(false,obj.lhs.lhs,I2),I1),pred);
 
         elseif strcmp(obj.lhs.type,'finally') && obj.lhs.from == 0 && ...
                 obj.lhs.to == 1 && obj.from == 0 && obj.to == 1
 
-            I1 = interval(obj.from,obj.to);
-            I2 = interval(obj.lhs.from,obj.lhs.to);
+            I1 = obj.interval;
+            I2 = obj.lhs.interval;
 
             res = aux_rewrite(globally(until(true,obj.lhs.lhs,I2),I1),pred);
 
         elseif obj.lhs.temporal
 
-            I_ = interval(obj.from,obj.to);
+            I_ = obj.interval;
 
             res = aux_rewrite(globally(aux_rewrite(obj.lhs,pred),I_),pred);
 
@@ -473,9 +473,9 @@ function res = aux_scaleTime(obj,dt)
         from = scale*res.from; to = scale*res.to;
 
         if abs(round(from) - from) > 1e-10 || abs(round(to) - to) > 1e-10
-            res.from = ceil(from); res.to = floor(to);
+            res.interval = stlInterval(ceil(from),floor(to));
         else
-            res.from = round(from); res.to = round(to);
+            res.interval = stlInterval(round(from),round(to));
         end
 
         res.lhs = aux_scaleTime(res.lhs,dt);
@@ -487,9 +487,9 @@ function res = aux_scaleTime(obj,dt)
         from = scale*res.from; to = scale*res.to;
 
         if abs(round(from) - from) > 1e-10 || abs(round(to) - to) > 1e-10
-            res.from = floor(from); res.to = ceil(to);
+            res.interval = stlInterval(floor(from),ceil(to));
         else
-            res.from = round(from); res.to = round(to);
+            res.interval = stlInterval(round(from),round(to));
         end
 
         res.lhs = aux_scaleTime(res.lhs,dt);
@@ -501,9 +501,9 @@ function res = aux_scaleTime(obj,dt)
         from = scale*res.from; to = scale*res.to;
 
         if abs(round(from) - from) > 1e-10 || abs(round(to) - to) > 1e-10
-            res.from = floor(from); res.to = ceil(to);
+            res.interval = stlInterval(floor(from),ceil(to));
         else
-            res.from = round(from); res.to = round(to);
+            res.interval = stlInterval(round(from),round(to));
         end
 
         res.lhs = aux_scaleTime(res.lhs,dt);
@@ -514,9 +514,9 @@ function res = aux_scaleTime(obj,dt)
         from = scale*res.from; to = scale*res.to;
 
         if abs(round(from) - from) > 1e-10 || abs(round(to) - to) > 1e-10
-            res.from = ceil(from); res.to = floor(to);
+            res.interval = stlInterval(ceil(from),floor(to));
         else
-            res.from = round(from); res.to = round(to);
+            res.interval = stlInterval(round(from),round(to));
         end
 
         res.lhs = aux_scaleTime(res.lhs,dt);
@@ -530,7 +530,7 @@ function res = aux_scaleTime(obj,dt)
             inner = aux_scaleTime(res.lhs,dt);
             res = globally(inner,interval(floor(from),ceil(from)));
         else
-            res.from = round(from);
+            res.interval = stlInterval(round(from));
             res.lhs = aux_scaleTime(res.lhs,dt);
         end
 

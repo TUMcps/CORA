@@ -81,11 +81,7 @@ function Zres = intersectStrip(Z,C,phi,y,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
-if nargin < 4
-    throw(CORAerror("CORA:notEnoughInputArgs", 4))
-elseif nargin > 5
-    throw(CORAerror("CORA:tooManyInputArgs", 5))
-end
+narginchk(4,5);
 
 inputArgs = { ...
     {Z, 'att', 'zonotope'}; ...

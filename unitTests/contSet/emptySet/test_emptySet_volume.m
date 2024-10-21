@@ -22,6 +22,9 @@ function res = test_emptySet_volume
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % init empty set
 n = 2;
@@ -29,6 +32,6 @@ O = emptySet(n);
 
 % compute volume
 val = volume(O);
-res = val == 0;
+assert(val == 0);
 
 % ------------------------------ END OF CODE ------------------------------

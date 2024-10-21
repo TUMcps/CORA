@@ -1,0 +1,471 @@
+\section{User Input Validation}
+\label{sec:inputvalidation}
+
+In this section, we provide some information about the validation of user inputs for algorithms implemented in CORA.
+We start with introductory remarks (\cref{ssec:inputvalidation_introduction}), followed by instructions for those who want to use our input validation for the own algorithms (\cref{ssec:inputvalidation_users}) and information for developers about the input validation process (\cref{ssec:inputvalidation_devs}) useful for future feature extensions.
+
+
+\subsection{Introduction}
+\label{ssec:inputvalidation_introduction}
+
+Algorithms implemented in CORA, see \cref{sec:dynamicSystemOperations}, generally take the following three input arguments:
+A dynamical system \texttt{sys}, model parameters \texttt{params}, and algorithm parameters \texttt{options}.
+These individual parts have to fit one another:
+For example, the dimension of the initial set (\texttt{params.R0}) has to match the state dimension of a dynamical system (\texttt{sys.dim}).
+Also, each algorithm requires a different set of \texttt{options} to execute.
+To check whether an algorithm is called with suitable arguments for \texttt{params} and \texttt{options}, we have implemented custom input argument validation.
+The goal is to have a single call
+\begin{equation*}
+	\texttt{[params,options] = validateOptions(sys,params,options);}
+\end{equation*}
+that validates \texttt{params} and \texttt{options} for a given system \texttt{sys}.
+If this is not the case, one obtains a clear error message stating what to fix (instead of a cryptic runtime error message).
+For internal reasons, \texttt{params} and \texttt{options} are unified into a single \texttt{options} struct.
+
+The input argument validation process consists of two main parts:
+\begin{enumerate}
+	\item The configuration file for a given system class and algorithm, defining which \texttt{params} and \texttt{options} can be set and which values they may assume.
+	\item The validation itself executed in \texttt{validateOptions}.
+\end{enumerate}
+Users who want to use the functionality of \texttt{validateOptions} only need to write a configuration file and declare potential default values as well as the set of admissible values for each field of their \texttt{params} and \texttt{options}, as described in \cref{ssec:inputvalidation_users}.
+Developers who wish to extend to functionality of \texttt{validateOptions} will find useful information in \cref{ssec:inputvalidation_devs}.
+
+Please note that using \texttt{validateOptions} is optional and only recommended for algorithms that will be part of a future CORA release!
+Calling a built-in CORA algorithm does not require any knowledge about \texttt{validateOptions}, as one only must follow the interface described in \cref{sec:dynamicSystemOperations}.
+Also, one can disable validation by setting \texttt{options.VALIDATE = false} (not recommended).
+
+
+\subsection{For users}
+\label{ssec:inputvalidation_users}
+
+We use configuration files to define all fields of \texttt{params} and \texttt{options} expected by a given algorithm of a given system class.
+In this subsection, we will show how to write configuration files, how to define default values for a given field of \texttt{params} or \texttt{options}, and how to constrain the set of admissible values for a field.
+To this end, we will also use a running example, alongside the general explanation of the used functions.
+
+Let us start with the configuration file, the purpose of which is to enlist all model parameters \texttt{params} and algorithm parameters \texttt{options} required for a given algorithm.
+The configuration file is a function with the following signature:
+\begin{equation*}
+	\texttt{[paramsList,optionsList] = config\_}\textit{classname}\texttt{\_}\textit{functionname}
+\end{equation*}
+where \textit{classname} needs to match the class of the object, i.e., the result of calling \texttt{class(sys)}, passed as the first argument to \texttt{validateOptions} and \textit{functionname} is the name of the algorithm.
+The output arguments are \texttt{paramsList} (list of supported model parameters) and \texttt{optionsList} (list of supported algorithm parameters).
+
+\begin{tcolorbox}
+	\begin{scriptsize} \textcolor{gray}{(Running example: Configuration file -- function signature)} \end{scriptsize} \\
+	We want to write a configuration file for a reachability algorithm for linear systems.
+	Since \texttt{class(sys) = linearSys} and our algorithm is implemented in a function called \texttt{reach}, our configuration file becomes
+	\begin{equation*}
+		\textttsmall{[paramsList,optionsList] = config\_linearSys\_reach}
+	\end{equation*}
+\end{tcolorbox}
+
+By convention, we store all configuration files in the directory
+\begin{equation*}
+	\texttt{cora/global/functions/helper/dynamics/checkOptions/configfiles}
+\end{equation*}
+Let us now look at the content of the configuration file:
+The first line of the configuration file has to be 
+\begin{equation*}
+	\texttt{[paramsList,optionsList] = initDynParameterList();}
+\end{equation*}
+which initializes the output arguments.
+Next, we add individual fields to \texttt{params} and \texttt{options} by calling
+\begin{align*}
+	&\texttt{paramsList(end+1,1) = add2list(}\textit{name,status}\texttt{);} \\
+	&\texttt{optionsList(end+1,1) = add2list(}\textit{name,status}\texttt{);}
+\end{align*}
+The syntax of \texttt{add2list} is as follows:
+\begin{itemize}
+	\item \textit{name} (char array):
+		name of the field containing at most one dot.
+	\item \textit{status} (char array): either \texttt{'mandatory'} (the given field must be defined by the user, otherwise an error is thrown),
+		\texttt{'optional'} (the given field can be defined by the user, but it is not required for the computation.)
+		or \texttt{'default'} (the given field can be defined by the user, otherwise the default value is taken (see below for how to set default values)).
+\end{itemize}
+
+\begin{tcolorbox}
+	\begin{scriptsize} \textcolor{gray}{(Running example: Configuration file -- defining model/algorithm parameters)} \end{scriptsize} \\
+	In our configuration file, we want to add the following mandatory model parameters:
+	An initial set \texttt{params.initialSet} and a time horizon \texttt{params.timeHorizon}.
+	Additionally, we want to add the algorithm parameter \texttt{options.algorithm} (default) and the conditional algorithm parameter \texttt{options.optimizeLevel} (mandatory), which is only mandatory for a certain value of \texttt{options.algorithm}.
+
+	Hence, the content of our configuration file looks as follows:
+	\begin{align*}
+		&\textttsmall{[paramsList,optionsList] = initDynParameterList();} \\
+		&\textttsmall{paramsList(end+1,1) = add2list('initialSet','mandatory');} \\
+		&\textttsmall{paramsList(end+1,1) = add2list('timeHorizon','mandatory');} \\
+		&\textttsmall{optionsList(end+1,1) = add2list('algorithm','default');} \\
+		&\textttsmall{optionsList(end+1,1) = add2list('optimizeLevel','mandatory');}
+	\end{align*}
+\end{tcolorbox}
+
+It goes without saying that identifiers for \texttt{params} and \texttt{options} should be unique.
+Important: The behavior for a field like \texttt{params.R0} is handled uniformly for \emph{all} algorithms using that specific field.
+Consequently, please check if there already exists a field with the same name when writing configuration files.
+Additionally, we must register each field of \texttt{params} in the function:
+\begin{equation*}
+	\texttt{cora/global/functions/helper/dynamics/checkOptions/isparam.m}
+\end{equation*}
+
+\begin{tcolorbox}
+	\begin{scriptsize} \textcolor{gray}{(Running example: Registering fields of model parameters)} \end{scriptsize} \\
+	We go to the file
+	\begin{equation*}
+		\textttsmall{cora/global/functions/helper/dynamics/checkOptions/isparam.m}
+	\end{equation*}
+	and add \texttt{'initialSet'} and \texttt{'timeHorizon'} to the list of model parameters, so that the output argument \texttt{res} becomes \texttt{true}.
+\end{tcolorbox}
+
+
+Next, we want to set the admissible values for the \texttt{params} and \texttt{options} defined in the configuration file.
+To this end, we define a set of function handles for each field of \texttt{params} and \texttt{options}, all of which must evaluate to true for successful validation.
+All checks are defined in the files
+\begin{align*}
+	&\texttt{cora/global/functions/helper/dynamics/checkOptions/checkDynParameterParams.m} \\
+	&\texttt{cora/global/functions/helper/dynamics/checkOptions/checkDynParameterOptions.m}
+\end{align*}
+First, we have a separate \texttt{case} block for each field in \texttt{params} and \texttt{options}, which calls a helper function defining all check functions.
+For this helper function, we use the convention
+\begin{align*}
+	&\texttt{checks = aux\_getChecksParams\_}\textit{name}\texttt{(checks,sys,func,params,options);} \\
+	&\texttt{checks = aux\_getChecksOptions\_}\textit{name}\texttt{(checks,sys,func,params,options);}
+\end{align*}
+
+More specifically, we define each check function using the function
+\begin{equation*}
+	\texttt{checks(end+1) = add2checks(}\textit{function\_handle}\texttt{,} \textit{error\_id}\texttt{);}
+\end{equation*}
+where \textit{function\_handle} is a function handle returning \texttt{true} or \texttt{false}
+and \textit{error\_id} is an identifier defined in the file
+\begin{equation*}
+	\texttt{cora/global/functions/helper/dynamics/checkOptions/getErrorMessage.m}
+\end{equation*}
+Each identifier is mapped to a text explaining why the associated check function failed, i.e., the associated \textit{function\_handle} returned \texttt{false}.
+
+We recommend to define one-liners and simple expressions directly, but to implement more intricate checks as separate functions in the directory
+\begin{equation*}
+	\texttt{cora/global/functions/helper/dynamics/checkOptions/checkFuncs}
+\end{equation*}
+and be prefixed by \texttt{c\_}, the corresponding \textit{error\_id} should be an empty char array \texttt{''}.
+
+For some fields of \texttt{params} or \texttt{options}, the set of admissible values is a set of char arrays.
+We store them in the file
+\begin{equation*}
+	\texttt{cora/global/functions/helper/dynamics/checkOptions/getMembers.m}
+\end{equation*}
+returning a list of members \texttt{memberlist}, against which the user-provided string is checked.
+In this case, we prefix the \textit{error\_id} with \texttt{member}.
+
+
+\begin{tcolorbox}
+	\begin{scriptsize} \textcolor{gray}{(Running example: Adding check functions for model parameters)} \end{scriptsize} \\
+	We want to add the following checks:
+	The initial set \texttt{params.initialSet} must be an object of the zonotope class and the time horizon \texttt{params.timeHorizon} must be a scalar real value greater than \texttt{0}.
+
+	First, we open the file
+	\begin{equation*}
+		\textttsmall{cora/global/functions/helper/dynamics/checkOptions/checkDynParameterParams.m}
+	\end{equation*}
+	and add \texttt{case}-blocks for our fields \texttt{initialSet} and \texttt{timeHorizon}:
+	\begin{align*}
+		&		\textttsmall{case 'initialSet':} \\
+		&\qquad \textttsmall{checks = aux\_getChecksParams\_initialSet(checks,sys,func,params,options);} \\
+		&		\textttsmall{case 'timeHorizon':} \\
+		&\qquad \textttsmall{checks = aux\_getChecksParams\_timeHorizon(checks,sys,func,params,options);}
+	\end{align*}
+	The first helper function is
+	\begin{align*}
+		&		\textttsmall{function checks = aux\_getChecksParams\_initialSet(checks,sys,func,params,options)} \\
+    	&\qquad \textttsmall{checks(end+1) = add2checks(} \\
+		&\qquad \quad \textttsmall{@(val)any(ismember(getMembers('initialSet'),class(val))),'memberinitialSet');} \\
+		&		\textttsmall{end}
+	\end{align*}
+	which defines a function handle that checks whether \texttt{initialSet} is an object of the zonotope class.
+	Here, we use the function
+	\begin{equation*}
+		\textttsmall{cora/global/functions/helper/dynamics/checkOptions/getMembers.m}
+	\end{equation*}
+	to return the set of admissible values for the class of \texttt{initialSet} in the helper function:
+	\begin{align*}
+		&		\textttsmall{case 'initialSet':} \\
+		&\qquad \textttsmall{memberlist = \{'zonotope'\};}
+	\end{align*}
+	This way, one can easily extend the set of admissible value if another set representation is supported in the future.
+	For our error identifier \texttt{'memberinitialSet'} we go to
+	\begin{equation*}
+		\textttsmall{cora/global/functions/helper/dynamics/checkOptions/getErrorMessage.m}
+	\end{equation*}
+	and add the identifer to the \texttt{switch-case} logic with a suitable error message.
+	Note that many error identifiers for simple checks like \texttt{@isscalar} are already defined; re-use them.
+
+	The helper function for the field \texttt{timeHorizon} is
+	\begin{align*}
+		&		\textttsmall{function checks = aux\_getChecksParams\_timeHorizon(checks,sys,func,params,options)} \\
+    	&\qquad \textttsmall{checks(end+1) = add2checks(@isscalar,'isscalar');} \\
+		&\qquad \textttsmall{checks(end+1) = add2checks(@(val)gt(val,0),'gtzero');} \\
+		&		\textttsmall{end}
+	\end{align*}
+\end{tcolorbox}
+
+
+\begin{tcolorbox}
+\begin{scriptsize} \textcolor{gray}{(Running example: Specifying a default value for algorithm parameters)} \end{scriptsize} \\
+The algorithm \texttt{options.algorithm} must either be \texttt{'standard'} or \texttt{'optimized'} and the level \texttt{options.optimizeLevel} must either be \texttt{0}, \texttt{1} or \texttt{2}.
+Similary to the last part of the running example, we open the file
+\begin{equation*}
+	\textttsmall{cora/global/functions/helper/dynamics/checkOptions/checkDynParameterOptions.m}
+\end{equation*}
+and add \texttt{case}-blocks for our fields \texttt{algorithm} and \texttt{optimizeLevel}:
+\begin{align*}
+	&		\textttsmall{case 'algorithm':} \\
+	&\qquad \textttsmall{checks = aux\_getChecksOptions\_algorithm(checks,sys,func,params,options);} \\
+	&		\textttsmall{case 'optimizeLevel':} \\
+	&\qquad \textttsmall{checks = aux\_getChecksOptions\_optimizeLevel(checks,sys,func,params,options);}
+\end{align*}
+The helper functions are implemented as
+\begin{align*}
+	&		\textttsmall{function checks = aux\_getChecksOptions\_algorithm(checks,sys,func,params,options)} \\
+	&\qquad \textttsmall{checks(end+1) = add2checks(} \\
+	&\qquad \quad \textttsmall{@(val)any(ismember(getMembers('algorithm'),class(val))),'memberalgorithm');} \\
+	&		\textttsmall{end}
+\end{align*}
+and
+\begin{align*}
+	&		\textttsmall{function checks = aux\_getChecksOptions\_optimizeLevel(checks,sys,func,params,options)} \\
+	&\qquad \textttsmall{checks(end+1) = add2checks(@isscalar,'isscalar');} \\
+	&\qquad \textttsmall{checks(end+1) = add2checks(@(val)any(val == [0,1,2]),'zero1or2');} \\
+	&		\textttsmall{end}
+\end{align*}
+Furthermore, we must alter the file
+\begin{equation*}
+	\textttsmall{cora/global/functions/helper/dynamics/checkOptions/getMembers.m}
+\end{equation*}
+by adding an appropriate \texttt{case}-block for the admissible values of \texttt{algorithm}.
+Finally, we add a \texttt{case}-block for all error identifiers to
+\begin{equation*}
+	\textttsmall{cora/global/functions/helper/dynamics/checkOptions/getErrorMessage.m}
+\end{equation*}
+\end{tcolorbox}
+
+
+Fields with status \textit{default} are set to their default value specified in the files
+\begin{align*}
+	&\texttt{cora/global/functions/helper/dynamics/checkOptions/getDefaultValueParams.m} \\
+	&\texttt{cora/global/functions/helper/dynamics/checkOptions/getDefaultValueOptions.m}
+\end{align*}
+for \texttt{params} and \texttt{options}, respectively, unless the user specifies a value.
+The values can either be set directly or implemented using helper functions
+\begin{equation*}
+	\texttt{defValue = aux\_def\_}\textit{name}\texttt{(sys,params,options);}
+\end{equation*}
+where we can use the information of \texttt{sys}, \texttt{params}, and \texttt{options} to determine a default value.
+
+
+\begin{tcolorbox}
+	\begin{scriptsize} \textcolor{gray}{(Running example: Specifying a default value for algorithm parameters)} \end{scriptsize} \\
+	The field \texttt{algorithm} should have the default value \texttt{'standard'}.
+	We open the file
+	\begin{equation*}
+		\textttsmall{cora/global/functions/helper/dynamics/checkOptions/getDefaultValueOptions.m}
+	\end{equation*}
+	and add a \texttt{case}-block with the desired default value:
+	\begin{align*}
+		&\textttsmall{case 'algorithm'} \\
+		&\qquad \textttsmall{defValue = 'standard';}
+	\end{align*}
+\end{tcolorbox}
+
+
+Some fields of \texttt{params} and \texttt{options} are conditionally set, that is, they are only required if another field has a certain value.
+The conditions are defined in the files
+\begin{align*}
+	&\texttt{cora/global/functions/helper/dynamics/checkOptions/getCondfunDynParameterParams.m} \\
+	&\texttt{cora/global/functions/helper/dynamics/checkOptions/getCondfunDynParameterOptions.m}
+\end{align*}
+First, we have a \texttt{case}-block for each field in \texttt{params} and \texttt{options}, which calls a helper function defined by convention as
+\begin{align*}
+	&\texttt{condfun = aux\_getCondfunParams\_}\textit{name}\texttt{(sys,func,params,options);} \\
+	&\texttt{condfun = aux\_getCondfunOptions\_}\textit{name}\texttt{(sys,func,params,options);}
+\end{align*}
+These helper functions return a value \texttt{res} that is \texttt{true} if a specific condition is met and \texttt{false} otherwise.
+
+
+\begin{tcolorbox}
+	\begin{scriptsize} \textcolor{gray}{(Running example: Adding a conditional function for an algorithm parameter)} \end{scriptsize} \\
+	We want to add the following condition on the field \texttt{optimizeLevel}.
+	It should only be required if \texttt{options.algorithm} is set to \texttt{'optimized'}.
+
+	To this end, we open the file
+	\begin{equation*}
+		\textttsmall{cora/global/functions/helper/dynamics/checkOptions/getCondfunDynParameterOptions.m}
+	\end{equation*}
+	and add a \texttt{case}-block for \texttt{optimizeLevel}:
+	\begin{align*}
+		&		\textttsmall{case 'optimizeLevel':} \\
+		&\qquad \textttsmall{condfun = aux\_getCondfunOptions\_optimizeLevel;}
+	\end{align*}
+	The helper function is implemented as an auxiliary function in the same file:
+	\begin{align*}
+		&		\textttsmall{function res = aux\_getCondfunOptions\_optimizeLevel(sys,func,params,options)} \\
+    	&\qquad \textttsmall{res = strcmp(options.algorithm,'optimized');} \\
+		&		\textttsmall{end}
+	\end{align*}
+\end{tcolorbox}
+
+
+Finally, let us explicitly list the files users should not have to interact with:
+\begin{itemize}
+	\item \texttt{add2checks.m}
+	\item \texttt{add2list.m}
+	\item \texttt{checkDynParameter.m}
+	\item \texttt{getCondfunDynParameter.m}
+	\item \texttt{getDefaultValue.m}
+	\item \texttt{initDynParameterList.m}
+	\item \texttt{params2options.m}
+	\item \texttt{splitIntoParamsOptions.m}
+	\item \texttt{validateOptions.m}
+\end{itemize}
+
+If you encounter any issues regarding these files, please contact the administrator.
+
+
+
+\subsection{For developers}
+\label{ssec:inputvalidation_devs}
+
+In this section, we go through the inner workings of \texttt{validateOptions} step by step.
+First, we check whether \texttt{validateOptions} is called internally.
+This happens because some CORA algorithms call other CORA algorithms.
+Obviously, once the user input is validated, we do not have to validate it again, as we assume that CORA algorithms are internally parameterized correctly.
+For internal calls, we only do post-processing and rewrite \texttt{params} into \texttt{options} for internal use (more on this below).
+This constitutes a major speed gain, e.g., for hybrid dynamics reachability.
+
+Next, we check whether there exists a configuration file that matches the calling function.
+If no such file exists, e.g., due to typos or refactoring, we notify the developer/user that \texttt{params} and \texttt{options} are not checked and we return only the merged \texttt{options} struct.
+
+Now, we validate the user inputs for the given \texttt{params} and \texttt{options}, in this order.
+We resolve cases where the value for a given field for \texttt{params} does not go together with the value for a given field of \texttt{options} by blaming the latter.
+In principle, we read the configuration file, set missing default values, and validate the user-defined values.
+However, there exist also fields which are conditionally set, i.e., they are only mandatory if some other field has a certain value.
+As an example, the field \texttt{options.krylovError} is only mandatory if the field \texttt{options.linAlg} is set to \texttt{'krylov'}.
+This means, we have to first set non-conditional fields, then check the conditions for the remaining fields, and only then check the values of conditional fields.
+
+Both \texttt{params} and \texttt{options} are checked by the following sequence of steps
+(the code is extensively documented, please check for more detailed information):
+%
+\begin{enumerate}
+	\item Read configuration file.
+		This gives us a blueprint of all potential fields and their statuses.
+	\item Set missing default values of non-conditional fields.
+	\item Find redundant fields and fields with a conditional function.
+	\item Validate non-redundant and non-conditional fields.
+	\item Check whether conditional fields must be set or not.
+		This can only be done after validating non-redundant and non-conditional fields.
+	\item For all conditional fields whose condition holds true, set missing default value and validate.
+	\item Print redundancies encompassing fields which are not defined in the configuration file
+			and fields for which the condition is not met (redundant in this configuration).
+\end{enumerate}
+
+After this sequence of steps, we perform a small bit of post-processing in the function \texttt{postProcessing}.
+Here, we rewrite certain fields of \texttt{params}, e.g., converting intervals to zonotopes, or determine certain additional fields of \texttt{options}, e.g., computing \texttt{options.originContained}, which influences the reachable set computation of linear systems.
+These operations are gathered here to ensure that CORA algorithms know exactly in which format to expect certain variables.
+Also, some options are fixed to certain values and thus set here (the user should not set them, as only one value is valid).
+
+Finally, we transfer all fields in \texttt{params} to \texttt{options}.
+Historically, there was only the \texttt{options} struct, so that the code internally only works with one struct.
+We have introduced the distinction between \texttt{params} and \texttt{options} to highlight the important difference between model parameters defining the circumstances of the analysis, and algorithm parameters required by the algorithm for execution.
+It should be a goal of future development to maintain this separation also internally.
+
+
+
+
+
+
+% \subsection{FAQ}
+% \label{ssec:FAQ}
+
+% Let us explicitly address some questions when working with input argument validation.
+
+% \paragraph{How do I add a new field to my \texttt{params} or \texttt{options}?}
+
+% (We demonstrate the process for a field in \texttt{options}.)
+% Add a line
+% \begin{equation*}
+% 	\texttt{optionsList(end+1,1) = add2list(}\textit{name,status}\texttt{);}
+% \end{equation*}
+
+% If \textit{status} is \texttt{'default'}, add the default value to
+% \begin{equation*}
+% 	\texttt{cora/global/functions/helper/dynamics/checkOptions/getDefaultValueOptions.m}
+% \end{equation*}
+% using a new \texttt{case}-block.
+
+% To define the check functions, go to
+% \begin{equation*}
+% 	\texttt{cora/global/functions/helper/dynamics/checkOptions/checkDynParameterOptions.m}
+% \end{equation*}
+% and add a new \texttt{case}-block with the name of your new field.
+% Write an auxiliary file with the signature
+% \begin{equation*}
+% 	\texttt{checks = aux\_getChecksOptions\_}\textit{name}\texttt{(checks,sys,func,params,options)}
+% \end{equation*}
+% where \textit{name} is the name of your new field.
+% In the auxiliary function, add a sequence of checks using
+% \begin{equation*}
+% 	\texttt{checks(end+1,1) = add2checks(}\textit{function\_handle}\texttt{,}\textit{error\_id}\texttt{);}
+% \end{equation*}
+% where \textit{function\_handle} is a function handle that returns \texttt{true} or \texttt{false}
+% and \textit{error\_id} is an identifier specified in
+% \begin{equation*}
+% 	\texttt{cora/global/functions/helper/dynamics/checkOptions/getErrorMessage.m}
+% \end{equation*}
+% If you need a new identifier, specify one.
+
+% If the need field is part of \texttt{params}, add the \textit{name} to the function
+% \begin{equation*}
+% 	\texttt{cora/global/functions/helper/dynamics/checkOptions/isparam.m}
+% \end{equation*}
+
+
+% \paragraph{How do I add a new conditional field to my \texttt{params} or \texttt{options}?}
+
+% First, follow the process for the question about adding fields to \texttt{params} or \texttt{options}.
+% Then, add a new \texttt{case}-block to the respective function
+% \begin{align*} 
+% 	&\texttt{cora/global/functions/helper/dynamics/checkOptions/getCondfunDynParameterParams.m} \\
+% 	&\texttt{cora/global/functions/helper/dynamics/checkOptions/getCondfunDynParameterOptions.m}
+% \end{align*}
+% Use an auxiliary function which returns \texttt{true} or \texttt{false} depending on whether the criterion is met.
+% If this function evaluates to \texttt{true}, the given field in \texttt{params} or \texttt{options} has the status defined in the configuration file.
+% Otherwise, the given field is redundant and will be marked as such if provided by the user.
+
+
+% \paragraph{How do I extend the set of admissible strings for a given field?}
+
+% The function 
+% \begin{equation*}
+% 	\texttt{cora/global/functions/helper/dynamics/checkOptions/getMembers.m}
+% \end{equation*}
+% contains all admissible strings for individual options.
+% Caution: This may be ok for new methods for low-level operations, such as zonotope order reduction.
+% For higher-level decisions, such as admissible algorithms, it may be better to define a new \texttt{case}-block.
+% The identifier of this \texttt{case}-block is then used in the respective functions
+% \begin{align*}
+% 	&\texttt{cora/global/functions/helper/dynamics/checkOptions/checkDynParameterParams.m} \\
+% 	&\texttt{cora/global/functions/helper/dynamics/checkOptions/checkDynParameterOptions.m}
+% \end{align*}
+% to get the set of admissible strings.
+
+
+% \paragraph{How do I extend the set of admissible values for a given field?}
+
+% First of all, extending the set of admissible values may interfere with other algorithms using that same field.
+% In this case, it is better to define a new field.
+% Generally, the check functions defining the set admissible values are stored in the functions
+% \begin{align*}
+% 	&\texttt{cora/global/functions/helper/dynamics/checkOptions/checkDynParameterParams.m} \\
+% 	&\texttt{cora/global/functions/helper/dynamics/checkOptions/checkDynParameterOptions.m}
+% \end{align*}
+% Add your new restrictions there.
+
+

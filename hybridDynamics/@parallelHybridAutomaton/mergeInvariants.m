@@ -1,14 +1,13 @@
-function invSet = mergeInvariants(pHA,invList,transList,mergedLabels)
+function invSet = mergeInvariants(pHA,locID,mergedLabels)
 % mergeInvariants - creates the full-dimensional invariant of the overall
 %    system from the invariants of the subcomponents
 %
 % Syntax:
-%    invSet = mergeInvariants(pHA,invList,transList,mergedLabels)
+%    invSet = mergeInvariants(pHA,locID,mergedLabels)
 %
 % Inputs:
 %    pHA - parallelHybridAutomaton object
-%    invList - list with the invariant sets for all subcomponents
-%    transList - list with the transition for all subcomponents
+%    locID - IDs of the currently active locations
 %    mergedLabels - synchronization labels which are active in the
 %                   composed location
 %
@@ -31,31 +30,37 @@ function invSet = mergeInvariants(pHA,invList,transList,mergedLabels)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % initialize resulting invariant set
-invSet = fullspace(pHA.dim);
+invSet = fullspace(pHA.nrOfStates);
 
 % loop over the invariants of the remaining subcomponents
-for i=1:length(invList)
+for i=1:length(pHA.components)
 
-    % intersect invariant with complements of guard sets if the
+    % read out invariant of currently active location of i-th subcomponent
+    inv = pHA.components(i).location(locID(i)).invariant;
+
+    % read out set of outgoing transitions of currently active location
+    transList = pHA.components(i).location(locID(i)).transition;
+
+    % -> intersect invariant with complements of guard sets if the
     % corresponding transition's synchronization label is active in the
     % composed location
-    for j=1:length(transList{i})
-        if isa(transList{i}(j).guard,'polytope') ...
-                || isa(transList{i}(j).guard,'levelSet')...
-                && ismember(transList{i}(j).syncLabel,mergedLabels)
+    for j=1:length(transList)
+        if isa(transList(j).guard,'polytope') ...
+                || isa(transList(j).guard,'levelSet') ...
+                && ismember(transList(j).syncLabel,mergedLabels)
             % not-operation not implemented for some cases...
             try
-                invList{i} = and_(invList{i},~transList{i}(j).guard,'exact');
+                inv = and_(inv,~transList(j).guard,'exact');
             end
         end
     end
 
     % lift set to high-dimensional space of the overall automaton
-    temp = lift_(invList{i},pHA.dim,pHA.bindsStates{i});
+    inv_lifted = lift_(inv,pHA.nrOfStates,pHA.bindsStates{i});
 
     % compute intersection with the invariants of the remaining
     % subcomponents
-    invSet = and_(invSet,temp,'exact');
+    invSet = and_(invSet,inv_lifted,'exact');
 
 end
 

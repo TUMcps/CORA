@@ -1,13 +1,13 @@
-function [R,R_Krylov] = exponential_Krylov_projected(obj,R0,options,stateFlag)
+function [R,R_Krylov] = exponential_Krylov_projected(linsys,R0,options,stateFlag)
 % exponential_Krylov_projected - computes the overapproximation of the 
 %    exponential of a system matrix up to a certain accuracy using a Krylov 
 %    subspace; the subspace is already precomputed
 %
 % Syntax:
-%    [R,R_Krylov] = exponential_Krylov_projected(obj,options)
+%    [R,R_Krylov] = exponential_Krylov_projected(linsys,R0,options,stateFlag)
 %
 % Inputs:
-%    obj - linearSys object
+%    linsys - linearSys object
 %    R0 - initial set
 %    options - reachability options
 %    stateFlag - true if computation is for the state solution
@@ -23,7 +23,7 @@ function [R,R_Krylov] = exponential_Krylov_projected(obj,R0,options,stateFlag)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       02-November-2018
@@ -32,30 +32,31 @@ function [R,R_Krylov] = exponential_Krylov_projected(obj,R0,options,stateFlag)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% Multiply previous reachable set with exponential matrix------------------
+% Multiply previous reachable set with exponential matrix
+
 % obtain center and generators of previous reachable set
-c = sparse(center(R0));
-G = sparse(generators(R0));
+c = sparse(R0.c);
+G = sparse(R0.G);
 
 % retrieve V_c and H_c from Arnoldi
 if stateFlag % for state solution
-    V_c_proj = obj.krylov.state.V_c_proj;
-    V_g_proj = obj.krylov.state.V_g_proj;
-    H_c = obj.krylov.state.H_c;
-    H_g = obj.krylov.state.H_g;
+    V_c_proj = linsys.krylov.state.V_c_proj;
+    V_g_proj = linsys.krylov.state.V_g_proj;
+    H_c = linsys.krylov.state.H_c;
+    H_g = linsys.krylov.state.H_g;
     options.t = options.t + options.timeStep; % state solution starts from t=0; input solution from t\in[0,timeStep]
 else % for input solution
-    V_c_proj = obj.krylov.input.V_c_proj;
-    V_g_proj = obj.krylov.input.V_g_proj;
-    H_c = obj.krylov.input.H_c;
-    H_g = obj.krylov.input.H_g;
+    V_c_proj = linsys.krylov.input.V_c_proj;
+    V_g_proj = linsys.krylov.input.V_g_proj;
+    H_c = linsys.krylov.input.H_c;
+    H_g = linsys.krylov.input.H_g;
 end
 
 % check if center is zero
 c_norm = norm(c);
 if c_norm == 0
-    if ~isscalar(obj.C) || obj.C~=1
-        dim_proj = length(obj.C(:,1));
+    if ~isscalar(linsys.C) || linsys.C~=1
+        dim_proj = length(linsys.C(:,1));
     else
         dim_proj = length(c);
     end
@@ -92,17 +93,15 @@ end
 if options.krylovError > 2*eps
     % Krylov error computation
     error_normalized = options.krylovError;
-    error = error_normalized*options.t;
-    Krylov_interval = interval(-1,1)*ones(length(c_new),1)*error;
+    err = error_normalized*options.t;
+    Krylov_interval = interval(-1,1)*ones(length(c_new),1)*err;
     R_Krylov = zonotope(Krylov_interval);
 
     % initial-state-solution zonotope
-    R = zonotope([c_new,G_new,error*eye(length(c_new))]);
-    %--------------------------------------------------------------------------
+    R = zonotope(c_new,G_new,err*eye(length(c_new)));
 else
     R_Krylov = 0;
-    R = zonotope([c_new,G_new]);
+    R = zonotope(c_new,G_new);
 end
-
   
 % ------------------------------ END OF CODE ------------------------------

@@ -29,14 +29,14 @@ res = true;
 
 comb_state = struct;
 [batch, comb_state] = batchCombinator(10, int16(13), 3, comb_state);
-res = res & (isempty(batch) & comb_state.done==true);
+assert(res & (isempty(batch) & comb_state.done==true));
 
 % Test 2: 1 combination -------------------------------------------
 
 comb_state = struct;
 [batch, comb_state] = batchCombinator(10, int16(10), 10, comb_state);
 expected = [1 2 3 4 5 6 7 8 9 10];
-res = res & (all(batch==expected) & comb_state.done==true);
+assert(res & (all(batch==expected) & comb_state.done==true));
 
 % Test 3: 10 combinations -------------------------------------------
 
@@ -80,6 +80,6 @@ for i=1:size(combs, 1)
     res_unique = res_unique & (size(unique_entries,2) == k);
 end
 
-res = res & res_minmax & res_unique;
+assert(res & res_minmax & res_unique);
 
 % ------------------------------ END OF CODE ------------------------------

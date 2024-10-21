@@ -1,0 +1,47 @@
+\subheading{Examples and unit tests}
+
+Examples and unit tests both execute CORA functionality.
+Their main difference is the audience:
+\begin{itemize}
+	\item Examples (\verb|cora/examples|) are geared towards \emph{users}:
+		They should \emph{show} the functionality of the code.
+		Ideally, a plot illustrates the result.
+		Only the most important functions require examples.
+		Examples can comprise more functions at the same time.
+	\item Unit tests (\verb|cora/unitTests|) are geared towards \emph{developers}:
+		They should \emph{check} the functionality of the code.
+		Their output argument is \verb|true| or \verb|false| corresponding to a successful or flawed execution of the test.
+		Each unit test check only a single function (omitting dependencies within the function itself).
+\end{itemize}
+
+There are different types of unit tests:
+\begin{itemize}
+	\item Analytical:
+		These tests compare the result of a function to an analytical solution.
+		All test cases should be deterministic.
+		They are the strongest types of unit tests.
+	\item Random tests:
+		These tests use randomly generated cases to check a wide variety of different evaluations.
+		The result can be checked to be within an acceptable range.
+		They are useful to find bugs which occur in edge cases.
+	\item Saved result:
+		These tests compare the result of a function to a previously saved result which is known to be correct.
+	\item Execution tests:
+		These tests merely prove if the function ran through.
+		The result is not checked numerically.
+\end{itemize}
+
+Furthermore, there are different unit test suites:
+\begin{itemize}
+	\item \verb|runTestSuite|:
+		This test suite calls all functions with the prefix \verb|test_|.
+		These tests should be quickly executable (about 5min in total) so that one can quickly detect error in the installation of CORA or undesired but far-reaching bugs.
+		Moreover, there should be no random tests.
+	\item \verb|runTestSuite_longDuration|:
+		This test suite calls all functions with the prefix \verb|testLongDuration_|.
+		These tests should be much more thorough than the standard test suite, as they are mostly comprised of randomized tests and tests of functions that are computationally demanding.
+	\item Other test suites:
+		They comprise tests that require third-party code.
+\end{itemize}
+
+All test suites have to execute without errors before the release of a new CORA version.

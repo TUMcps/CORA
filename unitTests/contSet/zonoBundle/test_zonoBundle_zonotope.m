@@ -26,7 +26,7 @@ function res = test_zonoBundle_zonotope
 % fully-empty zonoBundle
 zB = zonoBundle.empty(2);
 Z = zonotope(zB);
-res = representsa(Z,'emptySet');
+assert(representsa(Z,'emptySet'));
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);
@@ -34,16 +34,16 @@ Z2 = zonotope([0;0], [2 2; 2 -2]);
 zB = zonoBundle({Z1,Z2});
 % convert to zonotope
 Z = zonotope(zB);
-res(end+1,1) = contains(Z,zB,'exact',1e-10);
+assert(contains(Z,zB,'exact',1e-10));
 
 % empty intersection
 Z2 = zonotope([-4;1],[0.5 1; 1 -1]);
 zB = zonoBundle({Z1,Z2});
 % convert to zonotope
 Z = zonotope(zB);
-res(end+1,1) = contains(Z,zB);
+assert(contains(Z,zB));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

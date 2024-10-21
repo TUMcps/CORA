@@ -24,8 +24,6 @@ function res = testLong_linearSys_simulateRandom_04
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % Model Parameters --------------------------------------------------------
 
 tFinal = 5;
@@ -53,13 +51,16 @@ simOpt.points = N;
 types = {'standard','gaussian','rrt','constrained'};
 
 for i=1:numel(types)
+    % generate seed
+    seed = randi(2^32);
+    rng(seed);
+
     simRes = simulateRandom(sys, params, simOpt);
-    resvec(end+1) = all(size(simRes) == [N,1]);
+    assert(all(size(simRes) == [N,1]),"seed: %s",int2str(seed));
 end
 
 % combine results
-res = all(resvec);
-
+res = true;
 
 end
 

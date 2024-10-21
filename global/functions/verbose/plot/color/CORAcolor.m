@@ -15,6 +15,8 @@ function color = CORAcolor(identifier, varargin)
 %       - 'CORA:highlight1': orange
 %       - 'CORA:highlight2': blue
 %       - 'CORA:next': next color according to colororder
+%       - 'CORA:color<i>': matlab default color order colors
+%       - 'CORA:blue','CORA:red',...: matlab default colors 
 %    varargin - depends on identifier, see below
 %
 % Outputs:
@@ -34,15 +36,16 @@ function color = CORAcolor(identifier, varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin < 1
-    throw(CORAerror("CORA:notEnoughInputArgs", 1))
-end
-inputArgsCheck({{identifier, 'str', {'CORA:reachSet', ...
+narginchk(1,Inf);
+admissableColors = {'CORA:reachSet', ...
     'CORA:initialSet', 'CORA:finalSet', 'CORA:simulations', ...
     'CORA:unsafe','CORA:unsafeLight','CORA:safe', 'CORA:invariant', ...
     'CORA:highlight1','CORA:highlight2', 'CORA:next', ...
-    'CORA:color1','CORA:color2','CORA:color3','CORA:color4', ...
-    'CORA:color5','CORA:color6','CORA:color7'}}})
+    'CORA:color1','CORA:blue','CORA:color2','CORA:red', ...
+    'CORA:color3','CORA:yellow','CORA:color4','CORA:purple', ...
+    'CORA:color5','CORA:green','CORA:color6','CORA:light-blue', ...
+    'CORA:color7','CORA:dark-red'};
+inputArgsCheck({{identifier, 'str', admissableColors}})
 
 color = [0 0 0]; % default
 
@@ -51,9 +54,7 @@ switch identifier
         % varargin - {numColors, cidx}
         %    - numColors: number of reachSet colors
         %    - cidx: index of reachSet color
-        if nargin > 3
-            throw(CORAerror('CORA:tooManyInputArgs', 3))
-        end
+        narginchk(1,3);
         
         [numColors, cidx] = setDefaultValues({1 1}, varargin);
         inputArgsCheck({ ...
@@ -96,20 +97,22 @@ switch identifier
         color = defaultPlotColor();
 
     % matlab default colors
-    case 'CORA:color1'
+    case {'CORA:color1','CORA:blue'}
         color = [0 0.4470 0.7410];       % blue
-    case 'CORA:color2'
+    case {'CORA:color2','CORA:red'}
         color = [ 0.8500 0.3250 0.0980]; % red
-    case 'CORA:color3'
+    case {'CORA:color3','CORA:yellow'}
         color = [0.9290 0.6940 0.1250];  % yellow
-    case 'CORA:color4'
+    case {'CORA:color4','CORA:purple'}
         color = [0.4940 0.1840 0.5560];  % purple
-    case 'CORA:color5'
+    case {'CORA:color5','CORA:green'}
         color = [0.4660 0.6740 0.1880];  % green
-    case 'CORA:color6'
+    case {'CORA:color6','CORA:light-blue'}
         color = [0.3010 0.7450 0.9330];  % light blue
-    case 'CORA:color7'
+    case {'CORA:color7','CORA:dark-red'}
         color = [0.6350 0.0780 0.1840];  % dark red
+    otherwise
+        throw(CORAerror("CORA:wrongValue","first",admissableColors))
         
 end
     

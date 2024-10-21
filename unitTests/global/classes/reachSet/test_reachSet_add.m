@@ -43,11 +43,8 @@ end
 
 
 % add empty reachSet object
-if ~isequal(R1,add(R1,reachSet()))
-    throw(CORAerror('CORA:testFailed'));
-elseif ~isequal(R1,add(reachSet(),R1))
-    throw(CORAerror('CORA:testFailed'));
-end
+assert(isequal(R1,add(R1,reachSet())))
+assert(isequal(R1,add(reachSet(),R1)))
 
 
 % add reachSet objects
@@ -55,20 +52,14 @@ R = add(R1,R2);
 
 % parent property of R1 remains the same
 for i=1:length(R1)
-    if R(i).parent ~= parent1(i)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(R(i).parent == parent1(i),i)
 end
 % parent property of R2 incremented by length of R1 only if non-zero
 for i=1:length(R2)
     if R2(i).parent == 0
-        if R(i+lengthR1).parent ~= 0
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(R(i+lengthR1).parent == 0,i);
     else
-        if R(i+lengthR1).parent ~= R2(i).parent + lengthR1
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(R(i+lengthR1).parent == R2(i).parent + lengthR1,i)
     end
 end
 
@@ -79,20 +70,14 @@ R = add(R1,R2,shift);
 
 % parent property of R1 remains the same
 for i=1:length(R1)
-    if R(i).parent ~= parent1(i)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(R(i).parent == parent1(i),i)
 end
 % parent property of R2 incremented by length of R1 only if non-zero
 for i=1:length(R2)
     if R2(i).parent == 0
-        if R(i+lengthR1).parent ~= shift
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(R(i+lengthR1).parent == shift,i)
     else
-        if R(i+lengthR1).parent ~= R2(i).parent + lengthR1
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(R(i+lengthR1).parent == R2(i).parent + lengthR1,i)
     end
 end
 

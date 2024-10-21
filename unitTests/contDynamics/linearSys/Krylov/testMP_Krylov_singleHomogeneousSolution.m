@@ -19,6 +19,9 @@ function res = testMP_Krylov_singleHomogeneousSolution(~)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % enable access to private function "initReach_Krylov"
 path = CORAROOT;
@@ -82,7 +85,7 @@ linDyn = linearSys('KrylovTest',A,1); %initialize quadratic dynamics
 x_exact = expm(A*options.timeStep)*options.x0;
 
 % Is exact solution in zonotope?
-res = contains(Rnext.tp,zonotope(x_exact));
+assert(contains(Rnext.tp,zonotope(x_exact)));
 
 % revoke access to private function "initReach_Krylov"
 delete(target);

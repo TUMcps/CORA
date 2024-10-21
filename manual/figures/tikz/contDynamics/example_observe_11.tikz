@@ -1,0 +1,140 @@
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+0	-3\\
+0	3\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+1	-2.0186\\
+1	1.8608\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+2	-1.6916\\
+2	-1.1439\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+3	-1.0878\\
+3	-0.5826\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+4	-0.3864\\
+4	0.1071\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+5	-0.0114\\
+5	0.5023\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+6	0.0636\\
+6	0.596\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+7	-0.0522\\
+7	0.494\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+8	-0.2071\\
+8	0.3483\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+9	-0.3372\\
+9	0.2242\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+10	-0.435\\
+10	0.1302\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+11	-0.3379\\
+11	0.2296\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+12	-0.2931\\
+12	0.2759\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+13	-0.2705\\
+13	0.2993\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+14	-0.2366\\
+14	0.3337\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+15	-0.2814\\
+15	0.2893\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+16	-0.2816\\
+16	0.2893\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+17	-0.2645\\
+17	0.3064\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+18	-0.2913\\
+18	0.2797\\
+}--cycle;
+
+\addplot[plotstyle1]
+table[row sep=crcr] {%
+x	y\\
+19	-0.2823\\
+19	0.2888\\
+}--cycle;

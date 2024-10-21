@@ -26,117 +26,105 @@ function res = test_polytope_generateRandom
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true(0);
-
 % dimension
 P = polytope.generateRandom('Dimension',3);
-res(end+1,1) = dim(P) == 3 && ~representsa(P,'emptySet');
+assert(dim(P) == 3 && ~representsa(P,'emptySet'));
 P_ = polytope(P.A,P.b,P.Ae,P.be);
-res(end+1,1) = ~representsa(P_,'emptySet');
+assert(~representsa(P_,'emptySet'));
 
 % number of constraints
 P = polytope.generateRandom('NrConstraints',5);
-res(end+1,1) = size(P.A,1) == 5 && ~representsa(P,'emptySet');
+assert(size(P.A,1) == 5 && ~representsa(P,'emptySet'));
 P_ = polytope(P.A,P.b,P.Ae,P.be);
-res(end+1,1) = ~representsa(P_,'emptySet');
+assert(~representsa(P_,'emptySet'));
 
 % dimension and number of constraints (unbounded)
 P = polytope.generateRandom('Dimension',3,'NrConstraints',3);
-res(end+1,1) = dim(P) == 3 && size(P.A,1) == 3 ...
+assert(dim(P) == 3 && size(P.A,1) == 3 ...
     && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
-    && ~isempty(P.bounded.val) && ~P.bounded.val;
+    && ~isempty(P.bounded.val) && ~P.bounded.val);
 P_ = polytope(P.A,P.b,P.Ae,P.be);
-res(end+1,1) = ~representsa(P_,'emptySet') && ~isBounded(P_);
+assert(~representsa(P_,'emptySet') && ~isBounded(P_));
 
 % dimension and number of constraints (bounded)
 P = polytope.generateRandom('Dimension',3,'NrConstraints',10);
-res(end+1,1) = dim(P) == 3 && size(P.A,1) == 10 ...
+assert(dim(P) == 3 && size(P.A,1) == 10 ...
     && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
-    && ~isempty(P.bounded.val) && P.bounded.val;
+    && ~isempty(P.bounded.val) && P.bounded.val);
 P_ = polytope(P.A,P.b,P.Ae,P.be);
-res(end+1,1) = ~representsa(P_,'emptySet') && isBounded(P_);
+assert(~representsa(P_,'emptySet') && isBounded(P_));
 
 % dimension and boundedness
 P = polytope.generateRandom('Dimension',2,'isBounded',false);
-res(end+1,1) = dim(P) == 2 ...
+assert(dim(P) == 2 ...
     && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
-    && ~isempty(P.bounded.val) && ~P.bounded.val;
+    && ~isempty(P.bounded.val) && ~P.bounded.val);
 P_ = polytope(P.A,P.b,P.Ae,P.be);
-res(end+1,1) = ~representsa(P_,'emptySet') && ~isBounded(P_);
+assert(~representsa(P_,'emptySet') && ~isBounded(P_));
 
 % dimension, number of constraints, and boundedness
 P = polytope.generateRandom('Dimension',3,'NrConstraints',8,'isBounded',false);
-res(end+1,1) = dim(P) == 3 && size(P.A,1) == 8 ...
+assert(dim(P) == 3 && size(P.A,1) == 8 ...
     && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
-    && ~isempty(P.bounded.val) && ~P.bounded.val;
+    && ~isempty(P.bounded.val) && ~P.bounded.val);
 P_ = polytope(P.A,P.b,P.Ae,P.be);
-res(end+1,1) = ~representsa(P_,'emptySet') && ~isBounded(P_);
+assert(~representsa(P_,'emptySet') && ~isBounded(P_));
 
 % degeneracy
 P = polytope.generateRandom('IsDegenerate',true);
-res(end+1,1) = ~isFullDim(P) ...
+assert(~isFullDim(P) ...
     && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
-    && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+    && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 P_ = polytope(P.A,P.b,P.Ae,P.be);
-res(end+1,1) = ~representsa(P_,'emptySet') && ~isFullDim(P_);
+assert(~representsa(P_,'emptySet') && ~isFullDim(P_));
 
 % degeneracy and boundedness
 P = polytope.generateRandom('IsBounded',false,'IsDegenerate',true);
-res(end+1,1) = ~isempty(P.emptySet.val) && ~P.emptySet.val ...
+assert(~isempty(P.emptySet.val) && ~P.emptySet.val ...
     && ~isempty(P.bounded.val) && ~P.bounded.val ...
-    && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+    && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 P_ = polytope(P.A,P.b,P.Ae,P.be);
-res(end+1,1) = ~representsa(P_,'emptySet') && ~isBounded(P_) && ~isFullDim(P_);
+assert(~representsa(P_,'emptySet') && ~isBounded(P_) && ~isFullDim(P_));
 
 % dimension, degeneracy, and boundedness
 P = polytope.generateRandom('Dimension',4,'IsBounded',false,'IsDegenerate',true);
-res(end+1,1) = dim(P) == 4 ...
+assert(dim(P) == 4 ...
     && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
     && ~isempty(P.bounded.val) && ~P.bounded.val ...
-    && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+    && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 P_ = polytope(P.A,P.b,P.Ae,P.be);
-res(end+1,1) = ~representsa(P_,'emptySet') && ~isBounded(P_) && ~isFullDim(P_);
+assert(~representsa(P_,'emptySet') && ~isBounded(P_) && ~isFullDim(P_));
 
 % dimension, number of constraints, degeneracy, and boundedness
 P = polytope.generateRandom('Dimension',4,'NrConstraints',10,...
     'IsBounded',false,'IsDegenerate',true);
-res(end+1,1) = dim(P) == 4 && size(P.A,1) == 10 ...
+assert(dim(P) == 4 && size(P.A,1) == 10 ...
     && ~isempty(P.emptySet.val) && ~P.emptySet.val ...
     && ~isempty(P.bounded.val) && ~P.bounded.val ...
-    && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+    && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 P_ = polytope(P.A,P.b,P.Ae,P.be);
-res(end+1,1) = ~representsa(P_,'emptySet') && ~isBounded(P_) && ~isFullDim(P_);
-
-% combine results
-res = all(res);
+assert(~representsa(P_,'emptySet') && ~isBounded(P_) && ~isFullDim(P_));
 
 % wrong calls, i.e., user inputs cannot be fulfilled
 
 % cannot be degenerate if nrCon = 1
-try
-    P = polytope.generateRandom('NrConstraints',1,'IsDegenerate',true);
-    res = false;
-end
+assertThrowsAs(@polytope.generateRandom,'CORA:wrongValue',...
+    'NrConstraints',1,'IsDegenerate',true);
 
 % cannot be bounded if nrCon = 1
-try
-    P = polytope.generateRandom('NrConstraints',1,'IsBounded',true);
-    res = false;
-end
+assertThrowsAs(@polytope.generateRandom,'CORA:wrongValue',...
+    'NrConstraints',1,'IsBounded',true);
 
 % cannot be bounded if nrCon < n+1
-try
-    P = polytope.generateRandom('Dimension',5,'NrConstraints',5,...
-        'IsBounded',true);
-    res = false;
-end
+assertThrowsAs(@polytope.generateRandom,'CORA:wrongValue',...
+    'Dimension',5,'NrConstraints',5,'IsBounded',true);
 
 % cannot be bounded and degenerate if nrCon < n+2
-try
-    P = polytope.generateRandom('Dimension',5,'NrConstraints',6,...
-        'IsBounded',true,'IsDegenerate',true);
-    res = false;
-end
+assertThrowsAs(@polytope.generateRandom,'CORA:wrongValue',...
+    'Dimension',5,'NrConstraints',6,'IsBounded',true,'IsDegenerate',true);
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

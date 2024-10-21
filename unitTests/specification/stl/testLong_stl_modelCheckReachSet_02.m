@@ -28,7 +28,7 @@ function res = testLong_stl_modelCheckReachSet_02()
 res = true;
 
 % algorithms for reachSet model checking
-alg = {'rtl','sampledTime','signals'};
+alg = {'rtl','sampledTime','signals','incremental'};
 
 % init counter
 cnt = 0;
@@ -81,9 +81,7 @@ while cnt < 5
             resReach = modelChecking(R,eq,alg{j});
     
             % check if results are consistent
-            if resReach
-                throw(CORAerror('CORA:testFailed'));
-            end
+            assertLoop(~resReach,cnt,j);
         end
     end
 end

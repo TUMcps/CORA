@@ -23,8 +23,6 @@ function res = test_simResult_plus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % init simResult object
 n = 3;
 N = 100;
@@ -37,20 +35,20 @@ simRes = simResult(x,t);
 % simple cases
 shift = [0.1;0.2;0.3];
 simRes_out = simRes + shift;
-resvec(end+1) = isequal(simRes_out.x{1},x{1}+shift') ...
-    && isequal(simRes_out.x{2},x{2}+shift');
+assert(isequal(simRes_out.x{1},x{1}+shift') ...
+    && isequal(simRes_out.x{2},x{2}+shift'));
 
 shift = 2;
 simRes_out = simRes + shift;
-resvec(end+1) = isequal(simRes_out.x{1},x{1}+shift') ...
-    && isequal(simRes_out.x{2},x{2}+shift');
+assert(isequal(simRes_out.x{1},x{1}+shift') ...
+    && isequal(simRes_out.x{2},x{2}+shift'));
 
 shift = 2;
 simRes_out = shift + simRes;
-resvec(end+1) = isequal(simRes_out.x{1},x{1}+shift') ...
-    && isequal(simRes_out.x{2},x{2}+shift');
+assert(isequal(simRes_out.x{1},x{1}+shift') ...
+    && isequal(simRes_out.x{2},x{2}+shift'));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,20 +1,19 @@
-function [Rnext,options] = post(obj,R,options)
+function [Rnext,options] = post(obj,R,params,options)
 % post - computes the reachable continuous set for one time step of a
 %    linear parametric system
 %
 % Syntax:
-%    [Rnext] = post(obj,R,options)
+%    [Rnext] = post(obj,R,params,options)
 %
 % Inputs:
 %    obj - linParamSys object
 %    R - reachable set of the previous time step
+%    params - model parameters
 %    options - options for the computation of the reachable set
 %
 % Outputs:
 %    Rnext - reachable set of the next time step
 %    options - options for the computation of the reachable set
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -45,10 +44,10 @@ if isa(R.ti,'zonotope')
 end
 
 % use different algorithm if the input changes in every time step
-if isfield(options,'uTransVec')
+if isfield(params,'uTransVec')
    
     % update input sets
-    inputSolution(obj,options);
+    inputSolution(obj,params,options);
     
     % compute time point solution
     Rinit = R.tp;

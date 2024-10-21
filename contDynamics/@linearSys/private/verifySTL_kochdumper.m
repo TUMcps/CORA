@@ -1,12 +1,13 @@
-function [res,R,fals] = verifySTL_kochdumper(sys,params,options,spec)
+function [res,R,fals] = verifySTL_kochdumper(linsys,params,options,spec)
 % verifySTL_kochdumper - verification of linear systems vs. temporal logic specs [1]
 %
 % Syntax:
-%    [res,R,fals] = verifySTL_kochdumper(sys,params,spec)
+%    [res,R,fals] = verifySTL_kochdumper(linsys,params,options,spec)
 %
 % Inputs:
-%    sys - linearSys object
+%    linsys - linearSys object
 %    params - model parameters
+%    options - settings
 %    spec - object of class specification
 %
 % Outputs:
@@ -44,18 +45,18 @@ function [res,R,fals] = verifySTL_kochdumper(sys,params,options,spec)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % input argument pre-processing
-options = validateOptions(sys,mfilename,params,options);
+params = validateOptions(linsys,params,options);
 
 % determine the required time horizon
-if ~isfield(options,'u')
-    options.tFinal = maximumTime(spec.set);
+if ~isfield(params,'u')
+    params.tFinal = maximumTime(spec.set);
 end
 
 % initialization
 pred.point = []; pred.int = []; predNeg.point = []; predNeg.int = [];
 
 % choose initial time step size
-[dt,options] = aux_initTimeStepSize(sys,options);
+[dt,params] = aux_initTimeStepSize(linsys,params);
 
 % preprocess temporal logic specifications
 [phi,sets] = aux_preprocessTemporalLogic(spec.set);
@@ -65,7 +66,7 @@ pred.point = []; pred.int = []; predNeg.point = []; predNeg.int = [];
 while true
 
     % compute reachable set
-    [R,ind] = aux_compReachSet(sys,options,dt);
+    [R,ind] = aux_compReachSet(linsys,params,dt);
 
     % check if specification is satisfied
     [res,~,elem,pred] = aux_modelCheckReachSet(phi,R,ind,dt,sets,pred,false);
@@ -81,7 +82,7 @@ while true
                                                 setsNeg,predNeg,true);
     
         if ~res
-            fals = aux_falsifyingTrajectory(alpha,options.R0,options.U,dt);
+            fals = aux_falsifyingTrajectory(alpha,params.R0,params.U,dt);
             R = []; return;
         end
     end
@@ -89,8 +90,8 @@ while true
     % update time step size
     dt = dt/2;
 
-    if isfield(options,'u')
-        options.u = repelem(options.u,1,2);
+    if isfield(params,'u')
+        params.u = repelem(params.u,1,2);
     end
 end
 
@@ -99,37 +100,37 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [R,ind] = aux_compReachSet(sys,options,dt)
+function [R,ind] = aux_compReachSet(linsys,params,dt)
 % compute an over-approximation of the reachable set
 
     order = 10;
-    n = dim(options.R0);
-    p_x = size(generators(options.R0),2);
-    p_u = size(generators(options.U),2);
-    t = 0:dt:(options.tFinal + dt);
+    n = dim(params.R0);
+    p_x = size(generators(params.R0),2);
+    p_u = size(generators(params.U),2);
+    t = 0:dt:(params.tFinal + dt);
 
     % propagation matrices
-    eAdt = expm(sys.A*dt);
-    T = aux_constInputPropMat(sys.A,dt);
+    eAdt = expm(linsys.A*dt);
+    T = aux_constInputPropMat(linsys.A,dt);
 
     % modified input sets
-    u = sys.B * center(options.U);
-    U = sys.B * (options.U + (-center(options.U)));
+    u = linsys.B * center(params.U);
+    U = linsys.B * (params.U + (-center(params.U)));
 
-    if ~isempty(sys.c)
-        u = u + sys.c;
+    if ~isempty(linsys.c)
+        u = u + linsys.c;
     end
 
-    if ~isfield(options,'u')
-        options.u = zeros(n,length(t)-1);
+    if ~isfield(params,'u')
+        params.u = zeros(n,length(t)-1);
     else
-        options.u = sys.B*[options.u,options.u(:,end)];
+        params.u = linsys.B*[params.u,params.u(:,end)];
     end
     
     % auxiliary terms
-    E = aux_remMatrixExp(sys.A,dt,order);
-    [Usum,Asum] = aux_precomputeAuxiliaryTerms(sys.A,U,dt,order);
-    [F,G] = aux_curvatureEnclosure(sys.A,E,dt,order);
+    E = aux_remMatrixExp(linsys.A,dt,order);
+    [Usum,Asum] = aux_precomputeAuxiliaryTerms(linsys.A,U,dt,order);
+    [F,G] = aux_curvatureEnclosure(linsys.A,E,dt,order);
 
     % initialization
     Rint.set = cell(length(t)-1,1); Rint.time = cell(length(t)-1,1);
@@ -138,10 +139,10 @@ function [R,ind] = aux_compReachSet(sys,options,dt)
     ind.point = cell(length(t),1); ind.int = cell(length(t)-1,1);
     ind.point{1} = 1:p_x;
 
-    H = cell(length(t),1); H{1} = zonotope(options.R0);
+    H = cell(length(t),1); H{1} = zonotope(params.R0);
     P_u = zeros(n,1); P_U = zonotope(P_u); 
     eAt = eye(n); err = 0;
-    C = F*options.R0 + G*u;
+    C = F*params.R0 + G*u;
 
     Rpoint.time{1} = 0; Rpoint.set{1} = H{1};
 
@@ -150,7 +151,7 @@ function [R,ind] = aux_compReachSet(sys,options,dt)
 
          eAt = eAdt * eAt;
 
-        H{i+1} = eAdt * H{i} + T*(u + options.u(:,i));
+        H{i+1} = eAdt * H{i} + T*(u + params.u(:,i));
 
         P_U = eAdt * P_U + T*U;
 
@@ -424,7 +425,7 @@ function cons = aux_getFactorConstraints(set,unsafeSet,index)
         if isIntersecting(unsafeSet{k},set)
 
             % construct constraints
-            if isa(unsafeSet{k},'halfspace')
+            if isa(unsafeSet{k},'polytope') && representsa_(unsafeSet{k},'halfspace',1e-12)
 
                 [C,d] = aux_getConstraintHalfspace(set,unsafeSet{k},index);
                 cons{end+1}.C = C; cons{end}.d = d;
@@ -437,18 +438,18 @@ function cons = aux_getFactorConstraints(set,unsafeSet,index)
 
             else
 
-                % loop over all polytope halfspaces
+                % loop over all polytope constraints
                 A = unsafeSet{k}.A; b = unsafeSet{k}.b;
                 C = []; d = [];
 
                 for i = 1:size(A,1)
 
                     ind = setdiff(1:size(A,1),i);
-                    facet = conHyperplane(A(i,:),b(i),A(ind,:),b(ind));
+                    facet = polytope(A(ind,:),b(ind),A(i,:),b(i));
 
                     if isIntersecting(facet,set)
                         [C_,d_] = aux_getConstraintHalfspace(set,...
-                            halfspace(facet.a,facet.b),index);
+                            polytope(facet.Ae,facet.be),index);
                         C = [C; C_]; d = [d; d_];
                     end
                 end
@@ -460,16 +461,17 @@ function cons = aux_getFactorConstraints(set,unsafeSet,index)
 end
 
 function [C,d] = aux_getConstraintHalfspace(set,unsafeSet,index)
-% get the constraint on the factors for an intersection with a halfspace
+% get the constraint on the factors for an intersection with an unsafe set
+% represented by a polytope with a single inequality constraint
 
-    % project set onto the halfspace normal direction
-    C = unsafeSet.c' * generators(set);
+    % project set onto the normal direction
+    C = unsafeSet.A * generators(set);
 
     % get indices of factors that are not initial states or inputs
     ind = setdiff(1:size(C,2),index);
 
     % construct constraint offset and vector
-    d = unsafeSet.d - unsafeSet.c' * center(set) + sum(abs(C(ind)));
+    d = unsafeSet.b - unsafeSet.A * center(set) + sum(abs(C(ind)));
     C = C(index);
 end
 
@@ -618,26 +620,9 @@ function res = aux_emptyConstraint(C,d)
 % check if a constraint C*a < d is empty on the domain a \in [-1,1]
 
     n = size(C,2);
+    dom = interval(-ones(n,1),ones(n,1));
+    res = ~isIntersecting_(polytope(C,d),dom,'exact',1e-12);
 
-    if size(C,1) == 1
-
-        dom = interval(-ones(n,1),ones(n,1));
-        res = ~isIntersecting(halfspace(C,d),dom);
-
-    else
-        
-        problem.f = ones(n,1);
-        problem.Aineq = C;
-        problem.bineq = d;
-        problem.Aeq = [];
-        problem.beq = [];
-        problem.lb = -ones(n,1);
-        problem.ub = ones(n,1);
-    
-        [~,~,exitflag] = CORAlinprog(problem);
-    
-        res = exitflag ~= 1;
-    end
 end
 
 function fals = aux_falsifyingTrajectory(alpha,R0,U,dt)
@@ -727,7 +712,7 @@ function [res,alpha] = aux_falsifyingFactors(cons)
     catch ME
         % MOSEK cannot deal with last 'options' input argument; also, we
         % suppress the output using evalc because MOSEK is too stupid to
-        % put a semicolon at the end of line 133 in intlinprog :-)
+        % put a semicolon at the end of line 133 in their intlinprog :-)
         [~,alpha] = evalc('intlinprog(f,intcon,A,b,Aeq,beq);');
     end
     
@@ -865,14 +850,16 @@ function list = aux_safe2unsafe(sets)
     end
 end
 
-function res = aux_reverseHalfspaceConstraints(poly)
-% get a list of reversed halfspace constraints for a given polytope
+function res = aux_reverseHalfspaceConstraints(P)
+% get a list of reversed inequality constraints for a given polytope
+% TODO: call polytope/not instead once extended to cell-arrays for return
 
-    res = {};
-    poly = polytope(poly);
+    P = polytope(P);
+    nrCon = length(P.b);
+    res = cell(nrCon,1);
 
-    for i = 1:length(poly.b)
-        res{end+1} = halfspace(-poly.A(i,:),-poly.b(i));
+    for i = 1:nrCon
+        res{i} = ~polytope(P.A(i,:),P.b(i));
     end
 end
 
@@ -995,14 +982,14 @@ function [phi,sets] = aux_preprocessTemporalLogic(phi)
     end
 end
 
-function [dt,options] = aux_initTimeStepSize(sys,options)
+function [dt,params] = aux_initTimeStepSize(sys,params)
 % choose the initial time step size
 
     % select a time step size that is compatible with time-varying input
-    if isfield(options,'u')
-        dt = options.tFinal/size(options.u,2);
+    if isfield(params,'u')
+        dt = params.tFinal/size(params.u,2);
     else
-        dt = options.tFinal/2;
+        dt = params.tFinal/2;
     end
 
     % reduce time step size until the Taylor series for the matrix
@@ -1013,8 +1000,8 @@ function [dt,options] = aux_initTimeStepSize(sys,options)
             break;
         else
             dt = dt/2;
-            if isfield(options,'u')
-                options.u = repelem(options.u,1,2);
+            if isfield(params,'u')
+                params.u = repelem(params.u,1,2);
             end
         end
     end
@@ -1027,8 +1014,8 @@ function [dt,options] = aux_initTimeStepSize(sys,options)
             break;
         else
             dt = dt/2;
-            if isfield(options,'u')
-                options.u = repelem(options.u,1,2);
+            if isfield(params,'u')
+                params.u = repelem(params.u,1,2);
             end
         end
     end

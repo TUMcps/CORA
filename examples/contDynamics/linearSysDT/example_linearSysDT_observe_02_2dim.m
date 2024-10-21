@@ -28,7 +28,7 @@ function completed = example_linearSysDT_observe_02_2dim
 
 params.tFinal = 20; %final time
 params.R0 = zonotope(zeros(2,1),3*eye(2)); %initial set
-params.V = 0.2*zonotope([0,1]); % sensor noise set
+params.V = 0.2*zonotope(0,1); % sensor noise set
 params.W = 0.02*[-6; 1]*zonotope([0,1]); % disturbance set
 params.u = zeros(2,20); % input vector
 params.y = [0.79, 5.00, 4.35, 1.86, -0.11, -1.13, -1.17, -0.76, ...
@@ -49,7 +49,9 @@ A = [0 -0.5; 1 1];
 B = 1;
 c = zeros(2,1);
 C = [-2 1];
-twoDimSys = linearSysDT('twoDimSys',A, B, c, C, options.timeStep); 
+E = eye(dim(params.W));
+F = eye(dim(params.V));
+twoDimSys = linearSysDT('twoDimSys',A,B,c,C,[],[],E,F,options.timeStep); 
 
 
 % Set-based observation ---------------------------------------------------

@@ -1,11 +1,11 @@
-function [res,varargout] = verify(sys,params,options,spec)
+function [res,varargout] = verify(linsys,params,options,spec)
 % verify - verifies a hybrid system against the given specifications
 %
 % Syntax:
-%    R = verify(sys,params,options,spec)
+%    R = verify(linsys,params,options,spec)
 %
 % Inputs:
-%    sys - contDynamics object
+%    linsys - contDynamics object
 %    params - parameter defining the reachability problem
 %    options - options for the computation of the reachable set
 %       .verifyAlg: 'reachavoid:zonotope','reachavoid:supportFunc',
@@ -30,22 +30,18 @@ function [res,varargout] = verify(sys,params,options,spec)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % 1. check number of inputs
-if nargin < 4
-    throw(CORAerror('CORA:notEnoughInputArgs',4))
-elseif nargin > 4
-    throw(CORAerror("CORA:tooManyInputArgs", 4))
-end
+narginchk(4,4);
 
 % 2. validate inputs
 inputArgsCheck({ ...
-    {sys, 'att', 'linearSys'}; ...
+    {linsys, 'att', 'linearSys'}; ...
     {params, 'att', 'struct'}; ...
     {options, 'att', 'struct'}; ...
     {spec, 'att', {'specification','stl'}}; ...
 });
 
 % 3. select verification algorithm
-[verifyAlg,options] = aux_selectVerifyAlgorithm(sys,params,options,spec);
+[verifyAlg,options] = aux_selectVerifyAlgorithm(linsys,params,options,spec);
 
 % 5. call verify function depending on given specification
 switch verifyAlg
@@ -53,21 +49,21 @@ switch verifyAlg
     % reach-avoid
     case 'reachavoid:zonotope'
         varargout = cell(1,1);
-        [res,varargout{:}] = verifyRA_zonotope(sys,params,options,spec);
+        [res,varargout{:}] = verifyRA_zonotope(linsys,params,options,spec);
     case 'reachavoid:supportFunc'
         varargout = cell(1,2);
-        [res,varargout{:}] = verifyRA_supportFunc(sys,params,options,spec);
+        [res,varargout{:}] = verifyRA_supportFunc(linsys,params,options,spec);
 
     % stl
     case 'stl:kochdumper'
         varargout = cell(1,2);
-        [res,varargout{:}] = verifySTL_kochdumper(sys,params,options,spec);
+        [res,varargout{:}] = verifySTL_kochdumper(linsys,params,options,spec);
     case 'stl:seidl'
         varargout = cell(1,0);
-        res = verifySTL_seidl(sys,params,options,spec);
+        res = verifySTL_seidl(linsys,params,options,spec);
 
     otherwise
-        throw(CORAerror('CORA:noops',sys,params,options,spec));
+        throw(CORAerror('CORA:noops',linsys,params,options,spec));
 end
 
 end
@@ -75,7 +71,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [verifyAlg,options] = aux_selectVerifyAlgorithm(sys,params,options,spec)
+function [verifyAlg,options] = aux_selectVerifyAlgorithm(linsys,params,options,spec)
 
 % check if algorithm is given
 if isfield(options,'verifyAlg')

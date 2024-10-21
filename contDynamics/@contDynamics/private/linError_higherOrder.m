@@ -1,12 +1,12 @@
-function [Rerror,Error] = linError_higherOrder(obj,R,options)
+function [Rerror,Error] = linError_higherOrder(sys,R,options)
 % linError_higherOrder - computes the linearization error by using higher
 %    order tensors (extension of the error computation in [1])
 %
 % Syntax:
-%    [Rerror,Error] = linError_higherOrder(obj,R,options)
+%    [Rerror,Error] = linError_higherOrder(sys,R,options)
 %
 % Inputs:
-%    obj - nonlinear system object
+%    sys - nonlinear system object
 %    R - reachable set of the current time interval
 %    options - options struct
 %
@@ -36,11 +36,11 @@ function [Rerror,Error] = linError_higherOrder(obj,R,options)
 
 % compute interval of reachable set
 dx = interval(R);
-totalInt_x = dx + obj.linError.p.x;
+totalInt_x = dx + sys.linError.p.x;
 
 % compute intervals of input
 du = interval(options.U);
-totalInt_u = du + obj.linError.p.u;
+totalInt_u = du + sys.linError.p.u;
 
 % obtain intervals and combined interval z
 dz = [dx; du];
@@ -52,10 +52,10 @@ Rred = reduce(R,options.reductionTechnique,options.errorOrder);
 Z = cartProd(Rred,options.U);
 
 % calculate hessian matrix
-if isa(obj,'nonlinParamSys')
-    H = obj.hessian(obj.linError.p.x,obj.linError.p.u,options.paramInt);
+if isa(sys,'nonlinParamSys')
+    H = sys.hessian(sys.linError.p.x,sys.linError.p.u,options.paramInt);
 else
-    H = obj.hessian(obj.linError.p.x,obj.linError.p.u);
+    H = sys.hessian(sys.linError.p.x,sys.linError.p.u);
 end
 
 % evaluate third-order tensor 
@@ -65,17 +65,17 @@ if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ..
     % create taylor models or zoo objects
     [objX,objU] = initRangeBoundingObjects(totalInt_x,totalInt_u,options);
 
-    if isa(obj,'nonlinParamSys')
-        [T,ind] = obj.thirdOrderTensor(objX, objU, options.paramInt);
+    if isa(sys,'nonlinParamSys')
+        [T,ind] = sys.thirdOrderTensor(objX, objU, options.paramInt);
     else
-        [T,ind] = obj.thirdOrderTensor(objX, objU);
+        [T,ind] = sys.thirdOrderTensor(objX, objU);
     end
 
 else
-    if isa(obj,'nonlinParamSys')
-        [T,ind] = obj.thirdOrderTensor(totalInt_x, totalInt_u, options.paramInt);
+    if isa(sys,'nonlinParamSys')
+        [T,ind] = sys.thirdOrderTensor(totalInt_x, totalInt_u, options.paramInt);
     else
-        [T,ind] = obj.thirdOrderTensor(totalInt_x, totalInt_u);
+        [T,ind] = sys.thirdOrderTensor(totalInt_x, totalInt_u);
     end
 end
 
@@ -85,10 +85,10 @@ errorSec = 0.5 * quadMap(Z,H);
 % calculate the Lagrange remainder term (third order)
 if isempty(cell2mat(ind))
     % empty zonotope if all entries in T are empty
-    errorLagr = zonotope(zeros(obj.dim,1));
+    errorLagr = zonotope(zeros(sys.nrOfStates,1));
 else
     % skip tensors with all-zero entries using ind from tensor creation
-    errorLagr = interval(zeros(obj.dim,1),zeros(obj.dim,1));
+    errorLagr = interval(zeros(sys.nrOfStates,1),zeros(sys.nrOfStates,1));
     for i=1:length(ind)
         error_sum = interval(0,0);
         for j=1:length(ind{i})

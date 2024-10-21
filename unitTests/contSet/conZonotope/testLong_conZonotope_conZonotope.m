@@ -46,29 +46,23 @@ for i=1:nrOfTests
     % admissible initializations
     % only zonotope matrix
     cZ = conZonotope(Z);
-    if ~compareMatrices([cZ.c,cZ.G],Z)
-        res = false; break;
-    end
+    assertLoop(compareMatrices([cZ.c,cZ.G],Z),i)
 
     % center and generator matrix
     cZ = conZonotope(c,G);
-    if ~all(all(withinTol([cZ.c,cZ.G],Z)))
-        res = false; break;
-    end
+    assertLoop(all(all(withinTol([cZ.c,cZ.G],Z))),i)
 
     % zonotope matrix, constraint matrix, constraint vector
     cZ = conZonotope(Z,A,b);
-    if ~all(all(withinTol([cZ.c,cZ.G],Z))) || ~all(all(withinTol(cZ.A,A))) ...
-            || ~all(withinTol(cZ.b,b))
-        res = false; break;
-    end
+    assertLoop(all(all(withinTol([cZ.c,cZ.G],Z))),i)
+    assertLoop(all(all(withinTol(cZ.A,A))),i)
+    assertLoop(all(withinTol(cZ.b,b)),i)
     
     % center, generator matrix, constraint matrix, constraint vector
     cZ = conZonotope(c,G,A,b);
-    if ~all(all(withinTol([cZ.c,cZ.G],Z))) || ~all(all(withinTol(cZ.A,A))) ...
-            || ~all(withinTol(cZ.b,b))
-        res = false; break;
-    end
+    assertLoop(all(all(withinTol([cZ.c,cZ.G],Z))),i)
+    assertLoop(all(all(withinTol(cZ.A,A))),i)
+    assertLoop(all(withinTol(cZ.b,b)),i)
     
     
     % wrong initializations
@@ -80,40 +74,22 @@ for i=1:nrOfTests
     b_plus1 = randn(nrCon+1,1);
     
     % center and generator matrix of different dimensions
-    try
-        cZ = conZonotope(c_plus1,G); % <- should throw error here
-        res = false; break;
-    end
+    assertThrowsAs(@conZonotope,'CORA:wrongInputInConstructor',c_plus1,G);
     
     % A does not fit Z
-    try
-        cZ = conZonotope(Z,A_plus1,b); % <- should throw error here
-        res = false; break;
-    end
-    try
-        cZ = conZonotope(Z_plus1,A,b); % <- should throw error here
-        res = false; break;
-    end
+    assertThrowsAs(@conZonotope,'CORA:wrongInputInConstructor',Z,A_plus1,b);
+    assertThrowsAs(@conZonotope,'CORA:wrongInputInConstructor',Z_plus1,A,b);
     
     % A does not fit b
-    try
-        cZ = conZonotope(Z,A,b_plus1); % <- should throw error here
-        res = false; break;
-    end
+    assertThrowsAs(@conZonotope,'CORA:wrongInputInConstructor',Z,A,b_plus1);
     
     % center is a matrix
     if n ~= 1
-        try
-            cZ = conZonotope(c_mat,G); % <- should throw error here
-            res = false; break;
-        end
+        assertThrowsAs(@conZonotope,'CORA:wrongInputInConstructor',c_mat,G);
     end
     
     % too many input arguments
-    try
-        cZ = conZonotope(c,G,A,b,b); % <- should throw error here
-        res = false; break;
-    end
+    assertThrowsAs(@conZonotope,'CORA:numInputArgsConstructor',c,G,A,b,b);
 end
 
 % ------------------------------ END OF CODE ------------------------------

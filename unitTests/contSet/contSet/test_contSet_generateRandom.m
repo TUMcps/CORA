@@ -25,30 +25,29 @@ function res = test_contSet_generateRandom
 % ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
-res = true(0);
 rng(1)
 
 % test multiple generateRandom calls;
 for i=1:10
     S = contSet.generateRandom();
-    res(end+1) = isa(S, 'contSet');
+    assert(isa(S, 'contSet'));
 end
 
 % test dimension
 S = contSet.generateRandom('Dimension', 3);
-res(end+1) = dim(S) == 3;
+assert(dim(S) == 3);
 
 % test given classes
 S = contSet.generateRandom({'interval'});
-res(end+1) = isa(S, 'interval');
+assert(isa(S, 'interval'));
 
 S = contSet.generateRandom({'polyZonotope'});
-res(end+1) = isa(S, 'polyZonotope');
+assert(isa(S, 'polyZonotope'));
 
 S = contSet.generateRandom({'interval','zonotope'});
-res(end+1) = isa(S, 'interval') || isa(S, 'zonotope');
+assert(isa(S, 'interval') || isa(S, 'zonotope'));
 
-% test if all were successfull
-res = all(res);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

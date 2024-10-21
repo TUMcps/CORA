@@ -1,0 +1,16 @@
+\addplot [plotstyle1]
+  table[row sep=crcr]{%
+0.5	0.5\\
+2.5	0.5\\
+2.5	2.5\\
+0.5	2.5\\
+0.5	0.5\\
+};
+\addplot [plotstyle2]
+  table[row sep=crcr]{%
+0	-2\\
+0	0\\
+-2	0\\
+-2	-2\\
+0	-2\\
+};

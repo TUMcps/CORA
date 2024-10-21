@@ -26,6 +26,7 @@ function res = times(factor1,factor2)
 % Written:       19-June-2015
 % Last update:   13-January-2016 (DG)
 %                04-April-2023 (TL, minor optimizations)
+%                04-October-2023 (TL, fix for 0*[inf,-inf])
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -41,6 +42,10 @@ if isa(factor1, 'interval') && ~isa(factor2, 'interval')
     resInf = factor1.inf .* factor2;
     resSup = factor1.sup .* factor2;
 
+    % fix 0*Inf=NaN cases (see interval/mtimes)
+    resInf(isnan(resInf)) = 0;
+    resSup(isnan(resSup)) = 0;
+
     res = factor1;
     res.inf = min(resInf, resSup);
     res.sup = max(resInf, resSup);
@@ -55,6 +60,10 @@ elseif ~isa(factor1, 'interval') && isa(factor2, 'interval')
     
     resInf = factor2.inf .* factor1;
     resSup = factor2.sup .* factor1;
+
+    % fix 0*Inf=NaN cases (see interval/mtimes)
+    resInf(isnan(resInf)) = 0;
+    resSup(isnan(resSup)) = 0;
     
     res = factor2;
     res.inf = min(resInf, resSup);
@@ -68,6 +77,12 @@ else
     res2 = factor1.inf .* factor2.sup;
     res3 = factor1.sup .* factor2.inf;
     res4 = factor1.sup .* factor2.sup;
+
+    % fix 0*Inf=NaN cases (see interval/mtimes)
+    res1(isnan(res1)) = 0;
+    res2(isnan(res2)) = 0;
+    res3(isnan(res3)) = 0;
+    res4(isnan(res4)) = 0;
 
     % to find min and max
     res = factor1;

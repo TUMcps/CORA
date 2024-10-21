@@ -19,7 +19,10 @@ function res = testHeader_runHeaders
 % ------------------------------ BEGIN CODE -------------------------------
 
 disp(' ')
-res = runHeaders(true);
+assert(runHeaders(true));
 disp(' ')
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,32 +1,27 @@
-function sys = linearSysDT(sys,dt)
-% linearSysDT - convert linear continuous-time system to discrete-time
-%               system
+function linsysDT = linearSysDT(linsys,dt)
+% linearSysDT - convert a linear continuous-time system to equivalent
+%    discrete-time linear system according to Eq. (6) in [1]
 %
 % Syntax:
-%    sys = linearSysDT(sys,dt)
-%
-% Description:
-%    Converts a continuous-time linear system to a equivalent discrete-time 
-%    linear system according to Eq. (6) in [1]
+%    linsysDT = linearSysDT(linsys,dt)
 %
 % Inputs:
-%    sys - continuous-time linear system (class: linearSys)
+%    linsys - linearSys object
 %    dt - sampling time
 %
 % Outputs:
-%    sys - discrete-time linear system (class: linearSysDT)
+%    linsysDT - linearSysDT object
 %
 % Example:
 %    % continuous-time system
 %    A = [0 0 1 0;0 0 0 1;0 0 0 0;0 0 0 0];
 %    B = [0 0;0 0;1 0;0 1];
 %    C = [1 0 0 0;0 1 0 0];
-%
-%    sys = linearSys(A,B,[],C);
+%    linsys = linearSys(A,B,[],C);
 % 
 %    % convert to discrete-time system
-%    Ts = 0.1;
-%    sys_ = linearSysDT(sys,Ts);
+%    dt = 0.1;
+%    linsysDT = linearSysDT(linsys,dt);
 %
 % References:
 %    [1] B. Schuermann et. al: Guaranteeing Constraints of Disturbed
@@ -42,38 +37,40 @@ function sys = linearSysDT(sys,dt)
 % Authors:       Niklas Kochdumper
 % Written:       21-November-2020 
 % Last update:   19-November-2021 (MW, minor fixes)
+%                02-September-2024 (MW, extend to disturbance/noise matrices)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % convert system matrix A_ = e^A*dt
-A = expm(sys.A*dt);
+A_dt = expm(linsys.A*dt);
 
-% convert input matrix B_ = A^-1 * (e^A*dt - I) * B
-temp1 = eye(size(sys.A,1)) * dt;
-temp2 = temp1;
-cnt = 2;
+% convert input matrix
+%    B_dt = A^-1 * (e^A*dt - I) * B
+%    B_dt = T * B
+term_j = eye(linsys.nrOfStates) * dt;
+T = term_j;
 
-while true
-    temp1 = temp1 * dt/cnt * sys.A;
-    temp2 = temp2 + temp1;
-    cnt = cnt + 1;
-    if all(all(abs(temp1) < eps)) || cnt > 1000
+% maximum a thousand terms
+for j=2:1000
+    term_j = term_j * dt/j * linsys.A;
+    T = T + term_j;
+    if all(all(abs(term_j) < eps))
         break;
     end
 end
 
-B = temp2 * sys.B;
+B_dt = T * linsys.B;
+
+% same conversion process for disturbance matrix
+E_dt = T * linsys.E;
 
 % convert constant input c_ = A^-1 * (e^A*dt - I) * c
-c = zeros(sys.dim,1);
-if ~isempty(sys.c)
-    c = temp2 * sys.c;
-end
+c_dt = T * linsys.c;
 
 % construct resulting discrete time system
-sys = linearSysDT(A,B,c,sys.C,sys.D,sys.k,dt);
-    
-end
+linsysDT = linearSysDT(A_dt,B_dt,c_dt,...
+                    linsys.C,linsys.D,linsys.k,...
+                    E_dt,linsys.F,dt);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,0 +1,55 @@
+\subsection{Formal Verification of Neural Networks}
+\label{sec:neuralNetworkVerification}
+
+CORA enables the formal verification of neural networks.
+This refers to the problem of given a neural networks $\NN\colon\R^{\numNeurons_0}\to\R^{\numNeurons_\numLayers}$,
+an input set $\nnInputSet\subset\R^{\numNeurons_0}$,
+and some unsafe set $\nnUnsafeSet\subset\R^{\numNeurons_\numLayers}$ in the output space of the neural network,
+we want to verify that it holds
+\begin{equation}
+    \NN(\nnInputSet) \cap \nnUnsafeSet = \emptyset.
+\end{equation}
+As it is in general not feasible to compute the exact output set $\nnOutputSetExact=\NN(\nnInputSet)$~\cite{Katz2017},
+CORA usually computes an enclosure of the output set $\nnOutputSet\supseteq\nnOutputSetExact$.
+This is done using reachability analysis.
+
+CORA primarily implements the approaches described in~\cite{Kochdumper2023b,ladner2023a} for the reachability analysis on neural networks.
+The class \texttt{neuralNetwork} provides the function \texttt{evaluate}, that can be used to compute the output of a neural network for a single point or a set of possible inputs:
+\begin{center}
+    \texttt{res = nn.evaluate(x,options,idxLayer)}, \\
+    \texttt{res = nn.evaluate(X,options,idxLayer)},
+\end{center}
+where $\texttt{x}\in\R^{\numNeurons_0\times N}$ is an array of $N$ input points and $\texttt{X}\subset\R^{\numNeurons_0}$ is an input set.
+Currently, CORA supports zonotopes, polynomial zonotopes, interval, Taylor models, and constraint zonotopes as input sets to the neural network.
+A few settings are available to control the set propagation through the neural network.
+These are stored in the algorithm options struct for neural networks \texttt{options.nn}.
+We list the most important settings below, further information can be found in the documentation of the \texttt{evaluate} function:
+
+\begin{center}
+    \renewcommand{\arraystretch}{1.3}
+    \begin{longtable}[t]{l p{11cm}}
+        --~\texttt{.poly\_method} & string describing the approximation method of nonlinear functions: \texttt{'regression'}, \texttt{'singh'}, and \texttt{'taylor'}. \\
+        --~\texttt{.num\_generators} & maximal number of generators of the polynomial zonotope. If this number is exceeded, an order reduction method is executed.
+    \end{longtable}
+\end{center}
+The following code shows an exemplary set propagation through the previously defined neural network:
+
+\begin{center}
+    \begin{minipage}[t]{0.9\textwidth}
+    {\footnotesize  \input{./MATLABcode/example_neuralNetwork_evaluate}}
+    \end{minipage}
+\end{center}
+
+CORA can also automatically verify given specifications using the \texttt{verify} function:
+
+\begin{center}
+    \texttt{[res,x\_,y\_] = nn.verify(x,r,A,b,varargin)},
+\end{center}
+
+where \texttt{x, r} is the center of the input and the perturbation radius $\nnPertRadius$ of the input set $\nnInputSet$,
+and \texttt{A, b} describe the specification $A\tilde{y}+b\leq0$ with $\tilde{y}=\NN(\tilde{x}),\,\tilde{x}\in\nnInputSet$.
+The output variable \texttt{res} is \texttt{true} if the specification is fulfilled $\forall \tilde{x}\in\nnInputSet$,
+\texttt{false} if a counterexample was found, and is empty otherwise.
+In case a counterexample was found, \texttt{x\_, y\_} contains the respective point of the input set and output space, respectively.
+
+Further examples can be found at \texttt{./cora/examples/nn}.

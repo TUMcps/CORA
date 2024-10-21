@@ -23,7 +23,7 @@ function res = negationNormalForm(obj)
 
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   08-February-2024 (FL, use interval property of stl instead of from and to)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -50,16 +50,16 @@ function res = aux_recursive(obj,neg)
             res = aux_recursive(obj.lhs,false);
         elseif strcmp(obj.type,'finally')
             res = globally(aux_recursive(obj.lhs,true), ...
-                                            interval(obj.from,obj.to));
+                                            obj.interval);
         elseif strcmp(obj.type,'globally')
             res = finally(aux_recursive(obj.lhs,true), ...
-                                            interval(obj.from,obj.to));
+                                            obj.interval);
         elseif strcmp(obj.type,'until')
             res = release(aux_recursive(obj.lhs,true), ...
-                        aux_recursive(obj.rhs,true),interval(obj.from,obj.to));
+                        aux_recursive(obj.rhs,true),obj.interval);
         elseif strcmp(obj.type,'release')
             res = until(aux_recursive(obj.lhs,true), ...
-                        aux_recursive(obj.rhs,true),interval(obj.from,obj.to));
+                        aux_recursive(obj.rhs,true),obj.interval);
         elseif strcmp(obj.type,'next')
             res = next(aux_recursive(obj.lhs,true),obj.from);
         elseif strcmp(obj.type,'<')
@@ -88,16 +88,16 @@ function res = aux_recursive(obj,neg)
             res = aux_recursive(obj.lhs,true);
         elseif strcmp(obj.type,'finally')
             res = finally(aux_recursive(obj.lhs,false), ...
-                                            interval(obj.from,obj.to));
+                                            obj.interval);
         elseif strcmp(obj.type,'globally')
             res = globally(aux_recursive(obj.lhs,false), ...
-                                            interval(obj.from,obj.to));
+                                            obj.interval);
         elseif strcmp(obj.type,'until')
             res = until(aux_recursive(obj.lhs,false), ...
-                       aux_recursive(obj.rhs,false),interval(obj.from,obj.to));
+                       aux_recursive(obj.rhs,false),obj.interval);
         elseif strcmp(obj.type,'release')
             res = release(aux_recursive(obj.lhs,false), ...
-                       aux_recursive(obj.rhs,false),interval(obj.from,obj.to));
+                       aux_recursive(obj.rhs,false),obj.interval);
         elseif strcmp(obj.type,'next')
             res = next(aux_recursive(obj.lhs,false),obj.from);
         else

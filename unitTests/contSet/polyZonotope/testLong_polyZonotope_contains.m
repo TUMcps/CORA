@@ -15,7 +15,7 @@ function res = testLong_polyZonotope_contains
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Niklas Kochdumper
 % Written:       13-January-2020
@@ -24,26 +24,27 @@ function res = testLong_polyZonotope_contains
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
 % generate random 2D polynomial zonotope
 pZ = polyZonotope.generateRandom('Dimension',2,'NrGenerators',10,'NrFactors',4);
 
-% convert to polygon
+% enclose the polynomial zonotope by a polygon
 pgon = polygon(pZ);
 
-% compute interval enclosure
+% enclose the polygon by an interval
 I = interval(pgon);
 
-% generate random points outside the polynomial zonotope and check if "in"
-% gives the correct result
-for i = 1:100
-   
-    p = randPoint(I);
-    
-    if ~contains(pgon,p) && contains(pZ,p,'approx')
-        res = false; break
+% sample points within the interval
+p = randPoint(I,100);
+
+% for each randomly sampled point, if it is not contained in the polygon, 
+% it must not be contained in the polynomial zonotope
+for i = 1:size(p,2)
+    if ~contains(pgon,p(:,i))
+        assert(~contains(pZ,p(:,i),'approx'))
     end
 end
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

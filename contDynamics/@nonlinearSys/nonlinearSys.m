@@ -5,16 +5,16 @@ classdef nonlinearSys < contDynamics
 %
 % Syntax:
 %    % only dynamic equation
-%    obj = nonlinearSys(fun)
-%    obj = nonlinearSys(name,fun)
-%    obj = nonlinearSys(fun,states,inputs)
-%    obj = nonlinearSys(name,fun,states,inputs)
+%    nlnsys = nonlinearSys(fun)
+%    nlnsys = nonlinearSys(name,fun)
+%    nlnsys = nonlinearSys(fun,states,inputs)
+%    nlnsys = nonlinearSys(name,fun,states,inputs)
 %
 %    % dynamic equation and output equation
-%    obj = nonlinearSys(fun,out_fun)
-%    obj = nonlinearSys(name,fun,out_fun)
-%    obj = nonlinearSys(fun,states,inputs,out_fun,outputs)
-%    obj = nonlinearSys(name,fun,states,inputs,out_fun,outputs)
+%    nlnsys = nonlinearSys(fun,out_fun)
+%    nlnsys = nonlinearSys(name,fun,out_fun)
+%    nlnsys = nonlinearSys(fun,states,inputs,out_fun,outputs)
+%    nlnsys = nonlinearSys(name,fun,states,inputs,out_fun,outputs)
 %
 % Inputs:
 %    name - name of system
@@ -25,7 +25,7 @@ classdef nonlinearSys < contDynamics
 %    outputs - number of outputs
 %
 % Outputs:
-%    obj - generated nonlinearSys object
+%    nlnsys - generated nonlinearSys object
 %
 % Example:
 %    fun = @(x,u) [x(2); ...
@@ -74,7 +74,10 @@ end
 methods
     
     % class constructor
-    function obj = nonlinearSys(varargin)
+    function nlnsys = nonlinearSys(varargin)
+
+        % 0. check number of input arguments
+        assertNarginConstructor(0:6,nargin);
 
         % 1. copy constructor: not allowed due to obj@contDynamics below
 %         if nargin == 1 && isa(varargin{1},'nonlinearSys')
@@ -92,61 +95,69 @@ methods
             aux_computeProperties(fun,states,inputs,out_fun,outputs);
         
         % 5. instantiate parent class
-        obj@contDynamics(name,states,inputs,outputs);
+        % note: currently, we only support unit disturbance matrices
+        %       (same as number of states) and unit noise matrices (same as
+        %       number of outputs)
+        nlnsys@contDynamics(name,states,inputs,outputs,states,outputs);
         
         % 6a. assign object properties: dynamic equation
-        obj.mFile = fun;
-        obj.jacobian = eval(['@jacobian_',name]);
-        obj.hessian = eval(['@hessianTensor_',name]);
-        obj.thirdOrderTensor = eval(['@thirdOrderTensor_',name]);
+        nlnsys.mFile = fun;
+        nlnsys.jacobian = eval(['@jacobian_',name]);
+        nlnsys.hessian = eval(['@hessianTensor_',name]);
+        nlnsys.thirdOrderTensor = eval(['@thirdOrderTensor_',name]);
         for i = 4:10
-            obj.tensors{i-3} = eval(sprintf('@tensor%i_%s;',i,name));
+            nlnsys.tensors{i-3} = eval(sprintf('@tensor%i_%s;',i,name));
         end
 
         % 6b. assign object properties: output equation
-        obj.out_mFile = out_fun;
-        obj.out_isLinear = out_isLinear;
-        obj.out_jacobian = eval(['@out_jacobian_',name]);
-        obj.out_hessian = eval(['@out_hessianTensor_',name]);
-        obj.out_thirdOrderTensor = eval(['@out_thirdOrderTensor_',name]);
+        nlnsys.out_mFile = out_fun;
+        nlnsys.out_isLinear = out_isLinear;
+        nlnsys.out_jacobian = eval(['@out_jacobian_',name]);
+        nlnsys.out_hessian = eval(['@out_hessianTensor_',name]);
+        nlnsys.out_thirdOrderTensor = eval(['@out_thirdOrderTensor_',name]);
         
     end
     
-    function obj = setHessian(obj,version)
+    function nlnsys = setHessian(nlnsys,version)
         % allow switching between standard and interval arithmetic
         if strcmp(version,'standard')
-            obj.hessian = eval(['@hessianTensor_' obj.name]);
+            nlnsys.hessian = eval(['@hessianTensor_' nlnsys.name]);
         elseif strcmp(version,'int')
-            obj.hessian = eval(['@hessianTensorInt_' obj.name]);
+            nlnsys.hessian = eval(['@hessianTensorInt_' nlnsys.name]);
         end
     end
-    function obj = setOutHessian(obj,version)
+    function nlnsys = setOutHessian(nlnsys,version)
         % allow switching between standard and interval arithmetic
         if strcmp(version,'standard')
-            obj.out_hessian = eval(['@out_hessianTensor_' obj.name]);
+            nlnsys.out_hessian = eval(['@out_hessianTensor_' nlnsys.name]);
         elseif strcmp(version,'int')
-            obj.out_hessian = eval(['@out_hessianTensorInt_' obj.name]);
+            nlnsys.out_hessian = eval(['@out_hessianTensorInt_' nlnsys.name]);
         end
     end
 
-    function obj = setThirdOrderTensor(obj,version)
+    function nlnsys = setThirdOrderTensor(nlnsys,version)
         % allow switching between standard and interval arithmetic
         if strcmp(version,'standard')
-            obj.thirdOrderTensor = eval(['@thirdOrderTensor_' obj.name]);
+            nlnsys.thirdOrderTensor = eval(['@thirdOrderTensor_' nlnsys.name]);
         elseif strcmp(version,'int')
-            obj.thirdOrderTensor = eval(['@thirdOrderTensorInt_' obj.name]);
+            nlnsys.thirdOrderTensor = eval(['@thirdOrderTensorInt_' nlnsys.name]);
         end
     end
-    function obj = setOutThirdOrderTensor(obj,version)
+    function nlnsys = setOutThirdOrderTensor(nlnsys,version)
         % allow switching between standard and interval arithmetic
         if strcmp(version,'standard')
-            obj.out_thirdOrderTensor = eval(['@out_thirdOrderTensor_' obj.name]);
+            nlnsys.out_thirdOrderTensor = eval(['@out_thirdOrderTensor_' nlnsys.name]);
         elseif strcmp(version,'int')
-            obj.out_thirdOrderTensor = eval(['@out_thirdOrderTensorInt_' obj.name]);
+            nlnsys.out_thirdOrderTensor = eval(['@out_thirdOrderTensorInt_' nlnsys.name]);
         end
     end
     
 end
+
+methods (Access = protected)
+    [printOrder] = getPrintSystemInfo(S)
+end
+
 end
 
 
@@ -154,13 +165,8 @@ end
 
 function [name,fun,states,inputs,out_fun,outputs] = aux_parseInputArgs(varargin)
 
-    % check number of input arguments
-    if nargin > 6
-        throw(CORAerror('CORA:tooManyInputArgs',6));
-    end
-
     % default values
-    name = []; states = []; inputs = [];
+    name = []; fun =  @(x,u)[]; states = []; inputs = [];
     out_fun = []; outputs = [];
 
     % no input arguments
@@ -175,46 +181,28 @@ function [name,fun,states,inputs,out_fun,outputs] = aux_parseInputArgs(varargin)
     elseif nargin == 2
         if ischar(varargin{1})
             % syntax: obj = nonlinearSys(name,fun)
-            name = varargin{1};
-            fun = varargin{2};
+            [name,fun] = varargin{:};
         elseif isa(varargin{1},'function_handle')
             % syntax: obj = nonlinearSys(fun,out_fun)
-            fun = varargin{1};
-            out_fun = varargin{2};
+            [fun,out_fun] = varargin{:};
         end
     elseif nargin == 3
         if ischar(varargin{1})
             % syntax: obj = nonlinearSys(name,fun,out_fun)
-            name = varargin{1};
-            fun = varargin{2};
-            out_fun = varargin{3};
+            [name,fun,out_fun] = varargin{:};
         elseif isa(varargin{1},'function_handle')
             % syntax: obj = nonlinearSys(fun,states,inputs)
-            fun = varargin{1};
-            states = varargin{2};
-            inputs = varargin{3};
+            [fun,states,inputs] = varargin{:};
         end
     elseif nargin == 4
         % syntax: obj = nonlinearSys(name,fun,states,inputs)
-        name = varargin{1};
-        fun = varargin{2};
-        states = varargin{3};
-        inputs = varargin{4};
+        [name,fun,states,inputs] = varargin{:};
     elseif nargin == 5
         % syntax: obj = nonlinearSys(fun,states,inputs,out_fun,outputs)
-        fun = varargin{1};
-        states = varargin{2};
-        inputs = varargin{3};
-        out_fun = varargin{4};
-        outputs = varargin{5};
+        [fun,states,inputs,out_fun,outputs] = varargin{:};
     elseif nargin == 6
         % syntax: obj = nonlinearSys(name,fun,states,inputs,out_fun,outputs)
-        name = varargin{1};
-        fun = varargin{2};
-        states = varargin{3};
-        inputs = varargin{4};
-        out_fun = varargin{5};
-        outputs = varargin{6};
+        [name,fun,states,inputs,out_fun,outputs] = varargin{:};
     end
 
     % get name from function handle
@@ -293,8 +281,10 @@ function [states,inputs,out_fun,outputs,out_isLinear] = ...
     end
 
     if isempty(out_fun)
-        out_fun = @(x,u) eye(states)*x(1:states);
+        % init out_fun via eval to have numeric values 
+        % within function handle
         outputs = states;
+        out_fun = eval(sprintf('@(x,u) eye(%i)*x(1:%i)',outputs,outputs));
         out_isLinear = true(outputs,1);
     else
         % get number of states in output equation and outputs

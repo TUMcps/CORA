@@ -1,0 +1,50 @@
+\subsubsection{Nonlinear Systems with Uncertain Parameters} \label{sec:nonlinearParamSystems}
+
+Nonlinear parametric systems extend nonlinear systems by additionally considering uncertain parameters $p$:
+\begin{align}
+	\dot{x}(t) &= f(x(t),u(t),p), ~~ p\in \mathcal{P} \subset \mathbb{R}^{p},	\label{eq:nonlinParamSystem} \\
+	y(t) &= g(x(t),u(t),p) \label{eq:nonlinParamSystem_output},
+\end{align} 
+where $x(t) \in \Rn$ is the system state, $u(t) \in \R^m$ is the system input, $p \in \R^p$ is the parameter vector, $y(t) \in \R^o$ is the system output, and $f: \Rn \times \R^m \times \R^p \to \Rn$ and $g: \Rn \times \R^m \times \R^p \to \R^o$ are sufficiently smooth. As for linear parametric systems (see \cref{sec:linearParamSystems}), the parameters $p \in \mathcal{P}$ can be constant over time or time-varying.
+
+Nonlinear parametric systems are implemented by the class \texttt{nonlinParamSys}. An object of class \texttt{nonlinearSys} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{fun}), \\
+		& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{fun},\texttt{type}), \\
+     	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{name},\texttt{fun}), \\
+     	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{name},\texttt{fun},\texttt{type}), \\
+    	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{fun},n,m,p), \\
+    	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{fun},n,m,p,\texttt{type}), \\
+     	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{name},\texttt{fun},n,m,p), \\
+     	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{name},\texttt{fun},n,m,p,\texttt{type}), \\
+     	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{fun},\texttt{outFun}), \\
+     	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{fun},\texttt{type},\texttt{outFun}), \\
+     	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{name},\texttt{fun},\texttt{outFun}), \\
+     	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{name},\texttt{fun},\texttt{type},\texttt{outFun}), \\
+     	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{fun},n,m,p,\texttt{outFun},o), \\
+     	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{fun},n,m,p,\texttt{type},\texttt{outFun},o), \\
+     	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{name},\texttt{fun},n,m,p,\texttt{outFun},o), \\
+     	& \texttt{sys} = \texttt{nonlinParamSys}(\texttt{name},\texttt{fun},n,m,p,\texttt{type},\texttt{outFun},o),
+	\end{split}
+\end{equation*} 
+where \texttt{name} is a string specifying the name of the system, \texttt{fun} is a MATLAB function handle defining the function $f(x(t),u(t),p)$ in \eqref{eq:nonlinParamSystem}, $n$ is the number of states (see \eqref{eq:nonlinParamSystem}), $m$ is the number of inputs (see \eqref{eq:nonlinParamSystem}), $p$ is the number of parameters (see \eqref{eq:nonlinParamSystem}), \texttt{type} is a string that specifies if the parameter are constant over time (\texttt{'constParam'}) or time-varying (\texttt{'varParam'}), \texttt{outFun} is a MATLAB function handle defining the function $g(x(t),u(t),p)$ in \eqref{eq:nonlinParamSystem_output}, and $o$ is the number of outputs (see \eqref{eq:nonlinParamSystem_output}). The default value for \texttt{type} is \texttt{'constParam'}. If the number of states $n$, the number of inputs $m$, the number of parameters $p$, and the number of outputs $o$ are not provided, they are automatically determined from the function handle \texttt{fun}. If no output equation is provided, we assume $y = x$. Let us demonstrate the class \texttt{nonlinParamSys} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.48\textwidth}
+	\vspace{10pt}
+	\begin{equation*}
+	\begin{bmatrix} \dot x_1 \\ \dot x_2 \end{bmatrix} = \begin{bmatrix}  x_2 + u \\ p(1-x_1^2)x_2 - x_1 \end{bmatrix}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[t]{0.48\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_nonlinParamSys}
+\end{minipage}
+\end{center}
+
+An alternative to nonlinear parametric systems with constant parameters is to define each parameter as a state variable $\tilde{x}_i$ with the trivial dynamics $\dot{\tilde{x}}_i = 0$. Time-varying parameters can be equivalently modeled as uncertain inputs. For both cases the result is a nonlinear system that can be handled as described in \cref{sec:nonlinearSystems}. The question whether to compute the solution with the dedicated approach presented in this section or with the approach for nonlinear systems has not yet been thoroughly investigated.
+
+\subsubsubsection{Operation \texttt{reach}}
+
+For reachability analysis of nonlinear parametric systems we use the same algorithms and settings as for nonlinear systems (see \cref{sec:nonlinearReach}). The only difference is that the conservative polynomialization algorithm \cite{Althoff2013a} (\texttt{options.alg = 'poly'}) is yet only implemented for parametic systems for which the set of uncertain parameters $\mathcal{P}$ (see \eqref{eq:nonlinParamSystem}) is a single point instead of a set.

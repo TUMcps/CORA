@@ -23,9 +23,6 @@ function res = test_reachSet_reachSet
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% init result
-res = true;
-
 % empty reachSet
 R = reachSet();
 
@@ -70,31 +67,16 @@ R = reachSet([],timeInt,parent);
 R = reachSet(timePoint,[]);
 R = reachSet(timePoint,[],parent);
 
-if CHECKS_ENABLED
-
 % wrong instantiations: non-matching lengths, negative values, too many
 % input arguments
-try
-    R = reachSet(timePoint_);
-    res = false;
-end
-try
-    R = reachSet(timePoint,timeInt_);
-    res = false;
-end
-try
-    R = reachSet(timePoint,timeInt,parent_);
-    res = false;
-end
-try
-    R = reachSet(timePoint,timeInt,parent,loc_);
-    res = false;
-end
-try
-    R = reachSet(timePoint,timeInt,parent,loc,loc);
-    res = false;
-end
+assertThrowsAs(@reachSet,'CORA:wrongInputInConstructor',timePoint_);
+assertThrowsAs(@reachSet,'CORA:wrongInputInConstructor',timePoint,timeInt_);
+assertThrowsAs(@reachSet,'MATLAB:validators:mustBeNonnegative',timePoint,timeInt,parent_);
+assertThrowsAs(@reachSet,'MATLAB:validators:mustBeNonnegative',timePoint,timeInt,parent,loc_);
+assertThrowsAs(@reachSet,'CORA:numInputArgsConstructor',timePoint,timeInt,parent,loc,loc);
 
-end
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

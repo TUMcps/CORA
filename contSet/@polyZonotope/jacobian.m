@@ -64,7 +64,7 @@ for i=1:d
     if ~isempty(eMtmp)
         % adapt G matrix accordingly
         Gtmp = pZ.E(ii_diff(i),~indtmp).*pZ.G(:,~indtmp);
-        [E,G,c] = removeZeroExponents(eMtmp,Gtmp);
+        [E,G,c] = priv_removeZeroExponents(eMtmp,Gtmp);
     else
         E = zeros(length(pZ.id),0);
         G = zeros(n,0);

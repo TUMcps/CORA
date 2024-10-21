@@ -1,13 +1,13 @@
-function [t,z,ind] = simulate(obj,params,varargin)
+function [t,z,ind] = simulate(nlnsysDA,params,varargin)
 % simulate - simulates the system within a location
 %
 % Syntax:
-%    [t,z] = simulate(obj,params)
-%    [t,z,ind] = simulate(obj,params,options)
-%    [t,z,ind,y] = simulate(obj,params,options)
+%    [t,z] = simulate(nlnsysDA,params)
+%    [t,z,ind] = simulate(nlnsysDA,params,options)
+%    [t,z,ind,y] = simulate(nlnsysDA,params,options)
 %
 % Inputs:
-%    obj - nonlinDASys object
+%    nlnsysDA - nonlinDASys object
 %    params - struct containing the parameters for the simulation
 %       .tStart: initial time
 %       .tFinal: final time
@@ -24,7 +24,8 @@ function [t,z,ind] = simulate(obj,params,varargin)
 %    ind - returns the event which has been detected
 %    y - output vector
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -42,12 +43,13 @@ function [t,z,ind] = simulate(obj,params,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 if nargout == 4
-    CORAwarning('CORA:contDynamics',"Output trajectories not supported for class nonlinDASys!");
+    CORAwarning('CORA:contDynamics',...
+        "Output trajectories not supported for class nonlinDASys!");
     y = [];
 end
 
 % specify mass matrix
-M = diag([ones(1,obj.dim),zeros(1,obj.nrOfConstraints)]);
+M = diag([ones(1,nlnsysDA.nrOfStates),zeros(1,nlnsysDA.nrOfConstraints)]);
 
 % add mass matrix to the options struct
 if nargin > 2
@@ -59,25 +61,25 @@ end
 options = odeset(options,'RelTol',1e-7,'AbsTol',1e-10,'NormControl','on');
 
 % initial state is combination of dynamic and algebraic state variables
-if length(params.x0) == (obj.dim + obj.nrOfConstraints)
+if length(params.x0) == (nlnsysDA.nrOfStates + nlnsysDA.nrOfConstraints)
     z0 = params.x0;
 else
     %extract dynamic and algebraic initial state, as well as the input
     y0 = params.y0guess;
     %ensure consistent initial state
-    y0 = consistentInitialState(obj, params.x0, y0, params.u);
+    y0 = consistentInitialState(nlnsysDA, params.x0, y0, params.u);
     %update combined initial state
     z0 = [params.x0;y0];
 end
 
 try
-    [t,z,~,~,ind] = ode15s(getfcn(obj,params),...
+    [t,z,~,~,ind] = ode15s(getfcn(nlnsysDA,params),...
         [params.tStart,params.tFinal],z0,options);
-    %[t,z,te,xe,index] = ode23tb(getfcn(obj,params),...
+    %[t,z,te,xe,index] = ode23tb(getfcn(nlnsysDA,params),...
     %   [params.tStart,params.tFinal],z0,options);
 catch
-    [t,z] = ode15s(getfcn(obj,params),[params.tStart,params.tFinal],z0,options);
-    %[t,z] = ode23tb(getfcn(obj,params),[params.tStart,params.tFinal],z0,options);
+    [t,z] = ode15s(getfcn(nlnsysDA,params),[params.tStart,params.tFinal],z0,options);
+    %[t,z] = ode23tb(getfcn(nlnsysDA,params),[params.tStart,params.tFinal],z0,options);
     ind=[];
 end
 

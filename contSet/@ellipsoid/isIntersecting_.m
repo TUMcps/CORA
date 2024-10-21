@@ -1,14 +1,14 @@
-function res = isIntersecting_(E,S,type,varargin)
+function res = isIntersecting_(E,S,type,tol,varargin)
 % isIntersecting_ - determines if an ellipsoid intersects a set
 %
 % Syntax:
-%    res = isIntersecting_(E,S)
-%    res = isIntersecting_(E,S,type)
+%    res = isIntersecting_(E,S,type,tol)
 %
 % Inputs:
 %    E - ellipsoid object
 %    S - contSet object or double matrix (ncols = number of points)
 %    type - type of check ('exact' or 'approx')
+%    tol - tolerance
 %
 % Outputs:
 %    res - true/false
@@ -51,37 +51,47 @@ function res = isIntersecting_(E,S,type,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% all-zero shape matrix -> ellipsoid is just a point, check containment
-if rank(E)==0
-    res = contains_(S,E.q,type,100*eps);
+% ensure that numeric is second input argument
+[E,S] = reorderNumeric(E,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < E.precedence
+    res = isIntersecting_(S,E,type,tol);
+    return
+end
+
+% numeric case: check containment
+if isnumeric(S)
+    res = contains_(E,S,type,tol);
+    return
+end
+
+% sets must not be empty
+if representsa_(E,'emptySet',0) || representsa_(S,'emptySet',0)
+    res = false;
+    return
+end
+
+% ellipsoid is just a point, check containment
+if representsa_(E,'point',tol)
+    res = contains_(S,E.q,type,tol);
     return;
 end
 
-if isa(S,'double')
-    res = contains_(E,S,type,100*eps);
-    return;
-else
-    % make sure that contSet object is scalar
-    inputArgsCheck({{S,'att',{'contSet'},{'scalar'}}});
-end
-
+% general method: use shortest distance (must be 0 for intersection)
 try
-    % necessary since while we can check if "distance" exists for E, we  
-    % cannot check whether "distance(E,S)" for S of some class is supported
-    % use distance
-    tmp = distance(E,S);
-    res = tmp < E.TOL | withinTol(tmp,E.TOL);
-catch 
+    % we cannot check whether "distance(E,S)" is supported for some class S
+    dist = distance(E,S);
+    res = dist < E.TOL | withinTol(dist,E.TOL);
+catch ME
     % distance not implemented for S
-    % use fallback
-    % exact or over-approximative algorithm
     if strcmp(type,'exact')
-        throw(CORAerror('CORA:noops',E,S));
+        throw(CORAerror('CORA:noExactAlg',E,S));
     end
     
-    % it is not certain that S implements quadMap
+    % use fallback: it is not certain that S implements quadMap
     if ismethod(S,'quadMap') && ismethod(E,'interval')
-        res = isIntersectingMixed(E,S);
+        res = priv_isIntersectingMixed(E,S);
     else
         throw(CORAerror('CORA:noops',E,S));
     end

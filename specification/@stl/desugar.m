@@ -21,7 +21,7 @@ function phi = desugar(phi)
 
 % Authors:       Benedikt Seidl
 % Written:       11-May-2023
-% Last update:   ---
+% Last update:   08-February-2024 (FL, use interval property of stl instead of from and to)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -31,13 +31,13 @@ arguments
 end
 
 if strcmp(phi.type, 'until')
-    phi = until(desugar(phi.lhs), desugar(phi.rhs), interval(phi.from, phi.to));
+    phi = until(desugar(phi.lhs), desugar(phi.rhs), phi.interval);
 elseif strcmp(phi.type, 'release')
-    phi = desugar(~until(~phi.lhs, ~phi.rhs, interval(phi.from, phi.to)));
+    phi = desugar(~until(~phi.lhs, ~phi.rhs, phi.interval));
 elseif strcmp(phi.type, 'finally')
-    phi = desugar(until(stl(true), phi.lhs, interval(phi.from, phi.to)));
+    phi = desugar(until(stl(true), phi.lhs, phi.interval));
 elseif strcmp(phi.type, 'globally')
-    phi = desugar(~finally(~phi.lhs, interval(phi.from, phi.to)));
+    phi = desugar(~finally(~phi.lhs, phi.interval));
 elseif strcmp(phi.type, 'next')
     phi = desugar(finally(phi.lhs, interval(phi.from, phi.from)));
 elseif strcmp(phi.type, '&')

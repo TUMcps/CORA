@@ -23,8 +23,6 @@ function res = test_conPolyZono_representsa
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % instantiate constrained polynomial zonotope
 c = [0;0];
 G = [1 0 1;0 1 1];
@@ -36,9 +34,9 @@ cPZ1 = conPolyZono(c,G,E,A,b1,EC);
 % b2 = [0; 0];
 % cPZ2 = conPolyZono(c,G,E,A,b2,EC);
 
-res(end+1,1) = representsa(cPZ1,'emptySet',1e-8,'linearize',3,7);
+assert(representsa(cPZ1,'emptySet',1e-8,'linearize',3,7));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

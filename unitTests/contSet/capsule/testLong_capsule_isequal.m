@@ -45,34 +45,24 @@ for i=1:nrOfTests
     % test combinations of properties
     % ... different center
     C_ = capsule(c2,g1,r1);
-    if isequal(C,C_,tol)
-        res = false; break;
-    end
+    assertLoop(~isequal(C,C_,tol),i)
 
     % ... different generator
     C_ = capsule(c1,g2,r1);
-    if isequal(C,C_,tol)
-        res = false; break;
-    end
+    assertLoop(~isequal(C,C_,tol),i)
 
     % ... different radius
     C_ = capsule(c1,g1,r2);
-    if isequal(C,C_,tol)
-        res = false; break;
-    end
+    assertLoop(~isequal(C,C_,tol),i)
 
     % ... empty capsule
     C_empty = capsule.empty(n);
-    if isequal(C,C_empty)
-        res = false; break;
-    end
+    assertLoop(~isequal(C,C_empty),i)
 
     % ... capsule of reduced dimension
     if n > 1
         C_red = capsule(c1(1:n-1),g1(1:n-1),r1);
-        if isequal(C,C_red)
-            res = false; break;
-        end
+        assertLoop(~isequal(C,C_red),i)
     end
 
 end

@@ -1,20 +1,19 @@
-function [Rnext,options] = post(obj,R,options)
+function [Rnext,options] = post(nlnsys,R,params,options)
 % post - computes the reachable continuous set for one time step of a
 %    nonlinear system by overapproximative linearization
 %
 % Syntax:
-%    [Rnext] = post(obj,R,options)
+%    [Rnext,options] = post(nlnsys,R,params,options)
 %
 % Inputs:
-%    obj - nonlinearSys object
+%    nlnsys - nonlinearSys object
 %    R - reachable set of the previous time step
+%    params - model parameters
 %    options - options for the computation of the reachable set
 %
 % Outputs:
 %    Rnext - reachable set of the next time step
 %    options - options for the computation of the reachable set
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -35,24 +34,23 @@ function [Rnext,options] = post(obj,R,options)
 if strcmp(options.alg,'poly') && isa(R.tp{1}.set,'polyZonotope') && ...
    isfield(options,'polyZono') && ~isinf(options.polyZono.maxPolyZonoRatio)
 
-    temp = options.polyZono;
-
-    for i = 1:length(R.tp)
+    for i=1:length(R.tp)
         
         % compute ratio of dependent to independent part 
-        ratio = approxVolumeRatio(R.tp{i}.set,temp.volApproxMethod);
+        ratio = approxVolumeRatio(R.tp{i}.set,options.polyZono.volApproxMethod);
 
         % restructure the polynomial zonotope
-        if ratio > temp.maxPolyZonoRatio
+        if ratio > options.polyZono.maxPolyZonoRatio
            R.tp{i}.set = restructure(R.tp{i}.set, ...
-                      temp.restructureTechnique,temp.maxDepGenOrder);
+                                     options.polyZono.restructureTechnique, ...
+                                     options.polyZono.maxDepGenOrder);
         end
     end
 end
 
 %In contrast to the linear system: the nonlinear system has to be constantly
 %initialized due to the linearization procedure
-[Rnext,options] = initReach(obj,R.tp,options);
+[Rnext,options] = initReach(nlnsys,R.tp,params,options);
 
 %reduce zonotopes
 for i=1:length(Rnext.tp)

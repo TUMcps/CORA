@@ -2,7 +2,7 @@ function [res,msg] = c_pHA_U(val,sys,params)
 % c_pHA_U - costum validation function for params.U
 %
 % Syntax:
-%    [res,msg] = c_pHA_U(val,sys,options)
+%    [res,msg] = c_pHA_U(val,sys,params)
 %
 % Inputs:
 %    val - value for given param / option

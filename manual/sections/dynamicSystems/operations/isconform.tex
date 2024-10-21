@@ -1,0 +1,61 @@
+\subsubsection{isconform} \label{sec:isconform}
+
+The operation \operator{isconform} checks reachset conformance \cite{Althoff2023a,Roehm2019a}. A model is essentially reachset conformant if the measurements of the real system are contained in the set of reachable outputs of the model. Instead of checking reachset conformance with respect to a real system, one can also check reachset conformance with respect to a high-fidelity model. %This can be seen as some form of system identification, where instead of finding the most likely parameters, we compute a set of parameter values -- not only for the model dynamics but also for the set of disturbances and measurement errors.
+
+Formally, reachset conformance checks whether for all times $t$ and input trajectories $u(\cdot) \in \mathcal{U}$ ($\mathcal{U}$ is the set of input trajectories), the set of reachable outputs $Reach_t(S_A, u(\cdot))$ of the abstract system $S_A$ contains all possible measurements $Reach_t(S_I, u(\cdot))$ of the implementation $S_I$: 
+\begin{equation*}
+S_I \, \mathtt{conf}_R \, S_A \quad\Longleftrightarrow\quad \forall t, \, \forall u(\cdot) \in \mathcal{U}: Reach_t(S_I, u(\cdot))  \subseteq Reach_t(S_A, u(\cdot)).
+\end{equation*}
+In \cite[Thm.~1.]{Roehm2022}, it is shown that reachset conformance is necessary and sufficient to transfer safety properties, which are the predominant properties for certifying cyber-physical systems. In addition, properties that can be formalized using reachset temporal logic \cite{Roehm2016b} can be transferred. Reachset conformance is a weaker conformance notion than trace conformance, i.e., if $S_A$ is a trace conformant model of $S_I$, it is also a reachset conformant model of $S_I$ \cite[Thm.~2]{Roehm2022}.
+
+Reachset conformance can only be proven between models because one obviously cannot compute the reachable set of a real system. For real systems, one resorts to checking whether the reachable output of the abstract model $S_A$ contains all measurements of the implementation $S_I$. Even when $S_I$ is a model, one often resorts to using simulation results rather than reachability analysis due to the computational complexity of computing reachable sets. We call this approach reachset conformance checking, because we can only check the containment of samples rather than proving reachset conformance. To the best knowledge of the author, reachset conformance checking was first presented in \cite{Althoff2012b}. However, the term \textit{reachset conformance} is not used in that work and was introduced in \cite{Roehm2016} together with a formalization of reachset conformance checking. 
+
+The syntax for the operation \texttt{isconform} is:
+\begin{equation*}
+\begin{split}
+    & [\texttt{res}, \texttt{R}, \texttt{simRes}, \texttt{unifiedOutputs}] = \texttt{isconform}(\texttt{sys},\texttt{params},\texttt{options},\texttt{type})
+\end{split}
+\end{equation*}
+with input arguments
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{sys} & dynamic system defined by one of the classes \texttt{linearSysDT} (see \cref{sec:linearSysDT}) or \texttt{nonlinearSysDT} (see \cref{sec:nonlinearSystemsDT}) \\
+	$\bullet$~\texttt{params} & struct containing the parameter that define the conformance problem \\
+	& \begin{tabular}[t]{l p{10cm}}
+	 	--~\texttt{.tStart} & initial time $t_0$ (default value 0). \\
+	 	--~\texttt{.tFinal} & final time $t_f$. \\
+	 	--~\texttt{.R0} & uncertainty set $\tilde{\mathcal{X}}_0$ relative to the initial state, specified by one of the set representations in \cref{sec:basicSetRep}.\\
+	 	--~\texttt{.W} & set of disturbances $\mathcal{W}$ specified as an object of class \texttt{zonotope} (see \cref{sec:zonotope}). \\
+	 	--~\texttt{.V} & set of sensor noises $\mathcal{V}$ specified as an object of class \texttt{zonotope} (see \cref{sec:zonotope}).  \\
+	 	--~\texttt{.testSuite} & cell array of testCase objects, which contain input trajectories and the corresponding output trajectories of the implementation system $S_I$.
+	 \end{tabular}
+ \end{tabular}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~\texttt{options} & struct containing algorithm settings for conformance checking. Since the settings are different for each type of dynamic system, they are documented in \cref{sec:continuousDynamics} and \cref{sec:hybridDynamics}. \\
+	 $\bullet$~\texttt{type} & \texttt{'RRT'}, \texttt{'BF'} or \texttt{'dyn'}; can be omitted for \texttt{'dyn'}.
+\end{tabular}
+\end{center}
+
+and output arguments
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+    $\bullet$~\texttt{res} & result: true/false for conformance checking. \\
+	$\bullet$~\texttt{R} & object of class \texttt{reachSet} (see \cref{sec:reachSet}) that stores the observed set $\mathcal{R}(t_i)$ for all time points. \\
+	$\bullet$~\texttt{simRes} & object of class \texttt{simResult} (see \cref{sec:simResult}) that stores simulated trajectories in case a white-box model is used for reachset conformance. \\
+	$\bullet$~\texttt{unifiedOutputs} & Methods for linear systems unify outputs using the superposition principle, which are collected in this matrix.
+\end{tabular}
+\end{center}
+
+
+Let us demonstrate the operation \texttt{isconform} by an example: 
+
+\begin{center}
+\begin{minipage}[t]{\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_isconform}
+\end{minipage}
+\end{center}

@@ -47,9 +47,7 @@ for i=1:nrTests
     I = interval(lb,ub);
     I_abs = abs(I);
 
-    if ~isequal(I,I_abs,tol)
-        throw(CORAerror("CORA:testFailed"));
-    end
+    assertLoop(isequal(I,I_abs,tol),i)
 
     % upper bound smaller than 0 -> [-ub, -lb]
     ub = -rand(n);
@@ -58,9 +56,7 @@ for i=1:nrTests
     I_abs_true = interval(-ub, -lb);
     I_abs = abs(I);
 
-    if ~isequal(I_abs_true,I_abs,tol)
-        throw(CORAerror("CORA:testFailed"));
-    end
+   assertLoop(isequal(I_abs_true,I_abs,tol),i)
 
     % lower and upper bound enclose 0, abs(lb) < abs(ub) -> [0, ub]
     lb = -rand(n);
@@ -69,9 +65,7 @@ for i=1:nrTests
     I_abs_true = interval(zeros(n), ub);
     I_abs = abs(I);
 
-    if ~isequal(I_abs_true,I_abs,tol)
-        throw(CORAerror("CORA:testFailed"));
-    end
+    assertLoop(isequal(I_abs_true,I_abs,tol),i)
 
     % lower and upper bound enclose 0, abs(lb) > abs(ub) -> [0, -lb]
     ub = rand(n);
@@ -79,9 +73,7 @@ for i=1:nrTests
     I = interval(lb,ub);
     I_abs_true = interval(zeros(n), -lb);
     I_abs = abs(I);
-    if ~isequal(I_abs_true,I_abs,tol)
-        throw(CORAerror("CORA:testFailed"));
-    end
+    assertLoop(isequal(I_abs_true,I_abs,tol),i)
 
 end
 

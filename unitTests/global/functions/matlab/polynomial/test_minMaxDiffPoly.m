@@ -8,13 +8,13 @@ function res = test_minMaxDiffPoly()
 %    -
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Tobias Ladner
 % Written:       30-May-2023
@@ -23,35 +23,33 @@ function res = test_minMaxDiffPoly()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % simple cases
 
-[diffl,diffu] = minMaxDiffPoly([1 0],[0], -1, 2);
+[diffl,diffu] = minMaxDiffPoly([1 0],0, -1, 2);
 L = interval(diffl,diffu);
-resvec(end+1) = isequal(L,interval(-1,2));
+assert(isequal(L,interval(-1,2)));
 
 [diffl,diffu] = minMaxDiffPoly([0 0],[1 0], -1, 2);
 L = interval(diffl,diffu);
-resvec(end+1) = isequal(L,interval(-2,1));
+assert(isequal(L,interval(-2,1)));
 
 [diffl,diffu] = minMaxDiffPoly([2 0 0],[1 0], -1, 1);
 L = interval(diffl,diffu);
-resvec(end+1) = isequal(L,interval(-0.125,3));
+assert(isequal(L,interval(-0.125,3)));
 
 [diffl,diffu] = minMaxDiffPoly([2 3],[2 0], -1, 1);
 L = interval(diffl,diffu);
-resvec(end+1) = isequal(L,interval(3,3));
+assert(isequal(L,interval(3,3)));
 
 % higher-order polynomials
 
 [diffl,diffu] = minMaxDiffPoly([4 2 1 6],[-2 4], -3, 1);
 L = interval(diffl,diffu);
-resvec(end+1) = isequal(L,interval(-97,11));
+assert(isequal(L,interval(-97,11)));
 
 [diffl,diffu] = minMaxDiffPoly([-1 2 -1 6],[2 5 4], 2, 5);
 L = interval(diffl,diffu);
-resvec(end+1) = isequal(L,interval(-153,-18));
+assert(isequal(L,interval(-153,-18)));
 
 % test swapped
 coeffs1 = [2 -9 3];
@@ -62,11 +60,9 @@ u = -4;
 L1 = interval(diffl1,diffu1);
 [diffl2,diffu2] = minMaxDiffPoly(coeffs2,coeffs1,l,u);
 L2 = interval(diffl2,diffu2);
-resvec(end+1) = isequal(L1,-L2);
+assert(isequal(L1,-L2));
 
-% gather results
-res = all(resvec);
-
-end
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

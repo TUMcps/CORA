@@ -52,6 +52,8 @@ function cPZ = enclose(cPZ,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,3);
+
 % parse input arguments
 if nargin == 2
     cPZ2 = varargin{1};
@@ -60,8 +62,6 @@ elseif nargin == 3
         throw(CORAerror('CORA:wrongValue','third',"'zonotope' or 'interval'"));
     end
     cPZ2 = (varargin{1}*cPZ) + varargin{2};
-else
-    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
 % check if exponent matrices are identical

@@ -1,0 +1,48 @@
+\subheading{Header and footer}
+
+A CORA function has the following header and footer: \bigskip
+
+{\small \setstretch{1} \input{fun}}
+
+Let us now look at the respective parts in detail:
+\begin{itemize}
+	\item Function text \mcomment{<text1>}:
+	This text describes in simple words what the function does.
+	Do \textbf{not} use mathematical expressions, object names, or programming variables here.
+	\item Description \mcomment{<text2>} (optional):
+	Mathematical description of the function.
+	\item Function syntax \mcomment{Syntax}:
+	Here, we give some examples on how to call the function properly.
+	Not all variations have to be included (apart from object constructors).
+	\item Input arguments \mcomment{Inputs}:
+	The input arguments are described in more detail one after another.
+	If an input argument is optional, write \mcomment{(optional)} before the description.
+	\item Output arguments \mcomment{Outputs}:
+	Same as for input arguments.
+	\item Example call \mcomment{Example}:
+	Here, we provide an example function call.
+	The input arguments are defined and the function output is provided by calling the function.
+	For some methods, one can also plot the result.
+	Do not use randomized functions such as \verb|randPoint| or \verb|generateRandom| here.
+	\item Resources \mcomment{References}:
+	List all resources which are required for the function.
+	There is no bibliographic style to follow, each reference should be described exhaustively enough so that one can find it.
+	Using \mcomment{[1], [2], ...}, one can refer to them in the function text or in the code itself.
+	\item Additional information: ...
+	\item Related functions \mcomment{See also}:
+	List functions \mcomment{<otherfun1>,<otherfun2>,...} that have similar content to this function.
+	In general, these other functions are helpful to understand this function.
+	\item Empty line: This empty line (without \mcomment{\&}!) is important as the command \verb|help fun| only display the first connect sequence of comments on the command window.
+	Since the authors and the changelog are irrelevant to the user, they are hidden by this extra empty line.
+	\item Authorship and changelog:
+	The author(s) \mcomment{<author1>,<author2>} are mentioned in order of influence on the function.
+	One can be considered as an author if a substantial influence on the function has been made.
+	Notably, this includes simple syntax changes.
+	The date after \mcomment{Written} is the date on which the function was either written or committed for the first time.
+	If functions change name, the original date is used.
+	The fields \mcomment{Last update} and \mcomment{Last revision} can either be left empty using \mcomment{---} or filled with a date and the initials of the author of the changes with an explanation of the made changes.
+	Updates are usually smaller changes compared to revisions.	
+	Finally, please ensure vertical alignment.
+	\item Blocks for begin and end code:
+	Please copy these from existing functions.
+\end{itemize}

@@ -1,14 +1,14 @@
-function res = contains_(E,S,type,varargin)
+function res = contains_(E,S,mode,varargin)
 % contains_ - determines if an ellipsoid contains a set or a point
 %
 % Syntax:
 %    res = contains_(E,S)
-%    res = contains_(E,S,type)
+%    res = contains_(E,S,mode)
 %
 % Inputs:
 %    E - ellipsoid object 
 %    S - contSet object or single point
-%    type - mode of check ('exact' or 'approx')
+%    mode - mode of check ('exact' or 'approx')
 %
 % Outputs:
 %    res - true/false
@@ -52,114 +52,48 @@ function res = contains_(E,S,type,varargin)
 
 % containment check
 if isnumeric(S)
-    res = aux_containsPoint(E,S);
+    res = priv_containsPoint(E,S);
+    return
+end
 
-elseif isa(S,'ellipsoid')
-    res = containsEllipsoid(E,S);
+if isa(S,'ellipsoid')
+    res = priv_containsEllipsoid(E,S);
+    return
+end
 
-elseif isa(S,'capsule')
+if isa(S,'capsule')
     % check if balls at both ends of capsule are contained
     E1 = ellipsoid(S.r^2*eye(dim(S)), S.c+S.g);
     E2 = ellipsoid(S.r^2*eye(dim(S)), S.c-S.g);
-    res = containsEllipsoid(E,E1) && containsEllipsoid(E,E2);
+    res = priv_containsEllipsoid(E,E1) && priv_containsEllipsoid(E,E2);
+    return
+end
 
-elseif isa(S,'zonotope') && strcmp(type,'approx')
+if isa(S,'zonotope') && strcmp(mode,'approx')
     S = ellipsoid(S,'outer:norm_bnd');
-    res = containsEllipsoid(E,S);
+    res = priv_containsEllipsoid(E,S);
+    return
+end
 
-else
-    if strcmp(type,'exact')
-        if ismethod(S,'vertices_')
-            % check if all vertices of the set are contained
-            res = all(contains_(E,vertices(S),type,0));
-        else
-            throw(CORAerror('CORA:noExactAlg',E,S));
-        end   
-    else
-        if ismethod(S,'zonotope')
-            % zonotope over-approximation
-            S = zonotope(S); 
-            res = contains_(E,S,type,0);
-        else
-            throw(CORAerror('CORA:noops',E,S));
-        end
+if strcmp(mode,'exact')
+    if ismethod(S,'vertices_')
+        % check if all vertices of the set are contained
+        res = all(priv_containsPoint(E,vertices(S)));
+        return
     end
-
+    throw(CORAerror('CORA:noExactAlg',E,S));
 end
 
-end
-
-
-% Auxiliary functions -----------------------------------------------------
-
-function [res,val] = aux_containsPoint(E,Y)
-% gives an array of boolean values indicating whether points Y are
-% contained in the ellipsoid; additionally, the relative distance to the
-% center of the ellipsoid is returned (<= 1 if contained, =1 on boundary,
-% otherwise Inf)
-
-% number of points
-N = size(Y,2);
-
-% init results
-res = false(1,N);
-val = inf(1,N);
-ind_rem_eq = true(1,N);
-
-% degenerate case
-if ~isFullDim(E)
-
-    % subspace dimension
-    nt = rank(E);
-
-    % all-zero Q matrix -> ellipsoid is just a point
-    if nt == 0
-        res = all(withinTol(repmat(E.q,1,N),Y,E.TOL),1);
-        val(res) = 0;
-        return;
+% approx
+if strcmp(mode,'approx')
+    if ismethod(S,'zonotope')
+        % zonotope over-approximation
+        S = zonotope(S);
+        res = contains_(E,S,mode,0);
+        return
     end
-
-    % project via svd
-    [T,~,~] = svd(E.Q);
-    E = T'*E;
-    Y = T'*Y;
-
-    % save remainder
-    x_rem = E.q(nt+1:end);
-    Y_rem = Y(nt+1:end,:);
-
-    % check whether x_rem==Y_rem (those that do not fulfill are already
-    % not contained)
-
-    % indices of res which might be contained
-    ind_rem_eq = all(withinTol(repmat(x_rem,1,size(Y_rem,2)),Y_rem,E.TOL),1);
-
-    % if only center remains
-    if rank(E)==0
-        res(ind_rem_eq) = true;
-        val(ind_rem_eq) = 1;
-        return;
-    end
-
-    % project so that E is no longer degenerate
-    rankE = rank(E);
-    E = project(E,1:rankE);
-    Y = Y(1:rankE,:);
 end
 
-% convert mask to indices
-tmp = 1:N;
-ii_eq_rem = tmp(ind_rem_eq);
-
-% now, E is full-dimensional
-for i=ii_eq_rem
-    % simply check using ellipsoid equation
-    val_i = (Y(:,i)-E.q)'*(E.Q\(Y(:,i)-E.q));
-    tmp_E = 1 + E.TOL;
-    res(i) = val_i < tmp_E | withinTol(val_i,tmp_E);
-    val(i) = res(i)*val_i;
-end
-
-end
+throw(CORAerror('CORA:noops',E,S));
 
 % ------------------------------ END OF CODE ------------------------------

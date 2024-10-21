@@ -3,16 +3,15 @@ function [P,varargout] = polytope(Z,varargin)
 %
 % Syntax:
 %    P = polytope(Z)
-%    P = polytope(Z,'outer')
+%    P = polytope(Z,method)
+%    [P,comb,isDeg] = polytope(Z,'exact')
 %
 % Inputs:
 %    Z - zonotope object
-%    type - approximation:
+%    method - approximation:
 %               'exact': based on Theorem 7 of [1]
-%               'outer': ...
-%    method - outer-approximation method for type = 'outer'
-%               'tight': uses interval outer-approximation
-%               'volume': uses volume
+%               'outer:tight': uses interval outer-approximation
+%               'outer:volume' uses volume
 %
 % Outputs:
 %    P - polytope object
@@ -47,193 +46,160 @@ function [P,varargout] = polytope(Z,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% fix a tolerance
+tol = 1e-12;
+
 % parse input arguments
-[type,method] = setDefaultValues({'exact','tight'},varargin);
+method = setDefaultValues({'exact'},varargin);
 
 % check input arguments
 inputArgsCheck({{Z,'att','zonotope'};
-                {type,'str',{'exact','outer'}}; ...
-                {method,'str',{'tight','volume'}}});
+                {method,'str',{'exact','outer:tight','outer:volume'}}});
 
 
-if strcmp(type,'exact')
+if strcmp(method,'exact')
     % note: this method was previously called 'polytope'
 
     % obtain number of generators, dimensions
-    %Z = deleteAligned(Z);
     Z = compact_(Z,'zeros',eps);
-    c = Z.c;
-    G = Z.G;
-    [n,nrGen] = size(G);
-    
-    isDeg = false;
-    % other return values
-    varargout{1} = [];
-    
-    if rank(G) >= n
-        
-        if n > 1
-            % get number of possible facets
-            comb = combinator(nrGen,n-1,'c');
-            % bypass bug in combinator (rows with all-zeros?!)
-            comb = comb(any(comb,2),:);
-    
-            % build C matrices for inequality constraint C*x < d
-            C = zeros(length(comb(:,1)),n);
-            for i=1:length(comb(:,1))
-                indices=comb(i,:);
-                Q=G(:,indices);
-                v=ndimCross(Q);
-                C(i,:)=v'/norm(v);
-            end
-    
-            % remove NaN rows due to rank deficiency
-            index = find(sum(isnan(C),2));
-            if ~isempty(index)
-                C(index,:) = [];
-            end
-        else
-            C = 1;
-            comb = [];
-        end
-        
-        % build d vector and determine delta d
-        deltaD = zeros(length(C(:,1)),1);
-        for iGen = 1:nrGen
-            deltaD = deltaD+abs(C*G(:,iGen));
-        end 
-    
-        %compute dPos, dNeg
-        dPos = C*c + deltaD;
-        dNeg = -C*c + deltaD;
-         
-        % construct the overall inequality constraints
-        C = [C;-C];
-        d = [dPos;dNeg];
-        
-        % catch the case where the zonotope is not full-dimensional
-        temp = min([sum(abs(C - C(1,:)),2),sum(abs(C + C(1,:)),2)],[],2);
-        
-        if n > 1 && (isempty(C) || all(all(isnan(C))) || ...
-                       all(temp < 1e-12) || any(max(abs(C),[],1) < 1e-12))
-            
-            % singular value decomposition
-            [S,V,~] = svd(G);
-            
-            % state space transformation
-            Z_ = S'*[c,G];
-            
-            % remove dimensions with all zeros
-            ind = find(diag(V) <= 1e-12);
-            ind_ = setdiff(1:size(V,1),ind);
-            
-            if ~isempty(ind)
-                
-                isDeg = true;
-                
-                % compute polytope in transformed space
-                P = polytope(zonotope(Z_(ind_,:)));
-                
-                % transform back to original space
-                A = [P.A,zeros(size(P.A,1),length(ind))]*S';
-                b = P.b;
-                
-                % add equality constraint restricting polytope to null-space
-                C = [A;S(:,ind)';-S(:,ind)'];
-                d = [b;S(:,ind)'*c;-S(:,ind)'*c]; 
-            end        
-        end
+    comb = [];
+    isDeg = ~isFullDim(Z,tol);
 
-        varargout{1} = comb;
-        
-    elseif nrGen == 0
-        
+    if size(Z.G,2) == 0
         % generate equality constraint for the center vector
-        E = eye(n);
-        d_ = E * c;
-        C = [E;-E];
-        d = [d_;-d_];    
-        
+        n = dim(Z);
+        C = [eye(n);-eye(n)]; d = [Z.c;-Z.c];        
+    elseif ~isDeg
+        [C,d,comb] = aux_polytope_fullDim(Z);
     else
-        
-        isDeg = true;
-        
-        % singular value decomposition
-        [S,V,~] = svd(G);
-        V = [V,zeros(n,n-nrGen)];
-    
-        % state space transformation
-        Z_ = S'*[c,G];
-    
-        % remove dimensions with all zeros
-        ind = find(diag(V) <= 1e-12);
-        ind_ = setdiff(1:size(V,1),ind);
-    
-        if ~isempty(ind)
-            
-            % compute polytope in transformed space
-            P = polytope(zonotope(Z_(ind_,:)));
-    
-            % transform back to original space
-            A = [P.A,zeros(size(P.A,1),length(ind))]*S';
-            b = P.b;
-    
-            % add equality constraint restricting polytope to null-space
-            C = [A;S(:,ind)';-S(:,ind)'];
-            d = [b;S(:,ind)'*c;-S(:,ind)'*c];
-    
-        end
+        [C,d] = aux_polytope_degenerate(Z,tol);
     end
-    
-    % instantiate mpt Polytope
-    P = polytope(C,d);
-    % return values
+
+    % other return values
+    varargout{1} = comb;
     varargout{2} = isDeg;
 
+    % instantiate polytope
+    P = polytope(C,d);
 
-elseif strcmp(type,'outer')
-    % note: this method was previously called 'enclosingPolytope'
-    
-    if strcmp(method,'tight')
-        % solution1 (axis-aligned):
-        Zred = zonotope(interval(Z));
-        P = polytope(Zred); 
-        % solution 2 (method C):
-%         Zred = reduce(Z,'methC',1,filterLength);
-        Zred = reduce(Z,'pca');
-        Zred = aux_repair(Zred,Z);
-        Padd = polytope(Zred);
-        % intersect results
-        P = P & Padd;
-    elseif strcmp(method,'volume')
-        % solution 1 (method C):
-%         Zred1 = reduce(Z,'methC',1,filterLength);
-        Zred1 = reduce(Z,'pca');
-        Zred1 = aux_repair(Zred1,Z);
-        vol1 = volume(Zred1);
-        % solution2 (axis-aligned):
-        Zred2 = zonotope(interval(Z));
-        Zred2 = aux_repair(Zred2,Z);
-        vol2 = volume(Zred2);
-    
-        if vol1 < vol2
-            P = polytope(Zred1);
-        else 
-            P = polytope(Zred2);
-        end
-    end
+elseif startsWith(method,'outer')
+    P = aux_polytope_outer(Z,method);
 
 end
 
-% remove redundant constraints too slow...
-% P = compact_(P,'all',1e-9);
-
-% Set polytope properties
+% polytope is definitely bounded
 P.bounded.val = true;
+
 end
 
 
 % Auxiliary functions -----------------------------------------------------
+
+function [C,d,comb] = aux_polytope_fullDim(Z)
+
+c = Z.c; G = Z.G;
+[n,nrGen] = size(G);
+
+if n == 1
+    C = 1;
+    comb = [];
+else
+    % get number of possible facets
+    comb = combinator(nrGen,n-1,'c');
+    % bypass bug in combinator (rows with all-zeros?!)
+    comb = comb(any(comb,2),:);
+    nrComb = size(comb,1);
+
+    % build C matrices for inequality constraint C*x < d
+    C = zeros(nrComb,n);
+    for i=1:nrComb
+        % compute n-dimensional cross product with each combination
+        C(i,:) = ndimCross(G(:,comb(i,:)));
+    end
+    % normalize each normal vector
+    C = C ./ vecnorm(C',2,1)';
+
+    % remove NaN rows due to rank deficiency
+    index = find(sum(isnan(C),2));
+    if ~isempty(index)
+        C(index,:) = [];
+    end
+end
+
+% determine offset vector in addition to center
+deltaD = sum(abs(C*G),2);
+ 
+% construct the overall inequality constraints
+d = [C*c + deltaD; -C*c + deltaD];
+C = [C; -C];
+
+end
+
+function [C,d] = aux_polytope_degenerate(Z,tol)
+
+% read out information about zonotope
+c = Z.c; G = Z.G;
+[n,nrGen] = size(G);
+
+% singular value decomposition
+[U,S,~] = svd(G);
+S = [S,zeros(n,n-nrGen)];
+
+% state space transformation
+Z_ = U'*[c,G];
+
+% remove dimensions with all zeros
+ind = find(diag(S) <= tol);
+ind_ = setdiff(1:size(S,1),ind);
+
+if ~isempty(ind)
+    % compute polytope in transformed space
+    P = polytope(zonotope(Z_(ind_,:)));
+
+    % transform back to original space
+    A = [P.A,zeros(size(P.A,1),length(ind))]*U';
+    b = P.b;
+
+    % add equality constraint restricting polytope to null-space
+    C = [A;U(:,ind)';-U(:,ind)'];
+    d = [b;U(:,ind)'*c;-U(:,ind)'*c];
+end
+
+end
+
+function P = aux_polytope_outer(Z)
+% note: this method was previously called 'enclosingPolytope'
+
+if strcmp(method,'outer:tight')
+    % solution1 (axis-aligned):
+    Zred = zonotope(interval(Z));
+    P = polytope(Zred); 
+    % solution 2 (method C):
+    % Zred = reduce(Z,'methC',1,filterLength);
+    Zred = reduce(Z,'pca');
+    Zred = aux_repair(Zred,Z);
+    Padd = polytope(Zred);
+    % intersect results
+    P = P & Padd;
+elseif strcmp(method,'outer:volume')
+    % solution 1 (method C):
+    % Zred1 = reduce(Z,'methC',1,filterLength);
+    Zred1 = reduce(Z,'pca');
+    Zred1 = aux_repair(Zred1,Z);
+    vol1 = volume(Zred1);
+    % solution2 (axis-aligned):
+    Zred2 = zonotope(interval(Z));
+    Zred2 = aux_repair(Zred2,Z);
+    vol2 = volume(Zred2);
+
+    if vol1 < vol2
+        P = polytope(Zred1);
+    else 
+        P = polytope(Zred2);
+    end
+end
+
+end
 
 function Zrep = aux_repair(Z,Zorig)
 % repair zonotope if there is no length in one dimenion

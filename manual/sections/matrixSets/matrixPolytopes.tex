@@ -1,0 +1,26 @@
+\subsubsection{Matrix Polytopes} \label{sec:polytopeMatrix}
+
+A matrix polytope is defined analogously to a V-polytope (see \cref{sec:polytopes}):
+\begin{equation}\label{eq:matrixVertices}
+ \mathcal{A}_{[p]}=\bigg \{ \sum_{i=1}^{r} \alpha_i V\^i ~\Big|~ \alpha_i \in\mathbb{R}, \alpha_i \geq 0, \sum_i \alpha_i=1 \bigg \}, \quad V\^i \in \mathbb{R}^{n\times m}.
+\end{equation}
+The matrices $V\^i$ are also called vertices of the matrix polytope.
+When substituting the matrix vertices by vector vertices $v\^{i}\in \mathbb{R}^{n}$, one obtains a V-polytope (see \cref{sec:polytopes}).
+
+Matrix polytopes are implemented in CORA by the class \texttt{matPolytope}.
+An object of class \texttt{matPolytope} can be constructed as follows:
+\begin{equation*}
+	 \mathcal{A}_{[p]} = \texttt{matPolytope}(\texttt{V}),
+\end{equation*}
+where \texttt{V} is a three-dimensional array ($n\times m\times r$) that stores the vertices $V^{(i)}$, see \eqref{eq:matrixVertices}, of the matrix polytope.
+
+Let us demonstrate the construction of a \texttt{matPolytope} object by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.40\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_matPolytope}
+\end{minipage}
+\end{center}
+
+A more detailed example for matrix polytopes is provided in \cref{sec:matrixPolytopeExample} and in the file \textit{examples/matrixSet/example\_matPolytope.m} in the CORA toolbox. Furthermore, a list of methods for the class \texttt{matPolytope} is provided in \cref{sec:matrixPolytopeOperations}.

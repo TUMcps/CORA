@@ -1,13 +1,13 @@
-function [R,tcomp] = observe_PRadE(obj,options)
+function [R,tcomp] = observe_PRadE(linsysDT,params,options)
 % observe_PRadE - computes the guaranteed state estimation approach
-% from [1].
-%
+%    from [1].
 %
 % Syntax:
-%    [R,tcomp] = observe_PRadE(obj,options)
+%    [R,tcomp] = observe_PRadE(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -19,8 +19,6 @@ function [R,tcomp] = observe_PRadE(obj,options)
 %        Zhenhua Wang. Zonotopic fault detection observer with H −
 %        performance. In Proc. of the 36th IEEE Chinese Control
 %        Conference, pages 7230–7235, 2017.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -37,12 +35,11 @@ function [R,tcomp] = observe_PRadE(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % obtain offline gains
-
-options.L = observe_gain_PRadE(obj,options);
+options.L = observe_gain_PRadE(linsysDT,params,options);
 
 % apply set-membership approach
 tic
-R = observe_intersectionFree(obj,options);
+R = observe_intersectionFree(linsysDT,params,options);
 tcomp = toc;
 
 % ------------------------------ END OF CODE ------------------------------

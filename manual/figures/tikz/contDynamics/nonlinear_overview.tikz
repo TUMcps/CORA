@@ -1,0 +1,71 @@
+\begin{tikzpicture}
+[%
+    stepuml/.style={
+        rectangle,
+        draw=black,
+        thick,
+        fill=white,
+        align=left,
+        text width=12cm,
+        rounded corners=.2cm
+    },
+    stepumlshort/.style={
+        rectangle,
+        draw=black,
+        thick,
+        fill=white,
+        align=left,
+        text width=7cm,
+        rounded corners=.2cm
+    },
+    decision/.style={
+        diamond,
+        aspect=2,
+        draw=black,
+        thick,
+        fill=white,
+        align=center,
+        text width=2cm
+    },
+    arrow/.style={
+        thick,
+        ->
+    },
+    annotation/.style={
+        font=\footnotesize
+    }
+]
+
+\newcommand{\minSep}{0.5cm}
+
+\draw (0,0) node[stepuml, anchor=west] (step1) {\ding{192} Compute system abstraction (linear/polynomial)};
+
+\node[above=2*\minSep of step1.center, anchor=center] (step0) {Initial set: $\mathcal{R}(0)=\mathcal{X}_0$, time step: $k=1$};
+\draw [arrow] (step0) -- (step1);
+
+\node[stepuml, below=2*\minSep of step1.center, anchor=center] (step2) {\ding{193} Obtain required abstraction errors $\bar{\mathcal{L}}$ heuristically};
+\draw [arrow] (step1) -- (step2);
+
+\node[stepuml, below=2*\minSep of step2.center, anchor=center] (step3) {\ding{194} Compute $\mathcal{R}^{abstract}(\tau_k)$ of $\dot{x}(t) \in f^{abstract}(x(t),u(t)) \oplus \bar{\mathcal{L}}$};
+\draw [arrow] (step2) -- (step3);
+
+\node[stepuml, below=2*\minSep of step3.center, anchor=center] (step4) {\ding{195} Compute $\mathcal{L}$ based on $\mathcal{R}^{abstract}(\tau_k)$};
+\draw [arrow] (step3) -- (step4);
+
+\node[decision, below=4*\minSep of step4.west, anchor=west] (des) {$\mathcal{L} \subseteq \bar{\mathcal{L}}$ ?};
+\draw [arrow] (step4.south-|des.north) -- (des);
+
+\node[stepumlshort, below=4*\minSep of step4.east, anchor=east] (step5) {\ding{196} Enlarge $\bar{\mathcal{L}}$};
+\draw [arrow] (des.east) node[annotation, anchor=south west] {no}  -- (step5);
+\draw [arrow] (step5.east) -- +(0:\minSep) |- (step3.east);
+
+\node[stepuml, below=4*\minSep of step5.east, anchor=east] (step6) {\ding{197} Compute $\mathcal{R}(\tau_k)$ of $\dot{x}(t) \in f^{abstract}(x(t),u(t)) \oplus \mathcal{L}$};
+\draw [arrow] (des.south) node[annotation, anchor=north west] {yes} -- (step6.north-|des.south);
+
+\node[stepuml, below=2*\minSep of step6.center, anchor=center] (step7) {\ding{198} Cancellation of redundant reachable sets};
+\draw [arrow] (step6) -- (step7);
+
+\node[below=2*\minSep of step7.west, anchor=west] (step8) {Next initial set: $\mathcal{R}(t_{k+1})$, time step: $k:=k+1$};
+\draw [arrow] (step7.south) -- +(270:0.5*\minSep) -| (-\minSep,0) -- (step1.west);
+
+\end{tikzpicture}%

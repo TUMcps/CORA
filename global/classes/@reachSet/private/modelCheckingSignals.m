@@ -1,4 +1,4 @@
-function res = modelCheckingSignals(R,eq)
+function res = modelCheckingSignals(R,eq,varargin)
 % modelCheckingSignals - check if a reachable set satisfies an STL formula
 %                        using the three-valued signal approach
 %
@@ -8,6 +8,8 @@ function res = modelCheckingSignals(R,eq)
 % Inputs:
 %    R - reachable set (class reachSet)
 %    eq - logic formula (class stl)
+%    varargin - Additional options as name-value pairs:
+%               'returnBool' - return Boolean instead of Kleene result (default: true)
 %
 % Outputs:
 %    res - formula satisfied (true) or not (false)
@@ -37,16 +39,21 @@ function res = modelCheckingSignals(R,eq)
 
 % Authors:       Benedikt Seidl
 % Written:       03-May-2023
-% Last update:   ---
+% Last update:   08-February-2024 (FL, use stlInterval instead of interval)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+
+% check and extract additional options
+NVpairs = varargin;
+checkNameValuePairs(NVpairs, {'returnBool'});
+[~, returnBool] = readNameValuePair(NVpairs, 'returnBool', 'islogical', true);
 
 % prepare the formula
 [phi,aps] = combineAtomicPropositions(desugar(disjunctiveNormalForm(eq)));
 
 % compute the masks of this formula
-msk = masks(phi,interval(0,1),'any');
+msk = masks(phi,stlInterval(0,1),'any');
 
 % get the duration of the reachable set
 tFinal = query(R, 'tFinal');
@@ -59,12 +66,16 @@ analyzer = reachSetAnalyzer(aps, tFinal, msk);
 signals = analyzer.analyze(R);
 
 % compute the validity of every path through the reachable set
-res = true;
+res = kleene.True;
 
 for i=1:length(signals)
     sig = evaluateSignal(phi,dur,signals{i});
 
-    res = res && isequal(sig.at(0), kleene.True);
+    res = res & sig.at(0);
+end
+
+if returnBool
+    res = res == kleene.True;
 end
 
 end

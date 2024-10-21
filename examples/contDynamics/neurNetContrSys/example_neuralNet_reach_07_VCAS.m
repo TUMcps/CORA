@@ -193,12 +193,13 @@ else
     Ri = R0;
     adv_cur = adv_init;
     for i = 1:tFinal
-        evParams = struct();
-        evParams.poly_method = "singh";
+        % nn options
+        options = struct();
+        options.nn.poly_method = "singh";
 
         % evaluate network
         network = networks{adv_cur};
-        logits = network.evaluate(Ri, evParams);
+        logits = network.evaluate(Ri, options);
 
         % determine output
         logits = interval(logits);

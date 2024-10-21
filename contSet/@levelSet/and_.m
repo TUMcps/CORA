@@ -33,143 +33,210 @@ function res = and_(ls,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: contSet/and, conHyperplane/and_, halfspace/and_
+% See also: contSet/and, polytope/and_
 
 % Authors:       Niklas Kochdumper
 % Written:       22-July-2019
 % Last update:   ---
 % Last revision: 27-March-2023 (MW, rename and_)
+%                28-September-2024 (MW, integrate precedence)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    % ensure order
-    [ls,S] = findClassArg(ls,S,'levelSet');
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < ls.precedence
+    res = and_(S,ls,varargin{:});
+    return
+end
 
-    % intersection with fullspace or emptySet
-    if isa(S,'fullspace') || isa(S,'emptySet')
-        res = and_(S,ls); return
-    end
+% ensure order
+[ls,S] = findClassArg(ls,S,'levelSet');
 
-    % check input arguments
-    if isa(S,'conPolyZono')
-        res = and_(S,ls,'exact'); return
-    end
+% level set
+if isa(S,'levelSet')
+    res = aux_and_ls(ls,S);
+    return
+end
 
-    % convert polytope to level set
-    if isa(S,'polytope')
-        S = levelSet(S);
-    end
+% constrained polynomial zonotope
+if isa(S,'conPolyZono')
+    res = aux_and_cPZ(ls,S);
+    return
+end
 
-    % special case: intersection with a point
-    if isa(S,'polyZonotope') && aux_isavector(S)
-        % check if point fulfills level set equation
-        if ls.funHan(S.c) < 0 || withinTol(ls.funHan(S.c),0)
-            % init as zonotope for upcoming computations
-            res = zonotope(S.c);
-        else
-            res = emptySet(dim(S));
-        end
-        return
-    end
-    
-    % check if S is a level Set with same compOp => concatenate
-    if isa(S,'levelSet')
-        % use vars from ls (should be irrelevant which ones are used)
-        vars = ls.vars;
-        newEqs = [ls.eq;subs(S.eq,S.vars,vars)];
-        newCompOp = aux_uniteCompOp(ls,S);
-        res = levelSet(newEqs,vars,newCompOp);
-        res = compact_(res,'all',eps);
-        return;
-    end
+% all other set representations
+res = aux_and_other(ls,S);
 
-    % split up ls if it has multiple equations
-    if iscell(ls.compOp) && not(isscalar(ls.compOp))
-        res = fullspace(length(ls.vars));
-        for i = 1:length(ls.compOp)
-            op = ls.compOp{i};
-            eq = ls.eq(i);
-            lsComp = levelSet(eq, ls.vars, op);
-            comp = lsComp & S;
-            res = res & comp;
-        end
-        return;
-    end
-
-    % compute coarse outer-approximation
-    if any(strcmp(ls.compOp,{'<=','<'}))
-        % caution: multiple equations not supported...
-
-        % outer-approximation second set by interval for range bounding
-        I = interval(S);
-
-        % perform range bounding using Taylor models for complement of
-        % level set and second set
-        ls_ = not(ls);
-        boundedVals = interval(taylm(symfun(ls_.eq, ls_.vars),I));
-
-        % if the entire range is contained in the complement, the
-        % intersection is empty
-        % (TODO: slightly different for '<' / '<=')
-        if contains_(interval(-Inf,0),boundedVals)
-            res = emptySet(dim(S));
-            return
-        end
-
-        % S is an outer-approximation of S & ls, use this for now
-        % TODO: implement contractors for tighter outer-approximation
-        res = zonotope(S);
-        return
-
-    end
-    
-    if ~strcmp(ls.compOp,'==')
-        throw(CORAerror('CORA:noops',ls,S));
-    end
-
-    % compute interval over-approximation
-    I = interval(S);
-    
-    % tighten interval to enclose the level set
-    I = tightenDomain(ls,I);
-    
-    % compute polynomial zonotope with unsolvable method
-    [res,err,var] = aux_polyZonotopeUnsolvable(ls,I);
-    
-    % check if equation is solvable for one variable
-    if ls.solvable
-        
-        % select variable for taylor expansion
-        [var_,eq] = aux_selectVariable(ls,I);
-        
-        if length(eq) == 1
-            
-            % compute polynomial zonotope with the solvable method
-            [res_,err_] = aux_polyZonotopeSolvable(eq{1},var_,I);
-            
-            % select the better over-approximation
-            if err_ < err
-                res = res_;
-                err = err_;
-                var = var_;
-            end
-        end
-    end
-    
-    % use interval enclosure if it is smaller
-    if err > 2*rad(I(var))
-        res = polyZonotope(I); 
-    end
-    
-    % convert back to original set representation
-    if ~isa(S,'polyZonotope')
-        contSet = class(S);
-        eval(['res = ',contSet,'(res);']);
-    end
 end
 
 
 % Auxiliary functions -----------------------------------------------------
+
+function res = aux_and_other(ls,S)
+
+% convert polytope to level set
+if isa(S,'polytope')
+    S = levelSet(S);
+end
+
+% special case: intersection with a point
+if isa(S,'polyZonotope') && aux_isavector(S)
+    % check if point fulfills level set equation
+    if ls.funHan(S.c) < 0 || withinTol(ls.funHan(S.c),0)
+        % init as zonotope for upcoming computations
+        res = zonotope(S.c);
+    else
+        res = emptySet(dim(S));
+    end
+    return
+end
+
+% split up ls if it has multiple equations
+if iscell(ls.compOp) && not(isscalar(ls.compOp))
+    res = fullspace(length(ls.vars));
+    for i = 1:length(ls.compOp)
+        op = ls.compOp{i};
+        eq = ls.eq(i);
+        lsComp = levelSet(eq, ls.vars, op);
+        comp = lsComp & S;
+        res = res & comp;
+    end
+    return;
+end
+
+% compute coarse outer-approximation
+if any(strcmp(ls.compOp,{'<=','<'}))
+    % caution: multiple equations not supported...
+
+    % outer-approximation second set by interval for range bounding
+    I = interval(S);
+
+    % perform range bounding using Taylor models for complement of
+    % level set and second set
+    ls_ = not(ls);
+    boundedVals = interval(taylm(symfun(ls_.eq, ls_.vars),I));
+
+    % if the entire range is contained in the complement, the
+    % intersection is empty
+    % (TODO: slightly different for '<' / '<=')
+    if contains_(interval(-Inf,0),boundedVals,'exact',1e-12)
+        res = emptySet(dim(S));
+        return
+    end
+
+    % S is an outer-approximation of S & ls, use this for now
+    % TODO: implement contractors for tighter outer-approximation
+    res = zonotope(S);
+    return
+
+end
+
+if ~strcmp(ls.compOp,'==')
+    throw(CORAerror('CORA:noops',ls,S));
+end
+
+% compute interval over-approximation
+I = interval(S);
+
+% tighten interval to enclose the level set
+I = tightenDomain(ls,I);
+
+% compute polynomial zonotope with unsolvable method
+[res,err,var] = aux_polyZonotopeUnsolvable(ls,I);
+
+% check if equation is solvable for one variable
+if ls.solvable
+    
+    % select variable for taylor expansion
+    [var_,eq] = aux_selectVariable(ls,I);
+    
+    if length(eq) == 1
+        
+        % compute polynomial zonotope with the solvable method
+        [res_,err_] = aux_polyZonotopeSolvable(eq{1},var_,I);
+        
+        % select the better over-approximation
+        if err_ < err
+            res = res_;
+            err = err_;
+            var = var_;
+        end
+    end
+end
+
+% use interval enclosure if it is smaller
+if err > 2*rad(I(var))
+    res = polyZonotope(I); 
+end
+
+% convert back to original set representation
+if ~isa(S,'polyZonotope')
+    contSet = class(S);
+    eval(['res = ',contSet,'(res);']);
+end
+
+end
+
+function res = aux_and_ls(ls,S)
+
+% use vars from ls (should be irrelevant which ones are used)
+vars = ls.vars;
+newEqs = [ls.eq;subs(S.eq,S.vars,vars)];
+newCompOp = aux_uniteCompOp(ls,S);
+res = levelSet(newEqs,vars,newCompOp);
+res = compact_(res,'all',eps);
+
+end
+
+function res = aux_and_cPZ(ls,cPZ)
+
+% compute interval enclosure of constrained polynomial zonotope
+I = interval(cPZ,'interval');
+
+% enclose nonlinear constraint of the level set with a Taylor model
+tay = taylm(I);
+T = ls.funHan(tay);
+
+ind = zeros(dim(I),1);
+names1 = T.names_of_var;
+
+for i = 1:length(ind)
+    name = tay(i,1).names_of_var;
+    for j = 1:length(ind)
+        if strcmp(names1{j},name{1})
+            ind(i) = j;
+        end
+    end
+end
+
+EC = T.monomials(2:end,2:end)';
+EC = EC(ind,:);
+A = T.coefficients(2:end)';
+b = -T.coefficients(1);
+
+% construct conPolyZono object for the level set
+E = eye(dim(I));
+rem = T.remainder;
+
+if ~strcmp(S.compOp,'==')
+    temp = interval(T);
+    rem = interval(infimum(temp),supremum(rem));
+end
+
+c = center(rem); r = rad(rem);
+if ~all(r == 0)
+    A = [A,-diag(r)];
+    b = b + c;
+    EC = blkdiag(EC,eye(length(r)));
+    E = [E;zeros(length(r),size(E,2))];
+end
+
+ls = conPolyZono(center(I),zonotope(I).G,E,A,b,EC);
+
+% intersect with the original conPolyZono object
+res = and_(cPZ,ls,'exact');
+
+end
 
 function [res,err,var] = aux_polyZonotopeUnsolvable(ls,I)
 % compute over-approximating polynomial zonotope for the case where the

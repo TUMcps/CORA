@@ -1,0 +1,10 @@
+\begin{tikzpicture}
+\footnotesize
+
+\node[inner sep=0pt] (v) at (0,0) {\includegraphics[height=3cm]{./figures/hybridSimulation_1.eps}};
+\node[anchor=west] at (-2.25, -1.3) {$x_{(1)}$};
+\node[anchor=west] at (-3.1, -0.55) {$x_{(2)}$};
+\node[anchor=west] at (2.9, 0.7) {invariant};
+\node[anchor=west] at (2.9, -0.5) {guard set};
+
+\end{tikzpicture}%

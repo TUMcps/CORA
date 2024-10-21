@@ -51,10 +51,7 @@ for i=1:nTests
         f_abs(f_abs==0) = 1;
 
         % check result
-        if ~all(withinTol(fval_res./f_abs, fval./f_abs, 1e-6))
-            res = false;
-            return
-        end
+        assertLoop(all(withinTol(fval_res./f_abs, fval./f_abs, 1e-6)),i,j)
     end
 end
 

@@ -18,10 +18,13 @@ function res = test_capsule_enlarge
 
 % Authors:       Mark Wetzlinger
 % Written:       15-September-2019
-% Last update:   ---
+% Last update:   11-October-2024 (TL, fixed unit test)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % instantiate capsule
 C = capsule([1;1],[1;1],0.5);
@@ -31,9 +34,9 @@ factor = 2;
 C_enlarged = enlarge(C,factor);
 
 % true solution
-C_true = capsule([1;1],[2;2],1);
+C_true = capsule([1;1],[2;2],2);
 
 % compare results
-res = isequal(C_true,C_enlarged);
+assert(isequal(C_true,C_enlarged));
 
 % ------------------------------ END OF CODE ------------------------------

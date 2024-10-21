@@ -54,9 +54,7 @@ for i=1:nrTests
     P = and(P1,P2);
 
     % box has to contain the polytope
-    if ~representsa(P, 'emptySet')
-        res = false; return
-    end
+    assertLoop(representsa(P, 'emptySet'),i)
 
 end
 
@@ -87,10 +85,7 @@ for i=1:nrTests
 %     close;
 
     % intersection has to be P1
-    if ~eq(P1,P,tol)
-        res = false; return
-    end
-
+    assertLoop(eq(P1,P,tol),i)
 
     % starting from dimension 2
     n = randi([2,10]);
@@ -125,9 +120,7 @@ for i=1:nrTests
 %     plot(P,[1,2],'r--');
 %     close;
 
-    if ~eq(P,P_,tol)
-        res = false; return
-    end
+    assertLoop(eq(P,P_,tol),i)
 
 end
 

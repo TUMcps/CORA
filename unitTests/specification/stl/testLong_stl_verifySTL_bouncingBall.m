@@ -43,7 +43,7 @@ options.verifyAlg = 'stl:seidl';
 x = stl('x',2);
 
 % loop over different formulas and algorithms
-res = [];
+res = true;
 
 
 % formulas to verify
@@ -61,7 +61,7 @@ eq_pos = {
 };
 
 for i = 1:length(eq_pos)
-    res(end+1,1) = verify(sys,params,options,eq_pos{i});
+    assert(verify(sys,params,options,eq_pos{i}));
 end
 
 
@@ -81,10 +81,10 @@ eq_neg = {
 };
 
 for i = 1:length(eq_neg)
-    res(end+1,1) = ~verify(sys,params,options,eq_neg{i});
+    assert(~verify(sys,params,options,eq_neg{i}));
 end
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

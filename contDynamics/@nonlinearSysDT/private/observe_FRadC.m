@@ -1,13 +1,13 @@
-function [R,tcomp] = observe_FRadC(obj,options)
+function [R,tcomp] = observe_FRadC(nlnsysDT,params,options)
 % observe_FRadC - computes the guaranteed state estimation approach
-% from [1]; the approach is extended here for nonlinear systems.
-%
+%    from [1]; the approach is extended here for nonlinear systems.
 %
 % Syntax:
-%    [R,tcomp] = observe_FRadC(obj,options)
+%    [R,tcomp] = observe_FRadC(nlnsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time nonlinear system object
+%    nlnsysDT - discrete-time nonlinear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -18,8 +18,6 @@ function [R,tcomp] = observe_FRadC(obj,options)
 %    [1] Christophe Combastel. Zonotopes and kalman observers:
 %        Gain optimality under distinct uncertainty paradigms and
 %        robust convergence. Automatica, 55:265-273, 2015.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -35,12 +33,11 @@ function [R,tcomp] = observe_FRadC(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % set gain
-
 options.observerType = 1; % combastel
 
 % apply set-membership approach
-tic
-R = observe_intersectionFreeAdaptive(obj,options);
+tic;
+R = observe_intersectionFreeAdaptive(nlnsysDT,params,options);
 tcomp = toc;
 
 % ------------------------------ END OF CODE ------------------------------

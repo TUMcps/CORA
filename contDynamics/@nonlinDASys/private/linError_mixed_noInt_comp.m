@@ -1,17 +1,18 @@
-function [errorTotal, errorInt, errorInt_x, errorInt_y, Rtotal_y] = ...
-    linError_mixed_noInt_comp(obj, options, R, Verror_y)
+function [errorTotal,errorInt,errorInt_x,errorInt_y,Rtotal_y] = ...
+    linError_mixed_noInt_comp(nlnsysDA,R,Verror_y,params,options)
 % linError_mixed_noInt_comp - computes the linearization error 
-% compositionally according to [1].
+%    compositionally according to [1].
 %
 % Syntax:
-%    [errorTotal, errorInt, errorInt_x, errorInt_y, Rtotal_y] = ...
-%               linError_mixed_noInt_comp(obj, options, R, Verror_y)
+%    [errorTotal,errorInt,errorInt_x,errorInt_y,Rtotal_y] = ...
+%               linError_mixed_noInt_comp(nlnsysDA,R,Verror_y,params,options)
 %
 % Inputs:
-%    obj - nonlinear differential algebraic system object
-%    options - options struct
+%    nlnsysDA - nonlinear differential algebraic system object
 %    R - actual reachable set
 %    Verror_y - set of algebraic linearization error
+%    params - model parameters
+%    options - options struct
 %
 % Outputs:
 %    errorTotal - zonotope overapproximating the linearization error
@@ -25,13 +26,11 @@ function [errorTotal, errorInt, errorInt_x, errorInt_y, Rtotal_y] = ...
 %        using Reachable Sets", IEEE Transactions on Power Systems 29 (5), 
 %        2014, 2270-2280
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       21-November-2011
@@ -45,27 +44,27 @@ function [errorTotal, errorInt, errorInt_x, errorInt_y, Rtotal_y] = ...
 % ------------------------------ BEGIN CODE -------------------------------
 
 % compute set of algebraic variables
-f0_con = obj.linError.f0_con;
-D = obj.linError.D;
-E = obj.linError.E;
-F_inv = obj.linError.F_inv;
+f0_con = nlnsysDA.linError.f0_con;
+D = nlnsysDA.linError.D;
+E = nlnsysDA.linError.E;
+F_inv = nlnsysDA.linError.F_inv;
 R_y_cor = -F_inv*(f0_con + D*R); %correlated part
-R_y_add = -F_inv*(E*options.U + Verror_y); %uncorrelated part
+R_y_add = -F_inv*(E*params.U + Verror_y); %uncorrelated part
 R_y = R_y_cor + R_y_add;
 
 % init
-errorTotal = zeros(obj.dim, 1);
-errorTotal_x = zeros(obj.dim, 1);
-errorTotal_y = zeros(obj.nrOfConstraints, 1);
+errorTotal = zeros(nlnsysDA.nrOfStates, 1);
+errorTotal_x = zeros(nlnsysDA.nrOfStates, 1);
+errorTotal_y = zeros(nlnsysDA.nrOfConstraints, 1);
 
 % obtain indices for projection onto subsystems
 index = options.index;
 
 % linearization errors
 for iSys = 1:length(index)
-    psub{iSys}.x = index{iSys}.X * obj.linError.p.x;
-    psub{iSys}.y = index{iSys}.Y * obj.linError.p.y;
-    psub{iSys}.u = index{iSys}.Uv*options.Vgen + index{iSys}.Uy*obj.linError.p.y + index{iSys}.Uu*obj.linError.p.u; %IMPORTANT: INCLUDE effect of Vgen
+    psub{iSys}.x = index{iSys}.X * nlnsysDA.linError.p.x;
+    psub{iSys}.y = index{iSys}.Y * nlnsysDA.linError.p.y;
+    psub{iSys}.u = index{iSys}.Uv*options.Vgen + index{iSys}.Uy*nlnsysDA.linError.p.y + index{iSys}.Uu*nlnsysDA.linError.p.u; %IMPORTANT: INCLUDE effect of Vgen
 end
 
 parfor iSys = 1:length(index)
@@ -75,7 +74,7 @@ parfor iSys = 1:length(index)
     Rsub = index{iSys}.X * R;
     Rsub_y_cor = index{iSys}.Y * R_y_cor;
     Rsub_y_add = index{iSys}.Y * R_y_add;
-    Usub = index{iSys}.Uy*R_y + index{iSys}.Uu*options.U; %IMPORTANT: do not include effect of Vgen
+    Usub = index{iSys}.Uy*R_y + index{iSys}.Uu*params.U; %IMPORTANT: do not include effect of Vgen
     
     %obtain intervals and combined interval z
     dx = interval(Rsub);
@@ -180,7 +179,7 @@ errorTotal = reduce(errorTotal,'girard',options.zonotopeOrder);
 errorTotal_y = reduce(errorTotal_y,'girard',options.zonotopeOrder);
 
 %update R_y
-Rtotal_y =  obj.linError.p.y + (-F_inv)*(f0_con + D*R + E*options.U + errorTotal_y);
+Rtotal_y =  nlnsysDA.linError.p.y + (-F_inv)*(f0_con + D*R + E*params.U + errorTotal_y);
 
 %error intervals
 errorIHabs = abs(interval(errorTotal));

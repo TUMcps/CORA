@@ -31,6 +31,12 @@ function pZ = polyZonotope(I)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% check if not a matrix set
+n = dim(I);
+if numel(n) > 1
+    throw(CORAerror('CORA:wrongValue','first','Interval must not be an n-d array with n > 1.'))
+end
+
 c = center(I);
 G = diag(rad(I));
 E = eye(length(c));

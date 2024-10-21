@@ -41,9 +41,7 @@ for i=1:nrOfTests
         R = rad(IntE);
 
         for j=1:dim(E)
-            if ~all(withinTol(radius(E,j),R(1:j),E.TOL))
-                res = false; return;
-            end
+            assertLoop(all(withinTol(radius(E,j),R(1:j),E.TOL)),i,k,j)
         end
     end
 end

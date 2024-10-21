@@ -87,33 +87,15 @@ if strcmp(type,'exact')
     % ensure that halfspace representation is there
     constraints(P);
 
-    % read out constraints
-    A = P.A_.val; b = P.b_.val;
-    Ae = P.Ae_.val; be = P.be_.val;
-    
-    % shift entry in offset vector by support function value of subtrahend
-    for i = 1:size(A,1)
-        l = supportFunc_(S,A(i,:)','upper');
-        if isinf(l)
-            % subtrahend is unbounded in a direction where the minuend is
-            % bounded -> result is empty
-            P_out = polytope.empty(n); return
-        end
-        b(i) = b(i) - l;
-    end
-    % for equality constraints, we can easily detect if the resulting set
-    % becomes empty, as the lower and upper bounds for the support function
-    % in those directions must be equal
-    for i = 1:size(Ae,1)
-        I = supportFunc_(S,Ae(i,:)','range');
-        if ~withinTol(I.inf,I.sup)
-            P_out = polytope.empty(n); return
-        end
-        be(i) = be(i) - I.inf;
-    end
+    % compute the Minkowski difference (including emptiness check)
+    [A,b,Ae,be,empty] = priv_minkDiff(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val,S);
     
     % init resulting polytope
-    P_out = polytope(A,b,Ae,be);
+    if empty
+        P_out = polytope.empty(n);
+    else
+        P_out = polytope(A,b,Ae,be);
+    end
 
 elseif strcmp(type,'exact:vertices')
     if isa(S,'zonotope') || isa(S,'interval')

@@ -25,9 +25,6 @@ function res = testLong_parallelHybridAutomaton_mergeFlows_02
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true;
-
 % comp1: x1,x2,     u1,u2,  y1
 % comp2: x3,x4,x5,  u3,     y2,y3
 syms x1 x2 x3;
@@ -42,7 +39,7 @@ compOp = '<=';
 inv{1,1} = levelSet(eq,vars,compOp);
 compOp = '==';
 guard = levelSet(eq,vars,compOp);
-reset = struct('f',@(x,u) [x(1)-u(1);x(2)-u(2)]);
+reset = nonlinearReset(@(x,u) [x(1)-u(1);x(2)-u(2)]);
 trans{1,1} = transition(guard,reset,2);
 loc = location('loc1',inv{1,1},trans{1,1},dynamics{1,1});
 
@@ -53,7 +50,7 @@ compOp = '<=';
 inv{1,2} = levelSet(eq,vars,compOp);
 compOp = '==';
 guard = levelSet(eq,vars,compOp);
-reset = struct('f',@(x,u) [x(1)-u(1);-x(2)+u(2)]);
+reset = nonlinearReset(@(x,u) [x(1)-u(1);-x(2)+u(2)]);
 trans{1,2} = transition(guard,reset,1);
 loc(2) = location('loc2',inv{1,2},trans{1,2},dynamics{1,2});
 
@@ -68,7 +65,7 @@ compOp = '<=';
 inv{2,1} = levelSet(eq,vars,compOp);
 compOp = '==';
 guard = levelSet(eq,vars,compOp);
-reset = struct('f',@(x,u) [-x(1)+u(1);x(2);x(3)]);
+reset = nonlinearReset(@(x,u) [-x(1)+u(1);x(2);x(3)]);
 trans{2,1} = transition(guard,reset,2);
 loc(1) = location('loc1',inv{2,1},trans{2,1},dynamics{2,1});
 
@@ -81,7 +78,7 @@ compOp = '<=';
 inv{2,2} = levelSet(eq,vars,compOp);
 compOp = '==';
 guard = levelSet(eq,vars,compOp);
-reset = struct('f',@(x,u) [-x(1)-u(1);x(2);-x(3)]);
+reset = nonlinearReset(@(x,u) [-x(1)-u(1);x(2);-x(3)]);
 trans{2,2} = transition(guard,reset,1);
 loc(2) = location('loc2',inv{2,2},trans{2,2},dynamics{2,2});
 
@@ -98,8 +95,7 @@ pHA = parallelHybridAutomaton(components,inputBinds);
 
 
 % merge flows of location pair [1,1]
-mergedFlow = mergeFlows(pHA,{pHA.components(1).location(1).contDynamics,...
-    pHA.components(2).location(1).contDynamics},[1;1]);
+mergedFlow = mergeFlows(pHA,[1;1]);
 
 % instantiate true solution
 % comp#1/loc#1: f = @(x,u) [x(2)-u(2); -x(1)^2+u(1)];
@@ -116,11 +112,10 @@ f = @(x,u) [x(2)-0.05*x(3)-0.05*x(4); ...
 mergedFlow_ = nonlinearSys('location11',f);
 
 % compare solutions
-res = isequal(mergedFlow,mergedFlow_,1e-14);
+assert(isequal(mergedFlow,mergedFlow_,1e-14));
 
 % merge flows of location pair [2,2]
-mergedFlow = mergeFlows(pHA,{pHA.components(1).location(2).contDynamics,...
-    pHA.components(2).location(2).contDynamics},[2;2]);
+mergedFlow = mergeFlows(pHA,[2;2]);
 
 % instantiate true solution
 % comp#1/loc#2: f = [0 -1; -1 0]*x + [0 1; 1 0]*u
@@ -137,9 +132,9 @@ f = @(x,u) [-x(2)+x(5); ...
 mergedFlow_ = nonlinearSys('location22',f);
 
 % compare solutions
-res(end+1,1) = isequal(mergedFlow,mergedFlow_,1e-14);
+assert(isequal(mergedFlow,mergedFlow_,1e-14));
 
-% combine results
-res = all(res);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,0 +1,228 @@
+\subsection{Matrix Set Representations}
+\logToConsole{EXAMPLES: MATRIX SET REPRESENTATIONS}
+
+In this section we present examples for set-based computation using the different matrix set representations in \cref{sec:matrixSetRepresentationsAndOperations}.
+
+\subsubsection{Matrix Polytopes} \label{sec:matrixPolytopeExample}
+
+The following MATLAB code demonstrates some of the introduced methods:
+
+{\small
+\input{./MATLABcode/matPolytope_test.tex}}
+
+This produces the workspace output
+\begin{verbatim}
+matP3 =
+
+dimension:
+     2     2
+
+nr of vertices:
+     4
+
+vertices:
+
+(:,:,1) =
+
+     0     4
+     5     3
+
+
+(:,:,2) =
+
+     1     4
+     5     2
+
+
+(:,:,3) =
+
+     0     3
+     4     3
+
+
+(:,:,4) =
+
+     1     3
+     4     2
+
+
+matP4 =
+
+dimension:
+     2     2
+
+nr of vertices:
+     4
+
+vertices:
+
+(:,:,1) =
+
+     3     0
+     5     2
+
+
+(:,:,2) =
+
+     2     2
+     3     3
+
+
+(:,:,3) =
+
+     1    -1
+     1    -1
+
+
+(:,:,4) =
+
+     0     0
+     0     0
+
+
+intP =
+
+intervalMatrix:
+- dimension: 2  2
+
+  [1, 2] [2, 2]
+  [3, 3] [3, 4]
+\end{verbatim}
+
+
+\subsubsection{Matrix Zonotopes} \label{sec:matrixZonotopeExample}
+
+The following MATLAB code demonstrates some of the introduced methods:
+
+{\small
+\input{./MATLABcode/matZonotope_test.tex}}
+
+This produces the workspace output
+\begin{verbatim}
+matZ3 =
+
+matZonotope:
+dimension:
+     2     2
+
+center:
+     0     4
+     5     3
+
+generators: (2 generators)
+
+(:,:,1) =
+
+     1     0
+     1     1
+
+
+(:,:,2) =
+
+         0    0.5000
+    0.5000         0
+
+
+matZ4 =
+
+matZonotope:
+dimension:
+     2     2
+
+center:
+     3     0
+     5     2
+
+generators: (3 generators)
+
+(:,:,1) =
+
+    -1     2
+     1     1
+
+
+(:,:,2) =
+
+    1.0000    0.5000
+    2.0000    1.5000
+
+
+(:,:,3) =
+
+         0    0.5000
+    0.5000    0.5000
+
+
+intZ =
+
+intervalMatrix:
+- dimension: 2  2
+
+  [0, 2] [2, 2]
+  [2, 4] [3, 5]
+\end{verbatim}
+
+
+\subsubsection{Interval Matrices} \label{sec:intervalMatrixExample}
+
+The following MATLAB code demonstrates some of the introduced methods:
+
+{\small
+\input{./MATLABcode/intervalMatrix_test.tex}}
+
+This produces the workspace output
+\begin{verbatim}
+
+intM3 =
+
+intervalMatrix:
+- dimension: 2  2
+
+  [-1, 1] [3.5000, 4.5000]
+  [3.5000, 6.5000] [2, 4]
+
+
+intM4 =
+
+intervalMatrix:
+- dimension: 2  2
+
+  [1, 5] [-2, 3]
+  [0.5000, 10.5000] [-2, 7]
+
+
+matZ =
+
+matZonotope:
+dimension:
+     2     2
+
+center:
+     1     2
+     3     4
+
+generators: (4 generators)
+
+(:,:,1) =
+
+     1     0
+     0     0
+
+
+(:,:,2) =
+
+     0     0
+     1     0
+
+
+(:,:,3) =
+
+     0     0
+     0     0
+
+
+(:,:,4) =
+
+     0     0
+     0     1
+\end{verbatim}

@@ -1,4 +1,4 @@
-function res = simulateStandard(obj, options)
+function res = simulateStandard(sys,params,options)
 % simulateStandard - performs several random simulation of the system. It 
 %    can be set how many simulations should be performed, what percentage
 %    of initial states should start at vertices of the initial set, what 
@@ -7,11 +7,12 @@ function res = simulateStandard(obj, options)
 %    consists.
 %
 % Syntax:
-%    res = simulateStandard(obj, options)
+%    res = simulateStandard(sys,params,options)
 %
 % Inputs:
-%    obj - contDynamics object
-%    options - model parameters and settings for random simulation
+%    sys - contDynamics object
+%    params - model parameters
+%    options - settings for random simulation
 %
 % Outputs:
 %    res - object of class simResult storing time and states of the 
@@ -26,23 +27,24 @@ function res = simulateStandard(obj, options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % trajectory tracking
-tracking = isfield(options,'uTransVec');
+tracking = isfield(params,'uTransVec');
 
 % location for contDynamics always 0
 loc = 0;
 
 % output equation only for linearSys and linearSysDT currently
-comp_y = (isa(obj,'linearSys') || isa(obj,'linearSysDT')) && ~isempty(obj.C);
+comp_y = ((isa(sys,'linearSys') || isa(sys,'linearSysDT')) && ~isempty(sys.C)) ...
+    || (isa(sys,'nonlinearSysDT') && ~isempty(sys.out_mFile));
 
 % generate random initial points
 nrExtreme = ceil(options.points*options.fracVert);
 nrStandard = options.points - nrExtreme;
 X0 = [];
 if nrExtreme > 0
-	X0 = [X0, randPoint(options.R0,nrExtreme,'extreme')]; 
+	X0 = [X0, randPoint(params.R0,nrExtreme,'extreme')]; 
 end
 if nrStandard > 0
-	X0 = [X0, randPoint(options.R0,nrStandard,'standard')];
+	X0 = [X0, randPoint(params.R0,nrStandard,'standard')];
 end
 
 % initialize array of simResult objects
@@ -68,52 +70,54 @@ for r = 1:options.points
     
     % initialize cells for current simulation run r
     t = 0;
-    if isa(obj,'nonlinDASys')
-        x = zeros(1,obj.dim+obj.nrOfConstraints);
+    if isa(sys,'nonlinDASys')
+        x = zeros(1,sys.nrOfStates+sys.nrOfConstraints);
+    elseif isa(sys,'nonlinearARX')
+        x = zeros(1,sys.dim_y);
     else
-        x = zeros(1,obj.dim);
+        x = zeros(1,sys.nrOfStates);
     end
     if comp_y
-        y = zeros(1,obj.nrOfOutputs);
+        y = zeros(1,sys.nrOfOutputs);
     end
     
     % start of trajectory
-    options.x0 = X0(:,r);
+    params.x0 = X0(:,r);
     
     % loop over number of constant inputs per partial simulation run r
     for block = 1:length(options.nrConstInp)
         
         % update initial state
         if block > 1
-            options.x0 = xTemp(end,:)';
+            params.x0 = xTemp(end,:)';
         end
         
         % update input
         if tracking
-            options.uTrans = options.uTransVec(:,block);
+            params.uTrans = params.uTransVec(:,block);
         end
         
-        options.tStart = options.tu(block);
-        options.tFinal = options.tu(block+1);
+        params.tStart = params.tu(block);
+        params.tFinal = params.tu(block+1);
 
         % set input (random input from set of uncertainty)
         if r <= options.points*options.fracInpVert
-            uRand = randPoint(options.U,options.nrConstInp(block),'extreme');
+            uRand = randPoint(params.U,options.nrConstInp(block),'extreme');
         else
-            uRand = randPoint(options.U,options.nrConstInp(block));
+            uRand = randPoint(params.U,options.nrConstInp(block));
         end
         
         % combine inputs (random input + tracking)
-        options.u = uRand + options.uTrans;
+        params.u = uRand + params.uTrans;
 
         if comp_y
             % sample from disturbance set and sensor noise set
             if options.nrConstInp(block) == 1
-                options.w = randPoint(options.W);
-                options.v = randPoint(options.V);
+                params.w = randPoint(params.W);
+                params.v = randPoint(params.V);
             else
-                options.w = randPoint(options.W,options.nrConstInp(block));
-                options.v = randPoint(options.V,options.nrConstInp(block)+1);
+                params.w = randPoint(params.W,options.nrConstInp(block));
+                params.v = randPoint(params.V,options.nrConstInp(block)+1);
             end
         end
         
@@ -121,32 +125,36 @@ for r = 1:options.points
         % additional dummy entry in u and v (this is due to the evaluation
         % of the output equation at the end of the current [tStart,tFinal])
         % ONLY for linear systems, and only if there is a feedthrough matrix
-        if comp_y && any(any(obj.D))
-            if size(options.u) > 1
-                dummy_u = ones(obj.nrOfInputs,1) * pi/2;
-                options.u = [options.u, dummy_u];
+        if comp_y && isfield(sys, 'D') && any(any(sys.D))
+            if size(params.u) > 1
+                dummy_u = ones(sys.nrOfInputs,1) * pi/2;
+                params.u = [params.u, dummy_u];
             end
-            if size(options.v) > 1
-                dummy_v = ones(obj.nrOfOutputs,1) * pi/2;
-                options.v = [options.v, dummy_v];
+            if size(params.v) > 1
+                dummy_v = ones(sys.nrOfOutputs,1) * pi/2;
+                params.v = [params.v, dummy_v];
             end
         end
         
         % uncertain parameters
-        if isfield(options,'paramInt')
-            pInt = options.paramInt;
+        if isfield(params,'paramInt')
+            pInt = params.paramInt;
             if isa(pInt,'interval')
-                options.p = pInt.inf + 2*pInt.rad*rand;
+                params.p = pInt.inf + 2*pInt.rad*rand;
             else
-                options.p = pInt;
+                params.p = pInt;
             end
         end
 
         % simulate dynamical system
-        if comp_y
-            [tTemp,xTemp,~,yTemp] = simulate(obj,options);
+        if isa(sys, 'nonlinearARX')
+            params.y_init = reshape(params.x0,sys.dim_y,[]);
+            [tTemp,~,~,yTemp] = simulate(sys,params);
+            xTemp = yTemp;
+        elseif comp_y
+            [tTemp,xTemp,~,yTemp] = simulate(sys,params,options);
         else
-            [tTemp,xTemp] = simulate(obj,options);
+            [tTemp,xTemp] = simulate(sys,params,options);
         end
 
         % append to previous values, overwrite first one:
@@ -160,20 +168,20 @@ for r = 1:options.points
         
     end
     
-    if comp_y
+    if comp_y && (isa(sys,'linearSys') || isa(sys,'linearSysDT'))
         % final point of output trajectory uses different input and sensor noise
-        ylast = aux_outputTrajectoryEnd(obj,options,x);
+        ylast = aux_outputTrajectoryEnd(sys,params,x);
         y(end,:) = ylast';
     end
 
     % append simResult object
     if comp_y
         res(r,1) = simResult({x},{t},loc,{y});
-    elseif isa(obj,'nonlinDASys')
+    elseif isa(sys,'nonlinDASys')
         % dimensions of algebraic variables in extended state vector
-        dims_a = obj.dim+1:obj.dim+obj.nrOfConstraints;
+        dims_a = sys.nrOfStates+1:sys.nrOfStates+sys.nrOfConstraints;
         a = x(:,dims_a);
-        x = x(:,1:obj.dim);
+        x = x(:,1:sys.nrOfStates);
         res(r,1) = simResult({x},{t},loc,{},{a});
     else
         res(r,1) = simResult({x},{t},loc);
@@ -186,14 +194,14 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function ylast = aux_outputTrajectoryEnd(obj,options,xtraj)
+function ylast = aux_outputTrajectoryEnd(sys,params,xtraj)
 
-    if isfield(options,'uTransVec')
-        options.uTrans = options.uTransVec(:,end);
+    if isfield(params,'uTransVec')
+        params.uTrans = params.uTransVec(:,end);
     end
-    ulast = randPoint(options.U) + options.uTrans;
-    vlast = randPoint(options.V);
-    ylast = obj.C*xtraj(end,:)' + obj.D*ulast + obj.k + vlast;
+    ulast = randPoint(params.U) + params.uTrans;
+    vlast = randPoint(params.V);
+    ylast = sys.C*xtraj(end,:)' + sys.D*ulast + sys.k + vlast;
 
 end
 

@@ -22,6 +22,9 @@ function res = test_mergeConflict
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
     
 % get all files
 files = findfiles(CORAROOT);
@@ -55,6 +58,6 @@ for i=1:length(files)
 end
 
 % test is ok if no remaining unresolved merge conflicts
-res = isempty(unresolvedFiles);
+assert(isempty(unresolvedFiles));
 
 % ------------------------------ END OF CODE ------------------------------

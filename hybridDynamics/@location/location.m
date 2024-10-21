@@ -22,15 +22,10 @@ classdef location
 %    % invariant
 %    inv = polytope([-1,0],0);
 %    
-%    % transition
-%    c = [-1;0]; d = 0; C = [0,1]; D = 0;
-%    guard = conHyperplane(c,d,C,D);
-%
-%    % reset function
-%    reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
-%
-%    % transition
-%    trans(1) = transition(guard,reset,2);
+%    % transition: guard set, reset function, target
+%    guard = polytope([0,1],0,[-1,0],0);
+%    reset = linearReset([1,0;0,-0.75]);
+%    trans = transition(guard,reset,2);
 %
 %    % flow equation
 %    dynamics = linearSys([0,1;0,0],[0;0],[0;-9.81]);
@@ -47,22 +42,17 @@ classdef location
 % Authors:       Matthias Althoff
 % Written:       02-May-2007 
 % Last update:   ---
-% Last revision: ---
+% Last revision: 14-October-2024 (MW, update to current constructor structure)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
-    % name of the location
-    name (1,:) = 'location';
 
-    % invariant set 
-    invariant = [];
+    name = 'location';	            % name of the location
+    invariant = [];                 % invariant set 
+    transition = transition();      % array storing the transitions
+    contDynamics = contDynamics();  % system dynamics
 
-    % array storing the transitions
-    transition (:,1) = transition();
-
-    % system dynamics
-    contDynamics = contDynamics();
 end
 
 methods
@@ -70,49 +60,88 @@ methods
     % class constructor
     function loc = location(varargin)
 
-        % parse input arguments
+        % 0. empty
+        assertNarginConstructor([0,1,3,4],nargin);
         if nargin == 0
             return
-        elseif nargin == 1 && isa(varargin{1},'location')
-            % copy constructor
+        end
+
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'location')
             loc = varargin{1}; return
-        elseif nargin <= 2
-            throw(CORAerror('CORA:notEnoughInputArgs',3));
-        elseif nargin == 3
-            invSet = varargin{1};
-            loc.transition = varargin{2};
-            loc.contDynamics = varargin{3};
-        elseif nargin == 4
-            loc.name = varargin{1};
-            invSet = varargin{2};
-            loc.transition = varargin{3};
-            loc.contDynamics = varargin{4}; 
-        else
-            throw(CORAerror('CORA:tooManyInputArgs',4));
         end
 
-        % loc.transition has to be an array of transition objects
-        if ~isa(loc.transition,'transition')
-            if iscell(loc.transition)
-                % legacy error message
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Transitions have to be an object array instead of a cell array.'));
-            else
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Transitions have to be a transition object array.'));
-            end
-        end
+        % 2. parse input arguments: varargin -> vars
+        [name,inv,trans,sys] = aux_parseInputArgs(varargin{:});
 
-        % convert invariant sets to polytopes if possible
-        if isa(invSet,'fullspace') || isa(invSet,'polytope') ...
-                || isa(invSet,'levelSet') || isa(invSet,'emptySet')
-            % keep polytopes, levelSet, and empty invariants as is
-            loc.invariant = invSet;
-        else
-            loc.invariant = polytope(invSet);
-        end
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(name,inv,trans,sys,nargin);
+
+        % 4. compute dependent properties
+        [name,inv,trans,sys] = aux_computeProperties(name,inv,trans,sys);
+
+        % 5. assign properties
+        loc.name = name;
+        loc.invariant = inv;
+        loc.transition = trans;
+        loc.contDynamics = sys;
+        
     end
 end
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function [name,inv,trans,sys] = aux_parseInputArgs(varargin)
+
+    % default properties
+    name = 'location'; inv = []; trans = transition(); sys = contDynamics();
+
+    % parse arguments
+    if nargin == 3
+        [inv,trans,sys] = setDefaultValues({inv,trans,sys},varargin);
+    elseif nargin == 4
+        [name,inv,trans,sys] = setDefaultValues({name,inv,trans,sys},varargin);
+    end
+
+end
+
+function aux_checkInputArgs(name,inv,trans,sys,n_in)
+
+if CHECKS_ENABLED && n_in > 0
+
+    inputArgsCheck({{name,'att',{'char','string'}};...
+                    {inv,'att','contSet'};...
+                    {trans,'att',{'transition','cell'}};...  % cell only legacy
+                    {sys,'att','contDynamics'}});
+
+end
+
+end
+
+function [name,inv,trans,sys] = aux_computeProperties(name,inv,trans,sys)
+
+% loc.transition has to be an array of transition objects
+if ~isa(trans,'transition')
+    if iscell(trans)
+        % legacy error message
+        throw(CORAerror('CORA:wrongInputInConstructor',...
+            'Transitions have to be an object array instead of a cell array.'));
+    else
+        throw(CORAerror('CORA:wrongInputInConstructor',...
+            'Transitions have to be a transition object array.'));
+    end
+end
+
+% convert invariant sets to polytopes if possible (keep polytopes,
+% levelSet, and fullspace/emptySet invariants)
+if ~(isa(inv,'fullspace') || isa(inv,'polytope') ...
+        || isa(inv,'levelSet') || isa(inv,'emptySet'))
+    inv = polytope(inv);
+end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

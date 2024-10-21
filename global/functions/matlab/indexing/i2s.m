@@ -13,7 +13,7 @@ function subscriptMatrix = i2s(siz,indexVector)
 %    subscripts
 %
 % Outputs:
-%    subscriptMatrix - matrix of subscripts; each row corrsponds to one
+%    subscriptMatrix - matrix of subscripts; each row corresponds to one
 %    index
 %
 % Example: 
@@ -24,32 +24,30 @@ function subscriptMatrix = i2s(siz,indexVector)
 %
 % See also: none
 
-% Authors:       Matthias Althoff
+% Authors:       Matthias Althoff, Tobias Ladner
 % Written:       14-September-2006
 % Last update:   28-July-2020
+%                30-September-2024 (TL, rewrote)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    
-%init subscriptMatrix
-subscriptMatrix = [];
-
-%subscript variable string
-string = [];
-for iChar = 1:length(siz)
-    string = [string,'s',num2str(iChar),','];
+% extend given size to have at least two elements
+if isscalar(siz)
+    dims = [siz,1];
+else
+    dims = siz;
 end
-string(end) = [];
 
-%Generate command string
-command=['[',string,']=ind2sub([',num2str(siz),'],[',num2str(indexVector),']);'];
-eval(command);
+% compute subscripts
+subs = cell(numel(dims),1);
+[subs{:}] = ind2sub(dims,indexVector);
 
-%arrange variables in a vector
-string = strrep(string,',',';');
-command = ['subscriptMatrix=[',string,']'';'];
-eval(command);
+% rearrange such that each row corresponds to one index pair
+subscriptMatrix = cell2mat(subs)';
+
+% remove additional columns added due to scalar input
+subscriptMatrix = subscriptMatrix(:,1:numel(siz));
     
 end
     

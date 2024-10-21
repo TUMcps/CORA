@@ -22,25 +22,24 @@ function res = test_interval_uplus
 % ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-9;
-res = true(0);
 
 % empty
 I = interval.empty(2);
 I_uplus = +I;
-res(end+1,1) = representsa(I_uplus,'emptySet');
+assert(representsa(I_uplus,'emptySet'));
 
 % bounded
 I = interval([-5; -4; -3; 0; 0; 5], [-2; 0; 2; 0; 5; 8]);
 I_uplus = +I;
-res(end+1,1) = isequal(I_uplus,I,tol);
+assert(isequal(I_uplus,I,tol));
 
 % unbounded
 I = interval([-Inf;2],[1;Inf]);
 I_uplus = +I;
-res(end+1,1) = isequal(I_uplus,I,tol);
+assert(isequal(I_uplus,I,tol));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

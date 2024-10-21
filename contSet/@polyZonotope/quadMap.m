@@ -55,9 +55,9 @@ function pZ = quadMap(pZ,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    if nargin == 1
-        throw(CORAerror('CORAerror:notEnoughInputArgs',2));
-    elseif nargin == 2
+    narginchk(1,4);
+
+    if nargin == 2
         pZ = aux_quadMapSingle(pZ,varargin{1});
     elseif nargin == 3
         pZ = aux_quadMapMixed(pZ,varargin{1},varargin{2},false);
@@ -67,8 +67,6 @@ function pZ = quadMap(pZ,varargin)
                                             'has to be boolean.'));
         end
         pZ = aux_quadMapMixed(pZ,varargin{1},varargin{2},varargin{3});
-    else
-        throw(CORAerror('CORA:tooManyInputArgs',3));
     end
 end
 
@@ -86,7 +84,7 @@ function pZ = aux_quadMapSingle(pZ,Q)
     %       Z' Q Z  +  Zrem' Q Z  +  Z' Q Zrem  +  Zrem' Q Zrem 
     
     pZtemp = pZ;
-    pZtemp.GI = [];
+    pZtemp.GI = zeros(dim(pZ),0);
 
     Z = zonotope(pZtemp);
     Zrem = zonotope([0*pZ.c, pZ.GI]);
@@ -107,11 +105,11 @@ function pZ = aux_quadMapSingle(pZ,Q)
 
     % initialize the resulting generator and exponent matrix 
     N = size(Gext,2);
-    dim = length(Q);
+    dim_Q = length(Q);
     M = N*(N+1)/2;
 
     Equad = zeros(size(pZ.E,1),M);
-    Gquad = zeros(dim,M);
+    Gquad = zeros(dim_Q,M);
 
     % create the exponent matrix that corresponds to the quadratic map
     counter = 1;
@@ -123,7 +121,7 @@ function pZ = aux_quadMapSingle(pZ,Q)
 
 
     % loop over all dimensions
-    for i = 1:dim
+    for i = 1:dim_Q
         if ~isempty(Q{i})
             % quadratic evaluation
             quadMat = Gext'*Q{i}*Gext;
@@ -161,7 +159,7 @@ function pZ = aux_quadMapSingle(pZ,Q)
 
     else
         pZ.c = zeros(length(Q),1);
-        GI = [];
+        GI = zeros(length(Q),0);
     end
 
     % assemble the properties of the resulting polynomial zonotope
@@ -195,12 +193,12 @@ function pZ = aux_quadMapMixed(pZ1,pZ2,Q,dep)
     % split into a zonotope Z that overapproximates the dependent generators,
     % and a zonotope Zrem that contains the independent generators
     pZtemp = pZ1;
-    pZtemp.GI = [];
+    pZtemp.GI = zeros(dim(pZ1),0);
     Z1 = zonotope(pZtemp);
     Zrem1 = zonotope([0*pZ1.c, pZ1.GI]);
     
     pZtemp = pZ2;
-    pZtemp.GI = [];
+    pZtemp.GI = zeros(dim(pZ2),0);
     Z2 = zonotope(pZtemp);
     Zrem2 = zonotope([0*pZ2.c, pZ2.GI]);
 
@@ -215,11 +213,11 @@ function pZ = aux_quadMapMixed(pZ1,pZ2,Q,dep)
     N1 = size(Gext1,2);
     N2 = size(Gext2,2);
     
-    dim = length(Q);
+    dim_Q = length(Q);
     M = N1*N2;
 
     Equad = zeros(size(E1,1),M);
-    Gquad = zeros(dim,M);
+    Gquad = zeros(dim_Q,M);
 
     % create the exponent matrix that corresponds to the quadratic map
     counter = 1;
@@ -242,7 +240,7 @@ function pZ = aux_quadMapMixed(pZ1,pZ2,Q,dep)
     [Enew,Gnew] = removeRedundantExponents(Equad,Gquad);
 
     % mixed multiplication of remaining generators
-    GI = [];
+    GI = zeros(dim(Zrem1),0);
     Zquad_rest = quadMap(Zrem1,Zrem2,Q);
     G_add = Zquad_rest.G;
     c = Zquad_rest.c;

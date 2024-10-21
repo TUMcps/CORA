@@ -70,7 +70,9 @@ try
 
 catch ME
     close;
-    res = false;
+    rethrow(ME)
+end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

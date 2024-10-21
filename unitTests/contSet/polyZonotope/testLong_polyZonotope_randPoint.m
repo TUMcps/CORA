@@ -22,12 +22,15 @@ function res = testLong_polyZonotope_randPoint
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % tolerance
 tol = 1e-9;
 
 % check empty zonotope object -> error
-res = isempty(randPoint(polyZonotope.empty(1)));
+assert(isempty(randPoint(polyZonotope.empty(1))));
 
 
 % number of tests
@@ -63,10 +66,9 @@ for i=1:nrOfTests
     
     % center, dependent, independent generators, and exponent matrix
     pZ = polyZonotope(c,G,GI,E);
-    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.GI,GI,tol) ...
-            || ~compareMatrices([G;E],[pZ.G;pZ.E],tol)
-        res = false; return;
-    end
+    assertLoop(all(withinTol(center(pZ),c,tol)),i)
+    assertLoop(compareMatrices(pZ.GI,GI,tol),i)
+    assertLoop(compareMatrices([G;E],[pZ.G;pZ.E],tol),i)
     
     
     % check 'standard' method

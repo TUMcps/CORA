@@ -1,13 +1,13 @@
-function [R,tcomp] = observe_FRadA(obj,options)
+function [R,tcomp] = observe_FRadA(linsysDT,params,options)
 % observe_FRadA - computes the guaranteed state estimation approach
-% from [1].
-%
+%    from [1].
 %
 % Syntax:
-%    [R,Rout] = observe_FRadA(obj,options)
+%    [R,Rout] = observe_FRadA(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - linearSysDT object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -18,8 +18,6 @@ function [R,tcomp] = observe_FRadA(obj,options)
 %    [1] T. Alamo, J. M. Bravo, and E. F. Camacho. Guaranteed
 %        state estimation by zonotopes. Automatica, 41(6):1035–1043,
 %        2005.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -35,13 +33,12 @@ function [R,tcomp] = observe_FRadA(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % set intersection procedure
-
 options.intersectionType = 1;
 options.intersectionTechnique = 'alamo-FRad';
 
 % apply set-membership approach
 tic
-R = observe_stripBased(obj,options);
+R = observe_stripBased(linsysDT,params,options);
 tcomp = toc;
 
 % ------------------------------ END OF CODE ------------------------------

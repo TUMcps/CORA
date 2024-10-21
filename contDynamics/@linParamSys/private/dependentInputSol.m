@@ -33,8 +33,8 @@ Ac = obj.A.center;
 Ag = obj.A.generator;
 c = center(Rinit);
 r = obj.stepSize;
-n = obj.dim;
-params = obj.A.gens;
+n = obj.nrOfStates;
+params = obj.A.numgens;
 Umat = Uconst.Z;
 
 %SECOND ORDER DEPENDENT SOLUTION
@@ -74,7 +74,7 @@ if (params>=2)
     end
 end
 %obatin zonotope
-R_lowOrder = zonotope([R_c,R_g]);
+R_lowOrder = zonotope(R_c,R_g);
 
 %HIGHER ORDER INDEPENDENT SOLUTION
 %get state transition matrices

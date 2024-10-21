@@ -1,14 +1,12 @@
-function [paramsList,optionsList] = config_parallelHybridAutomaton_simulateRandom(sys,params,options)
-% config_parallelHybridAutomaton_simulateRandom - configuration file for validation of
-%    model parameters and algorithm parameters
+function [paramsList,optionsList] = config_parallelHybridAutomaton_simulateRandom
+% config_parallelHybridAutomaton_simulateRandom - configuration file for
+%    validation of model parameters and algorithm parameters
 %
 % Syntax:
-%    [paramsList,optionsList] = config_parallelHybridAutomaton_simulateRandom(sys,params,options)
+%    [paramsList,optionsList] = config_parallelHybridAutomaton_simulateRandom
 %
 % Inputs:
-%    sys - parallelHybridAutomaton object
-%    params - user-defined model parameters
-%    options - user-defined algorithm parameters
+%    -
 %
 % Outputs:
 %    paramsList - list of model parameters

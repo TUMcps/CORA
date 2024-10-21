@@ -22,6 +22,9 @@ function res = test_testCase_sequentialTestCases()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % set path
 path = [CORAROOT filesep 'models' filesep 'testCases' filesep 'autonomousDriving'];
@@ -39,13 +42,13 @@ resPartial = [];
 for iCase = 1:(length(seqTestCases)-1)
     %% check if values starting from time step 2 equal first values of next test case
     % y
-    resPartial(end+1) = all(all(seqTestCases{iCase}.y(2:end,:) == seqTestCases{iCase+1}.y(1:end-1,:)));
+    assert(all(all(seqTestCases{iCase}.y(2:end,:) == seqTestCases{iCase+1}.y(1:end-1,:))));
     % u
-    resPartial(end+1) = all(all(seqTestCases{iCase}.u(2:end,:) == seqTestCases{iCase+1}.u(1:end-1,:)));
+    assert(all(all(seqTestCases{iCase}.u(2:end,:) == seqTestCases{iCase+1}.u(1:end-1,:))));
     % x
-    resPartial(end+1) = all(all(seqTestCases{iCase}.x(2:end,:) == seqTestCases{iCase+1}.x(1:end-1,:)));
+    assert(all(all(seqTestCases{iCase}.x(2:end,:) == seqTestCases{iCase+1}.x(1:end-1,:))));
     % initial state
-    resPartial(end+1) = all(seqTestCases{iCase}.x(2,:) == seqTestCases{iCase+1}.initialState');
+    assert(all(seqTestCases{iCase}.x(2,:) == seqTestCases{iCase+1}.initialState'));
 end
 
 % final result

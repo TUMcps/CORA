@@ -59,30 +59,31 @@ c1 = [1; 0];
 c2 = [0; 1];
 c3 = [-1; 0];
 c4 = [0; -1];
-linSys1 = linearSys('linearSys',A,B,c1);
-linSys2 = linearSys('linearSys',A,B,c2);
-linSys3 = linearSys('linearSys',A,B,c3);
-linSys4 = linearSys('linearSys',A,B,c4);
+linsys1 = linearSys('linearSys',A,B,c1);
+linsys2 = linearSys('linearSys',A,B,c2);
+linsys3 = linearSys('linearSys',A,B,c3);
+linsys4 = linearSys('linearSys',A,B,c4);
 
 % invariant set (same for all locations)
 inv = polytope(interval([-1;-1],[1;1]));
 
 % guard sets
-guard1 = conHyperplane([1,0],1);
+guard1 = polytope([],[],[1,0],1);
 guard2 = fullspace(2);
-guard3 = conHyperplane([-1,0],1);
+guard3 = polytope([],[],[-1,0],1);
 guard4 = fullspace(2);
 
 % reset functions
 resetA = [1, 0; 0, 1];
+resetB = [0; 0];
 resetc1 = [0; 0.15];
 resetc2 = [-0.5; 0];
 resetc3 = [0; 0.15];
 resetc4 = [0.5; 0];
-reset1 = struct('A',resetA,'c',resetc1);
-reset2 = struct('A',resetA,'c',resetc2);
-reset3 = struct('A',resetA,'c',resetc3);
-reset4 = struct('A',resetA,'c',resetc4);
+reset1 = linearReset(resetA,resetB,resetc1);
+reset2 = linearReset(resetA,resetB,resetc2);
+reset3 = linearReset(resetA,resetB,resetc3);
+reset4 = linearReset(resetA,resetB,resetc4);
 
 % transitions
 trans1 = transition(guard1,reset1,2);
@@ -91,10 +92,10 @@ trans3 = transition(guard3,reset3,4);
 trans4 = transition(guard4,reset4,1);
 
 % location objects
-loc(1) = location('right',inv,trans1,linSys1);
-loc(2) = location('up',inv,trans2,linSys2);
-loc(3) = location('left',inv,trans3,linSys3);
-loc(4) = location('down',inv,trans4,linSys4);
+loc(1) = location('right',inv,trans1,linsys1);
+loc(2) = location('up',inv,trans2,linsys2);
+loc(3) = location('left',inv,trans3,linsys3);
+loc(4) = location('down',inv,trans4,linsys4);
 
 % instantiate hybrid automaton
 HA1 = hybridAutomaton(loc);
@@ -104,8 +105,8 @@ HA1 = hybridAutomaton(loc);
 % reset functions
 resetc12 = [-0.5; 0.15];
 resetc34 = [0.5; 0.15];
-reset12 = struct('A',resetA,'c',resetc12);
-reset34 = struct('A',resetA,'c',resetc34);
+reset12 = linearReset(resetA,resetB,resetc12);
+reset34 = linearReset(resetA,resetB,resetc34);
 
 % transitions
 trans1(1) = transition(guard1,reset12,2);
@@ -113,8 +114,8 @@ trans3(1) = transition(guard3,reset34,1);
 
 % location objects
 clear loc
-loc(1) = location('right',inv,trans1,linSys1);
-loc(2) = location('left',inv,trans3,linSys3);
+loc(1) = location('right',inv,trans1,linsys1);
+loc(2) = location('left',inv,trans3,linsys3);
 
 HA2 = hybridAutomaton(loc);
 
@@ -136,18 +137,12 @@ for i=1:length(R2)
     end
 
     % same number of sets per branch
-    if length(R1(i_R1).timePoint.set) ~= length(R2(i).timePoint.set)
-        res = false;
-        break
-    end
+    assertLoop(length(R1(i_R1).timePoint.set) == length(R2(i).timePoint.set),i)
 
     % same start set and end set (faster than checking all, and should
     % catch any potential errors)
-    if ~isequal(R1(i_R1).timePoint.set{1},R2(i).timePoint.set{1}) || ...
-            ~isequal(R1(i_R1).timePoint.set{end},R2(i).timePoint.set{end})
-        res = false;
-        break
-    end
+    assertLoop(isequal(R1(i_R1).timePoint.set{1},R2(i).timePoint.set{1}),i)
+    assertLoop(isequal(R1(i_R1).timePoint.set{end},R2(i).timePoint.set{end}),i)
 
     % increment index of R2
     i_R1 = i_R1 + 1;

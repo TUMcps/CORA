@@ -48,9 +48,7 @@ function res = test_boxPlaneIntersection
 % V_former = lcon2vert(A,b,beta,alpha);
 % 
 % % compare solutions
-% if aux_compareSolutions(V_former, V, V_naive) == 0
-%     throw(CORAerror('CORA:testFailed')); 
-% end
+% assert(aux_compareSolutions(V_former, V, V_naive) ~= 0)
 
 % TEST 2: random instances ------------------------------------------------
 
@@ -100,9 +98,7 @@ for d=mindim:maxdim
 end
 
 % misscount = size(checks,1) - nnz(checks);
-% if misscount > 0
-%     throw(CORAerror('CORA:testFailed'));
-% end
+% assert(misscount <= 0)
 
 res = true;
 

@@ -38,39 +38,29 @@ res = true;
 % n = 1, r = 1, linear
 f = @(x) x(1);
 isLin = isFuncLinear(f);
-if ~isLin
-    res = false;
-end
+assert(isLin)
 
 % n = 3, r = 1, nonlinear
 f = @(x) x(1) + x(2)*x(3);
 isLin = isFuncLinear(f);
-if isLin
-    res = false;
-end
+assert(~isLin)
 
 % n = 3, r = 2, linear + nonlinear
 f = @(x) [x(1); x(2)*x(3)];
 isLin = isFuncLinear(f);
-if ~isLin(1) || isLin(2)
-    res = false;
-end
+assert(isLin(1) && ~isLin(2))
 
 % n = 5, r = 2, all linear, matrix multiplication
 M = rand(2,5);
 f = @(x) M * x(1:5);
 isLin = isFuncLinear(f);
-if ~all(isLin)
-    res = false;
-end
+assert(all(isLin))
 
 % n = 5, r = 2, all linear, matrix multiplication with zeros
 M = [0 1 0 0 0; 0 0 1 0 0];
 f = @(x) M * x(1:5);
 isLin = isFuncLinear(f);
-if ~all(isLin)
-    res = false;
-end
+assert(all(isLin))
 
 
 % 2. Two input variables: x, u
@@ -78,30 +68,22 @@ end
 % n = 1, m = 1, r = 1, linear
 f = @(x,u) x(1) + u(1);
 isLin = isFuncLinear(f);
-if ~isLin
-    res = false;
-end
+assert(isLin)
 
 % n = 1, m = 1, r = 1, nonlinear (state)
 f = @(x,u) x(1)^2 + u(1);
 isLin = isFuncLinear(f);
-if isLin
-    res = false;
-end
+assert(~isLin)
 
 % n = 1, m = 1, r = 1, nonlinear (input)
 f = @(x,u) x(1) + u(1)^2;
 isLin = isFuncLinear(f);
-if isLin
-    res = false;
-end
+assert(~isLin)
 
 % n = 4, m = 2, r = 3, linear + nonlinear (state + input)
 f = @(x,u) [x(1) + u(2); x(4)^2; exp(u(1))];
 isLin = isFuncLinear(f);
-if ~isLin(1) || any(isLin(2:3))
-    res = false;
-end
+assert(isLin(1) && all(~isLin(2:3)))
 
 
 % 3. Three input variables: x, u, p
@@ -109,9 +91,7 @@ end
 % n = 4, m = 2, o = 1, r = 4, linear + nonlinear (state + input + parameters)
 f = @(x,u,p) [x(1) + u(2); x(4)^2; p(1)^3; exp(u(1))];
 isLin = isFuncLinear(f);
-if ~isLin(1) || any(isLin(2:4))
-    res = false;
-end
+assert(isLin(1) && all(~isLin(2:4)))
 
 
 % previously failed cases
@@ -138,8 +118,8 @@ true_isLin = [true,true,true,true;
             true,true,true,true;
             false,true,false,false;
             false,true,false,false];
-if ~all(all(isLin == true_isLin))
-    res = false;
+assert(all(all(isLin == true_isLin)))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,0 +1,519 @@
+% easychair.tex,v 3.5 2017/03/15
+\documentclass[EPiC]{easychair}
+
+\usepackage{doc}
+\usepackage[defaultlines=4,all]{nowidow}
+
+%Changes from Matthias Althoff:
+\usepackage{color,hyperref}
+\usepackage{fancyvrb}
+\usepackage{eurosym}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{lastpage}
+\usepackage{parskip}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{psfrag}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathrsfs}
+%\usepackage[amsmath,hyperref,thmmarks]{ntheorem}  %better package for proof environment
+\usepackage{cite}
+\usepackage{pifont} %for circled numbers
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{algorithm}  %for algorithm environment
+\usepackage{algpseudocode}
+\usepackage{listings} % to include MATLAB code
+\usepackage[defaultlines=4,all]{nowidow}
+\usepackage{dirtree} % required for directory tree
+
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+%Indexing elements----------------------
+\renewcommand{\^}[1]{^{(#1)}}
+\renewcommand{\th}[1]{#1^\text{th}}
+%---------------------------------------
+
+%short itemize--------------------------
+\newenvironment{shortitemize}%
+  {\begin{itemize}%
+    \setlength{\itemsep}{2pt}%
+    \setlength{\parskip}{0pt}}%
+  {\end{itemize}}
+%---------------------------------------
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	%keywordstyle=\color{magenta},
+	keywordstyle=\color{black},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2,
+	xleftmargin=0.4cm
+}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{definition}{Definition}[]
+\newtheorem{proposition}{Proposition}[]
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{property}{Property}
+\newtheorem{specification}{Specification}
+\newtheorem{example}{Example}
+
+\usepackage{cleveref}
+
+\lstset{style=mystyle}
+
+%\makeindex
+
+%% Front Matter
+%%
+% Regular title as in the article class.
+%
+\title{Convex Optimization for Conformance Synthesis of Discrete-Time Linear Systems}
+
+% Authors are joined by \and. Their affiliations are given by \inst, which indexes
+% into the list defined using \institute
+%
+\author{
+Matthias Althoff
+}
+
+% Institutes for affiliations are also joined by \and,
+\institute{
+	Technical University of Munich, \\
+	Department of Computer Engineering, \\
+	Munich, Germany\\
+	\email{althoff@tum.de}
+ }
+
+
+%  \authorrunning{} has to be set for the shorter version of the authors' names;
+% otherwise a warning will be rendered in the running heads. When processed by
+% EasyChair, this command is mandatory: a document without \authorrunning
+% will be rejected by EasyChair
+
+\authorrunning{M. Althoff}
+
+% \titlerunning{} has to be set to either the main title or its shorter
+% version for the running heads. When processed by
+% EasyChair, this command is mandatory: a document without \titlerunning
+% will be rejected by EasyChair
+\titlerunning{Convex Optimization for Conformance Synthesis of Discrete-Time Linear Systems}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+ This brief derives linear and quadratic programs for the conformance synthesis of linear systems. By using the standard form of linear and quadratic programs, we avoid using software packages like YALMIP for converting these problems, which saves computation time.
+\end{abstract}
+
+
+%------------------------------------------------------------------------------
+
+
+\section{Synthesizing Reachset Conformance using Zonotope Templates} \label{sec:synthesizingConformance}
+
+
+We present a deliberately simple approach to demonstrate the synthesis of reachset conformant models in the sense that no falsifying measurement exists. The presented approach slightly generalizes \cite[Sec.~III.B]{Liu2023} to systems with initial state uncertainties and also covers the reachset synthesis approach in \cite[Sec.~IV.C]{Liu2018a}, which only returned required uncertainties as axis-aligned boxes. As a result, one obtains the sets bounding the initial state $x_0 \in \mathcal{X}_0$, the disturbance $w(t) \in \mathcal{W}_c$, and the measurement uncertainty $v(t) \in \mathcal{V}$ so that the linear system
+\begin{equation}\label{eq:linearSystem}
+\begin{split}
+ \dot{x} &=  A x + B u + w \\
+ y &= C x + v
+\end{split}
+\end{equation}
+is reachset conformant with respect to all measurements $y$ taken at discrete times with a fixed time increment $h=t_{k+1}-t_k$. The extension to nonlinear systems is briefly outlined later. As also becomes obvious later, the approach can be easily modified so that one or two of the sets $\mathcal{X}_0$, $\mathcal{W}_c$, and $\mathcal{V}$ are given. For later derivations, we split the initial set into a fixed value denoted by $x_0$ and the shifted initial set $\tilde{\mathcal{X}}_0$ so that $\mathcal{X}_0 = x_0 \oplus \tilde{\mathcal{X}}_0$. The exact reachable set of the state of \eqref{eq:linearSystem} and its under-approximation \cite[Prop.~1]{Liu2018a} can be computed as 
+\begin{equation}
+\label{eq:reachableSetOfState}
+\begin{split}
+    \mathcal{R}_x(t,x_0,u(\cdot)) =& e^{At} (x_0 \oplus \tilde{\mathcal{X}}_0) \oplus \int_{0}^{t}e^{A(t-\tau)}( B u(\tau) + \mathcal{W}_c) d\tau \\
+\supseteq& e^{At} (x_0 \oplus \tilde{\mathcal{X}}_0) \oplus \int_{0}^{t}e^{A(t-\tau)} B u(\tau) d\tau \oplus \int_{0}^{t}e^{A(t-\tau)}d\tau \mathcal{W}_c.
+\end{split}
+\end{equation}
+The under-approximation is obtained by only considering constant inputs in $\mathcal{W}_c$; this makes it possible to factor out $\mathcal{W}_c$ for subsequent derivations. Inserting the reachable set of the state into the output function in \eqref{eq:linearSystem} results in
+\begin{equation}
+\label{eq:reachableSet}
+    \mathcal{R}(t,x_0,u(\cdot)) = C \, \mathcal{R}_x(t,x_0,u(\cdot)) \oplus \mathcal{V}.
+\end{equation}
+Given the set of measured outputs $\mathcal{Y}(h)$ at time $h$, we can formulate the condition for reachset conformance at time $h$ as
+\begin{equation}
+     \label{eq:rechsetCondition}
+	 \forall y(h) \in \mathcal{Y}(h): y(h) \in \mathcal{R}(h,x_0,u(\cdot)).
+\end{equation}
+Let us introduce the state $\tilde{x}(t,x_0,u(\cdot))$ and output $\tilde{y}(t,x_0,u(\cdot))$ obtained by starting in $x_0$ with input trajectory $u(\cdot)$ and without disturbance and sensor noise. Next, we simplify the conformance synthesis problem by subtracting $\tilde{y}(h,x_0,u(\cdot))$ from both sides of \eqref{eq:rechsetCondition}:
+\begin{equation}
+\begin{split}
+     \label{eq:modeling:stricterConstraint}
+	 & \forall y(h) \in \mathcal{Y}(h): y(h) - \tilde{y}(h,x_0,u(\cdot)) \in \mathcal{R}(h,x_0,u(\cdot)) - \tilde{y}(h,x_0,u(\cdot)) \\
+	 \overset{\eqref{eq:reachableSetOfState},\eqref{eq:reachableSet}}{\Longleftrightarrow} & \forall y(h) \in \mathcal{Y}(h): y(h) - \tilde{y}(h,x_0,u(\cdot)) \in C \left(e^{Ah} \tilde{\mathcal{X}}_0  \oplus \int_{0}^{h}e^{A(t-\tau)}  \, d\tau \, \mathcal{W}_c \right) \oplus \mathcal{V}.
+\end{split}
+\end{equation}
+Thus, subtracting the nominal solution makes the conformance-checking problem independent of $x_0$ and $u(\cdot)$. For further simplification, we introduce
+\begin{equation*}
+ \begin{split}
+  A_d &= e^{A h}, \\
+  \mathcal{W} &= \int_{0}^{h}e^{A(h-\tau)} \, d\tau \, \mathcal{W}_c, \\
+  \Lambda_k &= C \, A_d^k, \\
+ \end{split}
+\end{equation*}
+so that we can state using \eqref{eq:reachableSetOfState} that
+\begin{equation}
+    \label{eq:combinedConstraint_oneStep}
+	\mathcal{R}_x(t_{k+1},x_0,u(\cdot)) - \tilde{x}(t_{k+1},x_0,u(\cdot)) =  A_d \big(\mathcal{R}_x(t_{k},x_0,u(\cdot)) - \tilde{x}(t_k,x_0,u(\cdot))\big) \oplus \mathcal{W}. 
+\end{equation}
+By iteratively applying \eqref{eq:combinedConstraint_oneStep}, one obtains for $k \geq 1$ that
+\begin{equation*}
+	\mathcal{R}_x(t_{k},x_0,u(\cdot)) - \tilde{x}(t_k,x_0,u(\cdot)) =  A_d^k \tilde{\mathcal{X}}_0 \oplus \bigoplus_{i=0}^{k-1} A_d^i \mathcal{W}. 
+\end{equation*}
+After inserting the above result into the output function of \eqref{eq:linearSystem}, we can generalize \eqref{eq:modeling:stricterConstraint} to any time $t_k$:
+\begin{equation}
+    \label{eq:combinedConstraint}
+	\forall y(t_k) \in \mathcal{Y}(t_k): y(t_k) - y(t_k,x_0,u(\cdot)) \in \Lambda_k \tilde{\mathcal{X}}_0 \oplus \bigoplus_{i=0}^{k-1}  \Lambda_i \mathcal{W} \oplus \mathcal{V}. 
+\end{equation}
+Obviously, for $k=0$, we have that $y(t_k) - y(t_k,x_0,u(\cdot)) \in C \tilde{\mathcal{X}}_0 \oplus \mathcal{V}$. 
+Because this constraint is the same for the discrete-time system
+\begin{equation*}
+\begin{split}
+ x(t_{k+1}) &=  A_d x(t_k) + B u(t_k) + w(t_k) \\
+ y(t_k) &= C x(t_k) + v(t_k)
+\end{split}
+\end{equation*}
+with $w(t_k) \in \mathcal{W}$ ($\mathcal{X}_0$ and $\mathcal{V}$ are identical to the continuous-time system), the results transfer to this system class directly. The equivalence can easily be shown by performing the same previous steps for the discrete-time dynamics. To find optimal values of $\tilde{\mathcal{X}}_0$, $\mathcal{W}$, and $\mathcal{V}$ through a linear program, we restrict these sets to special zonotopes $\tilde{\mathcal{X}}_0$, $\mathcal{W}$, and $\mathcal{V}$, which originate from shifting and scaling template zonotopes and choosing a specific cost function. The corresponding continuous disturbance set $\mathcal{W}_c$ can be obtained by methods from converting between discrete and continuous dynamics; see, e.g., \cite{Shieh1980}. Because the continuous model would already be reachset conformant when the disturbance is constant between time steps, the consideration of all disturbances will only add conservatism and not impede the soundness of the result. After introducing the centers of the respective zonotopes as $c_X$, $c_W$, $c_V$, and the corresponding stretching factors as $\alpha_X$, $\alpha_W$, and $\alpha_V$, the shifted and scaled template zonotopes are 
+\begin{equation} \label{eq:zonotopeTemplates}
+ \begin{split}
+  \tilde{\mathcal{X}}_0 =& \langle c_X, G_X \, \mathrm{diag}(\alpha_X) \rangle, \quad G_X \in\mathbb{R}^{n \times p}, \alpha_X \in \mathbb{R}^p, \\
+  \mathcal{W} =& \langle c_W, G_W \, \mathrm{diag}(\alpha_W)\rangle, \quad G_W \in\mathbb{R}^{n \times q}, \alpha_W \in \mathbb{R}^q, \\
+  \mathcal{V} =& \langle c_V, G_V \, \mathrm{diag}(\alpha_V) \rangle, \quad G_V \in\mathbb{R}^{m \times r}, \alpha_V \in \mathbb{R}^r. \\
+ \end{split}
+\end{equation}
+Obviously, some of the values of $\alpha_X$, $\alpha_W$, and $\alpha_V$ can be fixed if they should not be optimized. Let us also introduce the $n$-dimensional vector of ones $\mathbf{1}_n \in \mathbb{R}^n$, the $n$-dimensional identity matrix $I_n$, and the matrix of zeros $\mathbf{0}$ of proper dimension. From now on we also make the assumption that absolute values of matrices are computed elementwise, i.e., $|M|_{ij} = |M_{ij}|$ for all entries of a matrix $M$. 
+
+\subsection{Interval Norm}
+
+For specifying the cost function of the reachset synthesis problem, we define the interval norm of a zonotope $\mathcal{Z}=\langle c, \hat{G} \rangle$ with $\hat{G} \in \mathbb{R}^{n \times p}$ and a user specified weighting vector $\sigma \in \mathbb{R}^n_{\geq 0}$ as
+	\begin{equation} \label{eq:intervalNorm}
+		\|\mathcal{Z}\|_{I,\sigma} := \sigma^T |\hat{G}| \mathbf{1}_p.
+	\end{equation}
+This norm essentially returns the summation of the edge lengths of the interval hull of the zonotope \cite[Prop.~2.2]{Althoff2010a}. As a norm it fulfills the following properties: a) $\|\mathcal{Z}\|_{I,\sigma} \geq 0$, b) $\|\langle c, \mathbf{0} \rangle \|_{I,\sigma} = 0$, c) $\| \gamma \mathcal{Z} \|_{I,\sigma} =  |\gamma| \| \mathcal{Z} \|_{I,\sigma}$ ($\gamma \in \mathbb{R}$), d) $\| \langle c, G_1 + G_2 \rangle\|_{I,\sigma} \leq  \| \langle c, G_1 \rangle \|_{I,\sigma} + \| \langle c, G_2 \rangle \|_{I,\sigma}$.
+
+We can now state the theorem for solving the reachset conformance synthesis problem as a linear program.
+\begin{theorem}[Linear Program for Synthesizing Reachset Conformance] \label{thm:linearProgram}
+ The linear program
+ \begin{equation} \label{eq:standardForm}
+    \begin{split}
+    & \min_z n^T z \\
+    \text{such that } & \tilde{A} z \leq \tilde{b},
+    \end{split}
+ \end{equation}
+ minimizes the cost function
+ \begin{equation} \label{eq:costFunction}
+    \sum_{k=0}^{N} \omega_k \|\mathcal{R}(t_k,x_0,u(\cdot)) - \tilde{y}(t_k,x_0,u(\cdot))\|_{I,\sigma}
+ \end{equation}
+ using the user-specified weighting vector $\omega$ and ensures reachset conformance, i.e. $\forall k\in\{0,1,\ldots, N\}:  \eqref{eq:combinedConstraint} \text{ holds}$. The cost function and the constraint are composed as follows:
+ \begin{align}
+  z =& \begin{bmatrix} c^T, & \alpha^T \end{bmatrix}^T, \label{eq:z} \\
+  n =& \begin{bmatrix} \mathbf{0}, & \sum_{k=0}^{N} \omega_k \sigma^T \tilde{G}(I,t_k) \end{bmatrix}^T, \\
+  \tilde{A} =& \begin{bmatrix}
+            \tilde{A}(t_0)^T, & \tilde{A}(t_1)^T, & \ldots, & \tilde{A}(t_N)^T, & [\mathbf{0}, -I_{p+q+r}]^T
+           \end{bmatrix}^T, \label{eq:combined_A}\\
+  \tilde{b} =& \begin{bmatrix}
+            \tilde{b}(t_0)^T, & \tilde{b}(t_1)^T, & \ldots, & \tilde{b}(t_N)^T, & \mathbf{0}
+           \end{bmatrix}^T, \label{eq:combined_b} \\
+  \tilde{A}(t_k) = & \begin{bmatrix} 
+            -N(t_k)\Gamma(t_k), & -\tilde{G}(N(t_k),t_k)
+           \end{bmatrix}, \label{eq:tilde_A} \\
+  \tilde{b}(t_k) =& - \max_{y(t_k) \in \mathcal{Y}(t_k)}
+  N(t_k) (y(t_k) - y(t_k,x_0,u(\cdot))) \label{eq:tilde_b} \\
+  \tilde{G}(M,t_k) =& \begin{cases}
+      \begin{bmatrix} 
+       |M \, \Lambda_k \, G_X|, & \sum_{i=0}^{k-1} |M \, \Lambda_i \, G_W |, & |M \, G_V |
+      \end{bmatrix} \text{, for } k\geq 1 \\
+      \begin{bmatrix} 
+       |M \, \Lambda_k \, G_X|, & \mathbf{0}, & |M \, G_V |
+      \end{bmatrix} \text{, for } k=0 \\
+                      \end{cases} \label{eq:tilde_G}
+ \end{align}
+ and $N(t_k)$ is the matrix of normal vectors of the zonotope with generator matrix 
+ \begin{equation} \label{eq:generatorMatrix}
+ \begin{split}
+ &G(t_k) = \\
+ &\begin{cases}
+           \begin{bmatrix} \Lambda_k \, G_X \, \mathrm{diag}(\alpha_X), & [\Lambda_0  \, G_W \, \mathrm{diag}(\alpha_W), .., \Lambda_{k-1} \, G_W \, \mathrm{diag}(\alpha_W)], & G_V \mathrm{diag}(\alpha_V) \end{bmatrix} \text{, for } k\geq1 \\[0.2cm]
+           \begin{bmatrix} \Lambda_k  \, G_X \, \mathrm{diag}(\alpha_X), & G_V \, \mathrm{diag}(\alpha_V) \end{bmatrix} \text{, for } k = 0
+          \end{cases}
+ \end{split}
+ \end{equation}
+ as computed by \cite[Thm.~7]{Althoff2010d}.
+\end{theorem}
+\begin{proof}
+ See \cref{sec:derivationOfLinearProgram}.
+\end{proof}
+
+\subsection{Frobenius Norm}
+
+As an alternative to the interval norm, one can also reduce the Frobenius norm of a zonotope $\mathcal{Z}=\langle c, \tilde{G} \rangle$ with $\hat{G} \in \mathbb{R}^{n \times p}$ defined as \cite[Def.~2]{Combastel2015}:
+	\begin{equation} \label{eq:FrobeniusNorm}
+		\|\mathcal{Z}\|_{F,P} := \sqrt{\mathrm{trace}(\hat{G}^T P \hat{G})}.
+	\end{equation}
+The cost function using the Frobenius norm results in a quadratic optimization problem.
+
+\begin{theorem}[Quadratic Program for Synthesizing Reachset Conformance]
+\label{thm:quadraticProgram}
+ The quadratic program
+ \begin{equation*} 
+    \begin{split}
+    & \min_z \frac{1}{2} z^T H z \\ % + n^T z \\
+    \text{such that } & \tilde{A} z \leq \tilde{b},
+    \end{split}
+ \end{equation*}
+ minimizes the cost function 
+ \begin{equation} \label{eq:costFunctionFrobenius}
+    \sum_{k=0}^{N} \omega_k \|\mathcal{R}(t_k,x_0,u(\cdot)) - y(t_k,x_0,u(\cdot))\|_{F,P}^2
+ \end{equation}
+ using the user-specified weighting vector $\omega$ and ensures reachset conformance, i.e. $\forall k\in\{0,1,\ldots, N\}:  \eqref{eq:combinedConstraint} \text{ holds}$. The constraints are identical to \cref{thm:linearProgram} and the cost function is composed as follows:
+ \begin{align}
+  \label{eq:H}
+  H =& \begin{bmatrix} \mathbf{0} & \mathbf{0} \\
+    \mathbf{0} & \sum_{k=0}^{N} \omega_k \, \tilde{H}(t_k) \end{bmatrix}, \\
+ \label{eq:H_tilde}
+  \tilde{H}(t_k) =& \mathrm{diag}\left(\begin{bmatrix} 
+  \widetilde{\mathrm{diag}}\left(G_X^T \Lambda_k^T \, P \, \Lambda_k  \, G_X \right), &
+  \tilde{H}_W(t_k), &
+  \widetilde{\mathrm{diag}}\left(G_V^T \, P \, G_V \right)\end{bmatrix} \right), \\
+  \label{eq:H_tilde_W}
+ \tilde{H}_W(t_k) =& \begin{cases}
+  \widetilde{\mathrm{diag}}\left(G_W^T (\sum_{i=0}^{k-1} \Lambda_i^T \, P \, \Lambda_i)  \, G_W \right) \text{, for } k\geq1 \\
+  \mathbf{0} \text{, for } k=0 \\
+                    \end{cases} .
+  \end{align}
+\end{theorem}
+% proof starts here----------------------------
+\begin{proof}
+ See \cref{sec:derivationOfQuadraticProgram}.
+\end{proof}
+
+
+
+\section{Alternative Computation for Sets Restricted to Boxes}
+
+
+We under-approximate the reachable set by multidimensional intervals to simplify the synthesis procedure. Furthermore, we store the largest value of all measurements $y(t) - \tilde{y}(t,x_0,u(\cdot))$ for each output dimension in the vector $\overline{y}(t)$; this is done analogously by storing the smallest values in $\underline{y}(t)$. For later derivations, we also introduce
+\begin{equation*}
+ \overline{x} = \sup\left(\tilde{\mathcal{X}}_0 \times \mathcal{W}_c \times \mathcal{V} \right), \qquad \underline{x} = \inf \left(\tilde{\mathcal{X}}_0 \times \mathcal{W}_c \times \mathcal{V} \right).
+\end{equation*}
+Without loss of generality, we assume that $\tilde{\mathcal{X}}_0$, $\mathcal{W}_c$, and $\mathcal{V}$ contain the origin so that $\forall i: \underline{x}_i <0, \, \overline{x}_i >0$. Due to the known sign of values in $\underline{x}$ and $\overline{x}$, the bounds after multiplication with a matrix $M$ become $\sup(M [\underline{x},\overline{x}]) = |M| \overline{x}$ and analogously for the infimum. Thus, we can state the following conditions for $t \in [0,h]$:
+\begin{align*}
+	& \overline{y}(t_k)  \leq \sup\left(  \begin{bmatrix} \Lambda_k & C \int_{0}^{t_k}e^{A(t_k-\tau)} \, d\tau & I_m \end{bmatrix} \left(\tilde{\mathcal{X}}_0 \times \mathcal{W} \times \mathcal{V} \right) \right) = \left|  \begin{bmatrix}\Lambda_k & C \int_{0}^{t_k}e^{A(t_k-\tau)} \, d\tau & I_m \end{bmatrix} \right| \overline{x}, \\
+	& \underline{y}(t) \geq \inf\left(  \begin{bmatrix}\Lambda_k & C \int_{0}^{t_k}e^{A(t_k-\tau)} \, d\tau & I_m \end{bmatrix} \left( \tilde{\mathcal{X}}_0 \times \mathcal{W} \times \mathcal{V} \right) \right) = \left|  \begin{bmatrix}\Lambda_k & C \int_{0}^{t_k}e^{A(t_k-\tau)} \, d\tau & I_m \end{bmatrix} \right| \underline{x}.
+\end{align*}
+The above constraints can be copied for all $m$ measurements to obtain constraints for all times. After defining 
+\begin{equation*}
+ \begin{split}
+  \overline{y} &= \begin{bmatrix} \overline{y}^T(t_0), \ldots, \overline{y}^T(t_k), \ldots, \overline{y}^T(h) \end{bmatrix}^T \\
+  \underline{y} &= \begin{bmatrix} \underline{y}^T(t_0), \ldots, \underline{y}^T(t_k), \ldots, \underline{y}^T(h) \end{bmatrix}^T \\
+  E &= \begin{bmatrix} \Lambda_0 & \mathbf{0} & I_m \\ \dots & \dots \\ \Lambda_k & C \int_{0}^{t_k}e^{A(t_k-\tau)} \, d\tau & I_m \\ \dots & \dots \\ \Lambda_N & C \int_{0}^{t_N}e^{A(t_N-\tau)} \, d\tau & I_m \end{bmatrix}
+ \end{split}
+\end{equation*}
+we obtain 
+\begin{equation}\label{eq:modeling:linConstraint}
+\begin{split}
+	\overline{y}  \leq & \left\vert E \right\vert  \overline{x}, \\
+	\underline{y}  \geq & \left\vert E \right\vert \underline{x}.
+\end{split}
+\end{equation}
+As an optimization problem, we minimize the sum of the weighted edge lengths using the user-specified weighting vector $\sigma$ of the obtained multidimensional intervals enclosing the measurements over all times:
+\begin{gather}\label{eq:modeling:newobjective}
+	\underset{\overline{x},\underline{x}} \min \quad \sigma^T |E| \left( \overline{x} - \underline{x} \right).
+\end{gather}
+After defining $\mathbf{0}$ as the matrix of zeros of proper dimension and
+\begin{equation*}
+ \begin{split}
+  x &= \begin{bmatrix} \overline{x} \\ \underline{x} \end{bmatrix} \\
+  n &= \left( \sigma^T |E| \begin{bmatrix} I_{2n+m} & -I_{2n+m} \end{bmatrix} \right)^T \\ 
+  \tilde{A} &= \begin{bmatrix} -|E| & \mathbf{0} \\ \mathbf{0} & |E| \end{bmatrix} \\
+  \tilde{b} &= \begin{bmatrix} -\overline{y} \\ \underline{y} \end{bmatrix}
+ \end{split}
+\end{equation*}
+we can formulate the linear program 
+\begin{equation*}
+\begin{split}
+ & \underset{x} \min \quad n^T x \\
+ \text{s.t.} \quad & \tilde{A}x \leq \tilde{b},
+\end{split}
+\end{equation*}
+which can be efficiently solved. By appropriately choosing $\sigma$, one can also only optimize over certain sets and assume the other sets to be given.
+
+For polynomial and nonlinear systems, we first linearize the dynamics and then use binary search for each dimension to find the sets $\tilde{\mathcal{X}}_0,\mathcal{U}$ as done in \cite{Liu2018a}. Synthesizing reachset conformant models is an active area of research and more advanced methods will be provided in future CORA releases. 
+
+
+
+\label{sec:bib}
+\bibliographystyle{plain}
+%\bibliographystyle{alpha}
+%\bibliographystyle{unsrt}
+%\bibliographystyle{abbrv}
+\bibliography{althoff_own,althoff_other}
+
+
+\appendix
+\section{Proof of \cref{thm:linearProgram}} \label{sec:derivationOfLinearProgram}
+
+Let us first rewrite \eqref{eq:combinedConstraint} in zonotope notation. After inserting \eqref{eq:zonotopeTemplates} in \eqref{eq:combinedConstraint}, we obtain
+ \begin{equation}
+\label{eq:zonotopeEnclosure}
+ \begin{split}
+  \forall y(t_k) \in \mathcal{Y}(t_k): y(t_k) - y(t_k,x_0,u(\cdot)) \in \underbrace{\langle \Gamma(t_k) \, c, G(t_k)\rangle}_{=\mathcal{R}(t_k,x_0,u(\cdot)) - y(t_k,x_0,u(\cdot))},
+ \end{split}
+\end{equation}
+where $G(t_k)$ is from \eqref{eq:generatorMatrix} and
+\begin{equation*}
+ \begin{split}
+ \Gamma(t_k) =& \begin{cases}
+                 \begin{bmatrix} \Lambda_k, & \sum_{i=0}^{k-1} \Lambda_i, & I_m \end{bmatrix} \text{, for } k\geq1 \\[0.2cm]
+                 \begin{bmatrix} \Lambda_k, & \textbf{0}, & I_m \end{bmatrix}\text{, for } k=0
+                \end{cases}
+, \\
+ c =& \begin{bmatrix} c_X^T, & c_W^T, & c_V^T \end{bmatrix}^T.
+ \end{split}
+\end{equation*}
+Next, we derive the constraint of the linear program, followed by the cost function.
+
+
+\paragraph{Constraint}
+In order to write the constraint in the form of \eqref{eq:standardForm}, we translate the generator representation in \eqref{eq:zonotopeEnclosure} into the halfspace representation using \cite[Thm.~7]{Althoff2010d} so that we obtain
+\begin{equation*}
+ \forall y(t_k) \in \mathcal{Y}(t_k): N(t_k) (y(t_k) - y(t_k,x_0,u(\cdot))) \leq d(t_k),
+\end{equation*}
+where the row vectors of $N(t_k)$ are the normal vectors as computed in \cite[Thm.~7]{Althoff2010d}. In order to check the above inequality for all measurements $y(t_k) \in \mathcal{Y}(t_k)$, we only have to check the measurements which are closest to each halfspace:
+\begin{equation} \label{eq:containmentCheck}
+ \max_{y(t_k) \in \mathcal{Y}(t_k)} N(t_k) (y(t_k) - y(t_k,x_0,u(\cdot))) \leq d(t_k),
+\end{equation}
+where the $\max$ operator is applied elementwise.
+Obviously, the normal vectors are unaffected by $c$ and $\alpha$ as shifting a zonotope and stretching its generators does not change its normal vectors (see proof of \cite[Thm.~1]{Liu2023}). However, the offset of the halfspaces encoded in $d(t_k)$ is affected. From \cite[Thm.~7]{Althoff2010d} we have that
+\begin{equation}\label{eq:d}
+    d(t_k) = N(t_k) \Gamma(t_k) c + |N(t_k) G(t_k)|\mathbf{1}_{p+k\cdot q+r}
+\end{equation}
+assuming that the absolute value is taken elementwise. It will be convenient to use
+\begin{equation} \label{eq:factoringOutAlpha}
+ |Q \, \mathrm{diag}(\alpha_Q)| \mathbf{1} = |Q| \alpha_Q, \quad Q \in \mathbb{R}^{m \times n}, \alpha_Q \in \mathbb{R}_{\geq 0}^{n}.
+\end{equation}
+After introducing
+\begin{equation*}
+ \alpha = \begin{bmatrix} \alpha_X^T, & \alpha_W^T, & \alpha_V^T \end{bmatrix}^T
+\end{equation*}
+and by restricting $\alpha \in \mathbb{R}_{\geq 0}^{p+q+r}$ without loss of generality, we have that
+\begin{equation} \label{eq:delta_d}
+\begin{split}
+ & |N(t_k) \, G(t_k)|\mathbf{1}_{p+k\cdot q+r} \\
+ \overset{\eqref{eq:generatorMatrix}}{=}& \big|N(t_k) \, \Lambda_k  \, G_X \, \mathrm{diag}(\alpha_X)\big|\mathbf{1}_p + \\
+ & \big|N(t_k) \begin{bmatrix} \Lambda_0  \, G_W \, \mathrm{diag}(\alpha_W) & \ldots & \Lambda_{k-1} \, G_W \, \mathrm{diag}(\alpha_W) \end{bmatrix} \big|\mathbf{1}_{k\cdot q} + \\
+ & \big|N(t_k) \, G_V \, \mathrm{diag}(\alpha_V)\big|\mathbf{1}_r \\
+ =& \big|N(t_k) \, \Lambda_k \, G_X \, \mathrm{diag}(\alpha_X)\big|\mathbf{1}_p + \sum_{i=0}^{k-1} \big|N(t_k) \, \Lambda_i  \, G_W \, \mathrm{diag}(\alpha_W) \big|\mathbf{1}_q + \big|N(t_k) \, G_V \, \mathrm{diag}(\alpha_V)\big|\mathbf{1}_r \\
+ \overset{\eqref{eq:factoringOutAlpha}}{=}& \big|N(t_k) \, \Lambda_k \, G_X\big| \alpha_X +\sum_{i=0}^{k-1} \big|N(t_k) \, \Lambda_i \, G_W \big|\alpha_W + \big|N(t_k) \, G_V \big|\alpha_V \\
+   =& \begin{bmatrix} 
+       |N(t_k) \, \Lambda_k \, G_X|, & \sum_{i=0}^{k-1} |N(t_k) \, \Lambda_i \, G_W |, & |N(t_k) \, G_V |
+      \end{bmatrix} \alpha \\
+ \overset{\eqref{eq:tilde_G}}{=}&  \tilde{G}(N(t_k),t_k) \, \alpha
+ \end{split}
+\end{equation}
+After inserting \eqref{eq:delta_d} in \eqref{eq:d} and using \eqref{eq:z}, we obtain
+\begin{equation} \label{eq:d_param}
+\begin{split}
+	d(t_k) &= \begin{bmatrix} 
+       N(t_k)\Gamma(t_k), & \tilde{G}(N(t_k),t_k)
+      \end{bmatrix} z.
+\end{split}
+\end{equation}
+Inserting \eqref{eq:d_param} in \eqref{eq:containmentCheck} results in
+\begin{equation*} 
+\begin{split}
+ \max_{y(t_k) \in \mathcal{Y}(t_k)} N(t_k) (y(t_k) - y(t_k,x_0,u(\cdot))) & \leq \begin{bmatrix} 
+       N(t_k)\Gamma(t_k), & \tilde{G}(N(t_k),t_k)
+      \end{bmatrix} z \\
+ \overset{\eqref{eq:tilde_A},\eqref{eq:tilde_b}}{\Longleftrightarrow} \tilde{A}(t_k)\, z & \leq \tilde{b}(t_k).
+\end{split}
+\end{equation*}
+To obtain the constraint for all time steps, we add the constraint for each time steps, resulting in the constraint in \eqref{eq:standardForm} using the shorthands introduced in \eqref{eq:combined_A} and \eqref{eq:combined_b}. This constraint also includes $[\mathbf{0}, -I_{p+q+r}]\alpha \leq \mathbf{0}$ to ensure that $\alpha \in \mathbb{R}_{\geq 0}^{p+q+r}$ as required in this proof. It remains to derive the cost function.
+
+\paragraph{Cost Function}
+Inserting \eqref{eq:zonotopeEnclosure} in \eqref{eq:costFunction} results in
+ \begin{align*} 
+    & \sum_{k=0}^{N} \omega_k \| \langle \Gamma(t_k) \, c, G(t_k) \rangle \|_{I,\sigma} \\
+    \overset{\eqref{eq:intervalNorm}}{\Longleftrightarrow} & \sum_{k=0}^{N} \omega_k \sigma^T |G(t_k)| \mathbf{1}_{p+k\cdot q + r} \\
+    \overset{\eqref{eq:delta_d}, N=I_m}{\Longleftrightarrow} & \sum_{k=0}^{N} \omega_k \sigma^T \tilde{G}(I_m,t_k) \alpha \\
+    \overset{\eqref{eq:z}}{\Longleftrightarrow} & \begin{bmatrix} \mathbf{0} & \sum_{k=0}^{N} \omega_k \sigma^T \tilde{G}(I_m,t_k) \end{bmatrix}  z \\
+    \Longleftrightarrow & n^T z.
+ \end{align*}
+ 
+ \section{Proof of \cref{thm:quadraticProgram}} \label{sec:derivationOfQuadraticProgram}
+ 
+ It will be convenient to use
+\begin{equation} \label{eq:factoringOutQuadratic}
+\begin{split}
+ & \mathrm{trace}\left(\mathrm{diag}(\begin{bmatrix} \alpha_Q & \alpha_R \end{bmatrix}) \, \begin{bmatrix} R^T, & Q^T \end{bmatrix} \, P \, \begin{bmatrix} Q, & R \end{bmatrix} \, \mathrm{diag}\left(\begin{bmatrix} \alpha_Q \\ \alpha_R \end{bmatrix}\right)\right) \\
+ = & \begin{bmatrix} \alpha_Q^T & \alpha_R^T \end{bmatrix} \, \widetilde{\mathrm{diag}}\left(\begin{bmatrix} R^T, & Q^T \end{bmatrix} \, P \, \begin{bmatrix} Q, & R \end{bmatrix}\right)\, \begin{bmatrix} \alpha_Q \\ \alpha_R \end{bmatrix} \\
+ = & \alpha_Q^T \, \widetilde{\mathrm{diag}}(Q^T \, P \, Q)\, \alpha_Q + 
+ \alpha_R^T \, \widetilde{\mathrm{diag}}(R^T \, P \, R)\, \alpha_R \\
+ = & \begin{bmatrix} \alpha_Q^T & \alpha_R^T \end{bmatrix} \, \mathrm{diag}\left(\begin{bmatrix} \widetilde{\mathrm{diag}}(Q^T \, P \, Q), & 
+ \widetilde{\mathrm{diag}}(R^T \, P \, R)\,\end{bmatrix} \right) \begin{bmatrix} \alpha_Q \\ \alpha_R \end{bmatrix}
+\end{split}
+\end{equation}
+where $\widetilde{\mathrm{diag}}(M)$ changes all entries to $0$, except for the diagonal elements:
+\begin{equation*}
+ [\widetilde{\mathrm{diag}}(M)]_{ij} = \begin{cases}
+                             M_{ij} \text{ , for } i=j, \\
+                             0 \text{ , for } i\neq j. \\
+                            \end{cases}
+\end{equation*}
+We have that
+\begin{equation} \label{eq:quadraticFormCostFunction}
+\begin{split}
+ & \mathrm{trace}(G(t_k)^T P G(t_k)) \\
+ \overset{\eqref{eq:generatorMatrix}, \eqref{eq:factoringOutQuadratic}}{=}& \alpha_X^T \, \widetilde{\mathrm{diag}}\left(G_X^T \Lambda_k^T \, P \, \Lambda_k  \, G_X \right) \alpha_X + \\
+ & \alpha_W^T \, \widetilde{\mathrm{diag}}\left(G_W^T \Lambda_0^T \, P \, \Lambda_0  \, G_W \right) \alpha_W + \ldots + \alpha_W^T \, \widetilde{\mathrm{diag}}\left(G_W^T \Lambda_{k-1}^T \, P \, \Lambda_{k-1}  \, G_W \right) \alpha_W + \\
+ & \alpha_V^T \, \widetilde{\mathrm{diag}}(G_V^T \, P \, G_V) \alpha_V \\
+ \overset{\eqref{eq:H_tilde_W}}{=}& \alpha_X^T \, \widetilde{\mathrm{diag}}\left(G_X^T \Lambda_k^T \, P \, \Lambda_k  \, G_X \right) \alpha_X + \alpha_W^T \, \tilde{H}_W(t_k) \alpha_W + \alpha_V^T \, \widetilde{\mathrm{diag}}\left(G_V^T \, P \, G_V \right) \alpha_V \\
+ \overset{\eqref{eq:factoringOutQuadratic}}{=}& 
+ \alpha^T \, \mathrm{diag}\left(\begin{bmatrix} 
+  \widetilde{\mathrm{diag}}\left(G_X^T \Lambda_k^T \, P \, \Lambda_k  \, G_X \right), &
+  \tilde{H}_W(t_k), &
+  \widetilde{\mathrm{diag}}\left(G_V^T \, P \, G_V \right)\end{bmatrix} \right) \alpha \\
+ \overset{\eqref{eq:H_tilde}}{=} & \alpha^T \, \tilde{H}(t_k)  \, \alpha
+ \end{split}
+\end{equation}
+Inserting \eqref{eq:zonotopeEnclosure} in \eqref{eq:costFunctionFrobenius} results in
+ \begin{align*} 
+    & \sum_{k=0}^{N} \omega_k \| \langle \Gamma(t_k) c, G(t_k) \rangle \|_{F,P}^2 \\
+    \overset{\eqref{eq:FrobeniusNorm}}{\Longleftrightarrow} & \sum_{k=0}^{N} \omega_k \, \mathrm{trace}(G(t_k)^T P G(t_k)) \\
+    \overset{\eqref{eq:quadraticFormCostFunction}}{\Longleftrightarrow} & \sum_{k=0}^{N} \omega_k \, \alpha^T \, \tilde{H}(t_k)  \, \alpha \\
+    {\Longleftrightarrow} & \alpha^T \left(\sum_{k=0}^{N} \omega_k \, \tilde{H}(t_k)  \right) \alpha \\
+    \overset{\eqref{eq:z}}{\Longleftrightarrow} & z^T \begin{bmatrix} \mathbf{0} & \mathbf{0} \\
+    \mathbf{0} & \sum_{k=0}^{N} \omega_k \, \tilde{H}(t_k) \end{bmatrix}  z \\
+    \overset{\eqref{eq:H}}{\Longleftrightarrow} & z^T H z.
+ \end{align*}
+
+
+\end{document}
+

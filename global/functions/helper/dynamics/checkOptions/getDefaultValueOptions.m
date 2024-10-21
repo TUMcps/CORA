@@ -90,6 +90,8 @@ switch field
         defValue = 1;
     case 'alg'
         defValue = aux_def_alg(sys,params,options);
+    case 'tensorOrder'
+        defValue = 2;
     case 'tensorOrderOutput'
         defValue = 2;
     case 'compOutputSet'
@@ -102,8 +104,58 @@ switch field
         defValue = inf;
     case 'armaxAlg'
         defValue = 'tvpGeneral';
-    case 'norm'
+    % for conform_white:
+    case 'cs.cp_lim'
+        defValue = Inf;
+    case 'cs.a_min'
+        defValue = 0;
+    case 'cs.a_max'
+        defValue = Inf;
+    case 'cs.cost'
         defValue = 'interval';
+    case 'cs.constraints'
+        defValue = 'gen';
+    case 'cs.P'
+        defValue = 1;
+    case 'cs.w'
+        defValue = aux_def_cs_w(sys,params,options);
+    case 'cs.verbose'
+        defValue = false;
+    case 'cs.robustnessMargin'
+        defValue = 1e-9;
+    case 'cs.derivRecomputation'
+        defValue = true;
+    % for conform_black
+    case 'approx.p'
+        defValue = 1;    
+    case 'approx.verbose'
+        defValue = false;   
+    case 'approx.filename'
+        t = datetime;
+        t.Format = 'yyyyMMddHHmmss';
+        defValue = sprintf('%s_approx', string(t));
+    case 'approx.save_res'
+        defValue = true;    
+    case 'approx.gp_parallel'
+        defValue = canUseParallelPool;   
+    case 'approx.gp_runs'
+        defValue = 1;    
+    case 'approx.gp_num_gen'
+        defValue = 100;     
+    case 'approx.cgp_num_gen'
+        defValue = 5;     
+    case 'approx.gp_pop_size'
+        defValue = 300;     
+    case 'approx.cgp_n_m_conf'
+        defValue = 5;      
+    case 'approx.cgp_pop_size_base'
+        defValue = 10;      
+    case 'approx.gp_func_names'
+        defValue = {'times','minus','plus','tanh','square','sin','rdivide'};
+    case 'approx.gp_max_genes' 
+        defValue = 5;
+    case 'approx.gp_max_depth' 
+        defValue = 6;    
     otherwise
         throw(CORAerror('CORA:specialError',...
             "There is no default value for options." + field + "."))
@@ -118,9 +170,9 @@ function val = aux_def_maxError(sys,params,options)
 
 val = [];
 if isa(sys,'contDynamics') || isa(sys,'parallelHybridAutomaton')
-    val = Inf(sys.dim,1);
+    val = Inf(sys.nrOfStates,1);
 elseif isa(sys,'hybridAutomaton')
-    n = sys.dim;
+    n = sys.nrOfStates;
     if all(n(1) == n)
         val = Inf(n(1),1);
     else
@@ -176,7 +228,7 @@ function val = aux_def_maxError_x(sys,params,options)
 
 val = [];
 if isa(sys,'nonlinDASys')
-    val = Inf(sys.dim,1);
+    val = Inf(sys.nrOfStates,1);
 end
 
 end
@@ -203,6 +255,16 @@ elseif isa(sys,'nonlinDASys')
     val = 'lin';
 end
 
+end
+
+function val = aux_def_cs_w(sys,params,options)
+if isprop(sys,'dt')
+    dt = sys.dt;
+else % get dt from testsuite
+    dt = params.testSuite{1}.sampleTime;
+end
+maxNrOfTimeSteps = ceil(round(params.tFinal/dt,2)); % maximum number of timeSteps
+val = ones(1,maxNrOfTimeSteps+1);
 end
 
 % ------------------------------ END OF CODE ------------------------------

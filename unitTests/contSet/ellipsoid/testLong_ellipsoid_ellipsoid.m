@@ -44,50 +44,32 @@ for i=1:nrOfTests
     % admissible initializations
     % only shape matrix
     E = ellipsoid(Q);
-    if ~all(all(withinTol(E.Q,Q,tol)))
-        res = false; break;
-    end
+    assertLoop(all(all(withinTol(E.Q,Q,tol))),i)
 
     % shape matrix and center
     E = ellipsoid(Q,q);
-    if ~all(all(withinTol(E.Q,Q,tol))) || ~all(withinTol(E.q,q,tol))
-        res = false; break;
-    end
+    assertLoop(all(all(withinTol(E.Q,Q,tol))),i)
+    assertLoop(all(withinTol(E.q,q,tol)),i)
     
     
     Q_plus1 = temp * temp';
     
     % shape matrix non-psd (only n > 1)
     if n > 1
-        try
-            E = ellipsoid(Q_nonpsd); % <- should throw error here
-            res = false; break;
-        end
+        assertThrowsAs(@ellipsoid,'CORA:wrongInputInConstructor',Q_nonpsd);
     end
     
     % shape matrix and center of different dimensions
-    try
-        E = ellipsoid(Q,q_plus1); % <- should throw error here
-        res = false; break;
-    end
-    try
-        E = ellipsoid(Q_plus1,q); % <- should throw error here
-        res = false; break;
-    end
+    assertThrowsAs(@ellipsoid,'CORA:wrongInputInConstructor',Q,q_plus1);
+    assertThrowsAs(@ellipsoid,'CORA:wrongInputInConstructor',Q_plus1,q);
     
     % center is a matrix
-    if n ~= 1
-        try
-            E = ellipsoid(Q,q_mat); % <- should throw error here
-            res = false; break;
-        end
+    if n > 1
+        assertThrowsAs(@ellipsoid,'CORA:wrongValue',Q,q_mat);
     end
     
     % too many input arguments
-    try
-        E = ellipsoid(Q,q,eps,q); % <- should throw error here
-        res = false; break;
-    end
+    assertThrowsAs(@ellipsoid,'CORA:numInputArgsConstructor',Q,q,eps,q);
     
 end
 

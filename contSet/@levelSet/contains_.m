@@ -38,7 +38,7 @@ function res = contains_(ls,S,type,tol,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: contSet/contains, halfspace/contains_, conHyperplane/contains_
+% See also: contSet/contains, polytope/contains_
 
 % Authors:       Niklas Kochdumper
 % Written:       19-July-2019

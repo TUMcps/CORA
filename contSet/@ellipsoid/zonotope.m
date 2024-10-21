@@ -1,53 +1,52 @@
 function Z = zonotope(E,varargin)
-% zonotope - over-approximates an ellipsoid by a zonotope
+% zonotope - converts an ellipsoid to a zonotope
 %
 % Syntax:
-%    E = zonotope(E)
-%    E = zonotope(E,m)
-%    E = zonotope(E,m,mode)
+%    Z = zonotope(E)
+%    Z = zonotope(E,mode)
+%    Z = zonotope(E,mode,nrGen)
 %
 % Inputs:
 %    E - ellipsoid object
-%    m - (optional) number of generators
 %    mode - (optional) Specifies whether function uses a lower bound on the 
 %           minimum zonotope norm or the exact value:
 %           * 'outer:box':      overapprox. parallelotope using
-%                               enc_parallelotope
-%           * 'outer:norm':     uses enc_zonotope(E,m,'exact') with exact
-%                               norm value
+%                               priv_encParallelotope
+%           * 'outer:norm':     uses priv_encZonotope with exact norm value
 %           * 'outer:norm_bnd': not implemented yet (throws error)
 %           * 'inner:box':      inner approx. parallelotope using
-%                               insc_parallelotope
-%           * 'inner:norm'      uses insc_zonotope(E,m,'exact') with exact
+%                               priv_inscParallelotope
+%           * 'inner:norm'      uses priv_inscZonotope with exact norm value
+%           * 'inner:norm_bnd': uses priv_inscZonotope with an bound on the
 %                               norm value
-%           * 'inner:norm_bnd': uses insc_zonotope(E,m) with an bound on
-%                               the norm value
 %           * default:          same as 'outer:norm_bnd'
+%    nrGen - (optional) number of generators
 %
 % Outputs:
 %    Z - zonotope object
 %
 % Example: 
 %    E = ellipsoid([3 -1; -1 1],[1;0]);
-%    Zenc = zonotope(E,10,'outer:norm');
-%    Zinsc = zonotope(E,10,'inner:norm');
-%    Zbox = zonotope(E);
+%    Z_enc = zonotope(E,'outer:norm',10);
+%    Z_insc = zonotope(E,'inner:norm',10);
+%    Z_box = zonotope(E);
 %
 %    figure; hold on;
 %    plot(E);
-%    plot(Zinsc,[1,2],'r');
-%    plot(Zenc,[1,2],'k');
-%    plot(Zbox,[1,2],'m');
+%    plot(Z_insc,[1,2],'r');
+%    plot(Z_enc,[1,2],'k');
+%    plot(Z_box,[1,2],'m');
 %
 % References:
 %    [1] V. Gaßmann, M. Althoff. "Scalable Zonotope-Ellipsoid Conversions
-%           using the Euclidean Zonotope Norm", 2020
+%        using the Euclidean Zonotope Norm", 2020
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: priv_encZonotope, priv_encParallelotope, priv_inscZonotope,
+%    priv_inscParallelotope
 
 % Authors:       Victor Gassmann
 % Written:       11-October-2019
@@ -57,51 +56,38 @@ function Z = zonotope(E,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% check input arguments
-if isempty(varargin)
-    mode = 'outer:box';
-    % does not matter, set to any positive integer
-    m = 1;
-elseif length(varargin)==1
-    m = varargin{1};
-    % default
-    mode = 'outer:norm';
-elseif length(varargin)==2
-    m = varargin{1};
-    mode = varargin{2};
-else
-    throw(CORAerror('CORA:tooManyInputArgs',3));
+narginchk(1,3);
+
+[mode,nrGen] = setDefaultValues({'outer:box',dim(E)},varargin);
+
+% before v2025, one could call the conversion with only the number of
+% generators, which has been removed to simplify the interface
+if isnumeric(mode)
+    CORAwarning("CORA:interface","ellipsoid/zonotope","CORA v2025.0.0");
 end
 
-inputArgsCheck({{E,'att','ellipsoid','scalar'};
+inputArgsCheck({{E,'att','ellipsoid'};
                 {mode,'str',{'outer:box','outer:norm','outer:norm_bnd',...
-                        'inner:box','inner:norm','inner:norm_bnd'}}});
-
-if isempty(m)
-    % only allow if mode is 'outer:box' or 'inner:box'
-    if ~strcmp(mode,'inner:box') && ~strcmp(mode,'outer:box')
-        throw(CORAerror('CORA:wrongValue','second','integer > 0'));
-    end
-    % set m to 1 to pass test below
-    m = 1;
-end
-
-inputArgsCheck({{m,'att',{'numeric'},{'scalar','positive','integer'}}});
-
+                             'inner:box','inner:norm','inner:norm_bnd'}}; ...
+                {nrGen,'att','numeric',{'scalar','positive','integer'}}});
+% nrGen not used if outer:box or inner:box since there the number of
+% generators is fixed!
 
 % compute rank and dimension of ellipsoid
 rankE = rank(E);
-dimE = dim(E);
 c = center(E);
+isDeg = rankE ~= dim(E);
 
 % handle degenerate case
-if ~(rankE == dimE)
-    if rankE==0
-        Z = zonotope(E.q);
+if isDeg
+    % ellipsoid is just a point
+    if rankE == 0
+        Z = zonotope(c);
         return;
     end
-    % compute svd to find U matrix transforming E.Q to diagonal matrix (to
-    % isolate degenerate dimensions)
+
+    % compute svd to find U matrix transforming the shape matrix to a 
+    % diagonal matrix (to isolate degenerate dimensions)
     [U,Qt,~] = svd(E.Q);
     
     % construct non-degenerate ellipsoid
@@ -114,25 +100,25 @@ end
 
 switch mode
     case 'outer:box'
-        Z = enc_parallelotope(E);
+        Z = priv_encParallelotope(E);
     case 'outer:norm'
-        Z = enc_zonotope(E,m,'exact');
-    %case 'outer:norm:bnd'% we do not implement the test used to compute the
-    %necessary lower bound on Z as in [1] since this test generally does
-    %not result in a very good lower bound
-    %    Z = enc_zonotope(E,m);
+        Z = priv_encZonotope(E,nrGen);
+    case 'outer:norm:bnd'
+        throw(CORAerror('CORA:notSupported',"mode = 'outer:norm:bnd'"));
+        % we do not implement the test used to compute the
+        % necessary lower bound on Z as in [1] since this test generally does
+        % not result in a very good lower bound
+    %    Z = priv_encZonotope(E,nrGen,'approx');
     case 'inner:box'
-        Z = insc_parallelotope(E);
+        Z = priv_inscParallelotope(E);
     case 'inner:norm'
-        Z = insc_zonotope(E,m,'exact');
+        Z = priv_inscZonotope(E,nrGen,'exact');
     case 'inner:norm_bnd'
-        Z = insc_zonotope(E,m);
-    otherwise
-        throw(CORAerror('CORA:wrongValue','third',...
-            "be 'outer:box', 'outer:norm', 'inner:box', 'inner:norm', or 'inner:norm_bnd'"));
+        Z = priv_inscZonotope(E,nrGen,'ub_convex');
 end
 
-if ~(rankE == dimE)
+% in degenerate case, lift lower-dimensional non-degenerate ellipsoid
+if isDeg
     Z = T*Z + c;
 end
 

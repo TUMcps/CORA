@@ -25,7 +25,7 @@ function res = test_linearSys_trajectoryError()
 
 % obtain linear system
 A = [-1 -4; 4 -1];
-linSys = linearSys('abstractionErrorSys',A,1);
+linsys = linearSys('abstractionErrorSys',A,1);
 
 % constant flow offset of other dynamics
 f = [0; -0.3];
@@ -52,16 +52,16 @@ order = 4;
 n = [1; 0];
 
 % call function
-E_err = trajectoryError(linSys,f,u,R0,tmin,tmax,tc,order,n);
+E_err = trajectoryError(linsys,f,u,R0,tmin,tmax,tc,order,n);
 
 % obtain values for comparison---------------------------------------------
 % powers of time intervals
 tInt = interval(tmin,tmax);
 
 for i = 1:(order+1)
-    res = tInt^i;
-    c = center(res);
-    gen = rad(res);
+    I_res = tInt^i;
+    c = center(I_res);
+    gen = rad(I_res);
     tZono{i} = matZonotope(c,gen); 
 end
 
@@ -98,10 +98,11 @@ I_err = interval(E_err);
 I_err_calc = interval(E_err_calc);
 
 % check if slightly bloated versions enclose each other
-res_1 = (I_err <= enlarge(I_err_calc,1+1e-8));
-res_2 = (I_err_calc <= enlarge(I_err,1+1e-8));
+assert(isequal(I_err,I_err_calc,1e-8));
+assert(isequal(I_err_calc,I_err,1e-8));
 
-% final result
-res = res_1 && res_2;
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

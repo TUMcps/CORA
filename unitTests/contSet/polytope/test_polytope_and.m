@@ -39,7 +39,7 @@ A = [1;-1]; b = [5; -4];
 P2 = polytope(A,b);
 % compute intersection and check emptiness
 P_and = P1 & P2;
-res = representsa(P_and,'emptySet');
+assert(representsa(P_and,'emptySet'));
 
 
 % intersection at only one point
@@ -54,7 +54,7 @@ isBounded(P2);
 P_and = P1 & P2;
 Ae_true = 1; be_true = 2;
 P_true = polytope([],[],Ae_true,be_true);
-res(end+1,1) = (P_and == P_true) && ~isempty(P_and.bounded.val) && P_and.bounded.val;
+assert((P_and == P_true) && ~isempty(P_and.bounded.val) && P_and.bounded.val);
 
 % intersection with polytope without constraints
 A = [1; -1]; b = [2; -1];
@@ -62,7 +62,7 @@ P1 = polytope(A,b);
 A = zeros(0,1); b = zeros(0,0);
 P2 = polytope(A,b);
 P_and = P1 & P2;
-res(end+1,1) = P_and == P1;
+assert(P_and == P1);
 
 
 % intersection is a full-dimensional polytope
@@ -74,7 +74,7 @@ P2 = polytope(A,b);
 P_and = P1 & P2;
 A_true = [1;-1]; b_true = [3;-2];
 P_true = polytope(A_true,b_true);
-res(end+1,1) = P_and == P_true;
+assert(P_and == P_true);
 
 % emptiness property test
 A = [1;-1]; b = [2;-3];
@@ -85,7 +85,7 @@ P2 = polytope(A,b);
 representsa(P1,"emptySet");
 % compute intersection and check emptiness
 P_and = P1 & P2;
-res(end+1,1) = ~isempty(P_and.emptySet.val) && P_and.emptySet.val;
+assert(~isempty(P_and.emptySet.val) && P_and.emptySet.val);
 
 % intersection with numeric (non-empty)
 A = [1; -1]; b = [2; -1];
@@ -94,14 +94,14 @@ p = 1.5;
 P_and = P & p;
 Ae_true = 1; be_true = 1.5;
 P_true = polytope([],[],Ae_true,be_true);
-res(end+1,1) = P_and == P_true;
+assert(P_and == P_true);
 
 % intersection with numeric (empty)
 A = [1; -1]; b = [2; -1];
 P = polytope(A,b);
 p = 2.5;
 P_and = P & p;
-res(end+1,1) = representsa(P_and,'emptySet') && dim(P_and) == 1;
+assert(representsa(P_and,'emptySet') && dim(P_and) == 1);
 
 
 % 2D ----------------------------------------------------------------------
@@ -120,7 +120,7 @@ P2 = polytope(A,b);
 P_and = P1 & P2;
 A_true = [-1/sqrt(2) -1/sqrt(2); 0 1; 1 0]; b_true = [-sqrt(2); 1; 2];
 P_true = polytope(A_true,b_true);
-res(end+1,1) = P_and == P_true && ~isempty(P_and.bounded.val) && P_and.bounded.val;
+assert(P_and == P_true && ~isempty(P_and.bounded.val) && P_and.bounded.val);
 
 
 % bounded & unbounded -> bounded
@@ -136,7 +136,7 @@ P2 = polytope(A,b);
 P_and = P1 & P2;
 A_true = [-1 2; -1 -2; 1 0]; b_true = [0; 0; 2];
 P_true = polytope(A_true,b_true);
-res(end+1,1) = P_and == P_true;
+assert(P_and == P_true);
 
 
 % bounded & fullspace -> bounded
@@ -145,7 +145,7 @@ P1 = polytope(A,b);
 A = zeros(0,2); b = zeros(0,0);
 P2 = polytope(A,b);
 P_and = P1 & P2;
-res(end+1,1) = P_and == P1;
+assert(P_and == P1);
 
 
 % bounded & bounded -> bounded
@@ -162,7 +162,7 @@ P_and = P1 & P2;
 A_true = [-1/sqrt(2) -1/sqrt(2); -1 2; 1 0]; b_true = [-sqrt(2); 0; 2];
 P_true = polytope(A_true,b_true);
 % intersection
-res(end+1,1) = P_and == P_true;
+assert(P_and == P_true);
 
 
 % unbounded & unbounded -> bounded
@@ -173,7 +173,7 @@ P2 = polytope(A,b);
 P_and = P1 & P2;
 A_true = [1 1; 1 -1;-1 1;-1 -1]; b_true = [2; 2; 2; 2];
 P_true = polytope(A_true,b_true);
-res(end+1,1) = P_and == P_true;
+assert(P_and == P_true);
 
 
 % empty & bounded -> empty
@@ -187,7 +187,7 @@ P2 = polytope(A,b);
 representsa(P1,"emptySet");
 % compute intersection and check emptiness value
 P_and = P1 & P2;
-res(end+1,1) = ~isempty(P_and.emptySet.val) && P_and.emptySet.val;
+assert(~isempty(P_and.emptySet.val) && P_and.emptySet.val);
 
 
 % polytope & zonotope
@@ -198,7 +198,7 @@ Z = zonotope(c,G);
 P_and = P & Z;
 A_true = [1 0; -1 1; -1 -1]; b_true = [1;1;-2];
 P_true = polytope(A_true,b_true);
-res(end+1,1) = P_and == P_true;
+assert(P_and == P_true);
 
 % polytope & interval
 A = [1 0; -1 1; -1 -1]; b = [1;1;1];
@@ -208,16 +208,16 @@ I = interval(lb,ub);
 P_and = P & I;
 A_true = [0 1; 1 0; -1 -1]; b_true = [0; 0; 1];
 P_true = polytope(A_true,b_true);
-res(end+1,1) = P_and == P_true;
+assert(P_and == P_true);
 
 % polytope & point
 A = [1 0; -1 1; -1 -1]; b = [1;1;1];
 P = polytope(A,b);
 p_inside = [0;0]; p_outside = [5;5];
 P_and = P & p_inside;
-res(end+1,1) = P_and == p_inside;
+assert(P_and == p_inside);
 P_and = P & p_outside;
-res(end+1,1) = representsa_(P_and,'emptySet',1e-10);
+assert(representsa_(P_and,'emptySet',1e-10));
 
 % H-polytope & V-polytope
 A = [1 0; -1 1; -1 -1]; b = [1;1;1];
@@ -225,9 +225,9 @@ P1 = polytope(A,b);
 V = [0 0; 1 1; 1 0]';
 P2 = polytope(V);
 P_and = P1 & P2;
-res(end+1,1) = P_and == P2;
+assert(P_and == P2);
 P_and = P2 & P1;
-res(end+1,1) = P_and == P2;
+assert(P_and == P2);
 
 % V-polytope & V-polytope
 V1 = [-1 0; 1 2; 1 -2]';
@@ -237,7 +237,7 @@ P2 = polytope(V2);
 P_and = P1 & P2;
 A_true = [1 0; 0 -1; -1 1]; b_true = [1; 0; 0];
 P_true = polytope(A_true,b_true);
-res(end+1,1) = P_and == P_true;
+assert(P_and == P_true);
 
 
 % nD ----------------------------------------------------------------------
@@ -260,10 +260,10 @@ A_true = [0 0 1; 0 0 -1; 1 1 0; -1 1 0; 1 -1 0; -1 -1 0];
 b_true = [1; -1; 2; -1; 2; -1];
 P_true = polytope(A_true,b_true);
 % compare, also P_ should be degenerate since P1 is degenerate
-res(end+1,1) = P_and == P_true && ~isempty(P_and.fullDim.val) && ~P_and.fullDim.val;
+assert(P_and == P_true && ~isempty(P_and.fullDim.val) && ~P_and.fullDim.val);
 
 
 % combine result
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

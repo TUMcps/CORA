@@ -1,0 +1,106 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                                                                                                         
+ \hspace*{-1.6em}{\scriptsize 1}$  $\color{mblue}$function$\color{black}$ example_nonlinearDA_reach_01_powerSystem_3bus()$\\
+ \hspace*{-2em}{\scriptsize 26}$  $\\
+ \hspace*{-2em}{\scriptsize 27}$  $\color{mgreen}$%set path$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 28}$  options.path = [CORAROOT $\color{mred}$'/contDynamics/stateSpaceModels'$\color{black}$];$\\
+ \hspace*{-2em}{\scriptsize 29}$  options.tensorOrder = 1;$\\
+ \hspace*{-2em}{\scriptsize 30}$  $\\
+ \hspace*{-2em}{\scriptsize 31}$  $\color{mgreen}$%specify continuous dynamics-----------------------------------------------$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 32}$  powerDyn = nonlinDASys(2,6,2,@bus3Dyn,@bus3Con,options); $\color{mgreen}$$\\
+ \hspace*{-2em}{\scriptsize 33}$  $\color{mgreen}$%--------------------------------------------------------------------------$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 34}$  $\\
+ \hspace*{-2em}{\scriptsize 35}$  $\color{mgreen}$%set options --------------------------------------------------------------$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 36}$  options.tStart = 0; $\color{mgreen}$%start time$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 37}$  options.tFinal = 5; $\color{mgreen}$%final time$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 38}$  options.x0 = [380; 0.7]; $\color{mgreen}$%initial state$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 39}$  options.y0guess = [ones(0.5*powerDyn.nrOfConstraints, 1);$$ \\
+ \hspace{2cm} $zeros(0.5*powerDyn.nrOfConstraints, 1)];$\\
+ \hspace*{-2em}{\scriptsize 40}$  options.R0 = zonotope([options.x0,diag([0.1, 0.01])]); $\color{mgreen}$%initial set$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 41}$  options.uTrans = [1; 0.4];$\\
+ \hspace*{-2em}{\scriptsize 42}$  options.U = zonotope([zeros(2,1),diag([0, 0.1*options.uTrans(2)])]);$\\
+ \hspace*{-2em}{\scriptsize 43}$  $\\
+ \hspace*{-2em}{\scriptsize 44}$  $\color{mgreen}$%options.timeStep=0.01; %time step size for reachable set computation$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 45}$  options.timeStep=0.05; $\color{mgreen}$%time step size for reachable set computation$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 46}$  options.taylorTerms=6; $\color{mgreen}$%number of taylor terms for reachable sets$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 47}$  options.zonotopeOrder=200; $\color{mgreen}$%zonotope order$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 48}$  options.errorOrder=1.5;$\\
+ \hspace*{-2em}{\scriptsize 49}$  options.polytopeOrder=2; $\color{mgreen}$%polytope order$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 50}$  options.reductionTechnique=$\color{mred}$'girard'$\color{black}$;$\\
+ \hspace*{-2em}{\scriptsize 51}$  $\\
+ \hspace*{-2em}{\scriptsize 52}$  options.originContained = 0;$\\
+ \hspace*{-2em}{\scriptsize 53}$  options.reductionInterval = 1e5;$\\
+ \hspace*{-2em}{\scriptsize 54}$  options.advancedLinErrorComp = 0;$\\
+ \hspace*{-2em}{\scriptsize 55}$  $\\
+ \hspace*{-2em}{\scriptsize 56}$  options.maxError = [0.5; 0];$\\
+ \hspace*{-2em}{\scriptsize 57}$  options.maxError_x = options.maxError;$\\
+ \hspace*{-2em}{\scriptsize 58}$  options.maxError_y = 0.005*[1; 1; 1; 1; 1; 1];$\\
+ \hspace*{-2em}{\scriptsize 59}$  $\color{mgreen}$%--------------------------------------------------------------------------$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 60}$  $\\
+ \hspace*{-2em}{\scriptsize 61}$  $\color{mgreen}$%compute reachable set$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 62}$  tic$\\
+ \hspace*{-2em}{\scriptsize 63}$  Rcont = reach(powerDyn, options);$\\
+ \hspace*{-2em}{\scriptsize 64}$  tComp = toc;$\\
+ \hspace*{-2em}{\scriptsize 65}$  disp([$\color{mred}$'computation time of reachable set: '$\color{black}$,num2str(tComp)]);$\\
+ \hspace*{-2em}{\scriptsize 66}$  $\\
+ \hspace*{-2em}{\scriptsize 67}$  $\color{mgreen}$%create random simulations; RRTs would provide better results, but are$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 68}$  $\color{mgreen}$%computationally more demanding$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 69}$  runs = 60;$\\
+ \hspace*{-2em}{\scriptsize 70}$  fracV = 0.5;$\\
+ \hspace*{-2em}{\scriptsize 71}$  fracI = 0.5;$\\
+ \hspace*{-2em}{\scriptsize 72}$  changes = 6;$\\
+ \hspace*{-2em}{\scriptsize 73}$  simRes = simulate_random(powerDyn, options, runs, fracV, fracI, changes);$\\
+ \hspace*{-2em}{\scriptsize 74}$  $\\
+ \hspace*{-2em}{\scriptsize 75}$  $\color{mgreen}$%plot results--------------------------------------------------------------$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 76}$  dims=[1 $\color{mred}$2];$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 77}$      $\\
+ \hspace*{-2em}{\scriptsize 78}$  figure;$\\
+ \hspace*{-2em}{\scriptsize 79}$  hold $\color{mred}$on$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 80}$  $\\
+ \hspace*{-2em}{\scriptsize 81}$  $\color{mgreen}$%plot reachable sets$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 82}$  $\color{mblue}$for$\color{black}$ i=1:length(Rcont)$\\
+ \hspace*{-2em}{\scriptsize 83}$      $\color{mblue}$for$\color{black}$ j=1:length(Rcont{1})$\\
+ \hspace*{-2em}{\scriptsize 84}$          Zproj = project(Rcont{i}{j},dims);$\\
+ \hspace*{-2em}{\scriptsize 85}$          Zproj = reduce(Zproj,$\color{mred}$'girard'$\color{black}$,3);$\\
+ \hspace*{-2em}{\scriptsize 86}$          plotFilled(Zproj,[1 2],[.75 .75 .75],$\color{mred}$'EdgeColor'$\color{black}$,$\color{mred}$'none'$\color{black}$);$\\
+ \hspace*{-2em}{\scriptsize 87}$      $\color{mblue}$end$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 88}$  $\color{mblue}$end$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 89}$  $\\
+ \hspace*{-2em}{\scriptsize 90}$  $\color{mgreen}$%plot initial set$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 91}$  plotFilled(options.R0,dims,$\color{mred}$'w'$\color{black}$,$\color{mred}$'EdgeColor'$\color{black}$,$\color{mred}$'k'$\color{black}$);$\\
+ \hspace*{-2em}{\scriptsize 92}$  $\\
+ \hspace*{-2em}{\scriptsize 93}$  $\color{mgreen}$%plot simulation results      $\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 94}$  $\color{mblue}$for$\color{black}$ i=1:length(simRes.t)$\\
+ \hspace*{-2em}{\scriptsize 95}$      plot(simRes.x{i}(:,dims(1)),simRes.x{i}(:,dims(2)),$\color{mred}$'Color'$\color{black}$,0*[1 1 1]);$\\
+ \hspace*{-2em}{\scriptsize 96}$  $\color{mblue}$end$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 97}$  $\\
+ \hspace*{-2em}{\scriptsize 98}$  $\color{mgreen}$%label plot$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 99}$  xlabel([$\color{mred}$'x_{'$\color{black}$,num2str(dims(1)),$\color{mred}$'}'$\color{black}$]);$\\
+ \hspace*{-2.4em}{\scriptsize 100}$  ylabel([$\color{mred}$'x_{'$\color{black}$,num2str(dims(2)),$\color{mred}$'}'$\color{black}$]);$\\
+ \hspace*{-2.4em}{\scriptsize 101}$  $\color{mgreen}$%--------------------------------------------------------------------------$\color{black}$$\\
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

@@ -20,49 +20,34 @@ function res = test_requiredToolboxes
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-Res = [];
 % note: license returns 1 if license exists and 0 if not (not: true/false!) 
+
 % check if symbolic math toolbox is available
-Res = logical(license('test','Symbolic_Toolbox'));
-if ~Res(end)
-    disp('Symbolic Math Toolbox missing!');
-end
+assert(logical(license('test','Symbolic_Toolbox')),'Symbolic Math Toolbox missing!');
 
 % check if optimization toolbox is available
-Res = [Res,logical(license('test','Optimization_Toolbox'))];
-if ~Res(end)
-    disp('Optimization Toolbox missing!');
-end
+assert(logical(license('test','Optimization_Toolbox')),'Optimization Toolbox missing!');
 
-Res = [Res,logical(license('test','Statistics_Toolbox'))];
-if ~Res(end)
-    disp('Statistics Toolbox missing!');
-end
+% check if statistics toolbox is available
+assert(logical(license('test','Statistics_Toolbox')),'Statistics Toolbox missing!');
 
 p = path;
 
 % note: contains returns true/false
 
 % check if YALMIP toolbox is available
-Res = [Res,isYalmipInstalled()];
-if ~Res(end)
-    disp('YALMIP toolbox missing!');
-end
+assert(isYalmipInstalled(),'YALMIP toolbox missing!');
 
 % Check if at least one SDP solver supported by YALMIP is installed
-Res = [Res,isSolverInstalled('mosek','sdpt3','gurobi','sedumi')];
-if ~Res(end)
-    disp('SDP solver supported by YALMIP missing!');
-end
+assert(isSolverInstalled('mosek','sdpt3','gurobi','sedumi'),'SDP solver supported by YALMIP missing!');
 
 % no check for MIP required as YALMIP 
 
-
 % check if CORA is on the path
-Res = [Res,contains(p,[filesep 'contDynamics' filesep])]; 
-Res = [Res,contains(p,[filesep 'contSet' filesep])]; 
-Res = [Res,contains(p,[filesep 'hybridDynamics' filesep])];
+assert(contains(p,[filesep 'contDynamics' filesep]),'CORA is not on the Matlab path.'); 
+assert(contains(p,[filesep 'contSet' filesep]),'CORA is not on the Matlab path.'); 
+assert(contains(p,[filesep 'hybridDynamics' filesep]),'CORA is not on the Matlab path.');
 
-res = all(Res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

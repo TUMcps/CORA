@@ -29,17 +29,17 @@ fs = fullspace(n);
 
 % init zonotope
 Z = zonotope(ones(n,1),[1 1; -1 0.5]);
-res = isIntersecting(fs,Z);
+assert(isIntersecting(fs,Z));
 
 % init vector
 p = [1;1];
-res(end+1,1) = isIntersecting(fs,p);
+assert(isIntersecting(fs,p));
 
 % init empty set
 O = emptySet(n);
-res(end+1,1) = ~isIntersecting(fs,O);
+assert(~isIntersecting(fs,O));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

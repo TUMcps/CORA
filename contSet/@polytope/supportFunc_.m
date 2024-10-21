@@ -109,63 +109,27 @@ end
 
 end
 
-function [val,x] = aux_solveLinProg(P,dir,type,retry)
+function [val,x] = aux_solveLinProg(P,dir,type)
 % support function evaluated according to [1, (33)]
 % support vector computed according to [1, (35)]
 
-if nargin < 6
-    retry = true;
-end
-
-if strcmp(type,'upper')
-    s = -1;
-elseif strcmp(type,'lower')
-    s = 1;
-end
-
-% simple check: empty polytope
-if isempty(P.A_.val) && isempty(P.Ae_.val)
-    val = s*Inf; x = [];
-    return
-end
-
-% set up linear program
-problem.f = s*dir';
-problem.Aineq = P.A_.val;
-problem.bineq = P.b_.val;
-problem.Aeq = P.Ae_.val;
-problem.beq = P.be_.val;
-problem.lb = [];
-problem.ub = [];
-
-% solve linear program
-[x,val,exitflag] = CORAlinprog(problem);
-val = s*val;
-
-if exitflag == -3
-    % unbounded
-    val = -s*Inf;
-    x = -s*sign(dir).*Inf(length(dir),1);
-elseif exitflag == -2
-    % infeasible -> empty set
-    val = s*Inf;
-    x = [];
-elseif exitflag ~= 1
-    if retry
-        % normalize direction with magnitude of constraints 
-        % for numeric stability
-        norm = max(abs([P.A_.val P.b_.val;P.Ae_.val P.be_.val]),[],'all');
-        dir = dir / norm;
-
-        % try to solve linear program
-        [val,x] = aux_solveLinProg(P,dir,type,isMosek,options,false);
-
-        % correct val
-        val = val * sum((dir~=0) * norm);
-
-    else
-        throw(CORAerror('CORA:solverIssue'));
+try
+    [val,x] = priv_supportFunc(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val,dir,type);
+catch ME
+    if ~startsWith(ME.identifier,'CORA:solverIssue')
+        rethrow(ME);
     end
+
+    % normalize direction with magnitude of constraints 
+    % for numeric stability
+    norm = max(abs([P.A_.val P.b_.val;P.Ae_.val P.be_.val]),[],'all');
+    dir = dir / norm;
+
+    % try to solve linear program
+    [val,x] = priv_supportFunc(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val,dir,type);
+
+    % correct val
+    val = val * sum((dir~=0) * norm);
 end
 
 end

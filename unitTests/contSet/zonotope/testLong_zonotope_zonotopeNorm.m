@@ -37,8 +37,8 @@ for n = dims
         P = randPoint(Z,Npoints);
         for i_p = 1:size(P,2)
             zN = zonotopeNorm(Z,P(:,i_p)-Z.center);
-            if zN > 1 && ~withinTol(zN,1)
-                throw(CORAerror('CORA:testFailed'));
+            if zN > 1 
+                assertLoop(withinTol(zN,1),n,i,i_p)
             end
         end
     end
@@ -59,8 +59,8 @@ for n = dims
         
         for i_p = 1:size(P_lift,2)
             zN = zonotopeNorm(Z_lift, P_lift(:,i_p)-Z_lift.center);
-            if zN < 1 && ~withinTol(zN,1)
-                throw(CORAerror('CORA:testFailed'));
+            if zN < 1 
+                assertLoop(withinTol(zN,1),n,i,i_p);
             end
         end
     end
@@ -79,22 +79,16 @@ for n = dims
         zN12 = zonotopeNorm(Z,p1+p2);
         zN1 = zonotopeNorm(Z,p1);
         zN2 = zonotopeNorm(Z,p2);
-        if ~( zN12 < zN1+zN2 || withinTol(zN12,zN1+zN2) )
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop( zN12 < zN1+zN2 || withinTol(zN12,zN1+zN2),n,i)
         
         % Check symmetry
         zN1 = zonotopeNorm(Z,p1);
         zN1_ = zonotopeNorm(Z,-p1);
-        if ~withinTol(zN1,zN1_)
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(withinTol(zN1,zN1_),n,i)
         
         % Check part of the positive definiteness
         zN = zonotopeNorm(Z, zeros(n,1));
-        if ~( zN < 0 || withinTol(zN,0) )
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop( zN < 0 || withinTol(zN,0),n,i)
     end
 end
 

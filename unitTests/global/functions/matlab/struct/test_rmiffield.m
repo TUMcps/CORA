@@ -23,13 +23,11 @@ function res = test_rmiffield
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % empty case
 S = struct();
 label = 'test';
 S = rmiffield(S,label);
-resvec(end+1) = ~isfield(S,label);
+assert(~isfield(S,label));
 
 % normal case
 S = struct();
@@ -37,18 +35,18 @@ label1 = 'label1';
 label2 = 'label2';
 S.(label1) = 'value1';
 S.(label2) = 'value2';
-resvec(end+1) = isfield(S,label1);
-resvec(end+1) = isfield(S,label2);
+assert(isfield(S,label1));
+assert(isfield(S,label2));
 S = rmiffield(S,label1);
-resvec(end+1) = ~isfield(S,label1);
-resvec(end+1) = isfield(S,label2);
+assert(~isfield(S,label1));
+assert(isfield(S,label2));
 
 % another call should not change the result
 S = rmiffield(S,label1);
-resvec(end+1) = ~isfield(S,label1);
-resvec(end+1) = isfield(S,label2);
+assert(~isfield(S,label1));
+assert(isfield(S,label2));
 
 % combine results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

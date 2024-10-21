@@ -66,12 +66,11 @@ for i=1:10
 end
 
 % check enclosure
-res = false(10,1);
 for i=1:length(eM)
-    res(i) = all(interval(eM{i}) <= eM_int.int);
+    assert(all(interval(eM{i}) <= eM_int.int));
 end
 
 %result of all enclosure checks
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

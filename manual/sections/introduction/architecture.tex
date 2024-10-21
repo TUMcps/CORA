@@ -1,0 +1,152 @@
+\subsection{Architecture}
+
+\begin{figure}[h!tb]
+    \centering
+    \tikzset{external/export next=false} % don't externalize for \ref to work properly
+    \begin{tikzpicture}
+        [%
+        auto,
+        class/.style={
+            rectangle,
+            draw=black,
+            thick,
+            fill=white,
+            align=center
+        },
+        superClass/.style={
+            rectangle,
+            draw=blue,
+            thick,
+            fill=white,
+            align=center
+        },
+        subclass/.style={
+            thick,
+            ->,
+            >=Triangle[open]
+        },
+        composition/.style={
+            thick,
+            ->,
+            >=Diamond[]
+        },
+        annotation/.style={
+            font=\footnotesize
+        }
+        ]
+
+        \newcommand{\minSep}{0.3cm}
+
+        % contDynamics -----------------------------------------------------------------------------------------------------
+
+        \draw (0,0) node[superClass, anchor=south west] (contDynamics) {\texttt{contDynamics}};
+
+        \node[class, above=4*\minSep of contDynamics.west, anchor=west] (linearSys) {\texttt{linearSys} (\cref{sec:linearSystems})};
+        \draw [subclass] (linearSys.west) -- +(180:\minSep) |- (contDynamics.west);
+        \node[class, above=3*\minSep of linearSys.west, anchor=west] (linParamSys) {\texttt{linParamSys} (\cref{sec:linearParamSystems})};
+        \draw [subclass] (linParamSys.west) -- +(180:\minSep) |- (contDynamics.west);
+        \node[class, above=3*\minSep of linParamSys.west, anchor=west] (linearSysDT) {\texttt{linearSysDT} (\cref{sec:linearSysDT})};
+        \draw [subclass] (linearSysDT.west) -- +(180:\minSep) |- (contDynamics.west);
+        \node[class, above=3*\minSep of linearSysDT.west, anchor=west] (linProbSys) {\texttt{linProbSys} (\cref{sec:linearProbSystems})};
+        \draw [subclass] (linProbSys.west) -- +(180:\minSep) |- (contDynamics.west);
+        \node[class, above=3*\minSep of linProbSys.west, anchor=west] (nonlinearSys) {\texttt{nonlinearSys} (\cref{sec:nonlinearSystems})};
+        \draw [subclass] (nonlinearSys.west) -- +(180:\minSep) |- (contDynamics.west);
+        \node[class, above=3*\minSep of nonlinearSys.west, anchor=west] (nonlinParamSys) {\texttt{nonlinParamSys} (\cref{sec:nonlinearParamSystems})};
+        \draw [subclass] (nonlinParamSys.west) -- +(180:\minSep) |- (contDynamics.west);
+        \node[class, above=3*\minSep of nonlinParamSys.west, anchor=west] (nonlinearSysDT) {\texttt{nonlinearSysDT} (\cref{sec:nonlinearSystemsDT})};
+        \draw [subclass] (nonlinearSysDT.west) -- +(180:\minSep) |- (contDynamics.west);
+        \node[class, above=3*\minSep of nonlinearSysDT.west, anchor=west] (nonlinDASys) {\texttt{nonlinDASys} (\cref{sec:nonlinearDASystems})};
+        \draw [subclass] (nonlinDASys.west) -- +(180:\minSep) |- (contDynamics.west);
+
+        % matrixSet --------------------------------------------------------------------------------------------------------
+
+        \draw (13,4.8) node[superClass,anchor=east] (matrixSet) {\texttt{matrixSet}};
+        \draw [composition] (matrixSet.west) node[annotation, anchor=south east] {$1$} -|- (linearSysDT.east) node[annotation, anchor=south west] {$1$};
+        \draw [composition] (matrixSet.west) -- +(180:0.6cm) -|- (nonlinearSysDT.east) node[annotation, anchor=south west] {$1$};
+
+        \node[class, above=4*\minSep of matrixSet.east, anchor=east] (matPolytope) {\texttt{matPolytope} (\cref{sec:polytopeMatrix})};
+        \draw [subclass] (matPolytope.east) -- +(0:\minSep) |- (matrixSet.east);
+        \node[class, above=3*\minSep of matPolytope.east, anchor=east] (matZonotope) {\texttt{matZonotope} (\cref{sec:zonotopeMatrix})};
+        \draw [subclass] (matZonotope.east) -- +(0:\minSep) |- (matrixSet.east);
+        \node[class, above=3*\minSep of matZonotope.east, anchor=east] (intervalMatrix) {\texttt{intervalMatrix} (\cref{sec:intervalMatrix})};
+        \draw [subclass] (intervalMatrix.east) -- +(0:\minSep) |- (matrixSet.east);
+
+        % contSet ----------------------------------------------------------------------------------------------------------
+
+        \node[superClass, below=6*\minSep of matrixSet.east,anchor=east] (contSet) {\texttt{contSet}};
+
+        \node[class, below=3*\minSep of contSet.east, anchor=east] (zonotope) {\texttt{zonotope} (\cref{sec:zonotope})};
+        \draw [subclass] (zonotope.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of zonotope.east, anchor=east] (interval) {\texttt{interval} (\cref{sec:interval})};
+        \draw [subclass] (interval.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of interval.east, anchor=east] (ellipsoid) {\texttt{ellipsoid} (\cref{sec:ellipsoids})};
+        \draw [subclass] (ellipsoid.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of ellipsoid.east, anchor=east] (polytope) {\texttt{polytope} (\cref{sec:polytopes})};
+        \draw [subclass] (polytope.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of polytope.east, anchor=east] (polyZonotope) {\texttt{polyZonotope} (\cref{sec:polynomialZonotopes})};
+        \draw [subclass] (polyZonotope.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of polyZonotope.east, anchor=east] (conPolyZono) {\texttt{conPolyZono} (\cref{sec:conPolyZono})};
+        \draw [subclass] (conPolyZono.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of conPolyZono.east, anchor=east] (capsule) {\texttt{capsule} (\cref{sec:capsules})};
+        \draw [subclass] (capsule.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of capsule.east, anchor=east] (zonoBundle) {\texttt{zonoBundle} (\cref{sec:zonoBundle})};
+        \draw [subclass] (zonoBundle.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of zonoBundle.east, anchor=east] (conZonotope) {\texttt{conZonotope} (\cref{sec:conZonotope})};
+        \draw [subclass] (conZonotope.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of conZonotope.east, anchor=east] (spectraShadow) {\texttt{spectraShadow} (\cref{sec:spectraShadow})};
+        \draw [subclass] (spectraShadow.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of spectraShadow.east, anchor=east] (probZonotope) {\texttt{probZonotope} (\cref{sec:probabilisticZonotopes})};
+        \draw [subclass] (probZonotope.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of probZonotope.east, anchor=east] (emptySet) {\texttt{emptySet} (\cref{sec:emptySet})};
+        \draw [subclass] (emptySet.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of emptySet.east, anchor=east] (fullspace) {\texttt{fullspace} (\cref{sec:fullspace})};
+        \draw [subclass] (fullspace.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of fullspace.east, anchor=east] (levelSet) {\texttt{levelSet} (\cref{sec:levelSet})};
+        \draw [subclass] (levelSet.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of levelSet.east, anchor=east] (taylm) {\texttt{taylm} (\cref{sec:taylorModels})};
+        \draw [subclass] (taylm.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of taylm.east, anchor=east] (affine) {\texttt{affine} (\cref{sec:affine})};
+        \draw [subclass] (affine.east) -- +(0:\minSep) |- (contSet.east);
+        \node[class, below=3*\minSep of affine.east, anchor=east] (zoo) {\texttt{zoo} (\cref{sec:zoo})};
+        \draw [subclass] (zoo.east) -- +(0:\minSep) |- (contSet.east);
+
+        % hybrid system ----------------------------------------------------------------------------------------------------
+
+        \node[class, below=6*\minSep of contDynamics.west, anchor=west] (transition) {\texttt{transition} (\cref{sec:hybridDynamics})};
+        \draw [composition] (contSet.west) node[annotation, anchor=south east] {$1..N$} -- +(180:1.5cm) -|- (transition.east) node[annotation, anchor=south west] {$1$};
+        \node[class, below=5*\minSep of transition.east, anchor=east] (location) {\texttt{location} (\cref{sec:hybridDynamics})};
+        \draw [composition] (contSet.west) -- +(180:1.5cm) -|- (location.east) node[annotation, anchor=south west] {$1$};
+        \draw [composition] (contDynamics.south) node[annotation, anchor=north west] {$1$} -- +(270:\minSep) -- (-2*\minSep,-\minSep) |- (location.west) node[annotation, anchor=south east] {$1$};
+        \draw [composition] (transition.south-|location.north) node[annotation, anchor=north west] {$1..N$} -- (location.north) node[annotation, anchor=south west] {$1$};
+        \node[class, below=5*\minSep of location.center, anchor=center] (hybridAutomaton) {\texttt{hybridAutomaton} (\cref{sec:hybridAutomaton})};
+        \draw [composition] (location.south) node[annotation, anchor=north west] {$1..N$} -- (hybridAutomaton.north) node[annotation, anchor=south west] {$1$};
+        \node[class, below=5*\minSep of hybridAutomaton.center, anchor=center] (parallelHybridAutomaton) {\texttt{parallelHybridAutomaton} (\cref{sec:parallelHybridAutomata})};
+        \draw [composition] (hybridAutomaton.south) node[annotation, anchor=north west] {$1..N$} -- (parallelHybridAutomaton.north) node[annotation, anchor=south west] {$1$};
+        \node[class, below=5*\minSep of parallelHybridAutomaton.center, anchor=center] (partition) {\texttt{partition} (\cref{sec:partition})};
+        \draw [composition] (partition.north) node[annotation, anchor=south west] {$0..1$} -- (parallelHybridAutomaton.south) node[annotation, anchor=north west] {$1$};
+        \node[class, below=5*\minSep of partition.center, anchor=center] (markovchain) {\texttt{markovchain} (\cref{sec:MarkovChains})};
+        \draw [composition] (hybridAutomaton.east) node[annotation, anchor=south west] {$1..N$} -- +(0:1.5cm) |- (markovchain.east) node[annotation, anchor=south west] {$1$};
+
+        % legend -----------------------------------------------------------------------------------------------------------
+
+        \node[below=6*\minSep of markovchain.center, anchor=center] (generalization) {\ \ Generalization};
+        \draw [subclass] (generalization.west) -- +(180:1cm);
+        \node[below=2*\minSep of generalization.west, anchor=west] (composition) {\ \ Composition};
+        \draw [composition] (composition.west) -- +(180:1cm);
+
+        \draw[thick] ($(generalization.north west)+(-1.5,0.15)$) rectangle ($(composition.south east)+(0.75,-0.15)$);
+
+    \end{tikzpicture}
+
+    \caption{Unified Modeling Language (UML) class diagram of CORA.}
+    \label{fig:classDiagram}
+\end{figure}
+
+
+The architecture of CORA can essentially be grouped into the parts presented in \cref{fig:classDiagram} using a UML\footnote{\url{http://www.uml.org/}} class diagram: Classes for set representations (\cref{sec:setRepresentationsAndOperations}), classes for matrix set representations (\cref{sec:matrixSetRepresentationsAndOperations}), classes for the analysis of continuous dynamics (\cref{sec:continuousDynamics}), classes for the analysis of hybrid dynamics (\cref{sec:hybridDynamics}), and classes for the abstraction to discrete systems (\cref{sec:discreteDynamics}).
+
+All classes for set representations inherit some common properties and functionality from the parent class \texttt{contSet} (see \cref{fig:classDiagram}). Similary, all classes for continuous dynamics inherit from the parent class \texttt{contDynamics} (see \cref{fig:classDiagram}).
+
+For hybrid systems, the class diagram in \cref{fig:classDiagram} shows that parallel hybrid automata (class \texttt{parallelHybridAutomaton}) consist of several instances of hybrid automata (class \linebreak[4]\texttt{hybridAutomaton}), which in turn consist of several instances of the \texttt{location} class. Each \texttt{location} object has continuous dynamics (classes inheriting from \texttt{contDynamics}), several transitions (class \texttt{transition}), and a set representation (classes inheriting from \texttt{contSet}) to describe the invariant of the location. Each transition has a set representation to describe the guard set enabling a transition to the next discrete state. More details on the semantics of those components can be found in \cref{sec:hybridDynamics}.
+
+Note that some classes subsume the functionality of other classes. For instance, nonlinear differential-algebraic systems (class \texttt{nonlinDASys}) are a generalization of nonlinear systems (class \texttt{nonlinearSys}). Less general systems are not removed because very efficient algorithms exist for those systems that are not applicable to more general systems. 

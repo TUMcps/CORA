@@ -46,19 +46,19 @@ for i=2:4
         V = vertices(Z);
 
         % check exact vs. upper bound
-        if val2_exact > val2_ub && ~withinTol(val2_exact,val2_ub,TOL)
-            res = false;
+        if val2_exact > val2_ub 
+            assertLoop(withinTol(val2_exact,val2_ub,TOL),i,j)
         end
         
         % check exact vs. upper bound (convex)
-        if val2_exact > val2_ubc && ~withinTol(val2_exact,val2_ubc,TOL)
-            res = false;
+        if val2_exact > val2_ubc 
+            assertLoop(withinTol(val2_exact,val2_ubc,TOL),i,j)
         end
         
         % check exact vs. norm of all vertices
-        temp = abs(val2_exact-max(sqrt(sum(V.^2))))/val2_exact;
-        if temp > 0 && ~withinTol(temp,0,TOL)
-            res = false;
+        val = abs(val2_exact-max(sqrt(sum(V.^2))))/val2_exact;
+        if val > 0 
+            assertLoop(withinTol(val,0,TOL),i,j)
         end
 
     end

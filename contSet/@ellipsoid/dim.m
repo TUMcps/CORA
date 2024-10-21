@@ -25,13 +25,12 @@ function n = dim(E)
 % Last update:   16-March-2021 (comp independent of property)
 %                04-July-2022 (VG, support class arrays)
 %                10-January-2024 (MW, simplify)
+%                05-October-2024 (MW, remove class arrays)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-n = zeros(size(E));
-for i=1:numel(E)
-    n(i) = size(E(i).q,1);
-end
+% take dimension of center
+n = size(E.q,1);
 
 % ------------------------------ END OF CODE ------------------------------

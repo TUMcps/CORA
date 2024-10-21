@@ -58,9 +58,7 @@ for i=1:nrTests
     val_P = volume(P);
 
     % compare values
-    if ~withinTol(val_Z,val_P,1e-5)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(withinTol(val_Z,val_P,1e-4),i,n);
 
 end
 

@@ -1,11 +1,12 @@
-function obj = inputSolution(obj,options)
+function obj = inputSolution(obj,params,options)
 % inputSolution - computes the bloating due to the input 
 %
 % Syntax:
-%    obj = inputSolution(obj,options)
+%    obj = inputSolution(obj,params,options)
 %
 % Inputs:
 %    obj - linParamSys object
+%    params - model parameters
 %    options - options struct
 %
 % Outputs:
@@ -28,11 +29,11 @@ function obj = inputSolution(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 %set of possible inputs
-V=obj.B*options.U;
+V=obj.B*params.U;
 
 %compute vTrans if possible
 try
-    vTrans=obj.B*options.uTrans;
+    vTrans=obj.B*params.uTrans;
 catch
     vTrans=[];
 end
@@ -42,7 +43,7 @@ r=obj.stepSize;
 
 %initialize the reachable set due to input
 inputSet = V*r;
-intM = eye(obj.dim)*r; %integral of the mapping matrix
+intM = eye(obj.nrOfStates)*r; %integral of the mapping matrix
 
 %matrix zonotope
 for i=1:length(obj.power.zono)
@@ -71,7 +72,7 @@ inputSetTrans=compact_(inputSetTrans,'zeros',eps);
 
 %compute additional uncertainty if origin is not contained in input set
 if options.originContained
-    inputCorr = zeros(obj.dim,1);
+    inputCorr = zeros(obj.nrOfStates,1);
 else
     %compute inputF
     obj = inputTie(obj,options);

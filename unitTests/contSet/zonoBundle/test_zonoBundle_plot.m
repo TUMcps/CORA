@@ -25,8 +25,6 @@ function res = test_zonoBundle_plot
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % instantiate zonotope bundle
 Z1 = zonotope([1;-1;2],[2 -1 3; 0 1 -1; -1 4 2]);
 Z2 = Z1 + [1;0;0];
@@ -38,27 +36,22 @@ try
     
     % one argument: object
     plot(zB);
-    resvec(end+1) = true;
 
     % two arguments: object, dimensions
     plot(zB,1);
     plot(zB,[2,3]);
-    resvec(end+1) = true;
 
     % three arguments: object, dimensions, linespec
     plot(zB,[1,2],'r+');
-    resvec(end+1) = true;
     
     % three arguments: object, dimensions, NVpairs
     plot(zB,[1,2],'LineWidth',2);
     plot(zB,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
     plot(zB,[1,2],'EdgeColor','k','FaceColor',[.8 .8 .8]);
-    resvec(end+1) = true;
     
     % four arguments: object, dimensions, linespec, NVpairs
     plot(zB,[1,2],'r','LineWidth',2);
     plot(zB,[1,2],'r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
-    resvec(end+1) = true;
 
     % check if plotted correctly
     ax = gca();
@@ -66,21 +59,35 @@ try
     
     % plot set
     plot(zB,[1,2]);
-    V = [7 7 5 -1 -4 -4 -2 4 7
-        -3 -3 -1 1 1 1 -1 -3 -3];
+    V = [ ...
+     -1, 5, 7, 4, -2, -4, -1 ; ...
+     1, -1, -3, -3, -1, 1, 1 ; ...
+    ];
     % check points
-    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true);
+    assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
     % test color
-    resvec(end+1) = isequal(colorOrder(1,:), ax.Children(1).Color);
-    
+    assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+
+    % check barely intersecting sets
+    Z{1} = zonotope([1;1],[1 0; 0 1]);
+    Z{2} = zonotope([2;2],[1;0]);
+    zB = zonoBundle(Z);
+    plot(zB)
+
+    V = [
+        1 2 1
+        2 2 2
+    ];
+    assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
+        
     % close figure
     close;
 catch ME
     close;
-    resvec(end+1) = false;
+    rethrow(ME)
 end
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

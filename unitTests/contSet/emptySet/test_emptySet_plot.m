@@ -23,8 +23,6 @@ function res = test_emptySet_plot
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 O = emptySet(3);
 
 try
@@ -33,28 +31,23 @@ try
     
     % one argument: object
     plot(O);
-    resvec(end+1) = true;
     
     % two arguments: object, dimensions
     plot(O,1);
     plot(O,[1,2]);
     plot(O,[2,3]);
-    resvec(end+1) = true;
     
     % three arguments: object, dimensions, linespec
     plot(O,[1,2],'r+');
-    resvec(end+1) = true;
     
     % three arguments: object, dimensions, NVpairs
     plot(O,[1,2],'LineWidth',2);
     plot(O,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
     plot(O,[1,2],'EdgeColor','k','FaceColor',[.8 .8 .8]);
-    resvec(end+1) = true;
     
     % four arguments: object, dimensions, linespec, NVpairs
     plot(O,[1,2],'r','LineWidth',2);
     plot(O,[1,2],'r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
-    resvec(end+1) = true;
 
     close;
 
@@ -67,17 +60,17 @@ try
     plot(O,[1,2]);
     V = zeros(2,0);
     % check points
-    resvec(end+1) = all(isnan([ax.Children(1).XData;ax.Children(1).YData]));
+    assert(all(isnan([ax.Children(1).XData;ax.Children(1).YData])));
     % test color
-    resvec(end+1) = isequal(colorOrder(1,:), ax.Children(1).Color);
+    assert(isequal(colorOrder(1,:), ax.Children(1).Color));
 
     % plot second set
     plot(O,[1,3]);
     V = zeros(2,0);
     % check points
-    resvec(end+1) = all(isnan([ax.Children(1).XData;ax.Children(1).YData]));
+    assert(all(isnan([ax.Children(1).XData;ax.Children(1).YData])));
     % test color
-    resvec(end+1) = isequal(colorOrder(2,:), ax.Children(1).Color);
+    assert(isequal(colorOrder(2,:), ax.Children(1).Color));
     
     % close figure
     close;
@@ -96,17 +89,17 @@ try
 
     % check points
     V = zeros(2,0);
-    resvec(end+1) = all(isnan([ax.Children(1).XData;ax.Children(1).YData]));
+    assert(all(isnan([ax.Children(1).XData;ax.Children(1).YData])));
 
     % close figure
     close;
 
 catch ME
     close;
-    resvec(end+1) = false;
+    rethrow(ME)
 end
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

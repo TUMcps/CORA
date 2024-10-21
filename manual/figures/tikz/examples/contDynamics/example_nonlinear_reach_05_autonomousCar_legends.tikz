@@ -1,0 +1,8 @@
+\addlegendimage{plotstyle1}
+\addlegendentry{Reachable set}
+\addlegendimage{plotstyle3}
+\addlegendentry{Initial set}
+\addlegendimage{plotstyle4}
+\addlegendentry{Simulations}
+\addlegendimage{plotstyle6}
+\addlegendentry{Reference trajectory}

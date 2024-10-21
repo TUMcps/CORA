@@ -1,20 +1,19 @@
-function [Rnext,options] = post(obj,R,options)
+function [Rnext,options] = post(obj,R,params,options)
 % post - computes the reachable continuous probabilistic set for one time 
 % step of a linear system
 %
 % Syntax:
-%    [Rnext,options] = post(obj,R,options)
+%    [Rnext,options] = post(obj,R,params,options)
 %
 % Inputs:
 %    obj - linProbSys object
 %    R - reachable set of the previous time step
+%    params - model parameters
 %    options - options for the computation of the reachable set
 %
 % Outputs:
 %    Rnext - reachable set of the next time step
 %    options - options for the computation of the reachable set
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none

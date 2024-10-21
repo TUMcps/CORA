@@ -1,13 +1,13 @@
-function simRes = simulateRRT(obj,options)
+function simRes = simulateRRT(sys,params,options)
 % simulateRRT - simulates a system using rapidly exploring random trees
 %
 % Syntax:
-%    simRes = simulateRRT(obj,options)
+%    simRes = simulateRRT(sys,params,options)
 %
 % Inputs:
-%    obj - contDynamics object
-%    options - struct containing model parameters and settings for the 
-%              random simulation
+%    sys - contDynamics object
+%    params - model parameters
+%    options - struct containing settings for the random simulation
 %       .points:     number of random initial points (positive integer)
 %       .vertSamp:   flag that specifies if random initial points, inputs,
 %                    and parameters are sampled from the vertices of the 
@@ -38,10 +38,10 @@ function simRes = simulateRRT(obj,options)
 R = options.R;
 
 % obtain set of uncertain inputs 
-if isfield(options,'uTransVec')
-    U = options.uTransVec(:,1) + options.U;
+if isfield(params,'uTransVec')
+    U = params.uTransVec(:,1) + params.U;
 else
-    U = options.uTrans + options.U;
+    U = params.uTrans + params.U;
 end
 
 % possible extreme inputs
@@ -54,22 +54,18 @@ t = cell(options.points,1);
 
 % init obtained states from the RRT
 if options.vertSamp
-    X = randPoint(options.R0,options.points,'extreme'); 
+    X = randPoint(params.R0,options.points,'extreme'); 
 else
-    X = randPoint(options.R0,options.points,'standard');
+    X = randPoint(params.R0,options.points,'standard');
 end
 
-% create full state (only for conformance checking)
-if isfield(options, 'convertFromAbstractState')
-    % lift each sample to the full state space
+% set flag for conformance checking
+conformanceChecking = isfield(options,'convertFromAbstractState');
+if conformanceChecking
+    % create full state: lift each sample to the full state space
     for iSample = 1:size(X,2)
         Xfull(:,iSample) = options.convertFromAbstractState(X(:,iSample))';
     end
-    % set flag for conformance checking
-    conformanceChecking = 1;
-else
-    % set flag for conformance checking
-    conformanceChecking = 0;
 end
 
 % number of time steps; time point solutions have one step more compared to
@@ -83,8 +79,8 @@ for iStep = 1:nrSteps
     disp("Step " + iStep + " of " + nrSteps);
     
     % update time
-    options.tStart = R.timePoint.time{iStep};
-    options.tFinal = R.timePoint.time{iStep+1};
+    params.tStart = R.timePoint.time{iStep};
+    params.tFinal = R.timePoint.time{iStep+1};
     
     % enlarge reachable set at starting point in time
     R_enl = enlarge(R.timePoint.set{iStep},options.stretchFac);
@@ -107,23 +103,23 @@ for iStep = 1:nrSteps
         % nearest neighbor and selected state
         ind = aux_nearestNeighbor(x_sample,X,normMatrix);
         if ~conformanceChecking
-            options.x0 = X(:,ind);
+            params.x0 = X(:,ind);
         else
-            options.x0 = Xfull(:,ind);
+            params.x0 = Xfull(:,ind);
         end
         
         % update set of uncertain inputs when tracking
-        if isfield(options,'uTransVec')
-            U = options.uTransVec(:,iStep) + options.U;
+        if isfield(params,'uTransVec')
+            U = params.uTransVec(:,iStep) + params.U;
             V_input = vertices(U);
         end
 
         % simulate model to find out best input
         for iInput = 1:nrOfExtrInputs
             % set input
-            options.u = V_input(:,iInput);
+            params.u = V_input(:,iInput);
             % simulate
-            [t_traj{iInput},x_traj{iInput}] = simulate(obj,options);   
+            [t_traj{iInput},x_traj{iInput}] = simulate(sys,params);   
             x_final = x_traj{iInput}(end,:); 
             % reduce to abstract state for conformance checking
             if conformanceChecking

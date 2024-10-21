@@ -22,6 +22,9 @@ function res = test_emptySet_radius
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % init empty set
 n = 2;
@@ -29,6 +32,6 @@ O = emptySet(n);
 
 % compute radius
 r = radius(O);
-res = r == 0;
+assert(r == 0);
 
 % ------------------------------ END OF CODE ------------------------------

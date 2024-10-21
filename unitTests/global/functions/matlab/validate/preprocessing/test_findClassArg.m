@@ -28,17 +28,14 @@ Z = zonotope([2;-1],[2 4 1; 0 -2 1]);
 I = interval([3;-1],[4;2]);
 
 [obj1,obj2] = findClassArg(Z,I,'zonotope');
-res = obj1 == Z && obj2 == I;
+assert(obj1 == Z && obj2 == I);
 [obj1,obj2] = findClassArg(Z,I,'interval');
-res(end+1,1) = obj1 == I && obj2 == Z;
+assert(obj1 == I && obj2 == Z);
 [obj1,obj2] = findClassArg(I,Z,'interval');
-res(end+1,1) = obj1 == I && obj2 == Z;
-try
-    [obj1,obj2] = findClassArg(Z,I,'polyZonotope');
-    res(end+1,1) = false;
-end
+assert(obj1 == I && obj2 == Z);
+assertThrowsAs(@findClassArg,'CORA:wrongValue',Z,I,'polyZonotope');
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,11 +1,11 @@
-function [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,options)
+function [timeInt,timePoint,res,tVec,options] = reach_adaptive(nlnsys,params,options)
 % reach_adaptive - computes the reachable continuous set
 %
 % Syntax:
-%    [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,options)
+%    [timeInt,timePoint,res,tVec,options] = reach_adaptive(nlnsys,params,options)
 %
 % Inputs:
-%    obj - continuous system object
+%    nlnsys - nonlinearSys object
 %    params - model parameters
 %    options - options for the computation of reachable sets
 %
@@ -15,8 +15,6 @@ function [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,option
 %    res - satisfaction / violation of specifications
 %    tVec - vector of time steps
 %    options - options for the computation of reachable sets (param tracking)
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -34,9 +32,9 @@ function [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,option
 % initialize cell-arrays that store the reachable set
 timeInt.set = {};
 timeInt.time = {};
-timePoint.set = {options.R0};
-timePoint.time = {options.tStart};
-res = 0;
+timePoint.set = {params.R0};
+timePoint.time = {params.tStart};
+res = false;
 tVec = 0;
 
 % remove 'adaptive' from alg (just for tensor computation)
@@ -48,26 +46,20 @@ end
 
 % iteration counter and time for main loop
 options.i = 1;
-options.t = options.tStart;
+options.t = params.tStart;
+options.R = params.R0;
 % set linearization errors (separate values for Delta and optimal Delta t)
-options.error_adm_horizon = zeros(obj.dim,1);
-options.error_adm_Deltatopt = zeros(obj.dim,1);
+options.error_adm_horizon = zeros(nlnsys.nrOfStates,1);
+options.error_adm_Deltatopt = zeros(nlnsys.nrOfStates,1);
 % init abortion flag
 abortAnalysis = false;
 
-% just for safety
-if ~isfield(options,'linReach_new')
-    options.linReach_new = true;
-end
-
-% timePoint.set{1,1} = options.R0;
-% timePoint.time{1,1} = options.t;
 
 % MAIN LOOP
-while options.tFinal - options.t > 1e-12 && ~abortAnalysis
+while params.tFinal - options.t > 1e-12 && ~abortAnalysis
     
     % log information
-    verboseLog(options.i,options.t,options);
+    verboseLog(options.verbose,options.i,options.t,params.tStart,params.tFinal);
 
     % reduction of R via restructuring (only poly)
     if isa(options.R,'polyZonotope')
@@ -79,11 +71,7 @@ while options.tFinal - options.t > 1e-12 && ~abortAnalysis
     end
     
     % propagation of reachable set
-    if options.linReach_new
-        [Rnext.ti,Rnext.tp,options] = linReach_adaptive(obj,options,options.R);
-    else
-        [Rnext.ti,Rnext.tp,options] = linReach_adaptive_old(obj,options,options.R);
-    end
+    [Rnext.ti,Rnext.tp,options] = linReach_adaptive(nlnsys,options.R,params,options);
     
     % reduction for next step
     Rnext.ti = reduce(Rnext.ti,'adaptive',options.redFactor*5); % not reused
@@ -91,17 +79,7 @@ while options.tFinal - options.t > 1e-12 && ~abortAnalysis
     % try: additional reduction for poly
     if isa(Rnext.tp,'polyZonotope')
         Rnext.tp = aux_reduceOnlyDep(Rnext.tp,options.polyZono.maxDepGenOrder);
-    end
-    % track zonotope orders
-    if isa(Rnext.tp,'polyZonotope')
-        options.zonordersRtp(options.i,1) = size(Rnext.tp.G,2) / obj.dim;
-        options.zonordersRtp(options.i,2) = size(Rnext.tp.GI,2) / obj.dim;
-    else
-        options.zonordersRtp(options.i,1) = size(generators(Rnext.tp),2) / obj.dim;
-    end
-    % track abstraction order
-    options.kappa(options.i,1) = options.tensorOrder;
-    
+    end    
 
     % save to output variables
     tVec(options.i,1) = options.timeStep;
@@ -121,11 +99,11 @@ while options.tFinal - options.t > 1e-12 && ~abortAnalysis
     options.R = Rnext.tp;
     
     % check for timeStep -> 0
-    abortAnalysis = aux_checkForAbortion(tVec,options.t,options.tFinal);
+    abortAnalysis = aux_checkForAbortion(tVec,options.t,params.tFinal);
 end
 
 % log information
-verboseLog(options.i,options.t,options);
+verboseLog(options.verbose,options.i,options.t,params.tStart,params.tFinal);
 
 end
 

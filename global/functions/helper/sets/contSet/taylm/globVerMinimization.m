@@ -69,31 +69,12 @@ function [val,xOpt,domOpt] = globVerMinimization(func,dom,tol,varargin)
 % Implementation of the Verified Global Optimizer concept from
 % reference paper [1]
 
+narginchk(3,9);
 
 % Initialization ----------------------------------------------------------
 
 % default values
-max_order = 10;
-opt_method = 'int';
-eps = 0.001;
-tolerance = 1e-8;
-
-% parse input arguments
-if nargin < 3
-    throw(CORAerror('CORA:notEnoughInputArgs',3));
-end
-if nargin >= 4 && ~isempty(varargin{1})
-   max_order = varargin{1}; 
-end
-if nargin >= 5 && ~isempty(varargin{2})
-   opt_method = varargin{2}; 
-end
-if nargin >= 6 && ~isempty(varargin{3})
-   eps = varargin{3}; 
-end
-if nargin >= 7 && ~isempty(varargin{4})
-   tolerance = varargin{4}; 
-end
+[max_order,opt_method,eps,tolerance] = setDefaultValues({10,'int',0.001,1e-8},varargin);
 
 % create taylor models
 if nargin >= 8 && ~isempty(varargin{5})

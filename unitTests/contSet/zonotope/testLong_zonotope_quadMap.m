@@ -36,15 +36,13 @@ nrOfRandPoints = 1000;
 Q{1} = [1 -2; -3 4];
 Q{2} = [0.5 0; 2 -1];
 
-Zres = quadMap(Z1,Q);
+Zres = quadMap(Z1,Q); 
 
 % map random points in zonotope and check if they are inside the result
 for i=1:nrOfRandPoints
     p = randPoint(Z1);
     pQp = quadMapPoint(p,p,Q);
-    if ~contains(Zres,pQp)
-        res = false; return
-    end
+    assertLoop(contains(Zres,pQp),i)
 end
 
 % 2. quadMapMixed: Z1*Q*Z2 ------------------------------------------------
@@ -57,9 +55,7 @@ for i=1:nrOfRandPoints
     p1 = randPoint(Z1);
     p2 = randPoint(Z2);
     pQp = quadMapPoint(p1,p2,Q);
-    if ~contains(Zres,pQp)
-        res = false; return
-    end
+    assertLoop(contains(Zres,pQp),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

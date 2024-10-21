@@ -4,20 +4,24 @@ classdef linearSysDT < contDynamics
 % Description:
 %    Generates a discrete-time linear system object according to the 
 %    following first-order difference equations:
-%       x(k+1) = A x(k) + B u(k) + c + w(k)
-%       y(k)   = C x(k) + D u(k) + k + v(k)
+%       x(k+1) = A x(k) + B u(k) + c + E w(k)
+%       y(k)   = C x(k) + D u(k) + k + F v(k)
 %
 % Syntax:
-%    obj = linearSysDT(A,B,dt)
-%    obj = linearSysDT(A,B,c,dt)
-%    obj = linearSysDT(A,B,c,C,dt)
-%    obj = linearSysDT(A,B,c,C,D,dt)
-%    obj = linearSysDT(A,B,c,C,D,k,dt)
-%    obj = linearSysDT(name,A,B,dt)
-%    obj = linearSysDT(name,A,B,c,dt)
-%    obj = linearSysDT(name,A,B,c,C,dt)
-%    obj = linearSysDT(name,A,B,c,C,D,dt)
-%    obj = linearSysDT(name,A,B,c,C,D,k,dt)
+%    linsysDT = linearSysDT(A,B,dt)
+%    linsysDT = linearSysDT(A,B,c,dt)
+%    linsysDT = linearSysDT(A,B,c,C,dt)
+%    linsysDT = linearSysDT(A,B,c,C,D,dt)
+%    linsysDT = linearSysDT(A,B,c,C,D,k,dt)
+%    linsysDT = linearSysDT(A,B,c,C,D,k,E,dt)
+%    linsysDT = linearSysDT(A,B,c,C,D,k,E,F,dt)
+%    linsysDT = linearSysDT(name,A,B,dt)
+%    linsysDT = linearSysDT(name,A,B,c,dt)
+%    linsysDT = linearSysDT(name,A,B,c,C,dt)
+%    linsysDT = linearSysDT(name,A,B,c,C,D,dt)
+%    linsysDT = linearSysDT(name,A,B,c,C,D,k,dt)
+%    linsysDT = linearSysDT(name,A,B,c,C,D,k,E,dt)
+%    linsysDT = linearSysDT(name,A,B,c,C,D,k,E,F,dt)
 %
 % Inputs:
 %    name - name of system
@@ -27,15 +31,17 @@ classdef linearSysDT < contDynamics
 %    C - output matrix
 %    D - feedthrough matrix
 %    k - output offset
+%    E - disturbance matrix
+%    F - output disturbance matrix
 %    dt - sampling time
 %
 % Outputs:
-%    obj - generated linearSysDT object
+%    linsysDT - generated linearSysDT object
 %
 % Example:
 %    A = [-0.4 0.6; 0.6 -0.4];
 %    B = [0; 1];
-%    c = [0;0]
+%    c = [0;0];
 %    C = [1 0];
 %    dt = 0.4;
 %    sys = linearSysDT(A,B,c,C,dt)
@@ -51,6 +57,7 @@ classdef linearSysDT < contDynamics
 % Last update:   14-June-2021 (MA, invoke observe from superclass)
 %                19-November-2021 (MW, default values for C, D, k)
 %                14-December-2022 (TL, property check in inputArgsCheck)
+%                30-August-2024 (MW, integrate E and F matrices)
 % Last revision: 18-June-2023 (MW, restructure using auxiliary functions)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -62,13 +69,18 @@ properties (SetAccess = private, GetAccess = public)
     C   % output matrix: q x n
     D   % feedthrough matrix: q x m
     k   % output offset: q x 1
+    E   % disturbance matrix: n x r
+    F   % output disturbance matrix: q x s
     dt  % sampling time
 end
 
 methods
     
     % class constructor
-    function obj = linearSysDT(varargin)
+    function linsysDT = linearSysDT(varargin)
+
+        % 0. check number of input arguments
+        assertNarginConstructor(0:10,nargin);
 
         % 1. copy constructor: not allowed due to obj@contDynamics below
 %         if nargin == 1 && isa(varargin{1},'linearSysDT')
@@ -76,27 +88,63 @@ methods
 %         end
 
         % 2. parse input arguments: varargin -> vars
-        [name,A,B,c,C,D,k,dt] = aux_parseInputArgs(varargin{:});
+        [name,A,B,c,C,D,k,E,F,dt] = aux_parseInputArgs(varargin{:});
 
-        % 3. check correctness of input arguments
-        aux_checkInputArgs(name,A,B,c,C,D,k,dt,nargin);
+        if iscell(A) && iscell(B) && iscell(C) && iscell(D)
+            % --> linear time-varying system
 
-        % 4. compute number of states, inputs, and outputs
-        [name,A,B,c,C,D,k,dt,states,inputs,outputs] = ...
-            aux_computeProperties(name,A,B,c,C,D,k,dt);
+            if ~isempty(c) || ~isempty(k) || ~isempty(E) || ~isempty(F)
+                throw(CORAerror('CORA:notSupported',...
+                    "Support for LTV systems with nonempty c, k, E or F is not implemented yet"));
+            end
+            for i=1:length(A)
+                % 3. check correctness of input arguments
+                aux_checkInputArgs(name,A{i},B{i},c,C{i},D{i},k,E,F,dt,nargin);
+
+                % 4. compute number of states, inputs, and outputs
+                [name,A{i},B{i},c,C{i},D{i},k,E,F,dt,states,inputs,outputs,dists,noises] = ...
+                    aux_computeProperties(name,A{i},B{i},c,C{i},D{i},k,E,F,dt);
+            end
+        else
+            % 3. check correctness of input arguments
+            aux_checkInputArgs(name,A,B,c,C,D,k,E,F,dt,nargin);
+
+            % 4. compute number of states, inputs, and outputs
+            [name,A,B,c,C,D,k,E,F,dt,states,inputs,outputs,dists,noises] = ...
+                aux_computeProperties(name,A,B,c,C,D,k,E,F,dt);
+        end
         
         % 5. instantiate parent class, assign properties
-        obj@contDynamics(name,states,inputs,outputs); 
-        obj.A = A; obj.B = B; obj.c = c;
-        obj.C = C; obj.D = D; obj.k = k;
-        obj.dt = dt;
+        linsysDT@contDynamics(name,states,inputs,outputs,dists,noises); 
+        linsysDT.A = A; linsysDT.B = B; linsysDT.c = c;
+        linsysDT.C = C; linsysDT.D = D; linsysDT.k = k;
+        linsysDT.E = E; linsysDT.F = F;
+        linsysDT.dt = dt;
     end
     
     % invoke function observe so that the superclass can access private
     % functions
-    function [R, tcomp] = observe(obj,params,options)
-        [R, tcomp] = observe@contDynamics(obj,params,options);
+    function [R, tcomp] = observe(syslinDT,params,options)
+        [R, tcomp] = observe@contDynamics(syslinDT,params,options);
     end
+
+    % update system dynamics for the new augmented input [u; w] where w is
+    % the process noise acting on all states 
+    function syslinDT = augment_u_with_w(syslinDT)
+        syslinDT = linearSysDT(syslinDT.name,syslinDT.A, [syslinDT.B eye(syslinDT.nrOfStates)], [], ...
+            syslinDT.C, [syslinDT.D, zeros(syslinDT.nrOfOutputs, syslinDT.nrOfStates)], syslinDT.dt);
+    end
+
+    % update system dynamics for the new augmented input [u; v] where v is
+    % the measurement noise acting on all outputs 
+    function syslinDT = augment_u_with_v(syslinDT)
+        syslinDT = linearSysDT(syslinDT.A, [syslinDT.B zeros(syslinDT.nrOfStates, syslinDT.nrOfOutputs)], [], ...
+            syslinDT.C, [syslinDT.D, eye(syslinDT.nrOfOutputs)], syslinDT.dt);
+    end
+end
+
+methods (Access = protected)
+    [printOrder] = getPrintSystemInfo(S)
 end
 
 end
@@ -104,18 +152,12 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [name,A,B,c,C,D,k,dt] = aux_parseInputArgs(varargin)
+function [name,A,B,c,C,D,k,E,F,dt] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin > 8
-        throw(CORAerror('CORA:tooManyInputArgs',8));
-    end
 
     % default name
     def_name = 'linearSysDT';
-    % init properties
-    A = []; B = []; c = []; C = []; D = []; k = []; dt = 0;
+    A = []; B = []; c = []; C = []; D = []; k = []; E = []; F = []; dt = 0;
 
     % no input arguments
     if nargin == 0
@@ -130,18 +172,18 @@ function [name,A,B,c,C,D,k,dt] = aux_parseInputArgs(varargin)
     % parse depending on whether first input argument is the name
     if ischar(varargin{1})
         % first input argument: name
-        [name,A,B,c,C,D,k] = setDefaultValues({def_name,A,B,c,C,D,k},varargin);
+        [name,A,B,c,C,D,k,E,F] = setDefaultValues({def_name,A,B,c,C,D,k,E,F},varargin);
 
     else
         % set default name
         name = def_name;
-        [A,B,c,C,D,k] = setDefaultValues({A,B,c,C,D,k},varargin);
+        [A,B,c,C,D,k,E,F] = setDefaultValues({A,B,c,C,D,k,E,F},varargin);
 
     end
     
 end
 
-function aux_checkInputArgs(name,A,B,c,C,D,k,dt,n_in)
+function aux_checkInputArgs(name,A,B,c,C,D,k,E,F,dt,n_in)
 % check correctness of input arguments
 
     % only check if macro set to true
@@ -159,6 +201,8 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,dt,n_in)
                 {C, 'att', 'numeric', 'matrix'}
                 {D, 'att', 'numeric', 'matrix'}
                 {k, 'att', 'numeric'}
+                {E, 'att', 'numeric', 'matrix'}
+                {F, 'att', 'numeric', 'matrix'}
                 {dt, 'att', 'numeric', {'scalar','positive'}}
             });
             
@@ -172,6 +216,8 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,dt,n_in)
                 {C, 'att', 'numeric', 'matrix'}
                 {D, 'att', 'numeric', 'matrix'}
                 {k, 'att', 'numeric'}
+                {E, 'att', 'numeric', 'matrix'}
+                {F, 'att', 'numeric', 'matrix'}
                 {dt, 'att', 'numeric', {'scalar','positive'}}
             });
 
@@ -191,7 +237,7 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,dt,n_in)
                 'Length of offset c must match row/column dimension of state matrix A.'));
         end
 
-        % check if dimensions fit
+        % check input matrix and throughput matrix
         if ~isempty(B)
             if ~isscalar(B)
                 if size(A,1) ~= size(B,1)
@@ -210,6 +256,17 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,dt,n_in)
             end
         end
 
+        % check if disturbance matrix has the correct size
+        if ~isempty(E)
+            if ~isscalar(E) && size(A,1) ~= size(E,1)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    ['Column dimension of disturbance matrix E must match '...
+                    'row/column dimension of state matrix A.']));
+            end
+        end
+
+        % check output matrix and throughput matrix
+        outputs = size(A,1); % assume outputs = states
         if ~isempty(C)
             if ~isscalar(C)
                 if size(A,1) ~= size(C,2)
@@ -218,8 +275,6 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,dt,n_in)
                         'row dimension of state matrix A.']));
                 end
                 outputs = size(C,1);
-            else % isscalar(C)
-                outputs = size(A,1);
             end
             if ~isempty(D) && ~isscalar(D) && outputs ~= size(D,1)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
@@ -231,15 +286,24 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,dt,n_in)
                     'Length of offset k must match row dimension of output matrix C.'));
             end
         end
+
+        % check if output disturbance matrix has the correct size
+        if ~isempty(F)
+            if ~isscalar(F) && outputs ~= size(F,1)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    ['Column dimension of noise matrix F must match '...
+                    'row/column dimension of state matrix C.']));
+            end
+        end
         
     end
 
 end
 
-function [name,A,B,c,C,D,k,dt,states,inputs,outputs] = ...
-    aux_computeProperties(name,A,B,c,C,D,k,dt)
+function [name,A,B,c,C,D,k,E,F,dt,states,inputs,outputs,dists,noises] = ...
+    aux_computeProperties(name,A,B,c,C,D,k,E,F,dt)
 % assign zero vectors/matrices for [] values (from user or by default)
-% compute number of states, inputs, and outputs
+% compute number of states, inputs,  outputs, disturbances, and noises
 % difficulty: MATLAB can use 1 instead of eye(n) for multiplication
 
     % number of states
@@ -280,6 +344,24 @@ function [name,A,B,c,C,D,k,dt,states,inputs,outputs] = ...
     % output offset
     if isempty(k)
         k = zeros(outputs,1);
+    end
+
+    % disturbance matrix and number of disturbances
+    if isempty(E)
+        E = zeros(states,1);
+    end
+    dists = states;
+    if ~isscalar(E)
+        dists = size(E,2);
+    end
+
+    % noise matrix and number of noises
+    if isempty(F)
+        F = zeros(outputs,1);
+    end
+    noises = outputs;
+    if ~isscalar(F)
+        noises = size(F,2);
     end
 
 end

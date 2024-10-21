@@ -47,8 +47,8 @@ Z = zonotope(C.c,C.g);
 if ~withinTol(C.r,0)
 
     % enclose capsule by ellipsoid and resulting ellipsoid by capsule
-    m = order*n-1;
-    Z = Z + zonotope(ellipsoid(C.r^2*eye(n)),m,'outer:norm');
+    nrGen = order*n-1;
+    Z = Z + zonotope(ellipsoid(C.r^2*eye(n)),'outer:norm',nrGen);
     
 end
 

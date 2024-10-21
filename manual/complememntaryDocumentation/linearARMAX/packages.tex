@@ -1,0 +1,85 @@
+
+\usepackage[a4paper, left=1.5cm, right=1.5cm, top=2.5cm, bottom=2cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+%\usepackage[sc]{mathpazo}
+\usepackage[american]{babel}
+\usepackage[autostyle]{csquotes}
+\usepackage{booktabs} % for rulers in tables
+\usepackage[final]{microtype} % for \microtypesetup{protrusion=true}
+\usepackage[hidelinks, breaklinks = true]{hyperref} % hidelinks removes colored boxes around references and links, breaklinks allows linebreak in e.g. list of figures for long captions
+%\usepackage[toc,nonumberlist,acronym]{glossaries} % TODO: remove if glossary not needed
+
+% math
+\usepackage{amssymb}
+\let\proof\relax
+\let\endproof\relax
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{algorithm} %for algorithm environment [noend]
+\usepackage{algpseudocode} %for algorithm environment
+\usepackage{units} % for units
+%\usepackage{scrhack} % necessary for listings package
+%\usepackage{listings}
+\usepackage{mathtools}
+
+% graphics
+\usepackage{graphicx}
+\usepackage{psfrag}
+%\usepackage{epstopdf}
+\usepackage{tikz}
+%\usepackage{pgfplots}
+%\usepackage{pgfplotstable}
+
+%added packages
+\usepackage{comment}	
+\usepackage{acronym}
+\usepackage{mathrsfs}
+\usepackage{subcaption}
+\usepackage{fixltx2e}
+\usepackage{amsfonts}
+\usepackage[capitalise]{cleveref}
+\usepackage{hyperref}
+
+\usepackage{bbm}
+\usepackage{scalerel}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{multirow}
+%\usepackage{amsthm}
+\usepackage{cite}
+
+% Caption format
+\captionsetup{
+    width=\linewidth, % width of caption is 90% of current textwidth
+    labelfont=bf,        % the label, e.g. figure 12, is bold
+    font=small,          % size 8pt --> IEEE
+    %format=hang,         % no caption text under the label
+}
+\newtheoremstyle{style}% name of the style to be used
+  {\topsep}% measure of space to leave above the theorem. E.g.: 3pt
+  {\topsep}% measure of space to leave below the theorem. E.g.: 3pt
+  {\itshape}% name of font to use in the body of the theorem
+  {0pt}% measure of space to indent
+  {\bfseries}% name of head font
+  {:}% punctuation between head and body
+  { }% space after theorem head; " " = normal interword space
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}
+
+% Theorem environments
+\theoremstyle{style}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+%\DeclareMathOperator*{\depeplus}{\bigoplus \hspace{-0.05cm}*}
+\DeclareMathOperator*{\bigboxplus}{\scalerel*{\boxplus}{()}}
+
+\crefname{equation}{}{}
+\crefname{section}{Sec.}{}
+\crefname{table}{Tab.}{}
+\crefname{algorithm}{Alg.}{}
+\crefname{definition}{Def.}{}
+%\crefname{line}{line}{line}
+

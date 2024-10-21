@@ -23,19 +23,17 @@ function res = test_capsule_reduce
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty capsule
 C = capsule.empty(2);
 C_reduce = reduce(C);
-res(end+1,1) = isequal(C,C_reduce);
+assert(isequal(C,C_reduce));
 
 % 2D capsule
 C = capsule([1;4],[1;-2],2);
 C_ = reduce(C);
-res(end+1,1) = isequal(C,C_);
+assert(isequal(C,C_));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

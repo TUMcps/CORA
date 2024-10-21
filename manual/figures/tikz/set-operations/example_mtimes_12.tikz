@@ -1,0 +1,10 @@
+\addplot [plotstyle2]
+  table[row sep=crcr]{%
+2	-2\\
+2	-1\\
+0	1\\
+-2	2\\
+-2	1\\
+0	-1\\
+2	-2\\
+};

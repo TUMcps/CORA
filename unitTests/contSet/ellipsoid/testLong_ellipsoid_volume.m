@@ -41,17 +41,10 @@ for i=1:nrOfTests
     E = ellipsoid(Q,q);
     vol_ball = (pi^(n/2) / gamma(1+n/2)) * 1^n;
     % check result
-    if ~withinTol(vol_ball,volume(E))
-        res = false; break;
-    end
+    assertLoop(withinTol(vol_ball,volume(E)),i)
     
     % check result
-    try
-        volume(E_d);
-    catch
-        res = false; break;
-    end
-
+    volume(E_d);    
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -27,8 +27,7 @@ function [params,options] = adaptOptions(loc,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % read params and options from contDynamics
-[paramsList,optionsList] = feval(['config_' class(loc.contDynamics) '_reach'],...
-    loc.contDynamics,options,options);
+[paramsList,optionsList] = feval(['config_' class(loc.contDynamics) '_reach']);
 
 % copy parameter from options
 params.U = options.U;

@@ -27,6 +27,12 @@ function P = polytope(I)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% check if not a matrix set
+n = dim(I);
+if numel(n) > 1
+    throw(CORAerror('CORA:wrongValue','first','Interval must not be an n-d array with n > 1.'))
+end
+
 % check if the interval has the correct format
 if size(I,2) > 1
     throw(CORAerror('CORA:wrongInputInConstructor',...

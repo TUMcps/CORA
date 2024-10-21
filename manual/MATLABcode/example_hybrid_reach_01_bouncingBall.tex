@@ -1,0 +1,112 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                                                                                      
+ $$\color{mgreen}$% Parameter ---------------------------------------------------------------$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$% problem description$\color{black}$$\\
+ $params.R0 = zonotope([1;0],diag([0.05,0.05]));      $\color{mgreen}$% initial set$\color{black}$$\\
+ $params.startLoc = 1;                                $\color{mgreen}$% initial location$\color{black}$$\\
+ $params.tFinal = 1.7;                                $\color{mgreen}$% final time$\color{black}$$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% Reachability Options ----------------------------------------------------$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$% settings for continuous reachability $\color{black}$$\\
+ $options.timeStep = 0.05;$\\
+ $options.taylorTerms = 10;$\\
+ $options.zonotopeOrder = 20;$\\
+ $$\\
+ $$\color{mgreen}$% settings for hybrid systems$\color{black}$$\\
+ $options.guardIntersect = $\color{mred}$'polytope'$\color{black}$;$\\
+ $options.enclose = {$\color{mred}$'box'$\color{black}$}; $\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% Hybrid Automaton --------------------------------------------------------$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$% continuous dynamics $\color{black}$$\\
+ $A = [0 1; 0 0];$\\
+ $B = [0; 0];$\\
+ $c = [0; -9.81];$\\
+ $linSys = linearSys($\color{mred}$'linearSys'$\color{black}$,A,B,c);$\\
+ $$\\
+ $$\color{mgreen}$% system parameters$\color{black}$$\\
+ $alpha = -0.75;                  $\color{mgreen}$% rebound factor$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$% invariant set $\color{black}$$\\
+ $inv = polytope([-1,0],0);$\\
+ $$\\
+ $$\color{mgreen}$% guard sets$\color{black}$$\\
+ $guard = polytope([0 1],0,[1 0],0);$\\
+ $$\\
+ $$\color{mgreen}$% reset function$\color{black}$$\\
+ $reset = linearReset([1 0; 0 alpha],[0;0],[0;0]);$\\
+ $$\\
+ $$\color{mgreen}$% transitions$\color{black}$$\\
+ $trans(1) = transition(guard,reset,1);$\\
+ $$\\
+ $$\color{mgreen}$% location object$\color{black}$$\\
+ $loc(1) = location($\color{mred}$'loc1'$\color{black}$,inv,trans,linSys); $\\
+ $$\\
+ $$\color{mgreen}$% hybrid automata$\color{black}$$\\
+ $HA = hybridAutomaton(loc);$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% Reachability Analysis ---------------------------------------------------$\color{black}$$\\
+ $$\\
+ $tic;$\\
+ $R = reach(HA,params,options);$\\
+ $tComp = toc;$\\
+ $$\\
+ $disp([$\color{mred}$'Computation time for reachable set: '$\color{black}$,num2str(tComp),$\color{mred}$' s'$\color{black}$]);$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% Simulation --------------------------------------------------------------$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$% settings for random simulation$\color{black}$$\\
+ $simOpt.points = 10;        $\color{mgreen}$% number of initial points$\color{black}$$\\
+ $simOpt.fracVert = 0.5;     $\color{mgreen}$% fraction of vertices initial set$\color{black}$$\\
+ $simOpt.fracInpVert = 0.5;  $\color{mgreen}$% fraction of vertices input set$\color{black}$$\\
+ $simOpt.inpChanges = 10;    $\color{mgreen}$% changes of input over time horizon  $\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$% random simulation$\color{black}$$\\
+ $simRes = simulateRandom(HA,params,simOpt); $\\
+ $$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% Visualization -----------------------------------------------------------$\color{black}$$\\
+ $$\\
+ $figure; hold $\color{mred}$on$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$% plot reachable set$\color{black}$$\\
+ $plotOverTime(R,1,$\color{mred}$'b'$\color{black}$);$\\
+ $$\\
+ $$\color{mgreen}$% plot initial set$\color{black}$$\\
+ $plotOverTime(params.R0,1,$\color{mred}$'k'$\color{black}$,$\color{mred}$'FaceColor'$\color{black}$,$\color{mred}$'w'$\color{black}$);$\\
+ $$\\
+ $$\color{mgreen}$% plot simulated trajectories$\color{black}$$\\
+ $plotOverTime(simRes,1);$\\
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

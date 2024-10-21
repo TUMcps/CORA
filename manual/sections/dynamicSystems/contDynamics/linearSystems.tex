@@ -1,0 +1,100 @@
+\subsubsection{Linear Systems} \label{sec:linearSystems}
+
+The first system dynamics we consider are linear systems of the form
+\begin{equation}\label{eq:linearSystem}
+\begin{split}
+	& \dot{x}(t) = A x(t) + B u(t) + c + w(t), \\
+	& y(t) = C x(t) + D u(t) + k + v(t),
+\end{split}
+\end{equation} 
+where $x(t) \in \Rn$ is the system state, $u(t)\in \R^m$ is the system input, $w(t) \in \Rn$ is the disturbance, $y(t) \in \R^p$ is the system output, $v(t) \in \R^p$ is the sensor noise, and $A \in \mathbb{R}^{n \times n}$, $B \in \mathbb{R}^{n \times m}$, $c \in \mathbb{R}^n$, $C \in \mathbb{R}^{p \times n}$, $D \in \mathbb{R}^{p \times m}$, $k \in \mathbb{R}^p$.
+Linear systems are implemented by the class \texttt{linearSys}. An object of class \texttt{linearSys} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		& \texttt{sys} = \texttt{linearSys}(A,B), \\
+		& \texttt{sys} = \texttt{linearSys}(A,B,c,C,D,k), \\
+		& \texttt{sys} = \texttt{linearSys}(\texttt{name},A,B), \\
+		& \texttt{sys} = \texttt{linearSys}(\texttt{name},A,B,c,C,D,k),
+	\end{split}
+\end{equation*} 
+where \texttt{name} is a string specifying the name of the system and $A,B,c,C,D,k$ are defined as in \eqref{eq:linearSystem}. Let us demonstrate the class \texttt{linearSys} by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.48\textwidth}
+	\begin{equation*}
+\begin{split}
+	& \begin{bmatrix} \dot x_1 \\ \dot x_2 \end{bmatrix} = \begin{bmatrix} -2 & 0 \\ 1 & -3 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} + \begin{bmatrix} 1 \\ 1 \end{bmatrix} u \\
+	& y = \begin{bmatrix} 1 & 0 \end{bmatrix} \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} 
+\end{split}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[t]{0.48\textwidth}
+	\vspace{5pt}
+	\footnotesize
+	\input{./MATLABcode/example_linearSys}
+\end{minipage}
+\end{center}
+
+\subsubsubsection{Operation \texttt{reach}}
+
+There exist several different algorithms for computing the reachable set of a linear system. The algorithms implemented in CORA are listed in \cref{tab:linAlg}. We recommend to use the adaptive algorithm (\texttt{options.linAlg = 'adaptive'}) since it is fully automatic and does not require any manual parameter tuning. A visualization of the basic steps that are applied to calculate the reachable set for a linear system is shown in \cref{fig:linReachOverview}: First, the reachable set $\mathcal{R}_h^d = e^{A \Delta t} \mathcal{X}_0$ for the next point in time is computed by propagating the initial set $\mathcal{X}_0$ with the matrix exponential $e^{A \Delta t}$. In the second step, the convex hull is computed. To account for the curvature of trajectories, the set resulting from the convex hull is bloated by an error term in the third step, which yields a tight enclosure of the reachable set $\mathcal{R}^d(\tau_0)$ for the time interval $\tau_0$.
+
+\begin{table}[h]
+	\caption{Reachability algorithms for linear systems.}
+	\centering
+	\label{tab:linAlg}
+	\begin{tabular}{lll}
+		\toprule
+		\textbf{Algorithm} & \textbf{Description} & \textbf{Reference} \\
+		\midrule
+		\texttt{standard} & standard algorithm & \cite{Girard2005} \\
+		\texttt{wrapping-free} & avoid wrapping effect & \cite{Girard2006} \\
+		\texttt{fromStart} & propagation from start & \cite{Frehse2011} \\
+		\texttt{decomp} & block decomposition (high-dim. systems) & \cite{Bogomolov2018} \\
+		\texttt{krylov} & Krylov subspace method (high-dim. systems) &  \cite{Althoff2020c}\footnote{Requires \textit{Multiple Precision Toolbox}: \\ \url{https://www.mathworks.com/matlabcentral/fileexchange/6446-multiple-precision-toolbox-for-matlab}} \\
+		\texttt{adap} & determine near-optimal settings automatically & \cite{Wetzlinger2020} \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+The settings for reachability analysis are specified as fields of the struct \texttt{options} (see \cref{sec:reach}). For linear systems, the following settings are available:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{longtable}[t]{l p{11cm}}	
+	--~\texttt{.linAlg} & string specifying the reachability algorithm that is used (see \cref{tab:linAlg}). The default value is \texttt{'standard'}. \\
+	--~\texttt{.timeStep} & time step size required for all algorithms except for \texttt{'adaptive'}. \\
+	--~\texttt{.taylorTerms} & number of Taylor terms for the computation of the exponential matrix $e^{A\Delta t}$ (see \cite[Eq. (3.2)]{Althoff2010a}). Required for all algorithms except for \texttt{'adaptive'}. \\
+	--~\texttt{.zonotopeOrder} & upper bound for the zonotope order $\rho$ (see \cref{sec:zonotope}). Required for all algorithms except for \texttt{'adaptive'}. \\
+	--~\texttt{.reductionTechnique} & string specifying the method used to reduce the zonotope order (see \cref{tab:zono_reduction}). The default value is \texttt{'girard'}. \\
+	--~\texttt{.partition} & array defining the range of dimensions each block covers. All blocks together make up the linear system (algorithm \texttt{'decomp'} only). \\
+	--~\texttt{.krylovError} & upper bound of Krylov error as defined in \cite[eq.~(3)]{Althoff2020c} (algorithm \texttt{'krylov'} only) \\
+	--~\texttt{.krylovStep} & step size to increase the dimension of the Krylov subspace $\xi$ as defined in \cite[Sec.~II.A]{Althoff2020c} until the Krylov error is below the upper bound defined by \texttt{.krylovError} (algorithm \texttt{'krylov'} only) \\
+	--~\texttt{.error} & upper bound for the error containing over-approximative terms as defined in \cite{Wetzlinger2020} (algorithm \texttt{'adaptive'} only). The default value is set to one hundreth of the longest edge of the interval over-approximation of the initial set.
+\end{longtable}
+\end{center}
+
+\begin{figure}[htb]
+    \centering	
+	\footnotesize
+    \includetikz{./figures/tikz/contDynamics/ReachsetSteps2}
+    \caption{Steps for the computation of an over-approximation of the reachable set for a linear system.}
+    \label{fig:linReachOverview}
+\end{figure}
+
+\newpage
+
+\subsubsubsection{Operation \texttt{reachInner}}
+
+To obtain an inner-approximation, we compute the reachable set for piecewise-constant uncertain inputs, which is an inner-approximation of the reachable set with uncertain inputs that can vary arbitrarily over time. Furthermore, we compute an inner-approximation of the original zonotope when we reduce the zonotope order. 
+
+The settings for reachability analysis are specified as fields of the struct \texttt{options} (see \cref{sec:reachInner}). For linear systems, the following settings are available:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{11cm}}	
+	--~\texttt{.timeStep} & time step size $\Delta t$. \\
+	--~\texttt{.zonotopeOrder} & upper bound for the zonotope order $\rho$ (see \cref{sec:zonotope}). \\
+	--~\texttt{.reductionTechnique} & string specifying the method used to reduce the zonotope order in an under-approximative way. The available methods are \texttt{'sum'}, \texttt{'linProg'}, \texttt{'scale'}. The default value is \texttt{'sum'}. \\
+\end{tabular}
+\end{center}

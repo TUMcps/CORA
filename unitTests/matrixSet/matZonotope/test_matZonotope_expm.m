@@ -26,7 +26,7 @@ function res = test_matZonotope_expm
 % only test for runtime error
 res = true;
 
-% empty matrix zonotope
+% matrix zonotope
 C = [0 1;0 -2.5];
 D = [0 0;0 0.5];
 intMat = intervalMatrix(C,D);

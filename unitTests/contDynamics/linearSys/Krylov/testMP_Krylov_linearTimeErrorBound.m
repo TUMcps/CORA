@@ -11,7 +11,7 @@ function res = testMP_Krylov_linearTimeErrorBound(~)
 %    no
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Reference:
 %    [1] Althoff, M.: Reachability Analysis of Large Linear Systems With
@@ -84,7 +84,7 @@ end
 linDyn = linearSys('KrylovTest',A,1); %initialize quadratic dynamics
 
 % test errors of first system
-res_1 = aux_testProcedure(linDyn, options);
+assert(aux_testProcedure(linDyn, options));
 
 % system with nu(A)>0 -----------------------------------------------------
 N = 100;
@@ -115,15 +115,15 @@ end
 linDyn = linearSys('KrylovTest',A,1); %initialize quadratic dynamics
 
 % test errors of second system
-res_2 = aux_testProcedure(linDyn, options);
-
-% final result
-res = res_1 && res_2;
+assert(aux_testProcedure(linDyn, options));
 
 % revoke access to private function "initReach_Krylov"
 delete(target);
 rmpath(genpath(path));
 addpath(genpath(path));
+
+% test completed
+res = true;
 
 end
 
@@ -144,7 +144,7 @@ krylovOrder = length(V(1,:));
 t = 0:options.timeStep:options.tFinal;
 
 % check error for each time
-res = [];
+res = true;
 for i=1:length(t)
     % set error
     errorBound = options.krylovError*t(i);
@@ -153,11 +153,11 @@ for i=1:length(t)
     error = aux_KrylovError(linDyn,linDyn.A,options.x0,t(i),krylovOrder,options);
     
     % check whether error is within bounds
-    res(end+1) = (error <= errorBound);
+    assert((error <= errorBound));
 end
 
 % All orders larger or equal?
-res = all(res);
+res = true;
 
 end
 

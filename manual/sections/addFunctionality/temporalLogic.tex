@@ -1,0 +1,52 @@
+\subsection{Signal Temporal Logic}
+\label{sec:temporalLogic}
+
+Signal temporal logic is a common formalism to represent complex specifications that describe the desired behavior of a system. In CORA, signal temporal logic formulas are represented by the class \texttt{stl}. An object of class \texttt{stl} can be constructed as follows:
+\begin{equation*}
+	\texttt{obj = stl(name,}n\texttt{)},
+\end{equation*}
+where \texttt{name} is a string specifying the name of the variable and $n$ is the dimension of the variable. The variables constructed with the constructor of the class \texttt{stl} correspond to the system states. These variables can be used to construct predicates with the operators \texttt{+}, \texttt{-}, \texttt{*}, \texttt{<}, \texttt{<=}, \texttt{>}, and \texttt{>=}. In addition, set containment $x \in \mathcal{S}$ can be realized with the function $\texttt{in(}x,\mathcal{S}\texttt{)}$, where $\mathcal{S}$ is a continuous set (see \cref{sec:setRepresentations}). The predicates can then be used as inputs for the signal temporal logic operators in \cref{tab:signalTemporalLogic}. Note that \texttt{stlInterval} objects, and thus the temporal operators, also support open and half-open intervals (see the example below). The resulting signal temporal logic formula can be used to construct a system specification (see \cref{sec:specification}) which is checked during reachability analysis, where CORA implements the approach in \cite{Roehm2016b} to check if the reachable set satisfies temporal logic specifications. Moreover, the incremental verification algorithm for signal temporal logic from \cite{Lercher2024} is implemented in the method \texttt{modelChecking} of the class \texttt{reachSet}.
+
+Let us demonstrate signal temporal logic in CORA by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.65\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_stl}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{10pt}
+	\begin{verbatim}
+		Command Window:	
+	
+eq = 
+
+(x1 < 3 U[1,3) x2 > 5)
+  
+  
+	\end{verbatim}
+\end{minipage}  
+\end{center}
+
+
+\begin{table}
+\centering
+\caption{Operators for signal temporal logic, where $\xi(t)$ is a trace and $\models$ denotes entailment.}
+\label{tab:signalTemporalLogic}
+\begin{tabular}{ l l l}	
+\toprule
+\textbf{Operator} & \textbf{CORA} & \textbf{Definition} \\
+\midrule
+$\phi \wedge \psi$ & \texttt{p \& q} & $\xi(t) \models \phi \wedge \xi(t) \models \psi$\\
+$\phi \vee \psi$ & \texttt{p | q} & $\xi(t) \models \phi \vee \xi(t) \models \psi$\\
+$\neg \, \phi$ & $\sim$\texttt{p} & $\xi(t) \models \neg \phi$\\
+$\phi \Rightarrow \psi$ & \texttt{implies(p,q)} & $\xi(t) \models \phi \Rightarrow \xi(t) \models \psi$\\
+$\mathcal{X}_{a} \, \phi$ & \texttt{next(p,a)} & $\xi(t+a) \models \phi$\\
+$\mathcal{F}_{[a,b]} \, \phi$ & \texttt{finally(p,stlInterval(a,b))} & $\exists t \in [a,b]: \xi(t) \models \phi$ \\
+$\mathcal{G}_{[a,b]} \, \phi$ & \texttt{globally(p,stlInterval(a,b))} & $\forall t \in [a,b]: \xi(t) \models \phi$ \\
+$\phi \, \mathcal{U}_{[a,b]} \, \psi$ & \texttt{until(p,q,stlInterval(a,b))} & $\exists t \in [a,b]: \xi(t) \models \psi \wedge \forall t' \in [0,t): \xi(t') \models \phi$ \\
+$\phi \, \mathcal{R}_{[a,b]} \, \psi$ \hspace{-10pt} & \texttt{release(p,q,stlInterval(a,b))} \hspace{-10pt} & $\forall t \in [a,b]: \xi(t) \models \psi \vee \exists t' \in [0,t): \xi(t') \models \phi$ \\
+\bottomrule
+\end{tabular}
+\end{table}

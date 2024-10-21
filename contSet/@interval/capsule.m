@@ -31,12 +31,18 @@ function C = capsule(I)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-    
+
+% check if not a matrix set
+n = dim(I);
+if numel(n) > 1
+    throw(CORAerror('CORA:wrongValue','first','Interval must not be an n-d array with n > 1.'))
+end
+
 % dimension with largest width -> generator of capsule
 width = rad(I);
 [~,ind] = sort(width,'descend');
 
-g = zeros(dim(I),1);
+g = zeros(n,1);
 g(ind(1)) = width(ind(1));
 
 % radius of capsule = enclosing radius of remaining interval

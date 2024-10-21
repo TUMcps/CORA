@@ -23,8 +23,6 @@ function res = test_zonoBundle_polytope
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % fully-empty zonoBundle
 % zB = zonoBundle.empty(2);
 % P = polytope(zB);
@@ -40,7 +38,7 @@ P = polytope(zB);
 V = vertices(zB);
 V_ = vertices(P);
 % compare results
-res(end+1,1) = compareMatrices(V,V_,1e-12);
+assert(compareMatrices(V,V_,1e-12));
 
 % empty intersection
 Z2 = zonotope([-4;1],[0.5 1; 1 -1]);
@@ -51,9 +49,9 @@ P = polytope(zB);
 V = vertices(zB);
 V_ = vertices(P);
 % compare results
-res(end+1,1) = compareMatrices(V,V_,1e-12);
+assert(compareMatrices(V,V_,1e-12));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

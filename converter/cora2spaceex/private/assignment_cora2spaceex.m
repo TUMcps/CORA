@@ -5,9 +5,9 @@ function assignment_cora2spaceex(tran, docNode, reset)
 %    assignment_cora2spaceex(tran, docNode, reset)
 %
 % Inputs:
-%    tran -
+%    tran - transition object
 %    docNode - 
-%    reset - 
+%    reset - linearReset/nonlinearReset object
 %
 % Outputs:
 %    -
@@ -28,32 +28,34 @@ function assignment_cora2spaceex(tran, docNode, reset)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty reset function (0x0 transition)
-if isempty(fields(reset))
-    eqs = '';
-    
-elseif isfield(reset,'A')
+if isa(reset,'linearReset')
     % linear reset
 
     A = reset.A;
-    b = reset.c;
+    B = reset.B;
+    c = reset.c;
     
-    dim = size(A,1);
+    % assumes preStateDim == postStateDim
+    n = reset.postStateDim;
+    m = reset.inputDim;
     
-    x = sym('x',[dim,1]);
+    x = sym('x',[n,1]);
+    u = sym('u',[m,1]);
     
-    eq = A*x + b;
+    eq = A*x + c; % + B*u
     
     % convert the equation to a character sequence
-    eqs ='';
-    for idx = 1:dim
-        x = sprintf('x%d''', idx); % first derivative of x_n
+    eqs = '';
+    for idx = 1:n
+        lhs = sprintf('x%d''', idx); % first derivative of x_n
         eq_c = char(eq(idx));
-        eq_c = [x, ' := ', eq_c];
-        if idx > 1;  eq_c = [newline,' & ', eq_c]; end
-        eqs = [eqs,eq_c];
+        eq_c = [lhs, ' := ', eq_c];
+        if idx > 1
+            eq_c = [newline,' & ', eq_c];
+        end
+        eqs = [eqs, eq_c];
     end
-elseif isfield(reset,'f')
+elseif isa(reset,'nonlinearReset')
     throw(CORAerror('CORA:notSupported',...
         'cora2spaceex does not support nonlinear reset functions.'));
 end
@@ -63,7 +65,5 @@ end
 assignment = docNode.createElement('assignment');
 assignment.appendChild(docNode.createTextNode(eqs));
 tran.appendChild(assignment);
-
-end
 
 % ------------------------------ END OF CODE ------------------------------

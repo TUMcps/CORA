@@ -1,0 +1,108 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                                                                                 
+ $$\color{mgreen}$% Parameter ---------------------------------------------------------------$\color{black}$$\\
+ $$\\
+ $params.tFinal = 400;                                     $\color{mgreen}$% final time$\color{black}$$\\
+ $params.R0 = zonotope([[2; 4; 4; 2; 10; 4],0.2*eye(6)]);  $\color{mgreen}$% initial set$\color{black}$$\\
+ $params.U = zonotope([0,0.005]);                          $\color{mgreen}$% uncertain input$\color{black}$$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% Reachability Settings ---------------------------------------------------$\color{black}$$\\
+ $$\\
+ $options.timeStep=0.5;$\\
+ $options.taylorTerms=4;$\\
+ $options.intermediateOrder = 4;$\\
+ $options.zonotopeOrder=10;$\\
+ $options.tensorOrder = 2;$\\
+ $options.alg = $\color{mred}$'lin'$\color{black}$;$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% System Dynamics ---------------------------------------------------------$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$% tank system with certain pararmters$\color{black}$$\\
+ $tank = nonlinearSys(@tank6Eq);$\\
+ $$\\
+ $$\color{mgreen}$% tank system with uncertain parameters$\color{black}$$\\
+ $optionsParam = options;$\\
+ $optionsParam.paramInt = interval(0.0148,0.015);$\\
+ $$\\
+ $tankParam = nonlinParamSys(@tank6paramEq);$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% Reachability Analysis ---------------------------------------------------        $\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$% compute reachable set of tank system without uncertain parameters$\color{black}$$\\
+ $tic$\\
+ $RcontNoParam = reach(tank, params, options);$\\
+ $tComp = toc;$\\
+ $disp([$\color{mred}$'computation time (without uncertain parameters): '$\color{black}$,num2str(tComp)]);$\\
+ $$\\
+ $$\color{mgreen}$% compute reachable set of tank system with uncertain parameters$\color{black}$$\\
+ $tic$\\
+ $RcontParam = reach(tankParam, params, optionsParam);$\\
+ $tComp = toc;$\\
+ $disp([$\color{mred}$'computation time (with uncertain parameters): '$\color{black}$,num2str(tComp)]);$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% Simulation --------------------------------------------------------------$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$% settings for random simulation $\color{black}$$\\
+ $simOpt.points = 60;        $\color{mgreen}$% number of initial points$\color{black}$$\\
+ $simOpt.fracVert = 0.5;     $\color{mgreen}$% fraction of vertices initial set$\color{black}$$\\
+ $simOpt.fracInpVert = 0.5;  $\color{mgreen}$% fraction of vertices input set$\color{black}$$\\
+ $simOpt.nrConstInp = 6;     $\color{mgreen}$% changes of input over time horizon$\color{black}$$\\
+ $$\\
+ $$\color{mgreen}$% random simulation$\color{black}$$\\
+ $simRes = simulateRandom(tank,params,simOpt);$\\
+ $$\\
+ $$\\
+ $$\color{mgreen}$% Visualization -----------------------------------------------------------$\color{black}$$\\
+ $$\\
+ $dims = {[1,2],[3,4],[5,6]};$\\
+ $$\\
+ $$\color{mgreen}$% plot different projections$\color{black}$$\\
+ $$\color{mblue}$for$\color{black}$ i = 1:length(dims)$\\
+ $    $\\
+ $    figure; hold $\color{mred}$on$\color{black}$$\\
+ $    projDims = dims{i};$\\
+ $$\\
+ $    $\color{mgreen}$% plot reachable sets$\color{black}$$\\
+ $    hanParam = plot(RcontParam,projDims,$\color{mred}$'FaceColor'$\color{black}$,[.7 .7 .7]$\color{black}$)$\\
+ $    hanNoParam = plot(RcontNoParam,projDims,$\color{mred}$'w'$\color{black}$);$\\
+ $    $\\
+ $    $\color{mgreen}$% plot initial set$\color{black}$$\\
+ $    plot(params.R0,projDims,$\color{mred}$'k'$\color{black}$,$\color{mred}$'FaceColor'$\color{black}$,$\color{mred}$'w'$\color{black}$);$\\
+ $  $\\
+ $    $\color{mgreen}$% plot simulation results$\color{black}$$\\
+ $    plot(simRes,projDims);$\\
+ $$\\
+ $    $\color{mgreen}$% label plot$\color{black}$$\\
+ $    xlabel([$\color{mred}$'x_{'$\color{black}$,num2str(projDims(1)),$\color{mred}$'}'$\color{black}$]);$\\
+ $    ylabel([$\color{mred}$'x_{'$\color{black}$,num2str(projDims(2)),$\color{mred}$'}'$\color{black}$]);$\\
+ $$\color{mblue}$end$\color{black}$$\\ 
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

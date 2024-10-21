@@ -17,6 +17,9 @@ function res = test_partition_exactIntersection()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 twoDimField=partition([0,10; -3,3],[5;10]);
 

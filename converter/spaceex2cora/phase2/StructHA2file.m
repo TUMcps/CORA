@@ -32,9 +32,7 @@ function StructHA2file(data,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check for too many input arguments
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(0,3);
 
 % set default values
 [filename,resultpath] = setDefaultValues({data.name,...

@@ -24,8 +24,6 @@ function res = test_linearSysDT_linearSysDT
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = false;
-
 % define linearSysDT ------------------------------------------------------
 
 % stable system matrix: n x n
@@ -103,27 +101,27 @@ for j = 1:length(list)
     sys = list{j};
     
     % check value of system dimension
-    assert(sys.dim == sys_n(j),['Case ' num2str(j) ': ' errmsg_n]);
+    assertLoop(sys.nrOfStates == sys_n(j),errmsg_n,[],j);
     % check value of number of inputs
-    assert(sys.nrOfInputs == sys_m(j),['Case ' num2str(j) ': ' errmsg_m]);
+    assertLoop(sys.nrOfInputs == sys_m(j),errmsg_m,[],j);
     % check value of number of outputs
-    assert(sys.nrOfOutputs == sys_y(j),['Case ' num2str(j) ': ' errmsg_y]);
+    assertLoop(sys.nrOfOutputs == sys_y(j),errmsg_y,[],j);
     
     % check default values
     if is_c_def(j)
-        assert(all(sys.c == c_def),['Case ' num2str(j) ': ' errmsg_c]);
+        assertLoop(all(sys.c == c_def),errmsg_c,[],j);
     end
     if is_C_def(j)
-        assert(all(all(sys.C == C_def)),['Case ' num2str(j) ': ' errmsg_C]);
+        assertLoop(all(all(sys.C == C_def)),errmsg_C,[],j);
     end
     if is_D_def(j)
-        assert(all(all(sys.D == D_def)),['Case ' num2str(j) ': ' errmsg_D]);
+        assertLoop(all(all(sys.D == D_def)),errmsg_D,[],j);
     end
     if is_k_def(j)
         if sys_y(j) == n
-        	assert(all(sys.k == k_def_n),['Case ' num2str(j) ': ' errmsg_k]);
+        	assertLoop(all(sys.k == k_def_n),errmsg_k,[],j);
         elseif sys_y(j) == y
-            assert(all(sys.k == k_def_y),['Case ' num2str(j) ': ' errmsg_k]);
+            assertLoop(all(sys.k == k_def_y),errmsg_k,[],j);
         end
     end
 end

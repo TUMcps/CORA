@@ -1,0 +1,28 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent             \hspace*{-1.6em}{\scriptsize 1}$  Mcenter = [1 2; 3 4]; $\color{mgreen}$% center of interval matrix M1$\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 2}$  Mdelta = [1 0; 1 1]; $\color{mgreen}$% delta of interval matrix M1$\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 3}$  intM1 = intervalMatrix(Mcenter, Mdelta); $\color{mgreen}$% instantiate interval matrix M1$\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 4}$  $\\ \hspace*{-1.6em}{\scriptsize 5}$  Mcenter = [-1 2; 2 -1]; $\color{mgreen}$% center of interval matrix M2$\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 6}$  Mdelta = [0 0.5; 0.5 0]; $\color{mgreen}$% delta of interval matrix M2$\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 7}$  intM2 = intervalMatrix(Mcenter, Mdelta); $\color{mgreen}$% instantiate interval matrix M2$\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 8}$  $\\ \hspace*{-1.6em}{\scriptsize 9}$  intM3 = intM1 + intM2 $\color{mgreen}$% perform Minkowski addition and display result$\color{black}$$\\ \hspace*{-2em}{\scriptsize 10}$  intM4 = intM1 * intM2 $\color{mgreen}$% compute multiplication of and display result $\color{black}$$\\ \hspace*{-2em}{\scriptsize 11}$  $\\ \hspace*{-2em}{\scriptsize 12}$  matZ = matZonotope(intM1) $\color{mgreen}$% compute matrix zonotope and display result$\color{black}$$\\ 
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

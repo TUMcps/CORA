@@ -8,8 +8,8 @@ function printMatrix(M,varargin)
 % Inputs:
 %    M - matrix
 %    accuracy - (optional) floating-point precision
-%    clearLine - (optional) whether to finish with '\n'
 %    doCompact - (optional) whether the matrix is printed compactly
+%    clearLine - (optional) whether to finish with '\n'
 %
 % Outputs:
 %    -
@@ -17,6 +17,8 @@ function printMatrix(M,varargin)
 % Example: 
 %    M = [2 3; -2 1];
 %    printMatrix(M)
+%
+% See also: printCell, printStruct, printSet
 
 % Authors:       Matthias Althoff
 % Written:       01-November-2017
@@ -24,55 +26,92 @@ function printMatrix(M,varargin)
 %                04-January-2021
 %                17-June-2022 (MW, parsing of accuracy)
 %                06-June-2024 (TL, added doCompact)
+%                10-October-2024 (TL, clean up input parsing)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
-if nargin > 4
-    throw(CORAerror('CORA:tooManyInputArgs',4));
+narginchk(0,4);
+[accuracy,doCompact,clearLine] = setDefaultValues({'%4.3f%s',false,true},varargin);
+if ischar(accuracy) && strcmp(accuracy,'high')
+    accuracy = '%16.16f%s';
 end
+inputArgsCheck({ ...
+    {M,'att','numeric'}, ...
+    {accuracy,'att', {'char','string'}}, ...
+    {doCompact,'att','logical'}, ...
+    {clearLine,'att','logical'}
+})
 
-% determine accuracy
-if nargin < 2 || isempty(varargin{1})
-    % default accuracy
-    accuracy = '%4.3f%s';
-else
-    % numerical value
-    if isnumeric(varargin{1})
-        accuracy = varargin{1};
-    % category
-    elseif ischar(varargin{1})
-        if strcmp(varargin{1},'high')
-            accuracy = '%16.16f%s';
-        else
-            accuracy = varargin{1};
-        end
+% empty case
+if isempty(M)
+    if all(size(M) == 0)
+        fprintf('[]');
+    else
+        fprintf('zeros(%i,%i)',size(M,1),size(M,2));
     end
-end
-
-% determine clearLine
-if nargin < 3
-    clearLine = true;
-else
-    clearLine = varargin{2};
-end
-
-if nargin < 4
-    doCompact = false;
-else
-    doCompact = varargin{3};
-end
-
-% scalar case
-if isscalar(M)
-    fprintf(accuracy, M);
     if clearLine
         fprintf('\n')
     end
     return
 end
 
+% scalar case
+if isscalar(M)
+    if round(M,0) == M % check integer
+        fprintf('%i', M);
+    else
+        fprintf(accuracy, M);
+    end
+    if clearLine
+        fprintf('\n')
+    end
+    return
+end
+
+if issparse(M)
+    [i,j,v] = find(M);
+    fprintf('sparse(')
+    if ~doCompact
+        fprintf(' ...\n')
+    end
+    printMatrix(i','%i',true,false);
+    fprintf(', ')
+    if ~doCompact
+        fprintf('...\n')
+    end
+    printMatrix(j','%i',true,false);
+    fprintf(', ')
+    if ~doCompact
+        fprintf('...\n')
+    end
+    printMatrix(v',accuracy,true,false);
+    if ~doCompact
+        fprintf(' ...\n')
+    end
+    fprintf(')')
+
+    if clearLine
+        fprintf('\n')
+    end
+    return
+end
+
+% nd case
+if numel(size(M)) > 2
+    % reshape to 1d vector and print with reshape to nd array
+    fprintf('reshape(')
+    printMatrix(reshape(M,1,[]),accuracy,true,false);
+    % compact size in reshape call
+    fprintf(', [%s])',strrep(num2str(size(M)),'  ',','))
+    if clearLine
+        fprintf('\n')
+    end
+    return
+end
+
+% 2d case
 numRows = size(M,1);
 numCols = size(M,2);
 
@@ -85,8 +124,8 @@ end
 %write each row
 for iRow=1:numRows
     for iCol=1:numCols
-        %write in workspace
-        fprintf(accuracy, M(iRow,iCol));
+        %write in command window
+        fprintf(accuracy, full(M(iRow,iCol)));
 
         if iCol < numCols && ~doCompact
             fprintf(',')

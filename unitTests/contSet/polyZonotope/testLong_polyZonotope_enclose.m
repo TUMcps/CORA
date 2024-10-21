@@ -86,9 +86,7 @@ for i = 1:5
 
     % check if the all points from the original polynomial zonotope are
     % enclosed by the reduced polynomial zonotope
-    if ~containsPointSet(pZ,points,[],30)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(containsPointSet(pZ,points,[],30),i);
 end
 
 
@@ -147,9 +145,7 @@ for i = 1:5
 
     % check if the all points from the original polynomial zonotope are
     % enclosed by the reduced polynomial zonotope
-    if ~containsPointSet(pZ,points,[],5)
-       throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(containsPointSet(pZ,points,[],5),i);
 end
 
 res = true;

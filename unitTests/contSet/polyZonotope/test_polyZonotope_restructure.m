@@ -39,9 +39,10 @@ G = [4 1 11 0 -1; 2 -1 0 19 -1];
 E = [1 0 0 0 3; 0 1 0 0 1; 0 0 1 0 0; 0 0 0 1 0];
 
 % check for correctness
-if ~all(withinTol(c,pZres.c)) || ~compareMatrices([G;E],[pZres.G;pZres.E]) ...
-        || ~isempty(pZres.GI)
-    res = false;
+assert(all(withinTol(c,pZres.c)))
+assert(compareMatrices([G;E],[pZres.G;pZres.E]))
+assert(isempty(pZres.GI))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

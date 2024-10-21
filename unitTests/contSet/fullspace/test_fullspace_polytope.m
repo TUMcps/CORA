@@ -23,19 +23,17 @@ function res = test_fullspace_polytope
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % init fullspace
 fs = fullspace(2);
 P = polytope(fs);
-res(end+1,1) = ~isBounded(P);
-res(end+1,1) = supportFunc(P,[1;0],'upper') == Inf;
-res(end+1,1) = supportFunc(P,[-1;0],'upper') == Inf;
-res(end+1,1) = supportFunc(P,[0;1],'upper') == Inf;
-res(end+1,1) = supportFunc(P,[0;-1],'upper') == Inf;
+assert(~isBounded(P));
+assert(supportFunc(P,[1;0],'upper') == Inf);
+assert(supportFunc(P,[-1;0],'upper') == Inf);
+assert(supportFunc(P,[0;1],'upper') == Inf);
+assert(supportFunc(P,[0;-1],'upper') == Inf);
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

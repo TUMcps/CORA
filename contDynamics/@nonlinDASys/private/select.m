@@ -1,15 +1,16 @@
-function dimForSplit = select(obj,options,Rinit,Rinit_y,iter)
+function dimForSplit = select(nlnsysDA,Rinit,Rinit_y,params,options,iter)
 % select - selects the split strategy of the reachable set causing the
-%          least linearization error
+%    least linearization error
 %
 % Syntax:
-%    dimForSplit = select(obj,options,Rinit)
+%    dimForSplit = select(nlnsysDA,Rinit,Rinit_y,params,options,iter)
 %
 % Inputs:
-%    obj - nonlinearSys or nonlinParamSys object
-%    options - struct containing the algorithm settings
+%    nlnsysDA - nonlinDASys object
 %    Rinit - initial reachable set (diff. variables)
 %    Rinit_y - initial reachable set (alg. variables)
+%    params - model parameters
+%    options - struct containing the algorithm settings
 %    iter - flag for activating iteration
 %
 % Outputs:
@@ -33,11 +34,11 @@ function dimForSplit = select(obj,options,Rinit,Rinit_y,iter)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % compute all possible splits of the maximum reachable set
-Rtmp = split(Rinit);
-R = cell(length(Rtmp),1);
+R_split = split(Rinit);
+R = cell(length(R_split),1);
 
-for i = 1:length(Rtmp)
-    R{i}.set = Rtmp{i}{1};        % only test one of the two split sets
+for i = 1:length(R_split)
+    R{i}.set = R_split{i}{1};        % only test one of the two split sets
     R{i}.error_x = zeros(size(options.maxError_x));
     R{i}.error_y = zeros(size(options.maxError_y));
 end
@@ -50,7 +51,7 @@ perfInd = zeros(length(R),1);
 
 for i=1:length(R)
     % compute the reachable set for the split set
-    [~,~,~,perfInd(i)] = linReach(obj,options,R{i},Rinit_y,iter);
+    [~,~,~,perfInd(i)] = linReach(nlnsysDA,R{i},Rinit_y,params,options,iter);
 end
 
 % find best performance index

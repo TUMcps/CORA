@@ -47,9 +47,7 @@ for i=1:nrOfTests
     Zdim = dim(Z);
     
     % assert correctness
-    if Zdim ~= n
-        res = false; break
-    end
+    assertLoop(Zdim == n,i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,30 +1,32 @@
-function PHA = roomHeatingParallel()
+function pHA = roomHeatingParallel()
 % roomHeatingParallel - room heating benchmark described in Sec. 2.3 in [1]
-%                       with two rooms represented as a parallel hybrid
-%                       automaton
+%    with two rooms represented as a parallel hybrid automaton
 %
 % Syntax:  
-%    PHA = roomHeatingParallel()
+%    pHA = roomHeatingParallel()
 %
 % Inputs:
-%    ---
+%    -
 %
 % Outputs:
-%    PHA - parallelHybridAutomaton object
+%    pHA - parallelHybridAutomaton object
 %
 % References:
 %   [1] A. Fehnker and F. Ivancic. "Benchmarks for Hybrid Systems 
 %       Verification", HSCC 2004
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      26-June-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       26-June-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
-
-
-% Test parallelHybridAutomaton
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parameter room 1
 a1 = 0.5; 
@@ -49,40 +51,37 @@ B = [b1,a1];
 c = c1;
 C = 1;
 
-linSys = linearSys(A,B,c,C);
+linsys = linearSys(A,B,c,C);
 
 inv = polytope(1,T_off);
 
-guard = conHyperplane(1,T_off);
+guard = polytope([],[],1,T_off);
 
-reset.A = 1;
-reset.c = 0;
+reset = linearReset(1,0,0);
 
 trans = transition(guard,reset,2);
 
-loc = location('on',inv,trans,linSys);
+loc = location('on',inv,trans,linsys);
 
 % Location 2 : Heating off
 A = -(a1 + b1);
 B = [b1,a1];
 C = 1;
 
-linSys = linearSys(A,B,[],C);
+linsys = linearSys(A,B,[],C);
 
 inv = polytope(-1,-T_on);
 
-guard = conHyperplane(1,T_on);
+guard = polytope([],[],1,T_on);
 
-reset.A = 1;
-reset.c = 0;
+reset = linearReset(1,0,0);
 
 trans = transition(guard,reset,1);
 
-loc(2) = location('off',inv,trans,linSys);
+loc(2) = location('off',inv,trans,linsys);
 
 % Hybrid automaton
-HA1 = hybridAutomaton(loc);
-
+HA1 = hybridAutomaton('roomHeatingParallel1',loc);
 
 
 % Room 2 - HA 2 -----------------------------------------------------------
@@ -93,39 +92,37 @@ B = [b2,a2];
 c = c2;
 C = 1;
 
-linSys = linearSys(A,B,c,C);
+linsys = linearSys(A,B,c,C);
 
 inv = polytope(1,T_off);
 
-guard = conHyperplane(1,T_off);
+guard = polytope([],[],1,T_off);
 
-reset.A = 1;
-reset.c = 0;
+reset = linearReset(1,0,0);
 
 trans = transition(guard,reset,2);
 
-loc(1) = location('on',inv,trans,linSys);
+loc(1) = location('on',inv,trans,linsys);
 
 % Location 2 : Heating off
 A = -(a2 + b2);
 B = [b2,a2];
 C = 1;
 
-linSys = linearSys(A,B,[],C);
+linsys = linearSys(A,B,[],C);
 
 inv = polytope(-1,-T_on);
 
-guard = conHyperplane(1,T_on);
+guard = polytope([],[],1,T_on);
 
-reset.A = 1;
-reset.c = 0;
+reset = linearReset(1,0,0);
 
 trans = transition(guard,reset,1);
 
-loc(2) = location('off',inv,trans,linSys);
+loc(2) = location('off',inv,trans,linsys);
 
 % Hybrid automaton
-HA2 = hybridAutomaton(loc);
+HA2 = hybridAutomaton('roomHeatingParallel2',loc);
 
 
 % Parallel Hybrid Automaton -----------------------------------------------
@@ -141,8 +138,6 @@ inputBinds{2} = [0 1; ...   % first global input
                  1 1];      % first output of component 1
    
 % parallel hybrid automaton
-PHA = parallelHybridAutomaton(comp,inputBinds);
+pHA = parallelHybridAutomaton('roomHeatingParallel',comp,inputBinds);
 
-end
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

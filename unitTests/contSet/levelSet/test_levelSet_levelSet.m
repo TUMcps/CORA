@@ -23,8 +23,6 @@ function res = test_levelSet_levelSet
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
 % init symbolic variables
 syms a b x y
 
@@ -53,15 +51,15 @@ ls = levelSet(eq,[a;b;y],'==');
 
 
 % errors
-try
-    % variable not in vars
-    ls = levelSet(eq,a,'<=');
-    res = false;
-end
-try
-    % wrong number of comparison operators
-    ls = levelSet([eq1;eq2],[a;b],'==');
-    res = false;
-end
+
+% variable not in vars
+assertThrowsAs(@levelSet,'symbolic:sym:matlabFunction:FreeVariable',eq,a,'<=');
+
+% wrong number of comparison operators
+assertThrowsAs(@levelSet,'symbolic:validators:MustBeMathScalar',[eq1;eq2],[a;b],'==');
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

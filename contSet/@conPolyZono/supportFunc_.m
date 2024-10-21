@@ -38,19 +38,19 @@ function val = supportFunc_(cPZ,dir,type,method,splits,varargin)
 %    dir = [1;1];
 %    
 %    b1 = supportFunc(cPZ,dir,'range');
-%    ub1 = conHyperplane(dir,supremum(b1));
-%    lb1 = conHyperplane(dir,infimum(b1));
+%    P1_ub = polytope([],[],dir,supremum(b1));
+%    P1_lb = polytope([],[],dir,infimum(b1));
 %
 %    b2 = supportFunc(cPZ,dir,'range','split');
-%    ub2 = conHyperplane(dir,supremum(b2));
-%    lb2 = conHyperplane(dir,infimum(b2));
+%    P2_ub = polytope([],[],dir,supremum(b2));
+%    P2_lb = polytope([],[],dir,infimum(b2));
 %
 %    figure; hold on;
 %    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
-%    plot(ub1,[1,2],'b');
-%    plot(lb1,[1,2],'b');
-%    plot(ub2,[1,2],'g');
-%    plot(lb2,[1,2],'g');
+%    plot(P1_ub,[1,2],'b');
+%    plot(P1_lb,[1,2],'b');
+%    plot(P2_ub,[1,2],'g');
+%    plot(P2_lb,[1,2],'g');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -66,8 +66,9 @@ function val = supportFunc_(cPZ,dir,type,method,splits,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
     
     % different methods to calculate the over-approximation
-    if strcmp(method,'interval')
-       
+switch method
+    case 'interval'
+   
         % project the polynomial zonotope onto the direction
         cPZ_ = dir' * cPZ;
         
@@ -81,20 +82,21 @@ function val = supportFunc_(cPZ,dir,type,method,splits,varargin)
         elseif strcmp(type,'range')
             % val = val
         end
-        
-    elseif strcmp(method,'split')
-        
+    
+    case 'split'
+    
         val = aux_supportFuncSplit(cPZ,dir,type,splits);
-        
-    elseif strcmp(method,'conZonotope')
-        
+    
+    case 'conZonotope'
+    
         val = aux_supportFuncConZonotope(cPZ,dir,type);
-                
-    elseif strcmp(method,'quadProg')
-        
+            
+    case 'quadProg'
+    
         val = aux_supportFuncQuadProg(cPZ,dir,type);
-        
-    end
+    
+end
+
 end
 
 
@@ -160,7 +162,7 @@ function val = aux_supportFuncConZonotope(cPZ,dir,type)
 
     % split into dependent part and independent part
     GI = cPZ_.GI;
-    cPZ_.GI = [];
+    cPZ_.GI = zeros(1,0);
 
     % enlose dependent part with a constrained zonotope
     cZ = conZonotope(cPZ_);

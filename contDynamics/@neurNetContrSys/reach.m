@@ -1,16 +1,15 @@
-function [R, res] = reach(obj, params, options, evParams, varargin)
+function [R, res] = reach(obj, params, options, varargin)
 % reach - computes the reachable continuous set for the entire time horizon
 %    of a continuous system
 %
 % Syntax:
-%    R = reach(obj,params,options,evParams)
-%    [R,res] = reach(obj,params,options,evParams,spec)
+%    R = reach(obj,params,options)
+%    [R,res] = reach(obj,params,options,spec)
 %
 % Inputs:
 %    obj - neurNetContrSys object
 %    params - parameter defining the reachability problem
-%    options - options for the computation of reachable sets
-%    evParams - parameters for neural network evaluation
+%    options - options for the computation of reachable sets and network evaluation
 %    spec - object of class specification
 %
 % Outputs:
@@ -37,57 +36,53 @@ function [R, res] = reach(obj, params, options, evParams, varargin)
 res = true;
 
 % parse input
-if nargin < 4
-    throw(CORAerror("CORA:notEnoughInputArgs", 4))
-elseif nargin > 5
-    throw(CORAerror('CORA:tooManyInputArgs', 5));
-end
+narginchk(3,4);
 spec = setDefaultValues({[]}, varargin);
 inputArgsCheck({ ...
     {obj, 'att', 'neurNetContrSys'}; ...
     {params, 'att', 'struct'}; ...
     {options, 'att', 'struct'}; ...
-    {evParams, 'att', 'struct'}; ...
     {spec, 'att', {'specification', 'numeric'}, {{}, {'empty'}}}; ...
 })
 
-% validate input
-[options,evParams] = aux_parseSettings(obj, params, options, evParams);
+% validate user input
+[params,options] = aux_parseSettings(obj, params, options);
 
 % adapt specification
 if isnumeric(spec)
     spec = [];
 else
-    spec = aux_adaptSpecification(spec, obj.dim, obj.nn.neurons_out);
+    spec = aux_adaptSpecification(spec, obj.nrOfStates, obj.nn.neurons_out);
 end
 
 % init
-tVec = options.tStart:obj.dt:options.tFinal;
-if tVec(end) ~= options.tFinal
+tVec = params.tStart:obj.dt:params.tFinal;
+if tVec(end) ~= params.tFinal
     % add tFinal if sampling time and time horizon don't match
     % resulting in a partial time step at the end.
-    tVec(end+1) = options.tFinal;
+    tVec(end+1) = params.tFinal;
 end
-X = options.R0;
+X = params.R0;
 R = [];
+idxLayer = 1:numel(obj.nn.layers);
 
 for i = 1:length(tVec) - 1
     % compute next time step
-    options.tStart = tVec(i);
-    options.tFinal = tVec(i+1);
+    params.tStart = tVec(i);
+    params.tFinal = tVec(i+1);
 
     % get control input = ouput of neural network
-    U = obj.nn.evaluate(X, evParams);
+    U = obj.nn.evaluate_(X, options, idxLayer);
 
     % append control input to initial set
-    options.R0 = aux_appendU2X(X, U);
+    params.R0 = aux_appendU2X(X, U);
 
     % compute reachable set for the controlled system of the next step
     % with constant input U
-    [R_i, res] = aux_reachability(obj.sys, options, spec);
+    [R_i, res] = aux_reachability(obj.sys, params, options, spec);
 
     % store reachable set
-    R_i = project(R_i, 1:obj.dim);
+    R_i = project(R_i, 1:obj.nrOfStates);
     R = add(R, R_i);
     X = R_i.timePoint.set{end};
 
@@ -112,13 +107,18 @@ for i = 1:length(spec)
 end
 end
 
-function [options, evParams] = aux_parseSettings(obj, params, options, evParams)
-% initilize the algorithm settings
+function [params,options] = aux_parseSettings(obj, params, options)
+
+% initilize the algorithm settings ----------------------------------------
 
 % check if the algorithm settings provided by the user are correct
+% doing some corrections to reuse config file for nonlinearSys/reach
 params.R0 = cartProd(params.R0, zeros(obj.nn.neurons_out, 1));
-options = validateOptions(obj.sys, mfilename, params, options);
-options.R0 = project(options.R0, 1:obj.nn.neurons_in);
+optionsnn = options.nn; % is checked via nnHelper.validateNNoptions
+options = rmfield(options,'nn');
+[params,options] = validateOptions(obj.sys, params, options, 'FunctionName', 'reach');
+params.R0 = project(params.R0, 1:obj.nn.neurons_in);
+options.nn = optionsnn;
 
 % obtain factors for initial state and input solution time step
 r = options.timeStep;
@@ -127,14 +127,14 @@ for i = 1:(options.taylorTerms + 1)
 end
 
 % initialize time-varying inputs
-if ~isfield(options, 'uTransVec')
-    tVec = options.tStart:options.timeStep:options.tFinal;
-    if tVec(end) ~= options.tFinal
+if ~isfield(params, 'uTransVec')
+    tVec = params.tStart:options.timeStep:params.tFinal;
+    if tVec(end) ~= params.tFinal
         % add tFinal if sampling time and time horizon don't match
         % resulting in a partial time step at the end.
-        tVec(end+1) = options.tFinal;
+        tVec(end+1) = params.tFinal;
     end
-    options.uTransVec = repmat(options.uTrans, [1, length(tVec)]);
+    params.uTransVec = repmat(params.uTrans, [1, length(tVec)]);
 end
 
 % check if splitting is turned off
@@ -144,15 +144,19 @@ if ~all(isinf(options.maxError))
         ' network controlled systems!']));
 end
 
-% parse evParams ----------------------------------
+% parse nn options --------------------------------------------------------
 
-if ~isfield(evParams, 'add_approx_error_to_GI')
+if ~isfield(options, 'add_approx_error_to_GI')
     % to reduce computational overhead
-    evParams.add_approx_error_to_GI = true;
+    options.nn.add_approx_error_to_GI = true;
 end
 
-% pre-compute derivatives
+options = nnHelper.validateNNoptions(options);
+
+% pre-compute derivatives -------------------------------------------------
+
 derivatives(obj.sys, options);
+
 end
 
 function R0 = aux_appendU2X(X, U)
@@ -198,18 +202,18 @@ function R0 = aux_appendU2X(X, U)
     end
 end
 
-function [R, res] = aux_reachability(sys, options, spec)
+function [R, res] = aux_reachability(sys, params, options, spec)
 % compute the reachable set of the controlled system (without performing
 % option checks)
 
 res = true;
 
 % init time steps
-tVec = options.tStart:options.timeStep:options.tFinal;
-if tVec(end) ~= options.tFinal
+tVec = params.tStart:options.timeStep:params.tFinal;
+if tVec(end) ~= params.tFinal
     % add tFinal if sampling time and intermediate time horizon don't match
     % resulting in a partial time step at the end.
-    tVec(end+1) = options.tFinal;
+    tVec(end+1) = params.tFinal;
 end
 
 % initialize cell-arrays that store the reachable set
@@ -217,8 +221,8 @@ Rint.set = cell(length(tVec)-1, 1);
 Rint.time = Rint.set;
 Rpoint.set = cell(length(tVec), 1);
 Rpoint.time = Rpoint.set;
-Rpoint.set{1} = options.R0;
-Rpoint.time{1} = options.tStart;
+Rpoint.set{1} = params.R0;
+Rpoint.time{1} = params.tStart;
 
 % loop over all reachability steps
 for i = 1:length(tVec) - 1
@@ -226,20 +230,26 @@ for i = 1:length(tVec) - 1
 
     % compute reachable set for one reachability step
     try
-        options.uTrans = options.uTransVec(:, i);
+        params.uTrans = params.uTransVec(:, i);
         if i == 1
-            [Rnext, options] = initReach(sys, options.R0, options);
+            [Rnext, options] = initReach(sys, params.R0, params, options);
+            % initReach does not reduce
+            Rnext.ti{1} = reduce(Rnext.ti{1},...
+                options.reductionTechnique,options.zonotopeOrder);
+            Rnext.tp{1}.set = reduce(Rnext.tp{1}.set,...
+                options.reductionTechnique,options.zonotopeOrder);
         else
-            [Rnext, options] = post(sys, Rnext, options);
+            [Rnext, options] = post(sys, Rnext, params, options);
         end
     catch ME
         R = aux_constructReachSet(Rpoint, Rint, i-1);
 
-        if true || strcmp(ME.identifier, 'reach:setexplosion') || strcmp(ME.identifier, 'CORA:reachSetExplosion')
+        if true || strcmp(ME.identifier, 'reach:setexplosion') ...
+            || strcmp(ME.identifier, 'CORA:reachSetExplosion')
             % display information to user
             fprintf("\n");
             disp(ME.message);
-            disp("  Step "+i+" at time t="+options.tStart);
+            disp("  Step "+i+" at time t="+params.tStart);
             disp("The reachable sets until the current step are returned.");
             fprintf("\n");
             res = false;
@@ -269,6 +279,7 @@ end
 
 % create resulting reachSet object
 R = reachSet(Rpoint, Rint);
+
 end
 
 function R = aux_constructReachSet(Rpoint, Rint, i)
@@ -280,6 +291,7 @@ Rpoint.time = Rpoint.time(1:i+1);
 Rint.time = Rint.time(1:i);
 
 R = reachSet(Rpoint, Rint);
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

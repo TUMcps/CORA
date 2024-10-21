@@ -312,9 +312,11 @@ switch purpose
         else
             NVpairs = [NVpairs, 'FaceColor', defaultPlotColor()];
         end
-        % edgecolor order: 'EdgeColor' > 'none'
+        facecolor = NVpairs{end};
+        
+        % edgecolor order: 'EdgeColor' > 'FaceColor'
         if isempty(edgecolor)
-            NVpairs = ['EdgeColor', 'none', NVpairs];
+            NVpairs = ['EdgeColor', facecolor, NVpairs];
         else
             NVpairs = ['EdgeColor', edgecolor, NVpairs];
         end
@@ -459,7 +461,7 @@ function NVpairs = aux_correctColorToNumeric(NVpairs, label)
                     case 'w'
                         color = [1 1 1];
                     case 'next'
-                        color = defaultPlotColor();
+                        color = nextcolor;
                     otherwise
                         % keep as is
                 end

@@ -24,9 +24,6 @@ function res = test_specification_specification
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true;
-
 % init sets
 set = zonotope([0;0],[1,-0.7;0.2,1]);
 set2 = interval([-1;-2],[2;3]);
@@ -52,112 +49,114 @@ funHan = @(x) x(1)^2;
 
 % only set
 spec = specification(set);
-if length(spec) ~= 1 || ~isequal(spec.set,set) || ~strcmp(spec.type,'unsafeSet')
-    res = false;
-end
+assert(length(spec) == 1)
+assert(isequal(spec.set,set))
+assert(strcmp(spec.type,'unsafeSet'))
 
 % list of sets
 spec = specification(list);
-if length(spec) ~= 3 || ~isequal(spec(1).set,list{1}) ...
-        || ~isequal(spec(2).set,list{2}) || ~isequal(spec(3).set,list{3}) ...
-        || ~strcmp(spec(1).type,'unsafeSet') || ~strcmp(spec(2).type,'unsafeSet') ...
-        || ~strcmp(spec(3).type,'unsafeSet')
-    res = false;
-end
+assert(length(spec) == 3)
+assert(isequal(spec(1).set,list{1}))
+assert(isequal(spec(2).set,list{2}))
+assert(isequal(spec(3).set,list{3}))
+assert(strcmp(spec(1).type,'unsafeSet'))
+assert(strcmp(spec(2).type,'unsafeSet'))
+assert(strcmp(spec(3).type,'unsafeSet'))
 
 % list of sets with different type
 spec = specification(list,'safeSet');
-if length(spec) ~= 3 || ~isequal(spec(1).set,list{1}) ...
-        || ~isequal(spec(2).set,list{2}) || ~isequal(spec(3).set,list{3}) ...
-        || ~strcmp(spec(1).type,'safeSet') || ~strcmp(spec(2).type,'safeSet') ...
-        || ~strcmp(spec(3).type,'safeSet')
-    res = false;
-end
+assert(length(spec) == 3)
+assert(isequal(spec(1).set,list{1}))
+assert(isequal(spec(2).set,list{2}))
+assert(isequal(spec(3).set,list{3}))
+assert(strcmp(spec(1).type,'safeSet'))
+assert(strcmp(spec(2).type,'safeSet'))
+assert(strcmp(spec(3).type,'safeSet'))
 
 % list of sets with location
 spec = specification(list,'safeSet',location_pHA);
-if length(spec) ~= 3 || ~isequal(spec(1).set,list{1}) ...
-        || ~isequal(spec(2).set,list{2}) || ~isequal(spec(3).set,list{3}) ...
-        || ~strcmp(spec(1).type,'safeSet') || ~strcmp(spec(2).type,'safeSet') ...
-        || ~strcmp(spec(3).type,'safeSet') || ~isequal(spec(1).location,location_pHA) ...
-        || ~isequal(spec(2).location,location_pHA) || ~isequal(spec(3).location,location_pHA)
-    res = false;
-end
+assert(length(spec) == 3)
+assert(isequal(spec(1).set,list{1}))
+assert(isequal(spec(2).set,list{2}))
+assert(isequal(spec(3).set,list{3}))
+assert(strcmp(spec(1).type,'safeSet'))
+assert(strcmp(spec(2).type,'safeSet'))
+assert(strcmp(spec(3).type,'safeSet'))
+assert(isequal(spec(1).location,location_pHA))
+assert(isequal(spec(2).location,location_pHA))
+assert(isequal(spec(3).location,location_pHA))
 
 % set with type and time 
 spec = specification(set,'invariant',time);
-if length(spec) ~= 1 || ~isequal(spec.set,set) || ~strcmp(spec.type,'invariant') ...
-        || ~isequal(spec.time,time)
-    res = false;
-end
+assert(length(spec) == 1)
+assert(isequal(spec.set,set))
+assert(strcmp(spec.type,'invariant'))
+assert(isequal(spec.time,time))
 
 % list of sets with type and time 
 spec = specification(list,'safeSet',time);
-if length(spec) ~= 3 || ~isequal(spec(1).set,list{1}) ...
-        || ~isequal(spec(2).set,list{2}) || ~isequal(spec(3).set,list{3}) ...
-        || ~strcmp(spec(1).type,'safeSet') || ~strcmp(spec(2).type,'safeSet') ...
-        || ~strcmp(spec(3).type,'safeSet') || ~isequal(spec(1).time,time) ...
-        || ~isequal(spec(2).time,time) || ~isequal(spec(3).time,time)
-    res = false;
-end
+assert(length(spec) == 3)
+assert(isequal(spec(1).set,list{1}))
+assert(isequal(spec(2).set,list{2}))
+assert(isequal(spec(3).set,list{3}))
+assert(strcmp(spec(1).type,'safeSet'))
+assert(strcmp(spec(2).type,'safeSet'))
+assert(strcmp(spec(3).type,'safeSet'))
+assert(isequal(spec(1).time,time))
+assert(isequal(spec(2).time,time))
+assert(isequal(spec(3).time,time))
 
 % list of sets with type, location, and time
 spec = specification(list,'safeSet',time,location_pHA);
-if length(spec) ~= 3 || ~isequal(spec(1).set,list{1}) ... 
-        || ~isequal(spec(2).set,list{2}) || ~isequal(spec(3).set,list{3}) ...
-        || ~strcmp(spec(1).type,'safeSet') || ~strcmp(spec(2).type,'safeSet') ...
-        || ~strcmp(spec(3).type,'safeSet') || ~isequal(spec(1).time,time) ...
-        || ~isequal(spec(3).time,time) || ~isequal(spec(3).time,time) ...
-        || ~isequal(spec(1).location,location_pHA) ...
-        || ~isequal(spec(2).location,location_pHA) ...
-        || ~isequal(spec(3).location,location_pHA)
-    res = false;
-end
+assert(length(spec) == 3)
+assert(isequal(spec(1).set,list{1}))
+assert(isequal(spec(2).set,list{2}))
+assert(isequal(spec(3).set,list{3}))
+assert(strcmp(spec(1).type,'safeSet'))
+assert(strcmp(spec(2).type,'safeSet'))
+assert(strcmp(spec(3).type,'safeSet'))
+assert(isequal(spec(1).time,time))
+assert(isequal(spec(3).time,time))
+assert(isequal(spec(3).time,time))
+assert(isequal(spec(1).location,location_pHA))
+assert(isequal(spec(2).location,location_pHA))
+assert(isequal(spec(3).location,location_pHA))
+
 
 % stl formula
 spec = specification(eq);
-if ~strcmp(spec.type,'logic')
-    res = false;
-end
+assert(strcmp(spec.type,'logic'));
+
 spec = specification(eq,'logic');
-if ~strcmp(spec.type,'logic')
-    res = false;
-end
+assert(strcmp(spec.type,'logic'));
+
 
 % function handle
 spec = specification(funHan);
-if ~isequal(spec.set,funHan) || ~strcmp(spec.type,'custom')
-    res = false;
-end
+assert(isequal(spec.set,funHan));
+assert(strcmp(spec.type,'custom'));
+
 spec = specification(funHan,'custom');
-if ~isequal(spec.set,funHan) || ~strcmp(spec.type,'custom')
-    res = false;
-end
+assert(isequal(spec.set,funHan));
+assert(strcmp(spec.type,'custom'));
 
 
 % wrong instantiations
 
 % stl formula with wrong type
-try
-    spec = specification(eq,'safeSet');
-    res = false;
-end
+assertThrowsAs(@specification,'CORA:wrongInputInConstructor',eq,'safeSet');
 
 % stl formula with too many input arguments
-try
-    spec = specification(eq,'logic',time);
-    res = false;
-end
+assertThrowsAs(@specification,'CORA:notSupported',eq,'logic',time);
+
 % stl formula with too many input arguments
-try
-    spec = specification(eq,'logic',location_HA);
-    res = false;
-end
+assertThrowsAs(@specification,'CORA:notSupported',eq,'logic',location_HA);
 
 % function handle with wrong type
-try
-    spec = specification(funHan,'safeSet');
-    res = false;
-end
+assertThrowsAs(@specification,'CORA:wrongInputInConstructor',funHan,'safeSet');
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

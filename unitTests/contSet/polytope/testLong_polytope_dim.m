@@ -40,9 +40,7 @@ for i=1:nrTests
     P = polytope.generateRandom('Dimension',n);
 
     % check dimension
-    if dim(P) ~= n
-        res = false; return
-    end
+    assertLoop(dim(P) == n,i)
 
     % instantiation: A and b matrix
     nrCon = randi(2*n);
@@ -52,9 +50,7 @@ for i=1:nrTests
     P = polytope(A,b);
 
     % check dimension
-    if dim(P) ~= n
-        res = false; return
-    end
+    assertLoop(dim(P) == n,i)
 
     % instantiation: vertices
     V = randn(n,randi([n+1,2*n]));
@@ -62,9 +58,7 @@ for i=1:nrTests
     P = polytope(V);
 
     % check dimension
-    if dim(P) ~= n
-        res = false; return
-    end
+    assertLoop(dim(P) == n,i)
 
     % instantiation: equality representation
     nrCon = randi(2*n);
@@ -74,9 +68,7 @@ for i=1:nrTests
     P = polytope([],[],Ae,be);
 
     % check dimension
-    if dim(P) ~= n
-        res = false; return
-    end
+    assertLoop(dim(P) == n,i)
 
 end
 

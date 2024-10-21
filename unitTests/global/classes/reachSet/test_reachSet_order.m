@@ -22,6 +22,9 @@ function res = test_reachSet_order
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % instantiate set, propagation matrix
 Z = zonotope([0;0],[1 0 -2; 2 -1 1]);
@@ -47,6 +50,6 @@ end
 R_true = reachSet(timePoint_sort);
 
 % compare results
-res = isequal(R_true,R_ordered);
+assert(isequal(R_true,R_ordered));
 
 % ------------------------------ END OF CODE ------------------------------

@@ -23,31 +23,41 @@ function res = test_zonotope_contains
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty zonotope
 % Z = zonotope.empty(2);
 % res(end+1,1) = contains(Z,Z);
 
 % 2D zonotopes
-c = [0; 1]; G = [1 2; -1 0];
+c = [0; 1]; G = [1 2 1; -1 0 1];
 Z1 = zonotope(c,G);
 c = [-1; 1.5]; G = [0.2 0; -0.1 0.1];
 Z2 = zonotope(c,G);
-res(end+1,1) = contains(Z1,Z2);
-res(end+1,1) = ~contains(Z2,Z1);
+assert(contains(Z1,Z2));
+assert(~contains(Z2,Z1));
 
 % inner zonotope is just a point
 Z2 = zonotope(c);
-res(end+1,1) = contains(Z1,Z2);
+assert(contains(Z1,Z2));
+
+% choose LP method for containment
+assert(contains(Z1,Z2,'st'));
 
 % both zonotope are just points
 Z1 = zonotope(zeros(4,1));
 Z2 = zonotope(ones(4,1));
-res(end+1,1) = contains(Z1,Z1);
-res(end+1,1) = ~contains(Z1,Z2);
+assert(contains(Z1,Z1));
+assert(~contains(Z1,Z2));
+
+% two sets with one being degenerate
+c = [ 5.000 ; 0.000 ];
+G = [ 0.000 ; 1.000 ];
+Z1 = zonotope(c,G);
+c = [ 5.650 ; 0.000 ];
+G = [ 0.000 0.050 0.000 0.000 0.000 ; 0.937 0.000 -0.005 -0.000 0.000 ];
+Z2 = zonotope(c,G);
+assert(~contains(Z1,Z2))
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

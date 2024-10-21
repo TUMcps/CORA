@@ -1,15 +1,16 @@
-function res = plus(summand1,summand2)
+function S_out = plus(fs,S)
 % plus - overloaded '+' operator for the Minkowski addition of a
 %    full-dimensional space and another set or vector
 %    case R^0: can only be added to another R^0, resulting in R^0;
 %              or to the empty set, resulting in the empty set
 %
 % Syntax:
-%    res = plus(summand1,summand2)
+%    S_out = fs + S
+%    S_out = plus(fs,S)
 %
 % Inputs:
-%    summand1 - fullspace object, contSet object, numerical vector
-%    summand2 - fullspace object, contSet object, numerical vector
+%    fs - fullspace object, numeric
+%    S - contSet object, numeric
 %
 % Outputs:
 %    res - fullspace object
@@ -32,21 +33,26 @@ function res = plus(summand1,summand2)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% determine fullspace object
-[res,summand] = findClassArg(summand1,summand2,'fullspace');
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < fs.precedence
+    S_out = S + fs;
+    return
+end
 
-if res.dimension == 0
+% ensure that numeric is second input argument
+[S_out,~] = reorderNumeric(fs,S);
+
+if S_out.dimension == 0
     throw(CORAerror('CORA:notSupported','Minkowski sum of R^0 not supported'));
 end
 
 % check dimensions of ambient space
-equalDimCheck(res,summand);
+equalDimCheck(S_out,S);
 
-if representsa_(summand,'emptySet',eps)
-    % return empty set
-    res = emptySet(res.dimension);
-else
-    % return fs as before
+% empty set case
+if representsa_(S,'emptySet',eps)
+    S_out = emptySet(dim(fs));
+    return
 end
 
 % ------------------------------ END OF CODE ------------------------------

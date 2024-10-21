@@ -1,6 +1,6 @@
 function [HAsim, A, U, U_delay, Uloc, c] = PLL()
 % PLL - returns a hybrid model of the phase-locked loop (PLL) described in 
-% Sec. 3 of [1]; parameters are from Tab. 1
+%    Sec. 3 of [1]; parameters are from Tab. 1
 %
 % Syntax:  
 %    HAsim = PLL()
@@ -13,19 +13,27 @@ function [HAsim, A, U, U_delay, Uloc, c] = PLL()
 %    uLocTrans - cell array of translating inputs
 %    U - cell array of input sets
 %    U_delay - cell array of input sets for delay phase
+%    U_loc - ???
+%    c - ???
 %
 % References:
 %    [1] Althoff, M.; Rajhans, A.; Krogh, B. H.; Yaldiz, S.; Li, X. & Pileggi, L. 
 %        Formal Verification of Phase-Locked Loops Using Reachability
 %        Analysis and Continuization. Proc. of the Int. Conference on
 %        Computer Aided Design, 2011, 659-666.
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% Author:       Matthias Althoff
-% Written:      10-August-2010
-% Last update:  30-June-2020
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       10-August-2010
+% Last update:   30-June-2020
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parameters
 fref=27; %MHz
@@ -130,11 +138,9 @@ guard1Sim = interval([-dist; -dist; -dist; -dist; 1-thin; -dist],[dist; dist; di
 %guard set 2 sim
 guard2Sim = interval([-dist; -dist; -dist; 1-thin; -dist; -dist],[dist; dist; dist; 1; dist; dist]);
 %reset 1
-reset1.A = eye(dim_x);
-reset1.c = [0; 0; 0; -1; -1; 0];
+reset1 = linearReset(eye(dim_x),zeros(dim_x),[0; 0; 0; -1; -1; 0]);
 %reset 2
-reset2.A = eye(dim_x);
-reset2.c = [0; 0; 0; -1; -1; 0];
+reset2 = linearReset(eye(dim_x),zeros(dim_x),[0; 0; 0; -1; -1; 0]);
 %transition 1 sim
 transSim(1) = transition(guard1Sim,reset1,2); %--> next loc: 2
 %transition 2 sim
@@ -150,10 +156,9 @@ inv = interval([-dist; -dist; -dist; -1-thin; -1-thin; -dist],[dist; dist; dist;
 %guard set 1 sim
 guard1Sim = interval([-dist; -dist; -dist; -thin; -dist; -dist],[dist; dist; dist; 0; dist; dist]); 
 %reset 1
-Atmp = eye(dim_x);
-Atmp(6,6) = 0;
-reset1.A = Atmp;
-reset1.c = zeros(dim_x,1);
+reset1A = eye(dim_x);
+reset1A(6,6) = 0;
+reset1 = linearReset(reset1A,zeros(dim_x),zeros(dim_x,1));
 %transition 1 sim
 clear transSim
 transSim = transition(guard1Sim,reset1,4); %--> next loc: 4
@@ -169,10 +174,9 @@ inv = interval([-dist; -dist; -dist; -1-thin; -1-thin; -dist],[dist; dist; dist;
 %guard set 1 sim
 guard1Sim = interval([-dist; -dist; -dist; -dist; -thin; -dist],[dist; dist; dist; dist; 0; dist]);
 %reset 1
-Atmp = eye(dim_x);
-Atmp(6,6) = 0;
-reset1.A = Atmp;
-reset1.c = zeros(dim_x,1);
+reset1A = eye(dim_x);
+reset1A(6,6) = 0;
+reset1 = linearReset(reset1A,zeros(dim_x),zeros(dim_x,1));
 %transition 1 sim
 transSim = transition(guard1Sim,reset1,4); %--> next loc: 4
 %specify location
@@ -187,13 +191,13 @@ inv = interval([-dist; -dist; -dist; -dist; -dist; -dist],[dist; dist; dist; dis
 %guard set 1 sim
 guard1Sim = interval([-dist; -dist; -dist; -dist; -dist; 50e-6],[dist; dist; dist; dist; dist; 51e-6]);
 %reset 1
-reset1.A = eye(dim_x);
-reset1.c = zeros(dim_x,1);
+reset1 = linearReset.eye(dim_x,dim_x);
 %transition 1 sim
 transSim = transition(guard1Sim,reset1,1); %--> next loc: 1
 %specify location
 locSim(4) = location('both',inv,transSim,simSys);
 
 % instantiate hybrid automaton
-HAsim = hybridAutomaton(locSim);
+HAsim = hybridAutomaton('PLL',locSim);
 
+% ------------------------------ END OF CODE ------------------------------

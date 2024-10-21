@@ -15,7 +15,7 @@ function res = test_intervalMatrix_norm
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       02-November-2017
@@ -54,10 +54,10 @@ matrixDelta = [ ...
 % instantiate interval matrix
 M_int = intervalMatrix(matrixCenter, matrixDelta);
 
-% obtain result of some vertices-----------------------
+% obtain result of some vertices
 V = randPoint(M_int,10);
 
-%loop through vertices
+% loop through vertices
 n_1_sample = zeros(length(V),1);
 n_2_sample = n_1_sample;
 n_inf_sample = n_1_sample;
@@ -66,26 +66,17 @@ for i=1:size(V,3)
     n_2_sample(i) = norm(V(:,:,i), 2);
     n_inf_sample(i) = norm(V(:,:,i), inf);
 end
-%-------------------------------------------------------
+
 
 % obtain results
 n_1 = norm(M_int, 1);
 n_inf = norm(M_int, inf);
 
-%check if slightly bloated results enclose others
-res_1 = all(n_1_sample <= n_1*1+1e-8);
-res_2 = all(n_inf_sample <= n_inf*1+1e-8);
+% check if slightly bloated results enclose others
+assert(all(n_1_sample <= n_1*1+1e-8));
+assert(all(n_inf_sample <= n_inf*1+1e-8));
 
-%result of different computation techniques
-res = res_1 && res_2;
-
-% save result if random test failed
-if ~res
-     file_name = strcat('test_intervalMatrix_norm_', ...
-                             datestr(now,'mm-dd-yyyy_HH-MM'));
-                  
-     file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', file_name);
-     save(file_path, 'V');
-end
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

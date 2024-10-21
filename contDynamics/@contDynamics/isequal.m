@@ -33,9 +33,7 @@ function res = isequal(sys1,sys2,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % too many input arguments
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(2,3);
 
 % default values
 tol = setDefaultValues({eps},varargin);
@@ -51,7 +49,7 @@ if ~strcmp(sys1.name,sys2.name)
 end
 
 % number of states, inputs, outputs
-if sys1.dim ~= sys2.dim || sys1.nrOfInputs ~= sys2.nrOfInputs ...
+if sys1.nrOfStates ~= sys2.nrOfStates || sys1.nrOfInputs ~= sys2.nrOfInputs ...
         || sys1.nrOfOutputs ~= sys2.nrOfOutputs
     res = false; return
 end

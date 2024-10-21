@@ -68,9 +68,7 @@ function res = testLong_nonlinearSys_simplifyOptimize
             temp1 = center(H1{j});
             temp2 = center(H2{j});
             
-            if ~all(all(withinTol(temp1,temp2,1e-14)))
-                throw(CORAerror('CORA:testFailed'));
-            end
+            assertLoop(all(all(withinTol(temp1,temp2,1e-14))),i,j)
         end
     end
     
@@ -110,9 +108,7 @@ function res = testLong_nonlinearSys_simplifyOptimize
                 temp1 = center(T1{j,k});
                 temp2 = center(T2{j,k});
 
-                if ~all(all(withinTol(temp1,temp2,1e-14)))
-                    throw(CORAerror('CORA:testFailed'));
-                end
+                assertLoop(all(all(withinTol(temp1,temp2,1e-14))),i,j,k)
             end
         end
     end

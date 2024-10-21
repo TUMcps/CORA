@@ -49,9 +49,7 @@ for i = 1:length(x)
     y_(i) = aux_evalTaylm(T_,x(i)-1);
 end
 
-if any(abs(y-y_) > 1e-10)
-   res = false;
-end
+assert(all(abs(y-y_) <= 1e-10))
 
 % % plot the function
 % hold on
@@ -94,9 +92,7 @@ for i = 1:size(X1,1)
     end
 end
 
-if ~compareMatrices(Z1,Z2,1e-10)
-    res = false;
-end
+assert(compareMatrices(Z1,Z2,1e-10))
 
 % % plot the function
 % hold on
@@ -153,25 +149,23 @@ for i = 1:size(X1,1)
     end
 end
 
-if diffMax > 1e-8
-    res = false;
-end
+assert(diffMax <= 1e-8)
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function res = aux_evalTaylm(obj,x)
+function tay_out = aux_evalTaylm(tay,x)
 
-    mon = obj.monomials;
-    coeff = obj.coefficients;
+    mon = tay.monomials;
+    coeff = tay.coefficients;
     
-    res = 0;
+    tay_out = 0;
     
     for i = 1:length(coeff)
         e = mon(i,2:end);
-        res = res + coeff(i) * prod(x.^(e'));
+        tay_out = tay_out + coeff(i) * prod(x.^(e'));
     end
 
 end

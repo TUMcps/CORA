@@ -61,9 +61,7 @@ for i = 1:5
     
     % check if the all transformed random points are located inside the
     % resulting polynomial zonotope object
-    if ~containsPointSet(pZ,points,[],30)
-        res = false; return
-    end
+    assertLoop(containsPointSet(pZ,points,[],30),i)
 end
 
 
@@ -102,9 +100,7 @@ for i = 1:5
     
     % check if the all transformed random points are located inside the
     % resulting polynomial zonotope object
-    if ~containsPointSet(pZ,points)
-        res = false; return
-    end
+    assertLoop(containsPointSet(pZ,points),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

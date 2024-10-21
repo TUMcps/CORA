@@ -57,9 +57,7 @@ function res = testLong_bernsteinPoly
               val = aux_regularPolynom(p,G,E);
               val_ = aux_bernsteinPolynom(p,B,E_);
               
-              if ~withinTol(val,val_,1e-13)
-                 res = false; return
-              end
+              assertLoop(withinTol(val,val_,1e-13),n,i,j)
            end
        end
     end

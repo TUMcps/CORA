@@ -1,0 +1,79 @@
+\subsection{Class \texttt{specification}}
+\label{sec:specification}
+
+The class \texttt{specification} allows one to define specifications that a system has to satisfy (see \cref{sec:reach}). If specifications are provided, reachability analysis terminates as soon as a specification is violated. An object of class \texttt{specification} can be constructed as follows (note that $\mathcal{S}$ can be replaced by \texttt{list}):
+\begin{equation*}
+	\begin{split}
+		& \texttt{spec} = \texttt{specification}(\mathcal{S}), \\
+		& \texttt{spec} = \texttt{specification}(\mathcal{S},\texttt{type}), \\
+		& \texttt{spec} = \texttt{specification}(\mathcal{S},\texttt{location}), \\
+		& \texttt{spec} = \texttt{specification}(\mathcal{S},\texttt{type},\texttt{location}), \\
+		& \texttt{spec} = \texttt{specification}(\mathcal{S},\texttt{type},\texttt{time}), \\
+		& \texttt{spec} = \texttt{specification}(\mathcal{S},\texttt{type},\texttt{location},\texttt{time}), \\
+		& \texttt{spec} = \texttt{specification}(\mathcal{S},\texttt{type},\texttt{time},\texttt{location}), \\
+		& \texttt{spec} = \texttt{specification}(\phi,\texttt{'logic'}), \\
+     	& \texttt{spec} = \texttt{specification}(\texttt{func},\texttt{'custom'}), \\
+		& \texttt{spec} = \texttt{specification}(\texttt{func},\texttt{'custom'},\texttt{time}), \\
+		& \texttt{spec} = \texttt{specification}(\texttt{func},\texttt{'custom'},\texttt{location}), \\
+		& \texttt{spec} = \texttt{specification}(\texttt{func},\texttt{'custom'},\texttt{time},\texttt{location}), \\
+		& \texttt{spec} = \texttt{specification}(\texttt{func},\texttt{'custom'},\texttt{location},\texttt{time}),
+	\end{split}
+\end{equation*}
+where the input arguments are defined as follows:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}[t]{l p{13cm} }
+	$\bullet$~$\mathbf{\mathcal{S}}$ & set which defines the specification represented by one of the set representations in \cref{sec:setRepresentations}. \\
+	$\bullet$~\textbf{\texttt{list}} & cell array storing the sets which define the specifications. Useful for constructing multiple specifications at once.\\
+	$\bullet$~\textbf{\texttt{type}} & string specifying the type of the specifications. Supported types are \texttt{'unsafeSet'}, \texttt{'safeSet'}, \texttt{'invariant'}, and \texttt{'custom'}. \\
+	$\bullet$~\textbf{\texttt{location}} & for hybrid automata (see \cref{sec:hybridAutomaton}): double array specifying in which location of a hybrid automaton the specification is active, can also be set to \texttt{[]} meaning active in all locations (default); for parallel hybrid automata (see \cref{sec:parallelHybridAutomata}): cell-array of double arrays specifying list of active locations for each component of the hybrid automaton \\
+	$\bullet$~\textbf{\texttt{time}} & time interval in which the specification is valid specified as an object of class interval (see \cref{sec:interval}). The default value is the empty interval, which stands for valid at all times. \\
+	$\bullet$~$\mathbf{\phi}$ & temporal logic specification represented as an object of class \texttt{stl} (see \cref{sec:temporalLogic}). \\
+	$\bullet$~\textbf{\texttt{func}} & function handle to a function $f(\mathcal{R})$ that takes the current reachable set $\mathcal{R}$ for time intervals as an input argument and returns \texttt{true} if the custom specification is satisfied, and \texttt{false} otherwise.
+\end{tabular}
+\end{center}
+
+Let us denote the reachable set at time $t$ as $\mathcal{R}(t)$. The different types of specifications are defined as follows:
+\begin{align*}
+	&\texttt{'unsafeSet'}: &\forall t \in [t_0,t_f]: ~ \mathcal{R}(t) \cap \mathcal{S} = \emptyset \\
+	&\texttt{'safeSet'}: &\forall t \in [t_0,t_f]: ~ \mathcal{R}(t) \subseteq \mathcal{S} ~~~~~\\
+	&\texttt{'invariant'}\footnotemark: &\forall t \in [t_0,t_f]: ~ \mathcal{R}(t) \cap \mathcal{S} \neq \emptyset \\
+	&\texttt{'logic'}: &\forall \xi(t) \in \mathcal{R}(t): ~ \xi(t) \models \phi ~~~~\\
+	&\texttt{'custom'}: &\forall t \in [t_0,t_f]: ~ f(\mathcal{R}(t)) = 1,
+\end{align*}
+\footnotetext{Please note that this specification does not check for invariants as defined in \cite{Blanchini1999}, but whether a reachable set is still within an invariant $\mathcal{S}$ as specified for hybrid systems.}%
+where $t_0$ is the initial and $t_f$ the final time for the reachable set computation. It is also possible to combine mutliple specifications using the method \texttt{add} (see \cref{sec:specAdd}). Let us demonstrate the construction of a specification by an example:
+
+\begin{center}
+\begin{minipage}[t]{0.55\textwidth}
+	\vspace{10pt}
+	\footnotesize
+	\input{./MATLABcode/example_specification}
+\end{minipage}
+\begin{minipage}[t]{0.3\textwidth}
+	\vspace{0pt}
+	\centering
+	\includetikz{./figures/tikz/add-functionality/example_specification}
+\end{minipage}
+\end{center}
+
+Next, we explain the methods of class \texttt{specification} in detail.
+
+\subsubsection{add}
+\label{sec:specAdd}
+
+The method \texttt{add} unites two specifications:
+\begin{equation*}
+	\texttt{spec} = \texttt{add}(\texttt{spec1},\texttt{spec2}),
+\end{equation*}
+where \texttt{spec1} and \texttt{spec2} are both objects of class \texttt{specification}. The specifications defined by \texttt{spec1} and \texttt{spec2} both have to be satisfied for the resulting specification \texttt{spec} to be satisfied.
+
+\subsubsection{check}
+
+The method \texttt{check} checks if a set $\mathcal{S} \subset \Rn$ satisfies the specification defined by the object \texttt{spec} of class \texttt{specification}:
+
+\begin{equation*}
+	\texttt{res} = \texttt{check}(\texttt{spec},\mathcal{S}),
+\end{equation*}
+where \texttt{res} is \texttt{true} if the specification is satisfied, and \texttt{false} otherwise.

@@ -23,18 +23,16 @@ function res = test_ellipsoid_isemptyobject
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty ellipsoid
 E = ellipsoid.empty(2);
-res(end+1,1) = isemptyobject(E);
+assert(isemptyobject(E));
 
 % 2D ellipsoid
 Q = eye(2); q = [-1;1];
 E = ellipsoid(Q,q);
-res(end+1,1) = ~isemptyobject(E);
+assert(~isemptyobject(E));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

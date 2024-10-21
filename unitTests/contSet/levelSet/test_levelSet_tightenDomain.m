@@ -43,9 +43,7 @@ expectedSolution_nonlinear{3} = interval([-1;-3],[1;3]);
 expectedSolution_nonlinear{4} = interval([-1;-3],[1;3]);
 
 for i = 1:length(expectedSolution_nonlinear) 
-    if ~isequal(results_nonlinear{i},expectedSolution_nonlinear{i},1e-4)
-        res = false;
-    end
+    assertLoop(isequal(results_nonlinear{i},expectedSolution_nonlinear{i},1e-4),i)
 end
 
 

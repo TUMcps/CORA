@@ -29,7 +29,7 @@ function [val,x,ksi] = supportFunc_(cZ,dir,type,varargin)
 %
 %    figure; hold on; xlim([-3,1]); ylim([-3,4]);
 %    plot(cZ);
-%    plot(conHyperplane(dir,val),[1,2],'r');
+%    plot(polytope([],[],dir',val),[1,2],'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -45,9 +45,119 @@ function [val,x,ksi] = supportFunc_(cZ,dir,type,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% empty case
-if representsa_(cZ,'emptySet',0)
-    x = [];
+% non-constrained case
+if isempty(cZ.A) || all(all(cZ.A == 0))
+    [val,x,ksi] = aux_supportFunc_unconstrained(cZ,dir,type);
+    return
+end
+
+% project the zonotope onto the direction
+G_proj = dir' * cZ.G;
+
+% check if one of the special cases are applicable
+[fval,x,ksi] = aux_trySpecialCases(G_proj,cZ.A,cZ.b);
+
+empty = false;
+if isempty(fval)
+    % linear program:
+    % max_{x \in cZ} dir' * x
+    % s.t. x = c + G*ksi
+    %      A * ksi = b
+    [ksi,fval,val,empty] = aux_evaluateLP(G_proj,cZ.A,cZ.b,type);
+end
+
+% unless emptiness determined, calculate bound by adding the zonotope center
+if ~empty
+    if strcmp(type,'range')
+        temp = dir' * cZ.c + fval;
+        val = interval(temp(1),temp(2));
+    elseif any(strcmp(type,{'upper','lower'}))
+        val = dir' * cZ.c + fval;
+    end
+    
+    % calculate support vector
+    if nargout >= 2
+        x = cZ.c + cZ.G*ksi;
+    end
+end
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function [ksi,fval,val,empty] = aux_evaluateLP(G_proj,A,b,type)
+
+% number of generators -> number of optimization variables
+nrGen = numel(G_proj);
+
+problem.Aineq = [];
+problem.bineq = [];
+problem.Aeq = A;
+problem.beq = b;
+% ksi in [-1, 1]
+problem.lb = -ones(nrGen,1);
+problem.ub = ones(nrGen,1);
+
+% for easier concatenation if type == 'range'
+fval = []; ksi = []; val = []; empty = false;
+
+% lower bound
+if any(strcmp(type,{'lower','range'}))
+    problem.f = G_proj';
+    [ksi,fval,exitflag] = CORAlinprog(problem);
+
+    if exitflag == -2
+        % primal infeasible -> empty set
+        empty = true;
+        if strcmp(type,'range')
+            val = interval.empty(1);
+        elseif strcmp(type,'lower')
+            val = Inf;
+        end
+        return
+    elseif exitflag <= -3
+        % should not be unbounded, or other solver issue...
+        throw(CORAerror('CORA:solverIssue'));
+    end
+end
+
+% upper bound: since linprog always computes a minimization, we
+% need to multiply with -1 in some parts...
+if any(strcmp(type,{'upper','range'}))
+    problem.f = -G_proj';
+    [ksi_,fval_,exitflag] = CORAlinprog(problem);
+
+    if exitflag == -2
+        % primal infeasible -> empty set
+        empty = true;
+        if strcmp(type,'range')
+            val = interval.empty(1);
+        elseif strcmp(type,'upper')
+            val = -Inf;
+        end
+        return
+    elseif exitflag == 1
+        % combine factors
+        ksi = [ksi, ksi_];
+        fval = [fval, -fval_];
+    elseif exitflag <= -3
+        % should not be unbounded, or other solver issue...
+        throw(CORAerror('CORA:solverIssue'));
+    end
+end
+
+end
+
+function [val,x,ksi] = aux_supportFunc_unconstrained(cZ,dir,type)
+
+% project zonotope onto the given direction
+cZ_proj = dir'*cZ;
+I = interval(cZ_proj);
+
+% trivially empty case
+if representsa_(I,'emptySet',0)
+    x = []; ksi = [];
     if strcmp(type,'upper')
         val = -Inf;
     elseif strcmp(type,'lower')
@@ -58,63 +168,44 @@ if representsa_(cZ,'emptySet',0)
     return
 end
 
-% non-constrained case
-if isempty(cZ.A) || all(all(cZ.A == 0)) 
-    
-    % project zonotope onto the direction
-    temp = dir'*cZ;
-    I = interval(temp);
-    
-    % determine upper or lower bound
-    if strcmp(type,'upper')
-        val = supremum(I);
-        ksi = sign(temp.G)';
-    elseif strcmp(type,'lower')
-        val = infimum(I); 
-        ksi = -sign(temp.G)';
-    elseif strcmp(type,'range')
-        val = I;
-        ksi = [-sign(temp.G)', sign(temp.G)'];
-    end
-
-    % calculate support vector
-    if nargout >= 2
-        x = cZ.c + cZ.G*ksi;
-    end
-    return
+% determine bound(s) and support vector
+if strcmp(type,'upper')
+    val = supremum(I);
+    ksi = sign(cZ_proj.G)';
+    x = cZ.c + cZ.G*ksi;
+elseif strcmp(type,'lower')
+    val = infimum(I); 
+    ksi = -sign(cZ_proj.G)';
+    x = cZ.c + cZ.G*ksi;
+elseif strcmp(type,'range')
+    val = I;
+    ksi = [-sign(cZ_proj.G)', sign(cZ_proj.G)'];
+    x = [];
+end
 
 end
 
-% object properties
-A = cZ.A;
-b = cZ.b;
-n = size(A,2);
+function [fval,x,ksi] = aux_trySpecialCases(G_proj,A,b)
 
-% ksi in [-1, 1]
-lb = -ones(n,1);
-ub = ones(n,1);
-
-% project the zonotope onto the direction
-f = dir' * cZ.G;
-
-% init values for better code logic
 fval = [];
 x = [];
 ksi = [];
 
+nrGen = numel(G_proj);
+
 % special cases
-if ~any(f)
+if ~any(G_proj)
     % projection of the zonotope equals 0 -> no extension of the set in
     % this direction
     fval = 0;
-    ksi = zeros(n,1);
+    ksi = zeros(nrGen,1);
 
 elseif nargout == 1
 
     % check if the objective function is identical to the normal vector of
     % a constraint -> only one solution
-    idxPos = all(withinTol(f,A),2);
-    idxNeg = all(withinTol(-f,A),2);
+    idxPos = all(withinTol(G_proj,A),2);
+    idxNeg = all(withinTol(-G_proj,A),2);
     % if more than one constraint eligible, skip this variant and go for
     % linear program evaluation
     if nnz(idxPos) + nnz(idxNeg) == 1
@@ -129,137 +220,6 @@ elseif nargout == 1
     end
 end
 
-persistent isMosek
-if isempty(isMosek)
-    isMosek = isSolverInstalled('mosek');
-end
-
-if isempty(fval)
-    % linear program:
-    % max_{x \in cZ} dir' * x
-    % s.t. x = c + G*ksi
-    %      A * ksi = b
-    
-    if isMosek
-
-        % lower bound
-        if any(strcmp(type,{'lower','range'}))
-            res = msklpopt(f',A,b,b,lb,ub,[],'minimize echo(0)');
-
-            if strcmp(res.sol.itr.prosta,'PRIMAL_INFEASIBLE')
-                % primal infeasible -> empty set
-                if strcmp(type,'range')
-                    val = interval.empty(1);
-                elseif strcmp(type,'lower')
-                    val = Inf;
-                end
-                return
-            elseif strcmp(res.sol.itr.prosta,'DUAL_INFEASIBLE')
-                % should not be unbounded -> solver issue
-                throw(CORAerror('CORA:solverIssue'));
-            elseif strcmp(res.sol.itr.prosta,'PRIMAL_AND_DUAL_FEASIBLE')
-                % combine factors
-                ksi = res.sol.itr.xx;
-                fval = res.sol.itr.dobjval;
-            end
-
-        end
-
-        % upper bound
-        if any(strcmp(type,{'upper','range'}))
-            res = msklpopt(f',A,b,b,lb,ub,[],'maximize echo(0)');
-
-            if strcmp(res.sol.itr.prosta,'PRIMAL_INFEASIBLE')
-                % primal infeasible -> empty set
-                if strcmp(type,'range')
-                    val = interval.empty(1);
-                elseif strcmp(type,'upper')
-                    val = -Inf;
-                end
-                return
-            elseif strcmp(res.sol.itr.prosta,'DUAL_INFEASIBLE')
-                % should not be unbounded -> solver issue
-                throw(CORAerror('CORA:solverIssue'));
-            elseif strcmp(res.sol.itr.prosta,'PRIMAL_AND_DUAL_FEASIBLE')
-                % combine factors
-                ksi = [ksi, res.sol.itr.xx];
-                fval = [fval, res.sol.itr.dobjval];
-            end
-        end
-
-    else
-        % MATLAB linprog
-
-        % linear program options
-        persistent options
-        if isempty(options)
-            options = optimoptions('linprog','Algorithm','dual-simplex','display','off');
-        end
-
-        problem.Aineq = [];
-        problem.bineq = [];
-        problem.Aeq = A;
-        problem.beq = b;
-        problem.lb = lb;
-        problem.ub = ub;
-        problem.options = options;
-
-        % lower bound
-        if any(strcmp(type,{'lower','range'}))
-            problem.f = f';
-            [ksi,fval,exitflag] = CORAlinprog(problem);
-
-            if exitflag == -2
-                % primal infeasible -> empty set
-                if strcmp(type,'range')
-                    val = interval.empty(1);
-                elseif strcmp(type,'lower')
-                    val = Inf;
-                end
-                return
-            elseif exitflag <= -3
-                % should not be unbounded, or other solver issue...
-                throw(CORAerror('CORA:solverIssue'));
-            end
-        end
-
-        % upper bound: since linprog always computes a minimization, we
-        % need to multiply with -1 in some parts...
-        if any(strcmp(type,{'upper','range'}))
-            problem.f = -f';
-            [ksi_,fval_,exitflag] = CORAlinprog(problem);
-
-            if exitflag == -2
-                % primal infeasible -> empty set
-                if strcmp(type,'range')
-                    val = interval.empty(1);
-                elseif strcmp(type,'upper')
-                    val = -Inf;
-                end
-                return
-            elseif exitflag == 1
-                % combine factors
-                ksi = [ksi, ksi_];
-                fval = [fval, -fval_];
-            elseif exitflag <= -3
-                % should not be unbounded, or other solver issue...
-                throw(CORAerror('CORA:solverIssue'));
-            end
-        end
-    end
-end
-
-% calculate bound by adding the zonotope center
-if strcmp(type,'range')
-    temp = dir' * cZ.c + fval;
-    val = interval(temp(1),temp(2));
-elseif any(strcmp(type,{'upper','lower'}))
-    val = dir' * cZ.c + fval;
-end
-
-% calculate support vector
-if nargout >= 2
-    x = cZ.c + cZ.G*ksi;
 end
 
 % ------------------------------ END OF CODE ------------------------------

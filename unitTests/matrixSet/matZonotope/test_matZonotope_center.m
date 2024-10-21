@@ -1,4 +1,4 @@
-function resvec = test_matZonotope_center
+function res = test_matZonotope_center
 % test_matZonotope_center - unit test function for dimension center
 % 
 % Syntax:
@@ -23,31 +23,29 @@ function resvec = test_matZonotope_center
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % empty matrix zonotope
 matZempty = matZonotope();
-resvec(end+1) = isempty(center(matZempty));
+assert(isempty(center(matZempty)));
 
 % scalar
 C = 0;
 G = []; G(:,:,1) = 1; G(:,:,2) = -2;
 matZscalar = matZonotope(C,G);
-resvec(end+1) = compareMatrices(C,center(matZscalar));
+assert(compareMatrices(C,center(matZscalar)));
 
 % nx1 vector
 C = [0; 1; 1];
 G = []; G(:,:,1) = [1; -1; -2]; G(:,:,2) = [-2; 0; 1];
 matZvector = matZonotope(C,G);
-resvec(end+1) = compareMatrices(C,center(matZvector));
+assert(compareMatrices(C,center(matZvector)));
 
 % matrix
 C = [0 2; 1 -1; 1 -2];
 G = []; G(:,:,1) = [1 1; -1 0; -2 1]; G(:,:,2) = [-2 0; 0 1; 1 -1];
 matZ = matZonotope(C,G);
-resvec(end+1) = compareMatrices(C,center(matZ));
+assert(compareMatrices(C,center(matZ)));
 
 % combine results
-resvec = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

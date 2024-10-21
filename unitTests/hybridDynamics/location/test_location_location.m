@@ -23,8 +23,6 @@ function res = test_location_location
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = [];
-
 % empty object
 loc = location();
 
@@ -35,11 +33,10 @@ name = 'S1';
 inv = polytope([-1,0],0);
 
 % transition
-c = [-1;0]; d = 0; C = [0,1]; D = 0;
-guard = conHyperplane(c,d,C,D);
+guard = polytope([0 1],0,[-1 0],0);
 
 % reset function
-reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
+reset = linearReset([1,0;0,-0.75]);
 
 % transition
 trans = transition(guard,reset,2);
@@ -51,12 +48,12 @@ dynamics = linearSys([0,1;0,0],[0;0],[0;-9.81]);
 loc = location(name,inv,trans,dynamics);
 
 % check if values have been assigned correctly
-res(end+1,1) = strcmp(loc.name,name);
-res(end+1,1) = isequal(loc.invariant,inv);
-res(end+1,1) = isequal(loc.transition,trans);
-res(end+1,1) = isequal(loc.contDynamics,linearSys([0,1;0,0],[0;0],[0;-9.81]));
+assert(strcmp(loc.name,name));
+assert(isequal(loc.invariant,inv));
+assert(isequal(loc.transition,trans));
+assert(isequal(loc.contDynamics,linearSys([0,1;0,0],[0;0],[0;-9.81])));
 
-% combine results
-res = all(res);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

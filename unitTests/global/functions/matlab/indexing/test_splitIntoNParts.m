@@ -26,36 +26,33 @@ function res = test_splitIntoNParts
 % minimum number of parts
 K = 20;
 arr = splitIntoNParts(K,1);
-res = all(size(arr) == [1,2]) && all(arr == [1,K]);
+assert(all(size(arr) == [1,2]) && all(arr == [1,K]));
 
 % maximum number of parts
 arr = splitIntoNParts(K,K);
-res(end+1,1) = all(size(arr) == [K,2]) && all(all(arr == [1:K; 1:K]'));
+assert(all(size(arr) == [K,2]) && all(all(arr == [1:K; 1:K]')));
 
 % even partition
 N = 5;
 arr = splitIntoNParts(K,N);
-res(end+1,1) = all(size(arr) == [N,2]) ...
-    && all(all(arr == [1 4; 5 8; 9 12; 13 16; 17 20]));
+assert(all(size(arr) == [N,2]) ...
+    && all(arr == [1 4; 5 8; 9 12; 13 16; 17 20],"all"));
 
 % uneven partition
 K = 31;
 N = 7;
 arr = splitIntoNParts(K,N);
-res(end+1,1) = all(size(arr) == [N,2]) && arr(1) == 1 && arr(end) == K;
-res(end+1,1) = true;
+assert(all(size(arr) == [N,2]) && arr(1) == 1 && arr(end) == K);
+
 for i=2:N
     % monotonically increasing
-    if arr(i,2) < arr(i,1)
-        res(end,1) = false; break
-    end
+    assertLoop(arr(i,1) < arr(i,2),i)
+
     % no gaps
-    if i > 1 && arr(i,1) ~= arr(i-1,2)+1
-        res(end,1) = false; break
-    end
+    assertLoop(i > 1 && arr(i-1,1)+1 ~= arr(i,2),i)
 end
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

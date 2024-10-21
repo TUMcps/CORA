@@ -1,9 +1,9 @@
 function example_manual_supportFunc()
 % example_manual_supportFunc - example from the manual demonstrating the 
-% supportFunc operation as defined in the manual
+%    supportFunc operation as defined in the manual
 %
 % Syntax:
-%   example_manual_supportFunc()
+%    example_manual_supportFunc()
 %
 % Inputs:
 %    -
@@ -15,9 +15,9 @@ function example_manual_supportFunc()
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also:
+% See also: none
 
-% Authors:        Tobias Ladner
+% Authors:       Tobias Ladner
 % Written:       27-September-2023
 % Last update:   ---
 % Last revision: ---
@@ -37,7 +37,7 @@ figure; hold on;
 useCORAcolors("CORA:manual")
 plot(S)
 enlargeAxis(1.2)
-plot(conHyperplane(-l,-res))
+plot(polytope([],[],-l',-res))
 
 title('$\mathcal{S}$ and \texttt{supportFunc}','Interpreter','latex');
 xlabel('$x_{(1)}$','Interpreter','latex')

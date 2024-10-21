@@ -1,0 +1,87 @@
+\documentclass{article}
+
+\usepackage{amsmath,amssymb}
+\usepackage{natbib}
+\usepackage{bibentry}
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+\nobibliography*
+
+\newcommand{\myparagraph}[1]{\paragraph{#1}\mbox{}\\ \mbox{} \\}
+
+\newtheorem{definition}{Definition}%alles neu
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem{assumption}{Assumption}
+\newtheorem{example}{Example}
+\newtheorem{corollary}{Corollary}
+\newtheorem{problem}{Problem}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rn}{\mathbb{R}^n}
+
+\newcommand{\operator}[1]{\normalfont \texttt{#1}}
+
+\newenvironment{proof}{\noindent\textit{Proof}}{\hfill$\square$}
+
+\begin{document}
+
+Author: Niklas Kochdumper \\[0.3cm]
+
+\noindent Taylor series expansion at the expansion point $z^{*T} = [x^{*T}~u^{*T}]^T$:
+\begin{equation}
+	\begin{split}
+	\dot x(t) \in ~ & f(z^*) + \frac{\partial f(z)}{\partial z}\bigg |_{z^*} (z(t)-z^*) + \frac{1}{2} (z(t)-z^*)^T \frac{\partial^2 f(z)}{\partial z^2}\bigg |_{z^*} (z(t)-z^*) \oplus \mathcal{L} \\
+	& ~ \\
+	& = f(z^*) + \underbrace{\frac{\partial f(x,u)}{\partial x}\bigg |_{z^*}}_{=A} (x(t)-x^*) + \underbrace{\frac{\partial f(x,u)}{\partial u}\bigg |_{z^*}}_{=B} (u(t)-u^*) + \frac{1}{2} (z(t)-z^*)^T \underbrace{\frac{\partial^2 f(z)}{\partial z^2}\bigg |_{z^*}}_{=D} (z(t)-z^*) \oplus \mathcal{L}
+	\end{split}
+	\label{eq:taylor}
+\end{equation}
+We now insert the substitutions $x(t) = x(t_s) + x^{\Delta}(t)$, $u(t) = u^* + u^{\Delta}(t)$ into \eqref{eq:taylor}:
+\begin{equation}
+	\begin{split}
+	\dot x(t) \in ~ & f(z^*) + A \big( x(t) - x^* \big) + B \big( u^* + u^{\Delta}(t) - u^* \big) \\
+	& + \frac{1}{2} \begin{bmatrix} x(t_s) + x^{\Delta}(t) - x^* \\ u^* + u^{\Delta}(t) - u^* \end{bmatrix}^T D ~ \begin{bmatrix} x(t_s) + x^{\Delta}(t) - x^* \\ u^* + u^{\Delta}(t) - u^* \end{bmatrix} \oplus \mathcal{L} \\
+	& ~ \\
+	= & ~ f(z^*) - A x^* + A x(t) + B u^{\Delta}(t) \\ & 
+	+ \frac{1}{2} \bigg( \underbrace{\begin{bmatrix} x(t_s) - x^* \\ \mathbf{0} \end{bmatrix}}_{= z(t_s)} + \underbrace{\begin{bmatrix} x^{\Delta}(t) \\ u^{\Delta}(t) \end{bmatrix}}_{=z^{\Delta}(t)} \bigg)^T D ~ \bigg( \underbrace{\begin{bmatrix} x(t_s) - x^* \\ \mathbf{0} \end{bmatrix}}_{= z(t_s)} + \underbrace{\begin{bmatrix} x^{\Delta}(t) \\ u^{\Delta}(t) \end{bmatrix}}_{=z^{\Delta}(t)} \bigg) \oplus \mathcal{L} \\
+	& ~ \\
+	= & ~ A x(t) + f(z^*) - A x^* + \frac{1}{2} z(t_s)^T D ~ z(t_s) \\
+	& + B u^{\Delta}(t) + \frac{1}{2}\big( z(t_s)^T D~ z^{\Delta}(t) + z^{\Delta}(t)^T D ~z(t_s) + z^{\Delta}(t)^T D ~z^{\Delta}(t) \big) \oplus \mathcal{L}
+	\end{split}
+	\label{eq:taylorSplit}
+\end{equation}
+Since $x(t_s) \in \mathcal{R}(t_s)$, $u(t) \in \mathcal{U}$, and $x^{\Delta}(t_s) \in \mathcal{R}^{\Delta}(\tau_s)$, we have that
+\begin{equation}
+	u^{\Delta}(t) \in \underbrace{ \mathcal{U} \oplus (-u^*)}_{= \mathcal{U}^{\Delta}}, ~~ z(t_s) \in \underbrace{(\mathcal{R}(t_s) \oplus (-x^*)) \times \mathbf{0}}_{= \mathcal{Z}(t_s)}, ~~ z^{\Delta}(t) \in \underbrace{\mathcal{R}^{\Delta}(\tau_s) \times \mathcal{U}^{\Delta}}_{= \mathcal{Z}^{\Delta}(\tau_s)}
+	\label{eq:sets}
+\end{equation}
+Inserting \eqref{eq:sets} into \eqref{eq:taylorSplit} then yields:
+\begin{equation}
+	\begin{split}
+	\dot x(t) \in ~& A x(t) + \underbrace{f(z^*) - A x^* + \frac{1}{2} z(t_s)^T D z(t_s)}_{\in \mathcal{V}(t_s)} \\
+	& + \underbrace{B u^{\Delta}(t) + \frac{1}{2}\Big( z(t_s)^T D~ z^{\Delta}(t) + z^{\Delta}(t)^T D ~z(t_s) + z^{\Delta}(t)^T D ~z^{\Delta}(t) \Big) \oplus \mathcal{L}}_{\in \mathcal{V}^{\Delta}(\tau_s)} 
+	\end{split}
+	\label{eq:diffEnclosure}
+\end{equation}
+where
+\begin{equation*}
+	\begin{split}
+		& \mathcal{V}(t_s) = \{ f(z^*) - A x^* \} \oplus \frac{1}{2} \texttt{sq}\big(D,\mathcal{Z}(t_s) \big) \\
+		& \mathcal{V}^{\Delta}(\tau_s) = B \mathcal{U}^{\Delta} \oplus \frac{1}{2} \Big( \texttt{mu} \big( D,\mathcal{Z}(t_s),\mathcal{Z}^{\Delta}(\tau_s) \big) \oplus \texttt{mu} \big( D,\mathcal{Z}^{\Delta}(\tau_s),\mathcal{Z}(t_s) \big) \oplus \texttt{sq}\big(D,\mathcal{Z}^{\Delta}(\tau_s) \big) \Big) \oplus \mathcal{L}
+	\end{split}
+\end{equation*}
+An over-approximation for the solution to the differential inclusion in \eqref{eq:diffEnclosure} can therefore be computed as 
+\begin{equation*}
+	\mathcal{R}(t_{s+1}) \supseteq e^{A \Delta t} \mathcal{R}(t_s) \boxplus \Gamma(\Delta t) \mathcal{V}(t_s) \oplus \mathcal{R}^{p,\Delta}\big(\mathcal{V}^{\Delta}(\tau_s),\Delta t \big)
+\end{equation*}
+where
+\begin{equation*}
+	\begin{split}
+		& \Gamma (\Delta t) = \int_{0}^{\Delta t} e^{A(\Delta t - t)} dt \\
+		& \mathcal{R}^{p,\Delta}\big(\mathcal{V}^{\Delta}(\tau_s),\Delta t \big) = \bigoplus_{i = 0}^{\nu} \frac{t^{i+1}}{(i+1)!} \texttt{convHull}\big(A^i \mathcal{V}^{\Delta}(\tau_s) \big) \oplus \mathcal{E}^{p,\Delta}.
+	\end{split}
+\end{equation*}
+
+\end{document}

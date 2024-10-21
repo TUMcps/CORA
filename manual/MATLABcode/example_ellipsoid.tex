@@ -1,0 +1,52 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$}
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                           
+ \hspace*{-1.6em}{\scriptsize 1}$  E1 = ellipsoid(diag([1/2,2])) $\color{mgreen}$% create ellipsoid E1 and display it$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 2}$  A = diag([2,0.5]);$\\
+ \hspace*{-1.6em}{\scriptsize 3}$  $\\
+ \hspace*{-1.6em}{\scriptsize 4}$  E2 = A*E1 + 0.5; $\color{mgreen}$% linear Map + Minkowski addition$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 5}$  E3 = E1 + E2; $\color{mgreen}$% Minkowski addition$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 6}$  E4 = E1 & E2; $\color{mgreen}$% intersection$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 7}$  $\\
+ \hspace*{-1.6em}{\scriptsize 8}$  disp([$\color{mred}$'E1 in E2?: '$\color{black}$,num2str(E2.contains(E1))]);$\\
+ \hspace*{-1.6em}{\scriptsize 9}$  disp([$\color{mred}$'E1 in E3?: '$\color{black}$,num2str(E3.contains(E1))]);$\\
+ \hspace*{-2em}{\scriptsize 10}$  $\\
+ \hspace*{-2em}{\scriptsize 11}$  figure; hold $\color{mred}$on$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 12}$  plot(E1,[1,2],$\color{mred}$'b'$\color{black}$); $\color{mgreen}$% plot E1 in blue$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 13}$  plot(E2,[1,2],$\color{mred}$'g'$\color{black}$); $\color{mgreen}$% plot E2 in green$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 14}$  plot(E3,[1,2],$\color{mred}$'r'$\color{black}$); $\color{mgreen}$% plot E3 in red$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 15}$  plot(E4,[1,2],$\color{mred}$'k'$\color{black}$); $\color{mgreen}$% plot E4 in black$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 16}$  $\\
+ \hspace*{-2em}{\scriptsize 17}$  E5 = ellipsoid([0.8,-0.6; -0.6,0.8],[1; -4]); $\color{mgreen}$% create ellipsoid E5$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 18}$  Zo_box = zonotope(E5); $\color{mgreen}$% overapproximate E5 by a parallelotope$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 19}$  Zu_norm = zonotope(E5,10,$\color{mred}$'outer:norm'$\color{black}$); $\color{mgreen}$% overapproximate E5 using zonotope norm$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 20}$  $\\
+ \hspace*{-2em}{\scriptsize 21}$  figure; hold $\color{mred}$on$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 22}$  plot(E5); $\color{mgreen}$% plot E5$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 23}$  plot(Zo_box,[1,2],$\color{mred}$'r'$\color{black}$); $\color{mgreen}$% plot overapproximative zonotope Zo_box $\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 24}$  plot(Zu_norm,[1,2],$\color{mred}$'m'$\color{black}$);$\color{mgreen}$% plot overapproximative zonotope Zu_norm$\color{black}$$\\
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

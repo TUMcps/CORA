@@ -34,7 +34,7 @@ function res = verifySTL_seidl(sys,params,options,eq)
 
 % Authors:       Benedikt Seidl
 % Written:       15-May-2023
-% Last update:   ---
+% Last update:   08-February-2024 (FL, use stlInterval instead of interval)
 % Last revision: 19-October-2023 (TL, rename to verifySTL)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -52,7 +52,7 @@ if ~isfield(options, 'timeStep')
 end
 
 % compute the masks of this formula
-msk = masks(phi,interval(0,options.timeStep),'any');
+msk = masks(phi,stlInterval(0,options.timeStep),'any');
 
 % prepare refinement loop -------------------------------------------------
 
@@ -113,7 +113,7 @@ function aux_updateMasks(signals)
         sigs = signals{j};
 
         for l = 1:length(k)
-            msk(k{l}) = combine(msk(k{l}),sigs(k{l}), @aux_comb);
+            msk(k{l}) = finiteSignal.combine(@aux_comb,msk(k{l}),sigs(k{l}));
         end
     end
 

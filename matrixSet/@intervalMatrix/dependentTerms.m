@@ -30,6 +30,7 @@ function [intSq,intH] = dependentTerms(obj,r)
 % Written:       20-February-2007 
 % Last update:   30-April-2007
 %                23-September-2010
+%                30-September-2024 (TL, updated aux_sum)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -108,9 +109,7 @@ end
 function s=aux_sum(A,i)
 %sum function: s=0.5 \sum_{k:k\neq i,k\neq j} a_{ik}a_{kj}t^2
     n=length(A);
-    k=0:n;
-    ind=k*n+1:n+1:n^2;
-    A(ind)=zeros(n,1);
+    A = A .* (1-eye(n));
     s=A(i,:)*A;
 end
 

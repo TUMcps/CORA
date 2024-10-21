@@ -45,9 +45,8 @@ for i=1:nrOfTests
     CH = convHull(I_low,I_high);
 
     % original sets have to be contained
-    if ~contains(CH,I_low) || ~contains(CH,I_high)
-        res = false; break;
-    end
+    assertLoop(contains(CH,I_low),i)
+    assertLoop(contains(CH,I_high),i)
 
 end
 

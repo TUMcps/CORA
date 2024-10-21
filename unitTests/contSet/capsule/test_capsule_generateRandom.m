@@ -23,8 +23,6 @@ function res = test_capsule_generateRandom
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty call
 C = capsule.generateRandom();
 
@@ -35,34 +33,34 @@ r = 3.5;
 
 % only dimension
 C = capsule.generateRandom('Dimension',n);
-res(end+1,1) = dim(C) == n;
+assert(dim(C) == n);
 
 % only center
 C = capsule.generateRandom('Center',c);
-res(end+1,1) = compareMatrices(C.c,c);
+assert(compareMatrices(C.c,c));
 
 % only radius
 C = capsule.generateRandom('Radius',r);
-res(end+1,1) = withinTol(C.r,r);
+assert(withinTol(C.r,r));
 
 % dimension and center
 C = capsule.generateRandom('Dimension',n,'Center',c);
-res(end+1,1) = dim(C) == n && compareMatrices(C.c,c);
+assert(dim(C) == n && compareMatrices(C.c,c));
 
 % dimension and radius
 C = capsule.generateRandom('Dimension',n,'Radius',r);
-res(end+1,1) = dim(C) == n && withinTol(C.r,r);
+assert(dim(C) == n && withinTol(C.r,r));
 
 % center and radius
 C = capsule.generateRandom('Center',c,'Radius',r);
-res(end+1,1) = compareMatrices(C.c,c) && withinTol(C.r,r);
+assert(compareMatrices(C.c,c) && withinTol(C.r,r));
 
 % dimension, center, and radius
 C = capsule.generateRandom('Dimension',n,'Center',c,'Radius',r);
-res(end+1,1) = dim(C) == n && compareMatrices(C.c,c) && withinTol(C.r,r);
+assert(dim(C) == n && compareMatrices(C.c,c) && withinTol(C.r,r));
 
 
 % unify results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

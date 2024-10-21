@@ -163,7 +163,7 @@ figure;
 for p=1:size(theta,2)
     subplot(3,1,p); hold on; box on;
     useCORAcolors("CORA:contDynamics");
-    color = CORAcolor('CORA:next');
+    color = nextcolor;
     curr_theta = theta(:,p);
     for i=1:length(curr_theta)
         IH = interval([infimum(curr_theta{i}); infimum(curr_theta{i})],...

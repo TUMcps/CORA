@@ -1,14 +1,12 @@
-function [paramsList,optionsList] = config_linearSys_reachInner(sys,params,options)
+function [paramsList,optionsList] = config_linearSys_reachInner
 % config_linearSys_reachInner - configuration file for validation of
 %    model parameters and algorithm parameters
 %
 % Syntax:
-%    [paramsList,optionsList] = config_linearSys_reachInner(sys,params,options)
+%    [paramsList,optionsList] = config_linearSys_reachInner
 %
 % Inputs:
-%    sys - linearSys object
-%    params - user-defined model parameters
-%    options - user-defined algorithm parameters
+%    -
 %
 % Outputs:
 %    paramsList - list of model parameters

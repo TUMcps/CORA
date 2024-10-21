@@ -33,11 +33,6 @@ function p = cubMapPoint(x1,x2,x3,T)
 
 % get dimension for input argument check
 n = size(x1,1);
-% check input arguments
-% inputArgsCheck({{x1,'att','numeric',{'nonnan','vector'}},...
-%                 {x2,'att','numeric',{'nonnan','vector','size',[n,1]}},...
-%                 {x3,'att','numeric',{'nonnan','vector','size',[n,1]}},...
-%                 {T,'att','cell',{'size',[n,n]}}});
 
 % init point
 p = zeros(n,1);

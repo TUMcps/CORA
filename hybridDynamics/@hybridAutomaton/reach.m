@@ -35,21 +35,20 @@ function [R,res] = reach(HA,params,options,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
     res = true;
+    spec = setDefaultValues({[]},varargin);
     
     % options preprocessing
-    options = validateOptions(HA,mfilename,params,options);
-    % ensure that options are not checked again (in any contDynamics/reach)
-    options.validated = true;
+    [params,options] = validateOptions(HA,params,options);
 
     % compute derivatives for each location
-    compDerivatives(HA,options);
+    if isfield(params,'paramInt')
+        % this is required for derivatives() call for nonlinParamSys
+        options.paramInt = params.paramInt;
+    end
+    priv_flowDerivatives(HA,options);
     
     % check specifications
-    spec = [];
-    if nargin >= 4
-       spec = varargin{1};
-    end
-    options = aux_check_flatHA_specification(options,HA,spec);
+    options.specificationLoc = aux_check_flatHA_specification(HA,spec);
 
     % initialize reachable set: we use a fixed size to start with and then
     % double the size if the current size is exceeded; this process avoids
@@ -62,15 +61,13 @@ function [R,res] = reach(HA,params,options,varargin)
     % computation, multiple branches of reachable set can emerge, requiring
     % to compute the successor reachable sets for all branches one after
     % the other; the queue handles this process)
-    list.set = options.R0;
-    list.loc = options.startLoc;
-    list.time = interval(options.tStart);
+    list.set = params.R0;
+    list.loc = params.startLoc;
+    list.time = interval(params.tStart);
     list.parent = 0;
 
     % display information on command window
-    if options.verbose
-        disp(newline + "Start analysis...");
-    end
+    aux_verbose_displayStart(options.verbose);
 
     % loop until the queue is empty or a specification is violated
     while ~isempty(list) && res
@@ -83,8 +80,10 @@ function [R,res] = reach(HA,params,options,varargin)
         parent = list(1).parent;
 
         % get inputs and specification for the current location
-        options.U = options.Uloc{locID};
-        options.u = options.uloc{locID};
+        params.U = params.Uloc{locID};
+        params.u = params.uloc{locID};
+        params.W = params.Wloc{locID};
+        params.V = params.Vloc{locID};
         options.specification = options.specificationLoc{locID};
         % get timeStep for the current location (unless adaptive)
         if ~strcmp(options.linAlg,'adaptive')
@@ -108,36 +107,34 @@ function [R,res] = reach(HA,params,options,varargin)
 
             % here, we overwrite the first entry in list and continue the
             % reachability analysis with this set -- in contrast to below,
-            % where the new sets are appended at the end of the list 
+            % where the new sets are appended at the end of the list
+
+            % compute derivatives of reset functions for current location
+            HA = derivatives(HA,locID);
 
             % append to the end of the list
-            list(1).set = reset(HA.location(locID).transition(instantTransition),...
-                            R0,options.U);
+            list(1).set = evaluate(HA.location(locID).transition(instantTransition).reset,...
+                            R0,params.U);
             list(1).loc = HA.location(locID).transition(instantTransition).target;
             list(1).parent = r;
 
             % print on command window that an instant transition has occurred
-            if options.verbose
-                disp("  transition: location " + locID + ...
-                    " -> location " + list(1).loc + "..." + ...
-                    " (time: " + string(tStart) + ")");
-            end
+            aux_verbose_displayInstantTransition(options.verbose,list(1).loc,locID,tStart);
             continue
 
         else
-            if options.verbose
-                fprintf("Compute reachable set in location " + locID + ...
-                    "..." + " (time: " + string(tStart) + " to ");
-            end
+            aux_verbose_displayReach(options.verbose,locID,tStart);
+
+            % compute derivatives of reset functions for current location
+            HA = derivatives(HA,locID);
 
             % compute the reachable set within a location until either the
             % final time is reached or the reachable set hits a guard set
             % and the computation proceeds in another location
-            [Rtemp,Rjump,res] = reach(HA.location(locID),R0,tStart,options);
+            params.R0 = R0; params.tStart = tStart;
+            [Rtemp,Rjump,res] = reach(HA.location(locID),params,options);
 
-            if options.verbose
-                fprintf(string(Rtemp(1).timePoint.time{end}) + ")\n");
-            end
+            aux_verbose_displayJump(options.verbose,Rtemp);
         end
 
         % remove current element from the queue
@@ -150,14 +147,12 @@ function [R,res] = reach(HA,params,options,varargin)
         list = [list; Rjump];
 
         % display transitions on command window
-        if options.verbose
-            aux_displayTransition(Rjump,locID);
-        end
+        aux_verbose_displayTransition(options.verbose,Rjump,locID);
 
         % store the computed reachable set
         for i=1:size(Rtemp,1)
             % compute output set
-            Ytemp = aux_outputSet(Rtemp(i),HA.location(locID),options);
+            Ytemp = aux_outputSet(Rtemp(i),HA.location(locID),params,options);
             % init reachSet object and append to full list
             temp = reachSet(Ytemp.timePoint,Ytemp.timeInterval,...
                             parent,locID);
@@ -174,26 +169,25 @@ function [R,res] = reach(HA,params,options,varargin)
     % pre-allocation of memory)
     R = R(1:r,1);
 
-    if options.verbose
-        disp("...time horizon reached, analysis finished." + newline);
-    end
+    aux_verbose_displayEnd(options.verbose);
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function options = aux_check_flatHA_specification(options,HA,spec)
+function specificationLoc = aux_check_flatHA_specification(HA,spec)
 % rewrites specifications in the correct format
 
     numLoc = length(HA.location);
 
     % initialize specifications with empty cells
     if isempty(spec)
-
-        options.specificationLoc = cell(numLoc,1);
+        specificationLoc = cell(numLoc,1);
+        return
+    end
 
     % adjust specification for each location  
-    elseif ~iscell(spec)
+    if ~iscell(spec)
 
         % number of specifications
         nrSpecs = length(spec);
@@ -213,21 +207,26 @@ function options = aux_check_flatHA_specification(options,HA,spec)
         end
 
         
-        options.specificationLoc = cell(numLoc,1);
+        specificationLoc = cell(numLoc,1);
         % if spec.location = [], specification is assumed to be active in
         % all locations
 
         for i=1:numLoc
             for j=1:nrSpecs
                 if isemptyobject(spec(j).location) || any(spec(j).location == i)
-                    options.specificationLoc{i} = ...
-                        add(options.specificationLoc{i},spec(j));
+                    specificationLoc{i} = add(specificationLoc{i},spec(j));
                 end
             end
         end
 
     % copy specification for each location
     else
+
+        % check if the number of cells matches the number of locations
+        if all(size(spec) ~= [numLoc,1])
+            throw(CORAerror('CORA:notSupported',...
+                'Input argument "spec" has the wrong format!'));
+        end
 
         % check if time information is provided
         for i = 1:length(spec)
@@ -238,18 +237,13 @@ function options = aux_check_flatHA_specification(options,HA,spec)
                 end
             end
         end
-        
-        % copy specifications
-        if all(size(spec) ~= [numLoc,1])
-            throw(CORAerror('CORA:notSupported',...
-                'Input argument "spec" has the wrong format!'));
-        end
 
-        options.specificationLoc = spec;
+        % copy specifications
+        specificationLoc = spec;
     end
 end
 
-function Ytemp = aux_outputSet(Rtemp,loc,options)
+function Ytemp = aux_outputSet(Rtemp,loc,params,options)
 % since we require the reachable set in the entire computation due to guard
 % intersections and the preparation of the start set for the next location,
 % we only compute the output set at the end of the analysis of each
@@ -257,8 +251,8 @@ function Ytemp = aux_outputSet(Rtemp,loc,options)
 
 % rewrite options.u of current location to options.uTrans for outputSet()
 % TODO: do this in validateOptions?
-if isfield(options,'u')
-    options.uTrans = options.u;
+if isfield(params,'u')
+    params.uTrans = params.u;
 end
 
 % init
@@ -273,7 +267,7 @@ if ~isempty(Rtemp.timePoint)
     Ytemp.timePoint.time = Rtemp.timePoint.time;
     for i=1:length(Rtemp.timePoint.set)
         Ytemp.timePoint.set{i} = ...
-            outputSet(loc.contDynamics,options,Rtemp.timePoint.set{i});
+            outputSet(loc.contDynamics,Rtemp.timePoint.set{i},params,options);
     end
 end
 
@@ -284,7 +278,7 @@ if ~isempty(Rtemp.timeInterval)
     Ytemp.timeInterval.time = Rtemp.timeInterval.time;
     for i=1:length(Rtemp.timeInterval.set)
         Ytemp.timeInterval.set{i} = ...
-            outputSet(loc.contDynamics,options,Rtemp.timeInterval.set{i});
+            outputSet(loc.contDynamics,Rtemp.timeInterval.set{i},params,options);
     end
 end
 
@@ -293,9 +287,55 @@ Ytemp.parent = Rtemp.parent;
 
 end
 
-function aux_displayTransition(list,locID)
+% logging functions below... (only print if options.verbose = true)
+
+function aux_verbose_displayStart(verbose)
+% display start message
+if ~verbose; return; end
+
+disp("Start analysis...");
+
+end
+
+function aux_verbose_displayEnd(verbose)
+% display end message
+if ~verbose; return; end
+
+disp("...time horizon reached, analysis finished." + newline);
+
+end
+
+function aux_verbose_displayInstantTransition(verbose,loc,locID,tStart)
+% display instant transition
+if ~verbose; return; end
+
+disp("  transition: location " + locID + ...
+     " -> location " + loc + "..." + ...
+     " (time: " + string(tStart) + ")");
+
+end
+
+function aux_verbose_displayReach(verbose,locID,tStart)
+% display information about reachability analysis
+if ~verbose; return; end
+
+fprintf("Compute reachable set in location " + locID + ...
+    "..." + " (time: " + string(tStart) + " to ");
+
+end
+
+function aux_verbose_displayJump(verbose,Rtemp)
+% display information about guard intersection
+if ~verbose; return; end
+
+fprintf(string(Rtemp(1).timePoint.time{end}) + ")\n");
+
+end
+
+function aux_verbose_displayTransition(verbose,list,locID)
 % only if verbose = true: print outgoing transitions with target location
 % identifier and time during which the transition has occurred
+if ~verbose; return; end
 
 if isempty(list)
     return

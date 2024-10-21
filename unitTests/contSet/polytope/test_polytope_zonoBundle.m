@@ -23,8 +23,6 @@ function res = test_polytope_zonoBundle
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % tolerance
 tol = 1e-14;
 
@@ -36,7 +34,7 @@ V = vertices(P);
 zB = zonoBundle(P);
 V_ = vertices(zB);
 % compare vertices
-res(end+1,1) = compareMatrices(V,V_,tol);
+assert(compareMatrices(V,V_,tol));
 
 
 % 2D, bounded
@@ -47,27 +45,22 @@ V = vertices(P);
 zB = zonoBundle(P);
 V_ = vertices(zB);
 % compare vertices
-res(end+1,1) = compareMatrices(V,V_,tol);
+assert(compareMatrices(V,V_,tol));
 
 
-% combine results
-res = all(res);
-
-
-% 2D, fully empty
+% 2D, fully empty -> unbounded
 A = zeros(0,2); b = zeros(0,0);
 P = polytope(A,b);
-try
-    zB = zonoBundle(P);
-    res = false;
-end
+assertThrowsAs(@zonoBundle,'CORA:specialError',P);
 
-% 2D, trivially fulfilled constraints
+
+% 2D, trivially fulfilled constraints -> unbounded
 A = [0 0]; b = 1; Ae = [0 0]; be = 0;
 P = polytope(A,b,Ae,be);
-try
-    zB = zonoBundle(P);
-    res = false;
-end
+assertThrowsAs(@zonoBundle,'CORA:specialError',P);
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

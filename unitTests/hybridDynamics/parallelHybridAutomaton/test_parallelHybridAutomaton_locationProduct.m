@@ -27,16 +27,16 @@ function res = test_parallelHybridAutomaton_locationProduct
 % first component, first location
 dynamics{1,1} = linearSys([0 -1; 1 0],[1 0; 0 1],[],[0.05 0.05]);
 inv{1,1} = polytope([1 1],0);
-guard = conHyperplane([1 1],0);
-reset = struct('A',[1 0; 0 1],'c',[3;3]);
+guard = polytope([],[],[1 1],0);
+reset = linearReset([1 0; 0 1],[0 0; 0 0],[3;3]);
 trans = transition(guard,reset,2);
 loc = location('loc1',inv{1,1},trans,dynamics{1,1});
 
 % first component, second location
 dynamics{1,2} = linearSys([0 -1; -1 0],[0 1; 1 0],[],[0.05 -0.05]);
 inv{1,2} = polytope([-1 -1],0);
-guard = conHyperplane([1 1],0);
-reset = struct('A',[1 0; 0 1],'c',[-3;3]);
+guard = polytope([],[],[1 1],0);
+reset = linearReset([1 0; 0 1],[0 0; 0 0],[-3;3]);
 trans = transition(guard,reset,1);
 loc(2) = location('loc2',inv{1,2},trans,dynamics{1,2});
 
@@ -46,16 +46,16 @@ HA1 = hybridAutomaton(loc);
 % second component, first location
 dynamics{2,1} = linearSys([0 1 -1; 1 0 0; 0 1 0],[0;-1;0],[],[0 0 0.05; 0.05 0.05 0]);
 inv{2,1} = polytope([1 1 1],1);
-guard = conHyperplane([1 1 1],1);
-reset = struct('A',[1 0 0; 0 1 0; 0 0 1],'c',[1;1;1]);
+guard = polytope([],[],[1 1 1],1);
+reset = linearReset([1 0 0; 0 1 0; 0 0 1],[0;0;0],[1;1;1]);
 trans = transition(guard,reset,2);
 loc(1) = location('loc1',inv{2,1},trans,dynamics{2,1});
 
 % second component, second location
 dynamics{2,2} = linearSys([0 -1 1; 1 0 0; 0 1 0],[0;0;1],[],[0.05 0 0; 0 0.05 -0.05]);
 inv{2,2} = polytope([-1 -1 -1],-1);
-guard = conHyperplane([1 1 1],1);
-reset = struct('A',[1 0 0; 0 1 0; 0 0 1],'c',[-1;-1;-1]);
+guard = polytope([],[],[1 1 1],1);
+reset = linearReset([1 0 0; 0 1 0; 0 0 1],[0;0;0],[-1;-1;-1]);
 trans = transition(guard,reset,1);
 loc(2) = location('loc2',inv{2,2},trans,dynamics{2,2});
 
@@ -79,24 +79,28 @@ allLabels = struct('name',[],'component',[],...
 loc = locationProduct(pHA,locID,allLabels);
 
 % resulting invariant dimension is 5
-res = dim(loc.invariant) == 5;
+assert(dim(loc.invariant) == 5);
 % compare with true invariant
 inv_true = polytope([1,1,0,0,0;0,0,-1,-1,-1],[0;-1]);
-res(end+1,1) = loc.invariant == inv_true;
+assert(loc.invariant == inv_true);
 % resulting flow equation is linear
-res(end+1,1) = isa(loc.contDynamics,'linearSys');
+assert(isa(loc.contDynamics,'linearSys'));
 % compare with true linear system
+A_true = [[0 -1; 1 0], [0.05 0 0; 0 0.05 -0.05];...
+    [0,0;0,0;0.05,0.05], [0 -1 1; 1 0 0; 0 1 0]];
+% disturbance matrix and noise matrix are trivial (1 dummy per component)
+E_true = zeros(size(A_true,1),length(locID));
+F_true = zeros(size(A_true,1),length(locID));
 dynamics_true = linearSys('linearSys x linearSys',...
-    [[0 -1; 1 0], [0.05 0 0; 0 0.05 -0.05];...
-    [0,0;0,0;0.05,0.05], [0 -1 1; 1 0 0; 0 1 0]],zeros(5,1),zeros(5,1));
-res(end+1,1) = isequal(loc.contDynamics,dynamics_true);
+    A_true,[],[],[],[],[],E_true,F_true);
+assert(isequal(loc.contDynamics,dynamics_true));
 % two transitions
-res(end+1,1) = length(loc.transition) == 2;
+assert(length(loc.transition) == 2);
 % targets
-res(end+1,1) = all(loc.transition(1).target == [2;2]) ...
-    && all(loc.transition(2).target == [1;1]);
+assert(all(loc.transition(1).target == [2;2]))
+assert(all(loc.transition(2).target == [1;1]))
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

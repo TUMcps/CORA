@@ -1,16 +1,17 @@
-function zB = plus(summand1,summand2)
+function S_out = plus(zB,S)
 % plus - Overloaded '+' operator for the Minkowski addition of a zonotope
 %        bundle with a zonotope or with a vector (see Prop. 2 in [1])
 %
 % Syntax:
-%    zB = plus(summand1,summand2)
+%    S_out = zB + S
+%    S_out = plus(zB,S)
 %
 % Inputs:
-%    summand1 - zonoBundle object, zonotope object, or numerical vector
-%    summand2 - zonoBundle object, zonotope object, or numerical vector
+%    zB - zonoBundle object, numeric
+%    S - contSet object, numeric
 %
 % Outputs:
-%    zB - zonoBundle object after Minkowski addition
+%    S_out - zonoBundle object after Minkowski addition
 %
 % References:
 %    [1] M. Althoff. "Zonotope bundles for the efficient computation of 
@@ -29,60 +30,58 @@ function zB = plus(summand1,summand2)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% determine zonotope bundle object
-[zB,summand] = findClassArg(summand1,summand2,'zonoBundle');
+% ensure that numeric is second input argument
+[S_out,S] = reorderNumeric(zB,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < S_out.precedence
+    S_out = S + S_out;
+    return
+end
 
 try
 
     % over-approximate the set if the summand is a zonotope bundle
-    if isa(summand,'zonoBundle')
-       summand = zonotope(interval(summand)); 
+    if isa(S,'zonoBundle') || isa(S,'interval')
+        S = zonotope(interval(S));
+        for i = 1:S_out.parallelSets
+            S_out.Z{i} = S_out.Z{i} + S;
+        end
+        return
     end
     
-    % different cases depending on the class of the second summand
-    if isa(summand,'zonotope') || isnumeric(summand) || isa(summand,'interval')
-    
-        for i = 1:zB.parallelSets
-            zB.Z{i} = zB.Z{i} + summand;
+    if isa(S,'zonotope')
+        for i = 1:S_out.parallelSets
+            S_out.Z{i} = S_out.Z{i} + S;
         end
+        return
+    end
 
-    elseif isa(summand,'polytope') || isa(summand,'conZonotope') 
-    
-        for i = 1:zB.parallelSets
-            zB.Z{i} = zB.Z{i} + zonoBundle(summand);
-        end        
-    
-    elseif isa(summand,'polyZonotope') || isa(summand,'conPolyZono')
-    
-        zB = summand + zB;
-    
-    else
-        % throw error for given arguments
-        throw(CORAerror('CORA:noops',summand1,summand2));
+    if isnumeric(S) && iscolumn(S)
+        for i = 1:S_out.parallelSets
+            S_out.Z{i} = S_out.Z{i} + S;
+        end
+        return
     end
 
 catch ME
     % note: error has already occured, so the operations below don't have
     % to be efficient
 
-    % already know what's going on...
-    if startsWith(ME.identifier,'CORA')
-        rethrow(ME);
-    end
-
     % check whether different dimension of ambient space
-    equalDimCheck(zB,summand);
+    equalDimCheck(S_out,S);
 
     % check for empty sets
-    if representsa_(zB,'emptySet',eps)
+    if representsa_(S_out,'emptySet',eps) || representsa_(S,'emptySet',eps)
+        S_out = zonoBundle.empty(dim(S_out));
         return
-    elseif representsa_(summand,'emptySet',eps)
-        zB = zonoBundle.empty(dim(zB)); return
     end
 
     % other error...
     rethrow(ME);
 
 end
+
+throw(CORAerror('CORA:noops',S_out,S));
 
 % ------------------------------ END OF CODE ------------------------------

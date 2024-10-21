@@ -1,0 +1,49 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                             
+ \hspace*{-1.6em}{\scriptsize 1}$  a1 = interval(-1, 2); $\color{mgreen}$% generate a scalar interval [-1,2]$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 2}$  a2 = interval(2, 3); $\color{mgreen}$% generate a scalar interval [2,3]$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 3}$  a3 = interval(-6, -4); $\color{mgreen}$% generate a scalar interval [-6,4]$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 4}$  a4 = interval(4, 6); $\color{mgreen}$% generate a scalar interval [4,6]$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 5}$  $\\
+ \hspace*{-1.6em}{\scriptsize 6}$  b1 = taylm(a1, 6); $\color{mgreen}$% Taylor model with maximum order of 6 and name a1$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 7}$  b2 = taylm(a2, 6); $\color{mgreen}$% Taylor model with maximum order of 6 and name a2$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 8}$  b3 = taylm(a3, 6); $\color{mgreen}$% Taylor model with maximum order of 6 and name a3$\color{black}$$\\
+ \hspace*{-1.6em}{\scriptsize 9}$  b4 = taylm(a4, 6); $\color{mgreen}$% Taylor model with maximum order of 6 and name a4$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 10}$  $\\
+ \hspace*{-2em}{\scriptsize 11}$  B1 = [b1; b2] $\color{mgreen}$% generate a row of Taylor models$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 12}$  B2 = [b3; b4] $\color{mgreen}$% generate a row of Taylor models$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 13}$  $\\
+ \hspace*{-2em}{\scriptsize 14}$  B1 + B2 $\color{black}$$\color{mgreen}$% addition$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 15}$  B1' * B2 $\color{black}$$\color{mgreen}$% matrix multiplication$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 16}$  B1 .* B2 $\color{black}$$\color{mgreen}$% pointwise multiplication$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 17}$  B1 / 2 $\color{black}$$\color{mgreen}$% division by scalar$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 18}$  B1 ./ B2 $\color{black}$$\color{mgreen}$% pointwise division$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 19}$  B1.^3 $\color{mgreen}$% power function$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 20}$  sin(B1) $\color{mgreen}$% sine function$\color{black}$$\\
+ \hspace*{-2em}{\scriptsize 21}$  sin(B1(1,1)) + B1(2,1).^2 - B1' * B2 $\color{black}$ $\color{mgreen}$% combination of functions$\color{black}$$\\
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

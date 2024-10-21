@@ -1,4 +1,4 @@
-classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) polyZonotope < contSet
+classdef polyZonotope < contSet
 % polyZonotope - object constructor for polynomial zonotopes
 %
 % Definition: see CORA manual, Sec. 2.2.1.5.
@@ -39,6 +39,11 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) polyZonotope < cont
 % 
 %    plot(pZ,[1,2],'FaceColor','r');
 %
+% References:
+%    [1] Kochdumper, N., et al. (2020). Sparse polynomial zonotopes: A novel
+%        set representation for reachability analysis. IEEE Transactions on 
+%        Automatic Control.
+%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
@@ -56,7 +61,7 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) polyZonotope < cont
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-properties (SetAccess = protected, GetAccess = public)
+properties (SetAccess = {?contSet, ?matrixSet}, GetAccess = public)
     c;      % center
     G;      % dependent generator matrix
     GI;     % independent generator matrix
@@ -76,6 +81,7 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor(1:5,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'polyZonotope')
@@ -88,10 +94,8 @@ methods
         % 2. check correctness of input arguments
         aux_checkInputArgs(c,G,GI,E,id,nargin);
 
-        % 3. remove redundancies
-        if ~isempty(E)
-            [E,G] = removeRedundantExponents(E,G);
-        end
+        % 3. compute properties
+        [c,G,GI,E,id] = aux_computeProperties(c,G,GI,E,id);
 
         % 4. assign properties
         obj.c = c;
@@ -100,12 +104,25 @@ methods
         obj.E = E;
         obj.id = id;
 
+        % 5. set precedence (fixed)
+        obj.precedence = 70;
+
     end
 end
 
 methods (Static = true)
     pZ = generateRandom(varargin) % generate random polyZonotope
     pZ = empty(n) % instantiates an empty polyZonotope
+    pZ = origin(n) % instantiates a polyZonotope representing the origin
+end
+
+methods (Access = protected)
+    [abbrev,printOrder] = getPrintSetInfo(S)
+end
+
+% plotting
+methods (Access = {?contSet})
+    han = plot3D(S,varargin);
 end
 
 
@@ -151,11 +168,6 @@ end
 function [c,G,GI,E,id] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
 
-    % check number of input arguments
-    if nargin > 5
-        throw(CORAerror('CORA:tooManyInputArgs',5));
-    end
-
     % no input arguments
     if nargin == 0
         c = []; G = []; GI = []; E = []; id = []; 
@@ -164,18 +176,6 @@ function [c,G,GI,E,id] = aux_parseInputArgs(varargin)
 
     % set default values
     [c,G,GI,E,id] = setDefaultValues({[],[],[],[],[]},varargin);
-
-    % default value for exponent matrix
-    if all(size(E) == [0,0])
-        h = size(G,2);
-        E = eye(h);
-    end
-
-    % number of dependent factors
-    if isempty(id)
-        p = size(E,1);
-        id = (1:p)'; % column vector
-    end
 
 end
 
@@ -199,7 +199,7 @@ function aux_checkInputArgs(c,G,GI,E,id,n_in)
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 'Center should be a column vector.'));
         end
-        if size(id, 2) ~= 1
+        if ~isempty(id) && size(id, 2) ~= 1
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 'Identifier vector should be a column vector.'));
         end
@@ -211,14 +211,42 @@ function aux_checkInputArgs(c,G,GI,E,id,n_in)
              throw(CORAerror('CORA:wrongInputInConstructor',...
                  'Dimension mismatch between center and independent generator matrix.'));
         end
-        if size(E,2) ~= size(G,2)
+        if ~isempty(E) && size(E,2) ~= size(G,2)
              throw(CORAerror('CORA:wrongInputInConstructor',...
                  'Dimension mismatch between dependent generator matrix and exponent matrix.'));
         end
-        if size(id, 1) ~= size(E,1)
+        if ~isempty(E) && ~isempty(id) && size(id, 1) ~= size(E,1)
              throw(CORAerror('CORA:wrongInputInConstructor',...
                  'Dimension mismatch between exponent matrix and identifier vector.'));
         end
+    end
+
+end
+
+function [c,G,GI,E,id] = aux_computeProperties(c,G,GI,E,id)
+
+    % remove redundancies
+    if ~isempty(E)
+        [E,G] = removeRedundantExponents(E,G);
+    end
+
+    % if G/GI is empty, set correct dimension
+    if isempty(G)
+        G = zeros(size(c,1),0);
+    end
+    if isempty(GI)
+        GI = zeros(size(c,1),0);
+    end
+
+    % default value for exponent matrix
+    if isempty(E)
+        E = eye(size(G,2));
+    end
+
+    % number of dependent factors
+    if isempty(id)
+        p = size(E,1);
+        id = (1:p)'; % column vector
     end
 
 end

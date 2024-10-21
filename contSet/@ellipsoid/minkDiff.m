@@ -5,14 +5,13 @@ function E = minkDiff(E,S,varargin)
 % Syntax:
 %    E = minkDiff(E,S)
 %    E = minkDiff(E,S,mode)
-%    E = minkDiff(E,S,L)
-%    E = minkDiff(E,S,L,mode)
+%    E = minkDiff(E,S,mode,L)
 %
 % Inputs:
 %    E - ellipsoid object
 %    S - set representation/double matrix
-%    L - (optional) directions to use for approximation
 %    mode - (optional) type of approximation ('inner', 'outer')
+%    L - (optional) directions to use for approximation
 %
 % Outputs:
 %    E - ellipsoid object after Minkowski difference
@@ -46,70 +45,47 @@ function E = minkDiff(E,S,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,4);
+
+[mode,L] = setDefaultValues({'outer',zeros(dim(E),0)},varargin);
+
 %% parsing and checking
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'};
-                {S,'att',{'contSet','numeric'}}});
+                {S,'att',{'contSet','numeric','cell'}}; ...
+                {mode,'str',{'inner','outer'}}; ...
+                {L,'att','numeric'}});
 
 % check dims
 equalDimCheck(E,S);
-
-% parse arguments
-if isempty(varargin)
-    L = zeros(dim(E),0);
-    mode = 'outer';
-elseif length(varargin)==1
-    if isa(varargin{1},'char')
-        mode = varargin{1};
-        L = zeros(dim(E),0);
-    elseif isa(varargin{1},'double')
-        L = varargin{1};
-        mode = 'outer';
-    else
-        throw(CORAerror('CORA:wrongValue','third',"be of type 'double' or 'char'"));
-    end
-elseif length(varargin)==2
-    if ~isa(varargin{1},'double')
-        throw(CORAerror('CORA:wrongValue','third',"be of type 'double'"));
-    end
-    if ~isa(varargin{2},'char')
-        throw(CORAerror('CORA:wrongValue','fourth',"be of type 'char'"));
-    end
-    L = varargin{1};
-    mode = varargin{2};
-else
-    throw(CORAerror('CORA:tooManyInputArgs',4));
-end
-
+equalDimCheck(E,L);
 
 % subtrahend is the empty set
-if all(representsa_(S,'emptySet',eps))
+if ~iscell(S) && representsa_(S,'emptySet',eps)
+    E = fullspace(dim(E));
     return;
 end
 
-% check arguments
-if ~any(strcmp(mode,{'inner','outer'}))
-    throw(CORAerror('CORA:wrongValue','fourth',"'inner' or 'outer'"));
-end
-
-if size(L,1)~=dim(E)
-    throw(CORAerror('CORA:dimensionMismatch',E,L));
-end
-
-%% different Minkowski differences
-N = length(S);
-
-if isa(S,'double')
+% different Minkowski differences
+if isnumeric(S) && iscolumn(S)
     s = sum(S,2);
     E = ellipsoid(E.Q,E.q-s);
     return;
 end
 
-if isa(S,'ellipsoid')
-    for i=1:N
-        E = minkDiffEllipsoid(E,S(i),L,mode);
+% ensure that all subtrahends are ellipsoids
+if iscell(S) && all(cellfun(@(S_i) isa(S_i,'ellipsoid'),S,'UniformOutput',true))
+    for i=1:length(S)
+        E = priv_minkDiffEllipsoid(E,S{i},L,mode);
     end
+    return
+end
+
+if isa(S,'ellipsoid')
+    E = priv_minkDiffEllipsoid(E,S,L,mode);
     return;
 end
+
+throw(CORAerror('CORA:noops',E,S));
 
 % ------------------------------ END OF CODE ------------------------------

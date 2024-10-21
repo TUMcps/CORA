@@ -23,44 +23,57 @@ function res = test_zonotope_and
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % 1D (convertible to intervals)
 Z1 = zonotope(0,3);
 Z2 = zonotope(5,1);
-Z1and2 = Z1 & Z2; % empty
-res(end+1,1) = representsa(Z1and2,'emptySet');
+Z_and = Z1 & Z2; % empty
+assert(representsa(Z_and,'emptySet'));
 
 Z1 = zonotope(0,4);
-Z1and2 = Z1 & Z2; % only one point
-res(end+1,1) = isequal(Z1and2,zonotope(4));
+Z_and = Z1 & Z2; % only one point
+assert(isequal(Z_and,zonotope(4)));
 
 Z1 = zonotope(0,5);
-Z1and2 = Z1 & Z2; % full-dimensional zonotope
-res(end+1,1) = isequal(Z1and2,zonotope(4.5,0.5));
+Z_and = Z1 & Z2; % full-dimensional zonotope
+assert(isequal(Z_and,zonotope(4.5,0.5)));
 
 % 2D
 Z1 = zonotope(zeros(2,1),rand(2,2));
 Z2 = zonotope(5*ones(2,1),rand(2,2));
-Z1and2 = Z1 & Z2; % empty
-res(end+1,1) = representsa(Z1and2,'emptySet');
+Z_and = Z1 & Z2; % empty
+assert(representsa(Z_and,'emptySet'));
 
 Z1 = zonotope([0;0],[1 0.5; 0 1]);
 Z2 = zonotope([2.5;2.5],[1 0; 0.5 1]);
-Z1and2 = Z1 & Z2; % only one point (exactly)
-res(end+1,1) = ~representsa(Z1and2,'emptySet');
+Z_and = Z1 & Z2; % only one point (exactly)
+assert(~representsa(Z_and,'emptySet'));
 
 Z1 = zonotope(zeros(2,1),rand(2,2));
 Z2 = zonotope(zeros(2,1),rand(2,2));
-Z1and2 = Z1 & Z2; % full-dimensional intersection
-res(end+1,1) = ~representsa(Z1and2,'emptySet');
+Z_and = Z1 & Z2; % full-dimensional intersection
+assert(~representsa(Z_and,'emptySet'));
 
 % empty set
 Z_e = zonotope.empty(2);
-res(end+1,1) = representsa(Z1 & Z_e,'emptySet');
+assert(representsa(Z1 & Z_e,'emptySet'));
+
+
+% averaging method
+Z1 = zonotope([1;2],[1 -1 2 0; 1 4 0 1]);
+Z2 = zonotope([-3;-4],[1 0 2; -1 1 2]);
+Z_and = and(Z1,Z2,'averaging');
+assert(~representsa(Z_and,'emptySet'));
+Z_and = and_(Z1,Z2,'averaging','normGen',false);
+assert(~representsa(Z_and,'emptySet'));
+Z_and = and_(Z1,Z2,'averaging','normGen',true,0.8);
+assert(~representsa(Z_and,'emptySet'));
+Z_and = and_(Z1,Z2,'averaging','radius');
+assert(~representsa(Z_and,'emptySet'));
+Z_and = and_(Z1,Z2,'averaging','volume');
+assert(~representsa(Z_and,'emptySet'));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

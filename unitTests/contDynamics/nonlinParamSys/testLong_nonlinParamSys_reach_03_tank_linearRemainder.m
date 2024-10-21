@@ -75,46 +75,40 @@ simRes = simulateRandom(tank, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
-
-plotting = false;
-
-if plotting
-    % don't plot in suite
     
-    plotOrder = 8;
-    for plotRun=1:3
-        % plot different projections
-        if plotRun==1
-            projectedDims=[1 2];
-        elseif plotRun==2
-            projectedDims=[3 4];    
-        elseif plotRun==3
-            projectedDims=[5 6]; 
-        end 
+% plotOrder = 8;
+% for plotRun=1:3
+%     % plot different projections
+%     if plotRun==1
+%         projectedDims=[1 2];
+%     elseif plotRun==2
+%         projectedDims=[3 4];    
+%     elseif plotRun==3
+%         projectedDims=[5 6]; 
+%     end 
+% 
+%     figure; hold on; box on;
+% 
+%     % reachable set: standard lagrange remainder
+%     plot(R_wo_linear,projectedDims,'b','Order',plotOrder);
+% 
+%     % reachable set: lagrange remainder added to system matrices (A,B)
+%     plot(R_Param,projectedDims,'r','Order',plotOrder);
+% 
+% 
+%     %plot initial set
+%     plot(params.R0,projectedDims,'k','FaceColor','w');
+% 
+%     %plot simulation results
+%     plot(simRes,projectedDims,'k');
+% 
+%     %label plot
+%     xlabel(['x_{',num2str(projectedDims(1)),'}']);
+%     ylabel(['x_{',num2str(projectedDims(2)),'}']);
+% end
 
-        figure; hold on; box on;
-    
-        % reachable set: standard lagrange remainder
-        plot(R_wo_linear,projectedDims,'b','Order',plotOrder);
 
-        % reachable set: lagrange remainder added to system matrices (A,B)
-        plot(R_Param,projectedDims,'r','Order',plotOrder);
-
-
-        %plot initial set
-        plot(params.R0,projectedDims,'k','FaceColor','w');
-
-        %plot simulation results
-        plot(simRes,projectedDims,'k');
-
-        %label plot
-        xlabel(['x_{',num2str(projectedDims(1)),'}']);
-        ylabel(['x_{',num2str(projectedDims(2)),'}']);
-    end
-end
-
-
-%example completed
+% test completed
 res = true;
 
 % ------------------------------ END OF CODE ------------------------------

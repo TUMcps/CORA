@@ -1,0 +1,55 @@
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent      
+ $$\color{mgreen}$% create two simple$\color{black}$$\\
+ $$\color{mgreen}$% spectrahedral shadows$\color{black}$$\\
+ $$\color{mgreen}$% an ellipsoid, using the first$\color{black}$$\\
+ $$\color{mgreen}$% type of instantiation$\color{black}$$\\
+ $A0 = eye(3);$\\
+ $A1 = [0 1 0; 1 0 0; 0 0 0];$\\
+ $A2 = [0 0 1; 0 0 0; 1 0 0];$\\
+ $A = [A0 A1 A2];$\\
+ $c = [-1.5;0];$\\
+ $G = [1 0;0 1.5];$\\
+ $     $\\
+ $SpS_ellipsoid = spectraShadow(A,c,G);$\\
+ $     $\\
+ $$\color{mgreen}$% a small zonotope, using the$\color{black}$$\\
+ $$\color{mgreen}$% second type of instantiation$\color{black}$$\\
+ $A0 = diag([-19 1 11 21 1 -9]);$\\
+ $A1 = diag([10 10 0 -10 -10 0]);$\\
+ $A2 = (10/3)*diag([1 -1 2 -1 1 -2]);$\\
+ $A = [A0 A1 A2];$\\
+ $$\\
+ $B = 0.5774*diag([-1 1 1 1 -1 -1]);$\\
+ $$\\
+ $ESumRep = {A, B};$\\
+ $$\\
+ $SpS_zonotope = spectraShadow(ESumRep);$\\
+ $$\\
+ $$\color{mgreen}$% we can construct more complicated sets$\color{black}$$\\
+ $$\color{mgreen}$% based on the two above, such as the$\color{black}$$\\
+ $$\color{mgreen}$% convex hull of the two previous$\color{black}$$\\
+ $$\color{mgreen}$% spectrahedral shadows$\color{black}$$\\
+ $SpS = convHull(SpS_ellipsoid, SpS_zonotope);$\\
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

@@ -1,0 +1,20 @@
+\addplot[plotstyle1] table[row sep=crcr]{%
+x	y\\
+4	4\\
+};
+\addplot[plotstyle2] table[row sep=crcr]{%
+x	y	u	v\\
+4	4	1.8	0\\
+};
+\addplot[plotstyle2] table[row sep=crcr]{%
+x	y	u	v\\
+4	4	-1.8	-0\\
+};
+\addplot[plotstyle2] table[row sep=crcr]{%
+x	y	u	v\\
+4	4	0.9	1.8\\
+};
+\addplot[plotstyle2] table[row sep=crcr]{%
+x	y	u	v\\
+4	4	-0.9	-1.8\\
+};

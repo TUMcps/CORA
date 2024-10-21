@@ -1,0 +1,31 @@
+\section{Graphical User Interface} \label{sec:gui}
+\logToConsole{GRAPHICAL USER INTERFACE}
+
+Since the 2021 release the CORA toolbox includes a graphical user interface (GUI). This GUI provides access to CORA's main functionality, even for users without any knowledge about programming in MATLAB. We recommend the usage of the GUI especially for CORA beginners since it allows to select algorithm settings conveniently using the respective drop-down menus. Moreover, the GUI contains info buttons that display detailed descriptions for all algorithm settings.
+
+\begin{figure}[htb]
+    \centering
+    \footnotesize
+    \includegraphics[width=0.95\columnwidth]{./figures/coraApp.eps}
+    \caption{Screenshot of the graphical user interface for CORA.}
+    \label{fig:gui}
+\end{figure}
+
+The GUI can be started by running
+\begin{equation*}
+    >> \texttt{coraApp}
+\end{equation*}
+form the MATLAB command window.
+In particular, the GUI can be used to compute reachable sets, simulate trajectories,
+and visualize the corresponding results for linear continuous systems (see \cref{sec:linearSystems}),
+nonlinear continuous systems (see \cref{sec:nonlinearSystems}), and hybrid automata (see \cref{sec:hybridAutomaton}).
+A screenshot from the GUI is shown in \cref{fig:gui}.
+To specify parameters, such as the system matrix $A$ for linear systems in \cref{fig:gui}, the GUI provides two options:
+One can either select variables from the MATLAB workspace using the drop-down menu,
+or specify parameters manually in the text field on the right hand side of the drop-down menu.
+If your workspace variables do not appear in the drop-down menu,
+please press the refresh workspace variables button at the top right.
+After one has specified all parameters and settings, the GUI offers two functionalities:
+By clicking on the run-button on the bottom left (see \cref{fig:gui}),
+the GUI generates figures that visualize the corresponding results.
+On the other hand, by clicking on the save-button the GUI generates a MATLAB script containing the corresponding CORA code.

@@ -42,9 +42,7 @@ for i=2:7
         for k=1:length(L)
             sF = supportFunc(Z,L(:,k));
             % ensure that val <= suppfnc(Z,l)
-            if val > sF && ~withinTol(val,sF)
-                throw(CORAerror('CORA:testFailed'));
-            end
+            assertLoop(val <= sF || withinTol(val,sF),i,j,k)
         end
     end
 end

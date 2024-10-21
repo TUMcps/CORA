@@ -1,0 +1,38 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                                                                      
+$$\color{mgreen}#%% Reference trajectory#\color{black}$$\\
+$x0_ref = [0; 0]; $\color{mgreen}$%initial state of reference trajectory$\color{black}$$\\
+$u_ref = zeros(2,10); $\color{mgreen}$%inputs for reference trajectory$\color{black}$$\\
+$n_k = 5; $\color{mgreen}$%time horizon$\color{black}$$\\
+$$\\
+$$\color{mgreen}#%% System Dynamics#\color{black}$$\\
+$reactor = linearSysDT($\color{mred}$'reactor'$\color{black}$,[0 -0.5; 1 1],  eye(2), zeros(2,1), [-2 1], 0.1); $\\
+$$\\
+$$\color{mgreen}$% conformance synthesis$\color{black}$$\\
+$p_G0 = computeGO(reactor,x0_ref,u_ref,n_k);$\\
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

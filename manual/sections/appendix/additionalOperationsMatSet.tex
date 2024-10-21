@@ -1,0 +1,84 @@
+\section{Additional Methods for Matrix Set Representations}
+
+In addition to the set operations described in \cref{sec:matSetOperations} and the methods for converting between set operations (see \cref{tab:setConversion}), all matrix set representations implement additional methods, which are documented subsequently.
+
+\subsection{Matrix Polytopes} \label{sec:matrixPolytopeOperations}
+
+We support the following additional methods for matrix polytopes:
+
+\begin{itemize}
+ \item \texttt{expmInd} -- operator for the exponential matrix of a matrix polytope, evaluated independently.
+ \item \texttt{expmIndMixed} -- operator for the exponential matrix of a matrix polytope, evaluated independently. Higher order terms are computed via interval arithmetic.
+ \item \texttt{mpower} -- overloaded '${}^{\wedge}$' operator for the power of matrix polytopes.
+ \item \texttt{plot} -- plots 2-dimensional projection of a matrix polytope.
+ \item \texttt{simplePlus} -- computes the Minkowski addition of two matrix polytopes without reducing the vertices by a convex hull computation.
+\end{itemize}
+
+%Since the matrix polytope class is written using the new structure for object oriented programming in MATLAB, it has the following public properties:
+%\begin{itemize}
+% \item \texttt{dim} -- dimension.
+% \item \texttt{verts} -- number of vertices.
+% \item \texttt{vertex} -- cell array of vertices $V\^i$ according to \eqref{eq:matrixVertices}.
+%\end{itemize}
+
+
+\subsection{Matrix Zonotopes} \label{sec:matrixZonotopeOperations}
+
+We support the following additional methods for matrix zonotopes:
+
+\begin{itemize}
+ \item \texttt{concatenate} -- concatenates the center and all generators of two matrix zonotopes.
+ \item \texttt{dependentTerms} -- considers dependency in the computation of Taylor terms for the matrix zonotope exponential according to \cite[Proposition 4.3]{Althoff2011b}. 
+ \item \texttt{expmInd} -- operator for the exponential matrix of a matrix zonotope, evaluated independently.
+ \item \texttt{expmIndMixed} -- operator for the exponential matrix of a matrix zonotope, evaluated independently. Higher order terms are computed via interval arithmetic.
+ \item \texttt{expmMixed} -- operator for the exponential matrix of a matrix zonotope, evaluated dependently. Higher order terms are computed
+via interval arithmetic as discussed in \cite[Section 4.4.4]{Althoff2011b}.
+ \item \texttt{expmOneParam} -- operator for the exponential matrix of a matrix zonotope when only one parameter is uncertain as described in \cite[Theorem 1]{Althoff2012b}.
+ \item \texttt{mpower} -- overloaded '${}^{\wedge}$' operator for the power of matrix zonotopes.
+ \item \texttt{norm} -- computes exactly the maximum norm value of all possible matrices.
+ \item \texttt{plot} -- plots 2-dimensional projection of a matrix zonotope.
+ \item \texttt{powers} -- computes the powers of a matrix zonotope up to a certain order.
+ \item \texttt{randomSampling} -- creates random samples within a matrix zonotope.
+ \item \texttt{reduce} -- reduces the order of a matrix zonotope. This is done by converting the matrix zonotope to a zonotope, reducing the zonotope, and converting the result back to a matrix zonotope.
+ \item \texttt{subsref} -- overloads the operator that selects elements of a \texttt{matZonotope}.
+ \item \texttt{volume} -- computes the volume of a matrix zonotope by computing the volume
+of the corresponding zonotope.
+ \item \texttt{zonotope} -- converts a matrix zonotope into a zonotope.
+\end{itemize}
+
+
+%Since the matrix zonotope class is written using the new structure for object oriented programming in MATLAB, it has the following public properties:
+%\begin{itemize}
+% \item \texttt{dim} -- dimension.
+% \item \texttt{gens} -- number of generators.
+% \item \texttt{center} -- $G\^0$ according to \eqref{eq:matrixZonotope}.
+% \item \texttt{generator} -- cell array of matrices $G\^{i}$ according to \eqref{eq:matrixZonotope}.
+%\end{itemize}
+
+
+\subsection{Interval Matrices} \label{sec:intervalMatrixOperations}
+
+We support the following additional methods for interval matrices:
+
+\begin{itemize}
+ \item \texttt{abs} -- returns the absolute value bound of an interval matrix.
+ \item \texttt{dependentTerms} -- considers dependency in the computation of Taylor terms for the interval matrix exponential according to \cite[Proposition 4.4]{Althoff2011b}. 
+ \item \texttt{exactSquare} -- computes the exact square of an interval matrix.
+ \item \texttt{expmAbsoluteBound} -- returns the over-approximation of the absolute bound
+of the symmetric solution of the computation of the exponential matrix.
+ \item \texttt{expmInd} -- operator for the exponential matrix of an interval matrix, evaluated independently.
+ \item \texttt{expmIndMixed} -- dummy function for interval matrices.
+ \item \texttt{expmMixed} -- dummy function for interval matrices.
+ \item \texttt{expmNormInf} -- returns the over-approximation of the norm of the difference between the interval matrix exponential and the exponential from the center matrix according to \cite[Theorem 4.2]{Althoff2011b}.
+ \item \texttt{exponentialRemainder} -- returns the remainder of the exponential matrix according to \cite[Proposition 4.1]{Althoff2011b}.
+ \item \texttt{interval} -- converts an interval matrix to an interval.
+ \item \texttt{mpower} -- overloaded '${}^{\wedge}$' operator for the power of interval matrices.
+ \item \texttt{mtimes} -- standard method, see \cref{sec:mtimesMatSet} for numeric matrix multiplication or a multiplication with another interval matrix according to \cite[Equation 4.11]{Althoff2011b}.
+ \item \texttt{norm} -- computes exactly the maximum norm value of all possible matrices.
+ \item \texttt{plot} -- plots 2-dimensional projection of an interval matrix.
+ \item \texttt{powers} -- computes the powers of an interval matrix up to a certain order.
+ \item \texttt{randomIntervalMatrix} -- generates a random interval matrix with a specified center and a specified delta matrix or scalar. The number of elements of that matrix which are uncertain has to be specified, too.
+ \item \texttt{randomSampling} -- creates random samples within a matrix zonotope.
+ \item \texttt{subsref} -- overloads the operator that selects elements.
+ \item \texttt{volume} -- computes the volume of an interval matrix by computing the volume of the corresponding interval.
+\end{itemize}

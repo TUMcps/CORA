@@ -28,21 +28,6 @@ function [res,S] = representsa_(E,type,tol,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% ellipsoids still allow for class arrays
-if ~isscalar(E)
-    if nargout == 2
-        throw(CORAerror('CORA:notSupported',...
-                'Second output argument not supported for ellipsoid-arrays.'));
-    end
-
-    % loop over this function
-    res = false(size(E));
-    for i=1:length(E)
-        res(i) = representsa_(E(i),type,tol);
-    end
-    return
-end
-
 % check empty object case
 if nargout == 1
     [empty,res] = representsa_emptyObject(E,type);

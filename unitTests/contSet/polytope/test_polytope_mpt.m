@@ -25,8 +25,6 @@ function res = test_polytope_mpt
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % vertices
 A = [1 0; -1 1; -1 -1];
 b = [1;1;1];
@@ -36,7 +34,7 @@ P = polytope(A,b);
 
 V = vertices(P);
 V_true = [1 2; -1 0; 1 -2]';
-res(end+1,1) = compareMatrices(V,V_true);
+assert(compareMatrices(V,V_true));
 
 % center
 % Any unbounded polytope returns a  large value as center, instead of NAN
@@ -57,6 +55,6 @@ P = polytope(A,b,Ae,be);
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

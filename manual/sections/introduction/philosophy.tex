@@ -1,0 +1,20 @@
+\subsection{Philosophy}
+
+The \textbf{CO}ntinuous \textbf{R}eachability \textbf{A}nalyzer (CORA)\footnote{\url{https://cora.in.tum.de/}} is a MATLAB toolbox for prototypical design of algorithms for reachability analysis. The toolbox is designed for various kinds of systems with purely continuous dynamics (linear systems, nonlinear systems, differential-algebraic systems, parameter-varying systems, etc.) and hybrid dynamics combining the aforementioned continuous dynamics with discrete transitions.
+Let us denote the continuous part of the solution of a hybrid system for a given initial discrete state by $\chi(t;x_0,u(\cdot),p)$, where $t\in\mathbb{R}$ is the time, $x_0 \in \mathbb{R}^n$ is the continuous initial state, $u(t) \in \mathbb{R}^m$ is the system input at $t$, $u(\cdot)$ is the input trajectory, and $p\in \mathbb{R}^p$ is a parameter vector. The continuous reachable set at time $t=t_f$ can be defined for a set of initial states $\mathcal{X}_0$, a set of input values $\mathcal{U}(t)$, and a set of parameter values $\mathcal{P}$, as
+\begin{gather*}
+  \mathcal{R}^e(t_f) = \Big\{ \chi(t_f;x_0,u(\cdot),p) \in \mathbb{R}^n \big| x_0 \in \mathcal{X}_0, \forall t: u(t)\in\mathcal{U}(t), p \in \mathcal{P} \Big\}.
+\end{gather*}
+CORA mainly supports over-approximative computation of reachable sets since (a) exact reachable sets cannot be computed for most system classes \cite{Lafferriere2001} and (b) over-approximative computations allow for safety verification. Thus, CORA computes over-approximations for particular points in time $\mathcal{R}(t) \supseteq \mathcal{R}^e(t)$ and for time intervals: $\mathcal{R}([t_0,t_f]) = \bigcup_{t\in [t_0,t_f]} \mathcal{R}(t)$. 
+
+CORA also enables the construction of an individual reachable set computation in a relatively short amount of time. This is achieved by the following design choices:
+\begin{itemize}
+ \item CORA is programmed in MATLAB, which is a script-based programming environment. Since the code does not have to be compiled, one can stop the program at any time and directly see the current values of variables. This makes it especially easy to understand the workings of the code and to debug new code. 
+ \item CORA is an object-oriented toolbox that uses modularity, operator overloading, inheritance, and information hiding. One can safely use existing classes and just adapt classes of interest without redesigning the whole code. Operator overloading facilitates writing formulas that look almost identical to the ones derived in scientific papers and thus reduces programming errors. Most of the information of each class is hidden and not relevant to users of the toolbox. Most classes use identical methods so that set representations and dynamic systems can be effortlessly replaced.
+ \item CORA interfaces with the established toolbox MPT\footnote{\url{http://control.ee.ethz.ch/~mpt/2/}}, which is also written in MATLAB. Results of CORA can be easily transferred to this toolbox and vice versa. We are currently supporting version 2 and 3 of the MPT.
+\end{itemize}
+Of course, it is also possible to use CORA as it is, to perform reachability analysis. 
+\begin{framed}
+ Please be aware of the fact that outcomes of reachability analysis heavily depend on the chosen parameters for the analysis (those parameters are listed in \cref{sec:reach}). Improper choice of parameters can result in an unacceptable over-approximation although reasonable results could be achieved by using appropriate parameters. Thus, self-tuning of the parameters for reachability analysis, as it is already done by the adaptive algorithm for linear and nonlinear systems, is investigated as part of ongoing and future work.
+\end{framed}
+Since this manual focuses on the presentation of the capabilities of CORA, no other tools for reachability analysis of continuous and hybrid systems are reviewed. A list of related tools is presented in \cite{Althoff2015a, Althoff2016a, Althoff2018b}.

@@ -29,6 +29,11 @@ function res = diag(I, varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+n = dim(I);
+if numel(n) > 2
+    throw(CORAerror('CORA:wrongValue','first','Interval must not be an n-d array with n > 2.'))
+end
+
 % obtain result
 res = interval(diag(I.inf, varargin{:}), diag(I.sup, varargin{:}));
 

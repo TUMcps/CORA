@@ -24,7 +24,7 @@ function res = release(obj1,obj2,time)
 
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   07-February-2024 (FL, replace from and to by interval)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -37,7 +37,7 @@ function res = release(obj1,obj2,time)
                       'This operation is not supported for stl objects!'));
     end
     
-    if ~isa(time,'interval') || ~all(size(time) == [1,1])
+    if ~isa(time,'stlInterval') && (~isa(time,'interval') || ~all(size(time) == [1,1]))
         throw(CORAerror('CORA:wrongValue',...
                         'Wrong format for input argument "time"!'));
     end
@@ -50,8 +50,7 @@ function res = release(obj1,obj2,time)
     res.rhs = obj2;
     res.id = [];
     res.temporal = true;
-    res.from = infimum(time);
-    res.to = supremum(time);
+    res.interval = stlInterval(time);
     res.variables = unique([obj1.variables;obj2.variables]);
 end
 

@@ -45,11 +45,9 @@ for i=1:nrOfTests
     normI_Inf = norm(I,Inf);
 
     % check with correct result
-    if abs(normI_1 - sum(ub)) > tol || ...
-            abs(normI_2 - norm(ub)) > tol || ...
-            abs(normI_Inf - max(ub)) > tol
-        res = false; break;
-    end
+    assertLoop(abs(normI_1 - sum(ub)) <= tol,i)
+    assertLoop(abs(normI_2 - norm(ub)) <= tol,i)
+    assertLoop(abs(normI_Inf - max(ub)) <= tol,i)
 
 end
 

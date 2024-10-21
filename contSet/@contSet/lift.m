@@ -28,9 +28,8 @@ function S = lift(S,N,proj)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
-if nargin < 2
-    throw(CORAerror("CORA:notEnoughInputArgs",2))
-elseif nargin < 3 || isempty(proj)
+narginchk(2,3);
+if nargin < 3 || isempty(proj)
     proj = 1:dim(S);
 end
 inputArgsCheck({{S,'att','contSet'};
@@ -41,7 +40,7 @@ if dim(S) > N
 elseif dim(S) ~= length(proj)
     throw(CORAerror('CORA:wrongValue','third','Number of dimensions in higher-dimensional space must match the dimension of the given set.'))
 elseif max(proj) > N
-    throw(CORAerror('CORA:wrongValue','thrid','Specified dimensions exceed dimension of high-dimensional space.'))
+    throw(CORAerror('CORA:wrongValue','third','Specified dimensions exceed dimension of high-dimensional space.'))
 end
 
 % call subfunction

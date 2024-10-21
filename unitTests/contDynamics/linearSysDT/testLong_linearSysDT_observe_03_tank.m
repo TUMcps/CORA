@@ -21,6 +21,9 @@ function res = testLong_linearSysDT_observe_03_tank()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 %% Load pedestrian model
@@ -124,7 +127,7 @@ for iEst = 1:length(Estimator)
     end
 
     %check if slightly bloated versions enclose each other
-    resPartial(end+1) = isequal(IH,IH_saved,accuracy);
+    assert(isequal(IH,IH_saved,accuracy));
 end
 
 % final result

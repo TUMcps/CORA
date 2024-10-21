@@ -27,7 +27,7 @@ TOL = 1e-6;
 
 % empty case
 Z_empty = zonotope.empty(2);
-res = norm(Z_empty) == -Inf;
+assert(norm(Z_empty) == -Inf);
 
 % full-dimensional case
 c = zeros(2,1);
@@ -44,19 +44,21 @@ val2_ubc = norm(Z,2,'ub_convex');
 V = vertices(Z);
 
 % check exact vs. upper bound
-if val2_exact > val2_ub && ~withinTol(val2_exact,val2_ub,TOL)
-    res = false;
+if val2_exact > val2_ub 
+    assert(withinTol(val2_exact,val2_ub,TOL))
 end
 
 % check exact vs. upper bound (convex)
-if val2_exact > val2_ubc && ~withinTol(val2_exact,val2_ubc,TOL)
-    res = false;
+if val2_exact > val2_ubc 
+    assert(withinTol(val2_exact,val2_ubc,TOL))
 end
 
 % check exact vs. norm of all vertices
-temp = abs(val2_exact-max(sqrt(sum(V.^2))))/val2_exact;
-if temp > 0 && ~withinTol(temp,0,TOL)
-    res = false;
+val = abs(val2_exact-max(sqrt(sum(V.^2))))/val2_exact;
+if val > 0 
+    assert(withinTol(val,0,TOL))
 end
+
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

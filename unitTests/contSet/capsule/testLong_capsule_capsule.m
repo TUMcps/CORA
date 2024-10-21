@@ -14,7 +14,7 @@ function res = testLong_capsule_capsule
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       19-March-2021
@@ -22,8 +22,6 @@ function res = testLong_capsule_capsule
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-
-tol = 1e-12;
 
 res = true;
 nrOfTests = 1000;
@@ -40,21 +38,18 @@ for i=1:nrOfTests
     % admissible initializations
     % only center
     C = capsule(c);
-    if ~compareMatrices(C.c,c)
-        res = false; break;
-    end
+    assertLoop(compareMatrices(C.c,c),i)
 
     % center and generator
     C = capsule(c,g);
-    if ~compareMatrices(C.c,c) || ~compareMatrices(C.g,g)
-        res = false; break;
-    end
+    assertLoop(compareMatrices(C.c,c),i)
+    assertLoop(compareMatrices(C.g,g),i)
     
     % center, generator, and radius
     C = capsule(c,g,r);
-    if ~compareMatrices(C.c,c) || ~compareMatrices(C.g,g) || ~withinTol(C.r,r)
-        res = false; break;
-    end
+    assertLoop(compareMatrices(C.c,c),i)
+    assertLoop(compareMatrices(C.g,g),i)
+    assertLoop(withinTol(C.r,r),i)
     
     % prevent 1D cases (where g can be interpreted as r)
     n = n + 1;
@@ -68,32 +63,17 @@ for i=1:nrOfTests
     rvec = rand(n,1);
     
     % mismatch between center and generator
-    try
-        C = capsule(c,gn_1); % <- should throw error here
-        res = false; break;
-    end
-    try
-        C = capsule(cn_1,g); % <- should throw error here
-        res = false; break;
-    end
-    
+    assertThrowsAs(@capsule,'CORA:wrongInputInConstructor',c,gn_1);
+    assertThrowsAs(@capsule,'CORA:wrongInputInConstructor',cn_1,g);
+        
     % negative radius
-    try
-        C = capsule(c,g,rneg); % <- should throw error here
-        res = false; break;
-    end
+    assertThrowsAs(@capsule,'CORA:wrongValue',c,g,rneg);
     
     % radius as a vector
-    try
-        C = capsule(c,g,rvec); % <- should throw error here
-        res = false; break;
-    end
+    assertThrowsAs(@capsule,'CORA:wrongValue',c,g,rvec);
     
     % too many input arguments
-    try
-        C = capsule(c,g,r,r); % <- should throw error here
-        res = false; break;
-    end
+    assertThrowsAs(@capsule,'CORA:numInputArgsConstructor',c,g,r,r);
     
 end
 

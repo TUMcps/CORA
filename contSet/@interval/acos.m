@@ -60,7 +60,7 @@ I.inf(ind4) = acos(ub(ind4));
 I.sup(ind4) = acos(lb(ind4));
 
 % return error if NaN occurs
-if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
+if any(isnan(I.inf),"all") || any(isnan(I.sup),"all")
     throw(CORAerror('CORA:outOfDomain','validDomain','>= -1 && <= 1'));
 end
 

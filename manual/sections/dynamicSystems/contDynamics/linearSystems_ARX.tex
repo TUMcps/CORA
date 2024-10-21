@@ -1,0 +1,54 @@
+\subsubsection{Linear ARX Models} \label{sec:linearARX}
+
+Discrete-time autoregressive models with exogenous Input (ARX models) are considered in the \texttt{linearARX} class.
+They can be described by the following equation:
+\begin{equation}\label{eq:linearARX}
+	y[i] = \sum_{j=1}^p \bar{A}_{j} y[i-j] + \sum_{j=0}^p \bar{B}_{j} {u}[i-j]
+\end{equation} 
+where $y[i] \in \R^o$ is the system output at time step $i$ and $u[i] \in \R^m$ is the system input which can also include disturbances and measurements noise.
+An object of class \texttt{linearARX} can be constructed as follows:
+\begin{equation*}
+	\begin{split}
+		&   \texttt{sys} = \texttt{linearARX}(\texttt{A\_{bar}},\texttt{B\_{bar}},\Delta t) \\
+		&   \texttt{sys} = \texttt{linearARX}(\texttt{name},\texttt{A\_{bar}},\texttt{B\_{bar}},\Delta t)
+	\end{split}
+\end{equation*} 
+where \texttt{name} is a string specifying the name of the system, \texttt{A\_{bar}} and \texttt{B\_{bar}} are cell arrays which contain the matrices $\bar{A}_{j}$ and $\bar{B}_{j}$, respectively, and $\Delta t$ is the sampling time specifying the time difference between the time steps $k$ and $k+1$.
+
+An example for the class \texttt{linearARX} is given in the following:
+
+\begin{center}
+\begin{minipage}[t]{0.58\textwidth}
+	\vspace{10pt}
+	\begin{align*}
+	\begin{bmatrix} y_1[i] \\ y_2[i] \end{bmatrix} &=
+	\begin{bmatrix} 0.4 & 0.6 \\ 0.6 & 0.4 \end{bmatrix} \begin{bmatrix} y_1[i-1] \\ y_2[i-1] \end{bmatrix}
+	+ \begin{bmatrix} 0.1 & 0 \\ 0.2 & 0.1 \end{bmatrix} \begin{bmatrix} y_1[i-2] \\ y_2[i-2] \end{bmatrix} \\
+	&\quad + \begin{bmatrix} 0 \\ 0 \end{bmatrix} u[i]
+	+ \begin{bmatrix} 0.3 \\ -0.7 \end{bmatrix} u[i-1]
+	+ \begin{bmatrix} 0.1 \\ 0 \end{bmatrix} u[i-2]
+\end{align*}
+\end{minipage}
+\begin{minipage}[t]{0.4\textwidth}
+	\footnotesize
+	\input{./MATLABcode/example_linearARX}
+\end{minipage}
+\end{center}
+
+
+
+\subsubsubsection{Operation \texttt{reach}}
+
+The reachable set for a linear ARX model can be computed as described in~\cite{Luetzow2023a}.
+
+As order reduction is not implemented yet, we only have to specify the reachability algorithm in the struct \texttt{options}:
+
+\begin{center}
+	\renewcommand{\arraystretch}{1.3}
+	\begin{tabular}[t]{l p{11cm}}
+		--~\texttt{.armaxAlg} & reachability algorithm (\texttt{'exactAddition'}\cite[Prop. 3]{Luetzow2023a}, \texttt{'tvpEfficient'}\cite[Thm. 3]{Luetzow2023a} or \texttt{'tvpGeneral'}\cite[Thm. 2]{Luetzow2023a}). The default value is \texttt{'tvpGeneral'}.
+	\end{tabular}
+\end{center}
+
+
+

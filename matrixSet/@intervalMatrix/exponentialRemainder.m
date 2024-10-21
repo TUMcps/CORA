@@ -36,8 +36,8 @@ eM = expm(M);
 if ~any(any(isnan(eM)))
 
     %compute first Taylor terms
-    Mpow = eye(intMat.dim);
-    eMpartial = eye(intMat.dim);
+    Mpow = eye(dim(intMat));
+    eMpartial = eye(dim(intMat));
     for i=1:maxOrder
         Mpow = M*Mpow;
         eMpartial = eMpartial + Mpow/factorial(i);
@@ -46,10 +46,10 @@ if ~any(any(isnan(eM)))
     W = eM-eMpartial;
 
     %instantiate remainder
-    E = intervalMatrix(zeros(intMat.dim),W);
+    E = intervalMatrix(zeros(dim(intMat)),W);
 else
     %instantiate remainder
-    E = intervalMatrix(zeros(intMat.dim),Inf(intMat.dim));
+    E = intervalMatrix(zeros(dim(intMat)),Inf(dim(intMat)));
 end
 
 % ------------------------------ END OF CODE ------------------------------

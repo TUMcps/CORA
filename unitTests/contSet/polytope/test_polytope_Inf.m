@@ -23,19 +23,17 @@ function res = test_polytope_Inf
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % 1D
 n = 1;
 P = polytope.Inf(n);
-res(end+1,1) = representsa(P,'fullspace') && dim(P) == 1;
+assert(representsa(P,'fullspace') && dim(P) == 1);
 
 % 5D
 n = 5;
 P = polytope.Inf(n);
-res(end+1,1) = representsa(P,'fullspace') && dim(P) == 5;
+assert(representsa(P,'fullspace') && dim(P) == 5);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -15,7 +15,7 @@ function res = testLong_polyZonotope_polyZonotope
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       20-March-2021
@@ -23,14 +23,10 @@ function res = testLong_polyZonotope_polyZonotope
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-
+ 
+% tolerance
 tol = 1e-12;
 
-% empty zonotope
-pZ = polyZonotope.empty(1);
-res_empty = representsa(pZ,'emptySet');
-
-res_rand = true;
 nrOfTests = 1000;
 for i=1:nrOfTests
 
@@ -64,57 +60,48 @@ for i=1:nrOfTests
     % admissible initializations
     % only center
     pZ = polyZonotope(c);
-    if ~all(withinTol(center(pZ),c,tol))
-        res_rand = false; break;
-    end
+    assert(all(withinTol(center(pZ),c,tol)));
     
     % center and dependent generators
     pZ = polyZonotope(c,G);
-    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(G,pZ.G,tol)
-        res_rand = false; break;
-    end
+    assert(all(withinTol(center(pZ),c,tol)));
+    assert(compareMatrices(G,pZ.G,tol));
     
     % center and independent generators
     pZ = polyZonotope(c,[],GI);
-    if ~all(withinTol(center(pZ),c,tol)) || ~isempty(pZ.G) ...
-            || ~compareMatrices(pZ.GI,GI,tol)
-        res_rand = false; break;
-    end
+    assert(all(withinTol(center(pZ),c,tol)));
+    assert(isempty(pZ.G));
+    assert(compareMatrices(pZ.GI,GI,tol));
     
     % center, dependent, and independent generators
     pZ = polyZonotope(c,G,GI);
-    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.GI,GI,tol) ...
-            || ~compareMatrices(G,pZ.G,tol)
-        res_rand = false; break;
-    end
+    assert(all(withinTol(center(pZ),c,tol)));
+    assert(compareMatrices(pZ.GI,GI,tol));
+    assert(compareMatrices(G,pZ.G,tol));
     
     % center, dependent, independent generators, and exponent matrix
     pZ = polyZonotope(c,G,GI,E);
-    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.GI,GI,tol) ...
-            || ~compareMatrices([G;E],[pZ.G;pZ.E],tol)
-        res_rand = false; break;
-    end
+    assert(all(withinTol(center(pZ),c,tol)));
+    assert(compareMatrices(pZ.GI,GI,tol));
+    assert(compareMatrices([G;E],[pZ.G;pZ.E],tol));
     
     % center, dependent generators and exponent matrix
     pZ = polyZonotope(c,G,[],E);
-    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices([G;E],[pZ.G;pZ.E],tol)
-        res_rand = false; break;
-    end
+    assert(all(withinTol(center(pZ),c,tol)))
+    assert(compareMatrices([G;E],[pZ.G;pZ.E],tol))
     
     % center, dependent generators, exponent matrix, and identifiers
     pZ = polyZonotope(c,G,[],E,id);
-    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices([G;E],[pZ.G;pZ.E],tol) ...
-            || any(abs(pZ.id - id) > tol)
-        res_rand = false; break;
-    end
+    assert(all(withinTol(center(pZ),c,tol)));
+    assert(compareMatrices([G;E],[pZ.G;pZ.E],tol));
+    assert(all(abs(pZ.id - id) <= tol));
     
     % center, independent generators, dependent generators, exponent matrix, and identifiers
     pZ = polyZonotope(c,G,GI,E,id);
-    if ~all(withinTol(center(pZ),c,tol)) || ~compareMatrices(pZ.GI,GI,tol) ...
-            || ~compareMatrices([G;E],[pZ.G;pZ.E],tol) ...
-            || any(abs(pZ.id - id) > tol)
-        res_rand = false; break;
-    end
+    assert(all(withinTol(center(pZ),c,tol)));
+    assert(compareMatrices(pZ.GI,GI,tol));
+    assert(compareMatrices([G;E],[pZ.G;pZ.E],tol));
+    assert(all(abs(pZ.id - id) <= tol));
     
     % wrong initializations
     % center
@@ -125,14 +112,12 @@ for i=1:nrOfTests
     c_NaN = c; c_NaN(randIdx) = Inf;
     % dependent generators
     G_plus1 = randn(n+1,nrDepGens);
-    randLogicals = randn(size(G_plus1)) > 0;
-    G_Inf = G_plus1; G_Inf(randLogicals) = Inf;
-    G_NaN = G_plus1; G_NaN(randLogicals) = NaN;
+    G_Inf = G; G_Inf(randi(numel(G_Inf))) = Inf;
+    G_NaN = G; G_NaN(randi(numel(G_NaN))) = NaN;
     % independent generators
     GI_plus1 = randn(n+1,nrIndepGens);
-    randLogicals = randn(size(GI_plus1)) > 0;
-    GI_Inf = GI_plus1; GI_Inf(randLogicals) = Inf;
-    GI_NaN = GI_plus1; GI_NaN(randLogicals) = NaN;
+    GI_Inf = G; GI_Inf(randi(numel(GI_Inf))) = Inf;
+    GI_NaN = G; GI_NaN(randi(numel(GI_NaN))) = NaN;
     % exponent matrix
     counter = 0;
     while true
@@ -151,118 +136,49 @@ for i=1:nrOfTests
 
     
     % center has Inf/NaN entry
-    try
-        pZ = polyZonotope(c_Inf); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope(c_NaN); % <- should throw error here
-        res_rand = false; break;
-    end
-    
+    assertThrowsAs(@polyZonotope,'CORA:wrongValue',c_Inf);
+    assertThrowsAs(@polyZonotope,'CORA:wrongValue',c_NaN);
+
     % center is a matrix
-    try
-        pZ = polyZonotope(c_mat); % <- should throw error here
-        res_rand = false; break;
-    end
-    
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',c_mat);
+
     % empty center
-    try
-        pZ = polyZonotope([],G); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope([],G,GI); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope([],G,GI,E); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope([],G,GI,E,id); % <- should throw error here
-        res_rand = false; break;
-    end
-    
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',[],G);
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',[],G,GI);
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',[],G,GI,E);
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',[],G,GI,E,id);
+
     % center and generator matrices of different dimensions
-    try
-        pZ = polyZonotope(c_plus1,G); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope(c_plus1,[],GI); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope(c_plus1,G,GI); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope(c,G_plus1); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope(c,[],GI_plus1); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope(c,G,GI_plus1); % <- should throw error here
-        res_rand = false; break;
-    end
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',c_plus1,G);
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',c_plus1,[],GI);
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',c_plus1,G,GI);
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',c,G_plus1);
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',c,[],GI_plus1);
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',c,G,GI_plus1);
     
     % dependent generator matrix has Inf/NaN entries
-    try
-        pZ = polyZonotope(c,G_Inf); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope(c,G_NaN); % <- should throw error here
-        res_rand = false; break;
-    end
-    
+    assertThrowsAs(@polyZonotope,'CORA:wrongValue',c,G_Inf);
+    assertThrowsAs(@polyZonotope,'CORA:wrongValue',c,G_NaN);
+
     % independent generator matrix has Inf/NaN entries
-    try
-        pZ = polyZonotope(c,[],GI_Inf); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope(c,[],GI_NaN); % <- should throw error here
-        res_rand = false; break;
-    end
+    assertThrowsAs(@polyZonotope,'CORA:wrongValue',c,[],GI_Inf);
+    assertThrowsAs(@polyZonotope,'CORA:wrongValue',c,[],GI_NaN);
     
     % exponent matrix and dependent generator matrix do not match
-    try
-        pZ = polyZonotope(c,G,[],E_plus1); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope(c,G,[],E_plus1,id); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope(c,Gplus1,[],E); % <- should throw error here
-        res_rand = false; break;
-    end
-    try
-        pZ = polyZonotope(c,Gplus1,[],E,id); % <- should throw error here
-        res_rand = false; break;
-    end
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',c,G,[],E_plus1);
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',c,G,[],E_plus1,id);
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',c,G_plus1,[],E);
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',c,G_plus1,[],E,id);
     
     % exponent matrix and identifier vector do not match
-    try
-        pZ = polyZonotope(c,G,[],E,id_plus1); % <- should throw error here
-        res_rand = false; break;
-    end
+    assertThrowsAs(@polyZonotope,'CORA:wrongInputInConstructor',c,G,[],E,id_plus1);
     
     % too many input arguments
-    try
-        pZ = polyZonotope(c,G,GI,E,id,id); % <- should throw error here
-        res_rand = false; break;
-    end 
+    assertThrowsAs(@polyZonotope,'CORA:numInputArgsConstructor',c,G,GI,E,id,id);
+     
 end
 
-
-% combine results
-res = res_empty && res_rand;
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

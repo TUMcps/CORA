@@ -1,4 +1,4 @@
-function [params, union_y_a, obj] = confSynth_gray(obj,params,options)
+function [params, union_y_a, linsysDT] = confSynth_gray(linsysDT,params,options)
 % confSynth_gray - specific conformance synthesis method for linear
 %   discrete-time systems. This method identifies parameters of a gray-box 
 %   model using fmincon in an outer loop as in Sec. III.B of [1] and 
@@ -6,10 +6,10 @@ function [params, union_y_a, obj] = confSynth_gray(obj,params,options)
 %   loop.
 %
 % Syntax:
-%    [params, union_y_a] = confSynth_gray(obj,params,options)
+%    [params, union_y_a] = confSynth_gray(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - linearSysDT object
 %    params - parameters defining the conformance problem
 %    options - options for the conformance checking
 %
@@ -84,14 +84,14 @@ function cost = nest_objfun(x_)
         param0(free) = x;
 
         % Get the system matrices from the parameter vector
-        [obj.A, obj.B, obj.C, obj.D] = params.getMatricesFromP(param0,obj);
+        [linsysDT.A, linsysDT.B, linsysDT.C, linsysDT.D] = params.getMatricesFromP(param0,linsysDT);
 
         % Try the white identification method. This sometimes result in
         % an error when the new estimated matrices make the estimation
         % infeasible. We catch these errors and set the corresponding
         % cost to inf. 
         try
-            [~, ~, cost] = obj.confSynth_dyn(params, options); % Just interested in the cost
+            [~, ~, cost] = linsysDT.confSynth_dyn(params, options); % Just interested in the cost
         catch err
             % Display the error message with additional information
             disp('Error occurred during the identification:');
@@ -111,10 +111,10 @@ param_opt = param_opt_ .* (ub(free) - lb(free)) + lb(free);
 
 % Get the system matrices from the parameter vector 
 param0(free) = param_opt;   
-[obj.A, obj.B, obj.C, obj.D] = params.getMatricesFromP(param0,obj);
+[linsysDT.A, linsysDT.B, linsysDT.C, linsysDT.D] = params.getMatricesFromP(param0,linsysDT);
 
 % Perform one last synthesis to obtain the optimal parameters
-[params, union_y_a] = obj.confSynth_dyn(params, options);
+[params, union_y_a] = linsysDT.confSynth_dyn(params, options);
 
 end
 

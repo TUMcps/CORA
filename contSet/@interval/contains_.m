@@ -49,14 +49,16 @@ end
 % point in interval containment
 if isnumeric(S)
     
-    res = all( (I.inf < S | withinTol(I.inf,S,tol)) ...
-            & (I.sup > S | withinTol(I.sup,S,tol)) , 1);
+    res = all( (I.inf < S + tol | withinTol(I.inf,S,tol)) ...
+            & (I.sup > S - tol | withinTol(I.sup,S,tol)), 1:numel(dim(I)));
+    res = reshape(res,1,[]);
 
 % interval in interval containment
 elseif isa(S,'interval')
 
-    % TODO: use withinTol(.,.,tol) below
-    if all(I.sup >= S.sup) && all(I.inf <= S.inf)
+    % check containment with tolerance
+    if all((I.sup >= S.sup | withinTol(I.sup,S.sup,tol)),"all") ...
+        && all((I.inf <= S.inf | withinTol(I.inf,S.inf,tol)),"all")
         res = true;
     end
 

@@ -24,6 +24,7 @@ function [X0, spec] = vnnlib2cora(file)
 % Written:       23-November-2021
 % Last update:   26-July-2023 (TL, speed up)
 %                30-August-2023 (TL, bug fix multiple terms in and)
+%                14-June-2024 (TL, major speed up)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -34,9 +35,12 @@ text = fileread(file);
 % determine number of inputs and number of outputs
 nrInputs = 0;
 nrOutputs = 0;
-for i = 1:length(text)
-    if startsWith(text(i:end), '(declare-const ')
-        temp = text(i+15:end);
+lineBreaks = strfind(text, newline);
+for ln = 1:(numel(lineBreaks)-1)
+    i = lineBreaks(ln)+1;
+    i1 = lineBreaks(ln+1);
+    if startsWith(text(i:i1), '(declare-const ')
+        temp = text(i+15:i1);
         ind = find(temp == ' ');
         temp = temp(1:ind(1)-1);
         if strcmp(temp(1), 'X')
@@ -49,6 +53,7 @@ end
 
 data.nrInputs = nrInputs + 1;
 data.nrOutputs = nrOutputs + 1;
+data.currIn = 0;
 
 % parse file
 data.polyInput = [];
@@ -59,7 +64,8 @@ while ~isempty(text)
         [len, data] = aux_parseAssert(text, data);
         text = strtrim(text(len+1:end));
     else
-        text = strtrim(text(2:end));
+        ln = regexp(text,newline,'once');
+        text = text((ln+1):end);
     end
 end
 
@@ -87,7 +93,9 @@ for i = 1:length(data.polyOutput)
 end
 
 % construct specification from list of output polytopes
-if length(Y) == 1
+if isempty(Y)
+    throw(CORAerror("CORA:converterIssue",sprintf('Unable to convert file: %s', file)));
+elseif isscalar(Y)
     spec = specification(Y{1}, 'safeSet');
 else
     % convert to the union of unsafe sets
@@ -128,6 +136,7 @@ elseif startsWith(text, '(or')
         data_.nrOutputs = data.nrOutputs;
         data_.polyInput = [];
         data_.polyOutput = [];
+        data_.currIn = 0;
 
         [len_, data_] = aux_parseAssert(text, data_);
 
@@ -162,7 +171,12 @@ elseif startsWith(text, '(and')
     % parse all or conditions
     while ~startsWith(text, ')')
         [len_, data] = aux_parseAssert(text, data);
-        text = strtrim(text(len_:end));
+        text = text(len_:end);
+
+        % trim white spaces
+        text_ = strtrim(text);
+        len_ = len_ + (length(text)-length(text_));
+        text = text_;
 
         % move overall length counter to current position
         len = len + len_;
@@ -177,10 +191,10 @@ else
 end
 end
 
-function S = aux_createPolytopeStruct()
+function S = aux_createPolytopeStruct(n)
 S = struct;
-S.C = [];
-S.d = [];
+S.C = zeros(2*n,n);
+S.d = zeros(2*n,1);
 end
 
 function [len, data] = aux_parseLinearConstraint(text, data)
@@ -224,17 +238,19 @@ end
 % combine the current constrain with previous constraints
 if strcmp(type, 'input')
     if isempty(data.polyInput)
-        data.polyInput = aux_createPolytopeStruct();
+        data.polyInput = aux_createPolytopeStruct(data.nrInputs);
     end
 
+    data.currIn = data.currIn+1;
+
     for i = 1:length(data.polyInput)
-        data.polyInput(i).C = [data.polyInput(i).C; C];
-        data.polyInput(i).d = [data.polyInput(i).d; d];
+        data.polyInput(i).C(data.currIn,:) = C;
+        data.polyInput(i).d(data.currIn) = d;
     end
 
 else
     if isempty(data.polyOutput)
-        data.polyOutput = aux_createPolytopeStruct();
+        data.polyOutput = aux_createPolytopeStruct(0);
     end
 
     for i = 1:length(data.polyOutput)
@@ -302,8 +318,8 @@ end
 function type = aux_getTypeOfConstraint(text)
 % check if the current constraint is on the inputs or on the outputs
 
-indX = find(text == 'X');
-indY = find(text == 'Y');
+indX = regexp(text, 'X', 'once');
+indY = regexp(text, 'Y', 'once');
 
 if isempty(indX)
     if isempty(indY)

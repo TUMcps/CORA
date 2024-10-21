@@ -40,7 +40,12 @@ options.timeStep = 1; % setp size
 options.alg = 'FRad-C'; % observer approach
 
 %% System Dynamics
-reactor = linearSysDT('reactor',[0 -0.5; 1 1], 1, zeros(2,1), [-2 1], options.timeStep);
+A = [0 -0.5; 1 1];
+B = 1;
+C = [-2 1];
+E = eye(dim(params.W));
+F = eye(dim(params.V));
+reactor = linearSysDT('reactor',A,B,[],C,[],[],E,F,options.timeStep);
 
 % observe
 EstSet = observe(reactor,params,options);
