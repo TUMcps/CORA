@@ -31,7 +31,14 @@ getJSON('https://api.github.com/repos/TUMcps/CORA/commits?per_page=100',
                 // format commit message
                 formattedCommitMessage = "<ul>";
                 for (let j = 2; j < messageText.length; j++) {
-                    formattedCommitMessage += `<li style="list-style-type: disc"> ${messageText[j].replace('-','')} </li>`;
+                    messageText_j = messageText[j].replace('-','');
+                    if (messageText_j) { // text not empty
+                        if (!messageText_j.startsWith('  ')) {
+                            formattedCommitMessage += `<li style="list-style-type: disc"> ${messageText_j} </li>`;
+                        } else {
+                            formattedCommitMessage += messageText_j;
+                        }
+                    }
                 }
                 formattedCommitMessage += "</ul>";
 
