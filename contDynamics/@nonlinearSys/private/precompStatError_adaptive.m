@@ -1,13 +1,14 @@
-function [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError_adaptive(obj,options,Rdelta)
+function [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError_adaptive(nlnsys,Rdelta,U,options)
 % precompStatError_adaptive - precompute the second order static error
 %    along with Hessian matrix, with adaptive zonotope order reduction
 %
 % Syntax:
-%    [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError_adaptive(obj,options,Rdelta)
+%    [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError_adaptive(nlnsys,Rdelta,U,options)
 %
 % Inputs:
-%    obj - nonlinear system object
+%    nlnsys - nonlinear system object
 %    Rdelta - shifted reachable set at the beginning of the time step
+%    U - input set
 %    options - options struct
 %
 % Outputs:
@@ -19,8 +20,6 @@ function [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError_adaptive(obj,opt
 %    ind3 - indices at which the third-order tensor is not zero
 %    Zdelta3 - set Zdelta reduced to the zonotope order for the evaluation
 %              of the third-order tensor
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -42,7 +41,7 @@ function [H,Zdelta,errorStat,T,ind3,Zdelta3] = precompStatError_adaptive(obj,opt
 % ------------------------------ BEGIN CODE -------------------------------
 
 % precompute the second order static error along with hessian matrix
-obj = setHessian(obj,'standard');
+nlnsys = setHessian(nlnsys,'standard');
 
 % initialize output arguments
 T = []; ind3 = []; Zdelta3 = [];
@@ -54,11 +53,11 @@ Rred = reduce(Rdelta,'adaptive',sqrt(options.redFactor));
 Rdelta = reduce(zonotope(Rdelta),'adaptive',sqrt(options.redFactor));
 
 % extend the sets by the input sets
-Z = cartProd(Rred,options.U);
-Zdelta = cartProd(Rdelta,options.U);
+Z = cartProd(Rred,U);
+Zdelta = cartProd(Rdelta,U);
 
 % calculate the hessian tensor
-H = obj.hessian(obj.linError.p.x, obj.linError.p.u);
+H = nlnsys.hessian(nlnsys.linError.p.x, nlnsys.linError.p.u);
 
 % calculate the quadratic map == static second-order error
 errorSecOrdStat = 0.5*quadMap(Z,H);

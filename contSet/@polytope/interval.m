@@ -36,20 +36,21 @@ function I = interval(P)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% obtain bounding box in halfspace representation
-B = box(P);
-
 % dimension
 n = dim(P);
 
-% special case: polytope is empty
-if B.emptySet.val
+% obtain bounding box in halfspace representation
+if P.isVRep.val
+    [A,b,empty] = priv_box_V(P.V_.val,n);
+else
+    [A,b,empty] = priv_box_H(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val,n);
+end
+
+% exit if already empty
+if empty
     I = interval.empty(n);
     return
 end
-
-% get constraint matrix and offset
-A = B.A_.val; b = B.b_.val;
 
 % init lower and upper bounds of resulting interval with Inf values
 lb = -Inf(n,1);

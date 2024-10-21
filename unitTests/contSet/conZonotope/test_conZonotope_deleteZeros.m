@@ -23,14 +23,12 @@ function res = test_conZonotope_deleteZeros
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty conZonotope
 cZ_empty = conZonotope.empty(2);
 cZ_empty_ = deleteZeros(cZ_empty);
-res(end+1,1) = representsa_(cZ_empty_,'emptySet',eps);
+assert(representsa_(cZ_empty_,'emptySet',eps));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

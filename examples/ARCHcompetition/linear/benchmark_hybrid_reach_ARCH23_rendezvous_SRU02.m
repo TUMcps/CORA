@@ -12,8 +12,8 @@ function text = benchmark_hybrid_reach_ARCH23_rendezvous_SRU02()
 %    res - true/false
 %
 % References: 
-%   [1] N. Chan et al. "Verifying safety of an autonomous spacecraft 
-%       rendezvous mission"  
+%    [1] N. Chan et al. "Verifying safety of an autonomous spacecraft 
+%        rendezvous mission"  
 
 % Authors:       Niklas Kochdumper
 % Written:       12-March-2018

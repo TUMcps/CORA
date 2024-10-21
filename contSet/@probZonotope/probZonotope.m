@@ -55,6 +55,7 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor(1:3,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'probZonotope')
@@ -91,11 +92,6 @@ end
 
 function [Z,g,gamma] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin > 3
-        throw(CORAerror('CORA:tooManyInputArgs',3));
-    end
 
     % no input arguments
     if nargin == 0

@@ -23,8 +23,6 @@ function res = test_capsule_lift
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % init
 C = capsule([2; -1], [1; 2], 0.5);
 
@@ -32,17 +30,19 @@ C = capsule([2; -1], [1; 2], 0.5);
 try
     C_lift = lift(C,5,[2,1]);
     % should fail
-    resvec(end+1) = false;
+    assert(false);
 catch ME
-    resvec(end+1) = strcmp(ME.identifier,'CORA:notDefined');
+    if ~strcmp(ME.identifier,'CORA:notDefined')
+        rethrow(ME)
+    end
 end
 
 % except no new dimensions are created
 C_lift = lift(C,2,[2,1]);
 C_proj = project(C,[2,1]);
-resvec(end+1) = isequal(C_proj,C_lift);
+assert(isequal(C_proj,C_lift));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

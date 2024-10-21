@@ -1,23 +1,21 @@
-function Y = outputSet(obj,options,R,R_y)
+function Y = outputSet(nlnsysDA,R,R_y,params,options)
 % outputSet - calculates output set based on a (non-)linear output equation
 %
 % Syntax:
-%    Y = outputSet(obj,options,R,R_y)
+%    Y = outputSet(nlnsysDA,R,R_y,params,options)
 %
 % Inputs:
-%    obj - nonlinDASys object
-%    options - options for the computation of reachable sets
+%    nlnsysDA - nonlinDASys object
 %    R - reachable set (either time point [i] or time interval [i,i+1])
 %    R_y - reachable set of algebraic variables (either time point [i] or
 %          time interval [i,i+1])
+%    params - model parameters (U, uTrans)
+%    options - options for the computation of reachable sets
 %
 % Outputs:
 %    Y - output set (either time point [i] or time interval [i,i+1])
 %
 % Example:
-%    -
-%
-% References:
 %    -
 %
 % Other m-files required: none
@@ -29,6 +27,7 @@ function Y = outputSet(obj,options,R,R_y)
 % Authors:       Mark Wetzlinger
 % Written:       19-November-2022
 % Last update:   07-December-2022 (MW, allow to skip output set)
+%                30-August-2024 (MW, add params to input arguments)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -44,18 +43,22 @@ if ~any(options.tensorOrderOutput == [2,3])
         'Only tensor orders 2 and 3 supported for computation of output set.'));
 end
 
+% compute input
+U = params.U + params.uTrans;
+
 if ~iscell(R)
-    Y = aux_outputSet(obj,options,R,R_y,obj.out_isLinear);
+    Y = aux_outputSet(nlnsysDA,options.tensorOrderOutput,R,R_y,U);
 else
     Y = cell(length(R),1);
     for i=1:length(R)
         if isstruct(R{i})
             % time-point solution
-            Y{i}.set = aux_outputSet(obj,options,R{i}.set,R_y{i},obj.out_isLinear);
+            Y{i}.set = aux_outputSet(nlnsysDA,options.tensorOrderOutput,...
+                R{i}.set,R_y{i},U);
             Y{i}.prev = R{i}.prev;
         else
             % time-interval solution
-            Y{i} = aux_outputSet(obj,options,R{i},R_y{i},obj.out_isLinear);
+            Y{i} = aux_outputSet(nlnsysDA,options.tensorOrderOutput,R{i},R_y{i},U);
         end
     end
 end
@@ -65,16 +68,13 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function Y = aux_outputSet(obj,options,R,R_y,all_linear)
+function Y = aux_outputSet(nlnsysDA,tensorOrderOutput,R,R_y,U)
 % output set computation for a given reachable set
 
 % dimension of state and inputs
-n = obj.dim;
-m = obj.nrOfInputs;
-r = obj.nrOfOutputs;
-
-% input set
-U = options.U + options.uTrans;
+n = nlnsysDA.nrOfStates;
+m = nlnsysDA.nrOfInputs;
+r = nlnsysDA.nrOfOutputs;
 
 % expansion points
 p_x = center(R);
@@ -89,26 +89,26 @@ I_y = interval(R_y);
 I = [I_x;I_y;I_u];
 
 % evaluate reset function at expansion point
-zerothorder = obj.out_mFile(p_x,p_y,p_u);
+zerothorder = nlnsysDA.out_mFile(p_x,p_y,p_u);
 
 % evaluate Jacobian at expansion point
-J = obj.out_jacobian(p_x,p_y,p_u);
+J = nlnsysDA.out_jacobian(p_x,p_y,p_u);
 
 % first-order
 firstorder = J * (R + (-p_x));
 
-if all_linear
+if nlnsysDA.out_isLinear
     % only affine map
     secondorder = 0;
     thirdorder = 0;
 
-elseif options.tensorOrderOutput == 2
+elseif tensorOrderOutput == 2
 
     % assign correct hessian (using interval arithmetic)
-    obj = setOutHessian(obj,'int');
+    nlnsysDA = setOutHessian(nlnsysDA,'int');
 
     % evaluate Hessian using interval arithmetic
-    H = obj.out_hessian(I_x,I_y,I_u);
+    H = nlnsysDA.out_hessian(I_x,I_y,I_u);
 
     % obtain maximum absolute values within I
     dz = max(abs(infimum(I)),abs(supremum(I)));
@@ -125,14 +125,14 @@ elseif options.tensorOrderOutput == 2
     % no third-order computation
     thirdorder = 0;
 
-elseif options.tensorOrderOutput == 3
+elseif tensorOrderOutput == 3
 
     % set handles to correct files
-    obj = setOutHessian(obj,'standard');
-    obj = setOutThirdOrderTensor(obj,'int');
+    nlnsysDA = setOutHessian(nlnsysDA,'standard');
+    nlnsysDA = setOutThirdOrderTensor(nlnsysDA,'int');
 
     % evaluate Hessians at expansion point
-    H = obj.out_hessian(p_x,p_y,p_u);
+    H = nlnsysDA.out_hessian(p_x,p_y,p_u);
 
     % Cartesian product of given set of states and inputs
     Z = cartProd(R,[I_y;I_u]);
@@ -141,7 +141,7 @@ elseif options.tensorOrderOutput == 3
     secondorder = 0.5*quadMap(Z + (-p),H);
     
     % evaluate third-order tensors over entire set
-    T = obj.out_thirdOrderTensor(I_x,I_y,I_u);
+    T = nlnsysDA.out_thirdOrderTensor(I_x,I_y,I_u);
     
     % compute Lagrange remainder
     I = I - p;

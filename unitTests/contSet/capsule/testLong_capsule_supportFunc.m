@@ -41,10 +41,7 @@ for n=2:4:30
     
     for d=1:size(dirs,2)
         val = supportFunc(C,dirs(:,d));
-        if abs(val) > 2
-            res = false;
-            return
-        end
+        assertLoop(abs(val) <= 2,n,d)
     end    
 end
 

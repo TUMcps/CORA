@@ -1,14 +1,14 @@
-function res = isIntersecting_(O,S,varargin)
+function res = isIntersecting_(O,S,type,tol,varargin)
 % isIntersecting_ - checks if an empty set intersects with another set
 %
 % Syntax:
-%    res = isIntersecting_(O,S)
-%    res = isIntersecting_(O,S,type)
+%    res = isIntersecting_(O,S,type,tol)
 %
 % Inputs:
 %    O - emptySet object
 %    S - contSet object or numerical vector
-%    type - (optional) type of check
+%    type - type of check
+%    tol - tolerance
 %
 % Outputs:
 %    res - true/false

@@ -23,7 +23,6 @@ function res = test_polytope_levelSet
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
 syms x1 x2 x3;
 
 % 2D, bounded
@@ -34,8 +33,8 @@ eq1 = x1 - 1;
 eq2 = -x1 + x2 - 1;
 eq3 = -x1 - x2 - 1;
 ls_true = levelSet([eq1;eq2;eq3],[x1;x2],{"<=","<=","<="});
-res(end+1,1) = length(ls.eq) == 3 && length(ls.vars) == 2 && length(ls.compOp) == 3;
-res(end+1,1) = isequal(ls,ls_true);
+assert(length(ls.eq) == 3 && length(ls.vars) == 2 && length(ls.compOp) == 3);
+assert(isequal(ls,ls_true));
 
 % 3D, unbounded
 A = [1 1 -1]; b = -1;
@@ -43,10 +42,10 @@ P = polytope(A,b);
 ls = levelSet(P);
 eq1 = x1 + x2 - x3 + 1;
 ls_true = levelSet(eq1,[x1;x2;x3],{"<="});
-res(end+1,1) = length(ls.eq) == 1 && length(ls.vars) == 3 && length(ls.compOp) == 1;
-res(end+1,1) = isequal(ls,ls_true);
+assert(length(ls.eq) == 1 && length(ls.vars) == 3 && length(ls.compOp) == 1);
+assert(isequal(ls,ls_true));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -13,14 +13,16 @@ function [R,tcomp] = observe(sys,params,options)
 %    R - set of possible states of the observer
 %    tcomp - computation time
 %
+% Example:
+%    -
+%
+% References:
 %    [1] M. Althoff and J. J. Rath. Comparison of Set-Based Techniques 
 %        for Guaranteed State Estimation of Linear Disturbed Systems. 
 %        Automatica, 130, article no. 109662, 2021.
 %    [2] M. Althoff. Guaranteed state estimation in CORA 2021. In Proc. 
 %        of the 8th International Workshop on Applied Verification for 
 %        Continuous and Hybrid Systems, 2021
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -41,10 +43,10 @@ if ~(isa(sys,'linearSysDT') || isa(sys,'nonlinearSysDT'))
 end
 
 % options preprocessing
-options = validateOptions(sys,mfilename,params,options);
+[params,options] = validateOptions(sys,params,options);
 
 % create vector of time points
-tVec = (options.tStart:options.timeStep:options.tFinal-options.timeStep)';
+tVec = (params.tStart:options.timeStep:params.tFinal-options.timeStep)';
 
 % compute symbolic derivatives for nonlinear systems
 if isa(sys,'nonlinearSysDT')
@@ -56,8 +58,8 @@ if isa(sys,'nonlinearSysDT')
     end
 end
 
-% execute observer 
-[R,tcomp] = executeObserver(sys,options);
+% execute observer (linearSysDT and nonlinearSysDT)
+[R,tcomp] = executeObserver(sys,params,options);
 
 % create object of class reachSet
 timePoint.set = R;

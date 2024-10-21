@@ -1,13 +1,15 @@
-function P_out = or(P1,P2)
+function P_out = or(P,S,varargin)
 % or - computes an over-approximation for the union of polytopes using the
 %    convex hull operation
 %
 % Syntax:
-%    P_out = or(P1,P2)
+%    P_out = or(P,S)
+%    P_out = or(P,S,mode)
 %
 % Inputs:
-%    P1 - polytope object
-%    P2 - polytope object
+%    P - polytope object
+%    S - contSet object, numeric
+%    mode - 'exact', 'outer', 'inner'
 %
 % Outputs:
 %    P_out - polytope object enclosing the union
@@ -16,7 +18,7 @@ function P_out = or(P1,P2)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval/or, zonotope/or, polytope/convHull
+% See also: interval/or, zonotope/or, polytope/convHull_
 
 % Authors:       Niklas Kochdumper, Viktor Kotsev
 % Written:       26-November-2019
@@ -26,6 +28,6 @@ function P_out = or(P1,P2)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % call convex hull
-P_out = convHull(P1,P2);
+P_out = convHull_(P,S,varargin{:});
     
 % ------------------------------ END OF CODE ------------------------------

@@ -123,8 +123,7 @@ end
 [E,G] = removeRedundantExponents(E,G);
 
 % generate random independent generators
-GI = [];
-
+GI = zeros(n,0);
 if nrIndGens > 0
     GI = gen_low + rand(n,nrIndGens) * (gen_up - gen_low);
 end

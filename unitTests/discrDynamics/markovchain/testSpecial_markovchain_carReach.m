@@ -1,6 +1,6 @@
 function res = testSpecial_markovchain_carReach
-% testSpecial_markovchain_carReach - unit_test_function for building a
-% Markov chain of a car using simulation results
+% testSpecial_markovchain_carReach - unit test function for building a
+%    Markov chain of a car using simulation results
 %
 % Syntax:
 %    res = testSpecial_markovchain_carReach
@@ -127,12 +127,10 @@ for iInput = 1:totalNrOfInputs
     end
 end
 
-%optimize structure of Markov chain
+% optimize structure of Markov chain
 [T, projMat, GammaFull] = convertTransitionMatrix(MC, gamma);
 
-%% compute maximum errors
-% init
-resPartial = [];
+% compute maximum errors
 accuracy = 1e-8;
 
 % load precomputed results
@@ -141,24 +139,24 @@ load carReach_unitTest Tsave projMatSave GammaFullSave
 % transition matrix - discrete time
 error = abs(T.T - Tsave.T);
 maxError = max(max(error));
-resPartial(end+1) = (maxError < accuracy);
+assert(maxError < accuracy);
 
 % transition matrix - continuous time
 error = abs(T.OT - Tsave.OT);
 maxError = max(max(error));
-resPartial(end+1) = (maxError < accuracy);
+assert(maxError < accuracy);
 
 % projection matrix
 error = abs(projMat - projMatSave);
 maxError = max(max(error));
-resPartial(end+1) = (maxError < accuracy);
+assert(maxError < accuracy);
 
 % Gamma matrix
 error = abs(GammaFull - GammaFullSave);
 maxError = max(max(error));
-resPartial(end+1) = (maxError < accuracy);
+assert(maxError < accuracy);
 
-% final result
-res = all(resPartial);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

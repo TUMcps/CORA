@@ -35,7 +35,7 @@ II = interval(C);
 V = vertices(I);
 res = all(contains(C,V));
 % check containment of interval
-res(end+1,1) = contains(II,I);
+assert(contains(II,I));
 
 
 % degenerate interval
@@ -46,10 +46,15 @@ C = capsule(I);
 
 % check containment of vertices of interval
 V = vertices(I);
-res(end+1,1) = all(contains(C,V));
+assert(all(contains(C,V)));
+
+
+% throws error for matrix intervals
+I = interval([2 3; 1 4]);
+assertThrowsAs(@capsule,'CORA:wrongValue',I)
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

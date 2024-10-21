@@ -29,11 +29,8 @@ intCellsP = intersectingCells(threeDimField_div,P);
 intCellsI = intersectingCells(threeDimField_div,I);
 intCellsZ = intersectingCells(threeDimField_div,Z);
 
-if (length(intCellsP) == length(intCellsI))&&(length(intCellsZ) == length(intCellsI))&&(length(intCellsP) == length(intCellsZ))
-    res1 = (~any(unique(intCellsP) - unique(intCellsZ)))&&(~any(unique(intCellsI) - unique(intCellsZ)));
-else
-    res1 = 0;
-end
+assert((length(intCellsP) == length(intCellsI))&&(length(intCellsZ) == length(intCellsI))&&(length(intCellsP) == length(intCellsZ)))
+assert((~any(unique(intCellsP) - unique(intCellsZ)))&&(~any(unique(intCellsI) - unique(intCellsZ))));
 
 % when slightly outside!
 
@@ -45,11 +42,8 @@ intCellsP = intersectingCells(threeDimField_div,P);
 intCellsI = intersectingCells(threeDimField_div,I);
 intCellsZ = intersectingCells(threeDimField_div,Z);
 
-if (length(intCellsP) == length(intCellsI))&&(length(intCellsZ) == length(intCellsI))&&(length(intCellsP) == length(intCellsZ))
-    res2 = (~any(unique(intCellsP) - unique(intCellsZ)))&&(~any(unique(intCellsI) - unique(intCellsZ)));
-else
-    res2 = 0;
-end
+assert((length(intCellsP) == length(intCellsI))&&(length(intCellsZ) == length(intCellsI))&&(length(intCellsP) == length(intCellsZ)))
+assert((~any(unique(intCellsP) - unique(intCellsZ)))&&(~any(unique(intCellsI) - unique(intCellsZ))));
 
 intSSP = intersectingCells(threeDimField_div,P,'subscripts');
 intCellsP1 = cellIndices(threeDimField_div,intSSP);
@@ -58,12 +52,9 @@ intCellsI1 = cellIndices(threeDimField_div,intSSI);
 intSSZ = intersectingCells(threeDimField_div,Z,'subscripts');
 intCellsZ1 = cellIndices(threeDimField_div,intSSZ);
 
-if (length(intCellsP1)==length(intCellsP))&&(length(intCellsI1)==length(intCellsI))&&(length(intCellsZ1)==length(intCellsZ))
-    res3 = (~any(unique(intCellsP1)-unique(intCellsP)))&&(~any(unique(intCellsI1)-unique(intCellsI)))&&(~any(unique(intCellsZ1)-unique(intCellsZ)));
-else
-    res3 = 0;
-end
+assert((length(intCellsP1)==length(intCellsP))&&(length(intCellsI1)==length(intCellsI))&&(length(intCellsZ1)==length(intCellsZ)))
+assert((~any(unique(intCellsP1)-unique(intCellsP)))&&(~any(unique(intCellsI1)-unique(intCellsI)))&&(~any(unique(intCellsZ1)-unique(intCellsZ))));
 
-res = res1&&res2&&res3;
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

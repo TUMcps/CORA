@@ -23,7 +23,7 @@ function Z = box(Z)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       09-March-2009
@@ -33,9 +33,6 @@ function Z = box(Z)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % determine new generator matrix
-G = diag(sum(abs(Z.G),2));
-
-% instantiate axis-aligned zonotope
-Z.G = G;
+Z.G = diag(sum(abs(Z.G),2));
 
 % ------------------------------ END OF CODE ------------------------------

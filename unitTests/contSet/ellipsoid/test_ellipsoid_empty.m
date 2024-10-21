@@ -23,19 +23,17 @@ function res = test_ellipsoid_empty
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % 1D
 n = 1;
 E = ellipsoid.empty(n);
-res(end+1,1) = representsa(E,'emptySet') && dim(E) == 1;
+assert(representsa(E,'emptySet') && dim(E) == 1);
 
 % 5D
 n = 5;
 E = ellipsoid.empty(n);
-res(end+1,1) = representsa(E,'emptySet') && dim(E) == 5;
+assert(representsa(E,'emptySet') && dim(E) == 5);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -31,10 +31,7 @@ for n=1:2:30
     C = capsule(randn(n,1),zeros(n,1),r);
     
     % since capsule is a ball, enclosing radius is radius
-    if ~withinTol(radius(C),r)
-        res = false;
-        break;
-    end
+    assertLoop(withinTol(radius(C),r),n)
 end
 
 % ------------------------------ END OF CODE ------------------------------

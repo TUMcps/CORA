@@ -5,7 +5,7 @@ function Z = projectHighDim_(Z,N,proj)
 %    Z = projectHighDim_(Z,N,proj)
 %
 % Inputs:
-%    obj - zonotope object
+%    Z - zonotope object
 %    N - dimension of the higher dimensional space
 %    proj - states of the high dimensional space that correspond to the
 %          states of the low dimensional polytope object

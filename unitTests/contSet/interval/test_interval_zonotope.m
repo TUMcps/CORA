@@ -23,29 +23,27 @@ function res = test_interval_zonotope
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
+% tolerance
 tol = 1e-9;
 
 % empty interval
 I = interval.empty(2);
 Z = zonotope(I);
-res(end+1,1) = representsa(Z,'emptySet') && dim(Z) == 2;
+assert(representsa(Z,'emptySet') && dim(Z) == 2);
 
 % bounded interval
 I = interval([-2;-5],[3;1]);
 Z = zonotope(I);
 c_true = [0.5;-2]; G_true = [2.5 0; 0 3];
-res(end+1,1) = all(withinTol(center(Z),c_true,tol));
-res(end+1,1) = compareMatrices(generators(Z),G_true,tol);
+assert(all(withinTol(center(Z),c_true,tol)));
+assert(compareMatrices(generators(Z),G_true,tol));
 
 % unbounded interval
 I = interval([-Inf;-2],[4;2]);
-try
-    zonotope(I);
-    res = false;
-end
+assertThrowsAs(@zonotope,'CORA:wrongValue',I);
 
-% combine results
-res = all(res);
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

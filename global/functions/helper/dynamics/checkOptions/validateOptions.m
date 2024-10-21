@@ -1,22 +1,29 @@
-function options = validateOptions(sys,func,params,options,varargin)
+function [params,options] = validateOptions(sys,params,options,varargin)
 % validateOptions - validates model parameters and algorithm parameters
-%    for given function
+%    for given system and function; after that, a bit of post processing
+%    so that algorithms know which format to except
+% 
+%    Validation can be deactivated by setting options.VALIDATED = true
+%    (this is also set at the end of this file)
 %
 % Syntax:
-%    options = validateOptions(sys,func,params,options)
-%    options = validateOptions(sys,func,params,options,internalCall)
+%    [options,params] = validateOptions(sys,params,options)
+%    [options,params] = validateOptions(sys,params,options,'FunctionName',fname)
 %
 % Inputs:
-%    sys - object of contDynamics class
-%    func - function for which parameters should be validated
+%    sys - contDynamics, hybridDynamics object
 %    params - model parameters (e.g., initial set)
 %    options - algorithm parameters (e.g., time step size)
-%    internalCall - (optional) true/false whether validation has happened
-%                   before at a higher system level; allows to skip
-%                   validation and only do post-processing
+%    Name-Value pair (arbitrary order):
+%       <'FunctionName',fname> - name of the function for which user inputs
+%       should be validated, i.e., second part of the configfile name,
+%       e.g., fname for linearSys_reach_configfile is 'reach'
+%       default: name of function calling validateOptions (read from call
+%       stack); this should only be set for unit tests
 %
 % Outputs:
-%    options -  merged parameters and options for further computations
+%    params - checked model parameters
+%    options - checked algorithm parameters
 %
 % Other m-files required:
 %    initErrorCodex.m - initializes error identifiers used to describe
@@ -40,62 +47,90 @@ function options = validateOptions(sys,func,params,options,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% set default value for internal call
-internalCall = setDefaultValues({false},varargin);
-
-% get file name of configuration file
-if ~internalCall
-    [fileFound,configfile,cfgIdx] = aux_getConfigfile(sys,func);
+if nargout == 1 && ~isempty(fields(options))
+    throw(CORAerror('CORA:notSupported',...
+        'validateOptions has two output arguments.'));
 end
 
-if ~internalCall && ~fileFound
-    
-    % if no configuration file exists, we notify the user that this is the
-    % case (occurs most likely during development) and that parameters and
-    % options are not being checked
+% read out function name (default: name of calling function)
+fname = aux_parseFunctionName(varargin);
+% have params and options been validated yet?
+if isfield(options,'VALIDATED') && options.VALIDATED
+    % params and options have been validated before on a higher level
+    % example: hybrid systems reachability calls linear systems
+    % reachability, but we only need to validate user inputs once on the
+    % top level
 
+    % only write params to options for internal behavior and return
+    [params, options] = postProcessing(sys,fname,params,options);
+    return;
+
+end
+
+% 1. get file name of configuration file
+[fileFound,configfile] = aux_getConfigfile(sys,fname);
+
+% note: the configuration file has to match the following format
+%    config_classname_functionname
+% where classname is class(sys) and functionname is the name of the calling
+% function; if no such configuration file exists, we notify the user that
+% parameters and options are not being checked (code continues, though)
+if ~fileFound
     disp("No configuration file to execute model/algorithm parameter validation.");
     disp("-> model/algorithm parameters are not checked!");
-    
-else
-    % params/options validation in multiple steps:
-
-    % we first check the model parameters, then the algorithm parameters;
-    % this is because the model parameters do not depend on the setting of
-    % the algorithm parameters (cases such as the length of an input signal
-    % and the time step size exist, but then it is deemed to be the fault
-    % of the algorithm parameter (time step size) which does not match the
-    % length of the input signal
-    % the check of either model or algorithm parameters does not include
-    % any rewriting of the provided values (this is done in step 4.)
-    
-    if ~internalCall
-    % 2. validation of model parameters (params)
-    params = aux_checkFullList(sys,func,params,options,configfile,'params');
-    
-    % 3. validation of algorithm parameters (options)
-    options = aux_checkFullList(sys,func,params,options,configfile,'options');
-    end
-    
-    % 4. post-processing: internal rewriting of the checked model/algorithm
-    % parameters to allow for a simpler syntax in the reach/simulate/...
-    % functions
-    [params, options] = postProcessing(sys,func,params,options);
-    
-    % 5. since the split in params and options historically occurred after
-    % many of the functions had already been written, we unify the structs
-    % for params and options and work with only options in the code
-    options = params2options(params,options);
+    return
 end
+
+
+% params/options validation in multiple steps:
+
+% we first check the model parameters, then the algorithm parameters;
+% this is because the model parameters do not depend on the setting of
+% the algorithm parameters (cases such as the length of an input signal
+% and the time step size exist, but then it is deemed to be the fault
+% of the algorithm parameter (time step size) which does not match the
+% length of the input signal
+% the check of either model or algorithm parameters does not include
+% any rewriting of the provided values (this is done in step 4.)
+
+% 2. validation of model parameters (params)
+params = aux_checkFullList(sys,fname,params,options,configfile,'params');
+
+% 3. validation of algorithm parameters (options)
+options = aux_checkFullList(sys,fname,params,options,configfile,'options');
+
+% 4. post-processing: internal rewriting of the checked model/algorithm
+% parameters to allow for a simpler syntax in the reach/simulate/...
+% functions
+[params, options] = postProcessing(sys,fname,params,options);
+
+% 5. user-defined params and options have been validated -> no need to
+% validate any more in further internal calls
+options.VALIDATED = true;
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function [fileFound,configfile,cfgIdx] = aux_getConfigfile(sys,func)
+function fname = aux_parseFunctionName(NVpairs)
+
+% only name-value pair: <FunctionName>, fname
+checkNameValuePairs(NVpairs,{'FunctionName'});
+[~,fname] = readNameValuePair(NVpairs,'FunctionName');
+
+% if function name is not user-provided, we read it out from the call stack
+% note: since this is an auxiliary function, we have to go back two levels
+if isempty(fname)
+    st = dbstack();
+    fname = st(3).name;
+end
+
+end
+
+function [fileFound,configfile,cfgIdx] = aux_getConfigfile(sys,fname)
 % sys - object of contDynamics class
-% func - function for which parameters/options should be validated
+% fname - (char array) function for which params/options should be validated
 %
 % fileFound - true/false whether a configuration file was found
 %             (false has special handling for development)
@@ -121,12 +156,13 @@ classname = class(sys);
 
 % rename classname to 'contDynamics' as there is only one configuration
 % file for all classes inheriting from contDynamics
-if isa(sys,'contDynamics') && any(contains(func,{'simulate','observe'}))
+if isa(sys,'contDynamics') && ...
+        (strcmp(fname,'conform') || any(contains(fname,{'simulate','observe'})))
     classname = 'contDynamics';
 end
 
 % obtain name of configfile for given class and function
-configfile = {['config_' classname '_' func]};
+configfile = {['config_' classname '_' fname]};
 cfgIdx = 0;
 
 % check if configfile exists
@@ -138,7 +174,7 @@ fileFound = isfile([currfolder filesep 'configfiles' filesep configfile{1} '.m']
 % subcomponents) and evaluate the corresponding configuration file to
 % obtain the list of parameters and options
 if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
-        && ~strcmp(func,'simulate')
+        && ~strcmp(fname,'simulate')
     % simulateRandom -> simulateStandard (corresponding func in contDynamics)
 
     if isa(sys,'hybridAutomaton')
@@ -149,12 +185,12 @@ if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
         for i=1:length(sys.location)
             % read out contDynamics class
             classname = class(sys.location(i).contDynamics);
-            if contains(func,'simulate')
+            if contains(fname,'simulate')
                 % for simulateRandom|simulate just contDynamics
                 classname = 'contDynamics';
             end
             % append name of configuration file
-            addConfigfiles{i} = ['config_' classname '_' func];
+            addConfigfiles{i} = ['config_' classname '_' fname];
         end
 
     elseif isa(sys,'parallelHybridAutomaton')
@@ -172,12 +208,12 @@ if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
 
                 % read out contDynamics class of i/j-th location
                 classname = class(sys.components(i).location(j).contDynamics);
-                if contains(func,'simulate')
+                if contains(fname,'simulate')
                     % for simulateNormal|simulate just contDynamics
                     classname = 'contDynamics';
                 end
                 addConfigfiles{sum(numLocs(1:i-1))+j,1} = ...
-                    ['config_' classname '_' func];
+                    ['config_' classname '_' fname];
             end
         end
     end
@@ -193,22 +229,17 @@ end
 
 end
 
-function blueprint = aux_readConfigfiles(sys,params,options,configfile,listname)
-% sys           ... object of some contDynamics class
-% params        ... list of model parameters
-% options       ... list of algorithmic parameters
+function blueprint = aux_readConfigfiles(configfile,listname)
 % configfile    ... name of configuration file (for hybrid systems: list of
 %                   unique names)
-% cfgIdx        ... list of indices for locations with unique configuration
-%                   file (0 for purely continuous systems)
 % listname      ... 'params', 'options', for error messages
 
 % loop over all configuration files
 for i=1:length(configfile)
     if strcmp(listname,'params')
-        [addBlueprint,~] = eval([configfile{i} '(sys,params,options)']);
+        [addBlueprint,~] = eval([configfile{i}]);
     elseif strcmp(listname,'options')
-        [~,addBlueprint] = eval([configfile{i} '(sys,params,options)']);
+        [~,addBlueprint] = eval([configfile{i}]);
     end
     if i == 1
         blueprint = addBlueprint;
@@ -260,19 +291,12 @@ function list = aux_checkFullList(sys,func,params,options,configfile,listname)
 % 4. all redundancies are printed (if VALIDATEOPTIONS_ERRORS = false)
 
 % read the configuration file(s)
-blueprint = aux_readConfigfiles(sys,params,options,configfile,listname);
+blueprint = aux_readConfigfiles(configfile,listname);
 
 
 % 1. set non-conditional defaults -----------------------------------------
 
 list = aux_setMissingDefaults(params,options,blueprint,sys,listname);
-
-% update configuration file
-if strcmp(listname,'params')
-    blueprint = aux_readConfigfiles(sys,list,options,configfile,listname);
-elseif strcmp(listname,'options')
-    blueprint = aux_readConfigfiles(sys,params,list,configfile,listname);
-end
 
 
 % 2. check irredundant and non-conditional parameters ---------------------
@@ -692,9 +716,9 @@ if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
     for i=1:length(configfile)
         if isa(sys,'hybridAutomaton')
             if strcmp(listname,'params')
-                [contDynlist,~] = eval([configfile{i} '(sys.location(cfgIdx(i)).contDynamics,params,options)']);
+                [contDynlist,~] = eval([configfile{i}]);
             elseif strcmp(listname,'options')
-                [~,contDynlist] = eval([configfile{i} '(sys.location(cfgIdx(i)).contDynamics,params,options)']);
+                [~,contDynlist] = eval([configfile{i}]);
             end
         elseif isa(sys,'parallelHybridAutomaton')
             cfgpHAcomp = find(cfgIdx(i)<=comps,1,'first');
@@ -703,11 +727,9 @@ if (isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')) ...
                 cfgpHAloc = cfgIdx(i);
             end
             if strcmp(listname,'params')
-                [contDynlist,~] = eval([configfile{i} ...
-                    '(sys.components(cfgpHAcomp).location(cfgpHAloc).contDynamics,params,options)']);
+                [contDynlist,~] = eval([configfile{i}]);
             elseif strcmp(listname,'options')
-                [~,contDynlist] = eval([configfile{i} ...
-                    '(sys.components(cfgpHAcomp).location(cfgpHAloc).contDynamics,params,options)']);
+                [~,contDynlist] = eval([configfile{i}]);
             end
         end
         % append new entries from contDynamics list

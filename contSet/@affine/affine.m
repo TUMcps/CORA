@@ -57,6 +57,7 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor(1:6,nargin);
 
         % 1. copy constructor: not allowed due to obj@taylm below
 %         if nargin == 1 && isa(varargin{1},'affine')
@@ -109,11 +110,6 @@ end
 
 function [int,name,opt_method,eps,tolerance] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin > 6
-        throw(CORAerror('CORA:tooManyInputArgs',6));
-    end
 
     % no input arguments
     if nargin == 0

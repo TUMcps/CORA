@@ -49,11 +49,8 @@ for dim = 2:5
     zonoRes_ = zonotope(pZres);
     
     % test for equality
-    Tol = 1e-12;
-    
-    if ~isequal(zonoRes,zonoRes_,Tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    tol = 1e-12;
+    assert(isequal(zonoRes,zonoRes_,tol),'',[],dim)
 end
 
 
@@ -102,9 +99,7 @@ for i = 1:3
 
     % check if the polynomial zonotope obtained by computing the quadratic map
     % encloses all randomly drawn and mapped points
-    if ~containsPointSet(pZres,points,[],30)
-        throw(CORAerror('CORA:testFailed'));
-    end  
+    assert(containsPointSet(pZres,points,[],30),'',[],i)
 end
 
 
@@ -139,11 +134,9 @@ for dim = 2:5
     zonoRes_ = zonotope(pZres);
     
     % test for equality
-    Tol = 1e-12;
+    tol = 1e-12;
     
-    if ~isequal(zonoRes,zonoRes_,Tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(isequal(zonoRes,zonoRes_,tol),dim)
 end
 
 
@@ -199,9 +192,7 @@ for i = 1:3
 
     % check if the polynomial zonotope obtained by computing the quadratic
     % map encloses all randomly drawn and mapped points
-    if ~containsPointSet(pZres,pointsRes,[],30)
-        throw(CORAerror('CORA:testFailed'));
-    end  
+    assertLoop(containsPointSet(pZres,pointsRes,[],30),i)
 end
 
 res = true;

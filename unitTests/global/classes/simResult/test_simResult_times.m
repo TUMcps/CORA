@@ -23,8 +23,6 @@ function res = test_simResult_times
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % init simResult object
 n = 3;
 N = 100;
@@ -37,20 +35,20 @@ simRes = simResult(x,t);
 % simple cases
 A = [2; 3; -1];
 simRes_out = A .* simRes;
-resvec(end+1) = isequal(simRes_out.x{1},x{1}.*A') ...
-    && isequal(simRes_out.x{2},x{2}.*A');
+assert(isequal(simRes_out.x{1},x{1}.*A') ...
+    && isequal(simRes_out.x{2},x{2}.*A'));
 
 A = 3;
 simRes_out = A .* simRes;
-resvec(end+1) = isequal(simRes_out.x{1},x{1}*A') ...
-    && isequal(simRes_out.x{2},x{2}*A');
+assert(isequal(simRes_out.x{1},x{1}*A') ...
+    && isequal(simRes_out.x{2},x{2}*A'));
 
 A = 3;
 simRes_out = simRes .* A;
-resvec(end+1) = isequal(simRes_out.x{1},x{1}*A') ...
-    && isequal(simRes_out.x{2},x{2}*A');
+assert(isequal(simRes_out.x{1},x{1}*A') ...
+    && isequal(simRes_out.x{2},x{2}*A'));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

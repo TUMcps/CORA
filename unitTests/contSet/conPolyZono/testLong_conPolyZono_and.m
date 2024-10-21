@@ -24,14 +24,19 @@ function res = testLong_conPolyZono_and
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% this test runs forever
 res = true; return
 splits = 4;
 
 % Random Tests --------------------------------------------------------
 
 % define set representations that are tested
-sets = {'conPolyZono','polyZonotope','zonotope','conZonotope', ...
-        'ellipsoid','capsule'};
+sets = {@conPolyZono.generateRandom,...
+        @polyZonotope.generateRandom, ...
+        @zonotope.generateRandom, ...
+        @conZonotope.generateRandom, ...
+        @ellipsoid.generateRandom, ...
+        @capsule.generateRandom};
 
 % loop over all test cases
 for i = 1:2
@@ -48,18 +53,16 @@ for i = 1:2
         for h = 1:3
         
             % generate random object of the current set representation
-            if strcmp(sets{j},'conPolyZono')
-                temp = conPolyZono.generateRandom('Dimension',2,'NrIndGenerators',0);
-            elseif strcmp(sets{j},'polyZonotope')
-                temp = polyZonotope.generateRandom('Dimension',2,'NrIndGenerators',0);
+            if j == 1 || j == 2  % conPolyZono, polyZonotope
+                S = sets{i}('Dimension',2,'NrIndGenerators',0);
             else
-                eval(['temp = ',sets{j},'.generateRandom(''Dimension'',2);']);
+                S = sets{i}('Dimension',2);
             end
             
-            cPZ2 = conPolyZono(temp);
+            cPZ2 = conPolyZono(S);
 
             % compute intersection
-            cPZ = cPZ1 & temp;
+            cPZ = cPZ1 & S;
 
             % get random points
             try
@@ -85,9 +88,7 @@ for i = 1:2
         
         % check if all points are inside the intersection of the
         % polygon enclosures
-        if ~contains(pgon,points)
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assert(contains(pgon,points))
     end
 end
 

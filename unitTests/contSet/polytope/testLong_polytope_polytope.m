@@ -42,9 +42,7 @@ for i=1:nrTests
     P = polytope(V);
 
     % vertices must be contained in polytope
-    if ~all(contains(P,V,'exact',1e-14))
-        res = false; return
-    end
+    assertLoop(all(contains(P,V,'exact',1e-14)),i)
 
     % sample vertices (likely with redundancies)
     A = rand(n,n);
@@ -56,9 +54,7 @@ for i=1:nrTests
     P = polytope(V);
 
     % vertices must be contained in polytope
-    if ~all(contains(P,V,'exact',1e-14))
-        res = false; return
-    end
+    assertLoop(all(contains(P,V,'exact',1e-14)),i)
 
 end
 

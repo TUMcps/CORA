@@ -1,15 +1,18 @@
-function res = or(I,S)
-% or - computes the union of an interval and a set
+function S_out = or(I,S,varargin)
+% or - computes the union of an interval and a set or point
 %
 % Syntax:
-%    res = or(I,S)
+%    S_out = I | S
+%    S_out = or(I,S)
+%    S_out = or(I,S,mode)
 %
 % Inputs:
 %    I - interval object
 %    S - contSet object
+%    mode - 'exact', 'outer', 'inner'
 %
 % Outputs:
-%    res - union of the two sets
+%    S_out - union of the two sets
 %
 % Example: 
 %    I1 = interval([-2;-2],[-1;-1]);
@@ -34,38 +37,42 @@ function res = or(I,S)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if ~representsa_(I,'emptySet',eps) && ...
-        ((isnumeric(S) && isempty(S)) || (~isnumeric(S) && representsa_(S,'emptySet',eps)))
-    res = I; return;
-end
-    
-% determine the interval object
-[I,S] = findClassArg(I,S,'interval');
+% default values
+mode = setDefaultValues({'outer'},varargin);
 
-% different cases depending on the class of the summand
+% ensure that numeric is second input argument
+[I,S] = reorderNumeric(I,S);
+
+% check dimensions
+equalDimCheck(I,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < I.precedence
+    S_out = or(S,I,varargin{:});
+    return
+end
+
+% empty set case: union is the other set
+if representsa_(S,'emptySet',eps)
+    S_out = I;
+    return
+elseif representsa_(I,'emptySet',eps)
+    S_out = S;
+    return
+end
+
+% interval-interval case
 if isa(S,'interval')
-    
-    if dim(I) ~= dim(S)
-        throw(CORAerror('CORA:dimensionMismatch',I,S));
-    end
-
-    res = interval(min([I.inf,S.inf],[],2), ...
-                   max([I.sup,S.sup],[],2));
-
-elseif isnumeric(S)
-
-    res = interval(min([I.inf,S],[],2), ...
-                   max([I.sup,S],[],2));
-
-elseif isa(S,'zonotope') || isa(S,'conZonotope') || ...
-       isa(S,'zonoBundle') || isa(S,'polyZonotope') || ...
-       isa(S,'polytope') || isa(S,'conPolyZono')
-
-    res = S | I;
-
-else
-    % throw error for given arguments
-    throw(CORAerror('CORA:noops',I,S));
+    S_out = interval(min(I.inf,S.inf),max(I.sup,S.sup));
+    return
 end
+
+% numeric
+if isnumeric(S)
+    S_out = interval(min(I.inf,S),max(I.sup,S));
+    return
+end
+
+throw(CORAerror('CORA:noops',I,S));
 
 % ------------------------------ END OF CODE ------------------------------

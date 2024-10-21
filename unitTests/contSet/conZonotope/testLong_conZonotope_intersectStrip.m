@@ -26,6 +26,7 @@ function res = testLong_conZonotope_intersectStrip
 
 % check whether the over-approximation of intersectStrip encloses the
 % exact result
+res = true;
 
 %% test methods handling multiple strips at a time
 % specify strips
@@ -74,20 +75,16 @@ P_exact_single = polytope(cZ) & P_single;
 % specify tolerance
 tol = 1e-6;
 Z_tol = zonotope([zeros(2,1),tol*eye(2)]);
-% init resVec
-resVec = zeros(length(cZ_over)+length(cZ_over_single),1);
+
 % case for multiple strips
 for i = 1:length(cZ_over)
-    resVec(i) = contains(polytope(cZ_over{i} + Z_tol),P_exact);
+    assert(contains(polytope(cZ_over{i} + Z_tol),P_exact,'exact',tol));
 end
 % case for single strip
 for i = 1:length(cZ_over_single)
-    resVec(i+length(cZ_over)) = ...
-        contains(polytope(cZ_over_single{i} + Z_tol),P_exact_single,'exact',tol);
+    assert(contains(polytope(cZ_over_single{i} + Z_tol),P_exact_single,'exact',tol));
 end
 
-% all methods over-aproximative?
-res = all(resVec);
 
 % figure; hold on 
 % plot(cZ,[1 2],'r-+');

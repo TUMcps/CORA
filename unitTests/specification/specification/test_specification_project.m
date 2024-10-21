@@ -54,20 +54,20 @@ funHan = @(x) x(1)^2 - x(2)*x(3);
 spec = specification(set,'unsafeSet');
 spec_ = project(spec,projDim);
 % compare set
-res = isequal(spec_.set,set_);
+assert(isequal(spec_.set,set_));
 
 % one unsafe set
 spec = specification(set,'safeSet');
 spec_ = project(spec,projDim);
 % compare set
-res(end+1,1) = isequal(spec_.set,set_);
+assert(isequal(spec_.set,set_));
 
 % list of unsafe sets
 spec = specification(list);
 spec_ = project(spec,projDim);
 % check all sets
 for i=1:length(spec_)
-    res(end+1,1) = isequal(spec_(i).set,list_{i});
+    assert(isequal(spec_(i).set,list_{i}));
 end
 
 % list of invariants
@@ -76,8 +76,8 @@ spec_ = project(spec,projDim);
 % check all sets
 for i=1:length(spec_)
     % type has to stay the same, check projection
-    res(end+1,1) = strcmp(spec_(i).type,'invariant') ...
-        && isequal(spec_(i).set,list_{i});
+    assert(strcmp(spec_(i).type,'invariant'))
+    assert(isequal(spec_(i).set,list_{i}));
 end
 
 % list of sets with time and location
@@ -85,29 +85,24 @@ spec = specification(list,'safeSet',time,location_HA);
 spec_ = project(spec,projDim);
 for i=1:length(spec_)
     % type, time, and location has to stay the same, check projection
-    res(end+1,1) = strcmp(spec_(i).type,'safeSet') ...
-        && isequal(spec_(i).time,spec(i).time) ...
-        && all(spec_(i).location == spec(i).location) ...
-        && isequal(spec_(i).set,list_{i});
+    assert(strcmp(spec_(i).type,'safeSet'))
+    assert(isequal(spec_(i).time,spec(i).time))
+    assert(all(spec_(i).location == spec(i).location))
+    assert(isequal(spec_(i).set,list_{i}));
 end
-
-% combine results
-res = all(res);
 
 % stl formula
 spec = specification(eq,'logic');
-try
-    % 'logic' not supported
-    spec_ = project(spec,projDim);
-    res = false; return
-end
+% 'logic' not supported
+assertThrowsAs(@project,'CORA:notSupported',spec,projDim);
 
 % function handle
 spec = specification(funHan,'custom');
-try
-    % 'custom' not supported
-    spec_ = project(spec,projDim);
-    res = false; return
-end
+% 'custom' not supported
+assertThrowsAs(@project,'CORA:notSupported',spec,projDim);
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

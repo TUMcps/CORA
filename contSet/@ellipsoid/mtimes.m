@@ -1,13 +1,14 @@
-function E = mtimes(A,E)
-% mtimes - Overloaded '*' operator for the multiplication of a matrix with
-%    an ellipsoid
+function E = mtimes(factor1,factor2)
+% mtimes - Overloaded '*' operator for the multiplication of a matrix or
+%    scalar with an ellipsoid
 %
 % Syntax:
-%    E = mtimes(A,E)
+%    E = factor1 * factor2
+%    E = mtimes(factor1,factor2)
 %
 % Inputs:
-%    A - numerical matrix
-%    E - ellipsoid object 
+%    factor1 - ellipsoid object, numeric matrix/scalar
+%    factor2 - ellipsoid object, numeric scalar
 %
 % Outputs:
 %    E - ellipsoid object
@@ -31,43 +32,47 @@ function E = mtimes(A,E)
 % Last update:   15-October-2019
 %                07-June-2022 (avoid construction of new ellipsoid object)
 %                04-July-2022 (VG, input checks, allow E to be class array)
+%                05-October-2024 (MW, remove class array)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% if A is scalar, transform to appropriate diagonal matrix
-if isnumeric(A) && numel(A)==1
-    A = A*eye(dim(E(1)));
-end
+try
 
-% check input arguments
-inputArgsCheck({{A,'att','numeric',{'ncols',dim(E(1))}};
-                {E,'att','ellipsoid'}});
-
-% empty set: result is empty set
-if representsa_(E,'emptySet',eps)
-    return
-end
-
-% make sure all ellipsoids are of same dimension
-if ~all(dim(E)==dim(E(1)))
-    throw(CORAerror('CORA:wrongValue','second',...
-                        'All ellipsoids need same dimension.'));
-end
-
-% make sure A is a matrix
-if ~ismatrix(A)
-    throw(CORAerror('CORA:wrongValue','first','"A" needs to be a matrix.'));
-end
-
-for i=1:numel(E)
-    % compute auxiliary value for new shape matrix
-    M = A*E(i).Q*A';
-    % make sure it is symmetric
-    M = 1/2*(M+M');
+    % matrix/scalar * ellipsoid
+    if isnumeric(factor1)
+        % -> factor2 must be an ellipsoid object
+        E = factor2;
+        % compute auxiliary value for new shape matrix
+        M = factor1*E.Q*factor1';
+        % make sure it is symmetric
+        M = 1/2*(M+M');
+        
+        E.Q = M;
+        E.q = factor1*E.q;
+        return
+    end
     
-    E(i).Q = M;
-    E(i).q = A*E(i).q;
+    % ellipsoid * scalar
+    if isnumeric(factor2)
+        % -> factor1 must be an ellipsoid object
+        E = factor1;
+        % compute auxiliary value for new shape matrix
+        M = factor2^2*E.Q;
+        % make sure it is symmetric
+        M = 1/2*(M+M');
+        
+        E.Q = M;
+        E.q = factor2*E.q;
+        return
+    end
+
+catch ME
+    % check whether different dimension of ambient space
+    equalDimCheck(factor1,factor2);
+    rethrow(ME);
 end
+
+throw(CORAerror('CORA:noops',factor1,factor2));
 
 % ------------------------------ END OF CODE ------------------------------

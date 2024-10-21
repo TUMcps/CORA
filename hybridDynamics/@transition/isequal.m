@@ -16,12 +16,11 @@ function res = isequal(trans1,trans2,varargin)
 %
 % Example: 
 %    % guard set
-%    c = [-1;0]; d = 0; C = [0,1]; D = 0;
-%    guard = conHyperplane(c,d,C,D);
+%    guard = polytope([0 1],0,[-1 0],0);
 %
 %    % reset function
-%    reset1 = struct('A',[1,0;0,-0.75],'c',[0;0]);
-%    reset2 = struct('A',[1,0;0,-0.75],'c',[1;0]);
+%    reset1 = linearReset([1,0;0,-0.75],[1;0],[0;0]);
+%    reset2 = linearReset([1,0;0,-0.75],[1;0],[1;0]);
 %
 %    % transition
 %    trans1 = transition(guard,reset1,1);
@@ -43,10 +42,7 @@ function res = isequal(trans1,trans2,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% too many input arguments
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(2,3);
 
 % default values
 tol = setDefaultValues({eps},varargin);
@@ -91,61 +87,10 @@ if ~strcmp(trans1.syncLabel,trans2.syncLabel)
     res = false; return
 end
 
-% reset function (conversion from nonlinear to linear not checked)
-
-% check fields (either both linear or both nonlinear)
-reset1fields = fields(trans1.reset);
-reset2fields = fields(trans2.reset);
-if ~all(ismember(reset1fields,reset2fields)) || ...
-        ~all(ismember(reset2fields,reset1fields))
+% reset function: can be set to [] by transition constructor, hence isempty
+if xor(isempty(trans1.reset),isempty(trans2.reset)) ...
+        || (~isempty(trans1.reset) && ~isequal(trans1.reset,trans2.reset,tol))
     res = false; return
-end
-
-% established that both reset functions have the same fields
-for i=1:length(reset1fields)
-    fieldname = reset1fields{i};
-    switch fieldname
-        case 'A'
-            % state mapping
-            if any(size(trans1.reset.A) ~= size(trans2.reset.A)) ...
-                    || ~all(all(withinTol(trans1.reset.A,trans2.reset.A,tol)))
-                res = false; return
-            end
-        case 'B'
-            % input mapping
-            if any(size(trans1.reset.B) ~= size(trans2.reset.B)) ...
-                    || ~all(all(withinTol(trans1.reset.B,trans2.reset.B,tol)))
-                res = false; return
-            end
-        case 'c'
-            % constant offset
-            if any(size(trans1.reset.c) ~= size(trans2.reset.c)) ...
-                    || ~all(all(withinTol(trans1.reset.c,trans2.reset.c,tol)))
-                res = false; return
-            end
-        case 'f'
-            % function handle for nonlinear reset function: instantiate
-            % nonlinearSys object for comparison
-            if ~isequal(nonlinearSys(@(x,u) trans1.reset.f([x;u]),...
-                    trans1.reset.stateDim,trans1.reset.inputDim),...
-                    nonlinearSys(@(x,u) trans2.reset.f([x;u]),...
-                    trans2.reset.stateDim,trans2.reset.inputDim))
-                res = false; return
-            end
-        case 'stateDim'
-            % dimension of state
-            if trans1.reset.stateDim ~= trans2.reset.stateDim
-                res = false; return
-            end
-        case 'inputDim'
-            if trans1.reset.inputDim ~= trans2.reset.inputDim
-                res = false; return
-            end
-        case 'hasInput'
-            if trans1.reset.hasInput ~= trans2.reset.hasInput
-                res = false; return
-            end
-    end
 end
 
 % guard set

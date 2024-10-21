@@ -44,10 +44,10 @@ steps = round((params.tFinal-params.tStart)/options.timeStep);
 R = reach(sys,params,options);
 
 % check if times are correct
-if ~withinTol(R.timePoint.time{1},params.tStart) ...
-        || length(R.timePoint.time) ~= steps + 1 ...
-        || ~withinTol(R.timePoint.time{end},params.tFinal)
-    res = false;
+assert(withinTol(R.timePoint.time{1},params.tStart))
+assert(length(R.timePoint.time) == steps + 1)
+assert(withinTol(R.timePoint.time{end},params.tFinal))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -92,7 +92,7 @@ linDyn = linearSys('KrylovTest',A,1); %initialize quadratic dynamics
 %--------------------------------------------------------------------------
 
 %init res
-res = zeros(length(example),1);
+assert(zeros(length(example),1));
 for i = 1:length(example)
     % set Krylov error
     options.krylovError = example{i}.error;
@@ -105,7 +105,7 @@ for i = 1:length(example)
     KrylovOrder = length(V(1,:));
     
     % Is Krylov order larger or equal?
-    res(i) = (KrylovOrder >= example{i}.order);
+    assert(KrylovOrder >= example{i}.order);
 end
 
 % revoke access to private function "initReach_Krylov"
@@ -114,6 +114,6 @@ rmpath(genpath(path));
 addpath(genpath(path));
 
 % All orders larger or equal?
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

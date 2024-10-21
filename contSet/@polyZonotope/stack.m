@@ -38,15 +38,15 @@ end
 for i=1:2:nargin
     % extract and check inputs (if not empty)
     inp1 = varargin{i};
-    if ~isempty(inp1)
+    if ~representsa(inp1,'emptySet')
         inputArgsCheck({{inp1,'att','polyZonotope'}});
     end
     inp2 = varargin{i+1};
-    if ~isempty(inp2)
+    if ~representsa(inp2,'emptySet')
         inputArgsCheck({{inp2,'att','polyZonotope'}});
     end
 
-    if ~isempty(inp1) || ~isempty(inp2)
+    if ~representsa(inp1,'emptySet') || ~representsa(inp2,'emptySet')
         % recursively build up pZ
         pZ = aux_stack2(pZ,aux_stack2(inp1,inp2));
     end

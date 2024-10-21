@@ -46,9 +46,7 @@ for i=1:nrTests
     pr = 0.8;
     randPoint(I,nrRandPoints,'gaussian',pr);
     
-    if ~contains(I,p)
-        res = false; break;
-    end
+    assertLoop(contains(I,p),i)
     
 end
 

@@ -24,11 +24,8 @@ function res = test_linearSys_generateRandom
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% init result
-res = true(0);
-
 % no input arguments
-linSys = linearSys.generateRandom();
+linsys = linearSys.generateRandom();
 
 % input values
 n = 6;
@@ -38,50 +35,50 @@ realInt = interval(-10,-4);
 imagInt = interval(-2,3);
 
 % state dimension given
-linSys = linearSys.generateRandom('StateDimension',n);
-res(end+1,1) = linSys.dim == n;
+linsys = linearSys.generateRandom('StateDimension',n);
+assert(linsys.nrOfStates == n);
 
 % input dimension given
-linSys = linearSys.generateRandom('InputDimension',nrInputs);
-res(end+1,1) = linSys.nrOfInputs == nrInputs;
+linsys = linearSys.generateRandom('InputDimension',nrInputs);
+assert(linsys.nrOfInputs == nrInputs);
 
 % output dimension given
-linSys = linearSys.generateRandom('OutputDimension',nrOutputs);
-res(end+1,1) = linSys.nrOfOutputs == nrOutputs;
+linsys = linearSys.generateRandom('OutputDimension',nrOutputs);
+assert(linsys.nrOfOutputs == nrOutputs);
 
 % all dimensions given
-linSys = linearSys.generateRandom('StateDimension',n,...
+linsys = linearSys.generateRandom('StateDimension',n,...
     'InputDimension',nrInputs,'OutputDimension',nrOutputs);
-res(end+1,1) = linSys.dim == n && linSys.nrOfInputs == nrInputs ...
-    && linSys.nrOfOutputs == nrOutputs;
+assert(linsys.nrOfStates == n && linsys.nrOfInputs == nrInputs ...
+    && linsys.nrOfOutputs == nrOutputs);
 
 % real interval given
-linSys = linearSys.generateRandom('realInterval',realInt);
-ev = eigs(linSys.A);
-res(end+1,1) = all(contains(realInt,real(ev)'));
+linsys = linearSys.generateRandom('realInterval',realInt);
+ev = eigs(linsys.A);
+assert(all(contains(realInt,real(ev)')));
 
 % imaginary interval given
-linSys = linearSys.generateRandom('ImaginaryInterval',imagInt);
-ev = eigs(linSys.A);
-res(end+1,1) = all(contains(imagInt,imag(ev)'));
+linsys = linearSys.generateRandom('ImaginaryInterval',imagInt);
+ev = eigs(linsys.A);
+assert(all(contains(imagInt,imag(ev)')));
 
 % real and imaginary interval given
-linSys = linearSys.generateRandom('realInterval',realInt,...
+linsys = linearSys.generateRandom('realInterval',realInt,...
     'ImaginaryInterval',imagInt);
-ev = eigs(linSys.A);
-res(end+1,1) = all(contains(realInt,real(ev)')) && all(contains(imagInt,imag(ev)'));
+ev = eigs(linsys.A);
+assert(all(contains(realInt,real(ev)')) && all(contains(imagInt,imag(ev)')));
 
 % all properties given
-linSys = linearSys.generateRandom('StateDimension',n,...
+linsys = linearSys.generateRandom('StateDimension',n,...
     'InputDimension',nrInputs,'OutputDimension',nrOutputs,...
     'realInterval',realInt,'ImaginaryInterval',imagInt);
-ev = eigs(linSys.A);
-res(end+1,1) = linSys.dim == n && linSys.nrOfInputs == nrInputs ...
-    && linSys.nrOfOutputs == nrOutputs && all(contains(realInt,real(ev)')) ...
-    && all(contains(imagInt,imag(ev)'));
+ev = eigs(linsys.A);
+assert(linsys.nrOfStates == n && linsys.nrOfInputs == nrInputs ...
+    && linsys.nrOfOutputs == nrOutputs && all(contains(realInt,real(ev)')) ...
+    && all(contains(imagInt,imag(ev)')));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

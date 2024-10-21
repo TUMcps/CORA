@@ -45,7 +45,7 @@ figure; hold on;
 useCORAcolors("CORA:contDynamics")
 plot(R)
 updateColorIndex(0)
-plot(R,1:2,'Set','tp','FaceColor','next','EdgeColor','k','Unify',false)
+plot(R,1:2,'Set','tp','FaceColor',nextcolor,'EdgeColor','k','Unify',false)
 plot(R(1).R0)
 
 % title('$\mathcal{S}$ and center','Interpreter','latex');

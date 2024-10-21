@@ -1,17 +1,16 @@
-function han = getfcn(obj,options)
+function han = getfcn(nlnsysDA,params)
 % getfcn - returns the function handle of the continuous function specified
 %    by the DAE system object
 %
 % Syntax:
-%    han = getfcn(obj,options)
+%    han = getfcn(nlnsysDA,params)
 %
 % Inputs:
-%    obj - nonlinDASys object
+%    nlnsysDA - nonlinDASys object
+%    params - model parameters
 %
 % Outputs:
 %    han - function handle
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,14 +27,14 @@ function han = getfcn(obj,options)
 
     function dxdt = f(t, z)
         %obtain x and y
-        x = z(1:obj.dim);
-        y = z((obj.dim+1):(obj.dim+obj.nrOfConstraints));
+        x = z(1:nlnsysDA.nrOfStates);
+        y = z((nlnsysDA.nrOfStates+1):(nlnsysDA.nrOfStates+nlnsysDA.nrOfConstraints));
         
         %return derivatives
-        dxdt(1:obj.dim,1) = obj.dynFile(x, y, options.u);
-        dxdt((obj.dim+1):(obj.dim+obj.nrOfConstraints),1) = obj.conFile(x, y, options.u);
+        dxdt(1:nlnsysDA.nrOfStates,1) = nlnsysDA.dynFile(x, y, params.u);
+        dxdt((nlnsysDA.nrOfStates+1):(nlnsysDA.nrOfStates+nlnsysDA.nrOfConstraints),1) = nlnsysDA.conFile(x, y, params.u);
     end
-
+    
     han = @f;
 
 end

@@ -14,10 +14,10 @@ function p = randPoint_(Z,N,type,varargin)
 %           'uniform:hitAndRun', 'uniform:billiardWalk')
 %
 % Outputs:
-%    p - random point in R^n
+%    p - random point (cloud) in R^n
 %
 % Example: 
-%    Z = zonotope([1;0],rand(2,5));
+%    Z = zonotope([1;0],[1 0 1; -1 2 1]);
 %    p = randPoint(Z);
 % 
 %    plot(Z); hold on;
@@ -25,16 +25,16 @@ function p = randPoint_(Z,N,type,varargin)
 %
 % References:
 %    [1] Robert L. Smith: Efficient Monte Carlo Procedures for Generating
-%    Points Uniformly Distributed Over Bounded Regions, Operations Research
-%    1984
+%        Points Uniformly Distributed Over Bounded Regions, Operations
+%        Research, 1984.
 %    [2] Boris T. Polyak, E. N. Gryazina: Billiard Walk - a New Sampling
-%    Algorithm for Control and Optimization, IFAC, 2014
+%        Algorithm for Control and Optimization, IFAC, 2014
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: contSet/randPoint, interval/randPoint
+% See also: contSet/randPoint, interval/randPoint_
 
 % Authors:       Matthias Althoff, Mark Wetzlinger, Adrian Kulmburg, Severin Prenitzer
 % Written:       23-September-2008 
@@ -43,113 +43,50 @@ function p = randPoint_(Z,N,type,varargin)
 %                22-May-2023 (AK, implemented uniform sampling)
 %                20-January-2024 (TL, added radius method)
 %                03-March-2024 (TL, made boundary method accessible)
-% Last revision: ---
+% Last revision: 05-October-2024 (MW, refactor)
 
 % ------------------------------ BEGIN CODE -------------------------------
-
-% get object properties
-c = Z.c; G = Z.G; n = dim(Z);
         
-% no generators: zonotope is just a point
-if isempty(G) || ~any(any(G))
-    % replicate center N times
-    p = repmat(c,1,N); return
+% zonotope is just a point -> replicate center N times
+if representsa_(Z,'point',eps)
+    p = repmat(Z.c,1,N);
+    return
 end
         
 % generate different types of random points
-if strcmp(type,'standard')
-    % degeneracy or all-zero generators do not have any effect here
-    
-    % take random values for factors
-    factors = -1 + 2*rand(size(G,2),N);
-    % sample points
-    p = c + G * factors;
-    
-% sampling of extreme random points
-elseif strcmp(type,'extreme')
-    
-    % 1D case
-    if n == 1
-        % flush all generators into one
-        G = sum(abs(G),2);
-        % random signs
-        s = sign(randn(1,N));
-        % instantiate points
-        p = c + s*G;
-        return
-    end
-    
-    % remove redundant generators
-    Z = compact_(Z,'zeros',eps);
-    Z = compact_(Z,'all',1e-10);
-    
-    % consider degenerate case
-    if rank(G) < n
-        Z = Z + (-c);
-        p = c * zeros(1,N);
-        [S,V,~] = svd([-G,G]);
-        d = diag(V);
-        ind = find(d > eps);
-        if isempty(ind)
-            return;
+switch type
+    case 'standard'
+        p = aux_randPoint_standard(Z,N);
+
+    case 'extreme'
+        % sampling of extreme random points
+        p = aux_randPoint_extreme(Z,N);
+
+    case 'uniform'
+        if representsa_(Z,'parallelotope',eps)
+            % for parallelotopes, there is a significantly easier solution
+            p = aux_randPointParallelotopeUniform(Z,N);
+        else
+            % Default algorithm for the uniform distribution is the
+            % billiard walk, since it gives more accurate results, despite
+            % a slightly longer computation time
+            p = aux_randPointBilliard(Z,N);
         end
-        Z = project(S'*Z,ind);
-        temp = randPoint(Z,N,type);
-        p(ind,:) = temp;
-        p = c + S*p;
-        return;
-    end
-    
-    % compute approximate number of zonotope vertices
-    q = aux_numberZonoVertices(Z);
-    
-    if ischar(N) && strcmp(N,'all')
-        % return all extreme points
-        p = vertices(Z);
-        
-    elseif 10*N < q
-        % generate random vertices
-        p = aux_getRandomVertices(Z,N);
-        
-    elseif N < q
-        % select random vertices
-        V = vertices(Z);
-        ind = randperm(size(V,2));
-        V = V(:,ind);
-        p = V(:,1:N);
-        
-    else
-        % compute vertices and additional points on the boundary
-        V = vertices(Z);
-        N_ = N - size(V,2);
-        V_ = aux_getRandomBoundaryPoints(Z,N_);
-        p = [V,V_];
-    end
 
-elseif strcmp(type,'uniform')
-    if representsa_(Z,'parallelotope',eps)
-        % If Z is a parallelotope, we have a significantly easier solution
-        p = aux_randPointParallelotopeUniform(Z, N);
-    else
-        % Default algorithm for the uniform distribution is the billiard walk,
-        % since it gives more accurate results, despite a slightly longer
-        % computation time
-        p = aux_randPointBilliard(Z, N);
-    end
-elseif strcmp(type,'uniform:billiardWalk')
-    p = aux_randPointBilliard(Z, N);
-elseif strcmp(type,'uniform:hitAndRun')
-    p = aux_randPointHitAndRun(Z, N);
+    case 'uniform:billiardWalk'
+        p = aux_randPointBilliard(Z,N);
 
-elseif strcmp(type,'radius')
-    p = aux_randPointRadius(Z,N);
+    case 'uniform:hitAndRun'
+        p = aux_randPointHitAndRun(Z,N);
 
-elseif strcmp(type,'boundary')
-    p = aux_getRandomBoundaryPoints(Z,N);
+    case 'radius'
+        p = aux_randPointRadius(Z,N);
 
-else
-    throw(CORAerror('CORA:noSpecificAlg',type,Z));
-    
+    case 'boundary'
+        p = aux_getRandomBoundaryPoints(Z,N);
+
+    otherwise
+        throw(CORAerror('CORA:noSpecificAlg',type,Z));
 end
 
 end
@@ -157,26 +94,100 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
+function p = aux_randPoint_standard(Z,N)
+% degeneracy or all-zero generators do not have any effect here
+    
+    % take random values for factors
+    factors = -1 + 2*rand(size(Z.G,2),N);
+    % sample points
+    p = Z.c + Z.G * factors;
+
+end
+
+function p = aux_randPoint_extreme(Z,N)
+
+n = dim(Z);
+c = Z.c; G = Z.G;
+
+% 1D case
+if n == 1
+    % flush all generators into one
+    G = sum(abs(G),2);
+    % random signs
+    s = sign(randn(1,N));
+    % instantiate points
+    p = c + s*G;
+    return
+end
+
+% remove redundant generators
+Z = compact_(Z,'all',1e-10);
+
+% consider degenerate case
+if rank(G) < n
+    Z = Z + (-c);
+    p = c * zeros(1,N);
+    [S,V,~] = svd([-G,G]);
+    d = diag(V);
+    ind = find(d > eps);
+    if isempty(ind)
+        return;
+    end
+    Z = project(S'*Z,ind);
+    p_proj = randPoint(Z,N,'extreme');
+    p(ind,:) = p_proj;
+    p = c + S*p;
+    return;
+end
+
+% compute approximate number of zonotope vertices
+q = aux_numberZonoVertices(Z);
+
+if ischar(N) && strcmp(N,'all')
+    % return all extreme points
+    p = vertices(Z);
+    
+elseif 10*N < q
+    % generate random vertices
+    p = aux_getRandomVertices(Z,N);
+    
+elseif N < q
+    % select random vertices
+    V = vertices(Z);
+    ind = randperm(size(V,2));
+    V = V(:,ind);
+    p = V(:,1:N);
+    
+else
+    % compute vertices and additional points on the boundary
+    V = vertices(Z);
+    N_ = N - size(V,2);
+    V_ = aux_getRandomBoundaryPoints(Z,N_);
+    p = [V,V_];
+end
+
+end
+
 function V = aux_getRandomVertices(Z,N)
 % generate random vertices
 
-    n = dim(Z); m = size(Z.G,2);
-    V = zeros(m,N); cnt = 1; G = Z.G;
+    n = dim(Z); nrGen = size(Z.G,2);
+    V = zeros(nrGen,N); cnt = 1;
  
     % loop until the desired number of vertices is achieved
     while cnt <= N
         
         % generate random zonotope face
-        temp = randperm(m);
-        ind = temp(1:n-1);
-        Q = G(:,ind);
+        randOrder = randperm(nrGen);
+        ind = randOrder(1:n-1);
+        Q = Z.G(:,ind);
         c = ndimCross(Q);
-        v = sign(c'*G)';
+        v = sign(c'*Z.G)';
         
         % generate random vertex on the zonotope face
         while true
            v_ = v;
-           v_(ind) = sign((-1 + 2*rand(n-1,1)));
+           v_(ind) = sign(-1 + 2*rand(n-1,1));
            if ~ismember(v_',V','rows')
               V(:,cnt) = v_;
               cnt = cnt + 1;
@@ -186,50 +197,48 @@ function V = aux_getRandomVertices(Z,N)
     end
     
     % compute vertices
-    V = Z.c + G*V;
+    V = Z.c + Z.G*V;
 end
 
 function V = aux_getRandomBoundaryPoints(Z,N)
 % generate random points on the zonotope vertices
 
-    G = Z.G;
-    n = dim(Z); m = size(G,2);
-    V = zeros(m,N);
+    n = dim(Z); nrGen = size(Z.G,2);
+    V = zeros(nrGen,N);
  
     % loop until the desired number of vertices is achieved
     for i = 1:N
         
         % generate random zonotope face
-        temp = randperm(m);
-        ind = temp(1:n-1);
-        Q = G(:,ind);
+        randOrder = randperm(nrGen);
+        ind = randOrder(1:n-1);
+        Q = Z.G(:,ind);
         c = ndimCross(Q);
-        r = rand();
-        if r > 0.5
+        if rand() > 0.5
            c = -c; 
         end
-        V(:,i) = sign(c'*G);
+        V(:,i) = sign(c'*Z.G);
         
         % generate random point on the zonotope face
         V(ind,i) = -1 + 2*rand(n-1,1);
     end
     
     % compute vertices
-    V = Z.c + G*V;
+    V = Z.c + Z.G*V;
 end
 
 function q = aux_numberZonoVertices(Z)
 % compute the number of zonotope vertices
 
-    n = dim(Z); m = size(Z.G,2);
+    n = dim(Z); nrGen = size(Z.G,2);
 
-    if m == 0
+    if nrGen == 0
         % only center
         q = 1;
         return;
     end
 
-    D = zeros(n,m);
+    D = zeros(n,nrGen);
     D(1,:) = 2*ones(1,size(D,2));
     D(:,1) = 2*ones(size(D,1),1);
 
@@ -246,7 +255,6 @@ function p = aux_randPointHitAndRun(Z,N)
     % m - number of generators, p0 - start point, p - return matrix
     
     c = Z.c;
-    
     Z = Z - c;
     
     % We need to check whether the zonotope Z is degenerate; the algorithm
@@ -318,7 +326,7 @@ end
 
 function p = aux_randPointBilliard(Z,N) 
 
-% m - number of generators, p0 - start point, tau - variable 
+    % m - number of generators, p0 - start point, tau - variable 
     %     influencing trajectory length, R0 - maximum reflection number, 
     %     p - return matrix
     c = Z.c;
@@ -352,11 +360,7 @@ function p = aux_randPointBilliard(Z,N)
     tau = norm(Z,2,'ub');
     R0 = 10 * dim(Z);
     
-    p = zeros(n,N);
-
-    % create option to suppress command line output of linprog
-    suppressPrint = optimoptions('linprog', 'Display', 'off');
-    
+    p = zeros(n,N);    
     
     % sample N points
     for i = 1:N
@@ -459,11 +463,11 @@ end
 
 function p = aux_randPointRadius(Z,N)
 
-% sample random points on boundary to obtain radii
-radii = aux_getRandomBoundaryPoints(Z,N) - Z.c;
-
-% sample semi-uniformly within 'sphere'
-p = Z.c + nthroot(rand(1,N),dim(Z)).*radii;
+    % sample random points on boundary to obtain radii
+    radii = aux_getRandomBoundaryPoints(Z,N) - Z.c;
+    
+    % sample semi-uniformly within 'sphere'
+    p = Z.c + nthroot(rand(1,N),dim(Z)).*radii;
 
 end
 

@@ -22,7 +22,10 @@ function res = test_checks_enabled
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
-res = CHECKS_ENABLED;
+assert(CHECKS_ENABLED);
 
 % ------------------------------ END OF CODE ------------------------------

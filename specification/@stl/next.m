@@ -23,7 +23,7 @@ function res = next(obj,time)
 
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   07-February-2024 (FL, replace from and to by interval)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -40,8 +40,7 @@ function res = next(obj,time)
     res.type = 'next';
     res.lhs = obj;
     res.rhs = [];
-    res.from = time;
-    res.to = [];
+    res.interval = stlInterval(time);
     res.id = [];
     res.temporal = true;
 end

@@ -28,6 +28,9 @@ function res = testMosek_linearSysDT_observe_06_Hinf_G()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 %% enable access to private function "observe_gain_Hinf"
@@ -68,7 +71,7 @@ for iSet = 1:timeSteps
     % check if simulation is enclosed
     res_sim = contains(IH,simRes.x{1}(iSet,:)');
     % combine results
-    resPartial(iSet) = res_cont && res_sim;
+    assert(res_cont && res_sim);
 end
 % Are all sets matching?
 res = all(resPartial);

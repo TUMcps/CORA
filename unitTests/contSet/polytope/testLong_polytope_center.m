@@ -44,9 +44,7 @@ for i = 1:nrTests
     c = center(P);
 
     %check if center is contained in polytope
-    if ~contains(P,c)
-        res = false; return
-    end
+    assertLoop(contains(P,c),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

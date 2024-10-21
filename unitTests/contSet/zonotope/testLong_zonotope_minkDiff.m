@@ -23,7 +23,6 @@ function res = testLong_zonotope_minkDiff
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
 tol = 1e-10;
 
 % quick test for all methods for syntax errors ----------------------------
@@ -45,11 +44,8 @@ for i=1:length(methods)
         % minkDiff
         diff_comp = minkDiff(minuend,subtrahend,methods{i});
 
-        % should not have failed
-        resvec(end+1) = true;
-
     catch ME
-        resvec(end+1) = false;
+        assertLoop(false,ME.message,[],i);
     end
 end
 
@@ -68,10 +64,8 @@ for i=1:10
     diff_comp = minkDiff(minuend,subtrahend,method);
 
     % diff + sub = min => min - sub = diff
-    resvec(end+1) = isequal(difference,diff_comp,tol);
-    if ~resvec(end)
-        keyboard
-    end
+    assert(isequal(difference,diff_comp,tol));
+
 end
 
 % test aligned
@@ -86,7 +80,7 @@ for i=1:10
 
     % min - sub = diff => diff + sub = min
     minuend_restored = zonotope(difference.c+subtrahend.c, difference.G+subtrahend.G);
-    resvec(end+1) = isequal(minuend_restored,minuend,tol);
+    assert(isequal(minuend_restored,minuend,tol));
 end
 
 % test error for exact
@@ -94,35 +88,21 @@ ns = [3,5,10];
 for n=ns
     minuend = zonotope.generateRandom('Dimension',n,'NrGenerators',2*n);
     subtrahend = zonotope.generateRandom('Dimension',n,'NrGenerators',2*n);
-    try
-        % should fail
-        difference = minkDiff(minuend,subtrahend,method);
-        resvec(end+1) = false;
-    catch
-        resvec(end+1) = true;
-    end
+    assertThrowsAs(@minkDiff,'CORA:wrongValue',minuend,subtrahend,method);
 end
 
 % method 'outer:scaling' --------------------------------------------------
 method='outer:scaling';
 
 for i=1:10
-    try 
-        % init
-        n = randi(10);
-        difference = zonotope.generateRandom('Dimension',n,'NrGenerators',2*n);
-        subtrahend = interval.generateRandom('Dimension',n);
-        minuend = difference + subtrahend;
-        
-        % minkDiff
-        diff_comp = minkDiff(minuend,subtrahend,method);
+    % init
+    n = randi(10);
+    difference = zonotope.generateRandom('Dimension',n,'NrGenerators',2*n);
+    subtrahend = interval.generateRandom('Dimension',n);
+    minuend = difference + subtrahend;
     
-        % should not have failed
-        resvec(end+1) = true;
-    
-    catch ME
-        resvec(end+1) = false;
-    end
+    % minkDiff
+    assertThrowsAs(@minkDiff,'',minuend,subtrahend,method);
 end
 
 % test non full-dimensional zonotopes -------------------------------------
@@ -154,11 +134,11 @@ for i=1:10
     difference = minkDiff(minuend,subtrahend,'exact');
 
     % test equality
-    resvec(end+1) = isequal(difference,diff_comp,tol);
+    assertLoop(isequal(difference,diff_comp,tol),i);
 end
 
 
 % gather results ----------------------------------------------------------
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

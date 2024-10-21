@@ -23,46 +23,38 @@ function res = testLong_updateCORApath
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % turn off warning while re-setting path
 w = warning;
 warning off;
-
-try
     
-    % test run
+% test run
+updateCORApath();
+
+% remove directory from path and check if is on path
+paths = {
+    [CORAROOT filesep 'contSet'];
+    [CORAROOT filesep 'contDynamics'];
+    [CORAROOT filesep 'global' filesep 'classes'];
+};
+
+for i=1:size(paths,1)
+    % remove directory from matlab path
+    path = paths{i};
+    rmpath(path);
+
+    % restore
     updateCORApath();
-    resvec(end+1) = true;
-    
-    % remove directory from path and check if is on path
-    paths = {
-        [CORAROOT filesep 'contSet'];
-        [CORAROOT filesep 'contDynamics'];
-        [CORAROOT filesep 'global' filesep 'classes'];
-    };
-    
-    for i=1:size(paths,1)
-        % remove directory from matlab path
-        path = paths{i};
-        rmpath(path);
-    
-        % restore
-        updateCORApath();
-    
-        % check if on matlab path
-        pathCell = regexp(path, pathsep, 'split');
-        resvec(end+1) = any(strcmp(path, pathCell));
-    end
 
-catch ME
-    resvec(end+1) = false;
+    % check if on matlab path
+    pathCell = regexp(path, pathsep, 'split');
+    assert(any(strcmp(path, pathCell)));
 end
+
 
 % restore warning
 warning(w)
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

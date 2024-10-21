@@ -35,14 +35,14 @@ S2 = cellCenter(threeDimField,c2);
 S3 = cellCenter(threeDimField_odd,c3);
 S4 = cellCenter(threeDimField_div,c4);
 
-res1 = (S1{1}-5)<1e-15;
-res2 = norm(S2{1}-[5.0000  -0.3000  0.5000]')<1e-15;
-res3 = norm(S2{2}-[5.0000  0.3000  0.5000]')<1e-15;
-res4 = norm(S3{1}-[5.0000  0  0.5000]')<1e-15;
-res5 = norm(S4{1}-[6.0000  -0.4500   0.4500]')<1e-15;
-res6 = norm(S4{2}-[6.0000 0.0500 0.4500]')<1e-15;
+assert((S1{1}-5)<1e-15);
+assert(norm(S2{1}-[5.0000  -0.3000  0.5000]')<1e-15);
+assert(norm(S2{2}-[5.0000  0.3000  0.5000]')<1e-15);
+assert(norm(S3{1}-[5.0000  0  0.5000]')<1e-15);
+assert(norm(S4{1}-[6.0000  -0.4500   0.4500]')<1e-15);
+assert(norm(S4{2}-[6.0000 0.0500 0.4500]')<1e-15);
 
 
-res = res1&&res2&&res3&&res4&&res5&&res6;
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

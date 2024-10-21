@@ -1,15 +1,17 @@
-function res = isBigger(obj,E)
-% isBigger - checks if ellipsoid(E2.Q) \subseteq ellipsoid(E1.Q) 
+function res = isBigger(E1,E2)
+% isBigger - checks if an ellipsoid is bigger than another ellipsoid when
+%    both centers are moved to the origin, i.e.,
+%    ellipsoid(E2.Q) \subseteq ellipsoid(E1.Q) 
 %
 % Syntax:
-%    res = isBigger(obj,E)
+%    res = isBigger(E1,E2)
 %
 % Inputs:
-%    obj - ellipsoid object
-%    E - ellipsoid object
+%    E1 - ellipsoid object
+%    E2 - ellipsoid object
 %
 % Outputs:
-%    res - boolean 
+%    res - true/false 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -25,61 +27,60 @@ function res = isBigger(obj,E)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check input
-inputArgsCheck({{obj,'att','ellipsoid','scalar'};
-                {E,'att','ellipsoid','scalar'}});
+inputArgsCheck({{E1,'att','ellipsoid','scalar'};
+                {E2,'att','ellipsoid','scalar'}});
 
 % check dimensions
-if dim(obj) ~= dim(E)
-    throw(CORAerror('CORA:dimensionMismatch',obj,E));
-end
+equalDimCheck(E1,E2);
 
-tol = min(obj.TOL,E.TOL);
+% set tolerance
+tol = min(E1.TOL,E2.TOL);
 
 % catch 1D case
-if dim(obj)==1
+if dim(E1)==1
     res = true;
     return;
 end
 
 % for simultaneous diagonalization, it is required that at least the first
-% argument is pd (all eigenvalues >E.TOL)
+% argument is positive definite (i.e., all eigenvalues >E.TOL)
 % if that is not the case, then both are degenerate and either they share
 % the same subspace so we can transform both into a subspace where at least
-% the first is non-degenerate, or obj.Q cannot be bigger than E.Q
+% the first is non-degenerate, or E1.Q cannot be bigger than E2.Q
 
-if ~isFullDim(obj) && isFullDim(E)
+if ~isFullDim(E1) && isFullDim(E2)
     res = false;
     return;
-elseif ~isFullDim(obj) && ~isFullDim(E)
-    % check if common subspace exists
-    % 1/2 just for good measure
-    Q_sum = 1/2*(obj.Q + E.Q);
-    [U,S] = svd(Q_sum);
+
+elseif ~isFullDim(E1) && ~isFullDim(E2)
+    % check if common subspace exists (factor 1/2 just for good measure)
+    Q_sum = 1/2*(E1.Q + E2.Q);
+    [U,S,~] = svd(Q_sum);
 
     r = rank(Q_sum);
-    % if S does not contain at least 1 approx 0 eigenvalue, they do not
+    % if S does not contain at least 1 approx. 0 eigenvalue, they do not
     % share common subspace
-    if r==dim(obj)
+    if r==dim(E1)
         res = false;
         return;
     end
     
     % share common subspace
     % transform and cut
-    obj = project(U'*obj,1:r);
-    E = project(U'*E,1:r);
-    
+    E1 = project(U'*E1,1:r);
+    E2 = project(U'*E2,1:r);
     
     % call isBigger again
-    res = isBigger(obj,E);
+    res = isBigger(E1,E2);
     return;
 end
 
-% simulatenous diagonalization: Find Tb such that
-% Tb'*Q1*Tb = I and Tb'*Q2*Tb = D (diagonal)
-% if max(diag(D))<=1 => contained
-[~,D] = simdiag(obj.Q,E.Q,tol);
+% simultaneous diagonalization: Find Tb such that
+%   Tb'*Q1*Tb = I and Tb'*Q2*Tb = D (diagonal)
+[~,D] = simdiag(E1.Q,E2.Q,tol);
 tmp = max(diag(D));
+
+% if max(diag(D)) <= 1 => contained
 res = tmp < 1+tol | withinTol(tmp,1+tol);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,12 +1,12 @@
-function [Rin,Rout] = reachInnerProjection(sys,params,options)
+function [Rin,Rout] = reachInnerProjection(nlnsys,params,options)
 % reachInnerProjection - compute an inner-approximation of the reachable 
-%                        set using the algorithm in [1].
+%    set using the algorithm in [1].
 %
 % Syntax:
-%    [Rin,Rout] = reachInnerProjection(sys,options)
+%    [Rin,Rout] = reachInnerProjection(nlnsys,options)
 %
 % Inputs:
-%    sys - nonlinearSys object
+%    nlnsys - nonlinearSys object
 %    params - parameters defining the reachability problem
 %    options - struct containting the algorithm settings
 %
@@ -34,16 +34,16 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
     % options preprocessing
-    options = validateOptions(sys,mfilename,params,options);
+    [params,options] = validateOptions(nlnsys,params,options);
 
     % Initialization ------------------------------------------------------
     
     % system dimension and number of time steps
-    n = sys.dim;
-    T = options.tStart:options.timeStep:options.tFinal;
+    n = nlnsys.nrOfStates;
+    T = params.tStart:options.timeStep:params.tFinal;
     
     % construct dynamic function for the jacobian
-    [fun,funJ] = aux_dynamicFunction(sys);
+    [fun,funJ] = aux_dynamicFunction(nlnsys);
     
     % compute Lie-derivatives
     derLieFun = aux_lieDerivative(fun,n,options.taylorOrder);
@@ -57,15 +57,15 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
     timeCont = cell(length(T)-1,1);
     time = cell(length(T),1);
     
-    Rset{1} = options.R0;
-    RsetOut{1} = options.R0;
+    Rset{1} = params.R0;
+    RsetOut{1} = params.R0;
     time{1} = T(1);
     
     % initial set and jacobian
-    z0Int = intKaucher(supremum(options.R0),infimum(options.R0));
-    z0 = center(options.R0);
-    z = options.R0;
-    z_ = interval(center(options.R0));
+    z0Int = intKaucher(supremum(params.R0),infimum(params.R0));
+    z0 = center(params.R0);
+    z = params.R0;
+    z_ = interval(center(params.R0));
     I = eye(n);
     J = interval(I(:),I(:));
     
@@ -77,7 +77,7 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
     for j = 1:length(T)-1
 
         % log
-        verboseLog(j,T(j),options);
+        verboseLog(options.verbose,j,T(j),params.tStart,params.tFinal);
         
         % Step 1: Rough Enclosure -----------------------------------------
         
@@ -154,7 +154,7 @@ function [Rin,Rout] = reachInnerProjection(sys,params,options)
     end
     
     % log
-    verboseLog(length(T),T(end),options);
+    verboseLog(options.verbose,length(T),T(end),params.tStart,params.tFinal);
     
     % Reachable Set Object ------------------------------------------------
     
@@ -438,13 +438,13 @@ function res = aux_lieDerivativeJacobian(der,n)
     end
 end
 
-function [fun,funJ] = aux_dynamicFunction(sys)
+function [fun,funJ] = aux_dynamicFunction(nlnsys)
 
     % construct function handle for dynamic function
-    fun = @(x) sys.mFile(x,0);
+    fun = @(x) nlnsys.mFile(x,0);
 
     % construct dynamic function for the jacobian
-    n = sys.dim;
+    n = nlnsys.nrOfStates;
     
     x = sym('x',[n,1]);
     J = sym('J',[n,n]);

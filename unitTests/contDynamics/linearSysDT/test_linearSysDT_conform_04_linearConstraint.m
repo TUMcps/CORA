@@ -26,6 +26,9 @@ function res = test_linearSysDT_conform_04_linearConstraint
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % init partial results
 resPartial = [];
@@ -41,9 +44,11 @@ A = expm(Ac*dt);
 B = [];
 C = [1 0 0 0; 0 1 0 0];
 D = [];
+E = eye(4);
+F = eye(2);
 
 % instantiate linear discrete-time dynamics
-pedestrian = linearSysDT(A,B,[],C,D,dt);
+pedestrian = linearSysDT(A,B,[],C,D,[],E,F,dt);
 params.tFinal = 4*dt;
 
 % the system has known uncertainties
@@ -75,10 +80,10 @@ for iStep = 1:length(R.timePoint.time)
     R_assembled = zonotope([Gamma_saved{iStep}*c,G_total_saved{iStep}]);
     % enlarged R_assembled should contain R
     R_enlarged = enlarge(R_assembled,1.001);
-    resPartial(end+1) = contains(R_enlarged, R.timePoint.set{iStep});
+    assert(contains(R_enlarged, R.timePoint.set{iStep}));
     % enlarged R should contain R_assembled
     R_enlarged = enlarge(R.timePoint.set{iStep},1.001);
-    resPartial(end+1) = contains(R_enlarged, R_assembled);
+    assert(contains(R_enlarged, R_assembled));
 end
 
 %% compare reachable sets assembled from halfspace representation
@@ -89,10 +94,10 @@ for iStep = 1:length(R.timePoint.time)
     R_assembled = polytope(N,d);
     % R_assembled should contain shrunk R
     R_shrunk = enlarge(R.timePoint.set{iStep},0.999);
-    resPartial(end+1) = contains(R_assembled, R_shrunk);
+    assert(contains(R_assembled, R_shrunk));
     % R_assembled should not contain enlarged R
     R_enlarged = enlarge(R.timePoint.set{iStep},1.001);
-    resPartial(end+1) = ~contains(R_assembled, R_enlarged);
+    assert(~contains(R_assembled, R_enlarged));
 end
 
 %% compare reachable sets assembled from halfspace representation using G_tilde
@@ -107,10 +112,10 @@ for iStep = 1:length(R.timePoint.time)
     R_assembled = polytope(N,d);
     % R_assembled should contain shrunk R
     R_shrunk = enlarge(R.timePoint.set{iStep},0.999);
-    resPartial(end+1) = contains(R_assembled, R_shrunk);
+    assert(contains(R_assembled, R_shrunk));
     % R_assembled should not contain enlarged R
     R_enlarged = enlarge(R.timePoint.set{iStep},1.001);
-    resPartial(end+1) = ~contains(R_assembled, R_enlarged);
+    assert(~contains(R_assembled, R_enlarged));
 end
 
 %% create alpha values: 
@@ -133,9 +138,9 @@ end
 %% check constraints
 for i = 1:length_alpha
     % small values should violate the constraint
-    resPartial(end+1) = ~all(lin_A*[c;alpha_small(:,i)] <= lin_b);
+    assertLoop(~all(lin_A*[c;alpha_small(:,i)] <= lin_b),i);
     % large values should fulfill the constraint
-    resPartial(end+1) = all(lin_A*[c;alpha_large(:,i)] <= lin_b);
+    assertLoop(all(lin_A*[c;alpha_large(:,i)] <= lin_b),i);
 end
 
 %% final result

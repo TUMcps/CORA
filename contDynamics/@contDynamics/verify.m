@@ -27,11 +27,7 @@ function res = verify(sys,params,options,spec)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % 1. check number of inputs
-if nargin < 4
-    throw(CORAerror('CORA:notEnoughInputArgs',4))
-elseif nargin > 4
-    throw(CORAerror("CORA:tooManyInputArgs", 4))
-end
+narginchk(4,4);
 
 % 2. validate inputs
 inputArgsCheck({ ...

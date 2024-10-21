@@ -18,7 +18,7 @@ function res = test_stl_masks
 
 % Authors:       Benedikt Seidl
 % Written:       23-January-2023
-% Last update:   ---
+% Last update:   08-February-2024 (FL, rename from signal to finiteSignal)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -38,21 +38,21 @@ m3 = masks(phi3);
 m4 = masks(phi4);
 
 % test masks function
-res = [];
-res(end+1,1) = isequal(signal([1.2 1.4], [false true]), m1("x"));
+res = true;
+assert(isequal(finiteSignal([1.2 1.4], [false true]), m1("x")));
 
-res(end+1,1) = isequal(signal(4, true), m2("x"));
-res(end+1,1) = isequal(signal([2.3 4], [false true]), m2("y"));
-res(end+1,1) = isequal(signal([2.3 4], [false true]), m2("z"));
+assert(isequal(finiteSignal(4, true), m2("x")));
+assert(isequal(finiteSignal([2.3 4], [false true]), m2("y")));
+assert(isequal(finiteSignal([2.3 4], [false true]), m2("z")));
 
-res(end+1,1) = isequal(signal([1.2 1.4+1.7], [false true]), m3("x"));
-res(end+1,1) = isequal(signal([1.7 1.4+1.7], [true false]), m3("z"));
+assert(isequal(finiteSignal([1.2 1.4+1.7], [false true]), m3("x")));
+assert(isequal(finiteSignal([1.7 1.4+1.7], [true false]), m3("z")));
 
-res(end+1,1) = isequal(signal(5.7, true), m4("x"));
-res(end+1,1) = isequal(signal([2.3 5.7], [false true]), m4("y"));
-res(end+1,1) = isequal(signal([1.7 2.3 5.7], [true false true]), m4("z"));
+assert(isequal(finiteSignal(5.7, true), m4("x")));
+assert(isequal(finiteSignal([2.3 5.7], [false true]), m4("y")));
+assert(isequal(finiteSignal([1.7 2.3 5.7], [true false true]), m4("z")));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

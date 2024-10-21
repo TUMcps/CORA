@@ -27,7 +27,7 @@ function res = isBounded(I)
 if representsa_(I,'emptySet',0)
     res = true;
 else
-    res = ~any(isinf(I.inf)) && ~any(isinf(I.sup));
+    res = ~any(isinf(I.inf),"all") && ~any(isinf(I.sup),"all");
 end
 
 % ------------------------------ END OF CODE ------------------------------

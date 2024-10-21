@@ -40,7 +40,7 @@ classdef capsule < contSet
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-properties (SetAccess = protected, GetAccess = public)
+properties (SetAccess = {?contSet, ?matrixSet}, GetAccess = public)
     c; % center
     g; % generator
     r; % radius
@@ -54,6 +54,7 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor(1:3,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'capsule')
@@ -74,6 +75,9 @@ methods
         obj.g = g;
         obj.r = r;
 
+        % 6. set precedence (fixed)
+        obj.precedence = 60;
+
     end
 end
 
@@ -81,6 +85,16 @@ methods (Static = true)
     C = enclosePoints(varargin) % enclose point cloud by capsule
     C = generateRandom(varargin) % generates random capsule
     C = empty(n) % instantiates an empty capsule
+    C = origin(n) % instantiates a capsule representing the origin in R^n
+end
+
+methods (Access = protected)
+    [abbrev,printOrder] = getPrintSetInfo(S)
+end
+
+% plotting
+methods (Access = {?contSet})
+    han = plot3D(S,varargin);
 end
 
 end
@@ -90,11 +104,6 @@ end
 
 function [c,g,r] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin > 3
-        throw(CORAerror('CORA:tooManyInputArgs',3));
-    end
 
     % assign center
     [c,g,r] = setDefaultValues({[],[],[]},varargin);

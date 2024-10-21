@@ -26,9 +26,6 @@ function res = testLong_zonotope_contains_SadraddiniTedrake
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% initialize partial results
-resPartial = [];
-
 %% create zonotopes -- random cases in 3D (non-zero center)
 for iSet = 1:10
     % create zonotope which is supposed to be enclosed (s: small)
@@ -48,9 +45,7 @@ for iSet = 1:10
     %res_alternative = aux_SadraddiniTedrake_alternative(Z_s, Z_l, 0); % order of Z_l and Z_s is different for this function
     res_alternative = Z_l.contains(Z_s, 'exact');
 
-    if res_alternative && ~res_original
-        resPartial(end+1) = false;
-    end
+    assertLoop(~(res_alternative && ~res_original),iSet)
 
     % loop over all types
     %resPartial(end+1) = (res_original == res_alternative);
@@ -75,16 +70,14 @@ for iSet = 1:10
     %res_alternative = aux_SadraddiniTedrake_alternative(Z_s, Z_l, 0); % order of Z_l and Z_s is different for this function
     res_alternative = Z_l.contains(Z_s, 'exact');
 
-    if res_alternative && ~res_original
-        resPartial(end+1) = false;
-    end
+    assertLoop(~(res_alternative && ~res_original),iSet)
     
     % loop over all types
     %resPartial(end+1) = (res_original == res_alternative);
 end
 
 %result of all tests
-res = all(resPartial);
+res = true;
 
 end
 

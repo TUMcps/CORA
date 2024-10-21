@@ -30,11 +30,11 @@ function res = test_hybridAutomaton_simulate
 inv1 = polytope([-1 1]/sqrt(2),0);
 inv2 = polytope([1 -1]/sqrt(2),0);
 
-guard = conHyperplane([-1 1]/sqrt(2),0);
-reset1 = struct('A',eye(2),'c',[-1;1]);
+guard = polytope([],[],[-1 1]/sqrt(2),0);
+reset1 = linearReset(eye(2),[],[-1;1]);
 trans1 = transition(guard,reset1,2);
 
-reset2 = struct('A',eye(2),'c',[1;-1]);
+reset2 = linearReset(eye(2),[],[1;-1]);
 trans2 = transition(guard,reset2,1);
 
 % clockwise motion
@@ -56,16 +56,16 @@ params.tFinal = 3;
 [t,x,loc] = simulate(HA,params); 
 
 % must be cell-arrays
-res = iscell(t) && iscell(x) && isnumeric(loc);
+assert(iscell(t) && iscell(x) && isnumeric(loc));
 % must be of same length
-res(end+1,1) = length(t) == length(x) && length(t) == length(loc);
+assert(length(t) == length(x) && length(t) == length(loc));
 % check whether points are contained in respective invariant
-res(end+1,1) = all(contains_(inv1,vertcat(x{loc==1})','exact',1e-10));
-res(end+1,1) = all(contains_(inv2,vertcat(x{loc==2})','exact',1e-10));
+assert(all(contains_(inv1,vertcat(x{loc==1})','exact',1e-10)));
+assert(all(contains_(inv2,vertcat(x{loc==2})','exact',1e-10)));
 % time before and after jumps must be the same, but state not
 for i=1:length(t)-1
-    res(end+1,1) = withinTol(t{i}(end),t{i+1}(1));
-    res(end+1,1) = ~compareMatrices(x{i}(end,:)',x{i+1}(1,:)');
+    assert(withinTol(t{i}(end),t{i+1}(1)));
+    assert(~compareMatrices(x{i}(end,:)',x{i+1}(1,:)'));
 end
 
 
@@ -73,12 +73,12 @@ end
 inv1 = polytope([-1 1]/sqrt(2),0);
 inv2 = polytope([1 -1 0]/sqrt(2),0);
 
-guard1 = conHyperplane([-1 1]/sqrt(2),0);
-guard2 = conHyperplane([-1 1 0]/sqrt(2),0);
-reset1 = struct('A',[1 0; 0 1; 0 0],'c',[-1;1;1]);
+guard1 = polytope([],[],[-1 1]/sqrt(2),0);
+guard2 = polytope([],[],[-1 1 0]/sqrt(2),0);
+reset1 = linearReset([1 0; 0 1; 0 0],[],[-1;1;1]);
 trans1 = transition(guard1,reset1,2);
 
-reset2 = struct('A',[1 0 0; 0 1 0],'c',[1;-1]);
+reset2 = linearReset([1 0 0; 0 1 0],[],[1;-1]);
 trans2 = transition(guard2,reset2,1);
 
 % clockwise motion
@@ -100,16 +100,16 @@ params.tFinal = 3;
 [t,x,loc] = simulate(HA,params); 
 
 % must be cell-arrays
-res(end+1,1) = iscell(t) && iscell(x) && isnumeric(loc);
+assert(iscell(t) && iscell(x) && isnumeric(loc));
 % must be of same length
-res(end+1,1) = length(t) == length(x) && length(t) == length(loc);
+assert(length(t) == length(x) && length(t) == length(loc));
 % check whether points are contained in respective invariant
-res(end+1,1) = all(contains_(inv1,vertcat(x{loc==1})','exact',1e-10));
-res(end+1,1) = all(contains_(inv2,vertcat(x{loc==2})','exact',1e-10));
+assert(all(contains_(inv1,vertcat(x{loc==1})','exact',1e-10)));
+assert(all(contains_(inv2,vertcat(x{loc==2})','exact',1e-10)));
 % time before and after jumps must be the same, but state not
 for i=1:length(t)-1
-    res(end+1,1) = withinTol(t{i}(end),t{i+1}(1));
-    res(end+1,1) = ~compareMatrices(x{i}(end,:)',x{i+1}(1,:)');
+    assert(withinTol(t{i}(end),t{i+1}(1)));
+    assert(~compareMatrices(x{i}(end,:)',x{i+1}(1,:)'));
 end
 
 
@@ -119,20 +119,20 @@ end
 A = [0.01 0;0 0.01];
 B = [0;0];
 c = [-1; 0];
-linSys = linearSys(A,B,c);
+linsys = linearSys(A,B,c);
 
 x = sym('x',[2,1]);
 inv = levelSet([x(1) - 1; x(1).^2 + x(2).^2 - 4],x,'<=');
 
 guard = levelSet(x(1) - 1,x,'==');
-reset.A = zeros(2); reset.c = zeros(2,1);
+reset = linearReset(zeros(2),zeros(2,1),zeros(2,1));
 trans = transition(guard,reset,1);
 
 guard = levelSet(x(1).^2 + x(2).^2 - 4,x,'==');
-reset.A = zeros(2); reset.c = zeros(2,1);
+reset = linearReset(zeros(2),zeros(2,1),zeros(2,1));
 trans = [trans;transition(guard,reset,1)];
 
-HA = hybridAutomaton(location(inv,trans,linSys));
+HA = hybridAutomaton(location(inv,trans,linsys));
 
 % simulation
 params.x0 = [0;0];
@@ -145,16 +145,14 @@ params.tFinal = 4;
 % check if trajectory stayed within the invariant
 for i = 1:length(x)
     for j = 1:size(x{i},1)
-        if ~contains(inv,x{i}(j,:)')
-            res(end+1,1) = false;
-        end
+        assertLoop(contains(inv,x{i}(j,:)'),i,j)
     end
 end
 
 
 % test the case with time-varying inputs by comparing the simulation of a
 % continuous system with the output of an equivalent automaton
-linSys = linearSys([-0.7 -2; 2 -0.7],1);
+linsys = linearSys([-0.7 -2; 2 -0.7],1);
 
 R0 = zonotope(10*ones(2,1),0.5*diag(ones(2,1)));
 U = zonotope([zeros(2,1),eye(2)]);
@@ -163,20 +161,20 @@ simOpts.x0 = randPoint(R0);
 simOpts.u = randPoint(U,10);
 simOpts.tFinal = 1;
 
-[tCont,xCont] = simulate(linSys,simOpts);
+[tCont,xCont] = simulate(linsys,simOpts);
 
 % equivalent hybrid automaton
 inv = polytope([1,0],1);
-guard = conHyperplane([1,0],1);
-reset.A = eye(2); reset.c = zeros(2,1);
+guard = polytope([],[],[1,0],1);
+reset = linearReset.eye(2);
 trans = transition(guard,reset,2);
-loc1 = location(inv,trans,linSys);
+loc1 = location(inv,trans,linsys);
 
 inv = polytope([-1,0],1);
-guard = conHyperplane([1,0],-1);
-reset.A = eye(2); reset.c = zeros(2,1);
+guard = polytope([],[],[1,0],-1);
+reset = linearReset.eye(2);
 trans = transition(guard,reset,1);
-loc2 = location(inv,trans,linSys);
+loc2 = location(inv,trans,linsys);
 
 HA = hybridAutomaton([loc1;loc2]);
 
@@ -190,12 +188,9 @@ xHyb = vertcat(xHyb{:});
 % check if the two simulated trajectories are equivalent
 xCont = interp1(tCont,xCont,tHyb);
 
-if max(max(abs(xHyb-xCont))) > 0.01
-    res(end+1,1) = false;
-end
-
+assert(max(max(abs(xHyb-xCont))) <= 0.01)
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,14 +1,14 @@
-function [R,res,options] = reach(obj,params,options,varargin)
+function [R,res,options] = reach(sys,params,options,varargin)
 % reach - computes the reachable continuous set for the entire time horizon
 %         of a continuous system
 %
 % Syntax:
-%    R = reach(obj,params,options)
-%    [R,res] = reach(obj,params,options,spec)
-%    [R,res,options] = reach(obj,params,options,spec)
+%    R = reach(sys,params,options)
+%    [R,res] = reach(sys,params,options,spec)
+%    [R,res,options] = reach(sys,params,options,spec)
 %
 % Inputs:
-%    obj - contDynamics object
+%    sys - contDynamics object
 %    params - parameter defining the reachability problem
 %    options - options for the computation of reachable sets
 %    spec - object of class specification 
@@ -17,9 +17,6 @@ function [R,res,options] = reach(obj,params,options,varargin)
 %    R - object of class reachSet storing the computed reachable set
 %    res  - true if specifications are satisfied, otherwise false
 %    options - options for the computation of reachable sets
-%
-% Example: 
-%    
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -39,34 +36,33 @@ function [R,res,options] = reach(obj,params,options,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
+spec = setDefaultValues({[]},varargin);
 
 % options preprocessing
-if ~isfield(options,'validated') || ~options.validated
-    options = validateOptions(obj,mfilename,params,options);
-else
-    % internal call: skip validation (options already checked)
-    options = validateOptions(obj,mfilename,params,options,true);
-end
+[params,options] = validateOptions(sys,params,options);
 
 % handling of specifications
-spec = []; specLogic = [];
-if nargin >= 4
-   spec = varargin{1}; 
-   [spec,specLogic] = splitLogic(spec);
+specLogic = [];
+if ~isempty(spec)
+    [spec,specLogic] = splitLogic(spec);
 end
 
 % reach called from
 % - linear class (linProbSys, linParamSys) or
 % - nonlinear class (nonlinearSys, nonlinDASys, nonlinParamSys)
-syslin = isa(obj,'linProbSys') || isa(obj,'linParamSys');
+syslin = isa(sys,'linProbSys') || isa(sys,'linParamSys');
 
 % compute symbolic derivatives
 if ~syslin
-    derivatives(obj,options);
-    if (isa(obj,'nonlinearSys') || isa(obj,'nonlinDASys')) && contains(options.alg,'adaptive')
+    % paramInt required for derivatives of nonlinParamSys...
+    if isfield(params,'paramInt')
+        options.paramInt = params.paramInt;
+    end
+    derivatives(sys,options);
+
+    if contains(options.alg,'adaptive')
         % nonlinear adaptive algorithm
-        [timeInt,timePoint,res,~,options] = reach_adaptive(obj,params,options);
-        % construct reachset object
+        [timeInt,timePoint,res,~,options] = reach_adaptive(sys,params,options);
         R = reachSet.initReachSet(timePoint,timeInt);
         return;
     end
@@ -79,68 +75,70 @@ for i = 1:(options.taylorTerms+1)
 end
 
 % if a trajectory should be tracked
-if isfield(options,'uTransVec')
-    options.uTrans = options.uTransVec(:,1);
+if isfield(params,'uTransVec')
+    params.uTrans = params.uTransVec(:,1);
 end
-options.t = options.tStart;
+options.t = params.tStart;
 
 % time period
-tVec = options.tStart:options.timeStep:options.tFinal;
+tVec = params.tStart:options.timeStep:params.tFinal;
+steps = length(tVec)-1;
 
 % initialize cell-arrays that store the reachable set
-timeInt.set = cell(length(tVec)-1,1);
-timeInt.time = cell(length(tVec)-1,1);
-timePoint.set = cell(length(tVec),1);
-timePoint.time = cell(length(tVec),1);
-if isa(obj,'nonlinDASys')
-    timeInt.algebraic = cell(length(tVec)-1,1);
+timeInt.set = cell(steps,1);
+timeInt.time = cell(steps,1);
+timePoint.set = cell(steps+1,1);
+timePoint.time = cell(steps+1,1);
+if isa(sys,'nonlinDASys')
+    timeInt.algebraic = cell(steps,1);
 end
 
 % first timePoint set is initial set
-timePoint.time{1} = options.tStart;
+timePoint.time{1} = params.tStart;
 if syslin
-    timePoint.set{1} = options.R0;
+    timePoint.set{1} = params.R0;
 else
-    if isa(obj,'nonlinDASys')
-        R_y = zonotope(consistentInitialState(obj,center(options.R0),...
-            options.y0guess,options.uTrans));
-        timePoint.set{1}{1}.set = outputSet(obj,options,options.R0,R_y);
+    if isa(sys,'nonlinDASys')
+        R_y = zonotope(consistentInitialState(sys,center(params.R0),...
+            params.y0guess,params.uTrans));
+        timePoint.set{1}{1}.set = outputSet(sys,params.R0,R_y,params,options);
     else
-        timePoint.set{1}{1}.set = outputSet(obj,options,options.R0);
+        timePoint.set{1}{1}.set = outputSet(sys,params.R0,params,options);
     end
     timePoint.set{1}{1}.prev = 1;
     timePoint.set{1}{1}.parent = 1;
 end
 
 % log information
-verboseLog(1,options.t,options);
+verboseLog(options.verbose,1,options.t,params.tStart,params.tFinal);
 
 % initialize reachable set computations
 try
-    [Rnext, options] = initReach(obj,options.R0,options);
+    [Rnext, options] = initReach(sys,params.R0,params,options);
 catch ME
     % if error from set explosion, return corresponding information
-    R = [];
-    reportReachError(ME,options.tStart,1);
+    reportReachError(ME,params.tStart,1);
+    R = reachSet.initReachSet(timePoint,timeInt);
+    res = false;
     return
 end
 
 
 % loop over all reachability steps
-for i = 2:length(tVec)-1
+for i = 2:steps
     
     % save reachable set in cell structure
-    if ~isa(obj,'nonlinDASys')
-        timeInt.set{i-1} = outputSet(obj,options,Rnext.ti);
-        timePoint.set{i} = outputSet(obj,options,Rnext.tp);
+    if ~isa(sys,'nonlinDASys')
+        timeInt.set{i-1} = outputSet(sys,Rnext.ti,params,options);
+        timePoint.set{i} = outputSet(sys,Rnext.tp,params,options);
     else
-        timeInt.set{i-1} = outputSet(obj,options,Rnext.ti,Rnext.y);
-        timePoint.set{i} = outputSet(obj,options,Rnext.tp,Rnext.y);
+        timeInt.set{i-1} = outputSet(sys,Rnext.ti,Rnext.y,params,options);
+        timePoint.set{i} = outputSet(sys,Rnext.tp,Rnext.y,params,options);
     end
     timeInt.time{i-1} = interval(tVec(i-1),tVec(i));
     timePoint.time{i} = tVec(i);
     
-    if isa(obj,'nonlinDASys')
+    if isa(sys,'nonlinDASys')
         timeInt.algebraic{i-1} = Rnext.y;
     end
 
@@ -161,16 +159,16 @@ for i = 2:length(tVec)-1
     % increment time
     options.t = tVec(i);
     % log information
-    verboseLog(i,options.t,options);
+    verboseLog(options.verbose,i,options.t,params.tStart,params.tFinal);
 
     % if a trajectory should be tracked
-    if isfield(options,'uTransVec')
-        options.uTrans = options.uTransVec(:,i);
+    if isfield(params,'uTransVec')
+        params.uTrans = params.uTransVec(:,i);
     end
 
     % compute next reachable set
     try
-        [Rnext,options] = post(obj,Rnext,options);
+        [Rnext,options] = post(sys,Rnext,params,options);
     catch ME
         % if error from set explosion, return corresponding information
         R = reachSet.initReachSet(timePoint,timeInt);
@@ -180,12 +178,12 @@ for i = 2:length(tVec)-1
 end
 
 % compute output set
-if ~isa(obj,'nonlinDASys')
-    timeInt.set{end} = outputSet(obj,options,Rnext.ti);
-    timePoint.set{end} = outputSet(obj,options,Rnext.tp);
+if ~isa(sys,'nonlinDASys')
+    timeInt.set{end} = outputSet(sys,Rnext.ti,params,options);
+    timePoint.set{end} = outputSet(sys,Rnext.tp,params,options);
 else
-    timeInt.set{end} = outputSet(obj,options,Rnext.ti,Rnext.y);
-    timePoint.set{end} = outputSet(obj,options,Rnext.tp,Rnext.y);
+    timeInt.set{end} = outputSet(sys,Rnext.ti,Rnext.y,params,options);
+    timePoint.set{end} = outputSet(sys,Rnext.tp,Rnext.y,params,options);
 end
 timeInt.time{end} = interval(tVec(end-1),tVec(end));
 timePoint.time{end} = tVec(end);
@@ -210,6 +208,6 @@ if res && ~isempty(specLogic)
 end
 
 % log information
-verboseLog(i+1,tVec(end),options);
+verboseLog(options.verbose,i+1,tVec(end),params.tStart,params.tFinal);
 
 % ------------------------------ END OF CODE ------------------------------

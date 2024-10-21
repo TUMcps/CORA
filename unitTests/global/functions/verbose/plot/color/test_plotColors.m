@@ -30,19 +30,19 @@ f = figure; hold on;
 
 % first color
 colors = colororder;
-res = res && all(CORAcolor('CORA:next') == colors(1, :));
+assert(res && all(CORAcolor('CORA:next') == colors(1, :)));
 
 % check after one plot
 plot(1:2, 3:4);
-res = res && all(CORAcolor('CORA:next') == colors(2, :));
+assert(res && all(CORAcolor('CORA:next') == colors(2, :)));
 
 % updateColorIndex
 updateColorIndex();
-res = res && all(CORAcolor('CORA:next') == colors(3, :));
+assert(res && all(CORAcolor('CORA:next') == colors(3, :)));
 
 % check after one plot
 plot(1:2, 3:4);
-res = res && all(CORAcolor('CORA:next') == colors(4, :));
+assert(res && all(CORAcolor('CORA:next') == colors(4, :)));
 
 % test with custom colororder ---------------------------------------------
 
@@ -52,30 +52,30 @@ set(gca, 'ColorOrderIndex', 1);
 
 % first color
 colors = colororder;
-res = res && all(CORAcolor('CORA:next') == colors(1, :));
+assert(res && all(CORAcolor('CORA:next') == colors(1, :)));
 
 % check after one plot
 plot(1:2, 3:4);
-res = res && all(CORAcolor('CORA:next') == colors(2, :));
+assert(res && all(CORAcolor('CORA:next') == colors(2, :)));
 
 % updateColorIndex
 updateColorIndex();
-res = res && all(CORAcolor('CORA:next') == colors(3, :));
+assert(res && all(CORAcolor('CORA:next') == colors(3, :)));
 
 % check useCORAcolors -----------------------------------------------------
 
 useCORAcolors("CORA:contDynamics");
 
 % first color is reachSet color
-res = res && all(CORAcolor('CORA:next') == CORAcolor('CORA:reachSet'));
+assert(res && all(CORAcolor('CORA:next') == CORAcolor('CORA:reachSet')));
 plot(1:2, 3:4);
 
 % second color is initialSet color
-res = res && all(CORAcolor('CORA:next') == CORAcolor('CORA:initialSet'));
+assert(res && all(CORAcolor('CORA:next') == CORAcolor('CORA:initialSet')));
 updateColorIndex();
 
 % last color is simulations color
-res = res && all(CORAcolor('CORA:next') == CORAcolor('CORA:simulations'));
+assert(res && all(CORAcolor('CORA:next') == CORAcolor('CORA:simulations')));
 
 close(f);
 

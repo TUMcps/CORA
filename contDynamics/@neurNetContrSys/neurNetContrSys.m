@@ -51,15 +51,20 @@ classdef neurNetContrSys < contDynamics
 % ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
-    sys; % system dynamics
-    nn; % neural network controller
-    dt; % sampling time
+
+    sys;    % system dynamics
+    nn;     % neural network controller
+    dt;     % sampling time
+
 end
 
 methods
 
     % class constructor
     function obj = neurNetContrSys(varargin)
+
+        % 0. check number of input arguments
+        assertNarginConstructor([0,3],nargin);
 
         % 1. copy constructor: not allowed due to obj@contDynamics below
 %         if nargin == 1 && isa(varargin{1},'neurNetContrSys')
@@ -76,7 +81,7 @@ methods
         [sysCL,nn,dt] = aux_computeProperties(sysOL,nn,dt);
         
         % 5. instantiate parent class, assign properties
-        obj@contDynamics(sysCL.name,sysOL.dim,max(1,sysOL.nrOfInputs-nn.neurons_out),0);
+        obj@contDynamics(sysCL.name,sysOL.nrOfStates,max(1,sysOL.nrOfInputs-nn.neurons_out),0);
         obj.sys = sysCL; obj.nn = nn; obj.dt = dt;
 
     end
@@ -88,13 +93,6 @@ end
 
 function [sys,nn,dt] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin ~= 0 && nargin < 3
-        throw(CORAerror('CORA:notEnoughInputArgs',3));
-    elseif nargin > 3
-        throw(CORAerror('CORA:tooManyInputArgs',3));
-    end
 
     % default values
     sys = contDynamics(); nn = []; dt = 0;
@@ -123,7 +121,7 @@ function aux_checkInputArgs(sys,nn,dt,n_in)
         })
 
         % check if dimensions fit
-        if sys.dim ~= nn.neurons_in
+        if sys.nrOfStates ~= nn.neurons_in
             throw(CORAerror('CORA:wrongInputInConstructor', ...
                'Dimension of sys and input of nn should match.'));
         end
@@ -140,17 +138,17 @@ end
 function [sys,nn,dt] = aux_computeProperties(sys,nn,dt)
 % compute properties of neurNetContrSys object
 
-    n = sys.dim; m = nn.neurons_out;
+    n = sys.nrOfStates; m = nn.neurons_out;
     % instantiate closed-loop system
     if isa(sys, 'nonlinearSys')
 
-        f = @(x, u) [sys.mFile(x(1:n), [x(n+1:n+m); u]); zeros(m, 1)];
+        f = @(x,u) [sys.mFile(x(1:n), [x(n+1:n+m); u]); zeros(m, 1)];
         name = [sys.name, 'Controlled'];
         sys = nonlinearSys(name, f, n+m, max(1, sys.nrOfInputs-m));
 
     elseif isa(sys, 'nonlinParamSys')
 
-        f = @(x, u, p) [sys.mFile(x(1:n), [x(n+1:n+m); u], p); zeros(m, 1)];
+        f = @(x,u,p) [sys.mFile(x(1:n), [x(n+1:n+m); u], p); zeros(m, 1)];
         name = [sys.name, 'Controlled'];
         sys = nonlinParamSys(name, f, n+m, max(1, sys.nrOfInputs-m));
 

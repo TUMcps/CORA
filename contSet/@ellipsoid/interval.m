@@ -36,12 +36,11 @@ inputArgsCheck({{E,'att','ellipsoid','scalar'}});
 
 n = dim(E);
 E0 = ellipsoid(E.Q,zeros(size(E.q)));
-dI = zeros(n,1);
-Idty = eye(n);
 
 % compute width of the ellipsoid in each dimension using support functions
+dI = zeros(n,1);
 for i=1:n
-    dI(i) = supportFunc_(E0,Idty(:,i),'upper');
+    dI(i) = supportFunc_(E0,unitvector(i,n),'upper');
 end
 
 % construct the resulting interval

@@ -43,9 +43,7 @@ for i=1:nrTests
     
     % check if randomly generated points are inside
     Y = randPoint(P,n);
-    if ~contains(P,Y,'exact',1e-12)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(contains(P,Y,'exact',1e-12),i);
 
 
     % instantiate polytope
@@ -54,18 +52,14 @@ for i=1:nrTests
     P1 = polytope(P2.A,b_);
     
     % check containment
-    if ~contains(P1,P2)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(contains(P1,P2),i);
     
     % generate zonotope
     Z = zonotope.generateRandom('Dimension',n);
     E = ellipsoid(Z,'inner:norm');
     P = polytope(Z);
     % check if Ei is in P
-    if ~contains(P,E,'exact',E.TOL)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(contains(P,E,'exact',E.TOL),i);
 end
 
 % ------------------------------ END OF CODE ------------------------------

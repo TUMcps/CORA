@@ -16,8 +16,8 @@ function res = isFullDim(cZ)
 %    A = [1 1 1]; b = 1;
 %    cZ1 = conZonotope(Z,A,b);
 %
-%    hyp = conHyperplane([1,-2],1);
-%    cZ2 = cZ1 & hyp;
+%    P = polytope([],[],[1,-2],1);
+%    cZ2 = cZ1 & P;
 %
 %    isFullDim(cZ1)
 %    isFullDim(cZ2)

@@ -1,13 +1,13 @@
-function [R,tcomp] = observe_volMinA(obj,options)
+function [R,tcomp] = observe_volMinA(nlnsysDT,params,options)
 % observe_volMinA - computes the guaranteed state estimation approach
-% from [1]; the approach is extended here for nonlinear systems.
-%
+%    from [1]; the approach is extended here for nonlinear systems.
 %
 % Syntax:
-%    [R,tcomp] = observe_volMinA(obj,options)
+%    [R,tcomp] = observe_volMinA(nlnsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time nonlinear system object
+%    nlnsysDT - discrete-time nonlinear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -17,8 +17,6 @@ function [R,tcomp] = observe_volMinA(obj,options)
 % Reference:
 %    [1] T. Alamo, J. M. Bravo, and E. F. Camacho. Guaranteed state 
 %        estimation by zonotopes. Automatica, 41(6):1035–1043, 2005.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -34,15 +32,12 @@ function [R,tcomp] = observe_volMinA(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % set intersection procedure
-
 options.intersectionType = 1;
 options.intersectionTechnique = 'alamo-volume';
 
 % apply set-membership approach
-tic
-R = observe_stripBased(obj,options);
+tic;
+R = observe_stripBased(nlnsysDT,params,options);
 tcomp = toc;
-
-end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -24,24 +24,21 @@ function res = test_fourier()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 try
     % example taken from fourier.m
     H = [-1 -1 -1 0; 3 -1 -1 1; -1 3 -1 2; -1 -1 3 3]; 
     h = fourier(H,[2 3]);
-    resvec(end+1) = true;
 
 catch ME
     if strcmp(ME.identifier,'MATLAB:TooManyInputs')
         CORAwarning("CORA:global", ...
             ['CORA does not have a compiled file of the Fourier-Motzkin elimination algorithm for your distribution. ' ...
             'Please let us know which distribution you are using and try to install it via the tbxmanager: tbxmanager install fourier.'])
-        resvec(end+1) = false;
+        rethrow(ME)
     end
 end
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

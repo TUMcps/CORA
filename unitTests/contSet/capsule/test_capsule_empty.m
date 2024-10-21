@@ -23,16 +23,14 @@ function res = test_capsule_empty
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % 2D empty capsule
 n = 2;
 C = capsule.empty(n);
-res(end+1,1) = dim(C) == n;
-res(end+1,1) = representsa(C,'emptySet');
+assert(dim(C) == n);
+assert(representsa(C,'emptySet'));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

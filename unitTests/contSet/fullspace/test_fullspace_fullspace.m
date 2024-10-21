@@ -23,20 +23,15 @@ function res = test_fullspace_fullspace
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % dimension greater or equal to one
 n = 2;
 fs = fullspace(n);
-res(end+1,1) = fs.dimension == n;
-
-% combine results
-res = all(res);
+assert(fs.dimension == n);
 
 % too many input arguments
-try
-    fs = fullspace(n,n);
-    res = false;
-end
+assertThrowsAs(@fullspace,'CORA:numInputArgsConstructor',n,n);
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -22,6 +22,9 @@ function res = test_ellipsoid_enlarge
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % instantiate ellipsoid
 E = ellipsoid([1 0;0 2],[0; 1]);
@@ -34,6 +37,6 @@ E_enlarged = enlarge(E,factor);
 E_true = ellipsoid([4 0;0 8],[0; 1]);
 
 % compare results
-res = isequal(E_true,E_enlarged);
+assert(isequal(E_true,E_enlarged));
 
 % ------------------------------ END OF CODE ------------------------------

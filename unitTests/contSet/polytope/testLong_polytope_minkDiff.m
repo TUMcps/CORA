@@ -55,17 +55,13 @@ for i=1:nrTests
 %     legend([h1,h2,hdiff],'P1','P2','minkDiff');
 
     % result has to contain the origin as P2 \subset P1
-    if ~contains(P,zeros(n,1))
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(contains(P,zeros(n,1)),i);
 
     % compute Minkowski difference the other way around
     P = minkDiff(P2,P1);
 
     % result has to be empty as P2 \subset P1
-    if ~representsa(P, 'emptySet')
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(representsa(P, 'emptySet'),i);
 
 
     % subtract an interval or a zonotope from a polytope

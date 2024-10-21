@@ -35,16 +35,12 @@ for i=1:nrOfTests
     % non-degenerate case
     E = ellipsoid.generateRandom('Dimension',n,'IsDegenerate',false);
     % check result
-    if dim(E) ~= n
-        res = false; break;
-    end
+    assertLoop(dim(E) == n,i)
     
     % degenerate case
     E = ellipsoid.generateRandom('Dimension',n,'IsDegenerate',true);
     % check result
-    if dim(E) ~= n
-        res = false; break;
-    end
+    assertLoop(dim(E) == n,i)
 
 end
 

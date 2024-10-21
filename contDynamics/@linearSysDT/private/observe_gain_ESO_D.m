@@ -1,13 +1,13 @@
-function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_D(obj,options)
-% observe_gain_ESO_D - computes the gain for the guaranteed state estimation
-% approach from [1]. 
-%
+function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_D(linsysDT,params,options)
+% observe_gain_ESO_D - computes the gain for the guaranteed state
+%    estimation approach from [1]. 
 %
 % Syntax:
-%    [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_D(obj,options)
+%    [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_D(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -22,8 +22,6 @@ function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_D(obj,options)
 %        H∞ set-membership observer design for discrete-time LPV
 %        systems. International Journal of Control, 93(10):2314-2325,
 %        2020.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -41,8 +39,8 @@ function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_D(obj,options)
 tic
 
 % essential values
-n = obj.dim;
-nrOfOutputs = obj.nrOfOutputs;
+n = linsysDT.nrOfStates;
+nrOfOutputs = linsysDT.nrOfOutputs;
 
 % set options of solver
 options_sdp = sdpsettings;
@@ -53,13 +51,13 @@ options_sdp.verbose = 0;
 % initialization of Alg. 1
 Q = eye(n); 
 % solve LMI, line 1 of Alg. 1
-[P,Y] = aux_solveLMI(obj,Q,options,options_sdp);
+[P,Y] = aux_solveLMI(linsysDT,Q,params.W,params.V,options_sdp);
 % compute L, line 2 of Alg. 1
 L = P\Y;
 % Compute observer matrix, line 3 of Alg. 1
-Ao = obj.A-L*obj.C;
+Ao = linsysDT.A-L*linsysDT.C;
 % Compute E, line 4 of Alg. 1
-E = [options.W.Q, -L*options.V.Q];
+E = [params.W.Q, -L*params.V.Q];
 % Estimate the expected steady-state covariance matrix V, line 5 of Alg. 1
 D_w = diag(ones(1,n+nrOfOutputs)); % without loss of generality, the disturbances are bounded by 1
 W = (1/3)*D_w; % eq. (64)
@@ -70,7 +68,7 @@ V = value(V);
 % Obtain matrix Q, line 6 of Alg. 1
 Q = inv(V);
 % solve LMI, line 7 of Alg. 1
-[P,Y,gamma] = aux_solveLMI(obj,Q,options,options_sdp);
+[P,Y,gamma] = aux_solveLMI(linsysDT,Q,params.W,params.V,options_sdp);
 % compute gain, line 8 of Alg. 1
 OGain = P\Y;
 % Compute lambda as the minimum generalised eigenvalue of the pair (Q,P), line 9 of Alg. 1
@@ -85,14 +83,14 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [P,Y,gamma] = aux_solveLMI(obj,Q,options,options_sdp)
+function [P,Y,gamma] = aux_solveLMI(obj,Q,W,V,options_sdp)
     
 % shape matrices of the disturbance and process noise sets
-F = options.W.Q;
-E = options.V.Q;
+F = W.Q;
+E = V.Q;
 
 % obtain system dimension and nr of outputs
-n = obj.dim;
+n = obj.nrOfStates;
 nrOfOutputs = obj.nrOfOutputs;
 nrOfDistGens = size(F,2);
 

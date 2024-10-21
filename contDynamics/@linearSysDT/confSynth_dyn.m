@@ -1,12 +1,12 @@
-function [params, union_y_a, cost] = confSynth_dyn(sys,params,options)
+function [params, union_y_a, cost] = confSynth_dyn(linsysDT,params,options)
 % confSynth_dyn - specific conformance synthesis method for linear 
 %   discrete-time systems according to [1].
 %
 % Syntax:
-%    params = confSynth_dyn(sys,params,options)
+%    params = confSynth_dyn(linsysDT,params,options)
 %
 % Inputs:
-%    sys - discrete-time linear system system
+%    linsysDT - linearSysDT object
 %    params - parameters defining the conformance problem
 %    options - options for the conformance checking
 %
@@ -23,7 +23,8 @@ function [params, union_y_a, cost] = confSynth_dyn(sys,params,options)
 %    [2] Liu et al., "Guarantees for Real Robotic Systems: Unifying Formal
 %        Controller Synthesis and Reachset-Conformant Identification", 202x.
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -49,13 +50,13 @@ nrOfGen.X = size(G.X,2); % number of generators of X
 nrOfGen.W = size(G.W,2); % number of generators of W
 nrOfGen.V = size(G.V,2); % number of generators of V
 % other variables
-maxNrOfTimeSteps = ceil(params.tFinal/sys.dt); % maximum number of timeSteps
-q = size(sys.C,1); % output dimension
-n = size(sys.A,1); % system dimension
+maxNrOfTimeSteps = ceil(params.tFinal/linsysDT.dt); % maximum number of timeSteps
+q = size(linsysDT.C,1); % output dimension
+n = size(linsysDT.A,1); % system dimension
 w = options.w; % weight vector
 
 %% Unify all differences to the nominal solution; see y_a(k) in eq. 14 of [2]
-[union_y_a,union_x_a] = conform_unifyTestCases(sys,params);
+[union_y_a,union_x_a] = conform_unifyTestCases(linsysDT,params);
 
 %% Corollary 1 in [2]: change time horizon to ensure conformance of an 
 % infinite time horizon; requires that the entire state can be measured
@@ -70,7 +71,7 @@ else
     lin_b = [];
     Lambda = cell(maxNrOfTimeSteps+1,1); % further time step required to consider initial time
     disturbanceMatrix = [];
-    Lambda{1} = sys.C;
+    Lambda{1} = linsysDT.C;
     LambdaSum = zeros(q,n);
 
     % loop over all time steps
@@ -80,9 +81,9 @@ else
             LambdaSum = LambdaSum + Lambda{k}; % C*[I + A_d + A_d^2 + ... + A_d^(k-1)]
             disturbanceMatrix(:,end+1:end+nrOfGen.W) = Lambda{k}*G.W; % C*[I, A_d, A_d^2, ..., A_d^(k-1)]*G.W
             % update i-th power of A
-            Adi = sys.A*Adi; 
+            Adi = linsysDT.A*Adi; 
             % update Lambda
-            Lambda{k+1} = sys.C*Adi; % Lambda_{k+1} is \Lambda_k in [1]
+            Lambda{k+1} = linsysDT.C*Adi; % Lambda_{k+1} is \Lambda_k in [1]
         else
             disturbanceMatrix = [];
         end
@@ -189,9 +190,9 @@ alpha_W = p_opt(dim_c+nrOfGen.X+1:dim_c+nrOfGen.X+nrOfGen.W);
 alpha_V = p_opt(dim_c+nrOfGen.X+nrOfGen.W+1:end);
 
 % new params for R0, W, and V
-params.R0conf = zonotope([c_X, generators(params.R0conf)*diag(alpha_X)]);
-params.W = zonotope([c_W, generators(params.W)*diag(alpha_W)]);
-params.V = zonotope([c_V, generators(params.V)*diag(alpha_V)]);
+params.R0conf = zonotope(c_X, generators(params.R0conf)*diag(alpha_X));
+params.W = zonotope(c_W, generators(params.W)*diag(alpha_W));
+params.V = zonotope(c_V, generators(params.V)*diag(alpha_V));
 
 
 end
@@ -289,6 +290,5 @@ function H_tilde = aux_compute_H_tilde(P, k, G, Lambda, nrOfGen)
     %% assemble H_tilde
     H_tilde = blkdiag(H_X, H_W, H_V);
 end
-
 
 % ------------------------------ END OF CODE ------------------------------

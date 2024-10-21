@@ -23,8 +23,6 @@ function res = testLong_linearSys_reach_08_adaptive
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
 % System Dynamics----------------------------------------------------------
 
 A = [-0.1 -2; 2 -0.1];
@@ -45,35 +43,27 @@ options.error = 0.01;
 % 1. homogeneous system
 params.R0 = zonotope(10*ones(dim_x,1),0.5*eye(dim_x));
 params.U = zonotope(zeros(dim_x,1));
-tic
 R = reach(sys,params,options);
-tComp = toc;
-disp("Computation time (homogeneous case): " + tComp);
 
 
 % 2. inhomogeneous system
 params.U = zonotope(ones(dim_x,1),0.02*eye(dim_x));
-tic
 R = reach(sys,params,options);
-tComp = toc;
-disp("Computation time (inhomogeneous case): " + tComp);
 
 
 % 3. system with output matrix
 C = [2 -1];
 sys = linearSys('sys',A,B,[],C);
-tic
 R = reach(sys,params,options);
-tComp = toc;
-disp("Computation time (output matrix case): " + tComp);
 
 
 % 4. with specification
 sys = linearSys('sys',A,B);
-spec = specification(halfspace([-1,0],-15));
-tic
-[R,res] = reach(sys,params,options,spec);
-tComp = toc;
-disp("Computation time (specification): " + tComp);
+spec = specification(polytope([-1,0],-15));
+R = reach(sys,params,options,spec);
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

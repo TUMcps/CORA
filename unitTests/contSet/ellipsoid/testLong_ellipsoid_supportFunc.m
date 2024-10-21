@@ -42,35 +42,24 @@ for i=10:5:15
                     v = V(:,i);
                     [val_u,x_u] = supportFunc(E,v);
                     % check if "v" points in direction of x
-                    if v'*(x_u-E.q)<0
-                        res = false;
-                        return;
-                    end
+                    assertLoop(v'*(x_u-E.q) >= 0,i,j,k,m)
+
                     % check if x is a boundary point of E
                     % check not supported for degenerate ellipsoids
                     if isFullDim(E)
                         d_rel = ellipsoidNorm(E,x_u-E.center);
-                        if d_rel>1+E.TOL
-                            res = false;
-                            return;
-                        end
+                        assertLoop(d_rel <= 1+E.TOL,i,j,k,m)
                     end
                     % check if x attains val
-                    if ~all(withinTol(val_u,v'*x_u,E.TOL))
-                        res = false;
-                        return;
-                    end
+                    assertLoop(all(withinTol(val_u,v'*x_u,E.TOL)),i,j,k,m)
+
                     [val_l,x_l] = supportFunc(E,v,'lower');
                     x_l_true = x_u - 2*(x_u-E.q);
-                    if ~all(withinTol(x_l,x_l_true,E.TOL))
-                        res = false;
-                        return;
-                    end
+                    assertLoop(all(withinTol(x_l,x_l_true,E.TOL)),i,j,k,m)
+
                     % check if x_l attains val_l
-                    if ~all(withinTol(val_l,v'*x_l,E.TOL))
-                        res = false;
-                        return;
-                    end
+                    assertLoop(all(withinTol(val_l,v'*x_l,E.TOL)),i,j,k,m)
+
                 catch ME
                     if strcmp(ME.identifier,'CORA:solverIssue')
                         disp('Randomly generated ellipsoids caused solver issues! Ignoring...');

@@ -26,13 +26,13 @@ function [t,x,loc] = simulate(pHA,params)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    % new options preprocessing
-    options = validateOptions(pHA,mfilename,params,struct([]));
+    % options preprocessing
+    params = validateOptions(pHA,params,struct());
 
     % initialization
-    tInter = options.tStart;         % intermediate time at transitions
-    locCurr = options.startLoc;      % current location
-    xInter = options.x0;             % intermediate state at transitions
+    tInter = params.tStart;         % intermediate time at transitions
+    locCurr = params.startLoc;      % current location
+    xInter = params.x0;             % intermediate state at transitions
 
     t = {}; x = {}; loc = [];
     cnt = 0;
@@ -42,8 +42,8 @@ function [t,x,loc] = simulate(pHA,params)
     allLabels = labelOccurrences(pHA);
 
     % loop over the different locations 
-    while tInter < options.tFinal && ~isempty(locCurr) && ...
-           ~all(options.finalLoc == locCurr)
+    while tInter < params.tFinal && ~isempty(locCurr) && ...
+           ~all(params.finalLoc == locCurr)
 
         % increment counter
         cnt = cnt + 1;
@@ -52,7 +52,7 @@ function [t,x,loc] = simulate(pHA,params)
         currentLocation = locationProduct(pHA,locCurr,allLabels);
 
         % construct system input for this location
-        params.u = aux_mergeInputVector(locCurr,options);
+        params.u = aux_mergeInputVector(locCurr,params.uLoc,params.inputCompMap);
 
         % simulate within the current location
         params.tStart = tInter;
@@ -77,16 +77,15 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function res = aux_mergeInputVector(loc,options)
+function res = aux_mergeInputVector(loc,uLoc,inputCompMap)
 % construct the input vector for the current location from the inputs for 
 % the subcomponents
 
-    res = zeros(size(options.inputCompMap,1),1);
-    temp = unique(options.inputCompMap);
+    res = zeros(size(inputCompMap,1),1);
+    temp = unique(inputCompMap);
     
     for i = 1:length(temp)
-        res(options.inputCompMap == temp(i)) = ...
-            options.uLoc{temp(i)}{loc(temp(i))}; 
+        res(inputCompMap == temp(i)) = uLoc{temp(i)}{loc(temp(i))}; 
     end
 end
 

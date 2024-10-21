@@ -23,8 +23,6 @@ function res = test_capsule_contains
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % 1. Same center, generator, different radius
 c = [2; -1; 1];
 g = [4; -3; 2];
@@ -35,8 +33,8 @@ C_small = capsule(c,g,r_small);
 C_big = capsule(c,g,r_big);
 
 % compute containment
-res(end+1,1) = ~contains(C_small,C_big);
-res(end+1,1) = contains(C_big,C_small);
+assert(~contains(C_small,C_big));
+assert(contains(C_big,C_small));
 
 
 % 2. centers too far away from one another
@@ -48,8 +46,8 @@ C_plus = capsule(c_plus,g,r);
 C_minus = capsule(c_minus,g,r);
 
 % compute containment
-res(end+1,1) = ~contains(C_plus,C_minus);
-res(end+1,1) = ~contains(C_minus,C_plus);
+assert(~contains(C_plus,C_minus));
+assert(~contains(C_minus,C_plus));
 
 
 % 3. capsules overlapping, different generators
@@ -58,8 +56,8 @@ g2 = g1 + [-1; 0.2; 0.5];
 C1 = capsule(c,g1,r);
 C2 = capsule(c,g2,r);
 % compute containment
-res(end+1,1) = ~contains(C1,C2);
-res(end+1,1) = ~contains(C2,C1);
+assert(~contains(C1,C2));
+assert(~contains(C2,C1));
 
 
 % 4. point containment
@@ -70,17 +68,17 @@ p_inside = center(C);
 % ... and outside
 p_outside = 10*ones(dim(C),1);
 % check if correct results for containment
-res(end+1,1) = contains(C, p_inside);
-res(end+1,1) = ~contains(C, p_outside);
+assert(contains(C, p_inside));
+assert(~contains(C, p_outside));
 
 % array of points (all outside)
 num = 10;
 p_array = 10*(ones(dim(C),num)+rand(dim(C),num));
-res(end+1,1) = ~any(contains(C, p_array));
+assert(~any(contains(C, p_array)));
 
 
 % combine tests
-res = all(res);
+res = true;
 
 
 % dimension mismatch
@@ -90,7 +88,7 @@ try
     contains(C1,C2);
 catch ME
     if ~strcmp(ME.identifier,'CORA:dimensionMismatch')
-        throw(CORAerror('CORA:testFailed'));
+        rethrow(ME)
     end
 end
 

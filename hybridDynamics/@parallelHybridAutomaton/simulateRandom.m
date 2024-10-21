@@ -33,27 +33,22 @@ function simRes = simulateRandom(pHA,params,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % input argument validation
-options = struct();
-if nargin == 3 && isstruct(varargin{1})
-    options = varargin{1};
-end
-
-% options preprocessing
-options = validateOptions(pHA,mfilename,params,options);
+options = setDefaultValues({struct()},varargin);
+[params,options] = validateOptions(pHA,params,options);
 
 % determine random points inside the initial set
 nrEx = ceil(options.points*options.fracVert);
 nrNor = options.points - nrEx;
 points = [];
 if nrEx > 0
-    points = [points, randPoint(options.R0,nrEx,'extreme')]; 
+    points = [points, randPoint(params.R0,nrEx,'extreme')]; 
 end
 if nrNor > 0
-    points = [points, randPoint(options.R0,nrNor,'standard')];
+    points = [points, randPoint(params.R0,nrNor,'standard')];
 end
 
 % determine time points
-time = linspace(options.tStart,options.tFinal,options.nrConstInp);
+time = linspace(params.tStart,params.tFinal,options.nrConstInp);
 
 % initialization
 t = []; x = []; locs = [];
@@ -63,16 +58,16 @@ simRes = [];
 for i = 1:options.points
 
     counter = 1;
-    loc = options.startLoc;
+    loc = params.startLoc;
     
     % loop over all input changes
     for g = 1:length(time)-1
     
         % get random inputs
         if counter < options.nrConstInp * options.fracInpVert 
-            params_.u = aux_generateRandomInputs(options,'extreme');
+            params_.u = aux_generateRandomInputs(params.Uloc,'extreme');
         else
-            params_.u = aux_generateRandomInputs(options,'standard');
+            params_.u = aux_generateRandomInputs(params.Uloc,'standard');
         end              
         
         % simulate the parallel hybrid automaton
@@ -80,7 +75,7 @@ for i = 1:options.points
         params_.tStart = time(g);
         params_.tFinal = time(g+1);
         params_.startLoc = loc;
-        params_.inputCompMap = options.inputCompMap;
+        params_.inputCompMap = params.inputCompMap;
         
         [tTemp,xTemp,locTemp] = simulate(pHA,params_);
         
@@ -105,21 +100,21 @@ end
     
 % Auxiliary functions -----------------------------------------------------
 
-function uLoc = aux_generateRandomInputs(options,flag)
+function uLoc = aux_generateRandomInputs(Uloc,flag)
 
-    uLoc = cell(length(options.Uloc),1);
+    uLoc = cell(length(Uloc),1);
 
     % inputs for the single components
-    for i = 1:length(options.Uloc)
+    for i = 1:length(Uloc)
         
-       uLoc{i} = cell(length(options.Uloc{i}),1);
+       uLoc{i} = cell(length(Uloc{i}),1);
         
-       for j = 1:length(options.Uloc{i})
+       for j = 1:length(Uloc{i})
            
           if strcmp(flag,'extreme')
-             uLoc{i}{j} = randPoint(options.Uloc{i}{j},1,'extreme');
+             uLoc{i}{j} = randPoint(Uloc{i}{j},1,'extreme');
           else
-             uLoc{i}{j} = randPoint(options.Uloc{i}{j});
+             uLoc{i}{j} = randPoint(Uloc{i}{j});
           end
        end
     end

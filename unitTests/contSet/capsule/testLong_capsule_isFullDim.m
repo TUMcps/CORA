@@ -60,10 +60,7 @@ for i=1:nrTests
     % compute whether full-dimensional
     CfullDim = isFullDim(C);
 
-    if CfullDim ~= fullDim
-        res = false;
-        break;
-    end
+    assertLoop(CfullDim == fullDim,i)
 
 end
 

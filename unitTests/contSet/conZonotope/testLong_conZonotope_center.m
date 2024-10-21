@@ -53,14 +53,10 @@ for i=1:nrTests
 
     % center of constrained zonotope without constraints has to be center
     % of zonotope
-    if ~all(withinTol(c_Z,c,0))
-        res = false; break
-    end
+    assertLoop(all(withinTol(c_Z,c,0)),i)
 
     % check containment of center of actually constrained zonotope
-    if ~contains(cZ,c_cZ)
-        res = false; break
-    end
+    assertLoop(contains(cZ,c_cZ),i)
 
 end
 

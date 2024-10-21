@@ -31,6 +31,8 @@ function res = isFuncLinear(f,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(1,2);
+
 % check if vector length for each input argument of f is given
 if nargin == 1
     % read out length of each input argument
@@ -38,8 +40,6 @@ if nargin == 1
 elseif nargin == 2
     sizeInputArgs = varargin{1};
     sizeFunOut = [];
-elseif nargin > 2
-    throw(CORAerror('CORA:tooManyInputArgs',2));
 end
 
 % init symbolic input arguments

@@ -24,7 +24,7 @@ function res = testLong_stl_modelChecking_bouncingBall
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-alg = {'rtl','sampledTime','signals'};
+alg = {'rtl','sampledTime','signals','incremental'};
 
 % hybrid system
 sys = bouncing_ball(-0.75);
@@ -48,7 +48,7 @@ R = reach(sys, params, options);
 x = stl('x',2);
 
 % loop over different formulas and algorithms
-res = [];
+res = true;
 
 
 % formulas to verify
@@ -69,7 +69,7 @@ eq_pos = {
 
 for j = 3:length(alg)
     for i = 1:length(eq_pos)
-        res(end+1,1) = modelChecking(R,eq_pos{i},alg{j});
+        assert(modelChecking(R,eq_pos{i},alg{j}));
     end
 end
 
@@ -91,11 +91,11 @@ eq_neg = {
 
 for j = 3:length(alg)
     for i = 1:length(eq_neg)
-        res(end+1,1) = ~modelChecking(R,eq_neg{i},alg{j});
+        assert(~modelChecking(R,eq_neg{i},alg{j}));
     end
 end
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

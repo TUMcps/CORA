@@ -22,6 +22,9 @@ function res = test_reachSet_project
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % instantiate set, propagation matrix
 Z = zonotope([1;1;4],[1 0 -2; 2 -1 1; -2 4 -1]);
@@ -44,6 +47,6 @@ R_true = reachSet(timePoint_true);
 R_proj = project(R,projDim);
 
 % compare results
-res = isequal(R_true,R_proj);
+assert(isequal(R_true,R_proj));
 
 % ------------------------------ END OF CODE ------------------------------

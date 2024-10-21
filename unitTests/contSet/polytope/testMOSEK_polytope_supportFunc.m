@@ -26,7 +26,7 @@ function res = testMOSEK_polytope_supportFunc
 
 % ensure that MOSEK is on the path
 if ~isSolverInstalled('mosek')
-    res = false; return
+    assert(false);
 end
 
 % init polytopes
@@ -61,7 +61,7 @@ end
 % remove MOSEK from path
 [suc,path2mosek] = removeSolverFromPath('mosek');
 if ~suc
-    res = false; return
+    assert(false);
 end
 
 % check full-dimensionality using MATLAB linprog
@@ -82,8 +82,8 @@ res = true;
 for i=1:length(res_mosek)
     for l=1:length(res_mosek{i})
         if ( isfinite(res_mosek{i}(l)) && ~withinTol(res_mosek{i}(l),res_matlab{i}(l)) ) ...
-                || ( ~isfinite(res_mosek{i}(l)) && res_mosek{i}(l) ~= res_matlab{i}(l) )s
-            res = false; return
+                || ( ~isfinite(res_mosek{i}(l)) && res_mosek{i}(l) ~= res_matlab{i}(l) )
+            assert(false);
         end
     end
 end

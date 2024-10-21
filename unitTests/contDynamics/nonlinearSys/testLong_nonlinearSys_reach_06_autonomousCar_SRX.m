@@ -27,7 +27,7 @@ function res = testLong_nonlinearSys_reach_06_autonomousCar_SRX()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-dim_x=6;
+dim_x = 6;
 
 %load data
 load SRX_lc_data
@@ -47,10 +47,10 @@ Z_init = zonotope(interval(min(V,[],2),max(V,[],2)));
 
 % Reachability Settings ---------------------------------------------------
 
-options.tStart = 0;
-options.tFinal = 7.5;
-options.x0 = center(Z_init);
-options.R0 = Z_init;
+params.tStart = 0;
+params.tFinal = 7.5;
+params.x0 = center(Z_init);
+params.R0 = Z_init;
 options.timeStep = 0.01;
 options.taylorTerms = 4;
 options.zonotopeOrder = 800;
@@ -59,7 +59,7 @@ options.reductionTechnique = 'girard';
 options.alg = 'lin';
 options.tensorOrder = 2;
 
-options.X_sample = zonotope([zeros(dim_x,1),1.8*diag([0.1, 0.1, 1, 0.5, 1, 1])]);
+params.X_sample = zonotope([zeros(dim_x,1),1.8*diag([0.1, 0.1, 1, 0.5, 1, 1])]);
 
 
 %load reference trajectory
@@ -74,10 +74,10 @@ p = SRXparameters();
 getModelFactors(p,1);
 
 %input consists of reference trajectory u_ref, sensor noise y
-options.uTransVec = [u_ref; zeros(4,length(u_ref(1,:)))];
+params.uTransVec = [u_ref; zeros(4,length(u_ref(1,:)))];
 U_ref = zonotope(zeros(length(u_ref(:,1)),1));
 Y = zonotope([zeros(4,1), 4*diag([0.02, 0.02, 0.05*pi/180, 0.05*pi/180])]); % applanix data (standard deviation): %delta x,y: 0.02, heading: 0.05*pi/180
-options.U = cartProd(U_ref, Y);
+params.U = cartProd(U_ref, Y);
 options.expVector = [0.2; 0; 0.25; 0.25; 0.15; 0];
 
 
@@ -89,41 +89,41 @@ carDyn=nonlinearSys(@DOTBicycleDynamics_controlled_SRX_velEq);
 % Simulation --------------------------------------------------------------
 
 %generate ode options
-stepsizeOptions = odeset('MaxStep',options.tFinal-options.tStart);
+stepsizeOptions = odeset('MaxStep',params.tFinal-params.tStart);
 opt = odeset(stepsizeOptions);
 
 %compute single simulation
-inputChanges=ceil(options.tFinal/options.timeStep);
-finalTime=options.tFinal;
-options.xStep(:,1) = options.x0;
+inputChanges=ceil(params.tFinal/options.timeStep);
+finalTime=params.tFinal;
+options.xStep(:,1) = params.x0;
 
 for iChange = 1:inputChanges
     %reset options
-    options.tStart=options.tFinal;
-    options.tFinal=options.tFinal+finalTime/inputChanges;
-    options.u = options.uTransVec(:,iChange);
+    params.tStart=params.tFinal;
+    params.tFinal=params.tFinal+finalTime/inputChanges;
+    params.u = params.uTransVec(:,iChange);
     if iChange > 1
-        options.x0 = x{iChange-1}(end,:);
+        params.x0 = x{iChange-1}(end,:);
     end
 
     %simulate hybrid automaton
-    [t{iChange},x{iChange}] = simulate(carDyn,options,opt); 
+    [t{iChange},x{iChange}] = simulate(carDyn,params,opt); 
     options.xStep(:,iChange+1) = x{iChange}(end,:);
 end
 
 %reset options
-options.tStart = 0;
-options.tFinal = finalTime;
+params.tStart = 0;
+params.tFinal = finalTime;
 
 
 % Reachability Analysis ---------------------------------------------------
-Rcont = aux_parallelReach(carDyn, options);
+R = aux_reach(carDyn, params, options);
 
 
 % Verification ------------------------------------------------------------
 
 %enclose result by interval
-IH = interval(Rcont{end});
+IH = interval(R{end});
 
 %saved result
 IH_saved = interval( ...
@@ -131,16 +131,20 @@ IH_saved = interval( ...
 [-0.0016227388002018; 2.7558057378008112; -0.0343461012859574; 64.4733925792921241; 28.2414003942370044; -0.0057006695447072]);
 
 %final result
-res = isequal(IH,IH_saved,1e-8);
+assert(isequal(IH,IH_saved,1e-8));
+
+
+% test completed
+res = true;
+
+end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function Rcont = aux_parallelReach(sys_init, options)
+function Rcont = aux_reach(sys_init, params, options)
 
 derivatives(sys_init,options); 
-
-tic
 
 %obtain factors for initial state and input solution
 for i=1:(options.taylorTerms+1)
@@ -149,17 +153,17 @@ for i=1:(options.taylorTerms+1)
 end
 
 %obtain intervalhull of uncertain sensor values
-IH_u = interval(options.U);
+IH_u = interval(params.U);
 IH_y = IH_u(6:9);
 
 %precompute linearizations
-timeSteps = ceil(options.tFinal/options.timeStep);
+timeSteps = ceil(params.tFinal/options.timeStep);
 
-linOptions=cell(1,timeSteps);
-sys=cell(1,timeSteps);
-linSys=cell(1,timeSteps);
-RallError=cell(1,timeSteps);
-
+linParams = cell(1,timeSteps);
+linOptions = cell(1,timeSteps);
+sys = cell(1,timeSteps);
+linsys = cell(1,timeSteps);
+RallError = cell(1,timeSteps);
 
 for iSet=1:timeSteps
     
@@ -169,92 +173,121 @@ for iSet=1:timeSteps
     else
         delayInd = 0;
     end
-    options.uTrans = options.uTransVec(:,iSet - delayInd);
+    params.uTrans = params.uTransVec(:,iSet - delayInd);
 
     %get first linearized system
     options.linearizationPoint = options.xStep(:,iSet);
-    [sysTmp,linSys{iSet},linOptions{iSet}] = linearize(sys_init,options);
+    [sysTmp,linsys{iSet},linParams{iSet},linOptions{iSet}] = ...
+        linearize(sys_init,[],params,options);
     sys{iSet} = copy(sysTmp);
 end
-    
-%parfor iSet=1:timeSteps
-for iSet=1:timeSteps  
+
+S = struct([]);
+for iSet=1:timeSteps
     %prepare reachable set computations
-    linSys{iSet} = preReach(linSys{iSet}, linOptions{iSet});
+    S = [S; aux_preReach(linsys{iSet},linParams{iSet},linOptions{iSet})];
 end
 %compute initial additional set due to linearization error
-V = zonotope([0*options.expVector,diag(options.expVector)]);
-RallError{1} = errorSolution(linSys{1},linOptions{1},V);
+V = zonotope(0*options.expVector,diag(options.expVector));
+RallError{1} = particularSolution_timeVarying(linsys{1},...
+    V,options.timeStep,options.taylorTerms);
 
 %initialize
-t = options.tStart + options.timeStep;
-iSet = 1;
-perfInd = 0;
-Rtp = options.R0;
+Rtp = params.R0;
 
-toc
-
-tic
-
-%while final time is not reached
-while (t<options.tFinal) && perfInd<1
+Rcont = cell(timeSteps,1);
+for iSet=1:timeSteps
     
     %set input and center
-    if iSet>30
+    if iSet > 30
         delayInd = 30;
     else
         delayInd = 0;
     end
-    options.uTrans = options.uTransVec(:,iSet - delayInd);
-    options.center = options.xStep(:,iSet);
+    params.uTrans = params.uTransVec(:,iSet - delayInd);
+    c = options.xStep(:,iSet);
 
     %translate Rinit by linearization point
     Rinit = reduce(Rtp,options.reductionTechnique,options.zonotopeOrder);
-    Rdelta = Rinit + (-options.center);
-
-    %do core computations
-    R_hom_tp = coreReach(linSys{iSet}, Rdelta);
+    Rdelta = Rinit - c;
+    
+    % first time step homogeneous solution
+    R_hom_tp = S(iSet).eAt*Rdelta + S(iSet).Pu;
     
     %translate reachable sets by linearization point
-    R_hom_tp = R_hom_tp+options.center;
+    R_hom_tp = R_hom_tp + c;
 
     %do post computations
-    [R_hom,IH_hom] = postReach(linSys{iSet}, Rinit, R_hom_tp, options.center);
+    [R_hom,IH_hom] = aux_postReach(Rinit,R_hom_tp,...
+        S(iSet).PU,S(iSet).F,S(iSet).inputCorr,c);
 
     %compute maximum reachable set due to maximal allowed linearization error
     IH_max=IH_hom + interval(RallError{iSet});
 
     % obtain linearization error
-    [error] = linError_constVel(sys{iSet},options.uTrans,IH_max,IH_y);
+    err = linError_constVel(sys{iSet},params.uTrans,IH_max,IH_y);
 
     %compute performance index of linearization error
-    perfInd = max(error./options.expVector)
-    
-    if perfInd>1
-        disp('stop');
-    end
+    perfInd = max(err./options.expVector);
 
     % compute reachable set due to the linearization error
-    V = zonotope([0*error,diag(error)]);
-    Rerror = errorSolution(linSys{iSet},linOptions{iSet},V);
+    V = zonotope(0*err,diag(err));
+    Rerror = particularSolution_timeVarying(linsys{iSet},...
+        V,options.timeStep,options.taylorTerms);
     
     %update RallError
     RallError{iSet+1} = enlarge(Rerror,1.8);
-    options.expVector = 1.8*error;
+    options.expVector = 1.8*err;
 
     %add intervalhull of actual error
-    Rti =R_hom.ti + Rerror;
-    Rtp =R_hom.tp + Rerror;
+    Rti = R_hom.ti + Rerror;
+    Rtp = R_hom.tp + Rerror;
     
     %save reachable set
-    Rcont{iSet}=Rti; 
-    
-    %increment time and set counter
-    t = t+options.timeStep;
-    iSet = iSet+1; 
-    %t
-    
+    Rcont{iSet} = Rti;
 end
-toc
+
+end
+
+function S = aux_preReach(sys,params,options)
+% prepares reachable set computation for linear systems
+
+% compute auxiliary interval matrices
+[E,F,G] = taylorMatrices(sys,options.timeStep,options.taylorTerms);
+
+% compute particular solutions
+[Pu,inputCorr] = particularSolution_constant(sys,params.uTrans,...
+    options.timeStep,options.taylorTerms);
+PU = particularSolution_timeVarying(sys,params.U,...
+    options.timeStep,options.taylorTerms);
+
+% read out exponential matrix
+eAt = getTaylor(sys,'eAdt',struct('timeStep',options.timeStep));
+
+% return in a struct
+S = struct('eAt',eAt,'E',E,'F',F,'G',G,'Pu',Pu,'PU',PU,'inputCorr',inputCorr);
+
+end
+
+function [Rnext,IH] = aux_postReach(Rinit,R_tp,RV,F,inputCorr,c)
+% computes the reachable continuous set for the first time interval as a
+% postprocessing step
+
+%time interval solution
+R_err = F*(Rinit+(-c)) + inputCorr;
+R_ti = enclose(Rinit,R_tp) + R_err;
+
+%write results to reachable set struct Rfirst
+Rnext.tp = R_tp + RV;
+Rnext.ti = R_ti + RV;
+
+%compute enclosing hull
+IH_init = interval(Rinit);
+IH_tp = interval(R_tp);
+IH_err = interval(R_err+RV);
+
+IH = or(IH_init,IH_tp) + IH_err;
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

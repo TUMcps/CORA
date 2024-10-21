@@ -56,8 +56,7 @@ sS=linearSys('sS',[0 0;0 0],[0;0]); %standstill
 %specify transitions-------------------------------------------------------
 
 %reset map for all transitions
-reset.A=eye(2); 
-reset.c=zeros(2,1);
+reset = linearReset.eye(2);
 
 %values required to set up invariant and guard sets
 dist = 1e3; 

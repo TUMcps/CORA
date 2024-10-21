@@ -46,20 +46,16 @@ G2 =  [1 1/4 -1/2 1/4; 1/2 9/4 -1/2 1/4];
 E2 = [1 0 1 2; 0 1 1 1];
 
 % check for correctness
-if ~all(withinTol(c1,pZsplit{1}.c)) || ~all(withinTol(c2,pZsplit{2}.c))
-    throw(CORAerror('CORA:testFailed'));
-end
+assert(all(withinTol(c1,pZsplit{1}.c)))
+assert(all(withinTol(c2,pZsplit{2}.c)))
 
 for i = 1:size(E1,2)    
     
     ind = ismember(pZsplit{1}.E',E1(:,i)','rows');  
     ind_ = find(ind > 0);
     
-    if isempty(ind_)
-        throw(CORAerror('CORA:testFailed'));
-    elseif ~all(pZsplit{1}.G(:,ind_(1)) == G1(:,i))
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(~isempty(ind_),i);
+    assertLoop(all(pZsplit{1}.G(:,ind_(1)) == G1(:,i)),i)
 end
 
 for i = 1:size(E2,2)    
@@ -67,11 +63,9 @@ for i = 1:size(E2,2)
     ind = ismember(pZsplit{2}.E',E2(:,i)','rows');  
     ind_ = find(ind > 0);
     
-    if isempty(ind_)
-        throw(CORAerror('CORA:testFailed'));
-    elseif ~all(pZsplit{2}.G(:,ind_(1)) == G2(:,i))
-        throw(CORAerror('CORA:testFailed'));
-    end
+    
+    assertLoop(~isempty(ind_),i);
+    assertLoop(all(pZsplit{2}.G(:,ind_(1)) == G2(:,i)),i)
 end
 
 

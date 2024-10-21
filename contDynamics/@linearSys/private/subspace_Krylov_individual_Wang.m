@@ -4,7 +4,7 @@ function [V,H,krylovOrder] = subspace_Krylov_individual_Wang(A,nu_A,v,initKrylov
 %    approach in Theorem 3.1 of [1] is used for tight error computation
 %
 % Syntax:
-%    [V,H,KrylovOrder] = subspace_Krylov_individual_Wang(obj,v,options)
+%    [V,H,KrylovOrder] = subspace_Krylov_individual_Wang(A,nu_A,v,initKrylovOrder,options)
 %
 % Inputs:
 %    A - system matrix

@@ -40,9 +40,7 @@ function res = test_stl_robustness()
     eq = until(y(2) < -point,y(1) > point,interval(0,1));
     
     % model checking
-    if robustness(eq,x,t) < 0
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(robustness(eq,x,t) >= 0)
 
     % slightly change STL formula
     y = stl('y',2);
@@ -50,10 +48,7 @@ function res = test_stl_robustness()
     eq = until(y(2) < -point,y(1) > point,interval(0,1));
 
     % model checking
-    if robustness(eq,x,t) > 0
-        throw(CORAerror('CORA:testFailed'));
-    end
-
+    assert(robustness(eq,x,t) <= 0)
 
     % analytical tests for the globally-operator
 
@@ -66,18 +61,13 @@ function res = test_stl_robustness()
     eq = globally(y(1) > 0.1,interval(0,1));
 
     % model checking
-    if robustness(eq,x,t) > 0
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(robustness(eq,x,t) <= 0)
 
     % different STL formula
     eq = globally(y(1) >= 0.2 & y(1) <= 0.3, interval(0.2,0.3));
 
     % model checking
-    if robustness(eq,x,t) < 0
-        throw(CORAerror('CORA:testFailed'));
-    end   
-
+    assert(robustness(eq,x,t) >= 0)
 
     % analytical tests for the finally-operator
 
@@ -90,17 +80,13 @@ function res = test_stl_robustness()
     eq = finally(y(1) > 1.1,interval(0,1));
 
     % model checking
-    if robustness(eq,x,t) > 0
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(robustness(eq,x,t) <= 0)
 
     % different STL formula
     eq = finally(y(1) >= 0.25, interval(0.2,0.3));
 
     % model checking
-    if robustness(eq,x,t) < 0
-        throw(CORAerror('CORA:testFailed'));
-    end   
+    assert(robustness(eq,x,t) >= 0)
 
 
     % analytical tests for different set representations
@@ -136,9 +122,7 @@ function res = test_stl_robustness()
     robReach = robustness(eq,R);
     robSim = robustness(eq,x,t);
 
-    if robSim < robReach
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(robSim >= robReach)
 
     % test for polytope predicates
     y = stl('y',2);
@@ -148,9 +132,7 @@ function res = test_stl_robustness()
     robReach = robustness(eq,R);
     robSim = robustness(eq,x,t);
 
-    if robSim < robReach
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(robSim >= robReach)
 
     % test for level set predicates
     y = stl('y',2);
@@ -160,9 +142,7 @@ function res = test_stl_robustness()
     robReach = robustness(eq,R);
     robSim = robustness(eq,x,t);
 
-    if robSim < robReach
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(robSim >= robReach)
 
 
     % Random Tests --------------------------------------------------------
@@ -197,9 +177,7 @@ function res = test_stl_robustness()
         rob = robustness(eq,x,t);
 
         % check if results are consistent
-        if ((resOrig && rob < 0) || (~resOrig && rob > 0)) && ~isinf(rob)
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(~(((resOrig && rob < 0) || (~resOrig && rob > 0)) && ~isinf(rob)),i);
     end
 
     % check if robustness for reachable set is consistent with robustness
@@ -239,8 +217,7 @@ function res = test_stl_robustness()
         end
         
         % generate random STL formula
-        dom = [];
-
+        dom = interval.empty(dim(R.timeInterval.set{1}));
         for j = 1:length(R.timeInterval.set)
             dom = dom | interval(R.timeInterval.set{j});
         end
@@ -259,9 +236,7 @@ function res = test_stl_robustness()
         end
 
         % check if results are consistent
-        if robSim < robReach
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(robSim >= robReach,i);
     end
 end
 

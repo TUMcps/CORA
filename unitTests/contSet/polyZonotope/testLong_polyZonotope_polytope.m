@@ -44,11 +44,7 @@ for j = 10:15
     
     % check if the all polytope vertices are located inside the polynomial
     % zonotope
-    suc = containsPointSet(pZres,V,[],30);
-    
-    if ~suc
-        throw(CORAerror('CORA:testFailed'));
-    end   
+    assertLoop(containsPointSet(pZres,V,[],30),j);
 end
 
 
@@ -70,11 +66,7 @@ for j = 10:12
     
     % check if the all polytope vertices are located inside the polynomial
     % zonotope
-    suc = containsPointSet(pZres,V,[],30);
-    
-    if ~suc
-        throw(CORAerror('CORA:testFailed'));
-    end   
+    assertLoop(containsPointSet(pZres,V,[],30),j);
 end
 
 
@@ -106,9 +98,7 @@ for j = 10:15
     V_ = vertices(P_);
 
     % check if the vertices are identical to the original points
-    if ~compareMatrices(V,V_,1e-12)
-        throw(CORAerror('CORA:testFailed'));
-    end   
+    assertLoop(compareMatrices(V,V_,1e-12),j);
 end
 
 
@@ -152,9 +142,7 @@ for j = 4:6
 
     % check if the vertices are identical to the original points (only has
     % to be a subset)
-    if ~compareMatrices(V_,V,1e-12,'subset')
-        throw(CORAerror('CORA:testFailed'));
-    end   
+    assertLoop(compareMatrices(V_,V,1e-12,'subset'),j)
 end
 
 
@@ -194,10 +182,7 @@ for j = 1:5
     % check if all points are located inside the over-approximating
     % polytope
     temp = C * points - d * ones(1,size(points,2));
-    
-    if any(temp > 1e-12)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(all(temp <= 1e-12),j)
 end
 
 
@@ -224,9 +209,7 @@ for j = 10:11
     V_ = vertices(P_);
     
     % check if the vertices are identical to the original points
-    if ~compareMatrices(V,V_,1e-12)
-        throw(CORAerror('CORA:testFailed'));
-    end   
+    assertLoop(compareMatrices(V,V_,1e-12),j);
 end
 
 % ------------------------------ END OF CODE ------------------------------

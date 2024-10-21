@@ -23,19 +23,17 @@ function res = test_levelSet_isemptyobject
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty level set
 ls = levelSet.empty(2);
-res(end+1,1) = ~isemptyobject(ls);
+assert(~isemptyobject(ls));
 
 % 2D level set
 syms x y
 eq = x + y - 1;
 ls2 = levelSet(eq,[x;y],'==');
-res(end+1,1) = ~isemptyobject(ls2);
+assert(~isemptyobject(ls2));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -45,11 +45,10 @@ for i=1:nrOfTests
     pExtreme_d = randPoint(Ed,nrPts,'extreme');
     
     % check for containment in ellipsoid
-    if ~all(contains(E,pNormal)) || ~all(contains(Ed,pNormal_d)) || ...
-       ~all(contains(enlarge(E,1+tol),pExtreme)) || ~all(contains(enlarge(Ed,1+tol),pExtreme_d))
-        res = false;
-        break;
-    end
+    assertLoop(all(contains(E,pNormal)),i)
+    assertLoop(all(contains(Ed,pNormal_d)),i)
+    assertLoop(all(contains(enlarge(E,1+tol),pExtreme)),i)
+    assertLoop(all(contains(enlarge(Ed,1+tol),pExtreme_d)),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

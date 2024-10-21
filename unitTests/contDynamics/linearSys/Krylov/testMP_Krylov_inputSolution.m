@@ -18,6 +18,9 @@ function res = testMP_Krylov_inputSolution(~)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % enable access to private function "initReach_Krylov"
 path = CORAROOT;
@@ -84,7 +87,7 @@ Rnext_Krylov = initReach_Krylov(linDyn, options.R0, options);
 Rnext = initReach(linDyn, options.R0, options);
 
 % Is exact solution in zonotope?
-res = (interval(Rnext.tp) <= interval(Rnext_Krylov.tp));
+assert((interval(Rnext.tp) <= interval(Rnext_Krylov.tp)));
 
 % revoke access to private function "initReach_Krylov"
 delete(target);

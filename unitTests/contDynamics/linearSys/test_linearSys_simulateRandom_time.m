@@ -24,7 +24,7 @@ function res = test_linearSys_simulateRandom_time
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = [];
+res = true;
 
 % stable system matrix: n x n
 A = [-0.3780    0.2839    0.5403   -0.2962
@@ -55,11 +55,11 @@ params.tFinal = 1;
 simRes = simulateRandom(sys,params,options);
 
 % check if start and end time correct
-res(end+1,1) = length(simRes) == options.points;
-res(end+1,1) = all(arrayfun(@(z) z.t{1}(1) == 0,simRes,'UniformOutput',true));
-res(end+1,1) = all(arrayfun(@(z) withinTol(z.t{1}(end),params.tFinal),simRes,'UniformOutput',true));
+assert(length(simRes) == options.points);
+assert(all(arrayfun(@(z) z.t{1}(1) == 0,simRes,'UniformOutput',true)));
+assert(all(arrayfun(@(z) withinTol(z.t{1}(end),params.tFinal),simRes,'UniformOutput',true)));
 % check location
-res(end+1,1) = all(arrayfun(@(z) isscalar(z.loc) && z.loc(1) == 0,simRes,'UniformOutput',true));
+assert(all(arrayfun(@(z) isscalar(z.loc) && z.loc(1) == 0,simRes,'UniformOutput',true)));
 
 % set start time as well
 params.tStart = 0.5;
@@ -67,13 +67,13 @@ params.tFinal = 1;
 simRes = simulateRandom(sys,params,options);
 
 % check if start and end time correct
-res(end+1,1) = length(simRes) == options.points;
-res(end+1,1) = all(arrayfun(@(z) withinTol(z.t{1}(1),params.tStart),simRes,'UniformOutput',true));
-res(end+1,1) = all(arrayfun(@(z) withinTol(z.t{1}(end),params.tFinal),simRes,'UniformOutput',true));
+assert(length(simRes) == options.points);
+assert(all(arrayfun(@(z) withinTol(z.t{1}(1),params.tStart),simRes,'UniformOutput',true)));
+assert(all(arrayfun(@(z) withinTol(z.t{1}(end),params.tFinal),simRes,'UniformOutput',true)));
 % check location
-res(end+1,1) = all(arrayfun(@(z) isscalar(z.loc) && z.loc(1) == 0,simRes,'UniformOutput',true));
+assert(all(arrayfun(@(z) isscalar(z.loc) && z.loc(1) == 0,simRes,'UniformOutput',true)));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

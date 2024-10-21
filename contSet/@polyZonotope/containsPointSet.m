@@ -62,23 +62,24 @@ for i=1:splits
 end
 
 % over-approximate the splitted polynomial zonotopes with linear zonotopes
-qZsplit = cell(length(pZsplit),1);
-for i = 1:length(pZsplit)
+nrSplits = length(pZsplit);
+qZsplit = cell(nrSplits+1,1);
+for i = 1:nrSplits
     temp = zonotope(pZsplit{i});
     temp = reduce(temp,'girard',order);
-    qZsplit{i} = halfspace(temp);
+    qZsplit{i} = polytope(temp);
 end
-
+% append zonotope conversion of full polynomial zonotope
 temp = zonotope(pZ);
 temp = reduce(temp,'girard',order);
-qZsplit{end+1} = halfspace(temp);
+qZsplit{end} = polytope(temp);
 
 % check if all points of the original polynomial zonotope are located
 % inside the reduced polynomial zonotope
 
 % init container for point-in-splitZonotope
-resTemp = false(length(qZsplit),size(points,2));
-for j=1:length(qZsplit)
+resTemp = false(nrSplits+1,size(points,2));
+for j=1:nrSplits+1
     resTemp(j,:) = contains_(qZsplit{j},points,'approx',1e-10);
 end
 % unify results: a point has to be in at least one of the split zonotopes

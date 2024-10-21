@@ -22,8 +22,8 @@ function text = benchmark_hybrid_reach_ARCH23_gearbox_GRBX01()
 % Parameters --------------------------------------------------------------
 
 % initial set
-int = interval([0;0;-0.0168;0.0029;0],[0;0;-0.0166;0.0031;0]);
-params.R0 = zonotope(int);
+I = interval([0;0;-0.0168;0.0029;0],[0;0;-0.0166;0.0031;0]);
+params.R0 = zonotope(I);
 
 % initial location, final location, and final time
 params.startLoc = 1;
@@ -92,8 +92,8 @@ guard1 = trans(1).guard;
 guard2 = trans(2).guard;
 
 specs = specification({ ...
-    halfspace(guard1.a(3:4)',guard1.b); ...
-    halfspace(guard2.a(3:4)',guard2.b) ...
+    polytope(guard1.Ae(3:4),guard1.be); ...
+    polytope(guard2.Ae(3:4),guard2.be) ...
 }, 'unsafeSet');
 
 axis([-2e-2,-3e-3,-1e-2,1e-2]);

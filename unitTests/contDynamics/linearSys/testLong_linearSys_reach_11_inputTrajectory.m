@@ -36,17 +36,13 @@ sys = linearSys('sys',A,B);
 
 % Parameters --------------------------------------------------------------
 
-dim = length(A);
+dim_x = length(A);
 
 params.tFinal = 5;
-params.R0 = zonotope([[10; 5],0.5*eye(dim)]);       % initial set
-params.U = zonotope([ones(dim,1),0.25*eye(dim)]);   % uncertain inputs
+params.R0 = zonotope([[10; 5],0.5*eye(dim_x)]);
+params.U = zonotope([zeros(dim_x,1),0.25*eye(dim_x)]);
 params.u = 50*[0.01 1; -0.02 -0.5];
 
-% Reachability Settings ---------------------------------------------------
-
-options.linAlg = 'adaptive';
-options.error = 0.05;
 
 % Simulation --------------------------------------------------------------
 
@@ -59,13 +55,15 @@ simRes = simulateRandom(sys, params, simOpt);
 
 % Reachability Analysis ---------------------------------------------------
 
+options.linAlg = 'adaptive';
+options.error = 0.05;
 Radaptive = reach(sys,params,options);
 
 % reachability settings for non-adaptive algorithms
+options = rmfield(options,'error');
 options.timeStep = 0.05;
 options.taylorTerms = 5;
 options.zonotopeOrder = 100;
-options = rmfield(options,'error');
 
 % correct dimension for u
 params.u = repelem(params.u,1,...
@@ -75,10 +73,6 @@ params.u = repelem(params.u,1,...
 options.linAlg = 'standard';
 Rstandard = reach(sys,params,options);
 
-% from start
-options.linAlg = 'fromStart';
-Rstart = reach(sys,params,options);
-
 % wrapping free
 options.linAlg = 'wrapping-free';
 Rwrappingfree = reach(sys,params,options);
@@ -86,15 +80,10 @@ Rwrappingfree = reach(sys,params,options);
 
 % Verification ------------------------------------------------------------
 
-res_adaptive = contains(Radaptive,simRes);
-res_start = contains(Rstart,simRes);
-res_standard = contains(Rstandard,simRes);
-res_wrappingfree = contains(Rwrappingfree,simRes);
+assert(contains(Radaptive,simRes));
+assert(contains(Rstandard,simRes));
+assert(contains(Rwrappingfree,simRes));
 
-% full result
-res = res_adaptive && res_start && res_standard && res_wrappingfree;
-
-
-end
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

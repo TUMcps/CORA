@@ -22,6 +22,9 @@ function res = test_hybridAutomaton_reach_01_bouncingBall
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 % Reachability Options ----------------------------------------------------
@@ -48,7 +51,7 @@ options.intersectInvariant = true;
 A = [0 1; 0 0];
 B = [0; 0];
 c = [0; -9.81];
-linSys = linearSys('linearSys',A,B,c);
+linsys = linearSys('linearSys',A,B,c);
 
 % system parameters
 alpha = -0.75;                                      % rebound factor
@@ -57,17 +60,16 @@ alpha = -0.75;                                      % rebound factor
 inv = polytope([-1,0],0);
 
 % guard sets
-guard = conHyperplane([1,0],0,[0,1],0);
+guard = polytope([0,1],0,[1,0],0);
 
 % reset function
-reset.A = [0, 0; 0, alpha]; 
-reset.c = zeros(2,1);
+reset = linearReset([0, 0; 0, alpha], zeros(2,1), zeros(2,1)); 
 
 % transitions
 trans = transition(guard,reset,1);
 
 % location object
-loc = location('loc1',inv,trans,linSys); 
+loc = location('loc1',inv,trans,linsys); 
 
 % hybrid automaton
 HA = hybridAutomaton(loc);
@@ -128,6 +130,6 @@ I_saved = interval( ...
 res_reach = isequal(I,I_saved,1e-4);
 
 % overall result
-res = res_sim && res_reach;
+assert(res_sim && res_reach);
 
 % ------------------------------ END OF CODE ------------------------------

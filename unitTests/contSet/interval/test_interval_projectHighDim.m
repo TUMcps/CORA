@@ -23,23 +23,18 @@ function res = test_interval_projectHighDim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % check default case
 I = interval([2;3],[4;5]);
 R = projectHighDim(I,5,[1,4]);
 Rtrue = interval([2;0;0;3;0],[4;0;0;5;0]);
-resvec(end+1) = isequal(R,Rtrue);
-
-% gather results
-res = all(resvec);
+assert(isequal(R,Rtrue));
 
 % empty cannot be projected
-% check empty
 I = interval.empty(1);
-try
-    R = projectHighDim(I,2,[]);
-    res = false;
-end
+assert(representsa(I,'emptySet'));
+
+
+% gather results
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

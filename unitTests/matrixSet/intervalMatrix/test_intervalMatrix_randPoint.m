@@ -22,6 +22,9 @@ function res = test_intervalMatrix_randPoint
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % instantiate interval matrix
 intMat = intervalMatrix([2 3; 1 2],[1 0; 1 1]);
@@ -30,18 +33,16 @@ intMat = intervalMatrix([2 3; 1 2],[1 0; 1 1]);
 M = randPoint(intMat);
 
 % check containment
-res = contains(intMat,M(:,:,1));
+assert(contains(intMat,M(:,:,1)));
 
 % multiple samples
 M = randPoint(intMat,5);
 for i=1:length(M)
-    if ~contains(intMat,M(:,:,i))
-        res = false; break
-    end
+    assertLoop(contains(intMat,M(:,:,i)),i)
 end
 
 % extreme sampling
 M = randPoint(intMat,1,'extreme');
-res = res & contains(intMat,M(:,:,1),'exact',1e-8);
+assert(contains(intMat,M(:,:,1),'exact',1e-8));
 
 % ------------------------------ END OF CODE ------------------------------

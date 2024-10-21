@@ -43,9 +43,7 @@ for i = 1:100
     p = randPoint(cZ,100,'extreme');
 
     % check if all points are in the convex hull of the vertices
-    if ~contains(polytope(V), p)
-        res = false; break
-    end
+    assertLoop(contains(polytope(V), p),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

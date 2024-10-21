@@ -1,13 +1,14 @@
-function pZ = plus(summand1,summand2)
+function S_out = plus(pZ,S)
 % plus - Overloaded '+' operator for the Minkowski addition of a polynomial
 %    zonotope with another set representation or a point
 %
 % Syntax:
-%    pZ = plus(summand1,summand2)
+%    pZ = pZ + S
+%    pZ = plus(pZ,S)
 %
 % Inputs:
-%    summand1 - polyZonotope object
-%    summand2 - contSet object or numerical vector
+%    pZ - polyZonotope object, numeric
+%    S - contSet object, numeric
 %
 % Outputs:
 %    pZ - polyZonotope object after Minkowski addition
@@ -38,56 +39,60 @@ function pZ = plus(summand1,summand2)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% determine which summand is the polyZonotope object
-[pZ,summand] = findClassArg(summand1,summand2,'polyZonotope');
+% ensure that numeric is second input argument
+[S_out,S] = reorderNumeric(pZ,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < S_out.precedence
+    S_out = S + S_out;
+    return
+end
 
 try
 
+    if isa(S,'polyZonotope')
+        % compute Minkowski sum
+        S_out.c = S_out.c + S.c;
+        if isempty(S_out.c)
+            S_out = polyZonotope.empty(dim(S_out));
+            return
+        end
+        S_out.G = [S_out.G,S.G];
+        S_out.E = blkdiag(S_out.E,S.E);
+        S_out.GI = [S_out.GI,S.GI];
+        max_id = max(S_out.id);
+        if isempty(max_id)
+            max_id = 0;
+        end
+        S_out.id = [S_out.id; max_id + S.id];
+        return
+    end
+
     % summand is a numeric vector
-    if isnumeric(summand)
-        pZ.c = pZ.c + summand;
+    if isnumeric(S) && iscolumn(S)
+        S_out.c = S_out.c + S;
         return;
     end
     
     % different cases for the different set representations
-    if isa(summand,'zonotope')
-        
-        pZ.c = pZ.c + center(summand);
-        pZ.GI = [pZ.GI, generators(summand)];
+    if isa(S,'zonotope')
+        S_out.c = S_out.c + center(S);
+        S_out.GI = [S_out.GI, generators(S)];
+        return
+    end
        
-    elseif isa(summand,'interval')
+    if isa(S,'interval')
+        S = zonotope(S);
+        S_out.c = S_out.c + center(S);
+        S_out.GI = [S_out.GI, generators(S)];
+        return
+    end
         
-        pZ = pZ + zonotope(summand);
-        
-    elseif isa(summand,'conPolyZono')
-        
-        pZ = summand + pZ;
-        
-    else
-        
-        % convert other set representations to polynomial zonotopes
-        if ~isa(summand,'polyZonotope') 
-            if isa(summand,'polytope') || isa(summand,'zonoBundle') || ...
-               isa(summand,'conZonotope')
-    
-                summand = polyZonotope(summand);
-            else
-                % throw error for given arguments
-                throw(CORAerror('CORA:noops',summand1,summand2));
-            end
-        end
-    
-        % compute Minkowski sum
-        pZ.c = pZ.c + summand.c;
-        if isempty(pZ.c)
-            pZ = polyZonotope.empty(dim(pZ));
-            return
-        end
-        pZ.G = [pZ.G,summand.G];
-        pZ.E = blkdiag(pZ.E,summand.E);
-        pZ.GI = [pZ.GI,summand.GI];
-        pZ.id = [pZ.id;max(pZ.id) + summand.id];
-        
+    % convert other set representations to polynomial zonotopes
+    if isa(S,'polytope') || isa(S,'zonoBundle') || isa(S,'conZonotope')
+        S = polyZonotope(S);
+        S_out = S_out + S;
+        return
     end
 
 catch ME
@@ -100,18 +105,19 @@ catch ME
     end
 
     % check whether different dimension of ambient space
-    equalDimCheck(pZ,summand);
+    equalDimCheck(S_out,S);
 
     % check for empty sets
-    if representsa_(pZ,'emptySet',eps)
+    if representsa_(S_out,'emptySet',eps) || representsa_(S,'emptySet',eps)
+        S_out = polyZonotope.empty(dim(S_out));
         return
-    elseif representsa_(summand,'emptySet',eps)
-        pZ = polyZonotope.empty(dim(pZ)); return
     end
 
     % other error...
     rethrow(ME);
 
 end
+
+throw(CORAerror('CORA:noops',S_out,S));
 
 % ------------------------------ END OF CODE ------------------------------

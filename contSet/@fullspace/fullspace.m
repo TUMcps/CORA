@@ -35,7 +35,7 @@ classdef fullspace < contSet
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-properties (SetAccess = protected, GetAccess = public)
+properties (SetAccess = {?contSet, ?matrixSet}, GetAccess = public)
     % dimension of space
     dimension = 0;
 end
@@ -48,18 +48,15 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor(1,nargin);
 
         % 1. copy constructor
         if nargin == 1  && isa(varargin{1},'fullspace')
-            % copy constructor
             obj = varargin{1};
             return;
         end
 
         % 2. parse input arguments
-        if nargin > 1
-            throw(CORAerror('CORA:tooManyInputArgs',1));
-        end
         n = varargin{1};
 
         % 3. check correctness of input arguments
@@ -67,6 +64,9 @@ methods
         
         % 4. assign properties
         obj.dimension = n;
+
+        % 5. set precedence (fixed)
+        obj.precedence = 10;
     end
 end
 
@@ -74,6 +74,10 @@ methods (Static = true)
     fs = generateRandom(varargin) % generate random full space
     fs = enclosePoints(points,varargin) % enclose point cloud with full space
     fs = Inf(n) % instantiates a fullspace fullspace
+end
+
+methods (Access = protected)
+    [abbrev,printOrder] = getPrintSetInfo(S)
 end
 
 end

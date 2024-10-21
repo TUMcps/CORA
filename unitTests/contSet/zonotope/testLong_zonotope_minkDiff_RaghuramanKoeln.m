@@ -29,9 +29,6 @@ function res = testLong_zonotope_minkDiff_RaghuramanKoeln
 % define small box
 smallBox = zonotope([[0;0;0],1e-6*eye(3)]);
 
-% initialize partial results
-resvec = true(0);
-
 %% create zonotopes -- random cases in 3D
 for iSet = 1:20
     % create minuend
@@ -55,29 +52,23 @@ for iSet = 1:20
     % check whether Minkowski difference returns the empty set
     if representsa(Z_res_original,'emptySet')
         % check if polytope solution is empty as well
-        resvec(end+1,1) = representsa(Z_res_alternative,'emptySet');
+        assert(representsa(Z_res_alternative,'emptySet'));
     elseif representsa(Z_res_alternative,'emptySet')
         % due to a yalmip bug (x0), the alternative solution is not able to
         % compute a solution, and thus aux_RaghuramanKoeln_alternative
         % returns the empty set.
         % We accept that case here...
-        resvec(end+1,1) = true;
     else
         % enclosure check: alternative in original + smallBox
-        resvec(end+1,1) = contains(Z_res_original + smallBox, Z_res_alternative);
+        assert(contains(Z_res_original + smallBox, Z_res_alternative));
 
         % enclosure check: alternative in original + smallBox
-        resvec(end+1,1) = contains(Z_res_alternative + smallBox, Z_res_original);
-    end
-    
-    if resvec(end) ~= 1
-        % MPT toolbox often wrongfully returns that a polytope is empty
-        throw(CORAerror('CORA:testFailed'))
+        assert(contains(Z_res_alternative + smallBox, Z_res_original));
     end
 end
 
 %result of all tests
-res = all(resvec);
+res = true;
 
 end
 

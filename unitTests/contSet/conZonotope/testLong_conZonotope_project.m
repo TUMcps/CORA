@@ -29,10 +29,10 @@ res = true;
 cZ = conZonotope.empty(1);
 try 
     project(cZ,[1,2])
-    res = false;
+    assert(false);
 catch ME
     if ~strcmp(ME.identifier,'CORA:emptySet')
-        res = false;
+        rethrow(ME)
     end
 end
 
@@ -73,9 +73,7 @@ for i=1:nrOfTests
     cZ_proj_true = conZonotope(c(selectedDims),G(selectedDims,:));
        
     % compare results
-    if ~isequal(cZ_proj,cZ_proj_true)
-        res = false; break;
-    end
+    assertLoop(isequal(cZ_proj,cZ_proj_true),i)
     
     % random constraints so that conZonotope represents just a point
     % as A being diagional forces each independent factor to one value
@@ -91,9 +89,7 @@ for i=1:nrOfTests
     cZ_proj_true = conZonotope(c(selectedDims),G(selectedDims,:),A,b);
     
     % compare results
-    if ~isequal(cZ_proj,cZ_proj_true)
-        res = false; break;
-    end
+    assertLoop(isequal(cZ_proj,cZ_proj_true),i)
     
 end
 

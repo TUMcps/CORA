@@ -42,21 +42,21 @@ goalSet_orientation = interval(1.27079632,1.87079632);
 
 
 % check conversion
-res = length(waterways) == lw;
-res(end+1,1) = length(shallows) == ls;
-res(end+1,1) = length(dynObs) == ldo;
-res(end+1,1) = length(statObs) == lso;
+assert(length(waterways) == lw);
+assert(length(shallows) == ls);
+assert(length(dynObs) == ldo);
+assert(length(statObs) == lso);
 
-res(end+1,1) = x0.x == x0_x && x0.y == x0_y && x0.time == x0_time ...
-    && x0.velocity == x0_velocity && x0.orientation == x0_orientation;
+assert(x0.x == x0_x && x0.y == x0_y && x0.time == x0_time ...
+    && x0.velocity == x0_velocity && x0.orientation == x0_orientation);
 
-res(end+1,1) = isequal(goalSet{1}.set.set.Vertices,goalSet_set_set_Vertices) ...
+assert(isequal(goalSet{1}.set.set.Vertices,goalSet_set_set_Vertices) ...
     && goalSet{1}.set.set.NumHoles == goalSet_set_set_NumHoles ...
     && goalSet{1}.set.set.NumRegions == goalSet_set_set_NumRegions ...
     && isequal(goalSet{1}.time,goalSet_time) ...
-    && isequal(goalSet{1}.orientation,goalSet_orientation);
+    && isequal(goalSet{1}.orientation,goalSet_orientation));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

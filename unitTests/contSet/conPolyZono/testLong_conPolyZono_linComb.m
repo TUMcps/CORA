@@ -30,8 +30,12 @@ splits = 4;
 % Random Tests --------------------------------------------------------
 
 % define set representations that are tested
-sets = {'conPolyZono','polyZonotope','zonotope','conZonotope', ...
-        'ellipsoid','capsule'};
+sets = {@conPolyZono.generateRandom,...
+        @polyZonotope.generateRandom, ...
+        @zonotope.generateRandom, ...
+        @conZonotope.generateRandom, ...
+        @ellipsoid.generateRandom, ...
+        @capsule.generateRandom};
 
 % loop over all test cases
 for i = 1:2
@@ -43,7 +47,7 @@ for i = 1:2
     for j = 1:length(sets)
         
         % generate random object of the current set representation
-        eval(['temp = ',sets{i},'.generateRandom(''Dimension'',2);']);
+        temp = sets{i}('Dimension',2);
         cPZ2 = conPolyZono(temp);
 
         % compute linear combination
@@ -71,9 +75,7 @@ for i = 1:2
         % check if all points are inside polygon enclosures
         pgon = polygon(cPZ,splits);
         
-        if ~contains(pgon,points)
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(contains(pgon,points),i,j)
     end
 end
 

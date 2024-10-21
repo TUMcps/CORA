@@ -23,19 +23,17 @@ function res = test_zonotope_empty
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % 1D
 n = 1;
 Z = zonotope.empty(n);
-res(end+1,1) = representsa(Z,'emptySet') && dim(Z) == 1;
+assert(representsa(Z,'emptySet') && dim(Z) == 1);
 
 % 5D
 n = 5;
 Z = zonotope.empty(n);
-res(end+1,1) = representsa(Z,'emptySet') && dim(Z) == 5;
+assert(representsa(Z,'emptySet') && dim(Z) == 5);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -3,14 +3,15 @@ function pZ = mtimes(factor1,factor2)
 %    interval matrix with a polynomial zonotope
 %
 % Syntax:
+%    pZ = factor1 * factor2
 %    pZ = mtimes(factor1,factor2)
 %
 % Inputs:
-%    factor1 - numerical matrix or interval matrix
-%    factor2 - polyZonotope object 
+%    factor1 - polyZonotope object, numeric matrix or scalar
+%    factor2 - polyZonotope object, numeric scalar
 %
 % Outputs:
-%    pZ - polyZonotpe after multiplication of a matrix with a polyZonotope
+%    pZ - polyZonotope after the multiplication
 %
 % Example: 
 %    pZ = polyZonotope([0;0],[2 0 1;0 2 1],[0;0],[1 0 3;0 1 1]);
@@ -34,106 +35,36 @@ function pZ = mtimes(factor1,factor2)
 % Authors:       Niklas Kochdumper
 % Written:       25-June-2018 
 % Last update:   ---
-% Last revision: ---
+% Last revision: 04-October-2024 (MW, remove InferiorClasses)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% find the polyZonotope object
-[pZ,matrix] = findClassArg(factor1,factor2,'polyZonotope');
-
-
 try
-
-    % numeric matrix
-    if isnumeric(matrix)
-        
-        pZ.c = matrix*pZ.c;
-        
-        if ~isempty(pZ.G)
-            pZ.G = matrix*pZ.G;
-        end
-        
-        if ~isempty(pZ.GI)
-            pZ.GI = matrix*pZ.GI;
-        end
-    
-     
-    % interval matrix
-    elseif isa(matrix,'interval')
-        
-        m = center(matrix);
-        r = rad(matrix);
-        
-        % calculate interval over-approximation
-        inter = interval(pZ);
-        s = abs(center(inter)) + rad(inter);
-        
-        % compute new polyZonotope
-        pZ.c = m*pZ.c;
-        if ~isempty(pZ.G)
-            pZ.G = m*pZ.G;
-        end
-        if ~isempty(pZ.GI)
-            pZ.GI = [m*pZ.GI, diag(r*s)];
-        else
-            pZ.GI = diag(r*s);
-        end
-        
-        
-    % interval matrix 
-    elseif isa(matrix,'intervalMatrix')
-        
-        % get minimum and maximum
-        M_min=infimum(matrix.int);
-        M_max=supremum(matrix.int); 
-        
-        % get center and radius of interval matrix
-        m=0.5*(M_max+M_min);
-        r=0.5*(M_max-M_min);
-        
-        % calculate interval over-approximation
-        inter = interval(pZ);
-        s = abs(center(inter)) + rad(inter);
-        
-        % compute new polyZonotope
-        pZ.c = m*pZ.c;
-        if ~isempty(pZ.G)
-            pZ.G = m*pZ.G;
-        end
-        if ~isempty(pZ.GI)
-            pZ.GI = [m*pZ.GI, diag(r*s)];
-        else
-            pZ.GI = diag(r*s);
-        end
-    
-        
-    % matrix zonotope 
-    else
-    
-        throw(CORAerror('CORA:noops',factor1,factor2));
-    
-    end
-
-catch ME
-    % note: error has already occured, so the operations below don't have
-    % to be efficient
-
-    % already know what's going on...
-    if startsWith(ME.identifier,'CORA')
-        rethrow(ME);
-    end
-
-    % check for empty sets
-    if representsa_(pZ,'emptySet',eps)
+    % matrix/scalar * polynomial zonotope
+    if isnumeric(factor1)
+        c = factor1*factor2.c;
+        G = factor1*factor2.G;
+        GI = factor1*factor2.GI;
+        pZ = polyZonotope(c,G,GI,factor2.E,factor2.id);
         return
     end
 
+    % polynomial zonotope * scalar
+    % (note that polynomial zonotope * matrix is not supported)
+    if isnumeric(factor2) && isscalar(factor2)
+        c = factor2*factor1.c;
+        G = factor2*factor1.G;
+        GI = factor2*factor1.GI;
+        pZ = polyZonotope(c,G,GI,factor1.E,factor1.id);
+        return
+    end
+
+catch ME
     % check whether different dimension of ambient space
     equalDimCheck(factor1,factor2);
-
-    % other error...
     rethrow(ME);
-
 end
+
+throw(CORAerror('CORA:noops',factor1,factor2));
 
 % ------------------------------ END OF CODE ------------------------------

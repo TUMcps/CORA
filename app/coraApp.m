@@ -843,7 +843,7 @@ file = file{1};
 linSys =  eval(strcat(file, '()'));
 
 if strcmp(class(linSys),'linearSys')
-    dimensions = string(1:linSys.dim);
+    dimensions = string(1:linSys.nrOfStates);
     dimensions1 = ['', dimensions, 'time'];
     dimensions2 = ['', dimensions];
 
@@ -2883,11 +2883,11 @@ file = file{1};
 nonlinSys =  eval(strcat(file, '()'));
 
 if strcmp(class(nonlinSys),'nonlinearSys')
-    dimensions = string(1:nonlinSys.dim);
+    dimensions = string(1:nonlinSys.nrOfStates);
     dimensions1 = ['', dimensions, 'time'];
     dimensions2 = ['', dimensions];
 
-    handles.dimensions_Nonlinear = nonlinSys.dim;
+    handles.dimensions_Nonlinear = nonlinSys.nrOfStates;
     handles.nrOfInputs_Nonlinear = nonlinSys.nrOfInputs;
 
     set(handles.popDim1Plot_Nonlinear, 'String', dimensions1);
@@ -5656,12 +5656,12 @@ file = strsplit(file, '.');
 file = file{1};
 hybridSys =  eval(strcat(file, '()'));
 
-if ~strcmp(class(hybridSys),'linearSys') && ~strcmp(class(hybridSys),'nonlinearSys')
-    dimensions = string(1:hybridSys.location{1,1}.contDynamics.dim);
+if ~isa(hybridSys,'linearSys') && ~isa(hybridSys,'nonlinearSys')
+    dimensions = string(1:hybridSys.location{1,1}.contDynamics.nrOfStates);
     dimensions1 = ['', dimensions, 'time'];
     dimensions2 = ['', dimensions];
 
-    handles.dimensions_Hybrid = hybridSys.location{1,1}.contDynamics.dim;
+    handles.dimensions_Hybrid = hybridSys.location{1,1}.contDynamics.nrOfStates;
     handles.nrOfInputs_Hybrid = hybridSys.location{1, 1}.contDynamics.nrOfInputs;
 
     set(handles.popDim1Plot_Hybrid, 'String', dimensions1);

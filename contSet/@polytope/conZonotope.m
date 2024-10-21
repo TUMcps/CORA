@@ -48,9 +48,7 @@ function cZ = conZonotope(P,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(1,3);
 
 % dimension
 n = dim(P);
@@ -64,114 +62,73 @@ inputArgsCheck({{P,'att','polytope'}, ...
                 {method,'str',{'exact:vertices','exact:supportFunc'}}, ...
                 {B,'att','interval'}});
 
+% fullspace cannot be represented as a conZonotope
 if representsa_(P,'fullspace',0)
     % conversion of fullspace object not possible
     throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
         'can therefore not be converted into a constrained zonotope.']));
+end
 
-elseif P.isVRep.val && isempty(P.V_.val)
+% vertex representation given and polytope is empty
+if P.isVRep.val && isempty(P.V_.val)
     cZ = conZonotope.empty(n);
     return
+end
 
-elseif strcmp(method,'exact:vertices')
+% choose method
+switch method
+    case 'exact:vertices'
+        % calculate the vertices of the polytope (also check for unboundedness)
+        try
+            V = vertices(P);
+        catch ME
+            if ~isempty(P.bounded.val) && ~P.bounded.val
+                 throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
+                    'can therefore not be converted into a constrained zonotope.']));
+            end
+            rethrow(ME);
+        end
+        
+        % no vertices -> empty set
+        if isempty(V)
+            cZ = conZonotope.empty(n);
+            return
+        end
 
-    % calculate the vertices of the polytope (check for unboundedness)
-    try
-        V = vertices(P);
-    catch ME
+        % ensure that constraints are there
+        [A,b,Ae,be] = constraints(P);
+        
+        % conversion
+        [c_,G_,A_,b_] = priv_conZonotope_vertices(A,b,Ae,be,V);
+
+    case 'exact:supportFunc'
+        % compute bounding box (which also computes set properties)
+        if nargin < 3
+            B = interval(P);
+        end
+
+        % check if P is known to be unbounded or empty
         if ~isempty(P.bounded.val) && ~P.bounded.val
-             throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
+            throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
                 'can therefore not be converted into a constrained zonotope.']));
+        elseif ~isempty(P.emptySet.val) && P.emptySet.val
+            cZ = conZonotope.empty(n);
+            return
         end
-        rethrow(ME);
-    end
 
-    % no vertices -> empty set
-    if isempty(V)
-        cZ = conZonotope.empty(n);
-        return
-    end
-
-    % ensure that constraints are there
-    constraints(P);
-
-    % number of constraints
-    nrIneq = size(P.A_.val,1);
-    nrEq = size(P.Ae_.val,1);
-
-    % read out all constraints
-    A_all = [P.A_.val; P.Ae_.val];
-    b_all = [P.b_.val; P.be_.val];
-    
-    % calculate a bounding box for the constrained zonotope
-    minV = min(V,[],2);
-    maxV = max(V,[],2);
-    
-    % compute center and generator matrix
-    c = 0.5 * (maxV + minV);
-    G = diag(0.5 * (maxV - minV));
-    
-    % Calculate the lower bound sigma for A*x \in [sigma,b] (Thm. 1 in [1])
-    sigma = min(A_all*V,[],2);
-    
-    % Construct constrained zonotope object according to eq. (21) in [1]
-    G_ = [G, zeros(size(G,1),nrIneq+nrEq)];
-    A_ = [A_all*G, diag((sigma-b_all)./2)];
-    b_ = (b_all+sigma)./2 - A_all*c;
-
-elseif strcmp(method,'exact:supportFunc')
-    
-    % compute bounding box
-    B = interval(P);
-
-    % check if P is unbounded
-    if ~P.bounded.val
-        % conversion of unbounded object not possible
-        throw(CORAerror('CORA:specialError',['Polytope is unbounded and '...
-            'can therefore not be converted into a constrained zonotope.']));
-    elseif P.emptySet.val
-        cZ = conZonotope.empty(n);
-        return
-    end
-    
-    % compute center and generators
-    c = center(B);
-    G = diag(0.5 * (supremum(B) - infimum(B)));
-
-    % ensure that constraints are there
-    constraints(P);
-
-    % number of constraints
-    nrIneq = size(P.A_.val,1);
-    nrEq = size(P.Ae_.val,1);
-
-    % read out constraints of polytope
-    A_all = [P.A_.val; P.Ae_.val];
-    b_all = [P.b_.val; P.be_.val];
-    
-    % compute lower bound in the direction of halfspaces
-    sigma = zeros(nrIneq,1);
-    for a=1:nrIneq
-        sigma(a) = supportFunc_(B,A_all(a,:)','lower');
-        % any lower bound is Inf -> polytope is empty
-        if sigma(a) == Inf
-            cZ = conZonotope.empty(n); return
+        % ensure that constraints are there
+        [A,b,Ae,be] = constraints(P);
+        
+        % conversion
+        [c_,G_,A_,b_,empty] = priv_conZonotope_supportFunc(A,b,Ae,be,B);
+        if empty
+            cZ = conZonotope.empty(n);
+            return
         end
-    end
-    % same for equality constraints
-    if ~isempty(P.Ae_.val)
-        % no need to compute the value
-        sigma = [sigma; P.be_.val];
-    end
-    
-    % Construct constrained zonotope object according to eq. (21) in [1]
-    G_ = [G, zeros(size(G,1),nrIneq+nrEq)];
-    A_ = [A_all*G, diag((sigma-b_all)./2)];
-    b_ = (b_all+sigma)./2 - A_all*c;
 
 end
 
 % init constained zonotope
-cZ = conZonotope(c,G_,A_,b_);
+cZ = conZonotope(c_,G_,A_,b_);
 
 % ------------------------------ END OF CODE ------------------------------

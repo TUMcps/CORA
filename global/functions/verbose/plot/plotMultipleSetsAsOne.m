@@ -4,10 +4,10 @@ function han = plotMultipleSetsAsOne(sets,varargin)
 %    (e.g. in legend, colororder, hold status, ...)
 %
 % Syntax:
-%    han = plotMultipleSetsAsOne(V,varargin)
+%    han = plotMultipleSetsAsOne(sets,varargin)
 %
 % Inputs:
-%    sets - matrix storing the polygon vertices
+%    sets - cell array of sets
 %    dims - desired dimensions to plot
 %    NVpairs - plot settings name-value pairs
 %           or cell array containing NVpairs for each set
@@ -55,9 +55,7 @@ end
 
 function [dims,NVpairs] = aux_parseInput(sets,varargin)
     % parse input
-    if nargin > 4
-        throw(CORAerror('CORA:tooManyInputArgs', 4))
-    end
+    narginchk(0,4);
 
     % set default values
     [dims,NVpairs,purpose] = setDefaultValues({[1,2],{},'none'},varargin);

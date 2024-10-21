@@ -1,223 +1,134 @@
-function [timeInt,timePoint,res] = reach_decomp(obj,options)
+function [timeInt,timePoint,res] = reach_decomp(linsys,params,options)
 % reach_decomp - implementation of decomposed approach for reachability
 %    analysis of linear systems, cf. [1]
 %
 % Syntax:
-%    [timeInt,timePoint,res] = reach_decomp(obj,options)
+%    [timeInt,timePoint,res] = reach_decomp(linsys,params,options)
 %
 % Inputs:
-%    obj - linearSys object
+%    linsys - linearSys object
+%    params - model parameters
 %    options - options for the computation of reachable sets
 %
 % Outputs:
 %    timeInt - array of time-interval output sets
 %    timePoint - array of time-point output sets
-%    res - boolean (only if specification given)
+%    res - true/false whether specification satisfied
 %
 % Example:
 %    -
+%
+% References: 
+%   [1] S. Bogomolov, M. Forets, G. Frehse, A. Podelski, C. Schlling
+%       "Decomposing Reach Set Computations with Low-dimensional Sets and
+%        High-Dimensional Matrices"
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
-% References: 
-%   [1] S. Bogomolov, M. Forets, G. Frehse, A. Podelski, C. Schlling
-%       "Decomposing Reach Set Computations with Low-dimensional Sets
-%            and High-Dimensional Matrices"
 
 % Authors:       Mark Wetzlinger
 % Written:       11-June-2019
 % Last update:   14-August-2019
 %                19-November-2022 (MW, modularize specification check)
+%                16-October-2024 (MW, full rewrite)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% blocks and output matrix ------------------------------------------------
-options.blocks = length(options.partition);
-if length(obj.A) ~= 1 && length(obj.C) == 1
-    if obj.C == 1
-        % output = states
-        obj.C = speye(obj.dim);
-    end
+%%% TODO: support sparsity somehow?
+
+% put system into canonical form
+if isfield(params,'uTransVec')
+    throw(CORAerror('CORA:notSupported'));
+else
+    [linsys,U,u,V,v] = canonicalForm(linsys,params.U,params.uTrans,...
+        params.W,params.V,zeros(linsys.nrOfNoises,1));
+    V = V + v(:,1);
 end
-% -------------------------------------------------------------------------
 
-
-% initialize reachable set computations -----------------------------------
-% log information
-verboseLog(1,options.tStart,options);
-% init reach step
-[Yhat0, options] = initReach_Decomp(obj, options.R0, options);
-% -------------------------------------------------------------------------
-
-
-% quick access ------------------------------------------------------------
-Rtrans   = options.Rtrans;
-Raux     = options.Raux;
-Yinhom   = options.Yinhom;
-Rinhom   = options.Rinhom;
-Rhom0    = options.Rhom;
-Rhom_tp0 = options.Rhom_tp;
-Cno0     = options.Cno0;
-C        = options.Cblock;
-% -------------------------------------------------------------------------
-
-
-% init time related terms -------------------------------------------------
-eAt   = obj.taylor.eAt; % used every step for update of P and Q
-P     = speye(obj.dim);
-Q     = obj.taylor.eAt;
-tVec  = options.tStart:options.timeStep:options.tFinal;
+% time period, number of steps, step counter
+tVec = params.tStart:options.timeStep:params.tFinal;
 steps = length(tVec) - 1;
-% -------------------------------------------------------------------------
 
-
-% init some variables -----------------------------------------------------
+% initialize output variables for reachable sets and output sets
 timeInt.set = cell(steps,1);
 timeInt.time = cell(steps,1);
 timePoint.set = cell(steps+1,1);
 timePoint.time = num2cell(tVec');
 
-timeInt.set{1} = zeros(obj.nrOfOutputs,1);
-timePoint.set{1} = zeros(obj.nrOfOutputs,1);
-for bi=1:options.blocks
-    timeInt.set{1} = timeInt.set{1} + Yhat0.ti{bi};
-    timePoint.set{1} = timePoint.set{1} + Yhat0.tp{bi};
-end
-timeInt.time{1} = options.tStart + interval(0,options.timeStep);
-Yhatk = cell(options.blocks,1);
-Yhatk_tp = cell(options.blocks,1);
-% -------------------------------------------------------------------------
+% log information
+verboseLog(options.verbose,1,params.tStart,params.tStart,params.tFinal);
 
+% compute reachable sets for first step
+blocks = options.partition;
+[Rtp,Rti,Htp_0,Hti_0,PU_0,Pu_0] = oneStep(linsys,...
+    params.R0,U,u(:,1),options.timeStep,options.taylorTerms,blocks);
 
-% exit if violation already -----------------------------------------------
+% read out propagation matrix and base particular solution
+eAdt = getTaylor(linsys,'eAdt',struct('timeStep',options.timeStep));
+
+PU = PU_0;
+P = eye(linsys.nrOfStates);
+Q = eAdt;
+
+% compute output sets
+timePoint.set{1} = outputSet_canonicalForm(linsys,params.R0,V,v,1);
+timePoint.set{2} = outputSet_canonicalForm(linsys,recompose(Rtp),V,v,2);
+timeInt.set{1} = outputSet_canonicalForm(linsys,recompose(Rti),V,v,1);
+timeInt.time{1} = interval(tVec(1),tVec(2));
+
+% safety property check
 if isfield(options,'specification')
     [res,timeInt,timePoint] = checkSpecification(...
-        options.specification,[],timeInt,timePoint,1);
+        options.specification,Rti,timeInt,timePoint,1);
     if ~res; return; end
 end
-% -------------------------------------------------------------------------
 
-tic;
-% loop over all further time steps of reachability analysis ---------------
-for k=2:steps
+for k = 2:steps
+    
+    % propagate affine solution (no reduction since representation size
+    % does not increase over time)
+    Hti = block_mtimes(Q,Hti_0);
+    Htp = block_mtimes(Q,Htp_0);
+    % propagate particular solution (constant input solution is one step of
+    % the propagation matrix behind because it is already included in the
+    % affine solution above)
+    PU_new = block_operation(@plus,block_mtimes(Q,PU_0),block_mtimes(P,Pu_0));
+    PU = block_operation(@plus,PU,PU_new);
+    if isa(PU,'contSet')
+        PU = decompose(reduce(recompose(PU, ...
+            options.reductionTechnique, options.zonotopeOrder),blocks));
+    end
+    
+    % R([t_k, t_k + Delta t_k]) = H([t_k, t_k + Delta t_k]) + P([0, t_k])
+    Rti = block_operation(@plus,Hti,PU);
+    Rtp = block_operation(@plus,Htp,PU);
+
+    % compute output sets
+    timePoint.set{k+1} = outputSet_canonicalForm(linsys,recompose(Rtp),V,v,k+1);
+    timeInt.set{k} = outputSet_canonicalForm(linsys,recompose(Rti),V,v,k);
+    timeInt.time{k} = interval(tVec(k),tVec(k+1));
+
+    % propagate matrix exponentials
+    P = Q;
+    Q = Q * eAdt;
+    
+    % safety property check
+    if isfield(options,'specification')
+        [res,timeInt,timePoint] = checkSpecification(...
+            options.specification,recompose(Rti),timeInt,timePoint,k);
+        if ~res; return; end
+    end
     
     % log information
-    verboseLog(k,tVec(k),options);
-    
-    % compute next reachable set
-    for bi=1:options.blocks
-        
-        if Cno0(bi) 
-            s_i = options.partition(bi,1);
-            f_i = options.partition(bi,2);
-            Ytemp = 0;
-            Ytemp_tp = 0;
-            for bj=1:options.blocks
-                s_j = options.partition(bj,1);
-                f_j = options.partition(bj,2);
-                Ytemp = Ytemp + (C{bi} * Q(s_i:f_i,s_j:f_j)) * Rhom0{bj};
-                Ytemp_tp = Ytemp_tp + (C{bi} * Q(s_i:f_i,s_j:f_j)) * Rhom_tp0{bj};
-            end
-            Yhatk{bi} = Ytemp + Yinhom{bi};
-            Yhatk_tp{bi} = Ytemp_tp + Yinhom{bi};
-        else
-            Yhatk{bi} = zeros(obj.nrOfOutputs,1);
-            Yhatk_tp{bi} = zeros(obj.nrOfOutputs,1);
-        end
-        
-    end
-    
-    % write to return variables
-    timeInt.set{k} = zeros(obj.nrOfOutputs,1); 
-    timePoint.set{k} = zeros(obj.nrOfOutputs,1);
-    for bi=1:options.blocks
-        timeInt.set{k} = timeInt.set{k} + Yhatk{bi};
-        timePoint.set{k} = timePoint.set{k} + Yhatk_tp{bi};
-    end
-    timeInt.time{k} = interval(tVec(k-1),tVec(k));
-    
-    if isfield(options,'specification')
-        % check safety property (only time interval)
-        for b=1:options.blocks
-            if options.Cno0(b)
-                [res,timeInt,timePoint] = checkSpecification(...
-                    options.specification,[],timeInt,timePoint,k);
-                if ~res; return; end
-            end
-        end
-    end
-    
-    
-    % update expm
-    P = Q; % ... propagation of Rtrans
-    Q = Q * eAt; % ... propagation of Raux and next Rhom0
-    
-    
-    % propagation of Rinhom
-    % note: for now, input set constant V(k) = V(k+1) = V (no uTransVec)
-    if options.isInhom
-        for bi=1:options.blocks
-            s_i = options.partition(bi,1);
-            f_i = options.partition(bi,2);
-            
-            if Cno0(bi)
-                Rinhomtemp = Rinhom{bi};
-                Yinhomtemp = Yinhom{bi};
-
-                % change representation if suitable
-                if issparse([Rinhom{bi}.c,Rinhom{bi}.G]) ...
-                    && nnz(Rinhom{bi}.G) / numel(generators(Rinhom{bi})) > 0.5
-                    % change to full representation
-                    Rinhom{bi} = zonotope(full(Rinhom{bi}.c), full(Rinhom{bi}.G));
-                    Rtrans{bi} = zonotope(full(Rtrans{bi}.c), full(Rtrans{bi}.G));
-                    Raux{bi}   = zonotope(full(Raux{bi}.c), full(Raux{bi}.G));
-                end
-                
-            
-                for bj=1:options.blocks
-                    s_j = options.partition(bj,1);
-                    f_j = options.partition(bj,2);
-                    eAtRtrans = P(s_i:f_i,s_j:f_j);
-                    eAtRaux   = Q(s_i:f_i,s_j:f_j);
-
-                    if ~(~nnz(eAtRtrans) && ~nnz(eAtRaux))
-                        % only if prop matrices not all-zeros
-                        Yinhomtemp = Yinhomtemp + (C{bi} * eAtRtrans) * Rtrans{bj} + ...
-                            (C{bi} * eAtRaux) * Raux{bj};
-                        Rinhomtemp = Rinhomtemp + eAtRtrans * Rtrans{bj} + ...
-                            eAtRaux * Raux{bj};
-                    end
-                end
-                
-                Rinhom{bi} = Rinhomtemp;
-                Yinhom{bi} = Yinhomtemp;
-                % order reduction
-                Rinhom{bi} = reduce(Rinhom{bi},options.reductionTechnique,options.zonotopeOrder);
-                if size(C{bi},1) == 1
-                    % manual order reduction if only one output dimension
-                    temp_YinhomsZ = interval(Yinhom{bi});
-                    YinhomsZ_only_generator = center(Yinhom{bi}) - supremum(temp_YinhomsZ);
-                    Yinhom{bi} = zonotope([center(Yinhom{bi}), YinhomsZ_only_generator]);
-                else
-                    Yinhom{bi} = reduce(Yinhom{bi},options.reductionTechnique,options.zonotopeOrder);
-                end
-            end
-            
-        end
-    end
+    verboseLog(options.verbose,k,tVec(k),params.tStart,params.tFinal);
     
 end
-% -------------------------------------------------------------------------
 
-% log information
-verboseLog(length(tVec),tVec(end),options);
-
-% no violation of specification
+% specification fulfilled
 res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -47,10 +47,10 @@ options.tensorOrder = 2;
 options.taylorTerms = 4;
 options.zonotopeOrder = 20;
 
-% Parameters for NN evaluation --------------------------------------------
+% Options for NN evaluation -----------------------------------------------
 
-evParams = struct();
-evParams.poly_method = "singh";
+options.nn = struct();
+options.nn.poly_method = "singh";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -132,7 +132,7 @@ else
     % Reachability Analysis -----------------------------------------------
 
     tic;
-    R = reach(sys, params, options, evParams);
+    R = reach(sys, params, options);
     tComp = toc;
     disp(['Time to compute reachable set: ', num2str(tComp)]);
 

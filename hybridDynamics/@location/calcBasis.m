@@ -1,14 +1,16 @@
-function B = calcBasis(loc,R,guard,options)
+function B = calcBasis(loc,R,guard,options,params)
 % calcBasis - calculate orthogonal basis with the methods from [1]
 %
 % Syntax:
-%    B = calcBasis(loc,R,guard,options)
+%    B = calcBasis(loc,R,guard,options,params)
 %
 % Inputs:
 %    loc - object of class location
 %    R - list of intersections between the reachable set and the guard
 %    guard - guard set (class: constrained hyperplane)
 %    options - struct containing the algorithm settings
+%    params - model parameters for evaluating dynamic equation
+%             (only options.enclose = 'flow')
 %
 % Outputs:
 %    B - cell-array containing the calculated basis
@@ -42,7 +44,7 @@ function B = calcBasis(loc,R,guard,options)
            
             % Box method as described in Section V.A.a) in [1]
             case 'box'
-                B{i} = eye(sys.dim);
+                B{i} = eye(sys.nrOfStates);
                 
                 
             % PCA mehtod as described in Section V.A.b) in [1]
@@ -52,10 +54,10 @@ function B = calcBasis(loc,R,guard,options)
                 G = aux_extractGenerators(R);
                 
                 % project the generators onto the hyperplane
-                if  isa(guard,'conHyperplane')
-                   Z = zonotope([zeros(sys.dim,1),G]); 
-                   Z_ = projectOnHyperplane(guard,Z);
-                   G = generators(Z_);
+                if isa(guard,'polytope') && representsa_(guard,'conHyperplane',1e-12)
+                    Z = zonotope([zeros(sys.nrOfStates,1),G]); 
+                    Z_ = projectOnHyperplane(Z,guard);
+                    G = generators(Z_);
                 end
                 
                 % limit maximum number of generators to 1000
@@ -71,18 +73,18 @@ function B = calcBasis(loc,R,guard,options)
             % Flow method as described in Section V.A.d) in [1]
             case 'flow'
                 
-                % compute projectd center of the union of all sets
+                % compute projected center of the union of all sets
                 c = aux_extractCenter(R);
                 
-                if  isa(guard,'conHyperplane')
+                if isa(guard,'polytope') && representsa_(guard,'conHyperplane',1e-12)
                    Z = zonotope(c); 
-                   Z_ = projectOnHyperplane(guard,Z);
+                   Z_ = projectOnHyperplane(Z,guard);
                    c = center(Z_);
                 end
                 
                 % compute flow at the center
-                options.u = options.uTrans;
-                fcnHan = getfcn(sys,options);
+                params.u = params.uTrans;
+                fcnHan = getfcn(sys,params);
                 dir = fcnHan(0,c);
 
                 dir = dir./norm(dir);

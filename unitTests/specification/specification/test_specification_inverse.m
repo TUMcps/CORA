@@ -48,67 +48,54 @@ funHan = @(x) x(1)^2;
 spec = specification(set,'unsafeSet');
 spec_ = inverse(spec);
 % single 'unsafeSet' becomes 'safeSet'
-res(end+1,1) = strcmp(spec_.type,'safeSet');
+assert(strcmp(spec_.type,'safeSet'));
 
 % one unsafe set
 spec = specification(set,'safeSet');
 spec_ = inverse(spec);
 % 'safeSet' becomes 'unsafeSet'
-res(end+1,1) = strcmp(spec_.type,'unsafeSet');
+assert(strcmp(spec_.type,'unsafeSet'));
 
 % list of unsafe sets
 spec = specification(list);
 spec_ = inverse(spec);
 % list of unsafe sets remain unsafe
-res(end+1,1) = all(arrayfun(@(x) strcmp(x.type,'unsafeSet'),spec_,...
-    'UniformOutput',true));
+assert(all(arrayfun(@(x) strcmp(x.type,'unsafeSet'),spec_,...
+    'UniformOutput',true)));
 
 % list of safe sets
 spec = specification(list,'safeSet');
 spec_ = inverse(spec);
 % all 'safeSet' become a single 'unsafeSet'
-res(end+1,1) = strcmp(spec_.type,'unsafeSet') && length(spec_) == 1;
+assert(strcmp(spec_.type,'unsafeSet') && length(spec_) == 1);
 
 % list of sets with location
 spec = specification(list,'safeSet',location_HA);
 spec_ = inverse(spec);
 % all 'safeSet' become a single 'unsafeSet'
-res(end+1,1) = strcmp(spec_.type,'unsafeSet') && length(spec_) == 1;
-
-
-% combine results
-res = all(res);
+assert(strcmp(spec_.type,'unsafeSet') && length(spec_) == 1);
 
 % list of sets with type and time 
 spec = specification(list,'safeSet',time);
-try
-    % time not supported
-    spec_ = inverse(spec);
-    res = false; return
-end
+% time not supported
+assertThrowsAs(@inverse,'CORA:notSupported',spec);
 
 % set with type and time
 spec = specification(set,'invariant');
-try
-    % 'invariant' not supported
-    spec_ = inverse(spec);
-    res = false; return
-end
+% 'invariant' not supported
+assertThrowsAs(@inverse,'CORA:notSupported',spec);
 
 % stl formula
 spec = specification(eq,'logic');
-try
-    % 'logic' not supported
-    spec_ = inverse(spec);
-    res = false; return
-end
+% 'logic' not supported
+assertThrowsAs(@inverse,'CORA:notSupported',spec);
 
 % function handle
 spec = specification(funHan,'custom');
-try
-    % 'custom' not supported
-    spec_ = inverse(spec);
-    res = false; return
-end
+% 'custom' not supported
+assertThrowsAs(@inverse,'CORA:notSupported',spec);
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

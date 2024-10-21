@@ -1,4 +1,4 @@
-function S = compact_(varargin)
+function S = compact_(S,varargin)
 % compact_ - removes redundancies in the representation of a set, the
 %    resulting set is equal to the original set, but minimal in its
 %    representation

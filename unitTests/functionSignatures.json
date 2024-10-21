@@ -1,0 +1,12 @@
+{
+  "_schemaVersion": "1.0.0",
+  
+  "runTestSuite":
+  {
+     "inputs":
+     [
+        {"name":"testSuite", "kind":"required", "type":["char", "choices={'short','long','nn','mp','mosek','sdpt3','examples','benchmark','testHeader'}"], "purpose":"ID of error"},
+        {"name":"desc", "kind":"required", "type":["char"], "purpose":"description of the error"}
+     ]
+  }
+}

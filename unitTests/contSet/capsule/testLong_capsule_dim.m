@@ -36,7 +36,7 @@ end
 
 res = true;
 for i=1:length(C)
-    res = res && dim(C{i}) == n(i);
+    assert(res && dim(C{i}) == n(i));
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -34,15 +34,12 @@ function [carInput,k] = DOTcontrol(x,varargin)
 
 %------------- BEGIN CODE --------------
 
+narginchk(2,3);
 % parse input
-if nargin < 2
-    throw(CORAerror("CORA:notEnoughInputArgs", 2))
-elseif nargin == 2
+if nargin == 2
     uComb = varargin{1};
 elseif nargin == 3
     uComb = [varargin{1};varargin{2}];
-else
-    throw(CORAerror("CORA:tooManyInputArgs", 3))
 end
 
 

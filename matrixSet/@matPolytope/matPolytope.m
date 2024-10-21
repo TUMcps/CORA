@@ -1,4 +1,4 @@
-classdef matPolytope
+classdef matPolytope < matrixSet
 % matPolytope class 
 %
 % Syntax:
@@ -19,7 +19,7 @@ classdef matPolytope
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: intervalMatrix, matZonotope
+% See also: matrixSet, intervalMatrix, matZonotope
 
 % Authors:       Matthias Althoff, Tobias Ladner
 % Written:       21-June-2010
@@ -30,7 +30,7 @@ classdef matPolytope
 % ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
-    V % vertices (n x m x N)
+    V; % vertices (n x m x N)
 
     % legacy
     verts
@@ -42,11 +42,12 @@ methods
     % class constructor
     function obj = matPolytope(V)
 
+        % 0. check number of input arguments
+        assertNarginConstructor(0:2,nargin);
+
         % 1. check input
         if nargin == 0
             V = [];
-        elseif nargin > 1
-            throw(CORAerror('CORA:tooManyInputArgs',1));
         end
 
         % 2. check input arguments
@@ -131,7 +132,7 @@ function aux_checkInputArgs(V)
 
         else
             inputArgsCheck({ ...
-                {V, 'att', 'numeric','nonnan'}; ...
+                {V, 'att', 'numeric', 'nonnan'}; ...
             })
         end
         

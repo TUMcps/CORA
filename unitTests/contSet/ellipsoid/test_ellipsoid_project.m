@@ -45,11 +45,11 @@ projDim = [false true true];
 E_proj2 = project(E,projDim);
 
 % check properties
-res(1) = all(all(withinTol(E_true.Q,E_proj1.Q)));
-res(2) = E_true.dim == E_proj1.dim;
-res(3) = all(all(withinTol(E_true.Q,E_proj2.Q)));
-res(4) = E_true.dim == E_proj2.dim;
+assert(all(withinTol(E_true.Q,E_proj1.Q),"all"));
+assert(E_true.dim == E_proj1.dim);
+assert(all(withinTol(E_true.Q,E_proj2.Q),"all"));
+assert(E_true.dim == E_proj2.dim);
 % summary of checks
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

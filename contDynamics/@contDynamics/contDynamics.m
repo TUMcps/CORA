@@ -2,29 +2,33 @@ classdef contDynamics < matlab.mixin.Copyable
 % contDynamics - basic class for continuous dynamics
 %
 % Syntax:
-%    obj = contDynamics()
-%    obj = contDynamics(name)
-%    obj = contDynamics(name,states)
-%    obj = contDynamics(name,states,inputs)
-%    obj = contDynamics(name,states,inputs,outputs)
+%    sys = contDynamics()
+%    sys = contDynamics(name)
+%    sys = contDynamics(name,states)
+%    sys = contDynamics(name,states,inputs)
+%    sys = contDynamics(name,states,inputs,outputs)
+%    sys = contDynamics(name,states,inputs,outputs,dists)
+%    sys = contDynamics(name,states,inputs,outputs,dists,noises)
 %
 % Inputs:
 %    name - system name
 %    states - number of states
 %    inputs - number of inputs
 %    outputs - number of outputs
+%    dists - number of disturbances
+%    noises - number of disturbances on output
 %
 % Outputs:
-%    obj - generated contDynamics object
+%    sys - generated contDynamics object
 %
 % Example:
-%    obj = contDynamics('system',2,1,1);
+%    sys = contDynamics('system',2,1,1);
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff, Niklas Kochdumper
 % Written:       02-May-2007 
@@ -33,52 +37,87 @@ classdef contDynamics < matlab.mixin.Copyable
 %                04-March-2019 (number of outputs added)
 %                22-May-2020 (NK, deleted stateID, inputID, etc. properties)
 %                14-December-2022 (TL, property check in inputArgsCheck)
+%                30-August-2024 (MW, add disturbance/noise sizes)
+%                30-August-2024 (MW, add disturbance/noise sizes)
+%                16-October-2024 (TL, renames dim to nrOfStates)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-  
 
 properties (SetAccess = private, GetAccess = public)
-    name;           % name of the system
-    dim;            % state dimension
-    nrOfInputs;     % input dimension
-    nrOfOutputs;    % output dimension
+    name;               % name of the system
+    nrOfStates;         % state dimension
+    nrOfInputs;         % input dimension
+    nrOfOutputs;        % output dimension
+    nrOfDisturbances;   % disturbance dimension
+    nrOfNoises;         % noise dimension
+
+    % legacy
+    dim;                % (also) state dimension
 end
     
 methods
     
     % class constructor
-    function obj = contDynamics(varargin)
+    function sys = contDynamics(varargin)
+
+        % 0. check number of input arguments
+        assertNarginConstructor(0:6,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'contDynamics')
-            obj = varargin{1}; return
+            sys = varargin{1}; return
         end
 
         % 2. parse input arguments: varargin -> vars
-        if nargin > 4
-            throw(CORAerror('CORA:tooManyInputArgs',4));
-        end
-        [name,n,m,r] = setDefaultValues({'',0,0,0},varargin);
+        [name,states,inputs,outputs,dists,noises] = ...
+            setDefaultValues({'',0,0,0,0,0},varargin);
 
         % 3. check correctness of input arguments
         if CHECKS_ENABLED && nargin > 0
             inputArgsCheck({ ...
                 {name, 'att', {'char', 'string'}}; ...
-                {n, 'att', 'numeric', ...
+                {states, 'att', 'numeric', ...
                     {'integer', 'nonnegative', 'scalar'}}; ...
-                {m, 'att', 'numeric', ...
+                {inputs, 'att', 'numeric', ...
                     {'integer', 'nonnegative', 'scalar'}}; ...
-                {r, 'att', 'numeric', ...
+                {outputs, 'att', 'numeric', ...
+                    {'integer', 'nonnegative', 'scalar'}}; ...
+                {dists, 'att', 'numeric', ...
+                    {'integer', 'nonnegative', 'scalar'}}; ...
+                {noises, 'att', 'numeric', ...
                     {'integer', 'nonnegative', 'scalar'}}; ...
             })
         end
 
         % 4. assign properties
-        obj.name = name;
-        obj.dim = n;
-        obj.nrOfInputs = m;
-        obj.nrOfOutputs = r;
+        sys.name = name;
+        sys.nrOfStates = states;
+        sys.nrOfInputs = inputs;
+        sys.nrOfOutputs = outputs;
+        sys.nrOfDisturbances = dists;
+        sys.nrOfNoises = noises;
+    end
+end
+
+methods (Access = protected)
+    [printOrder] = getPrintSystemInfo(S)
+end
+
+% getter & setter ---------------------------------------------------------
+
+methods 
+    function dim = get.dim(sys)
+        CORAwarning('CORA:deprecated', 'property', 'contDynamics.dim', 'CORA v2025', ...
+            'Please use contDynamics.nrOfStates instead.', ...
+            'This change was made to be consistent with the other properties.')
+        dim = sys.nrOfStates;
+    end
+    function set.dim(sys,dim)
+        CORAwarning('CORA:deprecated', 'property', 'contDynamics.dim', 'CORA v2025', ...
+            'Please use contDynamics.nrOfStates instead.', ...
+            'This change was made to be consistent with the other properties.')
+        sys.nrOfStates = dim;
     end
 end
 

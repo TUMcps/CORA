@@ -111,12 +111,12 @@ ylabel('$x_2$','FontSize',20,'interpreter','latex');
 
 
 % constraint defining the specification
-hs = halfspace(-[1,2],-6.4);
+P = polytope(-[1,2],-6.4);
 
 % construct objective function
-Rproj = -hs.c' * Rfin;
+Rproj = -P.A * Rfin;
 
-b = -hs.d - Rproj.c - sum(abs(Rproj.GI));
+b = -P.b - Rproj.c - sum(abs(Rproj.GI));
 x = sym('x',[size(Rproj.E,1),1]);
 
 objSym = -b;
@@ -154,7 +154,7 @@ hold on
 % visualize constraint
 xlim([-1.5,1.5]);
 ylim([0.5 3.5]);
-plot(specification(hs),[1,2]);
+plot(specification(P),[1,2]);
 
 % visualize time interval reachable set
 useCORAcolors("CORA:contDynamics")
@@ -207,7 +207,7 @@ hold on
 
 xlim([-1.5,1.5]);
 ylim([0.5 3.5]);
-plot(specification(hs),[1,2]);
+plot(specification(P),[1,2]);
 
 % visualize time interval reachable set
 plot(R,[1,2],'FaceColor',CORAcolor("CORA:reachSet"),'Splits',4); 

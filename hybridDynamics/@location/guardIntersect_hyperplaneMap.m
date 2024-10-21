@@ -1,14 +1,15 @@
-function R = guardIntersect_hyperplaneMap(loc,guard,R0,options)
+function R = guardIntersect_hyperplaneMap(loc,guard,R0,params,options)
 % guardIntersect_hyperplaneMap - implementation of the guard mapping
 %    approach described in [1]
 %
 % Syntax:
-%    R = guardIntersect_hyperplaneMap(loc,guard,R0,options)
+%    R = guardIntersect_hyperplaneMap(loc,guard,R0,params,options)
 %
 % Inputs:
 %    loc - location object
-%    guard - guard set (class: conHyperplane)
+%    guard - guard set (class: polytope)
 %    R0 - initial set (last reachable set not intersecting the guard set)
+%    params - model parameters
 %    options - struct containing the algorithm settings
 %
 % Outputs:
@@ -27,15 +28,19 @@ function R = guardIntersect_hyperplaneMap(loc,guard,R0,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+    if ~isa(guard,'polytope') || ~representsa_(guard,'conHyperplane',1e-12)
+        throw(CORAerror('CORA:notSupported','Guard set must be a constrained hyperplane.'));
+    end
+
     % refine the time interval at which the guard set is hit
-    [R0,tmin,tmax,Rcont] = aux_refinedIntersectionTime(loc,guard,R0,options); 
+    [R0,tmin,tmax,Rcont] = aux_refinedIntersectionTime(loc,guard,R0,params,options); 
     tmax = tmax - tmin;
 
     % average hitting time
     th = tmax/2;
     
     % system matrix A and set of uncertain inputs U
-    [A,U] = aux_systemParams(loc.contDynamics,Rcont,options);
+    [A,U] = aux_systemParams(loc.contDynamics,Rcont,params);
     
     % constant part b of the flow \dot y = A*y0 + b (see Prop. 1 in [1])
     b = aux_constantFlow(A,R0,U,th,options.taylorTerms);
@@ -64,28 +69,31 @@ function R = guardIntersect_hyperplaneMap(loc,guard,R0,options)
     % project set onto the hyperplane
     R = reduce(R,options.reductionTechnique,options.zonotopeOrder);
     
-    R = projectOnHyperplane(guard,R);
+    R = projectOnHyperplane(R,guard);
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function [Rmin,tmin,tmax,int] = aux_refinedIntersectionTime(loc,guard,R0,options)
+function [Rmin,tmin,tmax,I] = aux_refinedIntersectionTime(loc,guard,R0,params,options)
 % this function computes the reachable set with a smaller times step to
 % refine the time at which the reachable set intersects the guard set
 
     % init halfspace representing the region inside the invariant
-    hs = halfspace(guard.a',guard.b);
+    P = polytope(guard.Ae,guard.be);
     
-    if ~contains_(hs,center(R0))
-        hs = halfspace(-guard.a',-guard.b);
+    if ~contains_(P,center(R0),'exact',1e-12)
+        P = polytope(-guard.Ae,-guard.be);
     end
     
-    spec = specification(hs,'invariant');
+    spec = specification(P,'invariant');
     
     % adapt reachability options
-    [params,options] = adaptOptions(loc,options);
+    % [params,options] = adaptOptions(loc,options);
+    if isa(loc.contDynamics,'linParamSys')
+        options.compTimePoint = true;
+    end
     
     options.timeStep = 0.1*options.timeStep;
     params.R0 = R0;
@@ -99,19 +107,19 @@ function [Rmin,tmin,tmax,int] = aux_refinedIntersectionTime(loc,guard,R0,options
     tmax = R.timePoint.time{end};
     
     % compute minimum time and set
-    Rmin = R0; tmin = 0; int = []; found = false;
-    
+    Rmin = R0; tmin = 0; found = false;
+    I = interval.empty(dim(R.timeInterval.set{1}));
     
     for k = 1:length(R.timeInterval.set)
         
         % check if start set of step intersects
-        if ~found && contains_(hs,R.timePoint.set{k})
+        if ~found && contains_(P,R.timePoint.set{k},'exact',1e-12)
             % update minimum time
             Rmin = R.timePoint.set{k};
             tmin = R.timePoint.time{k};
         else
             % compute union of all sets that intersect the guard
-            int = int | interval(R.timeInterval.set{k});
+            I = I | interval(R.timeInterval.set{k});
             found = true;
         end
     end
@@ -183,14 +191,14 @@ function err = aux_abstractionError(A,U,R0,th,tmax,order)
 end
 
 
-function [A,U] = aux_systemParams(sys,Rcont,options)
+function [A,U] = aux_systemParams(sys,Rcont,params)
 % get the system matrix A and the set of uncertain inputs U 
 
     if isa(sys,'linearSys')
         
         % extract system matrix + set of uncertain inputs
         A = sys.A;
-        U = sys.B * options.U;
+        U = sys.B * params.U;
 
         if ~isempty(sys.c)
             U = U + sys.c; 
@@ -200,7 +208,7 @@ function [A,U] = aux_systemParams(sys,Rcont,options)
         
         % linearize the system
         c = center(Rcont);
-        u = center(options.U);
+        u = center(params.U);
         
         f = sys.mFile(c,u);
         [A,B] = sys.jacobian(c,u);
@@ -209,8 +217,8 @@ function [A,U] = aux_systemParams(sys,Rcont,options)
         int_x = Rcont;
         int_x_ = int_x - c;
         
-        int_u = interval(options.U);
-        int_u_ = interval(options.U) - u;
+        int_u = interval(params.U);
+        int_u_ = interval(params.U) - u;
         
         H = sys.hessian(int_x,int_u);
         
@@ -229,7 +237,7 @@ function [A,U] = aux_systemParams(sys,Rcont,options)
         linError = zonotope([0*linError,diag(linError)]);
         
         % add linearization error to the set of uncertain inputs
-        U = B*options.U + (f-A*c) + linError;
+        U = B*params.U + (f-A*c) + linError;
         
     else
         
@@ -244,15 +252,14 @@ function R = aux_mappedSetError(guard,R0,A,b,err)
 % compute the second part R_he of the mapped set (see (15) in [1])
 
     % obtain object properties
-    n = guard.a';                    % hyperplane normal vector
+    n = guard.Ae;                    % hyperplane normal vector
     
     % interval enclosure of the fraction 
     temp = A*R0 + b;
-    
-    int = interval(-n' * err)/interval(n'*temp);
+    I = interval(-n * err)/interval(n*temp);
     
     % overall set (see (15) in [1])
-    R = temp*int + err;
+    R = I*temp + err;
 
 end
 
@@ -293,8 +300,8 @@ function [k,L,Q,phi] = aux_taylorSeriesParam(guard,A,b,R0)
 % according to Prop. 3 in [1]
 
     % obtain object properties
-    n = guard.a';                    % hyperplane normal vector
-    d = guard.b;                     % hyperplane offset
+    n = guard.Ae';                    % hyperplane normal vector
+    d = guard.be;                     % hyperplane offset
 
     % auxiliary variables (see Prop. 2 in [1])
     x0 = center(R0);

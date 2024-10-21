@@ -35,7 +35,7 @@ function obj = nonlinMap(obj,options)
 A=obj.A;
 taylorTerms=options.taylorTerms;
 r=options.timeStep;
-n=obj.dim;
+n=obj.nrOfStates;
 
 %compute exact A square
 Asquare=apprSquare(A);

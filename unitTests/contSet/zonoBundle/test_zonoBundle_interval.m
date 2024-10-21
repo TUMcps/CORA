@@ -27,7 +27,7 @@ function res = test_zonoBundle_interval
 n = 2;
 zB = zonoBundle.empty(n);
 I = interval(zB);
-res = representsa(I,'emptySet') && dim(I) == n;
+assert(representsa(I,'emptySet') && dim(I) == n);
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);
@@ -35,16 +35,16 @@ Z2 = zonotope([0;0], [2 2; 2 -2]);
 zB = zonoBundle({Z1,Z2});
 % convert to interval
 I = interval(zB);
-res(end+1,1) = contains(I,zB);
+assert(contains(I,zB));
 
 % empty intersection
 Z2 = zonotope([-4;1],[0.5 1; 1 -1]);
 zB = zonoBundle({Z1,Z2});
 % convert to interval
 I = interval(zB);
-res(end+1,1) = representsa(I,'emptySet');
+assert(representsa(I,'emptySet'));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

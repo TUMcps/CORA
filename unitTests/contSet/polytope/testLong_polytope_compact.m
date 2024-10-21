@@ -50,9 +50,7 @@ for i=1:nrTests
         val1 = supportFunc(P_,dir);
         val2 = supportFunc(P_,dir);
         % compare values (second check for -/+Inf)
-        if ~withinTol(val1,val2,1e-10) && ~(val1 == val2)
-            res = false; return
-        end
+        assertLoop(withinTol(val1,val2,1e-10),i,j)
     end
 
 end
@@ -76,10 +74,7 @@ for i=1:nrTests
     P_ = compact(P);
 
     % both should have same number of constraints
-    if length(P.b) ~= length(P_.b)
-        res = false; return
-    end
-
+    assertLoop(length(P.b) == length(P_.b),i)
 
     % init box outside of smaller box
     A = [eye(n);-eye(n);eye(n);-eye(n)];
@@ -96,10 +91,8 @@ for i=1:nrTests
 
     % minimal H-representation should be first half of the redundant
     % representation
-    if length(P_.b) ~= round(0.5*length(P.b)) ...
-            || ~compareMatrices([P.A(1:2*n,:),P.b(1:2*n)]',[P_.A,P_.b]',1e-14)
-        res = false; return
-    end
+    assertLoop(length(P_.b) == round(0.5*length(P.b)),i)
+    assertLoop(compareMatrices([P.A(1:2*n,:),P.b(1:2*n)]',[P_.A,P_.b]',1e-14),i)
 
 
     % init random polytope
@@ -115,9 +108,7 @@ for i=1:nrTests
     P_ = compact(P_box);
 
     % should have at least 2*n less constraints than original polytope
-    if length(P_.b) > length(P_box.b) - 2*n
-        res = false; return
-    end
+    assertLoop(length(P_.b) <= length(P_box.b) - 2*n,i)
 
 end
 

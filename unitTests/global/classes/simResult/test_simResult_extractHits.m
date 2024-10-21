@@ -26,14 +26,14 @@ function res = test_simResult_extractHits
 % empty simResult
 simRes = simResult();
 [tHit,xHit,xHit_] = extractHits(simRes);
-res = isempty(tHit) && isempty(xHit) && isempty(xHit_);
+assert(isempty(tHit) && isempty(xHit) && isempty(xHit_));
 
 % simResult with trajectory (no specific location given)
 t = {[0; 0.02; 0.05]};
 x = {[1 1; 0.9 1.1; 0.8 1.2]};
 simRes = simResult(x,t);
 [tHit,xHit,xHit_] = extractHits(simRes);
-res(end+1,1) = isempty(tHit) && isempty(xHit) && isempty(xHit_);
+assert(isempty(tHit) && isempty(xHit) && isempty(xHit_));
 
 % simResult with one trajectory and given location
 t = {[0; 0.02; 0.05]; [0.05; 0.08; 0.1]};
@@ -43,17 +43,17 @@ simRes = simResult(x,t,loc);
 
 % no specific location
 [tHit,xHit,xHit_] = extractHits(simRes);
-res(end+1,1) = tHit == 0.05 ...
+assert(tHit == 0.05 ...
     && all(xHit{1} == [0.8; 1.2]) ...
-    && all(xHit_{1} == [0.8; 2.2]);
+    && all(xHit_{1} == [0.8; 2.2]));
 % extract specific location before jump
 [tHit,xHit,xHit_] = extractHits(simRes,2);
-res(end+1,1) = isempty(tHit) && isempty(xHit) && isempty(xHit_);
+assert(isempty(tHit) && isempty(xHit) && isempty(xHit_));
 % extract specific location after jump
 [tHit,xHit,xHit_] = extractHits(simRes,[],2);
-res(end+1,1) = tHit == 0.05 ...
+assert(tHit == 0.05 ...
     && all(xHit{1} == [0.8; 1.2]) ...
-    && all(xHit_{1} == [0.8; 2.2]);
+    && all(xHit_{1} == [0.8; 2.2]));
 
 % simResult with location vector
 t = {[0; 0.02; 0.05]; [0.05; 0.08; 0.1]};
@@ -63,15 +63,15 @@ simRes = simResult(x,t,loc);
 
 % extract hits
 [tHit,xHit,xHit_] = extractHits(simRes,[1;1]);
-res(end+1,1) = tHit == 0.05 ...
+assert(tHit == 0.05 ...
     && all(xHit{1} == [0.8; 1.2]) ...
-    && all(xHit_{1} == [0.8; 2.2]);
+    && all(xHit_{1} == [0.8; 2.2]));
 
 % wrong size of location vector
 [tHit,xHit,xHit_] = extractHits(simRes,[1;1;1]);
-res(end+1,1) = isempty(tHit) && isempty(xHit) && isempty(xHit_);
+assert(isempty(tHit) && isempty(xHit) && isempty(xHit_));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

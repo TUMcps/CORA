@@ -27,17 +27,15 @@ function r = rank(E)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% empty case
 if representsa_(E,'emptySet',eps)
     r = 0;
-else
-    r = zeros(size(E));
-    for i=1:numel(E)
-        % Find minimum svd threshold using reciprocal
-        % condition number
-        d = svd(E(i).Q);
-        mev_th = d(1)*E(i).TOL;
-        r(i) = sum(d>0 & d>=mev_th);
-    end
+    return
 end
+
+% Find minimum svd threshold using reciprocal condition number
+d = svd(E.Q);
+mev_th = d(1)*E.TOL;
+r = sum(d > 0 & d >= mev_th);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -78,15 +78,15 @@ redMeth(1) = lower(redMeth(1));
 
 % restructure with the selected method
 if spec == 1
-    pZ = restructureZono(pZ,order,redMeth);
+    pZ = priv_restructureZono(pZ,order,redMeth);
 elseif spec == 2
-    pZ = restructureReduceFull(pZ,order,redMeth);
+    pZ = priv_restructureReduceFull(pZ,order,redMeth);
 elseif spec == 3
-    pZ = restructureReducePart(pZ,order,redMeth);
+    pZ = priv_restructureReducePart(pZ,order,redMeth);
 elseif spec == 4
-    pZ = restructureReduceDI(pZ,order,redMeth,genOrder);
+    pZ = priv_restructureReduceDI(pZ,order,redMeth,genOrder);
 else
-    pZ = restructureReduce(pZ,order,redMeth,genOrder);
+    pZ = priv_restructureReduce(pZ,order,redMeth,genOrder);
 end
 
 % ------------------------------ END OF CODE ------------------------------

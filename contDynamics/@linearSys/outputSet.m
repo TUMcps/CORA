@@ -1,22 +1,20 @@
-function Y = outputSet(obj,options,R)
+function Y = outputSet(linsys,R,params,options)
 % outputSet - calculates output set based on output equation given by
-%    y = Cx + Du + k + v and sets for x (R) and u (options.U + options.uTrans)
+%    y = Cx + Du + k + Fv and sets for x (R) and u (options.U + options.uTrans)
 %
 % Syntax:
-%    Y = outputSet(obj,options,R)
+%    Y = outputSet(linsys,R,params,options)
 %
 % Inputs:
-%    obj - linearSys object
-%    options - options for the computation of reachable sets
+%    linsys - linearSys object
 %    R - reachable set (either time point [i] or time interval [i,i+1])
+%    params - model parameters
+%    options - options for the computation of reachable sets
 %
 % Outputs:
 %    Y - output set (either time point [i] or time interval [i,i+1])
 %
 % Example:
-%    -
-%
-% References:
 %    -
 %
 % Other m-files required: none
@@ -42,36 +40,36 @@ if ~options.compOutputSet
 end
 
 % output equation is not provided or y = x
-if isempty(obj.C) || ...
-        ( isscalar(obj.C) && obj.C == 1 && ~any(any(obj.D)) ...
-        && ~any(obj.k) && representsa_(options.V,'origin',eps) )
+if isempty(linsys.C) || ...
+        ( isscalar(linsys.C) && linsys.C == 1 && ~any(any(linsys.D)) ...
+        && ~any(linsys.k) && (~any(any(linsys.F)) || representsa_(params.V,'origin',eps)) )
     Y = R;
     return;
 end
 
 isD = false;
-if any(any(obj.D))
+if any(any(linsys.D))
     isD = true;
-    U = options.U + options.uTrans;
+    U = params.U + params.uTrans;
 end
 
 
 if ~isfield(options,'saveOrder')
     
     if isD
-        Y = obj.C*R + obj.D * U + obj.k + options.V;
+        Y = linsys.C*R + linsys.D * U + linsys.k + linsys.F * params.V;
     else
-        Y = obj.C*R + obj.k + options.V;
+        Y = linsys.C*R + linsys.k + linsys.F * params.V;
     end
 
 else
 
     % reduction by saveOrder
     if isD
-        Y = reduce(zonotope(obj.C*R) + obj.D * U + obj.k + options.V,...
+        Y = reduce(zonotope(linsys.C*R) + linsys.D * U + linsys.k + linsys.F * params.V,...
             options.reductionTechnique,options.saveOrder);
     else
-        Y = reduce(zonotope(obj.C*R) + obj.k + options.V,...
+        Y = reduce(zonotope(linsys.C*R) + linsys.k + linsys.F * params.V,...
             options.reductionTechnique,options.saveOrder);
     end
 

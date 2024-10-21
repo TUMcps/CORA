@@ -28,15 +28,15 @@ n = 2;
 O = emptySet(n);
 
 % intersection with itself
-res = ~isIntersecting(O,O);
+assert(~isIntersecting(O,O));
 
 % init zonotope
 Z = zonotope(zeros(2,1));
 
 % intersection with zonotope
-res(end+1,1) = ~isIntersecting(O,Z);
+assert(~isIntersecting(O,Z));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

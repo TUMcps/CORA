@@ -40,7 +40,7 @@ function [J_handle,J_str] = jacobianHandle(pZ,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check id inputs
-[id_diff,id_param] = checkDiffParamIds(pZ,varargin{:});
+[id_diff,id_param] = priv_checkDiffParamIds(pZ,varargin{:});
 
 % remove any constant generators
 ind = ismember(pZ.id,id_diff);
@@ -80,7 +80,7 @@ if isempty(pZ.G)
     return;
 end
 
-%% compute Jacobian
+% compute Jacobian
 pZ_diff_cell = jacobian(pZ,id_d);
 d_r = length(id_d);
 n_r = length(c);
@@ -93,7 +93,7 @@ for i=1:d_r
     J_structure(:,i) = J_str_i;
 end
 
-%% re-introduce missing dimensions, ids
+% re-introduce missing dimensions, ids
 J_str = zeros(n,d);
 % reintroduce missing dims (additional row vectors), ids (additional
 % columns) into J_str

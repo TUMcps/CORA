@@ -18,8 +18,6 @@ function res = testLong_nonlinearSys_linError()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
 % Parameters --------------------------------------------------------------
 
 params.tFinal = 0.0021;
@@ -54,16 +52,16 @@ options.tensorOrder = 2;
 
 % System Dynamics ---------------------------------------------------------
 
-sys = nonlinearSys(@highorderBicycleDynamics);
+nlnsys = nonlinearSys(@highorderBicycleDynamics);
 
 
 % Reachability Analysis ---------------------------------------------------
 
 % options check
-options = validateOptions(sys,'reach',params,options);
+[params,options] = validateOptions(nlnsys,params,options,'FunctionName','reach');
 
 % compute symbolic derivatives
-derivatives(sys,options); 
+derivatives(nlnsys,options); 
 
 % obtain factors for initial state and input solution time step
 r = options.timeStep;
@@ -72,7 +70,7 @@ for i = 1:(options.taylorTerms+1)
 end
 
 % perform one reachability step
-[R, options] = initReach(sys, options.R0, options);
+[R, options] = initReach(nlnsys, params.R0, params, options);
 
 % extract the set of linearization errors
 err = R.tp{1}.error;
@@ -80,33 +78,28 @@ linError = zonotope([zeros(length(err),1),diag(err)]);
 
 % evaluate the linearization error for a set of random points
 p.u = center(params.U);
-f0prev = sys.mFile(center(params.R0),p.u);
+f0prev = nlnsys.mFile(center(params.R0),p.u);
 p.x = center(params.R0) + f0prev*0.5*options.timeStep;
 
-f0 = sys.mFile(p.x,p.u);
-[A,~] = sys.jacobian(p.x,p.u);
+f0 = nlnsys.mFile(p.x,p.u);
+[A,~] = nlnsys.jacobian(p.x,p.u);
 
 N = 10000;
 points = zeros(length(x0),N);
 
 for i = 1:N
     p = randPoint(params.R0);
-
-    temp = sys.mFile(p,[0;0]);
-    points(:,i) = temp - A * (p - sys.linError.p.x) - f0;
+    points(:,i) = nlnsys.mFile(p,[0;0]) - A*(p - nlnsys.linError.p.x) - f0;
 end
 
 % check if the set of linerization error contains all randomly computed points
 linError = interval(linError);
-
 linError = linError([1 3 5 6]);
 points = points([1 3 5 6],:);
 
-for i = 1:N
-    if ~contains(linError,points(:,i))
-        res = false;
-    	break
-    end
-end
+assert(all(contains(linError,points)));
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

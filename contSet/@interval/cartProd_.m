@@ -20,7 +20,7 @@ function res = cartProd_(I,S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: contSet/cartProd, zonotope/cartProd_
+% See also: contSet/cartProd, interval/cat
 
 % Authors:       Mark Wetzlinger
 % Written:       18-September-2019

@@ -23,6 +23,9 @@ function res = testLong_zonotope_intersectStrip
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % check whether the over-approximation of intersectStrip encloses the
 % exact result
@@ -74,19 +77,15 @@ P_exact_single = polytope(Z) & P_single;
 % specify tolerance
 tol = 1e-6;
 Z_tol = zonotope([zeros(2,1),tol*eye(2)]);
-% init resVec
-resVec = zeros(length(Z_over)+length(Z_over_single),1);
+
 % case for multiple strips
 for i = 1:length(Z_over)
-    resVec(i) = contains(polytope(Z_over{i} + Z_tol),P_exact);
+    assert(contains(polytope(Z_over{i} + Z_tol),P_exact));
 end
 % case for single strip
 for i = 1:length(Z_over_single)
-    resVec(i+length(Z_over)) = contains(polytope(Z_over_single{i} + Z_tol),P_exact_single);
+    assert(contains(polytope(Z_over_single{i} + Z_tol),P_exact_single));
 end
-
-% all methods over-aproximative?
-res = all(resVec);
  
 % figure; hold on 
 % plot(Z,[1 2],'r-+');

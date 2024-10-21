@@ -20,10 +20,6 @@ function res = test_spaceex2cora_hybrid_flat_08
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true;
-
-
 % directory to SpaceEx model file
 dir_spaceex = [CORAROOT filesep 'unitTests' filesep 'converter' ...
     filesep 'spaceex2cora' filesep 'testSystems'];
@@ -48,7 +44,7 @@ inv = levelSet(eq,[x;y],'<');
 % transitions
 eq = x^2 + y^2 - 5;
 guard = levelSet(eq,[x;y],'<=');
-reset = struct('A',[1,0;0,1],'c',[-2;-2]);
+reset = linearReset(eye(2),zeros(2,1),[-2;-2]);
 trans = transition(guard,reset,2);
 
 % flow equation
@@ -65,7 +61,7 @@ inv = levelSet(eq,[x;y],'<');
 % transitions
 eq = -x^2 - y^2 + 5;
 guard = levelSet(eq,[x;y],'<=');
-reset = struct('A',[1,0;0,1],'c',[2;2]);
+reset = linearReset(eye(2),zeros(2,1),[2;2]);
 trans = transition(guard,reset,1);
 
 % flow equation
@@ -78,10 +74,11 @@ loc(2) = location('loc2',inv,trans,dynamics);
 % instantiate hybrid automaton
 sys_cora = hybridAutomaton(loc);
 
-
 % compare systems
-if ~isequal(sys_cora,sys_spaceex,1e-4)
-    res = false;
-end
+assert(isequal(sys_cora,sys_spaceex,1e-4))
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

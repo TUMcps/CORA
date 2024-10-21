@@ -41,7 +41,7 @@ inputArgsCheck({ ...
     {Y, 'att', {'contSet', 'numeric'}};
 });
 
-if isa(Y, 'numeric')
+if isnumeric(Y)
     % check dimensions
     if ~isempty(Y) && ~isscalar(Y) && ~all(dim(I) == size(Y), "all")
         throw(CORAerror('CORA:dimensionMismatch', I, Y));

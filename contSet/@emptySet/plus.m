@@ -1,16 +1,17 @@
-function res = plus(summand1,summand2)
+function S_out = plus(O,S)
 % plus - overloaded '+' operator for the Minkowski addition of a
 %    full-dimensional space and another set or vector
 %
 % Syntax:
-%    fs = plus(summand1,summand2)
+%    S_out = O + S
+%    S_out = plus(O,S)
 %
 % Inputs:
-%    summand1 - emptySet object, contSet object, numerical vector
-%    summand2 - emptySet object, contSet object, numerical vector
+%    O - emptySet object, numeric
+%    S - contSet object, numeric
 %
 % Outputs:
-%    res - emptySet object
+%    S_out - Minkowski sum
 %
 % Example: 
 %    O = emptySet(2);
@@ -30,10 +31,10 @@ function res = plus(summand1,summand2)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% determine emptySet object
-[res,summand] = findClassArg(summand1,summand2,'emptySet');
+% ensure that numeric is second input argument
+[S_out,S] = reorderNumeric(O,S);
 
 % check dimensions of ambient space
-equalDimCheck(res,summand);
+equalDimCheck(S_out,S);
 
 % ------------------------------ END OF CODE ------------------------------

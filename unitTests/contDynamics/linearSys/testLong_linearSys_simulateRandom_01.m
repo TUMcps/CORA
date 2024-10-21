@@ -87,26 +87,28 @@ simOpt{3}.nrConstInp = 10;
 
 % Check for completion ----------------------------------------------------
 
-res = [];
 % loop over all defined systems
 for s=1:length(sys)
     % loop over all defined model parameters
     for p=1:length(params)
         % loop over all settings
         for o=1:length(simOpt)
+            % generate seed
+            seed = randi(2^32);
+            rng(seed);
+
             try
-                simRes = simulateRandom(sys{s}, params{p}, simOpt{o});
-                res(end+1,1) = true;
-            catch
+                simRes = simulateRandom(sys{s}, params{p}, simOpt{o});           
+            catch ME
                 % run-time error
-                res(end+1,1) = false;
+                assertLoop(false,ME.message,[],s,p,o);
             end
         end
     end
 end
 
 % combine results
-res = all(res);
+res = true;
 
 
 end

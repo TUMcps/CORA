@@ -26,26 +26,18 @@ twoDimField=partition([0,10; -3,3],[5;10]);
 Zons1 = cellZonotopes(twoDimField,1:nrOfCells(twoDimField));
 Zons2 = cellZonotopes(twoDimField);
 
-if length(Zons1)==length(Zons2)
-    res1 = (norm(center(Zons1{3}) - center(Zons2{3}))<1e-9)&&(norm(generators(Zons1{3}) - generators(Zons2{3}))<1e-9);
-else
-    res1 = 0;
-end
-
+assert(length(Zons1)==length(Zons2))
+assert((norm(center(Zons1{3}) - center(Zons2{3}))<1e-9)&&(norm(generators(Zons1{3}) - generators(Zons2{3}))<1e-9));
 
 % check that cellZonotopes works, 3DOF
 Zons1 = cellZonotopes(threeDimField,1:nrOfCells(threeDimField));
 Zons2 = cellZonotopes(threeDimField);
 
-if length(Zons1)==length(Zons2)
-    res2 = (norm(center(Zons1{3}) - center(Zons2{3}))<1e-9)&&(norm(generators(Zons1{3}) - generators(Zons2{3}))<1e-9);
-else
-    res2 = 0;
-end
+assert(length(Zons1)==length(Zons2))
+assert((norm(center(Zons1{3}) - center(Zons2{3}))<1e-9)&&(norm(generators(Zons1{3}) - generators(Zons2{3}))<1e-9));
 
+res = true;
 
-res = res1&&res2;
-% 
 % segmentPolytope(threeDimField,[1 5 3])
 % segmentPolytope(threeDimField)
 % cellZonotopes(threeDimField,[1 5 3])

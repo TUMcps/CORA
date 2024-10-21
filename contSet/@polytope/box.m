@@ -58,88 +58,64 @@ end
 function P_out = aux_box_V(P)
 % computation of box enclosure for a polytope in vertex representation
 
-% read out dimension
-n = dim(P);
-
-% compute lower and upper bound
-ub = max(P.V,[],2);
-lb = min(P.V,[],2);
-
-% construct constraint matrix and offset
-A = [eye(n); -eye(n)];
-b = [ub; -lb];
-P_out = polytope(A, b);
+% compute halfspace representation
+[A,b,empty,fullDim,bounded] = priv_box_V(P.V_.val,dim(P));
+if empty
+    % add properties to input polytope
+    P.emptySet.val = true;
+    P.bounded.val = true;
+    P.fullDim.val = false;
+    P.V_.val = zeros(dim(P),0);
+    P.isVRep.val = true;
+    P.minVRep.val = true;
+    % output empty polytope
+    P_out = polytope.empty(dim(P));
+    return
+end
+% instantiate polytope (note that this eliminates all constraints where the
+% offset b is +-Inf)
+P_out = polytope(A,b);
 
 % set properties
-P_out.emptySet.val = false; % cannot be empty, otherwise V would be empty
-P_out.bounded.val = any(isinf(ub)) || any(isinf(lb));
-% 1D polytopes support -Inf/Inf vertices...
-if n == 1
-    P_out.fullDim.val = max(P.V_.val) - min(P.V_.val) > 0;
-else
-    P_out.fullDim.val = rank(P.V_.val,1e-10) == n;
-end
+P_out.minHRep.val = true;
+P_out.emptySet.val = empty;
+P_out.fullDim.val = fullDim;
+P_out.bounded.val = bounded;
 
 end
 
 function P_out = aux_box_H(P)
 % computation of box enclosure for a polytope in halfspace representation
 
-% read out dimension
-n = dim(P);
+% compute halfspace representation
+[A,b,empty,fullDim,bounded] = priv_box_H(P.A_.val,P.b_.val,...
+    P.Ae_.val,P.be_.val,dim(P));
 
-% init bounds
-ub = Inf(n,1);
-lb = -Inf(n,1);
-
-% loop over all 2n positive/negative basis vectors
-for i = 1:n
-    % i-th basis vector
-    e_i = [zeros(i-1,1);1;zeros(n-i,1)];
-    % maximize
-    ub(i) = supportFunc_(P,e_i,'upper');
-    if ub(i) == -Inf
-        % only enters here if the polytope is the empty set
-        P.emptySet.val = true;
-        P.bounded.val = true;
-        P.fullDim.val = false;
-        P.V_.val = zeros(n,0);
-        P.isVRep.val = true;
-        P.minVRep.val = true;
-        % init return set
-        P_out = polytope.empty(n);
-        return
-    end
-    % minimize
-    lb(i) = supportFunc_(P,e_i,'lower');
+if empty
+    % add properties to input polytope
+    P.emptySet.val = true;
+    P.bounded.val = true;
+    P.fullDim.val = false;
+    P.V_.val = zeros(dim(P),0);
+    P.isVRep.val = true;
+    P.minVRep.val = true;
+    % output empty polytope
+    P_out = polytope.empty(dim(P));
+    return
 end
-
-% construct output arguments
-A = [eye(n); -eye(n)];
-b = [ub; -lb];
-
-% remove unbounded constraints
-bounded = ~isinf(b);
-
-% rewrite properties
-A = A(bounded,:);
-b = b(bounded);
-
-% remove equality constraints
-Ae = [];
-be = [];
 
 % set properties: input polytope
 P.emptySet.val = false;
-P.bounded.val = all(bounded);
+P.fullDim = fullDim;
+P.bounded.val = bounded;
 
 % construct box
-P_out = polytope(A,b,Ae,be);
+P_out = polytope(A,b);
 % set properties: output polytope
 P_out.minHRep.val = true;
-P_out.emptySet.val = false;
-P_out.bounded.val = all(bounded);
-P_out.fullDim.val = ~any(withinTol(lb,ub,1e-10));
+P_out.emptySet.val = empty;
+P_out.fullDim.val = fullDim;
+P_out.bounded.val = bounded;
 
 end
 

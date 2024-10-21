@@ -43,43 +43,44 @@ inputArgsCheck({{pZ,'att','polyZonotope'};
 % special cases
 if isempty(pZ.GI)
     ratio = 0;
-    
-elseif isempty(pZ.G)
-    ratio = inf;
-    
-else
-
-    if strcmp(type,'pca')
-        % calculate state-space-transformation with pca
-        G = [pZ.G -pZ.G pZ.GI -pZ.GI];
-        [T,~,~] = svd(G);
-    
-        % transform the polynomial zonotope to the new state space
-        pZ = T'*pZ;
-    end
-
-    % over-approximate the independent generators part with an interval
-    n = length(pZ.c);
-    zono = zonotope([zeros(n,1),pZ.GI]);
-    Iind = interval(zono);
-
-    % over-approximate the dependent generators part with an interval
-    pZ.GI = [];
-    Idep = interval(pZ);
-    
-    % remove dimensions that are all-zero
-    ind1 = find(rad(Idep) == 0);
-    ind2 = find(rad(Iind) == 0);
-    
-    ind = unique([ind1;ind2]);
-    ind = setdiff(1:length(Idep),ind);  
-
-    % calculate the volumes of the parallelotopes
-    Vind = volume_(Iind(ind));
-    Vdep = volume_(Idep(ind));
-
-    % calculate the volume ratio
-    ratio = (Vind/Vdep)^(1/n);
+    return
 end
+    
+if isempty(pZ.G)
+    ratio = Inf;
+    return
+end
+    
+if strcmp(type,'pca')
+    % calculate state-space-transformation with pca
+    G = [pZ.G -pZ.G pZ.GI -pZ.GI];
+    [T,~,~] = svd(G);
+
+    % transform the polynomial zonotope to the new state space
+    pZ = T'*pZ;
+end
+
+% over-approximate the independent generators part with an interval
+n = dim(pZ);
+Z = zonotope([zeros(n,1),pZ.GI]);
+I_ind = interval(Z);
+
+% over-approximate the dependent generators part with an interval
+pZ.GI = zeros(n,0);
+Idep = interval(pZ);
+
+% remove dimensions that are all-zero
+ind1 = find(rad(Idep) == 0);
+ind2 = find(rad(I_ind) == 0);
+
+ind = unique([ind1;ind2]);
+ind = setdiff(1:length(Idep),ind);  
+
+% calculate the volumes of the parallelotopes
+Vind = volume_(I_ind(ind));
+Vdep = volume_(Idep(ind));
+
+% calculate the volume ratio
+ratio = (Vind/Vdep)^(1/n);
 
 % ------------------------------ END OF CODE ------------------------------

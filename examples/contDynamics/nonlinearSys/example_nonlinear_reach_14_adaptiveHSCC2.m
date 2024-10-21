@@ -41,14 +41,13 @@ handles = [ % dimensions
 sys_total = length(handles);
 
 % output variable: tab3
-tab3 = zeros(length(handles),12);
-% columns (6 for lin + 6 for poly)
+tab3 = zeros(length(handles),10);
+% columns (5 for lin + 5 for poly)
 timeIdx = 1;
 deltatminIdx = 2;
 deltatmaxIdx = 3;
-rhomaxIdx = 4;
-lmaxIdx = 5;
-gammaminIdx = 6;
+lmaxIdx = 4;
+gammaminIdx = 5;
 
 
 % loop over all nonlinear benchmarks
@@ -63,7 +62,7 @@ for sys_no = 1:sys_total
         options.verbose = true;
 
         adapTime = tic;
-        [R,~,opt] = reach(sys,params,options);
+        R = reach(sys,params,options);
         endset = R.timePoint.set{end};
         tVec = query(R,'tVec');
 
@@ -71,12 +70,12 @@ for sys_no = 1:sys_total
 
         % simulation
         simOpt.points = 1000;                       % number of initial points
-        simOpt.fracVert = 2^sys.dim/simOpt.points;  % fraction of vertices initial set
+        simOpt.fracVert = 2^sys.nrOfStates/simOpt.points;  % fraction of vertices initial set
 
         simRes = simulateRandom(sys,params,simOpt);
 
         % computation of gamma_min
-        endpoints = zeros(sys.dim,simOpt.points);
+        endpoints = zeros(sys.nrOfStates,simOpt.points);
         for i=1:simOpt.points
             endpoints(:,i) = simRes(i).x{1}(end,:)';
         end
@@ -88,7 +87,7 @@ for sys_no = 1:sys_total
                 try
                     edgelengths(:,end+1) = 2*rad(interval(endset,methods(i)));
                 catch
-                    edgelengths(:,end+1) = Inf(sys.dim,1);
+                    edgelengths(:,end+1) = Inf(sys.nrOfStates,1);
                 end
             end
             [gamma_o,minidx] = min(edgelengths,[],2);
@@ -104,7 +103,6 @@ for sys_no = 1:sys_total
         tab3(sys_no,6*(a-1)+timeIdx) = tComp;
         tab3(sys_no,6*(a-1)+deltatminIdx) = min(tVec);
         tab3(sys_no,6*(a-1)+deltatmaxIdx) = max(tVec);
-        tab3(sys_no,6*(a-1)+rhomaxIdx) = max(sum(opt.zonordersRtp,2));
         tab3(sys_no,6*(a-1)+lmaxIdx) = max(gamma_o);
         tab3(sys_no,6*(a-1)+gammaminIdx) = gamma_min;
         % -------------------------------------------------------------

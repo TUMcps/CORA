@@ -1,13 +1,13 @@
-function res = isequal(E1,E2,varargin)
-% isequal - checks if two ellipsoids are equal
+function res = isequal(E,S,varargin)
+% isequal - checks if an ellipsoid is equal to another set or point
 %
 % Syntax:
-%    res = isequal(E1,E2)
-%    res = isequal(E1,E2,tol)
+%    res = isequal(E,S)
+%    res = isequal(E,S,tol)
 %
 % Inputs:
-%    E1 - ellipsoid object
-%    E2 - ellipsoid object
+%    E - ellipsoid object
+%    S - contSet object, numeric
 %    tol - (optional) tolerance
 %
 % Outputs:
@@ -22,7 +22,7 @@ function res = isequal(E1,E2,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Victor Gassmann
 % Written:       13-March-2019
@@ -33,37 +33,66 @@ function res = isequal(E1,E2,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% too many input arguments
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(2,3);
 
 % parse input arguments
-tol = setDefaultValues({min(E1.TOL,E2.TOL)},varargin);
+tol = setDefaultValues({min(E.TOL,S.TOL)},varargin);
 
 % check input arguments
-inputArgsCheck({{E1,'att','ellipsoid','scalar'};
-                {E2,'att','ellipsoid','scalar'};
+inputArgsCheck({{E,'att',{'ellipsoid','numeric'},'scalar'};
+                {S,'att',{'contSet','numeric'},'scalar'};
                 {tol,'att','numeric',{'nonnan','nonnegative','scalar'}}});
+
+% ensure that numeric is second input argument
+[E,S] = reorderNumeric(E,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < E.precedence
+    res = isequal(S,E,tol);
+    return
+end
+
+% ambient dimensions must match
+if ~equalDimCheck(E,S,true)
+    res = false;
+    return
+end
+
+% ellipsoid-ellipsoid case
+if isa(S,'ellipsoid')
+    res = aux_isequal_ellipsoid(E,S,tol);
+    return
+end
+
+throw(CORAerror('CORA:noops',E,S));
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_isequal_ellipsoid(E,S,tol)
 
 % assume false
 res = false;
 
 % check if dimensions are equal
-if dim(E1) ~= dim(E2)
+if dim(E) ~= dim(S)
     return;
 end
 
 % check for emptyness
-if (representsa_(E1,'emptySet',eps) && ~representsa_(E2,'emptySet',eps)) ...
-        || (~representsa_(E1,'emptySet',eps) && representsa_(E2,'emptySet',eps))
+if (representsa_(E,'emptySet',eps) && ~representsa_(S,'emptySet',eps)) ...
+        || (~representsa_(E,'emptySet',eps) && representsa_(S,'emptySet',eps))
     return;
-elseif representsa_(E1,'emptySet',eps) && representsa_(E2,'emptySet',eps)
+elseif representsa_(E,'emptySet',eps) && representsa_(S,'emptySet',eps)
     res = true;
     return;
 end
 
 % compare shape matrix and center numerically
-res = all(all(withinTol(E1.Q,E2.Q,tol))) && all(withinTol(E1.q,E2.q,tol));
+res = all(all(withinTol(E.Q,S.Q,tol))) && all(withinTol(E.q,S.q,tol));
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

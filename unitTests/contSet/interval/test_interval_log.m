@@ -22,24 +22,28 @@ function res = test_interval_log
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% tolerance
 tol = 1e-9;
-res = true(0);
 
 % bounded input, unbounded output
 I = interval([0, 1],[2, exp(1)]);
 I_log = log(I);
 I_true = interval([-Inf,0],[0.6931471805599,1]);
-res(end+1,1) = isequal(I_log,I_true,tol);
+assert(isequal(I_log,I_true,tol));
 
 % out of bounds: throws an error since we cannot instantiate NaN intervals
 I = interval([-2; -2],[-1; 0]);
-try
-    log(I);
-    res = false;
-end
+assertThrowsAs(@log,'CORA:outOfDomain',I);
+
+% n-d arrays
+lb = reshape([ 1.000 3.000 2.000 5.000 -3.000 0.000 2.000 1.000 0.000 -2.000 -1.000 3.000 0.000 0.000 0.000 0.000 1.000 -1.000 1.000 0.000 0.000 0.000 0.000 0.000 ], [2,2,2,3]);
+ub = reshape([ 1.500 4.000 4.000 10.000 -1.000 0.000 3.000 2.000 1.000 0.000 2.000 4.000 0.000 0.000 0.000 0.000 2.000 -0.500 3.000 2.000 0.000 0.000 0.000 0.000 ], [2,2,2,3]);
+I = abs(interval(lb,ub));
+I_log = log(I);
+assert(isequal(I_log,interval(log(I.inf),log(I.sup))))
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

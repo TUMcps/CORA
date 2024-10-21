@@ -1,16 +1,17 @@
-function cPZ = plus(summand1,summand2)
+function S_out = plus(cPZ,S)
 % plus - Overloaded '+' operator for the Minkowski addition of a
 %    constrained polynomial zonotope with other sets or points
 %
 % Syntax:
-%    cPZ = plus(summand1,summand2)
+%    S_out = cPZ + S
+%    S_out = plus(cPZ,S)
 %
 % Inputs:
-%    summand1 - conPolyZono object, contSet object, or numerical vector
-%    summand2 - conPolyZono object, contSet object, or numerical vector
+%    cPZ - conPolyZono object, numeric
+%    S - contSet object, numeric
 %
 % Outputs:
-%    cPZ - conPolyZono object
+%    S_out - conPolyZono object
 %
 % Example: 
 %    c = [0;0];
@@ -43,40 +44,61 @@ function cPZ = plus(summand1,summand2)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% determine which summand is the conPolyZono object
-[cPZ,S] = findClassArg(summand1,summand2,'conPolyZono');
+% ensure that numeric is second input argument
+[S_out,S] = reorderNumeric(cPZ,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < S_out.precedence
+    S_out = S + S_out;
+    return
+end
 
 try
-
     % different cases for different set represnetations
-    if isnumeric(S) || isa(S,'interval') || ...
-       isa(S,'zonotope')
-    
-       Z = zonotope(S);
-       cPZ.c = cPZ.c + Z.c;
-       cPZ.GI = [cPZ.GI, Z.G];
+    if isa(S,'conPolyZono')
+        % update states
+        S_out.c = S_out.c + S.c;
+        S_out.G = [S_out.G, S.G];
+        S_out.E = blkdiag(S_out.E,S.E);
+        S_out.GI = [S_out.GI, S.GI];
+        
+        % update constraints
+        S_out = priv_updateConstraints(S_out,S_out,S);
+        return
+    end
+
+    if isa(S,'zonotope')
+        S_out.c = S_out.c + S.c;
+        S_out.GI = [S_out.GI, S.G];
+        return
+    end
+
+    % numeric and interval: convert to zonotope
+    if (isnumeric(S) && iscolumn(S)) || isa(S,'interval')
+        S = zonotope(S);
+        S_out.c = S_out.c + S.c;
+        S_out.GI = [S_out.GI, S.G];
+        return
+    end
        
-    elseif isa(S,'conPolyZono') || isa(S,'polytope') || ...
-           isa(S,'zonoBundle') || isa(S,'conZonotope') || ...
-           isa(S,'ellipsoid') || isa(S,'capsule') || ...
-           isa(S,'polyZonotope') || isa(S,'taylm')
+    if isa(S,'ellipsoid') || isa(S,'capsule') || ...
+            isa(S,'polyZonotope') || isa(S,'polytope') || ...
+            isa(S,'conZonotope') || isa(S,'zonoBundle') || isa(S,'taylm')
         
          % convert to conPolyZono object
          S = conPolyZono(S);
-       
+        
          % update states
-         cPZ.c = cPZ.c + S.c;
-         cPZ.G = [cPZ.G, S.G];
-         cPZ.E = blkdiag(cPZ.E,S.E);
+         S_out.c = S_out.c + S.c;
+         S_out.G = [S_out.G, S.G];
+         S_out.E = blkdiag(S_out.E,S.E);
          
-         cPZ.GI = [cPZ.GI, S.GI];
+         S_out.GI = [S_out.GI, S.GI];
          
          % update constraints
-         cPZ = updateConstraints(cPZ,cPZ,S);
+         S_out = priv_updateConstraints(S_out,S_out,S);
+         return
          
-    else
-         % throw error for given arguments
-         throw(CORAerror('CORA:noops',cPZ,S));
     end
 
 catch ME
@@ -89,18 +111,18 @@ catch ME
     end
 
     % check whether different dimension of ambient space
-    equalDimCheck(cPZ,summand);
+    equalDimCheck(S_out,S);
 
     % check for empty sets
-    if representsa_(cPZ,'emptySet',eps)
-        return
-    elseif representsa_(summand,'emptySet',eps)
-        cPZ = conPolyZono.empty(dim(cPZ)); return
+    if representsa_(S_out,'emptySet',eps) || representsa_(S,'emptySet',eps)
+        S_out = conPolyZono.empty(dim(S_out)); return
     end
 
     % other error...
     rethrow(ME);
 
 end
+
+throw(CORAerror('CORA:noops',S_out,S));
 
 % ------------------------------ END OF CODE ------------------------------

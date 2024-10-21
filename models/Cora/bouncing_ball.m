@@ -8,40 +8,43 @@ function HA = bouncing_ball(alpha)
 %    alpha - damping factor
 %
 % Outputs:
-%    HA - hybrid automaton
+%    HA - hybridAutomaton object
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% Author:       ---
-% Written:      ---
-% Last update:  ---
-% Last revision:---
+% Authors:       ---
+% Written:       ---
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % continuous dynamics
 A = [0 1; 0 0];
 B = [0; 0];
 c = [0; -9.81];
-linSys = linearSys('linearSys',A,B,c);
+linsys = linearSys('linearSys',A,B,c);
 
 % invariant set
 inv = polytope([-1,0],0);
 
 % guard sets
-guard = conHyperplane([1,0],0,[0,1],0);
+guard = polytope([0,1],0,[1,0],0);
 
 % reset function
-reset.A = [0, 0; 0, alpha];
-reset.c = zeros(2,1);
+reset = linearReset([0, 0; 0, alpha],zeros(2,1),zeros(2,1));
 
 % transitions
 trans = transition(guard,reset,1);
 
 % location object
-loc = location('loc1',inv,trans,linSys);
+loc = location('loc1',inv,trans,linsys);
 
 % hybrid automata
-HA = hybridAutomaton(loc);
+HA = hybridAutomaton('BouncingBall',loc);
 
-end
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

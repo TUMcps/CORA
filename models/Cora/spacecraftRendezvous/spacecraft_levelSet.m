@@ -6,7 +6,7 @@ function HA = spacecraft_levelSet()
 %    HA = spacecraft_levelSet()
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    HA - hybrid automaton object
@@ -14,13 +14,19 @@ function HA = spacecraft_levelSet()
 % References: 
 %   [1] N. Chan et al. "Verifying safety of an autonomous spacecraft 
 %       rendezvous mission (Benchmark proposal)"  
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% Author:       Niklas Kochdumper
-% Written:      23-December-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-December-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Mode Approaching --------------------------------------------------------
 
@@ -37,9 +43,7 @@ syms x y vx vy;
 inv = levelSet(-x^2 - y^2 + 100^2,[x;y;vx;vy],'<='); 
 
 % transition: x^2 + y^2 == 100^2
-resetA = eye(4);
-resetc = zeros(4,1);
-reset = struct('A', resetA, 'c', resetc);
+reset = linearReset.eye(4);
 
 guard = levelSet(x^2 + y^2 - 100^2,[x;y;vx;vy],'==');
 
@@ -68,12 +72,8 @@ trans = transition();
 loc(2) = location('S2', inv, trans, dynamics);
 
 
-
 % Hybrid Automaton --------------------------------------------------------
 
-HA = hybridAutomaton(loc);
+HA = hybridAutomaton('spacecraft',loc);
 
-
-end
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

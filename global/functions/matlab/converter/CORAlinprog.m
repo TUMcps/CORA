@@ -10,6 +10,11 @@ function [x,fval,exitflag,output,lambda] = CORAlinprog(problem)
 %    where problem is a struct. However, the MOSEK overload of linprog
 %    cannot handle that syntax, so we use this wrapper, instead.
 %
+%    Since the dual-simplex algorithm sometimes returns exitflag = -9 for
+%    problems which do have a solution, we have an automatic switch to the
+%    interior-point solver in that case. Note that we use the dual-simplex
+%    algorithm by default since it has shown to be more accurate.
+%
 % Syntax:
 %    [x,fval,exitflag,output,lambda] = CORAlinprog(problem)
 %
@@ -22,6 +27,7 @@ function [x,fval,exitflag,output,lambda] = CORAlinprog(problem)
 %              - problem.beq (equality constraint Aeq * x == beq)
 %              - problem.lb (lower bound for optimization variable)
 %              - problem.ub (upper bound for optimization variable)
+%              - problem.x0 (initial point)
 %
 % Outputs:
 %    x - minimizer
@@ -38,7 +44,8 @@ function [x,fval,exitflag,output,lambda] = CORAlinprog(problem)
 
 % Authors:       Mark Wetzlinger
 % Written:       16-July-2024
-% Last update:   ---
+% Last update:   04-October-2024 (MW, switch to interior-point in MATLAB call)
+%                09-October-2024 (TL, compatibility >=R2024a)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -97,19 +104,71 @@ if isMosek
     end
 
 else
-    % linear program options
-    if ~isfield(problem,'options')
-        persistent options
-        if isempty(options)
-            options = optimoptions('linprog','display','off');
+    % linear program options 
+    % (either use user-defined one or automatically determine best one)
+    if isfield(problem,'options')
+        options = {problem.options};
+    else
+        options = {};
+        
+        % default algorithm: 'dual-simplex'
+        persistent optionsDualSimplexDefault
+        if isempty(optionsDualSimplexDefault)
+            optionsDualSimplexDefault = optimoptions('linprog','Algorithm','dual-simplex','display','off');
         end
-        problem.options = options;
+        options = [options {optionsDualSimplexDefault}];
+
+        % matlab updated the 'dual-simplex' algorithm in R2024a ('dual-simplex-highs').
+        % However, the old algorithm provides solutions in some situations when the new one does not (exitflag=0)..
+        % We add the old algorithm here as fallback option.
+        if ~isMATLABReleaseOlderThan('R2024a')
+            persistent optionsDualSimplexLegacy
+            if isempty(optionsDualSimplexLegacy)
+                w = warning; warning off; % don't show legacy warning
+                optionsDualSimplexLegacy = optimoptions('linprog','Algorithm','dual-simplex-legacy','display','off');
+                warning(w);
+            end
+            options = [options {optionsDualSimplexLegacy}];
+        end
     end
 
-    problem.solver = 'linprog';
+    % test all options
+    for i=1:numel(options)
 
-    % call MATLAB linprog (with struct syntax)
-    [x,fval,exitflag,output,lambda] = linprog(problem);
+        problem.options = options{i};
+        algorithm = problem.options.Algorithm;
+        problem.solver = 'linprog';
+    
+        % call MATLAB linprog (with struct syntax)
+        [x,fval,exitflag,output,lambda] = aux_MATLABlinprog(problem,algorithm);
+    
+        % in some cases, the dual-simplex algorithm loses feasibility (leading
+        % to exitflag = -9), so we switch to the interior-point solver and try
+        % again
+        if exitflag == -9 && startsWith(algorithm,'dual-simplex')
+            algorithm = 'interior-point';
+            [x,fval,exitflag,output,lambda] = aux_MATLABlinprog(problem,algorithm);
+        end
+
+        if exitflag > 0
+            % some solution is found, don't test other options
+            break;
+        end
+    end
+end
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function [x,fval,exitflag,output,lambda] = aux_MATLABlinprog(problem,algorithm)
+
+% call MATLAB linprog
+w = warning; warning off; % don't show legacy warning
+problem.options.Algorithm = algorithm; % set the solver
+[x,fval,exitflag,output,lambda] = linprog(problem);
+warning(w);
 
 end
 

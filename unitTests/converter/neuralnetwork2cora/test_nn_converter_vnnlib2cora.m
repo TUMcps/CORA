@@ -19,28 +19,21 @@ function res = test_nn_converter_vnnlib2cora()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % try to load different vnnlib files with interesting structure
-try
 
-    % mnistfc benchmark
-    [X0, spec] = vnnlib2cora('mnistfc_prop_11_0.05.vnnlib');
-    resvec(end+1) = dim(X0{1}) == 28*28 && all(size(spec.set.A) == [9,10]);
-    
-    % axas_xu benchmark
-    [X0, spec] = vnnlib2cora('axas_xu_prop_3.vnnlib');
-    resvec(end+1) = dim(X0{1}) == 5 && all(size(spec.set.A) == [4,5]);
-    
-    % rl_learning benchmark
-    [X0, spec] = vnnlib2cora('rl_benchmark_dubinsrejoin_case_unsafe_11.vnnlib');
-    resvec(end+1) = dim(X0{1}) == 8 && all(size(spec.set.A) == [6,8]);
+% mnistfc benchmark
+[X0, spec] = vnnlib2cora('mnistfc_prop_11_0.05.vnnlib');
+assert(dim(X0{1}) == 28*28 && all(size(spec.set.A) == [9,10]));
 
-catch ME
-    resvec(end+1) = false;
-end
+% axas_xu benchmark
+[X0, spec] = vnnlib2cora('axas_xu_prop_3.vnnlib');
+assert(dim(X0{1}) == 5 && all(size(spec.set.A) == [4,5]));
+
+% rl_learning benchmark
+[X0, spec] = vnnlib2cora('rl_benchmark_dubinsrejoin_case_unsafe_11.vnnlib');
+assert(dim(X0{1}) == 8 && all(size(spec.set.A) == [6,8]));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

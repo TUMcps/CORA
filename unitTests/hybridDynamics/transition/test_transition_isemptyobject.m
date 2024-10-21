@@ -24,23 +24,23 @@ function res = test_transition_isemptyobject
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty object
-res = isemptyobject(transition());
+assert(isemptyobject(transition()));
 
 % transition
-guard = conHyperplane([1,0],0,[0,1],0);
-reset = struct('A',[0, 0; 0, 0.2],'c',zeros(2,1));
+guard = polytope([0,1],0,[1,0],0);
+reset = linearReset([0, 0; 0, 0.2]);
 target = 2;
 syncLabel = 'on';
 
 trans = transition(guard,reset,target,syncLabel);
-res(end+1,1) = ~isemptyobject(trans);
+assert(~isemptyobject(trans));
 trans = transition(guard,reset,target);
-res(end+1,1) = ~isemptyobject(trans);
+assert(~isemptyobject(trans));
 
 % array of transitions
-res(end+1,1) = all(isemptyobject([transition(),transition(guard,reset,target)]) == [true,false]);
+assert(all(isemptyobject([transition(),transition(guard,reset,target)]) == [true,false]));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

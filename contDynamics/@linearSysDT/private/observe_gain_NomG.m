@@ -1,20 +1,18 @@
-function [OGain,tComp]= observe_gain_NomG(obj,options)
+function [OGain,tComp]= observe_gain_NomG(linsysDT,params,options)
 % observe_gain_NomG - computes the gain for the guaranteed state estimation
 %    approach from [1].
 %
 % Syntax:
-%    [R,Rout] = observe_gain_NomG(obj,options)
+%    [R,Rout] = observe_gain_NomG(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
 %    OGain - observer gain
 %    tComp - computation time
-%
-% Example: 
-%    -
 %
 % Reference:
 %    [1] Ye Wang, Vicenç Puig, and Gabriela Cembrano. Set-
@@ -38,8 +36,8 @@ function [OGain,tComp]= observe_gain_NomG(obj,options)
 tic;
 
 % obtain system dimension and nr of outputs
-n = obj.dim;
-nrOfOutputs = obj.nrOfOutputs;
+n = linsysDT.nrOfStates;
+nrOfOutputs = linsysDT.nrOfOutputs;
 
 % set options of solver
 options_sdp = sdpsettings;
@@ -58,7 +56,7 @@ mu = 1; % decay rate
 % create symmetric matrix SM of LMI
 SM = blkvar;
 SM(1,1) = mu*P;
-SM(2,1) = P*obj.A-Y*obj.C;
+SM(2,1) = P*linsysDT.A-Y*linsysDT.C;
 SM(2,2) = P;
 SM = sdpvar(SM);
 constraint = [P>=0,SM>=0]; % constraint

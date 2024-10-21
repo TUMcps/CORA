@@ -17,10 +17,9 @@ function res = test_spaceex2cora_hybrid_flat_02
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-
+ 
 % assume true
 res = true;
-
 
 % directory to SpaceEx model file
 dir_spaceex = [CORAROOT filesep 'unitTests' filesep 'converter' ...
@@ -40,13 +39,11 @@ sys_spaceex = feval(filename);
 inv = polytope([-1 0; 0 1],[0; 0]);
 
 % transitions
-c = [1;0]; d = 0; C = [0 1]; D = 0;
-guard = conHyperplane(c,d,C,D);
-reset = struct('A',[-1,0;0,1],'c',[0;0]);
+guard = polytope([0 1],0,[1 0],0);
+reset = linearReset([-1,0;0,1],[0;0],[0;0]);
 trans = transition(guard,reset,1);
-c = [0;-1]; d = 0; C = [1 0]; D = 0;
-guard = conHyperplane(c,d,C,D);
-reset = struct('A',[0,1;-1,0],'c',[-1;0]);
+guard = polytope([-1 0],0,[0 1],0);
+reset = linearReset([0,1;-1,0],[0;0],[-1;0]);
 trans(2) = transition(guard,reset,1);
 
 % flow equation
@@ -59,8 +56,6 @@ loc = location('always',inv,trans,dynamics);
 sys_cora = hybridAutomaton(loc);
 
 % compare systems
-if sys_cora ~= sys_spaceex
-    res = false;
-end
+assert(sys_cora == sys_spaceex);
 
 % ------------------------------ END OF CODE ------------------------------

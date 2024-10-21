@@ -23,8 +23,6 @@ function res = test_conZonotope_lift
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % init
 Z = [0 3 0 1;0 0 2 1];
 A = [1 0 1];
@@ -35,17 +33,19 @@ cZ = conZonotope(Z,A,b);
 try
     cZ_lift = lift(cZ,5,[2,1]);
     % should fail
-    resvec(end+1) = false;
+    assert(false);
 catch ME
-    resvec(end+1) = strcmp(ME.identifier,'CORA:notDefined');
+    if ~strcmp(ME.identifier,'CORA:notDefined')
+        rethrow(ME)
+    end
 end
 
 % except no new dimensions are created
 cZ_lift = lift(cZ,2,[2,1]);
 cZ_proj = project(cZ,[2,1]);
-resvec(end+1) = isequal(cZ_proj,cZ_lift);
+assert(isequal(cZ_proj,cZ_lift));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

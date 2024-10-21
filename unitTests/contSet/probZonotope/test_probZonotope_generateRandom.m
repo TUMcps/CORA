@@ -23,25 +23,18 @@ function res = test_probZonotope_generateRandom
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % test options
 Z = probZonotope.generateRandom();
-resvec(end+1) = true;
 
 Z = probZonotope.generateRandom('Dimension',3);
-resvec(end+1) = true;
 
 Z = probZonotope.generateRandom('Center',ones(2,1));
-resvec(end+1) = true;
 
 Z = probZonotope.generateRandom('Dimension',4,'NrGenerators',10);
-resvec(end+1) = true;
 
 Z = probZonotope.generateRandom('Distribution','gamma');
-resvec(end+1) = true;
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

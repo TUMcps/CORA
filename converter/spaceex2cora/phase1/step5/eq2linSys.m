@@ -1,4 +1,4 @@
-function [isLinear,A,B,c,formalEqs,containsInput] = ...
+function [isLinear,A,B,c,formalEqs] = ...
     eq2linSys(exprNames,exprs,states,inputs,varargin)
 % eq2linSys - Converts string equations to a LTI system specification
 %    (if possible). Returns formatted nonlinear equations otherwise.
@@ -29,7 +29,6 @@ function [isLinear,A,B,c,formalEqs,containsInput] = ...
 %    B - input matrix of LTI system
 %    c - constant offset of LTI system
 %    formalEqs - equations formatted to paste into a matlab dynamics file
-%    containsInput - boolean specifying if the assignment contains an input
 %
 % Example: 
 %    [isLinear,A,B,c,formalEqs,containsInput] = ...
@@ -141,12 +140,10 @@ try
     B = double(B_sym);
     c = double(c_sym);
     isLinear = true;
-    containsInput = any(any(B));
 catch
     % Could not linearize system.
     A = []; B = []; c = [];
     isLinear = false;
-    containsInput = any(ismember(symvar(exprs),u));
     
     % Dear future person, who is tasked to implement linear systems with
     % variable parameters:  

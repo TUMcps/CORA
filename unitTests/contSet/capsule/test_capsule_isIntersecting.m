@@ -24,14 +24,12 @@ function res = test_capsule_isIntersecting
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty capsule
 C_empty = capsule.empty(2);
 c = [2;1]; g = [0;-1]; r = 2;
 C = capsule(c,g,r);
-res(end+1,1) = ~isIntersecting(C_empty,C_empty);
-res(end+1,1) = ~isIntersecting(C_empty,C);
+assert(~isIntersecting(C_empty,C_empty));
+assert(~isIntersecting(C_empty,C));
 
 
 % same center, generator, different radius
@@ -41,8 +39,8 @@ r_small = 0.5; r_big = 1;
 C_small = capsule(c,g,r_small);
 C_big = capsule(c,g,r_big);
 % check intersection
-res(end+1,1) = isIntersecting(C_small,C_big);
-res(end+1,1) = isIntersecting(C_big,C_small);
+assert(isIntersecting(C_small,C_big));
+assert(isIntersecting(C_big,C_small));
 
 
 % centers too far away from one another
@@ -55,8 +53,8 @@ r = 0.5;
 C_plus = capsule(c_plus,g,r);
 C_minus = capsule(c_minus,g,r);
 % check intersection
-res(end+1,1) = ~isIntersecting(C_plus,C_minus);
-res(end+1,1) = ~isIntersecting(C_minus,C_plus);
+assert(~isIntersecting(C_plus,C_minus));
+assert(~isIntersecting(C_minus,C_plus));
 
 
 % overlapping capsules
@@ -67,8 +65,8 @@ g2 = g + [-1; 0.2; 0.5];
 C1 = capsule(c,g1,r);
 C2 = capsule(c,g2,r);
 % check intersection
-res(end+1,1) = isIntersecting(C1,C2);
-res(end+1,1) = isIntersecting(C2,C1);
+assert(isIntersecting(C1,C2));
+assert(isIntersecting(C2,C1));
 
 
 % capsules touching in exactly one point, same radius
@@ -83,20 +81,17 @@ c2 = (1+r)*g2;
 C1 = capsule(c1,g1,r);
 C2 = capsule(c2,g2,r);
 % check intersection
-res(end+1,1) = isIntersecting(C1,C2);
-res(end+1,1) = isIntersecting(C2,C1);
-
-
-% combine tests
-res = all(res);
+assert(isIntersecting(C1,C2));
+assert(isIntersecting(C2,C1));
 
 
 % dimension mismatch
 C1 = capsule(1,1,1);
 C2 = capsule(rand(2,1),rand(2,1),1);
-try
-    isIntersecting(C1,C2);
-    res = false;
-end
+assertThrowsAs(@isIntersecting,'CORA:dimensionMismatch',C1,C2);
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

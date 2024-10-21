@@ -143,14 +143,13 @@ else
 end
 
 % rewrite equality constraints as pairwise inequality constraints
-P_ = polytope([P_.A_.val; P_.Ae_.val; -P_.Ae_.val],...
-              [P_.b_.val; P_.be_.val; -P_.be_.val]);
+[A,b] = priv_equalityToInequality(P_.A_.val,P_.b_.val,P_.Ae_.val,P_.be_.val);
 
 % normalize constraints to obtain dual polytope
 %   A x <= 1  -->  P^* = conv(A^T)
-P_ = normalizeConstraints(P_,'b');
+[A,b] = priv_normalizeConstraints(A,b,[],[],'b');
 % number of vertices
-h = size(P_.A_.val,1);
+h = size(A,1);
 
 % check if the origin is contained in the dual polytope by linear
 % programming:
@@ -167,7 +166,7 @@ problem.Aineq = [ones(h,1) -eye(h)];
 problem.bineq = zeros(h,1);
 
 % equality constraints: A^T x = 0, sum_i x_i = 1
-problem.Aeq = [zeros(n,1), P_.A_.val'; 0 ones(1,h)];
+problem.Aeq = [zeros(n,1), A'; 0 ones(1,h)];
 problem.beq = [zeros(n,1); 1];
 
 problem.lb = [];

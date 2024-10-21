@@ -1,19 +1,17 @@
-function obj = mappingMatrix(obj,options)
+function obj = mappingMatrix(obj,params,options)
 % mappingMatrix - computes the set of matrices which map the states for the
 %    next point in time.
 %
 % Syntax:
-%    obj = mappingMatrix(obj,options)
+%    obj = mappingMatrix(obj,params,options)
 %
 % Inputs:
-%    obj - linParamSys object 
+%    obj - linParamSys object
+%    params - model parameters
 %    options - options struct
 %
 % Outputs:
-%    obj - resulting linParamSys object 
-%
-% Example:
-%    -
+%    obj - resulting linParamSys object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -31,7 +29,7 @@ function obj = mappingMatrix(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 if isa(obj.A,'matZonotope') && (obj.A.numgens() == 1) && obj.constParam
-    [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(obj.A,obj.stepSize,obj.taylorTerms,options);
+    [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(obj.A,obj.stepSize,obj.taylorTerms,params);
     
     %constant input solution
     obj.Rtrans = RconstInput;

@@ -1,14 +1,12 @@
-function [paramsList,optionsList] = config_linearSysDT_reach(sys,params,options)
+function [paramsList,optionsList] = config_linearSysDT_reach
 % config_linearSysDT_reach - configuration file for validation of
 %    model parameters and algorithm parameters
 %
 % Syntax:
-%    [paramsList,optionsList] = config_linearSysDT_reach(sys,params,options)
+%    [paramsList,optionsList] = config_linearSysDT_reach
 %
 % Inputs:
-%    sys - hybridSystem or contDynamics object
-%    params - user-defined model parameters
-%    options - user-defined algorithm parameters
+%    -
 %
 % Outputs:
 %    paramsList - list of model parameters

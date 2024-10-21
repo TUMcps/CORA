@@ -55,9 +55,7 @@ for i=1:nrTests
     I_true = interval(lower_true, upper_true);
 
     % check
-    if ~isequal(I_enlarge,I_true,tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(isequal(I_enlarge,I_true,tol),i)
 
 end
 

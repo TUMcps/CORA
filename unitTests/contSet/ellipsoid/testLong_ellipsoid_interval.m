@@ -33,9 +33,7 @@ for i=10:5:15
         %compute interval
         I = interval(E);
         %check if all points are in the interval
-        if ~contains(I,Y)
-            res = false; return
-        end
+        assertLoop(contains(I,Y),i,j)
     end
 end
 

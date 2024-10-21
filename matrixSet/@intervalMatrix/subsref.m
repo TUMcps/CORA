@@ -43,7 +43,7 @@ if strcmp(S.type,'()')
             row=S.subs{1};
             val=intMat.int(row,:);
         %Select single element of V    
-        elseif isnumeric(S.subs{1}) && isnumeric(S.subs{1})
+        elseif isnumeric(S.subs{1}) && isnumeric(S.subs{2})
             row=S.subs{1};
             column=S.subs{2};
             val=intMat.int(row,column);

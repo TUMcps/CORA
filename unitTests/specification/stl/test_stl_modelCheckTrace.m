@@ -40,9 +40,7 @@ function res = test_stl_modelCheckTrace()
     eq = until(y(2) < -point,y(1) > point,interval(0,1));
     
     % model checking
-    if modelCheckTrace(eq,x,t) ~= true
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(modelCheckTrace(eq,x,t))
 
     % slightly change STL formula
     y = stl('y',2);
@@ -50,9 +48,7 @@ function res = test_stl_modelCheckTrace()
     eq = until(y(2) < -point,y(1) > point,interval(0,1));
 
     % model checking
-    if modelCheckTrace(eq,x,t) ~= false
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(~modelCheckTrace(eq,x,t))
 
 
     % analytical tests for the globally-operator
@@ -66,18 +62,13 @@ function res = test_stl_modelCheckTrace()
     eq = globally(y(1) > 0.1,interval(0,1));
 
     % model checking
-    if modelCheckTrace(eq,x,t) ~= false
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(~modelCheckTrace(eq,x,t));
 
     % different STL formula
     eq = globally(y(1) >= 0.2 & y(1) <= 0.3, interval(0.2,0.3));
 
     % model checking
-    if modelCheckTrace(eq,x,t) ~= true
-        throw(CORAerror('CORA:testFailed'));
-    end   
-
+    assert(modelCheckTrace(eq,x,t))
 
     % analytical tests for the finally-operator
 
@@ -90,17 +81,13 @@ function res = test_stl_modelCheckTrace()
     eq = finally(y(1) > 1.1,interval(0,1));
 
     % model checking
-    if modelCheckTrace(eq,x,t) ~= false
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(~modelCheckTrace(eq,x,t))
 
     % different STL formula
     eq = finally(y(1) >= 0.25, interval(0.2,0.3));
 
     % model checking
-    if modelCheckTrace(eq,x,t) ~= true
-        throw(CORAerror('CORA:testFailed'));
-    end   
+    assert(modelCheckTrace(eq,x,t))
 
 
     % Random Tests --------------------------------------------------------
@@ -134,9 +121,7 @@ function res = test_stl_modelCheckTrace()
         resInv = modelCheckTrace(~eq,x,t);
 
         % check if results are consistent
-        if resOrig == resInv
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(resOrig ~= resInv,i)
     end
 end
 

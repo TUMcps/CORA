@@ -54,9 +54,9 @@ function cZ = rescale(cZ,varargin)
         elseif isempty(cZ.ksi)
             if strcmp(method,'iter')
                 cZ = aux_preconditioning(cZ);
-                [domKsi, R] = ksi_iterative(cZ);
+                [domKsi, R] = priv_ksi_iterative(cZ);
             else
-                domKsi = ksi_optimizer(cZ);
+                domKsi = priv_ksi_optimizer(cZ);
             end
 
             ksi_l = infimum(domKsi);

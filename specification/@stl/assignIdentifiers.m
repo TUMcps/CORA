@@ -24,7 +24,7 @@ function [res,list] = assignIdentifiers(obj)
 
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   08-February-2024 (FL, use interval property of stl instead of from and to)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -53,24 +53,24 @@ function [res,cnt,list] = aux_recursive(obj,cnt,list)
     elseif strcmp(obj.type,'globally')
 
         [inner,cnt,list] = aux_recursive(obj.lhs,cnt,list);
-        res = globally(inner,interval(obj.from,obj.to));
+        res = globally(inner,obj.interval);
 
     elseif strcmp(obj.type,'finally')
 
         [inner,cnt,list] = aux_recursive(obj.lhs,cnt,list);
-        res = finally(inner,interval(obj.from,obj.to));
+        res = finally(inner,obj.interval);
 
     elseif strcmp(obj.type,'until')
 
         [lhs,cnt,list] = aux_recursive(obj.lhs,cnt,list);
         [rhs,cnt,list] = aux_recursive(obj.rhs,cnt,list);
-        res = until(lhs,rhs,interval(obj.from,obj.to));
+        res = until(lhs,rhs,obj.interval);
 
     elseif strcmp(obj.type,'release')
 
         [lhs,cnt,list] = aux_recursive(obj.lhs,cnt,list);
         [rhs,cnt,list] = aux_recursive(obj.rhs,cnt,list);
-        res = release(lhs,rhs,interval(obj.from,obj.to));
+        res = release(lhs,rhs,obj.interval);
 
     elseif strcmp(obj.type,'&')
 

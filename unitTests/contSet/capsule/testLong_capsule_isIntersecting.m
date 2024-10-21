@@ -27,7 +27,6 @@ function res = testLong_capsule_isIntersecting
 nrTests = 100;
 
 % 1. Same center, generator, different radius
-res(1) = true;
 
 for i=1:nrTests
 
@@ -43,20 +42,14 @@ for i=1:nrTests
     C_small = capsule(c,g,r_small);
     C_big = capsule(c,g,r_big);
 
-    % compute intersection
-    bigInSmall = isIntersecting(C_small,C_big);
-    smallInBig = isIntersecting(C_big,C_small);
-
     % check for correctness
-    if ~bigInSmall || ~smallInBig
-        res(1) = false; break;
-    end
+    assert(isIntersecting(C_small,C_big));
+    assert(isIntersecting(C_big,C_small));
 
 end
 
 
 % 2. centers too far away from one another
-res(2) = true;
 
 for i=1:nrTests
 
@@ -74,20 +67,14 @@ for i=1:nrTests
     C_plus = capsule(c_plus,g,r);
     C_minus = capsule(c_minus,g,r);
 
-    % compute intersection
-    minusInPlus = isIntersecting(C_plus,C_minus);
-    plusInMinus = isIntersecting(C_minus,C_plus);
-
     % check for correctness
-    if minusInPlus || plusInMinus
-        res(2) = false; break;
-    end
+    assert(~isIntersecting(C_plus,C_minus));
+    assert(~isIntersecting(C_minus,C_plus));
 
 end
 
 
 % 3. capsules overlapping
-res(3) = true;
 
 for i=1:nrTests
 
@@ -105,20 +92,14 @@ for i=1:nrTests
     C1 = capsule(c,g1,r);
     C2 = capsule(c,g2,r);
 
-    % compute intersection
-    C2inC1 = isIntersecting(C1,C2);
-    C1inC2 = isIntersecting(C2,C1);
-
     % check for correctness
-    if ~C2inC1 || ~C1inC2
-        res(3) = false; break;
-    end
+    assert(isIntersecting(C1,C2));
+    assert(isIntersecting(C2,C1));
 
 end
 
 
 % 4. capsules touching in exactly one point
-res(4) = true;
 
 for i=1:nrTests
     
@@ -138,18 +119,13 @@ for i=1:nrTests
     C1 = capsule(c1,g1,r);
     C2 = capsule(c2,g2,r);
 
-    % compute intersection
-    C2inC1 = isIntersecting(C1,C2);
-    C1inC2 = isIntersecting(C2,C1);
-
     % check for correctness
-    if ~C2inC1 || ~C1inC2
-        res(4) = false; break;
-    end
+    assert(isIntersecting(C1,C2));
+    assert(isIntersecting(C2,C1));
 
 end
 
 % combine tests
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

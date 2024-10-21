@@ -37,7 +37,7 @@ tay = [tx;ty];
 % plot --------------------------------------------------------------------
 
 figure; hold on
-plot(tay,1:2,'FaceColor',CORAcolor('CORA:next'));
+plot(tay,1:2,'FaceColor',nextcolor);
 
 xs = linspace(-1,1,1000);
 ys = f(xs);

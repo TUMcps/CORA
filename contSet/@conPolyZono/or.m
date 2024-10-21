@@ -1,16 +1,19 @@
-function cPZ = or(cPZ,S)
+function S_out = or(cPZ,S,varargin)
 % or - Computes the union of a constrained polynomial zonotope and another
 %    set representation
 %
 % Syntax:
-%    cPZ = or(cPZ,S)
+%    S_out = cPZ | S
+%    S_out = or(cPZ,S)
+%    S_out = or(cPZ,S,mode)
 %
 % Inputs:
 %    cPZ - conPolyZono object
 %    S - contSet object
+%    mode - 'exact', 'outer', 'inner'
 %
 % Outputs:
-%    cPZ - conPolyZono object
+%    S_out - conPolyZono object
 %
 % Example: 
 %    cPZ1 = conPolyZono([0;0],[2 0 2;0 2 2],[1 0 3;0 1 1]);
@@ -36,115 +39,135 @@ function cPZ = or(cPZ,S)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    if representsa_(S,'emptySet',1e-10,'linearize',0,1)
-        % union is cPZ
-        return
-    end
-    
-    % determine which set is the conPolyZono object
-    [cPZ,S] = findClassArg(cPZ,S,'conPolyZono');
-    
-    % consider the different cases of set representations
-    if isa(S,'conPolyZono') || isa(S,'polytope') || ...
-       isa(S,'interval') || isa(S,'zonotope') || ...
-       isa(S,'zonoBundle') || isa(S,'conZonotope') || ...
-       isa(S,'ellipsoid') || isa(S,'capsule') || ...
-       isa(S,'polyZonotope') || isa(S,'taylm')
+% ensure that numeric is second input argument
+[cPZ,S] = reorderNumeric(cPZ,S);
 
-        % convert to conPolyZono object
-        S = conPolyZono(S);
-        
-        % extract number of factors
-        p1 = size(cPZ.E,1);
-        p2 = size(S.E,1);
-        p = p1 + p2 + 2;     
-        
-        % construct the overall constraint matrices
-        [A_,b_,Etemp] = aux_conMatrix(p1,p2);
-        
-        A = blkdiag(1,A_,cPZ.A,S.A);
-        A = [A, [0;0;-0.5*cPZ.b;0.5*S.b]];
-        
-        b = [1;b_;0.5*cPZ.b;0.5*S.b];
-                
-        if ~isempty(cPZ.EC)
-            if ~isempty(S.EC)
-                temp = blkdiag(cPZ.EC,S.EC);
-                E1 = [zeros(2,size(temp,2));temp];
-            else
-                temp = size(cPZ.EC,2);
-                E1 = [zeros(2,temp);cPZ.EC;zeros(p2,temp)];
-            end
-        else
-            if ~isempty(S.EC)
-                E1 = [zeros(2+p1,size(S.EC,2));S.EC];
-            else
-                E1 = [];
-            end
-        end
-        E2 = zeros(p,1);
-        E2(1,1) = 1;
-        EC = [[1;1;zeros(p1+p2,1)],Etemp,E1,E2];
-        
-        % construct the overall state matrices
-        c = (cPZ.c + S.c)/2;     
-        G = [(cPZ.c - S.c)/2, zeros(length(c),1), cPZ.G, S.G];
-        
-        temp1 = zeros(p,1);
-        temp1(1) = 1;
-        
-        temp2 = zeros(p,1);
-        temp2(2) = 1;
-        
-        if ~isempty(cPZ.E)
-            n = size(cPZ.E,2);
-            E1_ = [zeros(2,n);cPZ.E;zeros(p2,n)];
-        else
-            E1_ = []; 
-        end
-        
-        if ~isempty(S.E)
-            n = size(S.E,2);
-            E2_ = [zeros(2+p1,n);S.E];
-        else
-            E2_ = []; 
-        end
-        
-        E = [temp1, temp2, E1_, E2_];
+% check dimensions
+equalDimCheck(cPZ,S);
 
-        % construct new independent generators
-        % compute independent part of the resulting set
-        if ~isempty(cPZ.GI)
-            GI = cPZ.GI;
-            if ~isempty(S.GI)
-               n = dim(cPZ); cen = zeros(n,1);
-               zono1 = zonotope(cen,cPZ.GI);
-               zono2 = zonotope(cen,S.GI);
-               zono = enclose(zono1,zono2);
-               GI = zono.G;
-            end
-        else
-            GI = S.GI;
-        end
-        
-        % construct the combined id vector
-        m = max(cPZ.id);
-        id = [cPZ.id;(m+1:m+length(S.id)+2)'];
-        id = [id(end-1:end);id(1:end-2)];
-        
-        % construct the resulting conPolyZono object
-        cPZ = conPolyZono(c,G,E,A,b,EC,GI,id);
-        
-        % remove redundant monomials
-        cPZ = compact_(cPZ,'all',eps);
-        
-    else
-        throw(CORAerror('CORA:noops',cPZ,S));
-    end
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < cPZ.precedence
+    S_out = or(S,cPZ,varargin{:});
+    return
+end
+
+% empty set case: union is constrained polynomial zonotope
+if representsa_(S,'emptySet',1e-10,'linearize',0,1)
+    S_out = cPZ;
+    return
+end
+
+% conPolyZono case
+if isa(S,'conPolyZono')
+    S_out = aux_or_conPolyZono(cPZ,S);
+    return
+end
+
+% all other sets: convert to conPolyZono object
+if isa(S,'ellipsoid') || isa(S,'capsule') || ...
+   isa(S,'polyZonotope') || isa(S,'polytope') || ...
+   isa(S,'conZonotope') || isa(S,'zonoBundle') || ...
+   isa(S,'zonotope') || isa(S,'interval') || ...
+   isa(S,'taylm')
+
+    S_out = aux_or_conPolyZono(cPZ,conPolyZono(S));
+    return 
+end
+
+throw(CORAerror('CORA:noops',cPZ,S));
+
 end
 
 
 % Auxiliary functions -----------------------------------------------------
+
+function S_out = aux_or_conPolyZono(cPZ,S)
+
+% extract number of factors
+p1 = size(cPZ.E,1);
+p2 = size(S.E,1);
+p = p1 + p2 + 2;     
+
+% construct the overall constraint matrices
+[A_,b_,Etemp] = aux_conMatrix(p1,p2);
+
+A = blkdiag(1,A_,cPZ.A,S.A);
+A = [A, [0;0;-0.5*cPZ.b;0.5*S.b]];
+
+b = [1;b_;0.5*cPZ.b;0.5*S.b];
+        
+if ~isempty(cPZ.EC)
+    if ~isempty(S.EC)
+        temp = blkdiag(cPZ.EC,S.EC);
+        E1 = [zeros(2,size(temp,2));temp];
+    else
+        temp = size(cPZ.EC,2);
+        E1 = [zeros(2,temp);cPZ.EC;zeros(p2,temp)];
+    end
+else
+    if ~isempty(S.EC)
+        E1 = [zeros(2+p1,size(S.EC,2));S.EC];
+    else
+        E1 = [];
+    end
+end
+E2 = zeros(p,1);
+E2(1,1) = 1;
+EC = [[1;1;zeros(p1+p2,1)],Etemp,E1,E2];
+
+% construct the overall state matrices
+c = (cPZ.c + S.c)/2;     
+G = [(cPZ.c - S.c)/2, zeros(length(c),1), cPZ.G, S.G];
+
+temp1 = zeros(p,1);
+temp1(1) = 1;
+
+temp2 = zeros(p,1);
+temp2(2) = 1;
+
+if ~isempty(cPZ.E)
+    n = size(cPZ.E,2);
+    E1_ = [zeros(2,n);cPZ.E;zeros(p2,n)];
+else
+    E1_ = []; 
+end
+
+if ~isempty(S.E)
+    n = size(S.E,2);
+    E2_ = [zeros(2+p1,n);S.E];
+else
+    E2_ = []; 
+end
+
+E = [temp1, temp2, E1_, E2_];
+
+% construct new independent generators
+% compute independent part of the resulting set
+if ~isempty(cPZ.GI)
+    GI = cPZ.GI;
+    if ~isempty(S.GI)
+       n = dim(cPZ); cen = zeros(n,1);
+       zono1 = zonotope(cen,cPZ.GI);
+       zono2 = zonotope(cen,S.GI);
+       zono = enclose(zono1,zono2);
+       GI = zono.G;
+    end
+else
+    GI = S.GI;
+end
+
+% construct the combined id vector
+m = max(cPZ.id);
+id = [cPZ.id;(m+1:m+length(S.id)+2)'];
+id = [id(end-1:end);id(1:end-2)];
+
+% construct the resulting conPolyZono object
+cPZ = conPolyZono(c,G,E,A,b,EC,GI,id);
+
+% remove redundant monomials
+S_out = compact_(cPZ,'all',eps);
+
+end
 
 function [A,b,EC] = aux_conMatrix(p1,p2)
 

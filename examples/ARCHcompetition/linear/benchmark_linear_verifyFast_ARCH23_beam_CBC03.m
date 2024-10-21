@@ -92,7 +92,7 @@ sys = linearSys('beam',A_C,B_C,[],C);
 % Specification -----------------------------------------------------------
 
 % forall t: y1 <= 74
-spec = specification(halfspace(1,74),'safeSet');
+spec = specification(polytope(1,74),'safeSet');
 
 
 % Verification ------------------------------------------------------------

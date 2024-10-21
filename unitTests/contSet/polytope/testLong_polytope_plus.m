@@ -49,9 +49,7 @@ for i=1:nrTests
     P_ = P + con;
 
     % compare offsets
-    if ~withinTol(P.b(randCon)+origLength,P_.b(randCon),1e-10)
-        res = false; break
-    end
+    assertLoop(withinTol(P.b(randCon)+origLength,P_.b(randCon),1e-10),i)
 
 end
 

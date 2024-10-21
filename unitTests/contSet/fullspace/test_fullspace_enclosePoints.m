@@ -22,6 +22,9 @@ function res = test_fullspace_enclosePoints
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % points
 p = [2 -4 1; -4 3 2; 0 1 9];
@@ -30,6 +33,6 @@ p = [2 -4 1; -4 3 2; 0 1 9];
 fs = fullspace.enclosePoints(p);
 
 % check result
-res = dim(fs) == 3;
+assert(dim(fs) == 3);
 
 % ------------------------------ END OF CODE ------------------------------

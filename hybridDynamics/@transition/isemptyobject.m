@@ -12,11 +12,10 @@ function res = isemptyobject(trans)
 %
 % Example: 
 %    % guard set
-%    c = [-1;0]; d = 0; C = [0,1]; D = 0;
-%    guard = conHyperplane(c,d,C,D);
+%    guard = polytope([-1,0],0,[0,1],0);
 %
 %    % reset function
-%    reset1 = struct('A',[1,0;0,-0.75],'c',[0;0]);
+%    reset1 = linearReset([1,0;0,-0.75]);
 %
 %    % transition
 %    trans = transition(guard,reset1,1);

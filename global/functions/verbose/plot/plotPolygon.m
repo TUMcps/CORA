@@ -21,7 +21,7 @@ function han = plotPolygon(V,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: plotPolytope3D
+% See also: plotPoints, plotPolytope3D
 
 % Authors:       Niklas Kochdumper, Tobias Ladner
 % Written:       05-May-2020
@@ -31,12 +31,13 @@ function han = plotPolygon(V,varargin)
 %                12-July-2023 (TL, cut off infinity values at axis limits)
 %                29-February-2024 (TL, fix ColorOrderIndex in filled 3d)
 %                05-April-2024 (TL, added option to plot in background)
+%                16-October-2024 (TL, fixes during contSet/plot restructuring)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % default
-NVpairs = {'Color',CORAcolor('CORA:next')};
+NVpairs = {'Color',nextcolor};
 
 % read plot options
 if ~isempty(varargin)
@@ -67,127 +68,16 @@ elseif size(V, 1) == 1
     throw(CORAerror("CORA:plotProperties", 2))
 
 elseif size(V, 2) == 1
-    % plot point
-
-    % plot empty (visible in legend)
-    han = aux_plotEmpty(hasFaceColor, facecolor, NVpairs);
-    % make scatter plot itself invisible
-    NVpairs{end+1} = 'HandleVisibility';
-    NVpairs{end+1} = 'off';
-
-    % correct color in NVpairs for scatter plot
-
-    % EdgeColor > Color
-    [NVpairs,color] = readNameValuePair(NVpairs, 'Color');
-    [NVpairs,edgecolor] = readNameValuePair(NVpairs,'EdgeColor');
-    NVpairs{end+1} = 'MarkerEdgeColor';
-    if ~isempty(edgecolor)
-        NVpairs{end+1} = edgecolor;
-    else
-        NVpairs{end+1} = color;
-    end
-
-    % FaceColor and marker
-    if hasFaceColor
-        % filled point
-        NVpairs = [NVpairs,{'Marker','.','MarkerFaceColor',facecolor}];
-    else
-        % open circle
-        NVpairs = [NVpairs,{'Marker','o'}];
-    end
-
-    if size(V, 1) == 2 
-        % plot point in 2d
-        scatter(V(1,:), V(2,:),NVpairs{:});
-    elseif size(V, 1) == 3 
-        % plot point in 3d
-        scatter3(V(1,:),V(2,:),V(3,:),NVpairs{:});
-        aux_show3dAxis()
-    end
+    % plot single point
+    han = aux_plotSinglePoint(V,NVpairs,hasFaceColor,facecolor);
 
 elseif size(V, 1) == 2
     % plot polygon in 2d
-
-    if doConvHull
-        % compute convex hull
-        V = aux_convHull(V);
-    end
-
-    % axis are reset even if they were set manually; correct afterwards
-    xmode = xlim("mode");
-    if xmode == "manual"
-        x = xlim;
-    end
-    ymode = ylim("mode");
-    if ymode == "manual"
-        y = ylim;
-    end
-
-    if ~hasFaceColor
-        % make line plot
-        han = plot(V(1,:), V(2,:), NVpairs{:});
-
-    else
-        % make filled plot
-
-        % for the set with multiple regions/holes to fill correctly,
-        % we need to remove the nan values
-        idxNan = any(isnan(V),1);
-        if nnz(idxNan) > 0
-            % store start point of each region
-            regStart = V(:,idxNan(2:end));
-
-            % remove nan value
-            V(:,any(isnan(V))) = [];
-            
-            % jump back to starting point V(:,1) to avoid line fragments
-            V = [V,fliplr(regStart)];            
-        end
-
-        % sometimes the color index does not get increased automatically
-        ax = gca();
-        cidx = ax.ColorOrderIndex;
-
-        % plot with facecolor
-        han = fill(V(1,:), V(2,:), facecolor, NVpairs{:});
-        
-        if cidx == ax.ColorOrderIndex
-            % update color index if it hasn't changed
-            updateColorIndex;
-        end
-    end
-
-    % reset axis mode
-    if xmode == "manual"
-        xlim(x);
-    end
-    if ymode == "manual"
-        ylim(y);
-    end
+    han = aux_plot2D(V,NVpairs,doConvHull,hasFaceColor,facecolor);
 
 elseif size(V, 1) == 3
-    % plot polygon in 3d at given height
-
-    if doConvHull
-        % compute convex hull
-        V = aux_convHull(V);
-    end
-
-    if ~hasFaceColor
-        han = plot3(V(1,:),V(2,:),V(3,:),NVpairs{:}); 
-    else
-        % sometimes the color index does not get increased automatically
-        ax = gca();
-        cidx = ax.ColorOrderIndex;
-
-        han = fill3(V(1,:),V(2,:),V(3,:),facecolor,NVpairs{:}); 
-        
-        if cidx == ax.ColorOrderIndex
-            % update color index if it hasn't changed
-            updateColorIndex;
-        end
-    end
-    aux_show3dAxis()
+    % plot polygon in 3d
+    han = aux_plot3D(V,NVpairs,doConvHull,hasFaceColor,facecolor);
 
 end
 
@@ -206,20 +96,10 @@ end
 
 function [NVpairs, V] = aux_positionAtXYZ(V, NVpairs)
     
-    [NVpairs,xpos] = readNameValuePair(NVpairs,'XPos','isscalar');
-    [NVpairs,ypos] = readNameValuePair(NVpairs,'YPos','isscalar');
-    [NVpairs,zpos] = readNameValuePair(NVpairs,'ZPos','isscalar');
-
-    % legacy 'Height'
-    [NVpairs,height] = readNameValuePair(NVpairs,'Height','isscalar');
-    if ~isempty(height)
-        CORAwarning('CORA:plot',"Plotting with 'Height' is deprecated. Use 'ZPos' instead.")
-        if ~isempty(zpos)
-            throw(CORAerror('CORA:notSupported', ...
-                "Plotting with 'ZPos' and 'Height' specified is not allowed. Use 'ZPos' instead."))
-        end
-        zpos = height;
-    end
+    % read XPos, YPos, ZPos
+    [NVpairs,xpos] = readNameValuePair(NVpairs,'XPos',{'isnumeric','isscalar'});
+    [NVpairs,ypos] = readNameValuePair(NVpairs,'YPos',{'isnumeric','isscalar'});
+    [NVpairs,zpos] = readNameValuePair(NVpairs,'ZPos',{'isnumeric','isscalar'});
 
     % set default values
     [dims, n] = size(V);
@@ -238,7 +118,13 @@ function [NVpairs, V] = aux_positionAtXYZ(V, NVpairs)
         V = [xpos * ones(1, n); V];
     end
     if ~isempty(ypos)
-        V = [V(1, :); ypos * ones(1, n); V(2:end, :)];
+        if size(V,1) == 2 && all(V(2,:) == 0)
+            % special case: most likely due extension in plot1D
+            % replace with YPos
+            V(2,:) = ypos;
+        else
+            V = [V(1, :); ypos * ones(1, n); V(2:end, :)];
+        end
     end
     if ~isempty(zpos)
         V = [V; zpos * ones(1, n)];
@@ -251,8 +137,8 @@ function [NVpairs, V] = aux_positionAtXYZ(V, NVpairs)
         throw(CORAerror('CORA:specialError', 'Not enough dimensions specified.'))
     end
     if dims > 3
-        throw(CORAerror('CORA:specialError', "Too many dimensions to plot." + ...
-            "Specified 'dims', 'XPos', 'YPos', and 'ZPos' must not exceed 3!"))
+        throw(CORAerror('CORA:specialError', "Too many dimensions to plot. " + ...
+            "Given points V along with optional parameters 'XPos', 'YPos', and 'ZPos' must not exceed 3!"))
     end 
 end
 
@@ -308,6 +194,187 @@ function V = aux_convHull(V)
             throw(CORAerror('CORA:specialError','Plotting the set failed while constructing the convex hull.'));
         end
     end
+end
+
+function han = aux_plotSinglePoint(V,NVpairs,hasFaceColor,facecolor)
+    % plot single point
+    
+    % plot empty (visible in legend)
+    % han = aux_plotEmpty(hasFaceColor, facecolor, NVpairs);
+    % make scatter plot itself invisible
+    % NVpairs{end+1} = 'HandleVisibility';
+    % NVpairs{end+1} = 'off';
+    
+    % correct color in NVpairs for scatter plot
+    
+    % EdgeColor > Color
+    [NVpairs,color] = readNameValuePair(NVpairs, 'Color');
+    [NVpairs,edgecolor] = readNameValuePair(NVpairs,'EdgeColor');
+    NVpairs{end+1} = 'MarkerEdgeColor';
+    if ~isempty(edgecolor)
+        NVpairs{end+1} = edgecolor;
+    else
+        NVpairs{end+1} = color;
+    end
+    
+    % FaceColor and marker
+    if hasFaceColor
+        % filled point
+        NVpairs = [NVpairs,{'Marker','.','MarkerFaceColor',facecolor}];
+    else
+        % open circle
+        NVpairs = [NVpairs,{'Marker','o'}];
+    end
+
+    % remove line style
+    NVpairs = [{'LineStyle','none'},NVpairs];
+    
+    if size(V, 1) == 2 
+        % plot point in 2d
+        han = plot(V(1,:), V(2,:),NVpairs{:});
+    elseif size(V, 1) == 3 
+        % plot point in 3d
+        han = plot3(V(1,:),V(2,:),V(3,:),NVpairs{:});
+        aux_show3dAxis()
+    end
+end
+
+function han = aux_plot2D(V,NVpairs,doConvHull,hasFaceColor,facecolor)
+    % plot in 2D
+    
+    if doConvHull
+        % compute convex hull
+        V = aux_convHull(V);
+    end
+    
+    % axis are reset even if they were set manually; correct afterwards
+    xmode = xlim("mode");
+    if xmode == "manual"
+        x = xlim;
+    end
+    ymode = ylim("mode");
+    if ymode == "manual"
+        y = ylim;
+    end
+    
+    if ~hasFaceColor
+        % make line plot
+        han = plot(V(1,:), V(2,:), NVpairs{:});
+    
+    else
+        % make filled plot
+
+        V = aux_sortMultipleRegionsAndHoles(V);
+    
+        % for the set with multiple regions/holes to fill correctly,
+        % we need to remove the nan values
+        idxNan = any(isnan(V),1);
+        if nnz(idxNan) > 0
+            % store start point of each region
+            regStart = V(:,idxNan(2:end));
+    
+            % remove nan value
+            V(:,any(isnan(V))) = [];
+    
+            % jump back to starting point V(:,1) to avoid line fragments
+            V = [V,fliplr(regStart)];            
+        end
+    
+        % sometimes the color index does not get increased automatically
+        ax = gca();
+        cidx = ax.ColorOrderIndex;
+    
+        % plot with facecolor
+        han = fill(V(1,:), V(2,:), facecolor, NVpairs{:});
+    
+        if cidx == ax.ColorOrderIndex
+            % update color index if it hasn't changed
+            updateColorIndex;
+        end
+    end
+    
+    % reset axis mode
+    if xmode == "manual"
+        xlim(x);
+    end
+    if ymode == "manual"
+        ylim(y);
+    end
+end
+
+function V = aux_sortMultipleRegionsAndHoles(V)
+
+% find region/hole separators (nan)
+idxNan = find(any(isnan(V),1));
+if isempty(idxNan)
+    % single region, no hole
+    return
+end
+
+% remove last point (= first point)
+if all(withinTol(V(:,1),V(:,end)))
+    V(:,end) = [];
+end
+
+% split vertices into regions
+idxNan = [1,idxNan,size(V,2)+1];
+Vs = arrayfun(@(i) V(:,(idxNan(i)+1):(idxNan(i+1)-1)), 1:(numel(idxNan)-1),'UniformOutput',false);
+
+% determine largest region
+[~,idx] = max(cellfun(@(V) vecnorm(max(V)-min(V)), Vs));
+V_main = Vs{idx};
+n = size(V,1);
+
+% remove main region from regions
+Vs(idx) = [];
+
+% inserted regions/holes at smallest distance to boundary of main region
+for i = 1:numel(Vs)
+    % extract
+    V_i = Vs{i};
+
+    % compute minimum of each vertex with other vertex in main region
+    V_i_3d = reshape(V_i, n, 1, []);
+    diff = sum(abs(V_main-V_i_3d),1);
+    [~, idxV] = min(min(diff, [], 3), [], 2);
+    [~, idxH] = min(min(diff, [], 2), [], 3);
+
+    V_main = [V_main(:, 1:idxV) ...
+        V_i(:, idxH:end), V_i(:, 1:idxH), ...
+        V_main(:, idxV:end)];
+end
+
+
+% obtain final vertices
+V = V_main;
+
+end
+
+
+function han = aux_plot3D(V,NVpairs,doConvHull,hasFaceColor,facecolor)
+% plot in 3D
+
+if doConvHull
+    % compute convex hull
+    V = aux_convHull(V);
+end
+
+if ~hasFaceColor
+    han = plot3(V(1,:),V(2,:),V(3,:),NVpairs{:}); 
+else
+    % sometimes the color index does not get increased automatically
+    ax = gca();
+    cidx = ax.ColorOrderIndex;
+
+    han = fill3(V(1,:),V(2,:),V(3,:),facecolor,NVpairs{:}); 
+
+    if cidx == ax.ColorOrderIndex
+        % update color index if it hasn't changed
+        updateColorIndex;
+    end
+end
+aux_show3dAxis()
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

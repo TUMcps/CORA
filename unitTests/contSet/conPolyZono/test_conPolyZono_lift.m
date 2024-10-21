@@ -23,8 +23,6 @@ function res = test_conPolyZono_lift
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % init
 c = [0;0];
 G = [1 0 1 -1; 0 1 1 1];
@@ -39,17 +37,19 @@ cPZ = conPolyZono(c,G,E,A,b,EC);
 try
     cPZ_lift = lift(cPZ,5,[2,1]);
     % should fail
-    resvec(end+1) = false;
+    assert(false);
 catch ME
-    resvec(end+1) = strcmp(ME.identifier,'CORA:notDefined');
+    if ~strcmp(ME.identifier,'CORA:notDefined')
+        rethrow(ME)
+    end
 end
 
 % except no new dimensions are created
 cPZ_lift = lift(cPZ,2,[2,1]);
 cPZ_proj = project(cPZ,[2,1]);
-resvec(end+1) = isequal(cPZ_proj,cPZ_lift);
+assert(isequal(cPZ_proj,cPZ_lift));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

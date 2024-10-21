@@ -77,15 +77,12 @@ tol = 1e-6;
 
 for i = 1:length(simRes{1})
     % compare results for original and converted parallel hybrid automaton
-    if ~all(size(simRes{1}{i}) == size(simRes{2}{i})) || ...
-            ~all(all(withinTol(simRes{1}{i},simRes{2}{i},tol)))
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(all(size(simRes{1}{i}) == size(simRes{2}{i})),i);
+    assertLoop(all(all(withinTol(simRes{1}{i},simRes{2}{i},tol))),i)
+
     % compare results for original and converted flat hybrid automaton
-    if ~all(size(simRes{1}{i}) == size(simRes{3}{i})) || ... 
-            ~all(all(withinTol(simRes{1}{i},simRes{2}{i},tol)))
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(all(size(simRes{1}{i}) == size(simRes{3}{i})),i);
+    assertLoop(all(withinTol(simRes{1}{i},simRes{2}{i},tol),"all"),i)
 end
 
 res = true;

@@ -1,6 +1,6 @@
 classdef reachSetAnalyzer < matlab.mixin.Copyable
 % reachSetAnalyzer - construct three-valued signals for the given atomic
-% propositions over reachable sets
+%    propositions over reachable sets
 %
 % Syntax:
 %    analyzer = reachSetAnalyzer(aps, 10)
@@ -21,7 +21,7 @@ classdef reachSetAnalyzer < matlab.mixin.Copyable
 
 % Authors:       Benedikt Seidl
 % Written:       24-August-2022
-% Last update:   ---
+% Last update:   14-February-2024 (FL, rename kleeneSignalBuilder to finiteKleeneSignalBuilder)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -52,7 +52,7 @@ methods
         k = keys(aps);
 
         for i = 1:length(k)
-            obj.sigBuilder(k{i}) = kleeneSignalBuilder(dur);
+            obj.sigBuilder(k{i}) = finiteKleeneSignalBuilder(dur);
         end
     end
 

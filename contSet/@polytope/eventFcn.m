@@ -33,14 +33,23 @@ function [val,isterminal,direction] = eventFcn(P,x,direction)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% TODO: equality constraints?
 constraints(P);
 
-% compute distance to boundary of each inequality constraint
-val = P.A_.val*x - P.b_.val;
-% Always stop the integration when event detected
-isterminal = ones(length(P.b_.val),1);   
-% Vectorize direction
-direction = ones(length(P.b_.val),1)*direction; 
+if isempty(P.be_.val)
+    % compute distance to boundary of each inequality constraint
+    val = P.A_.val*x - P.b_.val;
+    % Always stop the integration when event detected
+    isterminal = ones(length(P.b_.val),1);   
+    % Vectorize direction
+    direction = ones(length(P.b_.val),1)*direction;
+
+elseif representsa_(P,'conHyperplane',1e-12)
+    val = P.Ae_.val*x - P.be_.val;
+    isterminal = 1;
+    % direction?
+    
+else
+    throw(CORAerror('CORA:notSupported','Given polytope type not supported.'));
+end
 
 % ------------------------------ END OF CODE ------------------------------

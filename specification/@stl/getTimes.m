@@ -27,7 +27,7 @@ function [timeInt,timePoint] = getTimes(obj)
 
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   08-February-2024 (FL, use interval property of stl instead of from and to)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -84,12 +84,12 @@ function ind = aux_recursive(obj,time)
 
     elseif strcmp(obj.type,'globally') || strcmp(obj.type,'finally')
 
-        ind = aux_recursive(obj.lhs,interval(obj.from,obj.to) + time);
+        ind = aux_recursive(obj.lhs,obj.interval + time);
 
     elseif strcmp(obj.type,'until') || strcmp(obj.type,'release') 
 
-        ind1 = aux_recursive(obj.lhs,interval(obj.from,obj.to) + time);
-        ind2 = aux_recursive(obj.rhs,interval(obj.from,obj.to) + time);
+        ind1 = aux_recursive(obj.lhs,obj.interval + time);
+        ind2 = aux_recursive(obj.rhs,obj.interval + time);
         
         ind = aux_mergeIndices(ind1,ind2);
     end  

@@ -1,12 +1,13 @@
-function [OGain,tComp]= observe_gain_PRadD(obj,options)
+function [OGain,tComp]= observe_gain_PRadD(linsysDT,params,options)
 % observe_gain_PRadD - computes the gain for the guaranteed state estimation
-% approach from [1].
+%    approach from [1].
 %
 % Syntax:
-%    [OGain,tComp]= observe_gain_PRadD(obj,options)
+%    [OGain,tComp]= observe_gain_PRadD(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -18,8 +19,6 @@ function [OGain,tComp]= observe_gain_PRadD(obj,options)
 %        Cembrano. Zonotopic set-membership state estimation for
 %        discrete-time descriptor LPV systems. IEEE Transactions
 %        on Automatic Control, 64(5):2092-2099, 2019.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -34,18 +33,17 @@ function [OGain,tComp]= observe_gain_PRadD(obj,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-
 tic;
 
 % E and F in [1] are chosen such that they are multiplied with unit
 % uncertainties; thus, E and F can be seen as generators of zonotopes
 % representing the disturbance and noise set
-E = generators(options.W);
-F = generators(options.V);
+E = generators(params.W);
+F = generators(params.V);
 
 % obtain system dimension and nr of outputs
-n = obj.dim; 
-nrOfOutputs = obj.nrOfOutputs;
+n = linsysDT.nrOfStates; 
+nrOfOutputs = linsysDT.nrOfOutputs;
 
 % choice of alpha and beta depends on designer
 alpha = 0.5; % has to be in ]0,1[
@@ -85,8 +83,8 @@ while(gamma_up-gamma_lo)> gamma_tol
     SM(1,1) = alpha*P;
     SM(2,2) = (1-alpha)*beta*I;
     SM(3,3) = (1-alpha)*(1-beta)*I2;
-    SM(4,1) = (P-Y*obj.C)*obj.A;
-    SM(4,2) = (P-Y*obj.C)*E_new;
+    SM(4,1) = (P-Y*linsysDT.C)*linsysDT.A;
+    SM(4,2) = (P-Y*linsysDT.C)*E_new;
     SM(4,3) = Y*F_new;
     SM(4,4) = P;
     SM = sdpvar(SM);
@@ -115,6 +113,7 @@ while(gamma_up-gamma_lo)> gamma_tol
         gamma_lo = gamma_tst;
     end
 end
+
 % extract values from YALMIP symbolic decision variables
 P = value(P);
 Y = value(Y);

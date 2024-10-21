@@ -50,9 +50,7 @@ for i=1:nrTests
     Z = zonotope(c,G);
     
     % check if full-dimensional
-    if ~isFullDim(Z)
-        res = false; return
-    end
+    assertLoop(isFullDim(Z),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

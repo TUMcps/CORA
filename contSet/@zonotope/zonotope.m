@@ -1,4 +1,4 @@
-classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonotope < contSet
+classdef zonotope < contSet
 % zonotope - object constructor for zonotope objects
 %
 % Description:
@@ -27,7 +27,7 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonotope < contSet
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: polyZonotope, conZonotope, zonoBundle, conPolyZono
 
 % Authors:       Matthias Althoff, Niklas Kochdumper, Tobias Ladner
 % Written:       14-September-2006 
@@ -41,16 +41,18 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonotope < contSet
 %                14-December-2022 (TL, property check in inputArgsCheck)
 %                29-March-2023 (TL, optimized constructor)
 %                13-September-2023 (TL, replaced Z property with c and G)
+%                05-October-2024 (MW, removed halfspace property)
 % Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-properties (SetAccess = protected, GetAccess = public)
-    c, G; % zonotope center and generator 
-    Z; % legacy Z = [c,g_1,...,g_p]
+properties (SetAccess = {?contSet, ?matrixSet}, GetAccess = public)
+    c;                  % center
+    G;                  % generator matrix
 
-    % internally-set properties
-    halfspace;  % halfspace representation of the zonotope
+    % legacy
+    Z = [];             % concatenated center and generator matrix
+    halfspace = [];     % halfspace representation
 end
 
 methods
@@ -61,6 +63,7 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor(1:2,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'zonotope')
@@ -79,7 +82,9 @@ methods
         % 5. assign properties
         obj.c = c;
         obj.G = G;
-        obj.halfspace = [];
+
+        % 6. set precedence (fixed)
+        obj.precedence = 110;
     end
 end
 
@@ -87,6 +92,11 @@ methods (Static = true)
     Z = generateRandom(varargin) % generate random zonotope
     Z = enclosePoints(points,varargin) % enclose point cloud with zonotope
     Z = empty(n) % instantiates an empty zonotope
+    Z = origin(n);
+end
+
+methods (Access = protected)
+    [abbrev,printOrder] = getPrintSetInfo(S)
 end
 
 
@@ -118,6 +128,20 @@ methods
             obj.G = Z(:,2:end);
         end
     end
+
+    % getter for removed halfspace property
+    function hs = get.halfspace(obj)
+        CORAwarning('CORA:deprecated', 'property', 'zonotope.halfspace', 'CORA v2025', ...
+            'Please call polytope(obj) instead.', ...
+            'This change was made to avoid code redundancy.')
+        hs = obj.halfspace;
+    end
+    function obj = set.halfspace(obj, hs)
+        CORAwarning('CORA:deprecated', 'property', 'zonotope.halfspace', 'CORA v2025', ...
+            'Please use polytope objects instead.', ...
+            'This change was made to avoid code redundancy.')
+        obj.halfspace = [];
+    end
 end
 
 end
@@ -127,11 +151,6 @@ end
 
 function [c,G] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin > 2
-        throw(CORAerror('CORA:tooManyInputArgs',2));
-    end
 
     % no input arguments
     if nargin == 0

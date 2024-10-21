@@ -28,7 +28,7 @@ res = true;
 try
     intvalinit('SharpIVmult');
 catch
-    res = false;
+    assert(false);
     disp('intvalinit failed');
     return;
 end
@@ -87,7 +87,7 @@ if ( isempty(bad_ones_min) ~= true)
     disp('[number, infimum in Cora, infimum in IntLab, diference]')
     [bad_ones_min, i0(bad_ones_min), i1(bad_ones_min), i0(bad_ones_min) - i1(bad_ones_min), 180*angl0(bad_ones_min)/pi, 180*angl1(bad_ones_min)/pi]
     disp(' ')
-    res = false;
+    assert(false);
 end
 
 if ( isempty(bad_ones_max) ~= true)
@@ -95,7 +95,7 @@ if ( isempty(bad_ones_max) ~= true)
     disp('LEGEND: [number, supremum in Cora, supremum in IntLab, diference]')
     [bad_ones_max, s0(bad_ones_max), s1(bad_ones_max), s0(bad_ones_max) - s1(bad_ones_max)]
     disp(' ')
-    res = false;
+    assert(false);
 end
 
 % ------------------------------ END OF CODE ------------------------------

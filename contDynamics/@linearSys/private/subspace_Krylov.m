@@ -1,12 +1,12 @@
-function [V_c,H_c,V_g,H_g] = subspace_Krylov(obj,Z,options)
+function [V_c,H_c,V_g,H_g] = subspace_Krylov(linsys,Z,options)
 % subspace_Krylov - computes the Krylov subspaces for the center and
-% generators of a zonotpe
+%    generators of a zonotpe
 %
 % Syntax:
-%    [obj] = subspace_Krylov(obj,Z,options)
+%    [V_c,H_c,V_g,H_g] = subspace_Krylov(linsys,Z,options)
 %
 % Inputs:
-%    obj - linearSys object
+%    linsys - linearSys object
 %    Z - zonotope
 %    options - reachability options
 %
@@ -23,7 +23,7 @@ function [V_c,H_c,V_g,H_g] = subspace_Krylov(obj,Z,options)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       02-November-2018
@@ -32,7 +32,8 @@ function [V_c,H_c,V_g,H_g] = subspace_Krylov(obj,Z,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% Multiply previous reachable set with exponential matrix------------------
+% Multiply previous reachable set with exponential matrix
+
 % obtain center and generators of previous reachable set
 c = sparse(center(Z));
 G = sparse(generators(Z));
@@ -41,7 +42,7 @@ G = sparse(generators(Z));
 KrylovOrder = 1;
 
 % change obj.A to fit paper
-A = obj.A;
+A = linsys.A;
 
 % minimum eigenvalue
 %nu_A_test = eigs((-A-A')/2, 1, 'sa'); % lambda_min(A+A*/2) %<-- for Wang approx.

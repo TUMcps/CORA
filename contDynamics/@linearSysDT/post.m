@@ -1,11 +1,11 @@
-function Rnext = post(obj,Rnext,Uadd,~)
+function Rnext = post(linsysDT,Rnext,Uadd,varargin)
 % post - computes the reachable set for the next time step
 %
 % Syntax:
-%    Rnext = post(obj,Rnext,Uadd)
+%    Rnext = post(linsysDT,Rnext,Uadd)
 %
 % Inputs:
-%    obj - linearSysDT object
+%    linsysDT - linearSysDT object
 %    Rnext - reachable set of the previous time step
 %    Uadd - uncertain input set
 %
@@ -29,7 +29,10 @@ function Rnext = post(obj,Rnext,Uadd,~)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% post is overloaded with 3 to 4 input arguments
+narginchk(3,4);
+
 % write results to reachable set struct Rnext
-Rnext.tp = obj.A*Rnext.tp + obj.B*Uadd + obj.c;
+Rnext.tp = linsysDT.A*Rnext.tp + linsysDT.B*Uadd + linsysDT.c;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -67,7 +67,7 @@ elseif nargin==2
         Zsplit = aux_splitOneDim(zB,leftLimit,rightLimit,N); 
         
     %split using a halfspace
-    elseif isa(varargin{1},'halfspace')
+    elseif isa(varargin{1},'polytope') && representsa_(varargin{1},'halfspace',1e-12)
         %obtain halfspace
         h = varargin{1};
         %obtain rotation matrix

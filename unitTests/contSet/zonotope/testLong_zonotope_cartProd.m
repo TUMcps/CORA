@@ -58,9 +58,7 @@ for i=1:nrTests
     G = generators(Z_);
     
     % check result
-    if ~( compareMatrices(c,[c1;c2]) && compareMatrices(G,blkdiag(G1,G2)) )
-        res = false; break
-    end
+    assertLoop(( compareMatrices(c,[c1;c2]) && compareMatrices(G,blkdiag(G1,G2)) ),i)
 
 
     % zonotope-interval case
@@ -92,10 +90,8 @@ for i=1:nrTests
     G = generators(Z_);
     
     % check result
-    if ~( compareMatrices(c,[c1;0.5*(lb2+ub2)]) ...
-            && compareMatrices(G,blkdiag(G1,0.5*diag(ub2-lb2))) )
-        res = false; break
-    end
+    assertLoop(( compareMatrices(c,[c1;0.5*(lb2+ub2)]) ...
+            && compareMatrices(G,blkdiag(G1,0.5*diag(ub2-lb2))) ),i)
 
     % zonotope-numeric case
 
@@ -122,10 +118,8 @@ for i=1:nrTests
     G = generators(Z_);
     
     % check result
-    if ~( compareMatrices(c,[c1;num]) ...
-            && compareMatrices(G,[G1;zeros(n2,m1)]) )
-        res = false; break
-    end
+    assertLoop(( compareMatrices(c,[c1;num]) ...
+            && compareMatrices(G,[G1;zeros(n2,m1)]) ),i)
 
     % compute Cartesian product
     Z_ = cartProd(num,Z1);
@@ -135,10 +129,8 @@ for i=1:nrTests
     G = generators(Z_);
     
     % check result
-    if ~( compareMatrices(c,[num;c1]) ...
-            && compareMatrices(G,[zeros(n2,m1);G1]) )
-        res = false; break
-    end
+    assertLoop(( compareMatrices(c,[num;c1]) ...
+            && compareMatrices(G,[zeros(n2,m1);G1]) ),i)
 
 end
 

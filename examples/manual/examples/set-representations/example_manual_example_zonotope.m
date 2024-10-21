@@ -1,6 +1,6 @@
 function example_manual_example_zonotope()
 % example_manual_example_zonotope - example from the manual demonstrating 
-% the zonotope example from the manual
+% the zonotopes
 %
 % Syntax:
 %   example_manual_example_zonotope()
@@ -17,7 +17,7 @@ function example_manual_example_zonotope()
 %
 % See also:
 
-% Authors:        Tobias Ladner
+% Authors:       Tobias Ladner
 % Written:       27-September-2023
 % Last update:   ---
 % Last revision: ---

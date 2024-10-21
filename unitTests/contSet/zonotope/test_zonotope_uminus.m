@@ -23,8 +23,6 @@ function res = test_zonotope_uminus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = true(0);
-
 % init
 c = [0;0];
 G = [2 0 2; 0 2 2];
@@ -32,15 +30,15 @@ Z = zonotope(c, G);
 
 % negate
 nZ = -Z;
-resvec(end+1) = all([nZ.c,nZ.G] == -[c,G], 'all');
+assert(all([nZ.c,nZ.G] == -[c,G], 'all'));
 
 % compare with -1 * Z
-resvec(end+1) = isequal(nZ, -1*Z);
+assert(isequal(nZ, -1*Z));
 
 % test empty case
-resvec(end+1) = isemptyobject(-zonotope.empty(2));
+assert(isemptyobject(-zonotope.empty(2)));
 
 % add results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -76,7 +76,7 @@ xlim([-6,12]); ylim([-4,10])
 projDims = [1,2];
 
 % plot unsafe set
-spec = specification(halfspace([-1 2],-4.5),'unsafeSet');
+spec = specification(polytope([-1 2],-4.5),'unsafeSet');
 plot(spec,projDims,'DisplayName', 'Unsafe Set');
 
 % plot reachable set

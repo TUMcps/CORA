@@ -83,7 +83,7 @@ function obj = generateRandom(varargin)
     end
 
     % generate predicates
-    list = generateRandomPredicates(n,nrOps,dom);
+    list = aux_generateRandomPredicates(n,nrOps,dom);
 
     % binary operations required to combine all predicates in the list
     nrBin = ceil(log2(nrOps));     
@@ -216,6 +216,68 @@ function res = aux_nestedOps(obj)
         res = aux_nestedOps(obj.lhs) + aux_nestedOps(obj.rhs);
 
     end
+end
+
+function list = aux_generateRandomPredicates(n,nrPred,dom)
+% generate a list of random predicates (cell-array of stl) for an STL
+% formula given
+%    n - dimension of the state space
+%    nrPred - number of predicates
+%    dom - domain where predicates flip between true/false (class interval)
+
+% TODO: simplfy subsref syntax below
+
+% generate predicates
+x = stl('x',n);
+list = cell(nrPred,1);
+operators = {'<','<=','>','>='};
+
+for i = 1:nrPred
+
+    % choose random operator
+    op = operators{randi(4)};
+
+    % halfspace constraint (single variable or all variables)
+    if rand() > 0.5
+
+        % choose variable
+        ind = randi(n);
+
+        % generate offset
+        if representsa_(dom,'emptySet',eps)
+            offset = -5 + 10*rand();
+        else
+            offset = randPoint(dom(ind));
+        end
+
+        % generate predicate
+        % eval(['list{i} = x(ind) ',op,num2str(offset),';']);
+        eval(['list{i} = x.subsref(struct(''type'',''()'',''subs'',{{ind}})) ',op,num2str(offset),';']);
+
+    else
+
+        % choose halfspace normal vector
+        c = -2 + 4*rand(n,1);
+
+        % choose offset
+        if representsa_(dom,'emptySet',eps)
+            offset = -2 + 4*rand();
+        else
+            offset = randPoint(c'*zonotope(dom));
+        end
+
+        % generate predicate
+        rhs = c(1) * x.subsref(struct('type','()','subs',{{1}}));
+        
+
+        for j = 2:n
+            rhs = rhs + c(j) * x.subsref(struct('type','()','subs',{{j}}));
+        end
+        
+        eval(['list{i} = rhs',op,num2str(offset),';']);
+    end
+end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

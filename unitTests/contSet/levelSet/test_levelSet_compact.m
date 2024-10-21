@@ -33,13 +33,13 @@ eq2 = x^2 + y^2 - 5;
 % if only one level set given, do nothing
 ls = levelSet(eq1,[x;y],'<');
 S = compact(ls);
-res = isequal(ls,S);
+assert(isequal(ls,S));
 
 % change of comparison operator
 ls = levelSet([eq1,eq1],[x;y],{'<','<='});
 S = compact(ls);
 S_true = levelSet(eq1,[x;y],'<');
-res(end+1,1) = isequal(S,S_true);
+assert(isequal(S,S_true));
 
 % level set composed of two inequalities
 ls = levelSet([eq1;eq2],[x;y],{'<=','<='});
@@ -51,7 +51,7 @@ S = compact(ls);
 S_true = levelSet(eq1,[x;y],'==');
 
 % check
-res(end+1,1) = isequal(S,S_true);
+assert(isequal(S,S_true));
 
 
 % level set composed of infeasible pair of inequalities
@@ -64,10 +64,10 @@ S = compact(ls);
 S_true = emptySet(2);
 
 % check
-res(end+1,1) = isequal(S,S_true);
+assert(isequal(S,S_true));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

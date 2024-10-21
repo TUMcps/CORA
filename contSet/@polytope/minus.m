@@ -1,14 +1,15 @@
-function P_out = minus(P,varargin)
+function P_out = minus(P,S,varargin)
 % minus - dummy function to alert users of the difference in meaning
 %    between 'minus' for range bounding and 'minkDiff' for the Minkowski
 %    difference; for numerical vectors as subtrahends, these operations are
 %    equivalent, so we compute it here nonetheless
 %
 % Syntax:
-%    P_out = minus(P,varargin)
+%    P_out = minus(P,S)
 %
 % Inputs:
 %    P - polytope object
+%    S - numeric
 %
 % Outputs:
 %    P_out - polytope object
@@ -26,16 +27,27 @@ function P_out = minus(P,varargin)
 
 % Authors:       Mark Wetzlinger
 % Written:       09-November-2022
-% Last update:   ---
+% Last update:   03-October-2024 (MW, use private method)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isnumeric(varargin{1})
-    % subtrahend is numeric
-    P_out = minkDiff(P,varargin{:});
+% only supported for subtrahends that are numeric vectors
+if isnumeric(S) && iscolumn(S)
+    % skip dimension check for speed... copy polytope:
+    P_out = polytope(P);
+    if P.isHRep.val
+        [A,b,Ae,be] = priv_plus_minus_vector(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val,-S);
+        P_out.A_.val = A; P_out.b_.val = b;
+        P_out.Ae_.val = Ae; P_out.be_.val = be;
+    end
+    if P.isVRep.val
+        V = P.V_.val - S;
+        P_out.V_.val = V;
+    end
+
     % copy properties
-    P_out = copyProperties(P,P_out,'noV');
+    P_out = priv_copyProperties(P,P_out,'noV');
 
 else
     % throw error

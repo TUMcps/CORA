@@ -38,7 +38,7 @@ compOp = '<=';
 inv{1,1} = levelSet(eq,vars,compOp);
 compOp = '==';
 guard = levelSet(eq,vars,compOp);
-reset = struct('f',@(x,u) [x(1)-u(1);x(2)-u(2)]);
+reset = nonlinearReset(@(x,u) [x(1)-u(1);x(2)-u(2)]);
 trans{1,1} = transition(guard,reset,2);
 loc = location('loc1',inv{1,1},trans{1,1},dynamics{1,1});
 
@@ -51,7 +51,7 @@ compOp = '<=';
 inv{1,2} = levelSet(eq,vars,compOp);
 compOp = '==';
 guard = levelSet(eq,vars,compOp);
-reset = struct('f',@(x,u) [x(1)-u(1);-x(2)+u(2)]);
+reset = nonlinearReset(@(x,u) [x(1)-u(1);-x(2)+u(2)]);
 trans{1,2} = transition(guard,reset,1);
 loc(2) = location('loc2',inv{1,2},trans{1,2},dynamics{1,2});
 
@@ -68,7 +68,7 @@ compOp = '<=';
 inv{2,1} = levelSet(eq,vars,compOp);
 compOp = '==';
 guard = levelSet(eq,vars,compOp);
-reset = struct('f',@(x,u) [-x(1)+u(1);x(2);x(3)]);
+reset = nonlinearReset(@(x,u) [-x(1)+u(1);x(2);x(3)]);
 trans{2,1} = transition(guard,reset,2);
 loc(1) = location('loc1',inv{2,1},trans{2,1},dynamics{2,1});
 
@@ -81,7 +81,7 @@ compOp = '<=';
 inv{2,2} = levelSet(eq,vars,compOp);
 compOp = '==';
 guard = levelSet(eq,vars,compOp);
-reset = struct('f',@(x,u) [-x(1)-u(1);x(2);-x(3)]);
+reset = nonlinearReset(@(x,u) [-x(1)-u(1);x(2);-x(3)]);
 trans{2,2} = transition(guard,reset,1);
 loc(2) = location('loc2',inv{2,2},trans{2,2},dynamics{2,2});
 
@@ -100,10 +100,7 @@ pHA = parallelHybridAutomaton(components,inputBinds);
 % merge invariants of location pair [1,2]
 
 % merge invariant sets
-mergedInv = mergeInvariants(pHA,...
-    {pHA.components(1).location(1).invariant,...
-    pHA.components(2).location(2).invariant},...
-    {transition();transition()});
+mergedInv = mergeInvariants(pHA,[1;2],{});
 
 % instantiate true solution
 eq1 = -x1 + x2^2 + 3;
@@ -112,16 +109,13 @@ vars = sym('x',[5,1]);
 mergedInv_ = levelSet([eq1;eq2],vars,{'<=';'<='});
 
 % compare solutions
-res = isequal(mergedInv,mergedInv_,1e-14);
+assert(isequal(mergedInv,mergedInv_,1e-14));
 
 
 % merge invariants of location pair [2,1]
 
 % merge invariant sets
-mergedInv = mergeInvariants(pHA,...
-    {pHA.components(1).location(2).invariant,...
-    pHA.components(2).location(1).invariant}, ...
-    {transition();transition()});
+mergedInv = mergeInvariants(pHA,[2;1],{});
 
 % instantiate true solution
 eq1 = x1 - x2^2 - 3;
@@ -130,9 +124,9 @@ vars = sym('x',[5,1]);
 mergedInv_ = levelSet([eq1;eq2],vars,{'<=';'<='});
 
 % compare solutions
-res(end+1,1) = isequal(mergedInv,mergedInv_,1e-14);
+assert(isequal(mergedInv,mergedInv_,1e-14));
 
-% combine results
-res = all(res);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

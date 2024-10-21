@@ -27,7 +27,7 @@ function res = test_zonoBundle_center
 n = 2;
 zB = zonoBundle.empty(n);
 c = center(zB);
-res = isnumeric(c) && isempty(c) && size(c,1) == n;
+assert(isnumeric(c) && isempty(c) && size(c,1) == n);
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);
@@ -35,16 +35,16 @@ Z2 = zonotope([0;0], [2 2; 2 -2]);
 zB = zonoBundle({Z1,Z2});
 % compute center
 c = center(zB);
-res(end+1,1) = contains(zB,c);
+assert(contains(zB,c));
 
 % empty intersection
 Z2 = zonotope([-4;1],[0.5 1; 1 -1]);
 zB = zonoBundle({Z1,Z2});
 % compute center
 c = center(zB);
-res(end+1,1) = isnumeric(c) && isempty(c);
+assert(isnumeric(c) && isempty(c));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

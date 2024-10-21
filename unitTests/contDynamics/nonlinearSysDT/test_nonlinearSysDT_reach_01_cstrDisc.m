@@ -22,6 +22,9 @@ function res = test_nonlinearSysDT_reach_01_cstrDisc
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % Parameters --------------------------------------------------------------
 
@@ -62,6 +65,6 @@ simRes = simulateRandom(sysDisc, params, simOpt);
 
 % Verification ------------------------------------------------------------
 
-res = contains(R,simRes);
+assert(contains(R,simRes));
 
 % ------------------------------ END OF CODE ------------------------------

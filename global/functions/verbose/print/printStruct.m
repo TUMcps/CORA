@@ -9,8 +9,8 @@ function printStruct(S,varargin)
 % Inputs:
 %    S - struct array
 %    accuracy - (optional) floating-point precision
-%    clearLine - (optional) whether to finish with '\n'
 %    doCompact - (optional) whether to compact matrices
+%    clearLine - (optional) whether to finish with '\n'
 %
 % Outputs:
 %    -
@@ -19,49 +19,28 @@ function printStruct(S,varargin)
 %    S = struct('a',[1 2 3],'b','text');
 %    printStruct(S)
 %
+% See also: printMatrix, printCell, printSet
 
 % Authors:       Tobias Ladner
 % Written:       31-May-2023
 % Last update:   14-May-2024 (TL, added coCompact)
+%                10-October-2024 (TL, clean up input parsing)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
-if nargin > 4
-    throw(CORAerror('CORA:tooManyInputArgs',4));
+narginchk(0,4);
+[accuracy,doCompact,clearLine] = setDefaultValues({'%4.3f%s',false,true},varargin);
+if ischar(accuracy) && strcmp(accuracy,'high')
+    accuracy = '%16.16f%s';
 end
-
-% determine accuracy
-if nargin < 2 || isempty(varargin{1})
-    % default accuracy
-    accuracy = '%4.3f%s';
-else
-    % numerical value
-    if isnumeric(varargin{1})
-        accuracy = varargin{1};
-    % category
-    elseif ischar(varargin{1})
-        if strcmp(varargin{1},'high')
-            accuracy = '%16.16f%s';
-        else
-            accuracy = varargin{1};
-        end
-    end
-end
-
-% determine clearLine
-if nargin < 3
-    clearLine = true;
-else
-    clearLine = varargin{2};
-end
-
-if nargin < 4
-    doCompact = false;
-else
-    doCompact = varargin{3};
-end
+inputArgsCheck({ ...
+    {S,'att','struct'}, ...
+    {accuracy,'att', {'char','string'}}, ...
+    {doCompact,'att','logical'}, ...
+    {clearLine,'att','logical'}
+})
 
 numRows = size(S,1);
 numCols = size(S,2);
@@ -82,13 +61,13 @@ for i = 1:numRows
         names = fieldnames(S_ij);
         numNames = length(names);
 
-        if numNames > 1
+        if numNames > 1 && ~doCompact
             fprintf(' ...\n')
         end
 
         for k = 1:numNames
             name= names{k};
-            if numNames > 1
+            if numNames > 1 && ~doCompact
                 % intend
                 fprintf('    ')
             end
@@ -97,13 +76,21 @@ for i = 1:numRows
             % print value s.t. it can be re-created
             value = S_ij.(name);
             if isnumeric(value)
-                printMatrix(value,accuracy,false,doCompact)
-            elseif isa(value,'interval')
-                printInterval(value)
-            elseif isa(value,"struct")
-                printStruct(value,accuracy,false)
+                printMatrix(value,accuracy,doCompact,false)
+            elseif isstruct(value)
+                printStruct(value,accuracy,doCompact,false)
+            elseif iscell(value)
+                fprintf('{')
+                printCell(value,accuracy,doCompact,false)
+                fprintf('}')
             elseif ischar(value) || isstring(value)
                 fprintf("'%s'",value)
+            elseif isa(value,'contSet')
+                % always print compactly
+                printSet(value,accuracy,true,false)
+            elseif isa(value,'contDynamics')
+                % always print compactly
+                printSystem(value,accuracy,true,false)
             else
                 % print as string and hope for the best
                 fprintf("%s",value)
@@ -112,7 +99,7 @@ for i = 1:numRows
                 fprintf(',')
             end
 
-            if numNames > 1
+            if numNames > 1 && ~doCompact
                 fprintf(' ...\n')
             end
         end
@@ -121,7 +108,7 @@ for i = 1:numRows
             fprintf(',')
         end
     end
-    if length(S) > 1
+    if length(S) > 1 && ~doCompact
         fprintf('; ...\n')
     end
 end

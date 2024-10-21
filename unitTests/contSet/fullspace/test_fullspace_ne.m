@@ -28,25 +28,25 @@ n = 2;
 fs = fullspace(n);
 
 % compare with itself
-res = ~(fs ~= fs);
+assert(~(fs ~= fs));
 
 % init zonotope
 Z = zonotope(zeros(n,1),eye(n));
-res(end+1,1) = fs ~= Z;
+assert(fs ~= Z);
 
 % init interval
 I = interval(-Inf(n,1),Inf(n,1));
-res(end+1,1) = ~(fs ~= I);
+assert(~(fs ~= I));
 
 % init capsule
 C = capsule([1;1],[-1;1],0.5);
-res(end+1,1) = fs ~= C;
+assert(fs ~= C);
 
 % numerical vector
 p = [2;1];
-res(end+1,1) = fs ~= p;
+assert(fs ~= p);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

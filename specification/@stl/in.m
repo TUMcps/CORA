@@ -56,7 +56,7 @@ elseif isa(S,'interval') || isa(S,'zonotope') || ...
        isa(S,'polytope') || isa(S,'conZonotope') || ...
        isa(S,'zonoBundle') || isa(S,'halfspace')
 
-    res = polytope2stl(obj,polytope(S));
+    res = polytope2stl(obj,polytope(S));    
 
 elseif isa(S,'levelSet') || isa(S,'ellipsoid')
 

@@ -31,21 +31,21 @@ A = [0 1;...
 % input matrix
 B = [1; 1];
 
-% constant input
-c = zeros(2,1);
+% disturbance matrix
+E = [0; 1];
 
 % sampling time
 dt = 1;
 
-sys = linearSysDT('sys',A,B,c,dt);
+sys = linearSysDT('sys',A,B,[],[],[],[],E,dt);
 
 
 % Parameter ---------------------------------------------------------------
 
 params.tFinal = 10;
-params.R0 = zonotope([[1;-5],eye(length(A))]);
-params.U = zonotope([1,1]);
-params.W = [0; 1]*zonotope([0,0.03]);
+params.R0 = zonotope([1;-5],eye(length(A)));
+params.U = zonotope(1,1);
+params.W = zonotope(0,0.03);
 
 
 % Reachability Settings ---------------------------------------------------

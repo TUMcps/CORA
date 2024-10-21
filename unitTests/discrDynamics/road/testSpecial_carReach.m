@@ -20,6 +20,9 @@ function res = testSpecial_carReach
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 % set fileName and pathName
@@ -71,7 +74,7 @@ groundTruthSegmentLength = (inputField_groundTruth.intervals(:,2)-inputField_gro
 res_partial(end + 1) = (max(abs(segmentLength - groundTruthSegmentLength)) < 1e-12);
 
 % have all partial tests passed?
-res = prod(res_partial);
+assert(prod(res_partial));
 %--------------------------------------------------------------------------
 
 % ------------------------------ END OF CODE ------------------------------

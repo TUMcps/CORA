@@ -46,9 +46,6 @@ switch field
         defValue = aux_def_V(sys,params,options);
     case 'inputCompMap'
         defValue = aux_def_inputCompMap(sys,params,options);
-    % conformance
-    case 'w'
-        defValue = aux_def_conformWeight(sys,params);
     otherwise
         throw(CORAerror('CORA:specialError',...
             "There is no default value for params." + field + "."))
@@ -176,16 +173,26 @@ end
 
 function val = aux_def_W(sys,params,options)
 
-if isa(sys,'contDynamics') || isa(sys,'parallelHybridAutomaton')
-    % note: dimension of composed automaton is fixed
-    val = interval(zeros(sys.dim,1));
+if isa(sys,'contDynamics')
+    val = interval(zeros(sys.nrOfDisturbances,1));
 elseif isa(sys,'hybridAutomaton')
-    n = sys.dim;
-    if all(n(1) == n)
-        val = interval(zeros(n(1),1),zeros(n(1),1));
-    else
-        throw(CORAerror('CORA:notSupported',...
-            'Default value for W not supported for hybrid automata with varying number of states per location.'));
+    locations = sys.location;
+    numLoc = length(locations);
+    val = cell(numLoc,1);
+    for i = 1:numLoc
+        nrDists = locations(i).contDynamics.nrOfDisturbances;
+        val{i} = interval(zeros(max(1,nrDists),1));
+    end
+elseif isa(sys,'parallelHybridAutomaton')
+    numComps = length(sys.components);
+    val = cell(numComps,1);
+    for i=1:numComps
+        numLoc = length(sys.components(i).location);
+        val{i} = cell(numLoc,1);
+        for j = 1:numLoc
+            nrDists = sys.components(i).location(1).contDynamics.nrOfDisturbances;
+            val{i}{j} = interval(zeros(nrDists,1));
+        end    
     end
 end
 
@@ -193,18 +200,26 @@ end
 
 function val = aux_def_V(sys,params,options)
 
-if isa(sys,'contDynamics') || isa(sys,'parallelHybridAutomaton')
-    % note: dimension of composed automaton is fixed
-% CORA does not support output equations for composed parallel hybrid
-% automata -> use state dimension instead
-    val = interval(zeros(sys.nrOfOutputs,1),zeros(sys.nrOfOutputs,1));
+if isa(sys,'contDynamics')
+    val = interval(zeros(sys.nrOfNoises,1));
 elseif isa(sys,'hybridAutomaton')
-    r = sys.nrOfOutputs;
-    if all(r(1) == r)
-        val = interval(zeros(r(1),1));
-    else
-        throw(CORAerror('CORA:notSupported',...
-            'Default value for W not supported for hybrid automata with varying number of states per location.'));
+    locations = sys.location;
+    numLoc = length(locations);
+    val = cell(numLoc,1);
+    for i = 1:numLoc
+        nrNoises = locations(i).contDynamics.nrOfNoises;
+        val{i} = interval(zeros(max(1,nrNoises),1));
+    end
+elseif isa(sys,'parallelHybridAutomaton')
+    numComps = length(sys.components);
+    val = cell(numComps,1);
+    for i=1:numComps
+        numLoc = length(sys.components(i).location);
+        val{i} = cell(numLoc,1);
+        for j = 1:numLoc
+            nrNoises = sys.components(i).location(1).contDynamics.nrOfNoises;
+            val{i}{j} = interval(zeros(nrNoises,1));
+        end    
     end
 end
 
@@ -220,9 +235,5 @@ end
 
 end
 
-function val = aux_def_conformWeight(sys,params,options)
-    maxNrOfTimeSteps = ceil(params.tFinal/sys.dt); % maximum number of timeSteps
-    val = ones(maxNrOfTimeSteps+1,1);
-end
 
 % ------------------------------ END OF CODE ------------------------------

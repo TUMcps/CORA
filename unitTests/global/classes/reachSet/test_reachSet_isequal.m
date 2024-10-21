@@ -87,21 +87,21 @@ R6 = reachSet(timePoint__,timeInt);
 R7 = reachSet(timePoint,timeInt__);
 
 % compare reach set objects
-res = isequal(R1,R1);
-res(end+1,1) = ~isequal(R1,R2);
-res(end+1,1) = ~isequal(R1,R2,1e-10);
-res(end+1,1) = isequal(R1,R2,1e-4);
-res(end+1,1) = ~isequal(R1,R3);
-res(end+1,1) = isequal(R1,R3,1e-4);
-res(end+1,1) = ~isequal(R1,R4);
-res(end+1,1) = isequal(R1,R4,1e-4);
-res(end+1,1) = ~isequal(R1,R5);
-res(end+1,1) = ~isequal(R1,R6);
-res(end+1,1) = isequal(R1,R6,1e-4);
-res(end+1,1) = ~isequal(R1,R7);
-res(end+1,1) = isequal(R1,R7,1e-4);
+assert(isequal(R1,R1));
+assert(~isequal(R1,R2));
+assert(~isequal(R1,R2,1e-10));
+assert(isequal(R1,R2,1e-4));
+assert(~isequal(R1,R3));
+assert(isequal(R1,R3,1e-4));
+assert(~isequal(R1,R4));
+assert(isequal(R1,R4,1e-4));
+assert(~isequal(R1,R5));
+assert(~isequal(R1,R6));
+assert(isequal(R1,R6,1e-4));
+assert(~isequal(R1,R7));
+assert(isequal(R1,R7,1e-4));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

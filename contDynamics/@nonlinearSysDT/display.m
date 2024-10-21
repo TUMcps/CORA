@@ -1,11 +1,11 @@
-function display(sys)
-% display - Displays a nonlinearSysDT object on the command window
+function display(nlnsysDT)
+% display - displays a nonlinearSysDT object on the command window
 %
 % Syntax:
-%    display(sys)
+%    display(nlnsysDT)
 %
 % Inputs:
-%    sys - nonlinearSysDT object
+%    nlnsysDT - nonlinearSysDT object
 %
 % Outputs:
 %    -
@@ -34,19 +34,19 @@ function display(sys)
 dispInput(inputname(1))
 
 %display parent object
-display@contDynamics(sys);
+display@contDynamics(nlnsysDT);
 
 %display type
 disp('Type: Nonlinear discrete-time system');
 
 % display sampling time
-disp("Sampling time: " + sys.dt);
+disp("Sampling time: " + nlnsysDT.dt);
 
 %create symbolic variables
-vars = symVariables(sys);
+vars = symVariables(nlnsysDT);
 
 %insert symbolic variables into the system equations
-f = sys.mFile(vars.x,vars.u);
+f = nlnsysDT.mFile(vars.x,vars.u);
 
 %display state space equations
 disp('State-space equations:')
@@ -57,7 +57,7 @@ end
 fprintf(newline);
 
 %insert symbolic variables into the system equations
-y = sys.out_mFile(vars.x,vars.u);
+y = nlnsysDT.out_mFile(vars.x,vars.u);
 
 %display state space equations
 disp('Output equations:')

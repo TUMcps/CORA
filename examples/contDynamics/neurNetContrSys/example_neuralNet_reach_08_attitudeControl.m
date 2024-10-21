@@ -45,10 +45,10 @@ options.tensorOrder = 2;
 options.taylorTerms = 4;
 options.zonotopeOrder = 50;
 
-% Parameters for NN evaluation --------------------------------------------
+% Options for NN evaluation -----------------------------------------------
 
-evParams = struct();
-evParams.poly_method = "singh";
+options.nn = struct();
+options.nn.poly_method = "singh";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -75,7 +75,7 @@ spec = specification(unsafeSet,'unsafeSet',interval(params.tFinal));
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, evParams, true);
+[res, R, simRes] = verify(sys, spec, params, options, true);
 tTotal = toc(t);
 disp(['Result: ' res])
 

@@ -33,9 +33,7 @@ function [tHit,xHit,xHit_] = extractHits(simRes,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(1,3);
 
 % set default values
 [locIDstart,locIDend] = setDefaultValues({[],[]},varargin);

@@ -44,13 +44,11 @@ params.tFinal = 6.74;
 diff = simResOriginal.x - simResSX.x;
 error = sqrt(sum(diff.^2,2));
 
-if any(error > 1e-5) 
-    disp('Failed Conversion: error = ' + string(max(error)));
-    res = false;
-    return
-else
-    disp('Successful Conversion: error = ' + string(max(error)))
-    res = true;
+assert(all(error <= 1e-5))
+
+disp('Successful Conversion: error = ' + string(max(error)))
+res = true;
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

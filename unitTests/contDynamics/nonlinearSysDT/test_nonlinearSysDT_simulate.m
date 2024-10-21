@@ -23,15 +23,15 @@ function res = test_nonlinearSysDT_simulate
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = false;
+res = true;
 
 % define linearSysDT ------------------------------------------------------
 
 % stable system matrix: n x n
-A = [-0.3780    0.2839    0.5403   -0.2962
-    0.1362    0.2742    0.5195    0.8266
-    0.0502   -0.1051   -0.6572    0.3874
-    1.0227   -0.4877    0.8342   -0.2372];
+A = [0.9810    0.0143    0.0262   -0.0140
+    0.0079    1.0133    0.0267    0.0416
+    0.0029   -0.0054    0.9680    0.0188
+    0.0503   -0.0242    0.0411    0.9877];
 n_x = length(A);
 
 % input matrix: n x m
@@ -50,10 +50,15 @@ n_y = 2;
 D = [0 0 1;
      0 0 0];
 
+% disturbance matrix: n x n
+E = eye(n_x);
+
+% noise matrix: q x q
+F = eye(n_y);
+
 % initialize linearSysDT-object
-sys_lin = linearSys(A,B,[],C,D);
 dt = 0.05;
-sys_linDT = linearSysDT(sys_lin,dt);
+sys_linDT = linearSysDT(A,B,[],C,D,[],E,F,dt);
 
 % initialize nonlinearSysDT-object
 B_new = [sys_linDT.B eye(n_x) zeros(n_x,n_y)]; % from combining inputs and disturbances in u
@@ -96,17 +101,13 @@ params_NL.u = [u_rand; zeros(n_x+n_y, dt_steps+1)];
 params_NL.u = [u_rand; [w_rand zeros(n_x, 1)]; v_rand];
 [t_nonlin_uwv, x_nonlin_uwv, ~, y_nonlin_uwv] = simulate(sys,params_NL);
 
+assert(isequal(t_lin_u, t_nonlin_u, t_lin_uwv, t_nonlin_uwv));
+assert(sum(abs(y_lin_u - y_nonlin_u),'all') < 1e-6);
+assert(sum(abs(y_lin_uwv - y_nonlin_uwv),'all') < 1e-6);
+assert(sum(abs(x_lin_u - x_nonlin_u),'all') < 1e-6);
+assert(sum(abs(x_lin_uwv - x_nonlin_uwv),'all') < 1e-6);
 
-if isequal(t_lin_u, t_nonlin_u, t_lin_uwv, t_nonlin_uwv) ...
-        && sum(abs(y_lin_u - y_nonlin_u),'all') < 1e-6 ...
-        && sum(abs(y_lin_uwv - y_nonlin_uwv),'all') < 1e-6 ...
-        && sum(abs(x_lin_u - x_nonlin_u),'all') < 1e-6 ...
-        && sum(abs(x_lin_uwv - x_nonlin_uwv),'all') < 1e-6
-    % all checks ok
-    res = true;
-end
-
-end
-
+% combine results
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

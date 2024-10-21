@@ -28,9 +28,7 @@ function useCORAcolors(identifier, varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin < 1
-    throw(CORAerror("CORA:notEnoughInputArgs", 1))
-end
+narginchk(1,Inf);
 inputArgsCheck({{identifier, 'str', ...
     {'CORA:default','CORA:contDynamics','CORA:manual','CORA:manual-result'}}})
 
@@ -49,9 +47,7 @@ switch identifier
     case 'CORA:contDynamics'
         % varargin - {numColors}
         %    - numColors: number of reachSet colors
-        if nargin > 2
-            throw(CORAerror('CORA:tooManyInputArgs', 2))
-        end
+        narginchk(1,2);
 
         numColors = setDefaultValues({1}, varargin);
 

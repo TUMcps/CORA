@@ -1,4 +1,4 @@
-function example_manual_neuralNetwork()
+function res = example_manual_neuralNetwork()
 % example_manual_neuralNetwork - example from the manual demontrating the
 % neuralNetwork class as defined in the manual
 %
@@ -41,15 +41,17 @@ nn = neuralNetwork({ ...
  G = [2 1 2; 0 2 2];
  E = [1 0 3;0 1 1];
  GI = [];
- pZ = polyZonotope(c,G,GI,E);
+ X = polyZonotope(c,G,GI,E);
  
  % settings
- evParams = struct;
- evParams.poly_method = 'regression';
- evParams.num_generators = 1000;
- evParams.bound_approx = false;
+ options = struct;
+ options.nn.poly_method = 'regression';
+ options.nn.num_generators = 1000;
  
  % evaluation
- res = nn.evaluate(pZ, evParams);
+ Y = nn.evaluate(X, options);
+
+ % example completed
+ res = true;
 
 % ------------------------------ END OF CODE ------------------------------

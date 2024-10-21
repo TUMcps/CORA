@@ -69,9 +69,7 @@ for i = 1:3
 
     % check if the polynomial zonotope obtained by computing the quadratic map
     % encloses all randomly drawn and mapped points
-    if ~containsPointSet(pZres,points,[],30)
-        res = false; return
-    end  
+    assertLoop(containsPointSet(pZres,points,[],30),i)
 end
 
 
@@ -128,9 +126,7 @@ for i = 1:3
 
     % check if the polynomial zonotope obtained by computing the quadratic map
     % encloses all randomly drawn and mapped points
-    if ~containsPointSet(pZres,points,[],30)
-        res = false; return
-    end  
+    assertLoop(containsPointSet(pZres,points,[],30),i)
 end
 
 
@@ -168,9 +164,7 @@ for i = 1:3
 
     % check if the polynomial zonotope obtained by computing the quadratic map
     % encloses all randomly drawn and mapped points
-    if ~containsPointSet(pZres,points,[],5)
-        res = false; return
-    end  
+    assertLoop(containsPointSet(pZres,points,[],5),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

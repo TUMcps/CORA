@@ -40,7 +40,7 @@ inputArgsCheck({{intMat,'att','intervalMatrix'}, ...
             {type,'str',{'standard','extreme'}}});
 
 % obtain dimensions, lower bound, radius
-n = intMat.dim;
+n = dim(intMat);
 c = center(intMat.int);
 lb = infimum(intMat.int);
 r = rad(intMat);

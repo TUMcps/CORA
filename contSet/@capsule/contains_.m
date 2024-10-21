@@ -141,7 +141,7 @@ function res = aux_containsPoint(C,p)
     r = C.r;
     c = C.c;
 
-    % check case where capsule is a hypersphere
+    % check case where capsule is a hyperball
     if isempty(g)
         
        res = aux_inSphere(c,r,p);
@@ -155,12 +155,9 @@ function res = aux_containsPoint(C,p)
         % check if point is in hypercylinder
         if abs(proj) < norm(g)
            
-            % compute distance to axis
-            diff = (c + proj*g_) - p;
-            
-            % check if distance to axis is smaller than the radius
-            tmp = norm(diff);
-            res = tmp < r | withinTol(tmp,r);
+            % compute distance to axis, check if smaller than the radius
+            dist = norm((c + proj*g_) - p);
+            res = dist < r | withinTol(dist,r);
             
         else    
             % check if point is in upper or lower hypersphere

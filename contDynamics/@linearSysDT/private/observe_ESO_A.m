@@ -1,14 +1,14 @@
-function [R,tcomp] = observe_ESO_A(obj,options)
+function [R,tcomp] = observe_ESO_A(linsysDT,params,options)
 % observe_ESO_A - computes the guaranteed state estimation approach
-% from [1] and [2]. From [1] we use the intersection with strips and from
-% [2] we use the prediction.
-%
+%    from [1] and [2]. From [1] we use the intersection with strips and
+%    from [2] we use the prediction.
 %
 % Syntax:
-%    [R,tcomp] = observe_ESO_A(obj,options)
+%    [R,tcomp] = observe_ESO_A(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -26,8 +26,6 @@ function [R,tcomp] = observe_ESO_A(obj,options)
 %        with unknown-but-bounded disturbances.
 %        IET Control Theory & Applications, 10(4):431–442, 2016.
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
@@ -44,23 +42,23 @@ function [R,tcomp] = observe_ESO_A(obj,options)
 tic
 
 % time period
-tVec = options.tStart:options.timeStep:options.tFinal-options.timeStep;
+tVec = params.tStart:options.timeStep:params.tFinal-options.timeStep;
 
 % initialize parameter for the output equation
 R = cell(length(tVec),1);
 
 % width of strips; here: use norm, see p.2 of [1]; todo: check
-phi = norm(options.V);
+phi = norm(params.V);
 
 % precompute result for eq. (48) in [2]
-auxRes = sqrt(trace(options.W.Q));
+auxRes = sqrt(trace(params.W.Q));
 
 % Intersection
-y = options.y(:,1);
-Rnext.tp = options.R0;
+y = params.y(:,1);
+Rnext.tp = params.R0;
 sigma_sq = 0.3;
 % intersection of zonotope with strip
-[Rnext.tp, sigma_sq] = intersectStrip(Rnext.tp,obj.C,...
+[Rnext.tp, sigma_sq] = intersectStrip(Rnext.tp,linsysDT.C,...
     phi, y,sigma_sq,'Gollamudi1996');
 
 
@@ -70,19 +68,18 @@ R{1} = Rnext.tp;
 % loop over all time steps
 for k = 1:length(tVec)-1
     
-    
     %% Prediction, eq. (21) of [2]
     % homogeneous solution
-    Rnext_hom = post(obj,Rnext,options.uTransVec(:,k),options);
+    Rnext_hom = post(linsysDT,Rnext,params.uTransVec(:,k));
     % compute parameter p of eq. (48) in [2]
     p = auxRes/(sqrt(trace(sigma_sq*Rnext_hom.tp.Q))+auxRes);
     % finalize prediction
-    Q_next = (1-p)^-1*Rnext_hom.tp.Q + (sigma_sq*p)^-1*options.W.Q;
+    Q_next = (1-p)^-1*Rnext_hom.tp.Q + (sigma_sq*p)^-1*params.W.Q;
     Rnext.tp = ellipsoid(Q_next, Rnext_hom.tp.q);
     
     % Intersection
-    y = options.y(:,k+1);
-    [Rnext.tp, sigma_sq] = intersectStrip(Rnext.tp,obj.C,...
+    y = params.y(:,k+1);
+    [Rnext.tp, sigma_sq] = intersectStrip(Rnext.tp,linsysDT.C,...
         phi, y,sigma_sq,'Gollamudi1996');
 
     % Store result

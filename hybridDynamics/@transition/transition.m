@@ -8,22 +8,16 @@ classdef transition
 %
 % Inputs:
 %    guard - guard set (contSet object)
-%    reset - reset function (struct)
-%            - linear (without inputs): fields 'A','c'
-%                x_ = Ax + c, where x_ is the state after reset
-%            - linear (with inputs): fields 'A','B','c'
-%                x_ = Ax + Bu + c, where x_ is the state after reset
-%            - nonlinear (with/without inputs): field 'f' (function handle)
+%    reset - linearReset or nonlinearReset object
 %    target - number of target location
-%    syncLabel - synchronization label (only for use in parallel hybrid
-%                automata)
+%    syncLabel - synchronization label (parallel hybrid automata only)
 %
 % Outputs:
 %    trans - generated transition object
 %
 % Example:
-%    guard = conHyperplane([1,0],0,[0,1],0);
-%    reset = struct('A',[0, 0; 0, 0.2],'c',zeros(2,1));
+%    guard = polytope([0,1],0,[1,0],0);
+%    reset = linearReset([0,0;0,0.2]);
 %    target = 2;
 %    syncLabel = 'on';
 %
@@ -33,7 +27,8 @@ classdef transition
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: hybridAutomaton, location, parallelHybridAutomaton
+% See also: location, hybridAutomaton, parallelHybridAutomaton,
+%    linearReset, nonlinearReset
 
 % Authors:       Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger
 % Written:       02-May-2007 
@@ -42,24 +37,18 @@ classdef transition
 %                04-April-2022 (MP, add fields .hasInput/.inputDim to reset)
 %                16-June-2022 (MW, add checks for object properties, update handling of reset struct fields)
 %                25-June-2024 (TL, added 'real' to symbolic variables)
+%                10-October-2024 (MW, update with reset classes)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
-    % guard set (empty, linear, or nonlinear)
-    guard = [];
 
-    % reset function
-    % - linear: struct with fields 'A'(,'B'),'c' for Ax (+ Bu) + c
-    % - nonlinear: struct with field 'f'
-    reset struct = struct();
+    guard;                      % guard set (empty, linear, or nonlinear)
+    reset;                      % reset function (linearReset or nonlinearReset)
+    target;                     % target location (positive integer)
+    syncLabel = '';             % synchronization label (char array)
 
-    % target location
-    target {mustBeNumeric} = [];
-
-    % synchronization label
-    syncLabel (1,:) char = '';
 end
 
 methods
@@ -67,191 +56,103 @@ methods
     % class constructor
     function trans = transition(varargin)
 
-        % parse input arguments
+        % 0. empty
+        assertNarginConstructor([0,1,3,4],nargin);
         if nargin == 0
             return
-        elseif nargin == 1 && isa(varargin{1},'transition')
-            % copy constructor
+        end
+
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'transition')
             trans = varargin{1}; return
-        elseif nargin < 3
-            throw(CORAerror('CORA:notEnoughInputArgs',3));
-        elseif nargin > 4
-            throw(CORAerror('CORA:tooManyInputArgs',4));
-        end
-            
-        % assign object properties
-        trans.guard = varargin{1};
-        trans.reset = varargin{2};
-        trans.target = varargin{3};
-        if nargin == 4
-            % 4. check synchronization label already here (after assignment
-            % other types are also accepted as char for some reason)
-            if ~ischar(varargin{4})
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Synchronization label has to be a char-array.'));
-            end
-            trans.syncLabel = varargin{4};
         end
         
-        % 1. check guard set: either empty or admissible set representation
-        guardlist = {'interval','polytope','levelSet','conHyperplane','fullspace'};
-        if ~any(ismember(class(trans.guard),guardlist))
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                ['Property ''guard'' has to be one of the following classes:\n'...
-                '  ' strjoin(guardlist,', ') '.']));
-        end
+        % 2. parse input arguments: varargin -> vars
+        [guard,reset,target,syncLabel] = aux_parseInputArgs(varargin{:});
 
-        % 2. check reset function: correct fields, add internal fields
-        % 'hasInput' and 'inputDim', compute derivatives for nonlinear f
-        list = fields(trans.reset);
+        % 3. check correctness of input arguments
+        aux_checkInputArgs(guard,reset,target,syncLabel,nargin);
 
-        % check fields of reset struct:
-        % - from user instantiation: A,B,c,f
-        % - internal instantations: hasInput, inputDim, stateDim, J, Q, T
-        admissibleFields = {'A','B','c','f',...
-            'hasInput','inputDim','stateDim','J','Q','T'};
-        givenFields = ismember(admissibleFields,list);
-        redundantFields = rmfield(trans.reset,admissibleFields(givenFields));
-        if ~isempty(fields(redundantFields))
-            % throw error if any fields are redundant
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                ['transition.reset has redundant fields: '...
-                strjoin(fields(redundantFields),', '),'.']));
-        end
+        % 4. compute dependent properties
+        [guard,reset,target,syncLabel] = ...
+            aux_computeProperties(guard,reset,target,syncLabel);
         
-        % assign reset function properties
-        if ~all(isfield(trans.reset,{'stateDim','inputDim','hasInput'}))
-            % assumption: reset function has input arguments @(x,u)
-            trans.reset.hasInput = false;
-            trans.reset.inputDim = 0;
-            if isfield(trans.reset,'f')
-                % nonlinear reset function x_ = f(x,u)
-                % read out length of input arguments to evaluate reset function
-                [temp,trans.reset.stateDim] = inputArgsLength(trans.reset.f,2);
-                % size of inputs to reset function
-                trans.reset.inputDim = temp(2);
-                trans.reset.hasInput = trans.reset.inputDim > 0;
-            elseif isfield(trans.reset,'B')
-                % linear reset function with inputs: x_ = Ax + Bu + c
-                trans.reset.hasInput = true;
-                trans.reset.stateDim = size(trans.reset.B,1);
-                trans.reset.inputDim = size(trans.reset.B,2);
-            else
-                % linear reset function without inputs
-                trans.reset.stateDim = size(trans.reset.A,1);
-            end
-        end
-
-        % check whether matrices of linear transitions have correct sizes
-        aux_checkLinearReset(trans);
-        
-        % pre-compute derivatives for nonlinear resets: stored in fields
-        % .J (Jacobian), .Q (Hessian), .T (third-order tensor)
-        if isfield(trans.reset,'f') && ~all(isfield(trans.reset,{'J','Q','T'}))
-            % skip computation if J, Q, and T have already been computed
-            % (this occurs during internal re-instantation of transitions)
-            trans = aux_compDerivatives(trans);
-        end
-
-        % 3. check target: non-empty, integer, larger than zero
-        if isempty(trans.target) || any(mod(trans.target,1) ~= 0) || any(trans.target < 1)
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'All targets of a transition have to be integer values greater than zero.'));
-        end
+        % 5. assign properties
+        trans.guard = guard;
+        trans.reset = reset;
+        trans.target = target;
+        trans.syncLabel = syncLabel;
 
     end
-    
+end
 
-    % Auxiliary functions -------------------------------------------------
+end
 
-    function aux_checkLinearReset(trans)
-    % ensure that linear reset function x_ = Ax + Bu + c is properly
-    % defined
 
-        if CHECKS_ENABLED && isfield(trans.reset,'A')
-            % size of next state vector and current state vector
-            if isfield(trans.reset,'c')
-                if ~isvector(trans.reset.c)
-                    throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Constant offset in linear reset function has to be a vector.'));
-                end
+% Auxiliary functions -----------------------------------------------------
 
-                if size(trans.reset.A,1) ~= length(trans.reset.c)
-                    throw(CORAerror('CORA:wrongInputInConstructor',...
-                        'Linear reset function: Mismatch in rows of A and length of c.'));
-                end
-            end
+function [guard,reset,target,syncLabel] = aux_parseInputArgs(varargin)
 
-            if trans.reset.hasInput && size(trans.reset.A,1) ~= size(trans.reset.B,1)
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Linear reset function: Mismatch in rows of A and rows of B.'));
-            end
-        end
+    % default properties
+    guard = []; reset = []; target = []; syncLabel = '';
 
-    end
+    % parse arguments
+    [guard,reset,target,syncLabel] = setDefaultValues(...
+        {guard,reset,target,syncLabel},varargin);
 
-    function trans = aux_compDerivatives(trans)
-    % pre-compute all derivatives required for the enclosure of the 
-    % nonlinear reset function by a Taylor series expansion of order 2
-    % additional fields: .J (Jacobian), .Q (Hessian), .T (third-order tensor)
+end
 
-        % state dimension and input dimension of reset function
-        n = trans.reset.stateDim;
-        m = trans.reset.inputDim;
+function aux_checkInputArgs(guard,reset,target,syncLabel,n_in)
 
-        % create symbolic variables for reset function
-        z = sym('x',[n,1],'real');
-        u = sym('u',[m,1],'real');
+if CHECKS_ENABLED && n_in > 0
 
-        % if reset function depends on inputs, we create the substitute
-        % state z = [x;u] which is used for the rest of this function
-        if trans.reset.hasInput
-            % extended state z = [x;u]
-            z = [z;u];
-            % alter reset function to accept single input z
-            trans.reset.f = @(z) trans.reset.f(z(1:n),z(n+1:n+m));
-        end
-        
-        % evaluate f symbolically
-        f = trans.reset.f(z);
-        
-        % first-order derivative
-        J = jacobian(f,z);
-        trans.reset.J = matlabFunction(J,'Vars',{z});
-        
-        % check if Jacobian is constant:
-        % insert NaN for all variables -> all entries with variables become
-        % NaN, all others simple double
-        Jconst = ~isnan(double(subs(J,z,NaN(length(z),1))));
-        
-        % second-order derivative
-        trans.reset.Q = cell(n,1);
-        for i = 1:n
-            if all(Jconst(i,:))
-                % skip linear Jacobians
-                trans.reset.Q{i,1} = 0;
-            else
-                % compute Hessian of f
-                trans.reset.Q{i,1} = matlabFunction(hessian(f(i),z),'Vars',{z});
-            end
-        end
-        
-        % third-order derivative
-        trans.reset.T = cell(n,n+m);
-        for i = 1:n
-            for j = 1:n+m
-                if Jconst(i,j)
-                    % skip linear Jacobians
-                    trans.reset.T{i,j} = 0;
-                else
-                    % third-order tensor = Hessian of Jacobian
-                    trans.reset.T{i,j} = matlabFunction(hessian(J(i,j),z),'Vars',{z});
-                end
-            end
-        end
+    inputArgsCheck({{guard,'att',{'interval','polytope','levelSet','fullspace'}};...
+                    {reset,'att',{'abstractReset','struct'},'scalar'};...
+                    {target,'att','numeric',{'column','nonempty','integer','positive'}};...
+                    {syncLabel,'att','char'}});
+
+    % pre-state dimension of reset function must match dimension of guard
+    if isa(reset,'abstractReset') && dim(guard) ~= reset.preStateDim
+        throw(CORAerror('CORA:wrongInputInConstructor',...
+            'Dimension of guard set must match pre-state dimension of reset function.'));
     end
 
 end
+
+end
+
+function [guard,reset,target,syncLabel] = aux_computeProperties(guard,reset,target,syncLabel)
+
+% backward compatibility for structs
+if isa(reset,'struct')
+    CORAwarning("CORA:deprecated","property","reset","CORA v2025",...
+        "Please use a linearReset or nonlinearReset object instead of a struct.",...
+        "This change was made to improve code reliability.");
+
+    % try to convert the given struct to a linearReset/nonlinearReset object
+    try
+        if isfield(reset,'A')
+            % linear reset function, has .A and .c, potentially also .B
+            if isfield(reset,'B')
+                reset = linearReset(reset.A,reset.B,reset.c);
+            else
+                reset = linearReset(reset.A,[],reset.c);
+            end
+        elseif isfield(reset,'f')
+            % nonlinear reset function
+            reset = nonlinearReset(reset.f);
+        else
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Reset function must be a linearReset or nonlinearReset object.'));
+        end
+    catch ME
+        % conversion not successful... immediately direct away form struct
+        % usage and toward classes
+        throw(CORAerror('CORA:wrongInputInConstructor',...
+            'Reset function must be a linearReset or nonlinearReset object.'));
+    end
+end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

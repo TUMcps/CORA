@@ -24,28 +24,27 @@ function res = test_interval_vertices
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
 tol = 1e-9;
 
 % empty
 I = interval.empty(2);
 V = vertices(I);
-res(end+1,1) = isnumeric(V) && isempty(V) && size(V,1) == 2;
+assert(isnumeric(V) && isempty(V) && size(V,1) == 2);
 
 % bounded
 I = interval([-2; -4],[3; 1]);
 V = vertices(I);
 V_true = [-2 3  3 -2;
            1 1 -4 -4];
-res(end+1,1) = compareMatrices(V,V_true,tol);
+assert(compareMatrices(V,V_true,tol));
 
 % unbounded
 I = interval([-2; -4],[3; Inf]);
 V = vertices(I);
-V_true = [-2 -2   3 3;
-          -4 Inf -4 Inf];
-% check result (depends on ordering... cannot use compareMatrices here)
-res(end+1,1) = all(all(V == V_true));
+V_true = [-2 -2 3 3;
+          -4 Inf Inf -4];
+% check result (compareMatrices cannot deal with Inf...)
+assert(all(V == V_true,'all'));
 
 % degenerate
 I = interval([-2; 0; 1],[5; 2; 1]);
@@ -53,16 +52,16 @@ V = vertices(I);
 V_true = [-2 -2 5 5;
            0  2 0 2;
            1  1 1 1];
-res(end+1,1) = compareMatrices(V,V_true);
+assert(compareMatrices(V,V_true));
 
 % degenerate, point
 lb = [1;4;-2;6];
 I = interval(lb);
 V = vertices(I);
-res(end+1,1) = compareMatrices(V,lb);
+assert(compareMatrices(V,lb));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

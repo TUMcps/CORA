@@ -15,7 +15,7 @@ function res = isparam(name)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: splitIntoParamsOptions
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       21-June-2023

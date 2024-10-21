@@ -50,8 +50,9 @@ s(randperm(n,randi([1,n]))) = 0;
 Vd = U*[diag(s),zeros(n,N-n)]*W';
 Ed = ellipsoid.enclosePoints(Vd);
 
-if ~all(contains(E,V)) || ~all(contains(Ed,Vd))
-    res = false;
+assert(all(contains(E,V)))
+assert(all(contains(Ed,Vd)))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

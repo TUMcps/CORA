@@ -24,6 +24,8 @@ function res = testLong_zonotope_cubMap
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+tol = 1e-12;
+
 % TEST 1: Mixed Multiplication
 
 for i = 1:10
@@ -73,9 +75,7 @@ for i = 1:10
     end
     
     % convert zonotope to halfspace representation
-    Zres = halfspace(Zres);
-    C = Zres.halfspace.H;
-    d = Zres.halfspace.K;
+    P = polytope(Zres);
     
 %     % plot the result
 %     plot(Zres,[1,2],'r');
@@ -83,13 +83,7 @@ for i = 1:10
 %     plot(pointsRes(1,:),pointsRes(2,:),'.k');
     
     % check if all points are located inside the calculated zonotope
-    for j = 1:size(pointsRes,2)
-        
-       p = pointsRes(:,j);
-       if ~all(C*p - d < 0 | withinTol(C*p - d,0,1e-12))
-          throw(CORAerror('CORA:testFailed'));
-       end
-    end
+    assertLoop(all(contains(P,pointsRes)),i)
 end
 
 
@@ -129,9 +123,7 @@ for i = 1:10
     end
     
     % convert zonotope to halfspace representation
-    Zres = halfspace(Zres);
-    C = Zres.halfspace.H;
-    d = Zres.halfspace.K;
+    P = polytope(Zres);
     
 %     % plot the result
 %     plot(Zres,[1,2],'r');
@@ -139,14 +131,7 @@ for i = 1:10
 %     plot(pointsRes(1,:),pointsRes(2,:),'.k');
     
     % check if all points are located inside the calculated zonotope
-    for j = 1:size(pointsRes,2)
-        
-       p = pointsRes(:,j);
-        
-       if ~all(C*p - d < 0 | withinTol(C*p - d,0,1e-12))
-          throw(CORAerror('CORA:testFailed'));
-       end
-    end
+    assertLoop(all(contains(P,pointsRes)),i);
 end
 
 res = true;

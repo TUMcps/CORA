@@ -44,9 +44,7 @@ for i=1:nrTests
     P = simplex(Z);
 
     % check if zonotope is contained in simplex
-    if ~contains(P,Z,'exact',1e-12)
-        res = false; break
-    end
+    assertLoop(contains(P,Z,'exact',1e-12),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

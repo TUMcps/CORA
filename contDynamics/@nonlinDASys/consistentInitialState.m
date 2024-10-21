@@ -1,12 +1,13 @@
-function y0 = consistentInitialState(obj,x0,y0,u0)
+function y0 = consistentInitialState(nlnsysDA,x0,y0,u0)
 % consistentInitialState - returns a consistent initial algebraic state,
 %    i.e., a value for y(0) for which all algebraic equations 0 = g(x,y,u)
 %    are fulfilled
 %
 % Syntax:
-%    y0 = consistentInitialState(obj,x0,y0,u0)
+%    y0 = consistentInitialState(nlnsysDA,x0,y0,u0)
 %
 % Inputs:
+%    nlnsysDA - nonlinDASys object
 %    x0 - initial dynamic state
 %    y0 - guess for the initial algebraic state
 %    u0 - initial input
@@ -28,8 +29,8 @@ function y0 = consistentInitialState(obj,x0,y0,u0)
 converged = false;
 
 while ~converged
-    l = obj.conFile(x0, y0, u0);
-    [~,~,~,~,~,F] = obj.jacobian(x0, y0, u0);
+    l = nlnsysDA.conFile(x0, y0, u0);
+    [~,~,~,~,~,F] = nlnsysDA.jacobian(x0, y0, u0);
 
     %evaluate jacobian
     delta_y = F\(-l);

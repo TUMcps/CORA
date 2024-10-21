@@ -28,11 +28,11 @@ function O = and_(O,S,varargin)
 % Authors:       Mark Wetzlinger
 % Written:       22-March-2023
 % Last update:   05-April-2023 (MW, second argument can be empty)
+%                28-September-2024 (MW, first argument guaranteed emptySet)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % intersection is always empty set
-[O,S] = findClassArg(O,S,'emptySet');
 
 % ------------------------------ END OF CODE ------------------------------

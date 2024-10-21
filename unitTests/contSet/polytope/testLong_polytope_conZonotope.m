@@ -32,7 +32,7 @@ res = true;
 % number of tests
 nrTests = 10;
 % tolerance
-tol = 1e-8;
+tol = 1e-12;
 
 for i=1:nrTests
 
@@ -54,9 +54,8 @@ for i=1:nrTests
     V_vert = vertices(cZ_vert);
 
     % compare vertices
-    if ~compareMatrices(V_P,V_sF,tol) || ~compareMatrices(V_P,V_vert,tol)
-        res = false; return
-    end
+    assertLoop(compareMatrices(V_P,V_sF,tol),i)
+    assertLoop(compareMatrices(V_P,V_vert,tol),i)
 
 end
 

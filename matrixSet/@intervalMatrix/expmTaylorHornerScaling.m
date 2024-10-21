@@ -21,8 +21,9 @@ function result = expmTaylorHornerScaling(intMat,maxOrder,styleOfCalculation,var
 % Example:
 %    -
 %
-% Other m-files required: hornerTaylorSeries.m, taylorSeries.m,
-%           intervalMatrixRemainder.m, scalingSquaringHornerTaylorSeries
+% Other m-files required: priv_hornerTaylorSeries.m, taylorSeries.m,
+%    priv_intervalMatrixRemainder.m,
+%    priv_scalingSquaringHornerTaylorSeries.m
 % Subfunctions: none
 % MAT-files required: none
 %
@@ -38,10 +39,10 @@ function result = expmTaylorHornerScaling(intMat,maxOrder,styleOfCalculation,var
 switch styleOfCalculation
     case 0 
         % case of truncated Taylor series
-        result = taylorSeries(intMat,maxOrder);
+        result = priv_taylorSeries(intMat,maxOrder);
     case 1 
         % case of truncated Taylor series using horner scheme
-        result = hornerTaylorSeries(intMat,maxOrder);
+        result = priv_hornerTaylorSeries(intMat,maxOrder);
     case 2 
         % case of truncated Taylor series using horner scheme and the
         
@@ -49,10 +50,10 @@ switch styleOfCalculation
             case 0       
                 % no poetntial was given as attribute,
                 % so 1 is used as the default value
-                result = scalingSquaringHornerTaylorSeries(intMat,maxOrder,1);
+                result = priv_scalingSquaringHornerTaylorSeries(intMat,maxOrder,1);
             case 1
                 tmp = cell2mat(varargin);
-                result = scalingSquaringHornerTaylorSeries(intMat,maxOrder,tmp(1));
+                result = priv_scalingSquaringHornerTaylorSeries(intMat,maxOrder,tmp(1));
             otherwise 
                 result = [];
         end

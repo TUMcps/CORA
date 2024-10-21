@@ -24,9 +24,8 @@ function han = plotCircle(center,radius,NOP,style)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin < 3
-    throw(CORAerror('CORA:notEnoughInputArgs',3));
-elseif nargin==3
+narginchk(3,4);
+if nargin==3
     style = 'b-';
 end
 

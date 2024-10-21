@@ -1,3 +1,28 @@
+function example_zonotope()
+% example_zonotope - example from the manual demonstrating 
+%   zonotopes
+%
+% Syntax:
+%   example_zonotope()
+%
+% Inputs:
+%    -
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also:
+
+% Authors:       Tobias Ladner
+% Written:       27-September-2023
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 Z1 = zonotope([1 1 1; 1 -1 1]); % create zonotope Z1
 Z2 = zonotope([-1 1 0; 1 0 1]); % create zonotope Z2
@@ -29,3 +54,5 @@ enlargeAxis(1.2)
 figure(f2);
 xlabel('$x_{(1)}$','Interpreter','latex')
 ylabel('$x_{(2)}$','Interpreter','latex')
+
+% ------------------------------ END OF CODE ------------------------------

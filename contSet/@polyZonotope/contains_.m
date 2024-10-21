@@ -57,7 +57,8 @@ function res = contains_(pZ,S,type,varargin)
 
     % check user inputs 
     if strcmp(type,'exact')
-        throw(CORAerror('CORA:noExactAlg',pZ,S));
+        res = aux_exactContainment(pZ,S,type);
+        return
     end
     
     % initialize variables
@@ -116,6 +117,27 @@ end
 
 
 % Auxiliary functions -----------------------------------------------------
+
+function res = aux_exactContainment(pZ,S,type)
+% exact containment is supported in special cases
+
+% only center
+if ~any(any(pZ.G)) && ~any(any(pZ.GI))
+    res = all(withinTol(pZ.c,S));
+    return
+end
+
+% polyZonotope is a zonotope
+[isZonotope, Z] = representsa_(pZ,'zonotope',1e-12);
+if isZonotope
+    res = contains_(Z,S,type,100*eps,0);
+    return
+end
+
+% for other cases, no exact algorithm implemented
+throw(CORAerror('CORA:noExactAlg',pZ,S));
+
+end
 
 function res = aux_disproveContainment(pZ1,pZ2)
 % use contraction to prove that pZ2 is not a subset of pZ1 

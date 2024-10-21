@@ -24,7 +24,7 @@ function res = test_interval_asin
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
+% tolerance
 tol = 1e-9;
 
 % Check special values
@@ -36,21 +36,31 @@ tol = 1e-9;
 I = interval([-1,0],[1,0]);
 I_asin = asin(I);
 I_true = interval([-pi/2,0],[pi/2,0]);
-res(end+1,1) = isequal(I_asin,I_true,tol);
+assert(isequal(I_asin,I_true,tol));
 
 % check out of bounds
 I = interval(-2,0);
-try
-    I_asin = acos(I);
-    res(end+1,1) = false;
-end
-I = interval(0.5,1.1);
-try
-    I_asin = acos(I);
-    res(end+1,1) = false;
-end
+assertThrowsAs(@asin,'CORA:outOfDomain',I);
 
-% combine results
-res = all(res);
+I = interval(0.5,1.1);
+assertThrowsAs(@asin,'CORA:outOfDomain',I);
+
+% n-d arrays
+lb = [];
+lb(:,:,1,1) = [1 2; 3 5];
+lb(:,:,1,2) = [0 -1; -2 3];
+lb(:,:,1,3) = [1 1; -1 0];
+lb(:,:,2,1) = [-3 2; 0 1];
+ub = [];
+ub(:,:,1,1) = [1.5 4; 4 10];
+ub(:,:,1,2) = [1 2; 0 4];
+ub(:,:,1,3) = [2 3; -0.5 2];
+ub(:,:,2,1) = [-1 3; 0 2];
+I = interval(lb,ub);
+assertThrowsAs(@asin,'CORA:outOfDomain',I);
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

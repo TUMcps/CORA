@@ -103,7 +103,7 @@ for i=1:length(checks)
         if VALIDATEOPTIONS_ERRORS
             % error message if validation failed
             throw(CORAerror('CORA:specialError', ...
-            sprintf('%s.%s: %s.',listname, field, msg)));
+                sprintf('%s.%s: %s.',listname, field, msg)));
         else
             % append to list of failed checks
             failedIdx = failedIdx + 1;

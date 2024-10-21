@@ -67,7 +67,6 @@ R_i = Rin.timePoint.set{end};
 points = [randPoint(R_i,1000),randPoint(R_i,'all','extreme')];
 points_ = zeros(size(points));
 
-res1 = true;
 for i = 1:size(points,2)
 
     % simulate backwards in time
@@ -80,10 +79,7 @@ for i = 1:size(points,2)
     p = x(end,:)';
     points_(:,i) = p;
 
-    if ~contains(params.R0,p)
-        % not a valid inner-approximation
-        res1 = false;
-    end
+    assert(contains(params.R0,p))
 end
 
 % figure; hold on;
@@ -95,9 +91,9 @@ I_saved = interval([0.665734495820338; 0.511586092476733], ...
                    [0.729556137539839; 0.565744670853688]);
 I = interval(R_i);
 
-res2 = isequal(I,I_saved,1e-3);
+assert(isequal(I,I_saved,1e-3));
 
 % combine results
-res = res1 && res2;
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

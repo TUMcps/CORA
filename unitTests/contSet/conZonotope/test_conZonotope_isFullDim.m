@@ -23,19 +23,17 @@ function res = test_conZonotope_isFullDim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % check empty conZonotope object
 cZ = conZonotope.empty(2);
-res(end+1,1) = ~isFullDim(cZ);
+assert(~isFullDim(cZ));
 
 % constrained zonotope
 Z = [0 3 0 1;0 0 2 1];
 A = [1 0 1]; b = 1;
 cZ = conZonotope(Z,A,b);
-res(end+1,1) = isFullDim(cZ);
+assert(isFullDim(cZ));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

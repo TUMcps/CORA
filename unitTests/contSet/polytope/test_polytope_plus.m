@@ -23,7 +23,6 @@ function res = test_polytope_plus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
 tol = 1e-14;
 
 % 1D, fully empty + vector
@@ -31,7 +30,15 @@ A = zeros(0,1); b = zeros(0,0);
 P = polytope(A,b);
 z = 1;
 P_sum = P + z;
-res(end+1,1) = isemptyobject(P_sum);
+assert(isemptyobject(P_sum));
+
+% 1D, bounded + scalar
+A = [1; -1]; b = [4; -2];
+P = polytope(A,b);
+z = 1;
+P_sum = P + z;
+P_true = polytope([1;-1],[5;-3]);
+assert(isequal(P_sum,P_true,tol));
 
 
 % 2D, bounded + vector (vertex representation)
@@ -41,7 +48,7 @@ z = [2; 1];
 P_sum = P + z;
 V_sum = V + z;
 P_true = polytope(V_sum);
-res(end+1,1) = P_sum == P_true;
+assert(isequal(P_sum,P_true,tol));
 
 % 2D, bounded + bounded (vertex representation)
 V = [1 1; -1 1; -1 -1; 1 -1]';
@@ -51,7 +58,7 @@ P2 = polytope(V);
 P_sum = compact(P1 + P2,'V');
 V_true = [-1 2; 1 2; 2 1; 2 -1; -2 -1; -2 1]';
 P_true = polytope(V_true);
-res(end+1,1) = compareMatrices(P_sum.V,P_true.V);
+assert(compareMatrices(P_sum.V,P_true.V));
 
 % 2D, unbounded + bounded
 A = [1 0; -1 0; 0 1]; b = [1;1;1];
@@ -61,7 +68,7 @@ P2 = polytope(A,b);
 P_sum = P1 + P2;
 A = [1 0; -1 0; 0 1]; b = [2;2;2];
 P_true = polytope(A,b);
-res(end+1,1) = P_true == P_sum;
+assert(P_true == P_sum);
 
 % 2D, degenerate + degenerate
 A = [1 0; -1 0; 0 1; 0 -1]; b = [1;1;1;-1];
@@ -71,7 +78,7 @@ P2 = polytope(A,b);
 P_sum = P1 + P2;
 A_true = [1 0; -1 0; 0 1; 0 -1]; b_true = [2;2;2;-2];
 P_true = polytope(A_true,b_true);
-res(end+1,1) = P_sum == P_true;
+assert(isequal(P_sum,P_true,tol));
 
 % 2D, bounded + degenerate
 A = [1 0; -1 0; 0 1; 0 -1]; b = 0.1*ones(4,1);
@@ -82,7 +89,7 @@ P_sum = P1 + P2;
 V_true = [-0.15 -0.15; -0.15 0.05; 0.05 -0.15; 0.05 0.05; ...
           -0.05 -0.05; -0.05 0.15; 0.15 -0.05; 0.15 0.15]';
 P_true = polytope(V_true);
-res(end+1,1) = P_sum == P_true;
+assert(isequal(P_sum,P_true,tol));
 
 
 % 2D, bounded + interval
@@ -91,7 +98,7 @@ P = polytope(A,b);
 lb = [-2;1]; ub = [3;2];
 I = interval(lb,ub);
 P_sum = P + I;
-res(end+1,1) = isa(P_sum,"polytope");
+assert(isa(P_sum,"polytope"));
 
 % 2D, polytope + zonotope
 A = [2 1; -1 1; -2 -3; 0 -4; 2 -1]; b = ones(5,1);
@@ -100,8 +107,7 @@ isBounded(P);
 c = [1;0]; G = [1 0; 0 1];
 Z = zonotope(c,G);
 P_sum = P + Z;
-res(end+1,1) = isa(P_sum,"polytope") ...
-    && (~isempty(P_sum.bounded.val) && P_sum.bounded.val);
+assert(isa(P_sum,"polytope") && (~isempty(P_sum.bounded.val) && P_sum.bounded.val));
 
 % 2D, polytope + polyZonotope
 A = [2 1; -1 1; -2 -3; 0 -4; 2 -1]; b = ones(5,1);
@@ -109,7 +115,7 @@ P = polytope(A,b);
 c = [1;0]; G = [1 0; 0 1];
 pZ = polyZonotope(c,G);
 P_sum = P + pZ;
-res(end+1,1) = isa(P_sum,"polyZonotope");
+assert(isa(P_sum,"polyZonotope"));
 
 % 2D, polytope + point
 A = [1 0; -1 1; -1 -1]; b = [1;1;1];
@@ -118,10 +124,17 @@ p = [1;2];
 P_sum = P + p;
 V_true = [2 4; 2 0; 0 2]';
 P_true = polytope(V_true);
-res(end+1,1) = P_sum == P_true;
+assert(isequal(P_sum,P_true,tol));
 
 
-% combine results
-res = all(res);
+% 2D, addition with scalar
+A = [0.3536 0; 0.5 -1; -0.3536 0; -0.5 1];
+b = [sqrt(2); 1; 0; 1];
+P = polytope(A,b);
+assertThrowsAs(@plus,'CORA:notSupported',P,0);
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -48,9 +48,6 @@ Z_s_degenerate = zonotope([1 0.5; 1 0]);
 P_m = polytope(Z_m);
 P_m_degenerate = polytope(Z_m_degenerate);
 
-% initialize partial results
-resvec = true(0);
-
 % define small box
 smallBox = zonotope([[0;0],1e-8*eye(2)]);
 verySmallBox = zonotope([[0;0],1e-12*eye(2)]);
@@ -78,17 +75,16 @@ for iSet = 1:length(Z_s)
         % check whether Minkowski difference returns the empty set
         if representsa(Z_res,'emptySet')
             % check if polytope solution is empty as well
-            resvec(end+1,1) = representsa(P_res,'emptySet');
+            assert(representsa(P_res,'emptySet'));
         else
             % enclosure check (Definition of Minkoswki difference)
-            resvec(end+1,1) = contains(Z_m + smallBox, Z_res + Z_s{iSet});
+            assert(contains(Z_m + smallBox, Z_res + Z_s{iSet}));
 
             % enclosure check (comparison with polytope solution)
-            resvec(end+1,1) = contains(P_res + smallBox, polytope(Z_res));
+            assert(contains(P_res + smallBox, polytope(Z_res)));
 
             % enclosure check (comparison with polytope solution; other direction)
-            resvec(end+1,1) = contains(polytope(Z_res) + smallBox, ...
-                P_res + verySmallBox);
+            assert(contains(polytope(Z_res) + smallBox, P_res + verySmallBox));
 
     %         % for debugging:
     %         figure
@@ -118,17 +114,12 @@ for iType = 1:length(typeSet)
     type = typeSet{iType};
     
     % compute result
-    try 
-        Z_res = minkDiff(Z_m_degenerate, Z_s{1}, type);
-    catch
-        % as expected, this is not possible
-        Z_res = [];
-    end
+    Z_res = minkDiff(Z_m_degenerate, Z_s{1}, type);
 
     % the result should be empty
     if representsa(Z_res,'emptySet')
         % check if polytope solution is empty as well
-        resvec(end+1,1) = representsa(P_res,'emptySet');
+        assert(representsa(P_res,'emptySet'));
     end
 end
 
@@ -148,15 +139,15 @@ for iType = 1:length(typeSet)
     Z_res = minkDiff(Z_m_degenerate, Z_s_degenerate, type);
 
     % enclosure check (Definition of Minkoswki difference)
-    resvec(end+1,1) = contains(Z_m_degenerate + smallBox, Z_res + Z_s_degenerate);
+    assert(contains(Z_m_degenerate + smallBox, Z_res + Z_s_degenerate));
 
     % enclosure check (comparison with polytope solution); not applicable, see
     % above
-    resvec(end+1,1) = contains(P_res + smallBox, polytope(Z_res));
+    assert(contains(P_res + smallBox, polytope(Z_res)));
 
     % enclosure check (comparison with polytope solution; other direction); not applicable, see
     % above
-    resvec(end+1,1) = contains(polytope(Z_res) + smallBox, P_res);
+    assert(contains(polytope(Z_res) + smallBox, P_res));
 end
 
 
@@ -184,7 +175,7 @@ for iType = 1:length(typeSet)
     Z_res = minkDiff(Z_m, Z_s, type);
     
     % enclosure check (Definition of Minkoswki difference)
-    resvec(end+1,1) = contains(Z_m + smallBox, Z_res + Z_s);
+    assert(contains(Z_m + smallBox, Z_res + Z_s));
 end
 
 
@@ -211,17 +202,12 @@ for iSet = 1:10
 
         % enclosure check (Definition of Minkoswki difference)
         if ~representsa(Z_res,'emptySet')
-            resvec(end+1,1) = contains(Z_m + smallBox, Z_res + Z_s);
+            assert(contains(Z_m + smallBox, Z_res + Z_s));
         else
             % if the result is empty, it has to hold that Z_s is not contained
             % in Z_m when the centers are equal
             % This portion is commented out due to errors in the MPT toolbox
             % resPartial(end+1) = ~contains(Z_m, Z_s + smallBox + center(Z_m) - center(Z_s));
-        end
-
-        if resvec(end) ~= 1
-            % MPT toolbox often wrongfully returns that a polytope is empty
-            throw(CORAerror('CORA:testFailed'))
         end
     end
 end
@@ -253,7 +239,7 @@ for iSet = 1:10
 
             % enclosure check (over-approximation)
             if ~representsa(Z_res,'emptySet')
-                resvec(end+1,1) = contains(Z_res + smallBox, P_res);
+                assert(contains(Z_res + smallBox, P_res));
             else
                 % if the result is empty, it has to hold that Z_s is not
                 % contained in Z_m when the centers are equal
@@ -261,11 +247,6 @@ for iSet = 1:10
                 % of the MPT Toolbox is buggy
                 % This portion is commented out due to errors in the MPT toolbox
                 % resPartial(end+1) = ~contains(Z_m, Z_s + smallBox + center(Z_m) - center(Z_s));
-            end
-
-            if resvec(end) ~= 1
-                % MPT toolbox often wrongfully returns that a polytope is empty
-                throw(CORAerror('CORA:testFailed'))
             end
         end
     catch
@@ -275,6 +256,6 @@ end
 
 
 %result of all tests
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

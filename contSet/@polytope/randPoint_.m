@@ -73,6 +73,8 @@ function pt = randPoint_(P,N,type,varargin)
         pt = aux_randPointBilliard(P, N);
     elseif strcmp(type,'uniform:hitAndRun')
         pt = aux_randPointHitAndRun(P, N);
+    elseif strcmp(type,'uniform:ballWalk')
+        pt = aux_randPointBallWalk(P, N);
     else
         throw(CORAerror('CORA:noSpecificAlg',type,P));
     end
@@ -330,7 +332,7 @@ function p = aux_randPointHitAndRun(P, N)
         
         % Checking that the polytope is well defined:
         if abs(lambda_upper) == inf || abs(lambda_lower) == inf
-            throw(CORAerror('CORA:specialError','The polytope is either empty or unbounded, therefore one cannot sample it uniformly.'));
+            throw(CORAerror('CORA:specialError','The polytope is either empty or unbounded, therefore one cannot sample it uniformly using the hit-and-run algorithm.'));
         end
         % Checking that lambda_upper >= lambda_lower
         if lambda_upper < lambda_lower
@@ -355,6 +357,67 @@ function p = aux_randPointHitAndRun(P, N)
         % Add it to the list:
         p(:,i) = currentPoint;
     end
+end
+
+function p = aux_randPointBallWalk(P, N)
+    % Allocate memory
+    p = zeros([dim(P) N]);
+    
+    % We first try to 'round' the polytope as much as we can, by computing
+    % the interval over-approximation
+    I = interval(P);
+    c = center(P);
+    % Side lengths
+    L = (I.sup - I.inf)./2;
+    % If we have an unbounded polytope, ignore the unbounded parts
+    L(abs(L) == Inf) = 1;
+    % Same if we have a degenerate dimension
+    L(abs(L) < 100 * eps) = 1;
+    
+    Ptrans = diag(1./L) * (P - c);
+    
+    % This is just a convenient renaming. The polytope is now the set of
+    % points x, s.t. Ax <= b.
+    
+    % Need to check whether the polytope is degenerate
+    [res, X] = isFullDim(Ptrans);
+    n = dim(Ptrans);
+    if ~res
+        X = [X zeros([n n-size(X,2)])];
+    end
+    
+    % Radius of the Ball
+    r = 1/sqrt(dim(Ptrans));
+    
+    % We start at some random point in the polytope; for this, we can use
+    % the other, easier method:
+    currentPoint = randPoint(Ptrans);
+    for i = 1:N
+        doWhile = false; % Need to pass the next loop at least once
+        x = currentPoint;
+        while ~doWhile || ~Ptrans.contains(x)
+            doWhile = 1;
+            %generate a random direction
+            direction = randn([dim(Ptrans) 1]);
+            direction = direction./norm(direction);
+            
+            % in case the polytope is degenerate, the direction can only be in
+            % the subspace spanned by the vectors of X (which are normalized
+            % and orthogonal, so all is well, we still have a uniformly sampled
+            % direction)
+            direction = X * direction;
+            
+            % Generate a random number
+            mu = rand(1);
+            
+            % Benerate x in the Ball of radius r, around the currentPoint
+            x = currentPoint + r * mu^(1/dim(Ptrans)) * direction;
+        end
+        
+        p(:,i) = x;
+        currentPoint = x;
+    end
+    p = diag(L) * p+c;
 end
 
 

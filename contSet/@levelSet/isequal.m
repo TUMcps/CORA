@@ -1,13 +1,13 @@
-function res = isequal(ls1,ls2,varargin)
-% isequal - checks if two levelSet objects are equal
+function res = isequal(ls,S,varargin)
+% isequal - checks if a levelSet objects is equal to another set or point
 %
 % Syntax:
-%    res = isequal(ls1,ls2)
-%    res = isequal(ls1,ls2,tol)
+%    res = isequal(ls,S)
+%    res = isequal(ls,S,tol)
 %
 % Inputs:
-%    ls1 - location object
-%    ls2 - location object
+%    ls - levelSet object
+%    S - contSet object, numeric
 %    tol - tolerance (optional)
 %
 % Outputs:
@@ -41,36 +41,63 @@ function res = isequal(ls1,ls2,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% too many input arguments
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(2,3);
 
 % default values
 tol = setDefaultValues({eps},varargin);
 
 % check input arguments
-inputArgsCheck({{ls1,'att','levelSet'};
-                {ls2,'att','levelSet'};
+inputArgsCheck({{ls,'att',{'levelSet','numeric'}};
+                {S,'att',{'contSet','numeric'}};
                 {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
 
+% ensure that numeric is second input argument
+[ls,S] = reorderNumeric(ls,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < ls.precedence
+    res = isequal(S,ls,tol);
+    return
+end
+
+% ambient dimensions must match
+if ~equalDimCheck(ls,S,true)
+    res = false;
+    return
+end
+
+% levelSet-levelSet case
+if isa(S,'levelSet')
+    res = aux_isequal_levelSet(ls,S,tol);
+    return
+end
+
+throw(CORAerror('CORA:noops',ls,S));
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_isequal_levelSet(ls,S,tol)
+
 % reduce both to minimal representation
-ls1 = compact_(ls1,'all',eps);
-ls2 = compact_(ls2,'all',eps);
+ls = compact_(ls,'all',eps);
+S = compact_(S,'all',eps);
 
 % check if number of equations are equal
-if length(ls1.eq) ~= length(ls2.eq)
+if length(ls.eq) ~= length(S.eq)
     res = false; return
 end
 
 % check if number of used (!) variables is equal
-usedVarsTotal = length(aux_usedVariables(ls1));
-if usedVarsTotal ~= length(aux_usedVariables(ls1))
+usedVarsTotal = length(aux_usedVariables(ls));
+if usedVarsTotal ~= length(aux_usedVariables(ls))
     res = false; return
 end
 
 % check if symbolic expressions and comparison operator match
-idxInLS2 = false(length(ls1.eq));
+idxInLS2 = false(length(ls.eq));
 
 % init map for symbolic variable name comparison:
 % - (:,1): first level set
@@ -84,13 +111,13 @@ assigned = false(usedVarsTotal,1);
 
 
 % loop over all equations from first level set
-for i=1:length(ls1.eq)
+for i=1:length(ls.eq)
 
     % assume: no match found
     found = false;
 
     % number of variables used in i-th equation of first level set
-    usedVars1 = symvar(ls1.eq(i)).';
+    usedVars1 = symvar(ls.eq(i)).';
     nrUsedVars1 = length(usedVars1);
 
     % find out which variable names should be substituted for given
@@ -140,11 +167,11 @@ for i=1:length(ls1.eq)
     end
 
     % substitute variable names for comparison in first level set
-    ls1_subbed = subs(ls1.eq(i),usedVars1,subNames);
+    ls1_subbed = subs(ls.eq(i),usedVars1,subNames);
     
 
     % loop over all equations from second level set
-    for j=1:length(ls2.eq)
+    for j=1:length(S.eq)
         % skip if j-th entry has already been matched to an equation of the
         % first level set
 
@@ -153,14 +180,14 @@ for i=1:length(ls1.eq)
 
             % check if same comparison operator used (different handling
             % depending on whether compOp is a cell-array)
-            if ~iscell(ls1.compOp) && ~strcmp(ls1.compOp,ls2.compOp) ...
-                    || iscell(ls1.compOp) && ~strcmp(ls1.compOp{i},ls2.compOp{j})
+            if ~iscell(ls.compOp) && ~strcmp(ls.compOp,S.compOp) ...
+                    || iscell(ls.compOp) && ~strcmp(ls.compOp{i},S.compOp{j})
                 % try next equation of second level set
                 continue;
             end
 
             % variable names used in j-th equation
-            usedVars2 = symvar(ls2.eq(j)).';
+            usedVars2 = symvar(S.eq(j)).';
             % number of symbolic variables in j-th equation
             nrUsedVars2 = length(usedVars2);
 
@@ -171,7 +198,7 @@ for i=1:length(ls1.eq)
             end
 
             % substitute same variable names in second level set's equation
-            ls2_subbed = subs(ls2.eq(j),usedVars2,subNames);
+            ls2_subbed = subs(S.eq(j),usedVars2,subNames);
 
             % check if difference between two equations equals 0
             if logical(simplify(ls1_subbed - ls2_subbed) == 0)
@@ -194,9 +221,6 @@ end
 res = true;
 
 end
-
-
-% Auxiliary functions -----------------------------------------------------
 
 function usedVars = aux_usedVariables(ls)
 % returns number of variables that are actually used in the level set

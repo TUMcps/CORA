@@ -14,7 +14,7 @@ function res = test_interval_lift
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Tobias Ladner
 % Written:       13-September-2023
@@ -23,24 +23,19 @@ function res = test_interval_lift
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % check default case
 I = interval([2;3],[4;5]);
 R = lift(I,5,[1,4]);
 Rtrue = interval([2;-inf;-inf;3;-inf],[4;inf;inf;5;inf]);
-resvec(end+1) = isequal(R,Rtrue);
-
-% gather results
-res = all(resvec);
+assert(isequal(R,Rtrue));
 
 % empty not supported
 % check empty
 I = interval.empty(1);
-try
-    R = lift(I,2,[]);
-    res = false;
-end
+assertThrowsAs(@lift,'CORA:notSupported',I,2,[]);
 
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

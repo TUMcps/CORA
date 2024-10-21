@@ -61,9 +61,8 @@ for i = 2:10
     c_ = Z_.c;
     G_ = Z_.G;
     
-    if ~compareMatrices(pZres.c,c_) || ~compareMatrices(pZres.G,G_)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(compareMatrices(pZres.c,c_),i)
+    assertLoop(compareMatrices(pZres.G,G_),i)
     
 end
 
@@ -104,9 +103,7 @@ for i = 1:5
     
     % check if the all transformed random points are located inside the
     % resulting polynomial zonotope object
-    if ~containsPointSet(pZres,points,[],30)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(containsPointSet(pZres,points,[],30),i)
 end
 
 
@@ -146,9 +143,7 @@ for i = 1:5
     
     % check if the all transformed random points are located inside the
     % resulting polynomial zonotope object
-    if ~containsPointSet(pZres,points)
-       throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(containsPointSet(pZres,points),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

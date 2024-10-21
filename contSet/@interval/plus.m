@@ -1,26 +1,28 @@
-function res = plus(summand1,summand2)
-% plus - Overloaded '+' operator for intervals
+function S_out = plus(I,S)
+% plus - overloaded '+' operator for the Minkowski sum of an interval and
+%    another set or point
 %
 % Syntax:
-%    res = plus(summand1,summand2)
+%    S_out = I + S
+%    S_out = plus(I,S)
 %
 % Inputs:
-%    summand1 - interval object
-%    summand2 - interval object
+%    I - interval object, numeric
+%    S - contSet object, numeric
 %
 % Outputs:
-%    res - interval
+%    S_out - Minkowski sum
 %
 % Example:
-%    summand1 = interval([-2;1],[3;2]);
-%    summand2 = interval([0;1],[1;2]);
-%    summand1 + summand2
+%    I = interval([-2;1],[3;2]);
+%    S = interval([0;1],[1;2]);
+%    I + S
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       19-June-2015
@@ -32,56 +34,49 @@ function res = plus(summand1,summand2)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% determine the interval object
-[res,summand] = findClassArg(summand1,summand2,'interval');
+% ensure that numeric is second input argument
+[S_out,S] = reorderNumeric(I,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < S_out.precedence
+    S_out = S + S_out;
+    return
+end
 
 try
 
-    % different cases depending on the class of the summand
-    if isa(summand,'interval')
+    % interval-interval case
+    if isa(S,'interval')
+        S_out.inf = S_out.inf + S.inf;
+        S_out.sup = S_out.sup + S.sup;
+        return
+    end
     
-        res.inf = res.inf + summand.inf;
-        res.sup = res.sup + summand.sup;
-    
-    elseif isnumeric(summand)
-    
-        res.inf = res.inf + summand;
-        res.sup = res.sup + summand;    
-    
-    elseif isa(summand,'zonotope') || isa(summand,'conZonotope') || ...
-           isa(summand,'zonoBundle') || isa(summand,'polyZonotope') || ...
-           isa(summand,'polytope') || isa(summand,'conPolyZono')
-    
-        res = summand + res;
-    
-    else
-    
-        % throw error for given arguments
-        throw(CORAerror('CORA:noops',summand1,summand2));
+    % numeric vector/matrix
+    if isnumeric(S)
+        S_out.inf = S_out.inf + S;
+        S_out.sup = S_out.sup + S;
+        return
     end
 
 catch ME
     % note: error has already occured, so the operations below don't have
     % to be efficient
 
-    % already know what's going on...
-    if startsWith(ME.identifier,'CORA')
-        rethrow(ME);
-    end
+    % check whether different dimension of ambient space
+    equalDimCheck(S_out,S);
 
     % check for empty sets
-    if representsa_(res,'emptySet',eps)
+    if representsa_(S_out,'emptySet',eps) || representsa_(S,'emptySet',eps)
+        S_out = interval.empty(dim(S_out));
         return
-    elseif representsa_(summand,'emptySet',eps)
-        res = interval.empty(dim(res)); return
     end
-
-    % check whether different dimension of ambient space
-    equalDimCheck(res,summand);
 
     % other error...
     rethrow(ME);
 
 end
+
+throw(CORAerror('CORA:noops',S_out,S));
 
 % ------------------------------ END OF CODE ------------------------------

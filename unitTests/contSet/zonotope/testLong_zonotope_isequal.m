@@ -14,7 +14,7 @@ function res = testLong_zonotope_isequal
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       17-September-2019
@@ -24,11 +24,9 @@ function res = testLong_zonotope_isequal
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true;
-
 % number of tests
 nrTests = 1000;
+tol = 1e-14;
 
 % compare randomly generated zonotopes
 for i=1:nrTests
@@ -41,9 +39,9 @@ for i=1:nrTests
     Z2 = zonotope(-1+2*rand(n,nrOfGens+1));
 
     % check all combinations
-    if ~(isequal(Z1,Z1) && isequal(Z2,Z2) && ~isequal(Z1,Z2))
-        res = false; return
-    end
+    assertLoop(isequal(Z1,Z1,tol),i)
+    assertLoop(isequal(Z2,Z2,tol),i)
+    assertLoop(~isequal(Z1,Z2,tol),i)
     
     % check different order of generators
     c3 = zeros(n,1);
@@ -55,9 +53,10 @@ for i=1:nrTests
     Z3difforder = zonotope(c3,G3difforder);
     
     % compare zonotopes
-    if ~isequal(Z3,Z3difforder)
-        res = false; return
-    end
+    assertLoop(isequal(Z3,Z3difforder,tol),i)
 end
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

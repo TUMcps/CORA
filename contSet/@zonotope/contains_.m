@@ -44,9 +44,8 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
 %    res - true/false
 %
 % Note: For low dimensions or number of generators, and if S is a point
-% cloud with a very large number of points, it may be beneficial to first
-% compute the halfspace representation of Z via Z.halfspace, and then call
-% contains(Z,P).
+% cloud with a very large number of points, it may be beneficial to convert
+% the zonotope to a polytope and call its containment operation
 %
 % Example: 
 %    Z1 = zonotope([0.5 2 3 0;0.5 2 0 3]);
@@ -86,200 +85,217 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
 %                25-November-2022 (LS, method 'st' using sparse matrices)
 %                25-November-2022 (MW, rename 'contains')
 %                06-March-2024 (TL, check emptiness of zonotopes)
+%                27-September-2024 (MW, remove halfspace call)
+%                02-October-2024 (MW, point-in-zono, type decides LP/polytope)
 % Last revision: 27-March-2023 (MW, rename contains_)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    % init result
-    res = true;
-        
-    % point (cloud) in zonotope containment (see [2], Definition 4)
-    if isnumeric(S)
-        % we return a logical array, one value per points
-        res = false(1,size(S,2));
-
-        % special case: check if outer-body is only a point
-        if isempty(Z.G)
-            res = all(withinTol(Z.c,S),1);
-            return
-        end
-
-        % There are basically two algorithms to choose from: Either we
-        % compute it by first calculating all the halfspaces of the
-        % zonotope, or we solve it using linear programming. For the
-        % halfspace method, the relevant quantity to look for is the
-        % maximal number of facets of the zonotope.
-        % If the zonotope is non-degenerate (which we may assume if
-        % #generators >= dim), then this is given as follows:
-        if size(Z.G,2) >= size(Z.G,1)
-            numberOfFacets = 2*nchoosek(size(Z.G, 2), size(Z.G,1)-1);
-        else
-            % If the zonotope is degenerate, we need to replace the dim by
-            % the rank
-            numberOfFacets = 2*nchoosek(size(Z.G,2),rank(Z)-1);
-        end
-        % We can now estimate the approximate runtime of the halfspace
-        % method:
-        runtime_halfspaceMethod = numberOfFacets * size(Z.G,1)^4;
-        % The runtime of the linprog method on the other hand mainly
-        % depends on the number of generators, but also on the number of
-        % points we are evaluating this on:
-        runtime_linprogMethod = (size(Z.G, 2)+1)^(3.5) * size(S,2);
-        
-        % We can now compare runtimes. Additionally, we need to
-        % double-check that the halfspace method does not lead to an
-        % explosion of halfspaces. Currently, the maximal number of
-        % halfspaces allowed is hardcoded in such a way, that
-        % numberOfFacets < 100000
-        % This has to be taken with a grain of salt, and the user may want
-        % to change that value to whatever value he/she desires.
-        % In practice, this is only relevant for dimensions <= 3.
-
-        % halfspace conversion always preferrable if the zonotope is in
-        % fact a parallelotope
-        
-        if representsa_(Z,'parallelotope',eps) || (isempty(Z.halfspace) && ...
-                numberOfFacets < 100000 && runtime_halfspaceMethod < runtime_linprogMethod)
-            Z = halfspace(Z);
-        end
-        
-        % If the halfspace-representation of the zonotope has already been
-        % computed in advance, we can use this
-        if ~isempty(Z.halfspace)
-            for i = 1:size(S,2)
-                % simple test: check if point fulfills all inequalities
-                % composing the halfspace representation of the zonotope
-                inequality = Z.halfspace.H*S(:,i) < Z.halfspace.K | ...
-                    withinTol(Z.halfspace.H*S(:,i),Z.halfspace.K,tol);
-                res(i) = all(inequality);
-            end
-        else
-            % check for each point whether zonotope norm is <= 1
-            for i = 1:size(S,2)
-                tmp = zonotopeNorm(Z,S(:,i)-Z.c);
-                res(i) = tmp < 1 | withinTol(tmp,1,tol);
-            end
-        end
-        
-    % capsule/ellipsoid in zonotope containment
-    elseif isa(S,'capsule') || isa(S,'ellipsoid')      
+% point (cloud) in zonotope containment (see [2], Definition 4)
+if isnumeric(S)
+    res = aux_contains_pointcloud(Z,S,type,tol);
+    return
+end
+    
+% capsule/ellipsoid in zonotope containment
+if isa(S,'capsule') || isa(S,'ellipsoid')
+    P = polytope(Z);
+    res = contains_(P,S,'exact',tol);
+    return
+end
+    
+% taylm/polyZonotope in zonotope containment
+if isa(S,'taylm') || isa(S,'polyZonotope')
+    if strcmp(type,'exact')
+        throw(CORAerror('CORA:noExactAlg',S,Z));
+    elseif strcmp(type,'approx')
         P = polytope(Z);
         res = contains_(P,S,'exact',tol);
-        
-    % taylm/polyZonotope in zonotope containment
-    elseif isa(S,'taylm') || isa(S,'polyZonotope')
-        if strcmp(type,'exact')
-            throw(CORAerror('CORA:noops',S,Z));
-        elseif strcmp(type,'approx')
-            P = polytope(Z);
-            res = contains_(P,S,'exact',tol);
-        else
-            throw(CORAerror('CORA:noops',S,Z));
-        end
-
-    else
-        % As of now, to respect backwards compatibility, the default method
-        % for 'exact' is 'venum' if S is an interval, 'polymax'
-        % otherwise. This will change in the future, once better heuristics
-        % for these two methods are found, and their running time is then
-        % analyzed precisely.
-        
-        % If S is an interval, we can transform it to a zonotope; if
-        % 'exact' is chosen as a method, we change the method to 'venum'.
-        if isa(S, 'interval')
-            S = zonotope(S);
-            if strcmp(type,'exact')
-                type = 'venum';
-            end
-        end
-        
-        % Now, either S is a zonotope, and we can use the different
-        % methods for zonotope containment, or it is something else. In the
-        % latter case, we can send it to conZonotope.contains, since it 
-        % contains all the instructions for the general case.
-        if ~isa(S, 'zonotope')
-            cZ = conZonotope(Z);
-            % Here, we need to check that only the methods 'exact' or
-            % 'approx' are used
-            if ~strcmp(type,'exact') && ~strcmp(type,'approx')
-                throw(CORAerror('CORA:notSupported',...
-                    "The methods 'venum', 'polymax', 'st' and 'opt' are " + ...
-                    "not yet implemented for containment checks other than zonotope-in-zonotope!"));
-            end
-            res = contains_(cZ,S,type,tol);
-
-        else
-            % We may now assume that S is a zonotope
-
-            % check if inner set is empty
-            if representsa_(S,'emptySet',tol)
-                % always contained
-                res = true;
-                return;
-            elseif representsa_(Z,'emptySet',tol)
-                % if inner is not empty but outer zonotope is, return false
-                res = false;
-                return
-            end
-
-            
-            % Set adaptive maxEval, if needed
-            if strcmp(type, 'opt') && maxEval == -1
-                m1 = size(S.G, 2);
-                maxEval = max(500, 200 * m1);
-            end
-            
-            % Simplify the zonotopes as much as possible, and rename them
-            % to Z1 and Z2, to match the notation in [2]
-            Z1 = compact_(S,'zeros',eps);
-            Z2 = compact_(Z,'zeros',eps);
-
-            % special case: inner zonotope is just a point
-            if isempty(Z1.G)
-                res = contains_(Z2,Z1.c,'exact',tol);
-                return
-            end
-            
-            % Depending on the method, choose the right subfunction
-            switch type
-                case {'exact', 'polymax'}
-                    res = aux_polyhedralMaximization(Z1, Z2, tol);
-                case 'venum'
-                    res = aux_vertexEnumeration(Z1, Z2, tol);
-                case {'approx', 'st'}
-                    res = aux_SadraddiniTedrake(Z1, Z2, tol);
-                case 'opt'
-                    % Check if surrogate optimization is available
-                    GOT_installed = true;
-                    try
-                        optimoptions('surrogateopt');
-                    catch
-                        GOT_installed = false;
-                    end
-                    
-                    if ~GOT_installed
-                        CORAwarning('CORA:contSet',...
-                            ['You have not installed the Global ' ...
-                            'Optimization Toolbox from MATLAB, and can '...
-                            'therefore not use surrogateopt for solving '...
-                            'the zonotope containment problem. '...
-                            'Alternatively, the DIRECT algorithm will '...
-                            'be used for now, but for improved results, '...
-                            'please install the Global Optimization Toolbox.']);
-                        % Right after the first warning, disable it, so as
-                        % to not clutter the command window
-                        warning('off');
-                        res = aux_DIRECTMaximization(Z1, Z2, tol, maxEval);
-                    else
-                        res = aux_surrogateMaximization(Z1, Z2, tol, maxEval);
-                    end
-            end
-        end
     end
+    return
+end
+
+% As of now, to respect backwards compatibility, the default method
+% for 'exact' is 'venum' if S is an interval, 'polymax'
+% otherwise. This will change in the future, once better heuristics
+% for these two methods are found, and their running time is then
+% analyzed precisely.
+
+% If S is an interval, we can transform it to a zonotope; if
+% 'exact' is chosen as a method, we change the method to 'venum'.
+if isa(S,'interval')
+    S = zonotope(S);
+    if strcmp(type,'exact')
+        type = 'venum';
+    end
+    res = aux_contains_zonotope(Z,S,type,tol,maxEval);
+    return
+end
+
+% zonotope-in-zonotope containment
+if isa(S,'zonotope')
+    res = aux_contains_zonotope(Z,S,type,tol,maxEval);
+    return
+end
+
+% Send it to conZonotope.contains, since it contains all the instructions
+% for the general case.
+try
+    cZ = conZonotope(Z);
+catch ME
+    throw(CORAerror('CORA:noops',Z,S));
+end
+% Here, we need to check that only the methods 'exact' or
+% 'approx' are used
+if ~strcmp(type,'exact') && ~strcmp(type,'approx')
+    throw(CORAerror('CORA:notSupported',...
+        "The methods 'venum', 'polymax', 'st' and 'opt' are " + ...
+        "not yet implemented for containment checks other than zonotope-in-zonotope!"));
+end
+res = contains_(cZ,S,type,tol);
+
 end
 
 
 % Auxiliary functions -----------------------------------------------------
+
+function res = aux_contains_zonotope(Z,S,type,tol,maxEval)
+
+% check if inner set is empty
+if representsa_(S,'emptySet',tol)
+    % always contained
+    res = true;
+    return
+elseif representsa_(Z,'emptySet',tol)
+    % if inner zonotope is not empty but outer zonotope is, return false
+    res = false;
+    return
+end
+
+% Set adaptive maxEval, if needed
+if strcmp(type, 'opt') && maxEval == -1
+    m1 = size(S.G, 2);
+    maxEval = max(500, 200 * m1);
+end
+
+% Simplify the zonotopes as much as possible, and rename them to Z1 and Z2,
+% to match the notation in [2]
+Z1 = compact_(S,'zeros',eps);
+Z2 = compact_(Z,'zeros',eps);
+
+% special case: inner zonotope is just a point
+if isempty(Z1.G)
+    res = aux_contains_pointcloud(Z2,Z1.c,type,tol);
+    return
+end
+
+% Depending on the method, choose the right subfunction
+switch type
+    case {'exact', 'polymax'}
+        res = aux_polyhedralMaximization(Z1, Z2, tol);
+    case 'venum'
+        res = aux_vertexEnumeration(Z1, Z2, tol);
+    case {'approx', 'st'}
+        res = aux_SadraddiniTedrake(Z1, Z2, tol);
+    case 'opt'
+        % Check if surrogate optimization is available
+        GOT_installed = true;
+        try
+            optimoptions('surrogateopt');
+        catch
+            GOT_installed = false;
+        end
+        
+        if ~GOT_installed
+            CORAwarning('CORA:contSet',...
+                ['You have not installed the Global ' ...
+                'Optimization Toolbox from MATLAB, and can '...
+                'therefore not use surrogateopt for solving '...
+                'the zonotope containment problem. '...
+                'Alternatively, the DIRECT algorithm will '...
+                'be used for now, but for improved results, '...
+                'please install the Global Optimization Toolbox.']);
+            % Right after the first warning, disable it, so as
+            % to not clutter the command window
+            warning('off');
+            res = aux_DIRECTMaximization(Z1, Z2, tol, maxEval);
+        else
+            res = aux_surrogateMaximization(Z1, Z2, tol, maxEval);
+        end
+end
+
+end
+
+function res = aux_contains_pointcloud(Z,S,type,tol)
+
+% read out data
+[n,nrGenZ] = size(Z.G);
+numPoints = size(S,2);
+
+% we return a logical array, one value per points
+res = false(1,numPoints);
+
+% special case: check if outer-body is only a point
+if isempty(Z.G)
+    res = all(withinTol(Z.c,S),1);
+    return
+end
+
+% halfspace conversion always preferrable if the zonotope is in fact a
+% parallelotope
+isParallelotope = representsa_(Z,'parallelotope',eps);
+% If type is 'st', 'opt', or 'polymax', we choose the zonotope norm method
+% (unless the zonotope is a parallelotope), if type is 'exact' or 'approx',
+% we heuristically choose a method (see below)
+useLP = any(strcmp(type,{'st','opt','polymax'}));
+
+if ~useLP && ~isParallelotope
+    % There are basically two algorithms to choose from: Either we
+    % compute it by first calculating all the halfspaces of the
+    % zonotope, or we solve it using linear programming. For the
+    % halfspace method, the relevant quantity to look for is the
+    % maximal number of facets of the zonotope.
+    % If the zonotope is non-degenerate (which we may assume if
+    % #generators >= dim), then this is given as follows:
+    if nrGenZ >= n
+        numFacets = 2*nchoosek(nrGenZ,n-1);
+    else
+        % If the zonotope is degenerate, we need to replace the dim by
+        % the rank
+        numFacets = 2*nchoosek(nrGenZ,rank(Z)-1);
+    end
+    % We can now estimate the approximate runtime of the halfspace
+    % method:
+    runtime_halfspaceMethod = numFacets * n^4;
+    % The runtime of the linprog method on the other hand mainly
+    % depends on the number of generators, but also on the number of
+    % points we are evaluating this on:
+    runtime_LP = (nrGenZ+1)^(3.5) * numPoints;
+
+    % We can now compare runtimes. Additionally, we need to
+    % double-check that the halfspace method does not lead to an
+    % explosion of halfspaces. Currently, the maximal number of
+    % halfspaces allowed is hardcoded in such a way, that
+    % numberOfFacets < 100000
+    % This has to be taken with a grain of salt, and the user may want
+    % to change that value to whatever value he/she desires.
+    % In practice, this is only relevant for dimensions <= 3.
+    useLP = numFacets > 100000 && runtime_halfspaceMethod > runtime_LP;
+end
+
+if isParallelotope || ~useLP
+    % convert to polytope (only inequalities), check all
+    P = polytope(Z);
+    res = contains_(P,S,'exact',tol);
+else
+    % check for each point whether zonotope norm is <= 1 (incl. tolerance)
+    for i = 1:numPoints
+        zNorm = zonotopeNorm(Z,S(:,i)-Z.c);
+        res(i) = zNorm < 1 | withinTol(zNorm,1,tol);
+    end
+end
+
+end
 
 function isIn = aux_vertexEnumeration(Z1, Z2, tol)
 % Solves the zonotope containment problem by checking whether the maximum
@@ -323,14 +339,15 @@ function isIn = aux_polyhedralMaximization(Z1, Z2, tol)
 
 % First, we need to shift Z2 so that it is centered around the origin
 Z = Z2 - Z2.c;
-% Then, we compute the halfspace representation, if it is not already
-% computed
-if isempty(Z.halfspace)
-    Z = halfspace(Z);
-end
+% Then, we compute the halfspace representation
+P = polytope(Z);
 
 % We then need the normalized halfspace-matrix
-H_norm = Z.halfspace.H ./ Z.halfspace.K;
+H_norm = P.A;
+idx = ~withinTol(P.b,0); % ignore rows with b=0
+H_norm(idx,:) = P.A(idx,:) ./ P.b(idx);
+b = P.b;
+b(idx) = b(idx) ./ b(idx);
 
 % Similarly to vertexEnum, we need to create combinations from the pool of
 % vectors given by [G c1-c2], where G is the generator matrix of Z1, and
@@ -350,7 +367,7 @@ n = size(M, 1);
 for i = 1:n
     mu = M(i,:); % Sign-combination
     maximum = poly_norm(V*mu'); % Compute the resulting polyhedral norm
-    if maximum > 1+tol % If we found a point with polyhedral norm larger
+    if maximum > b(i)+tol % If we found a point with polyhedral norm larger
                        % than 1, we can stop the algorithm.
         isIn = false;
         return

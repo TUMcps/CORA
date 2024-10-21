@@ -14,7 +14,7 @@ function res = testLong_interval_interval
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       20-March-2021
@@ -40,24 +40,20 @@ for i=1:nrOfTests
     
     % admissible initializations
     I = interval(a,b);
-    if any(abs(I.inf - a) > tol) || any(abs(I.sup - b) > tol)
-        res = false; break;
-    end
+    assertLoop(all(abs(I.inf - a) <= tol),i)
+    assertLoop(all(abs(I.sup - b) <= tol),i)
     
     I = interval(a);
-    if any(abs(I.inf - a) > tol) || any(abs(I.sup - a) > tol)
-        res = false; break;
-    end
+    assertLoop(all(abs(I.inf - a) <= tol),i)
+    assertLoop(all(abs(I.sup - a) <= tol),i)
     
     I = interval(a_mat);
-    if any(any(abs(I.inf - a_mat) > tol)) || any(any(abs(I.sup - a_mat) > tol))
-        res = false; break;
-    end
+    assertLoop(all(abs(I.inf - a_mat) <= tol),i)
+    assertLoop(all(abs(I.sup - a_mat) <= tol),i)
     
     I = interval(a_mat,b_mat);
-    if any(any(abs(I.inf - a_mat) > tol)) || any(any(abs(I.sup - b_mat) > tol))
-        res = false; break;
-    end
+    assertLoop(all(abs(I.inf - a_mat) <= tol),i)
+    assertLoop(all(abs(I.sup - b_mat) <= tol),i)
     
     % wrong initializations
     a_large = 1+rand(n,1);
@@ -66,38 +62,17 @@ for i=1:nrOfTests
     b_plus1 = rand(n+1,1);
     
     % lower limit larger than upper limit
-    try
-        I = interval(a,b_small); % <- should throw error here
-        res = false; break;
-    end
-    try
-        I = interval(a_large,b); % <- should throw error here
-        res = false; break;
-    end
-    
+    assertThrowsAs(@interval,'CORA:wrongInputInConstructor',a,b_small);
+    assertThrowsAs(@interval,'CORA:wrongInputInConstructor',a_large,b);
+
     % size of limits do not match
-    try
-        I = interval(a_plus1,b); % <- should throw error here
-        res = false; break;
-    end
-    try
-        I = interval(a,b_plus1); % <- should throw error here
-        res = false; break;
-    end
-    try
-        I = interval(a_mat,b); % <- should throw error here
-        res = false; break;
-    end
-    try
-        I = interval(a,b_mat); % <- should throw error here
-        res = false; break;
-    end
+    assertThrowsAs(@interval,'CORA:wrongInputInConstructor',a_plus1,b);
+    assertThrowsAs(@interval,'CORA:wrongInputInConstructor',a,b_plus1);
+    assertThrowsAs(@interval,'CORA:wrongInputInConstructor',a_mat,b);
+    assertThrowsAs(@interval,'CORA:wrongInputInConstructor',a,b_mat);
     
     % too many input arguments
-    try
-        I = interval(a,b,b); % <- should throw error here
-        res = false; break;
-    end 
+    assertThrowsAs(@interval,'CORA:numInputArgsConstructor',a,b,b);
 end
 
 % ------------------------------ END OF CODE ------------------------------

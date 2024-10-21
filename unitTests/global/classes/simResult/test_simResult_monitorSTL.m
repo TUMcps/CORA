@@ -38,7 +38,7 @@ phi{2} = finally(x(1) > 5, interval(4,7));
 res = true;
 
 for i=1:length(phi)
-    res = res && monitorSTL(simRes,phi{i});
+    assert(res && monitorSTL(simRes,phi{i}));
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -15,23 +15,45 @@ function res = testFlaky_ellipsoid_isIntersecting
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Victor Gassmann
 % Written:       18-March-2021
 % Last update:   ---
-% Last revision: ---
+% Last revision: 22-September-2024 (MW, integrate components)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% point
-[~,res] = evalc('testLong_ellipsoid_contains');
+nRuns = 2;
 
-% all that implement distance
-[~,res_] = evalc('testLong_ellipsoid_distance');
-res = res && res_;
+% degeneracy
+bools = [false,true];
 
-% mixed
-res = res && testLong_component_ellipsoid_isIntersectingMixed;
+% smaller dims since halfspaces and vertices are involved
+for i=5:5:10
+    for j=1:nRuns
+        for k=1:2 
+            % init random ellipsoid, zonotope, and polyZonotope
+            E = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
+            Z = zonotope.generateRandom('Dimension',i);
+            pZ = polyZonotope.generateRandom('Dimension',i);
+
+            % sample random point from ellipsoid
+            s = randPoint(E,1);
+
+            % init zonotope and polyZonotope containing that random point
+            % so that sets always intersect
+            Z1 = zonotope(s,Z.G);
+            pZ1 = polyZonotope(s,pZ.G, pZ.GI, pZ.E, pZ.id);
+            
+            % check for intersection
+            assertLoop(isIntersecting(E,Z1,'approx'),i,j,k)
+            assertLoop(isIntersecting(E,pZ1,'approx'),i,j,k)
+        end
+    end
+end
+
+% combine results
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -24,19 +24,19 @@ function res = test_location_isemptyobject
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty location
-res = isemptyobject(location());
+assert(isemptyobject(location()));
 
 % non-empty location
 inv = polytope([-1,0],0);
-guard = conHyperplane([-1;0],0,[0,1],0);
-reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
+guard = polytope([0,1],0,[-1,0],0);
+reset = linearReset([1,0;0,-0.75]);
 trans = transition(guard,reset,1);
 dynamics = linearSys([0,1;0,0],[0;0],[0;-9.81]);
 
-res(end+1,1) = ~isemptyobject(location(inv,trans,dynamics));
-res(end+1,1) = all(isemptyobject([location(),location(inv,trans,dynamics)]) == [true false]);
+assert(~isemptyobject(location(inv,trans,dynamics)));
+assert(all(isemptyobject([location(),location(inv,trans,dynamics)]) == [true false]));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

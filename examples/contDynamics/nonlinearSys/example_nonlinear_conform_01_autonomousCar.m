@@ -64,7 +64,7 @@ options.reachAlg = 'lin';
 options.tensorOrder = 3;
 
 %% Conformance settings
-options.confAlg = 'RRT';
+confAlg = 'RRT';
 options.U_increment.val = [0.1; 0.1; 0.1; 0.1; 0.1; 0.1; 0.1]; % increments for additive disturbance
 options.U_increment.ind = 11:17; % maps state indices to input indices to achieve reachset conformance 
 params.testSuite = ACC2012Test;
@@ -87,7 +87,7 @@ options.refModel = CommonRoadMB2;
     
 %% Conformance checking
 tic
-[res, R, simRes] = conform(vehModelACC2012,params,options); % RRT results should also be returned
+[res, R, simRes] = conform(vehModelACC2012,params,options,confAlg); % RRT results should also be returned
 tComp = toc
 
 if res

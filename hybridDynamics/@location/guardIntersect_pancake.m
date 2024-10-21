@@ -1,29 +1,30 @@
-function R = guardIntersect_pancake(loc,R0,guard,guardID,options)
+function R = guardIntersect_pancake(loc,R0,guard,guardID,params,options)
 % guardIntersect_pancake - implementation of the time scaling approach
 %    described in [1]
 %
 % Syntax:
-%    R = guardIntersect_pancake(loc,R0,guard,options)
+%    R = guardIntersect_pancake(loc,R0,guard,guardID,params,options)
 %
 % Inputs:
 %    loc - location object
 %    R - list of intersections between the reachable set and the guard
 %    guard - guard set (class: constrained hyperplane)
 %    guardID - ID of the guard set
+%    params - model parameters
 %    options - struct containing the algorithm settings
 %
 % Outputs:
 %    R - set enclosing the guard intersection
+%
+% References: 
+%   [1] S. Bak et al. "Time-Triggered Conversion of Guards for Reachability
+%       Analysis of Hybrid Automata"
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: none
-%
-% References: 
-%   [1] S. Bak et al. "Time-Triggered Conversion of Guards for Reachability
-%       Analysis of Hybrid Automata"
 
 % Authors:       Niklas Kochdumper
 % Written:       05-November-2018             
@@ -34,60 +35,59 @@ function R = guardIntersect_pancake(loc,R0,guard,guardID,options)
 
     % initialization
     sys = loc.contDynamics;
-    [params,options_] = adaptOptions(loc,options);
 
     % check if guard set is a constrained hyperplane
-    if ~isa(guard,'conHyperplane')
+    if ~(isa(guard,'polytope') || representsa_(guard,'conHyperplane',1e-12))
         throw(CORAerror('CORA:specialError',...
-            "The method 'pancake' only supports guards given as conHyperplane objects!")); 
+            "The method 'pancake' only supports guards given as polytope objects that represent constrained hyperplanes!")); 
     end
     
     % convert hyperplane to a halfspace that represents the outside of the
     % invariant set
     c = center(R0);
-    hs = halfspace(guard.a',guard.b);
+    P = polytope(guard.Ae,guard.be);
 
-    if contains_(hs,c)
-        hs = halfspace(-guard.a',-guard.b);
+    if contains_(P,c,'exact',1e-12)
+        P = polytope(-guard.Ae,-guard.be);
     end
 
     % set default options for nonlinear system reachability analysis
-    optionsScal = options_;
+    optionsScaled = options;
     
     if ~isa(sys,'nonlinearSys')
-       optionsScal = aux_defaultOptions(options_); 
+       optionsScaled = aux_defaultOptions(options); 
     end
     
     % create system for the time-scaled system dynamics
-    [sys_,params] = aux_scaledSystem(sys,hs,R0,guardID,params);
+    [sys_,params] = aux_scaledSystem(sys,P,R0,guardID,params);
 
     % compute the reachable set for the time scaled system 
-    R = aux_reachTimeScaled(sys_,hs,R0,params,optionsScal);
+    R = aux_reachTimeScaled(sys_,P,R0,params,optionsScaled);
     
     % jump accross the guard set in only one time ste
-    R = aux_jump(sys,hs,R,options_);
+    R = aux_jump(sys,P,R,options);
 
     % project the reachable set onto the hyperplane
-    R = projectOnHyperplane(guard,R);
+    R = projectOnHyperplane(R,guard);
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function [sys,params] = aux_scaledSystem(sys,hs,R0,guardID,params)
+function [sys,params] = aux_scaledSystem(sys,P,R0,guardID,params)
 % Scale the system dynamics using the distance to the hyperplane as a 
 % scaling factor 
 
     % get maximum distance of initial set ot hyperplane
-    maxDist = supremum(interval(hs.c' * R0 + (-hs.d)));
+    maxDist = supremum(interval(P.A * R0 + (-P.b)));
     params.paramInt = maxDist;
 
     % define scaling function
-    g = @(x,p) (hs.c' * x - hs.d)./p;
+    g = @(x,p) (P.A * x - P.b)./p;
 
     % get system dynamics
-    n = sys.dim;
+    n = sys.nrOfStates;
     m = sys.nrOfInputs;
     
     if isa(sys,'linearSys')
@@ -130,13 +130,13 @@ function [sys,params] = aux_scaledSystem(sys,hs,R0,guardID,params)
     eval(str);
 end
 
-function Rfin = aux_reachTimeScaled(sys,hs,R0,params,options)
+function Rfin = aux_reachTimeScaled(sys,P,R0,params,options)
 % Compute the reachable set of the scaled system such that the final
 % reachable set until the scaled reachable set is very close to the
 % hyperplane
 
     % adapt options
-    spec = specification(hs,'unsafeSet');
+    spec = specification(P,'unsafeSet');
     params.R0 = R0;
     if isfield(options,'maxError')
        options = rmfield(options,'maxError'); 
@@ -153,7 +153,7 @@ function Rfin = aux_reachTimeScaled(sys,hs,R0,params,options)
     Rfin = R.timePoint.set{end};
 end
 
-function Rcont = aux_jump(sys,hs,R0,options)
+function Rcont = aux_jump(sys,P,R0,options)
 % compute the reachable set in such a way that the reachable set jumps in 
 % only one time step accross the hyperplane    
 
@@ -168,13 +168,13 @@ function Rcont = aux_jump(sys,hs,R0,options)
     R = reach(sys,params,options);
 
     % check if located inside the invariant
-    dist_ = supportFunc_(R.timePoint.set{end},hs.c,'upper','interval',8,1e-3) - hs.d;
+    dist_ = supportFunc_(R.timePoint.set{end},P.A','upper','interval',8,1e-3) - P.b;
     
     if dist_ < 0 
     % guard set crossed -> reduce time step size to get smaller set
         
         Rcont = R.timeInterval.set{end};
-        distMin = supportFunc_(R0,hs.c,'lower','interval',8,1e-3) - hs.d;
+        distMin = supportFunc_(R0,P.A','lower','interval',8,1e-3) - P.b;
         lb = 0; ub = timeStep;
         
         for i = 1:10
@@ -188,7 +188,7 @@ function Rcont = aux_jump(sys,hs,R0,options)
             R = reach(sys,params,options);
 
             % check if located inside the invariant
-            dist = supportFunc_(R.timePoint.set{end},hs.c,'upper','interval',8,1e-3) - hs.d;
+            dist = supportFunc_(R.timePoint.set{end},P.A','upper','interval',8,1e-3) - P.b;
             
             if dist < 0
                 Rcont = R.timeInterval.set{end};
@@ -215,7 +215,7 @@ function Rcont = aux_jump(sys,hs,R0,options)
             R = reach(sys,params,options);
 
             % check if located inside the invariant
-            dist = supportFunc_(R.timePoint.set{end},hs.c,'upper','interval',8,1e-3) - hs.d;
+            dist = supportFunc_(R.timePoint.set{end},P.A','upper','interval',8,1e-3) - P.b;
 
             if dist < 0
                 Rcont = R.timeInterval.set{end};
@@ -242,9 +242,9 @@ function options = aux_defaultOptions(options)
     list = fields(options);
     
     for i = 1:length(list)
-       if ~ismember(list{i},opts)
-         options = rmfield(options,list{i});  
-       end
+        if ~ismember(list{i},opts)
+            options = rmfield(options,list{i});
+        end
     end
     
     for i = 1:length(opts)
@@ -256,12 +256,7 @@ end
 
 function f = aux_dynamicsLinSys(x,u,sys)
 % dynamic function of a linear system
-
-    if isempty(sys.c)
-       f = sys.A * x + sys.B * u; 
-    else
-       f = sys.A * x + sys.B * u + sys.c;
-    end
+    f = sys.A * x + sys.B * u + sys.c;
 end
     
 % ------------------------------ END OF CODE ------------------------------

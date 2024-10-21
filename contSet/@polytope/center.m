@@ -94,26 +94,27 @@ function c = aux_center_only_equalityConstraints(P,n)
 
 % minimal halfspace representation: if two constraints are aligned and
 % cannot be fulfilled at the same time, an empty polytope is returned
-P_ = compact_(P,'Ae',1e-10);
+[~,~,Ae,be] = priv_normalizeConstraints([],[],P.Ae_.val,P.be_.val,'A');
+[Ae,be,empty] = priv_compact_alignedEq(Ae,be,1e-12);
 
 % check if emptyness has been determined during the computation of the
 % minimal representation
-if ~isempty(P.emptySet.val) && P.emptySet.val
+if empty
     c = double.empty(n,0);
     return
 end
 
 % all constraints now are linearly independent, hence the relation of 
 % system dimension and number of constraints determines the solution
-if size(P_.Ae_.val,1) < n
+if size(Ae,1) < n
     % underdetermined -> unbounded
     c = NaN(n,1);
-elseif size(P_.Ae_.val,1) > n
+elseif size(Ae,1) > n
     % overdetermined -> no solution
     c = double.empty(n,0);
 else
     % same number of constraints as system dimension -> single point
-    c = P_.Ae_.val \ P_.be_.val;
+    c = Ae \ be;
 end
 
 end

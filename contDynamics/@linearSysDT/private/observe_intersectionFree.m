@@ -1,13 +1,13 @@
-function R = observe_intersectionFree(obj,options)
+function R = observe_intersectionFree(linsysDT,params,options)
 % observe_intersectionFree - computes the guaranteed state estimation 
-% approach according to the intersection-free approach, see [1].
-%
+%    approach according to the intersection-free approach, see [1].
 %
 % Syntax:
-%    R = observe_intersectionFree(obj,options)
+%    R = observe_intersectionFree(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimations
 %
 % Outputs:
@@ -17,8 +17,6 @@ function R = observe_intersectionFree(obj,options)
 %    [1] M. Althoff and J. J. Rath. Comparison of Set-Based Techniques 
 %        for Guaranteed State Estimation of Linear Disturbed Systems, 
 %        in preparation.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,23 +36,22 @@ function R = observe_intersectionFree(obj,options)
 %%initialize computation
 
 %time period
-tVec = options.tStart:options.timeStep:options.tFinal-options.timeStep;
+tVec = params.tStart:options.timeStep:params.tFinal-options.timeStep;
 timeSteps = length(tVec);
 
 % initialize parameter for the output equation
 R = cell(length(tVec),1);
 
 % store first reachable set
-Rnext.tp = options.R0;
+Rnext.tp = params.R0;
 R{1} = Rnext.tp;
-
 
 %% loop over all time steps
 for k = 1:timeSteps-1
     
     % Prediction, eq. (11) in [1]
-    Rnext.tp = (obj.A-options.L*obj.C)*Rnext.tp + obj.B*options.uTransVec(:,k) + ...
-        options.L*options.y(:,k) + (-options.L*options.V) + options.W;
+    Rnext.tp = (linsysDT.A-options.L*linsysDT.C)*Rnext.tp + linsysDT.B*params.uTransVec(:,k) + ...
+        options.L*params.y(:,k) + (-options.L*params.V) + params.W;
     
     % Order reduction
     Rnext.tp = reduce(Rnext.tp,options.reductionTechnique,options.zonotopeOrder);
@@ -62,6 +59,5 @@ for k = 1:timeSteps-1
     % Store result
     R{k+1} = Rnext.tp;
 end
-
 
 % ------------------------------ END OF CODE ------------------------------

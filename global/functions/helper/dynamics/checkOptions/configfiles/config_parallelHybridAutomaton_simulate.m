@@ -1,14 +1,12 @@
-function [paramsList,optionsList] = config_parallelHybridAutomaton_simulate(sys,params,options)
-% config_parallelHybridAutomaton_simulate - configuration file for validation of
-%    model parameters and algorithm parameters
+function [paramsList,optionsList] = config_parallelHybridAutomaton_simulate
+% config_parallelHybridAutomaton_simulate - configuration file for
+%    validation of model parameters and algorithm parameters
 %
 % Syntax:
-%    [paramsList,optionsList] = config_parallelHybridAutomaton_simulate(sys,params,options)
+%    [paramsList,optionsList] = config_parallelHybridAutomaton_simulate
 %
 % Inputs:
-%    sys - parallelHybridAutomaton object
-%    params - user-defined model parameters
-%    options - user-defined algorithm parameters
+%    -
 %
 % Outputs:
 %    paramsList - list of model parameters

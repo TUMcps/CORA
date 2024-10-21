@@ -1,17 +1,22 @@
-function res = testMP_Krylov_iss_initReach(~)
-% testMP_Krylov_iss_initReach - unit_test_function for checking
-%    the Krylov method for the solution of the first time interval
-%    using the ISS model.
+function res = testMP_Krylov_iss_initReach
+% testMP_Krylov_iss_initReach - unit test for checking the Krylov method
+%    for the solution of the first time interval using the ISS model.
 %    This test requires the multiple precision toolbox.
 %
 % Syntax:
-%    res = testMP_Krylov_iss_initReach(~)
+%    res = testMP_Krylov_iss_initReach
 %
 % Inputs:
-%    no
+%    -
 %
 % Outputs:
 %    res - true/false
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       13-November-2018
@@ -36,27 +41,27 @@ addpath(genpath(path));
 
 % load system matrices
 load('iss.mat');
-dim = length(A);
+n = length(A);
 
 %set options --------------------------------------------------------------
-R0 = interval(-0.0001*ones(dim,1),0.0001*ones(dim,1));
-options.x0=center(R0); %initial state for simulation
+R0 = interval(-0.0001*ones(n,1),0.0001*ones(n,1));
+options.x0 = center(R0); %initial state for simulation
 
-options.taylorTerms=6; %number of taylor terms for reachable sets
-options.zonotopeOrder=inf; %zonotope order
+options.taylorTerms = 6;
+options.zonotopeOrder = inf;
 options.saveOrder = 1;
-options.originContained=0;
-options.reductionTechnique='girard';
+options.originContained = false;
+options.reductionTechnique = 'girard';
 options.linAlg = 'krylov';
-options.compOutputSet = 0;
+options.compOutputSet = false;
 options.saveOrder = 10;
 
 U = interval([0;0.8;0.9],[0.1;1;1]);
-options.U=zonotope([[0;0;0],diag(rad(U))]); %input for reachability analysis
+options.U = zonotope([0;0;0],diag(rad(U)));
 options.uTrans = center(U);
 
-options.R0=zonotope(R0); %initial state for reachability analysis
-options.tFinal=20; %final time
+options.R0 = zonotope(R0);
+options.tFinal = 20;
 options.timeStep = 0.01;
 
 options.krylovError = eps;
@@ -77,8 +82,8 @@ linDyn = linearSys('iss',A,B,[],1);
 linDyn_Krylov = linDyn;
 options_Krylov = options;
 
-% compute overapproximation using Krylov methods
-[~, options] = initReach_Euclidean(linDyn, options.R0, options);
+% compute overapproximation using standard methods
+[~, options] = initReach(linDyn, options.R0, options);
 
 % compute overapproximation using Krylov methods
 [~, options_Krylov] = initReach_Krylov(linDyn_Krylov, options_Krylov.R0, options_Krylov);
@@ -87,10 +92,10 @@ options_Krylov = options;
 % method; to save computational time, the results of the Krylov method are
 % boxed
 % homogeneous solution; time point
-epsilonBox = 1e-7*interval(-ones(dim,1),ones(dim,1));
+epsilonBox = 1e-7*interval(-ones(n,1),ones(n,1));
 Rhom_tp_Krylov_boxed = interval(options_Krylov.Rhom_tp_proj);
 Rhom_tp_boxed = interval(options.Rhom_tp);
-resVec(1) = Rhom_tp_boxed <= (Rhom_tp_Krylov_boxed + epsilonBox);
+assert(Rhom_tp_boxed <= (Rhom_tp_Krylov_boxed + epsilonBox));
 
 % homogeneous solution; tie: tie can be more accurate for Krylov methods
 Rtie_Krylov_boxed = interval(options_Krylov.R_tie_proj);
@@ -111,20 +116,17 @@ inpDiff = max(infDiff, supDiff);
 % homogeneous solution; time interval
 Rhom_Krylov_boxed = interval(options_Krylov.Rhom_proj);
 Rhom_boxed = interval(options.Rhom);
-resVec(2) = Rhom_boxed <= (Rhom_Krylov_boxed + epsilonBox + interval(-(tieDiff+inpDiff),(tieDiff+inpDiff)));
+assert(Rhom_boxed <= (Rhom_Krylov_boxed + epsilonBox + interval(-(tieDiff+inpDiff),(tieDiff+inpDiff))));
 
 % particulate solution
 Raux_Krylov_boxed = interval(options_Krylov.Raux_proj);
 Raux_boxed = interval(options.Raux);
-resVec(3) = Raux_boxed <= (Raux_Krylov_boxed + epsilonBox);
+assert(Raux_boxed <= (Raux_Krylov_boxed + epsilonBox));
 
 % particulate solution of uTrans
 Rtrans_Krylov_boxed = interval(options_Krylov.Rtrans_proj);
 Rtrans_boxed = interval(options.Rtrans);
-resVec(4) = Rtrans_boxed <= (Rtrans_Krylov_boxed + epsilonBox);
-
-% Have all partial tests passed?
-res = all(resVec);
+assert(Rtrans_boxed <= (Rtrans_Krylov_boxed + epsilonBox));
 
 % delete copied functions
 delete(target1);
@@ -132,5 +134,8 @@ delete(target2);
 delete(target3);
 rmpath(genpath(path));
 addpath(genpath(path));
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

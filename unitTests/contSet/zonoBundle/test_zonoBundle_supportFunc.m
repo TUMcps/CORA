@@ -23,17 +23,16 @@ function res = test_zonoBundle_supportFunc
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
 tol = 1e-10;
 
 % fully-empty set
 zB = zonoBundle.empty(2);
 [val,x] = supportFunc(zB,[1;0],'upper');
-res(end+1,1) = val == -Inf && isnumeric(x) && isempty(x);
+assert(val == -Inf && isnumeric(x) && isempty(x));
 [val,x] = supportFunc(zB,[1;0],'lower');
-res(end+1,1) = val == Inf && isnumeric(x) && isempty(x);
+assert(val == Inf && isnumeric(x) && isempty(x));
 val = supportFunc(zB,[1;0],'range');
-res(end+1,1) = isequal(val,interval(-Inf,Inf));
+assert(isequal(val,interval(-Inf,Inf)));
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);
@@ -42,27 +41,27 @@ zB = zonoBundle({Z1,Z2});
 
 dir = [1;0];
 [val,x] = supportFunc(zB,dir,'upper');
-res(end+1,1) = withinTol(val,4) && compareMatrices(x,[4;0],tol);
+assert(withinTol(val,4) && compareMatrices(x,[4;0],tol));
 val = supportFunc(zB,dir,'lower');
-res(end+1,1) = withinTol(val,-2);
+assert(withinTol(val,-2));
 dir = [-1;-1];
 [~,x] = supportFunc(zB,dir,'upper');
-res(end+1,1) = compareMatrices(x,[-2;-1],tol);
+assert(compareMatrices(x,[-2;-1],tol));
 dir = [0,1];
 val = supportFunc(zB,dir,'lower');
-res(end+1,1) = withinTol(val,-1);
+assert(withinTol(val,-1));
 
 % empty intersection
 Z2 = zonotope([-4;1],[0.5 1; 1 -1]);
 zB = zonoBundle({Z1,Z2});
 val = supportFunc(zB,[1;0]);
-res(end+1,1) = val == -Inf;
+assert(val == -Inf);
 val = supportFunc(zB,[1;0],'lower');
-res(end+1,1) = val == Inf;
+assert(val == Inf);
 val = supportFunc(zB,[1;0],'range');
-res(end+1,1) = isequal(val,interval(-Inf,Inf));
+assert(isequal(val,interval(-Inf,Inf)));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -21,30 +21,24 @@ function res = test_nonlinearSys_initReach
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% Model Parameters --------------------------------------------------------
-
+% model parameters
 dim_x = 6;
-% initial set for reachability analysis
-params.R0=zonotope([[2; 4; 4; 2; 10; 4],0.2*eye(dim_x)]);
-% input for reachability analysis
-params.U = zonotope([0,0.005]);
+params.R0 = zonotope([2; 4; 4; 2; 10; 4],0.2*eye(dim_x));
+params.U = zonotope(0,0.005);
 params.tFinal = 4;
 
-% Reachability Settings ---------------------------------------------------
-
+% reachability settings
 options.timeStep=4;
 options.taylorTerms=4;
 options.zonotopeOrder=50;
 options.alg = 'lin';
 options.tensorOrder = 2;
 
-
-% System Dynamics ---------------------------------------------------------
-
+% system dynamics
 tank = nonlinearSys(@tank6Eq);
 
 % options check
-options = validateOptions(tank,'reach',params,options);
+[params,options] = validateOptions(tank,params,options,'FunctionName','reach');
 
 % compute derivations (explicitly, since reach-function is not called)
 derivatives(tank,options);
@@ -56,7 +50,7 @@ for i=1:(options.taylorTerms+1)
 end
 
 % comupute only first step
-Rfirst = initReach(tank,options.R0,options);
+Rfirst = initReach(tank,params.R0,params,options);
 
 % obtain interval hull of reachable set of first point in time
 IH_tp = interval(Rfirst.tp{1}.set);
@@ -66,20 +60,21 @@ IH_ti = interval(Rfirst.ti{1});
 linErrors = Rfirst.tp{1}.error;
 
 
-% provide ground truth ----------------------------------------------------
+% ground truth
 IH_tp_true = interval( ...
-    [1.805794924492548; 3.643302925448510; 3.794026010097514; 1.951955268722969; 9.340994919972307; 4.092865541209832], ...
-    [2.228835741922012; 4.057287375680283; 4.196071491984251; 2.345141943407481; 9.763059676176212; 4.486279786058111]);
-
+    [1.8057949711597598; 3.6433030183959114; 3.7940260617482671; 1.9519553317477598; 9.3409949650858550; 4.0928655724716370], ...
+    [2.2288356782079028; 4.0572873081850807; 4.1960714210115002; 2.3451418924166987; 9.7630596270322201; 4.4862797486713282]);
 IH_ti_true = interval( ...
-    [1.769980105509319; 3.628140100136413; 3.780529192499684; 1.785064137861807; 9.327884759666599; 3.790086962434773], ...
-    [2.248980508158373; 4.220700770907024; 4.215731246885301; 2.365236344229507; 10.220054681235801; 4.504219313510544]);
+    [1.7699801606999799; 3.6281401930838144; 3.7805292441504390; 1.7850641948695933; 9.3278848047801457; 3.7900869967590674], ...
+    [2.2489804444442649; 4.2207006906857227; 4.2157311855735484; 2.3652362932387256; 10.2200546341070346; 4.5042192761237603]);
+linErrors_true = 1e-3*[0.206863579523074; 0.314066666873806; 0.161658311464827; 0.353255431809860; 0.358487021465299; 0.209190642349808];
 
-linErrors_true = 1e-3*[0.206863683556226; 0.314066832661960; 0.161658399976593; 0.353255589312750; 0.358487165091235; 0.209190685436450];
-% -------------------------------------------------------------------------
+% compare results
+assert(isequal(IH_tp,IH_tp_true,1e-8))
+assert(isequal(IH_ti,IH_ti_true,1e-8))
+assert(compareMatrices(linErrors,linErrors_true,1e-12));
 
-%final result
-res = isequal(IH_tp,IH_tp_true,1e-8) && isequal(IH_ti,IH_ti_true,1e-8) ...
-    && compareMatrices(linErrors,linErrors_true,1e-12);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

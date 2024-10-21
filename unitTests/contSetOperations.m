@@ -32,9 +32,7 @@ function setOps = contSetOperations(contSetclass,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin > 2
-    throw(CORAerror('CORA:tooManyInputArgs',2));
-end
+narginchk(1,2);
 
 % default values
 type = setDefaultValues({'basic'},varargin);

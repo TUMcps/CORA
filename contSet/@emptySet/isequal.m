@@ -1,5 +1,5 @@
 function res = isequal(O,S,varargin)
-% isequal - checks if two emptySet objects are equal
+% isequal - checks if an empty set is equal to another set or point
 %
 % Syntax:
 %    res = isequal(O,S)
@@ -32,20 +32,43 @@ function res = isequal(O,S,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,3);
+
+% default values
+tol = setDefaultValues({eps},varargin);
+
+% check input arguments
+inputArgsCheck({{O,'att',{'emptySet','numeric'}};
+                {S,'att',{'contSet','numeric'}};
+                {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
+
+% ensure that numeric is second input argument
+[O,S] = reorderNumeric(O,S);
+
+% ambient dimensions must match
+if ~equalDimCheck(O,S,true)
+    res = false;
+    return
+end
+
 if isa(S,'emptySet')
     % note: tolerance has no effect, only for overloading purposes
     res = O.dimension == S.dimension;
-
-elseif isnumeric(S)
-    % vector
-    res = isempty(S);
-
-elseif isa(S,'contSet')
-    % contSet objects...
-    res = dim(S) == O.dimension && representsa_(S,'emptySet',eps);
-    
-else
-    throw(CORAerror('CORA:noops',O,S));
+    return
 end
+
+% other contSet classes
+if isa(S,'contSet')
+    res = dim(S) == O.dimension && representsa_(S,'emptySet',eps);
+    return
+end
+
+% vector
+if isnumeric(S)
+    res = isempty(S) && numel(S) == O.dimension;
+    return
+end
+
+throw(CORAerror('CORA:noops',O,S));
 
 % ------------------------------ END OF CODE ------------------------------

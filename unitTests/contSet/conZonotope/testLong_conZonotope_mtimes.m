@@ -52,9 +52,7 @@ for k = 1:5
     cZ_ = M * cZ;
     
     % check if the results are equal
-    if ~compareMatrices([Z_.c,Z_.G],[cZ_.c,cZ_.G])
-        throw(CORAerror('CORA:testFailed'));
-    end   
+    assertLoop(compareMatrices([Z_.c,Z_.G],[cZ_.c,cZ_.G]),k)
 end
 
 
@@ -80,16 +78,7 @@ for k = 1:5
     cZ_ = I * cZ;
     
     % check if the results are equal
-    if ~compareMatrices([Z_.c,Z_.G],[cZ_.c,cZ_.G])
-       file_name = strcat('testLong_conZonotope_mtimes_2_', ...
-                          datestr(now,'mm-dd-yyyy_HH-MM'));
-                  
-       file_path = fullfile(CORAROOT, 'unitTests', 'failedTests', ...
-                            file_name);
-                           
-       save(file_path, 'Z_', 'cZ_')
-       throw(CORAerror('CORA:testFailed'));
-    end   
+    assertLoop(compareMatrices([Z_.c,Z_.G],[cZ_.c,cZ_.G]),k)
 end
 
 
@@ -163,9 +152,7 @@ for k = 1:5
 
     % check if all points are located inside the resulting conZonotope
     for i = 1:size(points,2)
-       if ~all(A*points(:,i) < b | withinTol(A*points(:,i),b))
-          throw(CORAerror('CORA:testFailed'));
-       end
+       assertLoop(all(A*points(:,i) < b | withinTol(A*points(:,i),b)),k,i)
     end
 end
 

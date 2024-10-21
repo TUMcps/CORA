@@ -1,16 +1,17 @@
-function cZ = plus(summand1,summand2)
+function S_out = plus(cZ,S)
 % plus - Overloaded '+' operator for the Minkowski addition of a
-%    constrained zonotope with other set representations
+%    constrained zonotope with another set or vector
 %
 % Syntax:
-%    cZ = plus(summand1,summand2)
+%    S_out = cZ + S
+%    S_out = plus(cZ,S)
 %
 % Inputs:
-%    summand1 - conZonotope object or numerical vector
-%    summand2 - conZonotope object or numerical vector
+%    cZ - conZonotope object, numeric
+%    S - contSet object, numeric
 %
 % Outputs:
-%    cZ - conZonotope object
+%    S_out - conZonotope object
 %
 % Example: 
 %    Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
@@ -40,77 +41,71 @@ function cZ = plus(summand1,summand2)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% find a conZonotope object
-[cZ,summand] = findClassArg(summand1,summand2,'conZonotope');
+% ensure that numeric is second input argument
+[S_out,S] = reorderNumeric(cZ,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < S_out.precedence
+    S_out = S + S_out;
+    return
+end
 
 try
 
-    % handle different classes of the second summand
-    if isa(summand,'conZonotope')
+    % sum with constrained zonotope
+    if isa(S,'conZonotope')
+        S_out = aux_plus_conZonotope(S_out,S);
+        return
+    end
         
-        % Calculate minkowski sum (Equation (12) in reference paper [1])
-        cZ.c=cZ.c+summand.c;
-        cZ.G(:,(end+1):(end+size(summand.G,2))) = summand.G;
+    % numeric: add to center
+    if isnumeric(S) && iscolumn(S)
+        S_out.c = S_out.c + S;
+        return
+    end
         
-        if isempty(cZ.A)
-            if ~isempty(summand.A)
-                cZ.A = [zeros(size(summand.A,1), ...
-                       size(cZ.G,2)-size(summand.A,2)),summand.A]; 
-                cZ.b = summand.b;
-            end
-        else
-            if isempty(summand.A)
-                cZ.A = [cZ.A,zeros(size(cZ.A,1),size(summand.G,2))];
-            else
-                cZ.A = blkdiag(cZ.A, summand.A);
-                cZ.b = [cZ.b; summand.b];
-            end
-        end
-        
-        cZ.ksi = [];
-        cZ.R = [];
-        
-    elseif isnumeric(summand) 
-        
-        cZ.c = cZ.c + summand;
-        
-    elseif isa(summand,'zonotope') || isa(summand,'interval') || ...
-           isa(summand,'polytope') || isa(summand,'zonoBundle')
-        
-        cZ = cZ + conZonotope(summand);
-        
-    elseif isa(summand,'polyZonotope') || isa(summand,'conPolyZono')
-        
-        cZ = polyZonotope(cZ) + summand;
-     
-    else
-    
-        % throw error for given arguments
-        throw(CORAerror('CORA:noops',summand1,summand2));
-    
+    % other set representations: convert to conZonotope
+    if isa(S,'zonotope') || isa(S,'interval') || ...
+           isa(S,'polytope') || isa(S,'zonoBundle')
+        S_out = aux_plus_conZonotope(S_out,conZonotope(S));
+        return
     end
 
 catch ME
     % note: error has already occured, so the operations below don't have
     % to be efficient
 
-    % already know what's going on...
-    if startsWith(ME.identifier,'CORA')
-        rethrow(ME);
-    end
-
     % check whether different dimension of ambient space
-    equalDimCheck(cZ,summand);
+    equalDimCheck(S_out,S);
 
     % check for empty sets
-    if representsa_(cZ,'emptySet',eps)
+    if representsa_(S_out,'emptySet',eps) || representsa_(S,'emptySet',eps)
+        S_out = conZonotope.empty(dim(S_out));
         return
-    elseif representsa_(summand,'emptySet',eps)
-        cZ = conZonotope.empty(dim(cZ)); return
-    end    
+    end
 
     % other error...
     rethrow(ME);
+
+end
+
+throw(CORAerror('CORA:noops',S_out,S));
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function S_out = aux_plus_conZonotope(S_out,S)
+% Equation (12) in reference paper [1]
+
+S_out.c = S_out.c + S.c;
+S_out.G(:,(end+1):(end+size(S.G,2))) = S.G;
+S_out.A = blkdiag(S_out.A, S.A);
+S_out.b = [S_out.b; S.b];
+
+S_out.ksi = [];
+S_out.R = [];
 
 end
 

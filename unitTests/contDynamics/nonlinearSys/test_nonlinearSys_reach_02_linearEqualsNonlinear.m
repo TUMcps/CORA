@@ -19,6 +19,9 @@ function res = test_nonlinearSys_reach_02_linearEqualsNonlinear
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % Parameters --------------------------------------------------------------
 
@@ -81,6 +84,6 @@ IH_nonlinear_T1 = interval(Rnonlin1.timePoint.set{end});
 IH_nonlinear_T2 = interval(Rnonlin2.timePoint.set{end});
 
 % final result
-res = isequal(IH,IH_nonlinear_T1,1e-8) && isequal(IH,IH_nonlinear_T2,1e-8);
+assert(isequal(IH,IH_nonlinear_T1,1e-8) && isequal(IH,IH_nonlinear_T2,1e-8));
 
 % ------------------------------ END OF CODE ------------------------------

@@ -41,9 +41,7 @@ for i=1:nrOfTests
     cZ = conZonotope(c,G);
     
     % assert correctness
-    if ~isFullDim(cZ)
-        res = false; break;
-    end
+    assertLoop(isFullDim(cZ),i)
     
     % random constraints so that conZonotope represents just a point
     % as A being diagional forces each independent factor to one value
@@ -53,9 +51,7 @@ for i=1:nrOfTests
     cZ = conZonotope(c,G,A,b);
     
     % assert correctness
-    if isFullDim(cZ)
-        res = false; break;
-    end
+    assertLoop(~isFullDim(cZ),i)
     
 end
 

@@ -47,9 +47,8 @@ for i=1:nrOfTests
     I = interval.enclosePoints(pts);
 
     % check with correct solution
-    if any(infimum(I) < minbound) || any(supremum(I) > maxbound)
-        res = false; break;
-    end
+    assertLoop(all(infimum(I) >= minbound),i)
+    assertLoop(all(supremum(I) <= maxbound),i)
 
 end
 

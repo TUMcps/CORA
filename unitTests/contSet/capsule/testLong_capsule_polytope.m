@@ -48,8 +48,8 @@ for j=1:nrTests
             dir = [zeros(i-1,1); e; zeros(n-i,1)];
             val_C = supportFunc_(C,dir,'upper');
             val_P = supportFunc_(P,dir,'upper');
-            if val_P < val_C && ~withinTol(val_P,val_C,tol)
-                throw(CORAerror('CORA:testFailed'));
+            if val_P < val_C
+                assertLoop(withinTol(val_P,val_C,tol),j,i,e)
             end
         end
     end
@@ -57,20 +57,17 @@ for j=1:nrTests
     % capsule with only center
     C_center = capsule(C.c);
     P_center = polytope(C_center);
-    if ~contains(P_center,C_center.c,'exact',tol)
-        throw(CORAerror('CORA:testFailed'));
-%     elseif ~representsa_(P_center,'point',tol)
-%         throw(CORAerror('CORA:testFailed'));
-    end
+    assert(contains(P_center,C_center.c,'exact',tol))
+%   assert(representsa_(P_center,'point',tol))
 
     C_generator = capsule(C.c,C.g);
     P_generator = polytope(C_generator);
     % check random support function evaluation
     dir = randn(n,1);
-    if ~withinTol(supportFunc_(C_generator,dir,'upper'),...
-            supportFunc_(P_generator,dir,'upper'),tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(withinTol(supportFunc_(C_generator,dir,'upper'),...
+            supportFunc_(P_generator,dir,'upper'),tol))
+
+end
 
 end
 

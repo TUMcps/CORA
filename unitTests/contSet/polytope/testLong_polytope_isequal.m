@@ -40,17 +40,13 @@ for i=1:nrTests
     P = polytope.generateRandom('Dimension',n,'NrConstraints',nrCon);
 
     % 2. has to be equal to itself
-    if ~isequal(P,P,tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(isequal(P,P,tol),i);
     
     % 2. re-order constraints -> same polytope
     randOrder = randperm(nrCon);
     P_reordered = polytope(P.A(randOrder,:),P.b(randOrder));
 
-    if ~isequal(P,P_reordered,tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(isequal(P,P_reordered,tol),i);
 
     % 3. add n redundant constraints
     A_redundant = zeros(n,n); b_redundant = zeros(n,1);
@@ -66,9 +62,7 @@ for i=1:nrTests
     P_redundant = polytope([P.A(randOrder,:); A_redundant],...
         [P.b(randOrder); b_redundant]);
     
-    if ~isequal(P,P_redundant,tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(isequal(P,P_redundant,tol),i);
 
     % 4. add one irredundant constraint
     % compute support function in a random direction
@@ -78,9 +72,7 @@ for i=1:nrTests
     P_nonredundant = polytope([P.A(randOrder,:); randDir'],...
         [P.b(randOrder); val - 0.01 - rand(1)]);
     
-    if isequal(P,P_nonredundant,tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(~isequal(P,P_nonredundant,tol),i);
 
 end
 

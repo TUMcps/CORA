@@ -1,15 +1,15 @@
-function [R,tcomp] = observe_PRadC(obj,options)
+function [R,tcomp] = observe_PRadC(linsysDT,params,options)
 % observe_PRadC - computes the guaranteed state estimation approach
-% from [1] and [2]. In [3], two versions of PRadC exist; we have removed
-% PRadC-I since its performance is not as good as PRadC-II, which is now
-% simply called PRad-C.
-%
+%    from [1] and [2]. In [3], two versions of PRadC exist; we have removed
+%    PRadC-I since its performance is not as good as PRadC-II, which is now
+%    simply called PRad-C.
 %
 % Syntax:
-%    [R,tcomp] = observe_PRadC(obj,options)
+%    [R,tcomp] = observe_PRadC(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -29,8 +29,6 @@ function [R,tcomp] = observe_PRadC(obj,options)
 %        Estimators for Linear Time-Invariant Systems , Automatica 130, 
 %        2021, article no. 109662
 %
-% Example: 
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
@@ -47,8 +45,7 @@ function [R,tcomp] = observe_PRadC(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % obtain offline gains
-
-OGain = observe_gain_PRadC(obj,options);
+OGain = observe_gain_PRadC(linsysDT,params,options);
 
 % set intersection procedure
 options.intersectionType = 2;
@@ -56,7 +53,7 @@ options.intersectionTechnique = OGain; % gain directly provided
 
 % apply set-membership approach
 tic
-R = observe_stripBased(obj,options);
+R = observe_stripBased(linsysDT,params,options);
 tcomp = toc;
 
 % ------------------------------ END OF CODE ------------------------------

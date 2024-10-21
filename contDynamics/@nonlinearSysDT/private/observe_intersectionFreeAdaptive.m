@@ -1,14 +1,15 @@
-function R = observe_intersectionFreeAdaptive(obj,options)
+function R = observe_intersectionFreeAdaptive(nlnsysDT,params,options)
 % observe_intersectionFreeAdaptive - computes the guaranteed state
-% estimation approach according to the intersection-free approach
-% when the gain changes in each iteration, see [1], [2]; the approach is 
-% extended here for nonlinear systems.
+%    estimation approach according to the intersection-free approach
+%    when the gain changes in each iteration, see [1], [2]; the approach is 
+%    extended here for nonlinear systems.
 %
 % Syntax:
-%    R = observe_intersectionFreeAdaptive(obj,options)
+%    R = observe_intersectionFreeAdaptive(nlnsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time nonlinear system object
+%    nlnsysDT - nonlinearSysDT object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -21,8 +22,6 @@ function R = observe_intersectionFreeAdaptive(obj,options)
 %    [2] M. Althoff and J. J. Rath. Comparison of Set-Based Techniques 
 %        for Guaranteed State Estimation of Linear Disturbed Systems, 
 %        in preparation.
-%
-% Example:
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,46 +37,45 @@ function R = observe_intersectionFreeAdaptive(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 %time period
-
-tVec = options.tStart:options.timeStep:options.tFinal-options.timeStep;
+tVec = params.tStart:options.timeStep:params.tFinal-options.timeStep;
 
 % initialize parameter for the output equation
 R = cell(length(tVec),1);
 % store first reachable set
-Rnext.tp = options.R0;
-R{1} = options.R0;
+Rnext.tp = params.R0;
+R{1} = params.R0;
 
 % F is chosen in [1] such that they are multiplied with unit
 % uncertainties; thus, E and F can be seen as generators of zonotopes
 % representing the disturbance and noise set
-F = generators(options.V);
+F = generators(params.V);
 
 % loop over all time steps
 for k = 1:length(tVec)-1
     
     %% linearize nonlinear system
     %linearization point p
-    p.u = options.uTransVec(:,k);
+    p.u = params.uTransVec(:,k);
     p.x = center(R{k});
 
     %substitute p into the system equation in order to obtain the constant
     %input
-    f0 = obj.mFile(p.x, p.u);
+    f0 = nlnsysDT.mFile(p.x, p.u);
 
     %get jacobian matrices
-    [A_lin,B_lin] = obj.jacobian(p.x, p.u);
+    [A_lin,B_lin] = nlnsysDT.jacobian(p.x, p.u);
 
     %save linearization point
-    obj.linError.p=p;
+    nlnsysDT.linError.p=p;
 
     %translate Rinit by linearization point
-    Rdelta = R{k} + (-obj.linError.p.x);
+    Rdelta = R{k} + (-nlnsysDT.linError.p.x);
 
     % obtain linearization error
     if options.tensorOrder == 2
-        Verror = linError_mixed_noInt(obj, options, Rdelta);
+        Verror = linError_mixed_noInt(nlnsysDT, Rdelta, params, options);
     elseif options.tensorOrder == 3
-        Verror = linError_thirdOrder(obj, options, Rdelta);    
+        Verror = linError_thirdOrder(nlnsysDT, Rdelta, params, options);
     end
     
     % Compute observer gain
@@ -85,14 +83,14 @@ for k = 1:length(tVec)-1
         % obtain generators
         G = generators(Rnext.tp);
         G_comb = G*G';
-        L = A_lin*G_comb*obj.C'*inv(obj.C*G_comb*obj.C' + F*F');
+        L = A_lin*G_comb*nlnsysDT.C'*inv(nlnsysDT.C*G_comb*nlnsysDT.C' + F*F');
     else
         disp('this observer type is not yet implemented')
     end
     
     % Prediction, eq. (11) in [2]
-    Rnext.tp = (A_lin-L*obj.C)*Rdelta - L*obj.C*obj.linError.p.x  + ...
-        L*options.y(:,k) + (-L)*options.V + options.W + Verror + f0;
+    Rnext.tp = (A_lin-L*nlnsysDT.C)*Rdelta - L*nlnsysDT.C*nlnsysDT.linError.p.x  + ...
+        L*params.y(:,k) + (-L)*params.V + params.W + Verror + f0;
     
     % Order reduction
     Rnext.tp = reduce(Rnext.tp,options.reductionTechnique,options.zonotopeOrder);
@@ -100,6 +98,5 @@ for k = 1:length(tVec)-1
     % Store result
     R{k+1} = Rnext.tp;
 end
-
 
 % ------------------------------ END OF CODE ------------------------------

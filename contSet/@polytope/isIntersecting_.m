@@ -1,8 +1,8 @@
-function res = isIntersecting_(P,S,type,varargin)
+function res = isIntersecting_(P,S,type,tol,varargin)
 % isIntersecting_ - determines if a polytope intersects another set
 %
 % Syntax:
-%    res = isIntersecting_(P,S,type)
+%    res = isIntersecting_(P,S,type,tol)
 %
 % Inputs:
 %    P - polytope object
@@ -44,18 +44,35 @@ function res = isIntersecting_(P,S,type,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% set tolerance
-tol = setDefaultValues({1e-12},varargin);
+% ensure that numeric is second input argument
+[P,S] = reorderNumeric(P,S);
 
-% get polytope object
-[P,S] = findClassArg(P,S,'polytope');
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < P.precedence
+    res = isIntersecting_(S,P,type,tol);
+    return
+end
+
+% numeric case: check containment
+if isnumeric(S)
+    res = contains_(P,S,type,tol);
+    return
+end
+
+% sets must not be empty (LPs too costly...)
+% if representsa_(P,'emptySet',0) || representsa_(S,'emptySet',0)
+%     res = false;
+%     return
+% end
 
 % fullspace
 if representsa_(P,'fullspace',0)
     % unless S is the empty set, there is an intersection
-    res = ~representsa_(S,'emptySet',eps); return
+    res = ~representsa_(S,'emptySet',eps);
+    return
 elseif representsa_(S,'fullspace',0)
-    res = ~representsa_(P,'emptySet',eps); return
+    res = ~representsa_(P,'emptySet',eps);
+    return
 end
 
 % dimension
@@ -67,44 +84,81 @@ if n == 1
         res = isIntersecting_(interval(P),interval(S),type,tol);
         return
     end
+    % if conversion to interval is not possible... use a method below
+    % note: try to fix conversions
 end
 
+% potential quick check: single equality constraint case
+% TODO: find out what issues arise with zonoBundles...
+if length(P.be_.val) == 1 && ~isa(S,'zonoBundle')
+    I = supportFunc_(S,P.Ae_.val','range','interval',8,1e-3);
+    if ~contains_(I,P.be_.val,'exact',1e-12)
+        res = false; return
+    end
+end
 
-% nD cases
+% single halfspace case
+if representsa_(P,'halfspace',tol)
+    res = aux_isIntersecting_halfspace_other(P,S,tol);
+    return
+end
+
+% polytope and polytope
 if isa(S,'polytope')
-    % polytope and polytope
-    res = aux_isIntersecting_poly_poly(P,S);
-     
-elseif strcmp(type,'exact')
-    % exact check for intersection
-        
-    if isnumeric(S)
-        % a point cloud intersects a polytope if any point is contained
-        res = any(contains_(P,S,'exact',tol));
-    elseif isa(S,'interval') || isa(S,'zonotope')
+    res = aux_isIntersecting_poly_poly(P,S,tol);
+    return
+end
+
+% exact check for intersection
+if isa(S,'contSet') && strcmp(type,'exact')
+    if isa(S,'interval') || isa(S,'zonotope')
         res = aux_isIntersecting_P_cZ(P,conZonotope(S));
-    elseif isa(S,'conZonotope')
+        return
+    end
+    if isa(S,'conZonotope')
         res = aux_isIntersecting_P_cZ(P,S);
-    elseif isa(S,'zonoBundle')
+        return
+    end
+    if isa(S,'zonoBundle')
         res = aux_isIntersecting_P_zB(P,S);
-    elseif isa(S,'halfspace') || isa(S,'conHyperplane')
-        res = isIntersecting_(S,P,'exact');
-    else
-        throw(CORAerror('CORAerror:noops',P,S));
+        return
     end
     
-else
-    % over-approximative check for intersection
-    res = aux_isIntersecting_approx(P,S);
-    
+    throw(CORAerror('CORA:noExactAlg',P,S));
 end
+    
+if isa(S,'contSet') && strcmp(type,'approx')
+    % over-approximative check for intersection
+    res = aux_isIntersecting_approx(P,S,tol);
+    return
+end
+
+throw(CORAerror('CORA:noops',P,S));
 
 end
     
 
 % Auxiliary functions -----------------------------------------------------
 
-function res = aux_isIntersecting_poly_poly(P1,P2)
+function res = aux_isIntersecting_halfspace_other(P1,S,tol)
+% special cases (heritage from old halfspace class)
+
+% single halfspace & single halfspace
+% (don't call polytope/representsa_ for speed)
+if isa(S,'polytope') && S.isHRep.val && length(S.b_) == 1 && isempty(S.be_)
+    [P1_A,P1_b] = priv_normalizeConstraints(P1.A_.val,P1.b_.val,P1.Ae_val,P1.be_val);
+    [S_A,S_b] = priv_normalizeConstraints(S.A_.val,S.b_.val,S.Ae_val,S.be_val);
+    res = sum(abs(S_A + P1_A)) > tol | S_b + P1_b > 0;
+    return;
+end
+
+% single halfspace (just take first one) & other
+bound = supportFunc_(S,P1.A_.val(1,:)','lower','interval',8,1e-3);
+res = bound <= min(P1.b_.val) || withinTol(bound,min(P1.b_.val),tol);
+
+end
+
+function res = aux_isIntersecting_poly_poly(P1,P2,tol)
 
 % go over possible cases in the following order:
 % 1) H-polytope & H-polytope
@@ -113,7 +167,7 @@ function res = aux_isIntersecting_poly_poly(P1,P2)
 if P1.isHRep.val
     if P2.isHRep.val
         % both in H
-        res = aux_isIntersecting_Hpoly_HPoly(P1,P2);
+        res = aux_isIntersecting_Hpoly_HPoly(P1,P2,tol);
     else
         % P1 in H, P2 in V
         res = aux_isIntersecting_Hpoly_Vpoly(P1,P2);
@@ -126,10 +180,9 @@ else
     res = aux_isIntersecting_Vpoly_Vpoly(P1,P2);
 end
 
-
 end
 
-function res = aux_isIntersecting_Hpoly_HPoly(P1,P2)
+function res = aux_isIntersecting_Hpoly_HPoly(P1,P2,tol)
 % intersection check of two polytopes in halfspace representation
 
 % construct the intersection
@@ -137,7 +190,7 @@ P1P2 = polytope([P1.A_.val; P2.A_.val], [P1.b_.val; P2.b_.val], ...
                 [P1.Ae_.val; P2.Ae_.val], [P1.be_.val; P2.be_.val]);
 
 % check if it is empty
-res = ~representsa(P1P2,'emptySet');
+res = ~representsa(P1P2,'emptySet',tol);
 
 end
 
@@ -211,76 +264,67 @@ end
 
 function res = aux_isIntersecting_P_cZ(P,cZ)
 % check if a polytope {x | H*x <= d, He*x = de} and a constraint zonotope 
-% {x = c + G*a | A*a = b, a \in [-1,1]} intersect by solving the following
-% linear program:
+% {x = c + G*beta | A*beta = b, a \in [-1,1]} intersect by solving the
+% following linear program:
 %
-% min_{t,x,a} t
+% min_{t,x,beta} t
 %
 % s.t. Hx - d <= t
 %        He x = de
-%      c + Ga = x
-%          Aa = b
-%           a \in [-1,1]
+%   c + Gbeta = x
+%      A beta = b
+%        beta \in [-1,1]
 
-    % halfspaces and offsets of polytope
-    H = P.A_.val;
-    d = P.b_.val;
-    He = P.Ae_.val;
-    de = P.be_.val;
+    % note: this LP must have non-empty H, otherwise unbounded!
+
+    % halfspace normal vectors/offsets of polytope, and number thereof
+    H = P.A_.val; d = P.b_.val;
+    nrIneq_poly = size(H,1);
+    He = P.Ae_.val; de = P.be_.val;
+    nrEq_poly = size(He,1);
     
-    % center and generator matrix of constrained zonotope
-    c = cZ.c;
-    G = cZ.G;
-    
-    % dimension
+    % center, generator matrix, and constraints of constrained zonotope
+    c = cZ.c; G = cZ.G;
+    A = cZ.A; b = cZ.b;
+    % dimension, number of generators, number of constraints
     n = length(c);
-    % number of generators
-    m = size(G,2);
-    % number of polytope inequality constraints
-    p = size(H,1);
-    % number of polytope equality constraints
-    pe = size(He,1);
+    nrGen = size(G,2);
+    nrEq_conZono = size(A,1);
 
-    % optimization variable is [t;x;a] with length 1 + n + m
+    % optimization variable is [t;x;beta] with length 1 + n + nrGen
 
     % construct inequality constraints
-    %   Hx - d <= t   =>  Hx <= t + d
-    %   a \in [-1,1]  =>  -a <= 1, a <= 1
+    %   Hx - d <= t      <=>  Hx <= t + d
+    %   beta \in [-1,1]  <=>  -beta <= 1, beta <= 1
     
     % compute number of elements and minimum sparsity
-    numElem = (p+2*m)*(1+n+m);
-    minNumZeros = 2*m*(1+n) + p*m + 2*m*(m-1);
+    numElem = (nrIneq_poly+2*nrGen)*(1+n+nrGen);
+    minNumZeros = 2*nrGen*(1+n) + nrIneq_poly*nrGen + 2*nrGen*(nrGen-1);
     sparsity = minNumZeros / numElem;
     % use sparse representation if beneficial
     if sparsity > 0.5
-        Aineq = [-ones(p,1), H, sparse(p,m);
-             sparse(m,1+n), -speye(m);
-             sparse(m,1+n), speye(m)];
+        Aineq = [-ones(nrIneq_poly,1), H, sparse(nrIneq_poly,nrGen);
+                 sparse(nrGen,1+n), -speye(nrGen);
+                 sparse(nrGen,1+n), speye(nrGen)];
     else
-        Aineq = [-ones(p,1), H, zeros(p,m);
-             zeros(m,1+n), -eye(m);
-             zeros(m,1+n), eye(m)];
+        Aineq = [-ones(nrIneq_poly,1), H, zeros(nrIneq_poly,nrGen);
+                 zeros(nrGen,1+n), -eye(nrGen);
+                 zeros(nrGen,1+n), eye(nrGen)];
     end
-    bineq = [d;ones(2*m,1)];
+    bineq = [d;ones(2*nrGen,1)];
 
     % construct equality constraints
     % He*x = de
-    % x = c + G*a  <=>  x - G*a = c
-    % A*a = b
-    Aeq = [[zeros(pe,1),He,zeros(pe,m)]; [zeros(n,1),eye(n),-G]];
-    beq = [de; c];
-    
-    if ~isempty(cZ.A)
-        A = cZ.A; b = cZ.b;
-        % A*a = b
-        Aeq = [Aeq;
-               zeros(size(A,1),1+n),A];
-        beq = [beq;b];
-    end
+    % x = c + G*beta  <=>  x - G*beta = c
+    % A*beta = b
+    Aeq = [[zeros(nrEq_poly,1),He,zeros(nrEq_poly,nrGen)];
+           [zeros(n,1),eye(n),-G];
+           [zeros(nrEq_conZono,1+n),A]];
+    beq = [de; c; b];
     
     % construct objective function
     % min t
-    f = [1;zeros(n+m,1)];
+    f = [1;zeros(n+nrGen,1)];
 
     % init linprog struct
     problem.f = f;
@@ -315,6 +359,9 @@ function res = aux_isIntersecting_P_cZ(P,cZ)
         % tol? => use constraint tolerance (default: 1e-6)
         tol = 1e-6;
         res = val < tol;
+    elseif exitflag == -3
+        % unbounded (because no inequality constraints in P) => feasible
+        res = true;
     else
         throw(CORAerror('CORA:solverIssue','linprog'));
     end
@@ -344,8 +391,8 @@ function res = aux_isIntersecting_P_zB(P,zB)
     [p,n] = size(H);
 
     % construct inequality constraints
-    A = [H,-eye(p);zeros(p,n),-eye(p)];
-    b = [d;zeros(p,1)];
+    Aineq = [H,-eye(p);zeros(p,n),-eye(p)];
+    bineq = [d;zeros(p,1)];
     
     % loop over all parallel zonotopes in the bundle
     Aeq = [];
@@ -363,8 +410,8 @@ function res = aux_isIntersecting_P_zB(P,zB)
         beq = [beq;c];
         
         % construct inequality constraints
-        A = blkdiag(A,[eye(m);-eye(m)]);
-        b = [b;ones(2*m,1)];
+        Aineq = blkdiag(Aineq,[eye(m);-eye(m)]);
+        bineq = [bineq;ones(2*m,1)];
     end
     
     temp = repmat(eye(n),[zB.parallelSets,1]);
@@ -387,19 +434,17 @@ function res = aux_isIntersecting_P_zB(P,zB)
     [~,val,exitflag] = CORAlinprog(problem);
 
     % check if intersection between the two sets is empty
-    if exitflag < 0 || (val > 0 && ~withinTol(val,0))
-        res = false; 
-    else
-        res = true;
-    end
+    res = ~(exitflag < 0 || (val > 0 && ~withinTol(val,0)));
     
 end
 
-function res = aux_isIntersecting_approx(P,S)
+function res = aux_isIntersecting_approx(P,S,tol)
 % approx check, i.e., conservative intersection check (possibility of false
 % positives)
         
 res = true;
+[isHyp,P] = representsa_(P,'conHyperplane',tol);
+
 A = P.A_.val;
 b = P.b_.val;
 
@@ -411,11 +456,21 @@ if isa(S,'zonoBundle')
         
         % read out j-th zonotope
         Z = S.Z{j};
+
+        if isHyp
+            % check intersection with hyperplane
+            I = supportFunc_(Z,P.Ae_.val(1,:)','range');
+            if ~contains_(I,P.be_.val(1),'exact',tol)
+                res = false;
+                return
+            end
+        end
         
         % loop over all halfspaces
         for i = 1:size(A,1)
             if b(i) < supportFunc_(Z,A(i,:)','lower')
-                res = false; return;
+                res = false;
+                return
             end
         end
 
@@ -423,19 +478,25 @@ if isa(S,'zonoBundle')
     
 else
 
-    otherOptions = {};
-    if isa(S,'conPolyZono') || isa(S,'polyZonotope')
-        otherOptions = {'interval',8,1e-3};
+    if isHyp
+        % check intersection with hyperplane
+        I = supportFunc_(S,P.Ae_.val(1,:)','range');
+        if ~contains_(I,P.be_.val(1),'exact',tol)
+            res = false;
+            return
+        end
     end
     
     % loop over all halfspaces
     for i = 1:size(A,1)
-        if b(i) < supportFunc_(S,A(i,:)','lower',otherOptions{:})
-            res = false; return;
+        if b(i) < supportFunc_(S,A(i,:)','lower')
+            res = false;
+            return
         end
     end
 
 end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

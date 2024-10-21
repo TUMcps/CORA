@@ -23,13 +23,11 @@ function res = test_capsule_eq
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty capsule
 C1 = capsule.empty(1);
 C2 = capsule.empty(2);
-res(end+1,1) = C1 == C1;
-res(end+1,1) = ~(C1 == C2);
+assert(C1 == C1);
+assert(~(C1 == C2));
 
 % tolerance
 tol = 1e-9;
@@ -43,13 +41,13 @@ C_tol = capsule(c,g,r+tol/2);
 C_red = capsule(c(1:end-1),g(1:end-1),r);
 
 % compare
-res(end+1,1) = C == C;
-res(end+1,1) = eq(C,C);
-res(end+1,1) = ~(C == C_tol);
-res(end+1,1) = eq(C,C_tol,tol);
-res(end+1,1) = ~eq(C,C_red);
+assert(C == C);
+assert(eq(C,C));
+assert(~(C == C_tol));
+assert(eq(C,C_tol,tol));
+assert(~eq(C,C_red));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

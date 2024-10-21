@@ -29,17 +29,17 @@ O = emptySet(n);
 
 % empty
 p = double.empty(n,0);
-res = contains(O,p);
+assert(contains(O,p));
 
 % point
 p = [2;1];
-res(end+1,1) = ~contains(O,p);
+assert(~contains(O,p));
 
 % zonotope
 Z = zonotope(zeros(n,1),eye(n));
-res(end+1,1) = ~contains(O,Z);
+assert(~contains(O,Z));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

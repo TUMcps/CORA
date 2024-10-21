@@ -43,21 +43,20 @@ methods
     
     % class constructor
     function obj = syntaxTree(value,id,varargin)
-        % check number of input arguments
-        if nargin < 2
-            throw(CORAerror('CORA:notEnoughInputArgs',2));
-        elseif nargin > 5
-            throw(CORAerror('CORA:tooManyInputArgs',5));
-        end
 
-        % assign values
+        % 0. check number of input arguments
+        assertNarginConstructor(2:5,nargin);
+
+        % 1. parse input arguments: varargin -> vars
+        [operator,funHan,nodes] = setDefaultValues({[],[],[]},varargin);
+
+        % 2. assign values
         obj.value = value;
         obj.id = id;
-        if nargin > 3
-            obj.operator = varargin{1};
-            obj.funHan = varargin{2};
-            obj.nodes = varargin{3};
-        end
+        obj.operator = operator;
+        obj.funHan = funHan;
+        obj.nodes = nodes;
+        
     end
     
     % parsing methods
@@ -267,6 +266,7 @@ methods
     end
     
     function res = prod(obj,varargin)
+        narginchk(1,2);
         n = 1;
         if nargin <= 1
             if size(obj,1) == 1
@@ -280,8 +280,6 @@ methods
             S.subs = {1,':'};
         elseif n == 2
             S.subs = {':', 1};
-        else
-            throw(CORAerror('CORA:tooManyInputArgs',2));
         end
         res = subsref(obj,S);
         for i = 2:size(obj, n)
@@ -291,6 +289,7 @@ methods
     end
     
     function res = sum(obj,varargin)
+        narginchk(1,2);
         n = 1;
         if nargin <= 1
             if size(obj,1) == 1
@@ -304,8 +303,6 @@ methods
             S.subs = {1,':'};
         elseif n == 2
             S.subs = {':', 1};
-        else
-            throw(CORAerror('CORA:tooManyInputArgs',2));
         end
         res = subsref(obj,S);
         for i = 2:size(obj, n)

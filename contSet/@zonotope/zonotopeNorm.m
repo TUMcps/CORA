@@ -59,8 +59,7 @@ if representsa_(Z,'emptySet',eps)
 end
 
 % Retrieve generator-representation of Z
-G = Z.generators;
-if isempty(G)
+if isempty(Z.G)
     if ~any(p)
         res = 0; return
     else
@@ -69,37 +68,27 @@ if isempty(G)
 end
 
 % Retrieve dimensions of the generator matrix of Z
-n = size(G, 1);
-m = size(G, 2);
+[n,numGen] = size(Z.G);
 
 % Set up objective and constraints of the linear program as defined in
 % [2, Equation (8)]
-problem.f = [1; zeros([m 1])];
+problem.f = [1; zeros(numGen,1)];
 
-problem.Aeq = [zeros([n 1]), G];
+problem.Aeq = [zeros(n,1), Z.G];
 problem.beq = p;
 
-Aineq1 = [-ones([m 1]), eye(m)];
-Aineq2 = [-ones([m 1]), -eye(m)];
+problem.Aineq = [-ones(numGen,1),  eye(numGen); ...
+                 -ones(numGen,1), -eye(numGen)];
+problem.bineq = zeros(2*numGen,1);
 
-problem.Aineq = [Aineq1; Aineq2];
-problem.bineq = zeros([2*m 1]);
-
+% bounds integrated in inequality constraints
 problem.lb = [];
 problem.ub = [];
 
-% Suppress solver output
-persistent options
-if isempty(options)
-    options = optimoptions('linprog', 'Display', 'none');
-end
-problem.solver = 'linprog';
-problem.options = options;
-
-% Solve the linear program: If the problem is not feasible, this means
-% that the zonotope must be degenerate, and that the point can not be
-% realized as a linear combination of the generators of the zonotope. In
-% that case, the norm is defined as Inf
+% Solve the linear program: If the problem is infeasible, this means that
+% the zonotope must be degenerate, and that the point can not be realized
+% as a linear combination of the generators of the zonotope. In that case,
+% the norm is defined as Inf
 [minimizer_p,res,exitflag] = CORAlinprog(problem);
 if exitflag == -2
     res = Inf;

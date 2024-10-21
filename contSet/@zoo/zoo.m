@@ -65,6 +65,7 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor(2:6,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'zoo')
@@ -90,17 +91,17 @@ methods
     function res = acos(obj); res = zooComputation(@acos,obj); end
     function res = asin(obj); res = zooComputation(@asin,obj); end
     function res = atan(obj); res = zooComputation(@atan,obj); end
-    function res = cos(obj); res = zooComputation(@cos,obj); end
+    function res = cos(obj);  res = zooComputation(@cos,obj);  end
     function res = cosh(obj); res = zooComputation(@cosh,obj); end
-    function res = exp(obj); res = zooComputation(@exp,obj); end
-    function res = log(obj); res = zooComputation(@log,obj); end
-    function res = sin(obj); res = zooComputation(@sin,obj); end
+    function res = exp(obj);  res = zooComputation(@exp,obj);  end
+    function res = log(obj);  res = zooComputation(@log,obj);  end
+    function res = sin(obj);  res = zooComputation(@sin,obj);  end
     function res = sinh(obj); res = zooComputation(@sinh,obj); end
     function res = sqrt(obj); res = zooComputation(@sqrt,obj); end
-    function res = tan(obj); res = zooComputation(@tan,obj); end
+    function res = tan(obj);  res = zooComputation(@tan,obj);  end
     function res = tanh(obj); res = zooComputation(@tanh,obj); end
     function res = mpower(obj1,obj2); res = zooComputation(@mpower,obj1,obj2); end
-    function res = power(obj1,obj2); res = zooComputation(@power,obj1,obj2); end
+    function res = power(obj1,obj2);  res = zooComputation(@power,obj1,obj2);  end
 
     function res = isemptyobject(obj); res = false; end
              
@@ -113,14 +114,6 @@ end
 
 function [int,method,names,max_order,eps,tolerance] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin > 6
-        throw(CORAerror('CORA:tooManyInputArgs',6));
-    end
-    if nargin < 2
-        throw(CORAerror('CORA:notEnoughInputArgs',2));
-    end
 
     % set default values (first two always given)
     [int,method,names,max_order,eps,tolerance] = ...

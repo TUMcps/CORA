@@ -45,11 +45,8 @@ for i=1:nrOfTests
     G_true = diag(rad(I));
     
     % compare results
-    if ~all(withinTol(center(Z),c_true,tol))
-        throw(CORAerror('CORA:testFailed'));
-    elseif ~compareMatrices(generators(Z),G_true,tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(all(withinTol(center(Z),c_true,tol)),i)
+    assertLoop(compareMatrices(generators(Z),G_true,tol),i)
 
 end
 

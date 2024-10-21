@@ -26,6 +26,7 @@ function [count,out] = inputArgsLength(f,varargin)
 % Authors:       Victor Gassmann, Mark Wetzlinger
 % Written:       11-September-2020
 % Last update:   17-June-2022 (MW, speed up when inpArgs exceeds nargin to f)
+%                08-October-2024 (MW, fix empty function handle case)
 % Last revision: 20-November-2022 (MW, restucture alternative method)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -37,8 +38,9 @@ narginf = setDefaultValues({nargin(f)},varargin);
 % try fast way to determine number of inputs (does not work if
 % statements like "length(x)" occur in the dynamic function
 try
-    % create symbolic variables (length 100 for each input)
-    narginvars = sym('x',[100,narginf]);
+    % create symbolic variables (up to 100 per input argument supported)
+    maxNumVars = 100;
+    narginvars = sym('x',[maxNumVars,narginf]);
     narginvars_cell = num2cell(narginvars,1);
     
     % evaluate function
@@ -46,7 +48,7 @@ try
     
     % output dimension of f
     out = size(fsym);
-    if any(out == 1)
+    if any(out <= 1)
         out = max(out);
     end
     % used variables from array of symbolic variables (size: [100,inpArgs])
@@ -54,15 +56,9 @@ try
     % logical indices for used variables
     mask = ismember(narginvars,vars);
     % required dimension of each inpArgs for evaluation of f
-    count = zeros(narginf,1);
-    for i=1:narginf
-        % last 'true' value in logical indices is required dimension
-        tmp = find(mask(:,i),1,'last');
-        if isempty(tmp)
-            tmp = 0;
-        end
-        count(i) = tmp;
-    end
+    count = cell2mat(cellfun(@aux_findIdx,...
+        mat2cell(mask,maxNumVars,ones(narginf,1)),...
+        'UniformOutput',false));
 
     % sanity check: call function with computed number of input arguments
     try
@@ -88,7 +84,10 @@ if narginf == 1
         count = count + 1;
         try
             output = f(narginvars(1:count));
-            % get length of symbolic output
+            % get length of symbolic output -> only exit if the output is a
+            % vector (required for matrix-vector multiplication like A*x,
+            % where A has a fixed size and x should be chosen such that the
+            % result is a vector (would not occur if x is scalar!)
             out = size(output);
             if any(out == 1)
                 out = max(out);
@@ -166,6 +165,21 @@ while true
 
     % increment number of inputs
     maxVal = maxVal + 3;
+end
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function idx = aux_findIdx(vec)
+% find index of last true value in a vector, return 0 if not found
+
+idx = find(vec,1,'last');
+if isempty(idx)
+    idx = 0;
+end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

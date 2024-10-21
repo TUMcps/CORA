@@ -53,9 +53,8 @@ for i=1:nrTests
     p(:,end+1) = randPoint(P,1,'uniform:billiardWalk');
 
     % all need to be contained within the polytope
-    if ~all(contains(P,p,'exact',tol))
-        res = false; return
-    end
+    assertLoop(all(contains(P,p,'exact',tol)),i)
+
 end
 
 
@@ -77,7 +76,7 @@ for i=1:length(methods)
         p = randPoint(P,nrPts,methods{i});
         
         % check for containment in polytope
-        res = all(contains(P,p,'exact',tol));
+        assertLoop(all(contains(P,p,'exact',tol)),i,j)
         
     end
 end

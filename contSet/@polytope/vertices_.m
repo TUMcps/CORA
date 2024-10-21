@@ -63,9 +63,12 @@ end
 
 % 1D case quick
 if n == 1
-    V = aux_vertices_1D(P);
+    V = priv_vertices_1D(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val);
     P.V_.val = V;
     P.isVRep.val = true;
+    P.emptySet.val = false;
+    P.bounded.val = ~any(isinf(V));
+    P.fullDim.val = size(V,2) > 1;
     return
 end
 
@@ -127,63 +130,6 @@ end
 
 
 % Auxiliary functions -----------------------------------------------------
-
-function V = aux_vertices_1D(P)
-% simplified function for 1D polytopes    
-
-    % compute minimal representation
-    P = compact_(P,'all',1e-9);
-    P = normalizeConstraints(P,'A');
-
-    % if there is no point, P is already empty
-    if P.emptySet.val
-        V = []; return
-    end
-
-    if ~isempty(P.A_.val)
-
-        % check boundedness from below
-        Aisminus1 = withinTol(P.A_.val,-1);
-        if any(Aisminus1)
-            % bounded from below
-            V = -P.b_.val(Aisminus1);
-        else
-            % unbounded toward -Inf
-            V = -Inf;
-        end
-    
-        % check boundedness from above
-        Ais1 = withinTol(P.A_.val,1);
-        if any(Ais1)
-            % bounded from above (add only if not a duplicate)
-            if ~withinTol(V,P.b_.val(Ais1))
-                V = [V, P.b_.val(Ais1)];
-            end
-        else
-            % unbounded toward +Inf
-            V = [V, Inf];
-        end
-
-        % set boundedness, emptiness
-        P.emptySet.val = false;
-        P.bounded.val = any(isinf(V));
-        P.fullDim.val = size(V,2) > 1;
-
-    elseif ~isempty(P.Ae)
-        % due to minHRep call above, we should only have one equality here
-        V = P.be_.val / P.Ae_.val;
-        % equality representation -> not full-dimensional
-        P.fullDim.val = false;
-        % emptiness would have been detected above
-        P.emptySet.val = false;
-
-    else
-        throw(CORAerror('CORA:specialError',...
-            'Error in vertex computation of 1D polytope.'));
-
-    end
-
-end
 
 function [V,method] = aux_vertices_cdd(P,c)
 % vertex enumeration using cdd (third-party)
@@ -287,22 +233,18 @@ if ~isBounded(P)
         'Vertex computation requires a bounded polytope.'));
 end
 
-if ~isempty(P.be_.val)
-    % rewrite as inequality constraints
-    A = [P.A_.val; P.Ae_.val; -P.Ae_.val];
-    b = [P.b_.val; P.be_.val; -P.be_.val];
-    P = polytope(A,b);
-end
+% rewrite as inequality constraints
+[A,b] = priv_equalityToInequality(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val);
 
 % normalize rows
-P = normalizeConstraints(P,'A');
+[A,b] = priv_normalizeConstraints(A,b,[],[],'A');
 
 % minimal H-representation
-P = compact_(P,'all',1e-9);
-
-% read out constraints
-A = P.A_.val;
-b = P.b_.val;
+[A,b,~,~,empty] = priv_compact_all(A,b,[],[],dim(P),1e-12);
+if empty
+    V = zeros(dim(P),0);
+    return
+end
 
 % number of constraints and dimension
 [nrCon,n] = size(A);

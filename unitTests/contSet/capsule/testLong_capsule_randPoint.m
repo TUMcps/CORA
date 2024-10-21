@@ -22,6 +22,9 @@ function res = testLong_capsule_randPoint
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 numPoints = 100;
 

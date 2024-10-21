@@ -1,6 +1,6 @@
 function res = isequal(fs,S,varargin)
-% isequal - checks if two full-dimensional spaces are equal
-%    case R^0: can only be equal to another R^0
+% isequal - checks if a full-dimensional space is equal to another set or
+%    point; case R^0: can only be equal to another R^0
 %
 % Syntax:
 %    res = isequal(fs,S)
@@ -33,20 +33,48 @@ function res = isequal(fs,S,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,3);
+
+% default values
+tol = setDefaultValues({eps},varargin);
+
+% check input arguments
+inputArgsCheck({{fs,'att',{'fullspace','numeric'}};
+                {S,'att',{'contSet','numeric'}};
+                {tol,'att','numeric',{'scalar','nonnegative','nonnan'}}});
+
+% ensure that numeric is second input argument
+[fs,S] = reorderNumeric(fs,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < fs.precedence
+    res = isequal(S,fs,tol);
+    return
+end
+
+% ambient dimensions must match
+if ~equalDimCheck(fs,S,true)
+    res = false;
+    return
+end
+
 if isa(S,'fullspace')
     res = fs.dimension == S.dimension;
+    return
+end
 
-elseif isa(S,'interval')
+if isa(S,'interval')
     % only set that can cover R^n
     res = all(infimum(S) == -Inf) && all(supremum(S) == Inf);
-
-elseif isa(S,'contSet') || isnumeric(S)
-    % no other sets can cover R^n or represent R^0
-    res = false;
-
-else
-    % unknown path...
-    throw(CORAerror('CORA:noops',fs,S));
+    return
 end
+
+% no other sets can cover R^n or represent R^0
+if isa(S,'contSet') || isnumeric(S)
+    res = false;
+    return
+end
+
+throw(CORAerror('CORA:noops',fs,S));
 
 % ------------------------------ END OF CODE ------------------------------

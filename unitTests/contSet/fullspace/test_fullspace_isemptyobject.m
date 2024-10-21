@@ -22,12 +22,15 @@ function res = test_fullspace_isemptyobject
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % init fullspace
 n = 2;
 fs = fullspace(n);
 
 % check emptiness
-res = ~isemptyobject(fs);
+assert(~isemptyobject(fs));
 
 % ------------------------------ END OF CODE ------------------------------

@@ -24,7 +24,7 @@ function [val,x] = supportFunc_(zB,dir,type,varargin)
 %   
 %    figure; hold on;
 %    plot(Z1); plot(Z2); plot(zB);
-%    plot(conHyperplane(halfspace([1;1],val)),[1,2],'g');
+%    plot(polytope([],[],[1,1],val),[1,2],'g');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -39,33 +39,21 @@ function [val,x] = supportFunc_(zB,dir,type,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% fully-empty zonoBundle
-if representsa_(zB,'emptySet',1e-8)
-    x = [];
-    if strcmp(type,'upper')
-        val = -Inf;
-    elseif strcmp(type,'lower')
-        val = Inf;
-    elseif strcmp(type,'range')
-        val = interval(-Inf,Inf);
-    end
-    return
-end
+% dimension
+n = dim(zB);
 
 % initialization
-Aeq = [];
-beq = [];
-lb = [];
-ub = [];
+Aeq = []; beq = [];
+lb = []; ub = [];
 
 % loop over all parallel sets
 for i = 1:zB.parallelSets
     
    % get object properties 
    Z = zB.Z{i};
-   G = generators(Z);
    c = center(Z);
-   [n,nrGens] = size(G);
+   G = generators(Z);
+   nrGens = size(G,2);
    
    % construct equality constraint matrices
    Aeq = blkdiag(Aeq,-G);
@@ -88,54 +76,55 @@ f = [dir;zeros(length(lb),1)];
 problem.lb = [];
 problem.ub = [];
 
-% upper or lower bound
-if strcmp(type,'lower')
+% upper/lower bound or range
+switch type 
+    case 'lower'
     
-    % solve linear program
-    problem.f = f';
-    [x,val,exitflag] = CORAlinprog(problem);
-    if exitflag == -2
-        % primal infeasible -> empty set
-        val = Inf; x = []; return
-    elseif exitflag <= -3
-        % should not be unbounded, or other solver issue...
-        throw(CORAerror('CORA:solverIssue'));
-    end
+        % solve linear program
+        problem.f = f';
+        [x,val,exitflag] = CORAlinprog(problem);
+        if exitflag == -2
+            % primal infeasible -> empty set
+            val = Inf; x = []; return
+        elseif exitflag <= -3
+            % should not be unbounded, or other solver issue...
+            throw(CORAerror('CORA:solverIssue'));
+        end
     
-elseif strcmp(type,'upper')
+    case 'upper'
     
-    % solve linear program
-    problem.f = -f';
-    [x,val,exitflag] = CORAlinprog(problem);
-    if exitflag == -2
-        % primal infeasible -> empty set
-        val = -Inf; x = []; return
-    elseif exitflag <= -3
-        % should not be unbounded, or other solver issue...
-        throw(CORAerror('CORA:solverIssue'));
-    end
-    val = -val;
+        % solve linear program
+        problem.f = -f';
+        [x,val,exitflag] = CORAlinprog(problem);
+        if exitflag == -2
+            % primal infeasible -> empty set
+            val = -Inf; x = []; return
+        elseif exitflag <= -3
+            % should not be unbounded, or other solver issue...
+            throw(CORAerror('CORA:solverIssue'));
+        end
+        val = -val;
    
-elseif strcmp(type,'range')
+    case 'range'
 
-    % solve linear program for upper bound
-    problem.f = -f';
-    [x_upper,val_upper,exitflag] = CORAlinprog(problem);
-    if exitflag == -2
-        % primal infeasible -> empty set
-        val = interval(-Inf,Inf); x = []; return
-    elseif exitflag <= -3
-        % should not be unbounded, or other solver issue...
-        throw(CORAerror('CORA:solverIssue'));
-    end
-    val_upper = -val_upper;
-
-    % solve linear program for lower bound
-    problem.f = f';
-    [x_lower,val_lower] = CORAlinprog(problem);
-
-    % combine results for output args
-    val = interval(val_lower,val_upper);
+        % solve linear program for upper bound
+        problem.f = -f';
+        [x_upper,val_upper,exitflag] = CORAlinprog(problem);
+        if exitflag == -2
+            % primal infeasible -> empty set
+            val = interval(-Inf,Inf); x = []; return
+        elseif exitflag <= -3
+            % should not be unbounded, or other solver issue...
+            throw(CORAerror('CORA:solverIssue'));
+        end
+        val_upper = -val_upper;
+    
+        % solve linear program for lower bound
+        problem.f = f';
+        [x_lower,val_lower] = CORAlinprog(problem);
+    
+        % combine results for output args
+        val = interval(val_lower,val_upper);
 
 end
 

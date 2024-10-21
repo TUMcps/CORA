@@ -9,13 +9,13 @@ function E = ellipsoid(Z,varargin)
 %    Z - zonotope object
 %    mode - (optional) specifies whether function uses a bound on the 
 %               respective zonotope norm or the exact value:
-%               - 'outer:exact':    Uses MVEE(Z)
-%               - 'outer:norm':     Uses enc_ellipsoid(E,'exact') with
-%                                   exact norm value
-%               - 'outer:norm_bnd': Uses enc_ellipsoid(E) with upper bound
-%                                   for norm value (default)
-%               - 'inner:exact':    Uses MVIE(Z)
-%               - 'inner:norm'      Uses insc_ellipsoid(E,'exact') with
+%               - 'outer:exact':    Uses priv_MVEE(Z)
+%               - 'outer:norm':     Uses priv_encEllipsoid with exact norm
+%                                   value
+%               - 'outer:norm_bnd': Uses priv_encEllipsoid(E) with upper
+%                                   bound for norm value (default)
+%               - 'inner:exact':    Uses priv_MVIE(Z)
+%               - 'inner:norm'      Uses priv_inscEllipsoid(E,'exact') with
 %                                   exact norm value
 %               - 'inner:norm_bnd': Not implemented yet, throws error
 %
@@ -32,13 +32,13 @@ function E = ellipsoid(Z,varargin)
 %
 % References:
 %    [1] V. Gaßmann, M. Althoff. "Scalable Zonotope-Ellipsoid Conversions
-%           using the Euclidean Zonotope Norm", 2020
+%        using the Euclidean Zonotope Norm", 2020
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Victor Gassmann, Matthias Althoff
 % Written:       11-October-2019
@@ -47,25 +47,26 @@ function E = ellipsoid(Z,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(1,2);
+
 % set default method
 mode = setDefaultValues({'outer:norm_bnd'},varargin);
 
-% obtain rank of zonotope
+% obtain information about zonotope
 n = dim(Z);
-G = Z.G;
-c = Z.c;
-Grank = rank(G);
-
 
 % zonotope is just a point
 if representsa_(Z,'point',eps)
-
-    E = ellipsoid(zeros(n),c);
+    E = ellipsoid(zeros(n),Z.c);
     return
+end
 
-% reduce dimension of zonotope if not full dimensional
-elseif n ~= Grank
-    
+% exact information
+c = Z.c; G = Z.G;
+Grank = rank(G);
+
+% reduce dimension of zonotope if degenerate
+if n ~= Grank
     % compute QR decomposition
     [Q, R] = qr(G);
     
@@ -85,19 +86,19 @@ if size(Z.G,2) == n
 else
     switch mode
         case 'outer:exact'
-            E = MVEE(Z);
+            E = priv_MVEE(Z);
         case 'outer:norm'
-            E = enc_ellipsoid(Z,'exact');
+            E = priv_encEllipsoid(Z,'exact');
         case 'outer:norm_bnd'
-            E = enc_ellipsoid(Z);
+            E = priv_encEllipsoid(Z,'ub_convex');
         case 'inner:exact'
-            E = MVIE(Z);
+            E = priv_MVIE(Z);
         case 'inner:norm'
-            E = insc_ellipsoid(Z,'exact');
+            E = priv_inscEllipsoid(Z);
         %case 'inner:norm_bnd' % we do not implement the test used to compute the
         %necessary lower bound on Z as in [1] since this test generally does
         %not result in a very good lower bound
-        %    E = insc_ellipsoid(Z);
+        %    E = priv_inscEllipsoid(Z);
         otherwise
              throw(CORAerror('CORA:wrongValue','second',...
                  "'outer:exact','outer:norm','outer:norm_bnd','inner:exact' or 'inner:norm'"));

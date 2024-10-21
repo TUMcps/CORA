@@ -22,9 +22,10 @@ classdef conZonotope < contSet
 %    obj - generated conZonotope object
 %
 % Example: 
-%    Z = [0 3 0 1;0 0 2 1];
+%    c = [0;0];
+%    G = [3 0 1; 0 2 1];
 %    A = [1 0 1]; b = 1;
-%    cZ = conZonotope(Z,A,b);
+%    cZ = conZonotope(c,G,A,b);
 %    plot(cZ);
 %
 % References:
@@ -49,7 +50,7 @@ classdef conZonotope < contSet
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-properties (SetAccess = private, GetAccess = public)
+properties (SetAccess = {?contSet, ?matrixSet}, GetAccess = public)
     
     % center and generators  x = c + G*beta; |beta| <= 1
     c, G;
@@ -81,6 +82,7 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor(1:4,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'conZonotope')
@@ -97,10 +99,11 @@ methods
         [c,G,A,b] = aux_computeProperties(c,G,A,b);
 
         % 5. assign properties
-        obj.c = c;
-        obj.G = G;
-        obj.A = A;
-        obj.b = b;
+        obj.c = c; obj.G = G;
+        obj.A = A; obj.b = b;
+
+        % 6. set precedence (fixed)
+        obj.precedence = 90;
 
     end
     
@@ -109,7 +112,6 @@ methods
     c = center(cZ)
     res = conIntersect(cZ1,cZ2,M)
     cPZ = conPolyZono(cZ)
-    cZ = convHull(cZ,varargin)
     res = cubMap(cZ,varargin)
     cZ = deleteZeros(cZ)
     n = dim(cZ)
@@ -118,7 +120,6 @@ methods
     G = generators(cZ)
     cZ = intersectStrip(cZ,C,phi,y,varargin)
     I = interval(cZ)
-    cZ = intervalMultiplication(cZ,I)
     res = isFullDim(cZ)
     cZ = minkDiff(cZ1,S,varargin)
     P = polytope(cZ)
@@ -141,7 +142,12 @@ end
 
 methods (Static = true)
     cZ = generateRandom(varargin) % generate random constrained zonotope
-    cz = empty(n) % instantiates an empty constrained zonotope
+    cZ = empty(n) % instantiates an empty constrained zonotope
+    cZ = origin(n) % instantiates a constrained zonotope representing the origin in R^n
+end
+
+methods (Access = protected)
+    [abbrev,printOrder] = getPrintSetInfo(S)
 end
 
 
@@ -182,11 +188,6 @@ end
 
 function [c,G,A,b] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin > 4
-        throw(CORAerror('CORA:tooManyInputArgs',4));
-    end
 
     % set default values depending on nargin
     if nargin == 1 || nargin == 3

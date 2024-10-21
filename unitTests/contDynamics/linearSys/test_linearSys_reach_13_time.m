@@ -18,8 +18,6 @@ function res = test_linearSys_reach_13_time
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
 % stable system matrix: n x n
 A = [-0.3780    0.2839    0.5403   -0.2962
     0.1362    0.2742    0.5195    0.8266
@@ -62,11 +60,9 @@ for i=1:length(algs)
     R = reach(sys,params,options);
 
     % check if times are correct
-    if ~withinTol(R.timePoint.time{1},params.tStart) ...
+    assert(withinTol(R.timePoint.time{1},params.tStart) ...
             || length(R.timePoint.time) ~= steps + 1 ...
-            || ~withinTol(R.timePoint.time{end},params.tFinal)
-        res = false;
-    end
+            || ~withinTol(R.timePoint.time{end},params.tFinal));
 
 end
 
@@ -77,10 +73,11 @@ options_.error = 0.1;
 R = reach(sys,params,options_);
 
 % check if times are correct
-if ~withinTol(R.timePoint.time{1},params.tStart) ...
-        || ~withinTol(R.timePoint.time{end},params.tFinal)
-    res = false;
-end
+assert(withinTol(R.timePoint.time{1},params.tStart) ...
+        || ~withinTol(R.timePoint.time{end},params.tFinal));
 
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

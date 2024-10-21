@@ -43,9 +43,9 @@ function Zquad = quadMap(Z1,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    if nargin == 1
-        throw(CORAerror('CORAerror:notEnoughInputArgs',2));
-    elseif nargin == 2
+    narginchk(2,3);
+
+    if nargin == 2
         if isa(varargin{1}{1},'matZonotope')
             Zquad = aux_quadMapSingleMatZono(Z1,varargin{1});
         else
@@ -53,9 +53,8 @@ function Zquad = quadMap(Z1,varargin)
         end
     elseif nargin == 3
         Zquad = aux_quadMapMixed(Z1,varargin{1},varargin{2});
-    else
-        throw(CORAerror('CORA:tooManyInputArgs',3));
     end
+    
 end
 
 
@@ -172,9 +171,9 @@ function Zquad = aux_quadMapSingleMatZono(Z,Q)
     Z_D = quadMap(Z,Q_);
     
     % zonotopes Z_Kj for the generator of the matrix zonotope
-    Z_K = cell(Q{1}.gens,1);
+    Z_K = cell(numgens(Q{1}),1);
     
-    for j = 1:Q{1}.gens
+    for j = 1:length(Z_K)
         for i = 1:length(Q)
             Q_{i} = Q{i}.G(:,:,j); 
         end

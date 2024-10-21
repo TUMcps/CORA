@@ -1,13 +1,13 @@
-function [R,tcomp] = observe_CZN_A(obj,options)
+function [R,tcomp] = observe_CZN_A(linsysDT,params,options)
 % observe_CZN_A - computes the guaranteed state estimation approach
-% from [1].
-%
+%    from [1].
 %
 % Syntax:
-%    [R,tcomp] = observe_CZN_A(obj,options)
+%    [R,tcomp] = observe_CZN_A(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -17,10 +17,7 @@ function [R,tcomp] = observe_CZN_A(obj,options)
 % Reference:
 %    [1] J. K. Scott, D. M. Raimondo, G. R. Marseglia, and R. D.
 %        Braatz. Constrained zonotopes: A new tool for set-based
-%        estimation and fault detection. Automatica, 69:126–136,
-%        2016.
-%
-% Example: 
+%        estimation and fault detection. Automatica, 69:126–136, 2016.
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,15 +35,14 @@ function [R,tcomp] = observe_CZN_A(obj,options)
 tic
 
 % time period
-tVec = options.tStart:options.timeStep:options.tFinal-options.timeStep;
+tVec = params.tStart:options.timeStep:params.tFinal-options.timeStep;
 
 % initialize parameter for the output equation
 R = cell(length(tVec),1);
 
 % Intersection; statement below eq. (33) of [1]
-y = options.y(:,1);
-Rnext.tp = conIntersect(options.R0, y + conZonotope(-1*options.V), obj.C);
-
+y = params.y(:,1);
+Rnext.tp = conIntersect(params.R0, y + conZonotope(-1*params.V), linsysDT.C);
 
 % store first reachable set
 R{1} = Rnext.tp;
@@ -54,13 +50,12 @@ R{1} = Rnext.tp;
 % loop over all time steps
 for k = 1:length(tVec)-1
     
-    
     % Prediction, part of eq. (33) of [1]
-    Rnext.tp = obj.A*Rnext.tp + obj.B*options.uTransVec(:,k) + options.W;
+    Rnext.tp = linsysDT.A*Rnext.tp + linsysDT.B*params.uTransVec(:,k) + params.W;
     
     % Intersection, part of eq. (33) of [1]
-    y = options.y(:,k+1);
-    Rnext.tp = conIntersect(Rnext.tp, y + conZonotope(-1*options.V), obj.C);
+    y = params.y(:,k+1);
+    Rnext.tp = conIntersect(Rnext.tp, y + conZonotope(-1*params.V), linsysDT.C);
     
     % Order reduction
     Rnext.tp = reduce(Rnext.tp,options.reductionTechnique,options.zonotopeOrder);
@@ -68,6 +63,7 @@ for k = 1:length(tVec)-1
     % Store result
     R{k+1} = Rnext.tp; % + 1e-6*zonotope([zeros(length(obj.C(1,:))), eye(length(obj.C(1,:)))]); % add small set for numerical stability
 end
+
 tcomp = toc;
 
 % ------------------------------ END OF CODE ------------------------------

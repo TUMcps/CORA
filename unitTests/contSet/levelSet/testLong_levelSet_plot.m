@@ -23,8 +23,6 @@ function res = testLong_levelSet_plot
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % define level sets
 syms x y z
 
@@ -61,9 +59,8 @@ for i = 1:length(levelSets)
         else
             plot(levelSets{i},[1,2,3],'r');
         end
-        resvec(end+1) = true;
-    catch
-        resvec(end+1) = false;
+    catch ME
+        rethrow(ME)
     end
 
     % close figure
@@ -77,22 +74,19 @@ ls = levelSets{2}; % with '<='
 
 plot(ls,[1,2],'PlotMethod','outer');
 plot(ls,[1,2],'PlotMethod','inner');
-resvec(end+1) = true;
 
 plot(ls,[1,2],'Splits',3);
 plot(ls,[1,2],'Splits',5);
-resvec(end+1) = true;
 
 plot(ls,[1,2],'Splits',3,'PlotMethod','outer');
 plot(ls,[1,2],'Splits',3,'PlotMethod','outer','FaceColor','b');
 plot(ls,[1,2],'Splits',3,'FaceColor','b','PlotMethod','outer');
 plot(ls,[1,2],'FaceColor','b','Splits',3,'PlotMethod','outer');
-resvec(end+1) = true;
 
 % close figure
 close;
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

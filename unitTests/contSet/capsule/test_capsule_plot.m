@@ -25,8 +25,6 @@ function res = test_capsule_plot
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % instantiate capsule
 C = capsule([1;1;2],[0;1;-0.5],0.5);
 
@@ -41,7 +39,6 @@ try
     plot(C,1);
     plot(C,[1,2]);
     plot(C,[2,3]);
-    resvec(end+1) = true;
     
     % three arguments: object, dimensions, linespec
     plot(C,[1,2],'r+');
@@ -54,7 +51,6 @@ try
     % four arguments: object, dimensions, linespec, NVpairs
     plot(C,[1,2],'FaceColor','r','LineWidth',2);
     plot(C,[1,2],'FaceColor','r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
-    resvec(end+1) = true;
    
     close;
 
@@ -65,21 +61,24 @@ try
     
     % plot set
     plot(C,[1,2]);
-    V = [1.5 1.38682 1.01731 0.660629 0.5 0.5 0.588577 1.00472 1.46239 1.5 1.5; 
-        2 2.31682 2.4997 2.36719 2 0 -0.284132 -0.499978 -0.190251 0 2];
+    V = [ ...
+     1.5000000000000000, 1.4059835861602852, 1.1563036824392341, 0.8466895194061126, 0.5958618798622533, 0.5000000000000000, 0.5940164138397146, 0.8436963175607657, 1.1533104805938872, 1.4041381201377467, 1.5000000000000000 ; ...
+     2.0000000000000000, -0.2918515509097633, -0.4749412162109486, -0.4759158502719480, -0.2944017320797011, 0.0000000000000001, 2.2918515509097634, 2.4749412162109485, 2.4759158502719480, 2.2944017320797014, 2.0000000000000000 ; ...
+    ];
+
     % check points
-    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-5,'subset',true);
+    assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-5,'subset',true));
     % test color
-    resvec(end+1) = isequal(colorOrder(1,:), ax.Children(1).Color);
+    assert(isequal(colorOrder(1,:), ax.Children(1).Color));
 
     % close figure
     close;
 catch ME
     close;
-    resvec(end+1) = false;
+    rethrow(ME)
 end
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

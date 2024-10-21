@@ -22,6 +22,9 @@ function res = test_reachSet_contains
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % simple continuous-time linear system
 A = [0.1 1; -1 0.1];
@@ -51,7 +54,7 @@ simRes = simulateRandom(sys_ct,params,simOpt);
 
 % check containment
 tol = 1e-10;
-res = contains(R,simRes,'exact',tol);
+assert(contains(R,simRes,'exact',tol));
 
 
 % simple discrete-time linear system
@@ -85,6 +88,6 @@ simRes = simulateRandom(sys_dt,params,simOpt);
 
 % check containment
 tol = 1e-10;
-res = res & contains(R,simRes,'exact',tol);
+assert(res & contains(R,simRes,'exact',tol));
 
 % ------------------------------ END OF CODE ------------------------------

@@ -32,25 +32,21 @@ for i=1:nrOfTests
     % random dimension
     n = randi(15);
     E = ellipsoid.generateRandom('IsDegenerate',false);
-    if ~isFullDim(E)
-        res = false; break;
-    end
+    assertLoop(isFullDim(E),i)
+
     % ellipsoid with random dimension, Q, and center, degenerate
     E = ellipsoid.generateRandom('IsDegenerate',true);
-    if isFullDim(E)
-        res = false; break;
-    end
+    assertLoop(~isFullDim(E),i)
     
     % fixed dimension, non-degenerate
     E = ellipsoid.generateRandom('Dimension',n,'IsDegenerate',false);
-    if dim(E) ~= n || ~isFullDim(E)
-        res = false; break;
-    end
+    assertLoop(dim(E) == n,i)
+    assertLoop(isFullDim(E),i)
+
     % fixed dimension, degenerate
     E = ellipsoid.generateRandom('Dimension',n,'IsDegenerate',true);
-    if dim(E) ~= n || isFullDim(E)
-        res = false; break;
-    end
+    assertLoop(dim(E) == n,i)
+    assertLoop(~isFullDim(E),i)
 
 end
 

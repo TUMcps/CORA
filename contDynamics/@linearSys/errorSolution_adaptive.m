@@ -1,12 +1,12 @@
-function [Rerror,options] = errorSolution_adaptive(obj,options,Vdyn,Vstat)
+function [Rerror,options] = errorSolution_adaptive(linsys,options,Vdyn,Vstat)
 % errorSolution_adaptive - computes the solution due to the abstraction error
 %    the number of Taylor terms is chosen according to the set size decrease
 %
 % Syntax:
-%    Rerror = errorSolution_adaptive(obj,options,Vdyn,Vstat)
+%    Rerror = errorSolution_adaptive(linsys,options,Vdyn,Vstat)
 %
 % Inputs:
-%    obj - linearized system
+%    linsys - linearSys object
 %    options - options struct (for nonlinear system)
 %    Vdyn - set of dynamic errors
 %    Vstat - set of static errors
@@ -42,17 +42,17 @@ end
 deltat = options.timeStep;
 
 % exponential
-A = obj.A;
+A = linsys.A;
 A_abs = abs(A);
 Apower{1} = A;  
 Apower_abs{1} = A_abs; 
-M = eye(obj.dim);
+M = eye(linsys.nrOfStates);
 eAabst = expm(A_abs*deltat);
 %initialize Asum
 AVsum = deltat * Vdyn;
 RerrorInt_etanoF = sum(abs(generators(AVsum)),2);
 if isVstat
-    Asum = deltat * eye(obj.dim);
+    Asum = deltat * eye(linsys.nrOfStates);
 end
 
 eta = 1; breakcond = false;

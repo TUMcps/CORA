@@ -30,6 +30,12 @@ function E = ellipsoid(I, varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% 0. check if not a matrix set
+n = dim(I);
+if numel(n) > 1
+    throw(CORAerror('CORA:wrongValue','first','Interval must not be an n-d array with n > 1.'))
+end
+
 % 1. preprocess
 [I,mode] = aux_preprocess(I,varargin);
 

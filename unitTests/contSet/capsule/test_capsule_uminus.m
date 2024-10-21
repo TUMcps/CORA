@@ -23,26 +23,24 @@ function res = test_capsule_uminus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = true(0);
-
 % instantiate capsule
 C = capsule([1;4], [1;-2], 2);
 
 % negate
 nC = -C;
-resvec(end+1) = all(nC.c == -C.c);
-resvec(end+1) = all(nC.g == -C.g);
-resvec(end+1) = all(nC.r == C.r);
+assert(all(nC.c == -C.c));
+assert(all(nC.g == -C.g));
+assert(all(nC.r == C.r));
 
 % compare with -1 * C
-resvec(end+1) = isequal(nC, -1*C);
+assert(isequal(nC, -1*C));
 
 % second example
 C = capsule([2;-3], [5;-6], 1);
 nC = -C;
-resvec(end+1) = isequal(nC, -1*C);
+assert(isequal(nC, -1*C));
 
 % add results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

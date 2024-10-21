@@ -23,8 +23,6 @@ function res = test_ellipsoid_lift
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % init
 E = ellipsoid([1 0;0 2],[0; 1]);
 
@@ -32,17 +30,19 @@ E = ellipsoid([1 0;0 2],[0; 1]);
 try
     E_lift = lift(E,5,[2,1]);
     % should fail
-    resvec(end+1) = false;
+    assert(false);
 catch ME
-    resvec(end+1) = strcmp(ME.identifier,'CORA:notDefined');
+    if ~strcmp(ME.identifier,'CORA:notDefined')
+        rethrow(ME)
+    end
 end
 
 % except no new dimensions are created
 E_lift = lift(E,2,[2,1]);
 E_proj = project(E,[2,1]);
-resvec(end+1) = isequal(E_proj,E_lift);
+assert(isequal(E_proj,E_lift));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

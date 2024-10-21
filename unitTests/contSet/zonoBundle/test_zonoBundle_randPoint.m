@@ -27,7 +27,7 @@ function res = test_zonoBundle_randPoint
 n = 2;
 zB = zonoBundle.empty(n);
 p = randPoint(zB);
-res = isnumeric(p) && isempty(p) && size(p,1) == n;
+assert(isnumeric(p) && isempty(p) && size(p,1) == n);
 
 % non-empty intersection
 Z1 = zonotope([1;1], [3 0; 0 2]);
@@ -41,16 +41,16 @@ p = [p, randPoint(zB,5,'extreme')];
 p = [p, randPoint(zB,'all')];
 
 % check if all points are contained
-res(end+1,1) = all(contains(zB,p,'exact',1e-12));
+assert(all(contains(zB,p,'exact',1e-12)));
 
 % empty intersection
 Z2 = zonotope([-4;1],[0.5 1; 1 -1]);
 zB = zonoBundle({Z1,Z2});
 % sample random point
 p = randPoint(zB);
-res(end+1,1) = isnumeric(p) && isempty(p);
+assert(isnumeric(p) && isempty(p));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -35,7 +35,7 @@ function P_out = not(P)
 constraints(P);
 
 % different cases
-if isempty(P.Ae_.val) && length(P.b_.val) == 1
+if isempty(P.be_.val) && length(P.b_.val) == 1
     % exactly one inequality constraint -> switch inequality sign:
     %    Ax <= b  ->  Ax > b <=> -Ax < -b
     % shift by eps to account for < instead of <= (which we have to use)
@@ -53,7 +53,7 @@ else
     % other cases not supported because the complement cannot be expressed
     % as a polytope
     throw(CORAerror('CORA:notSupported',['Complement operation is only '...
-        'supported for a single inequality constraint or empty sets.']));
+        'supported for a single inequality constraint, emptySet, and fullspace.']));
 end
 
 % ------------------------------ END OF CODE ------------------------------

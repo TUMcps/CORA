@@ -23,8 +23,6 @@ function res = test_polyZonotope_uminus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = true(0);
-
 % init
 c = [1;2];
 G = [1 0 1; 0 1 1];
@@ -34,17 +32,17 @@ pZ = polyZonotope(c,G,GI,E);
 
 % negate
 npZ = -pZ;
-resvec(end+1) = all(npZ.c == -c, 'all');
-resvec(end+1) = all(npZ.G == -G, 'all');
-resvec(end+1) = all(npZ.GI == -GI, 'all');
+assert(all(npZ.c == -c, 'all'));
+assert(all(npZ.G == -G, 'all'));
+assert(all(npZ.GI == -GI, 'all'));
 
 % compare with -1 * pZ
-resvec(end+1) = isequal(npZ, -1*pZ);
+assert(isequal(npZ, -1*pZ));
 
 % test empty case
-resvec(end+1) = isemptyobject(-polyZonotope.empty(2));
+assert(isemptyobject(-polyZonotope.empty(2)));
 
 % add results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

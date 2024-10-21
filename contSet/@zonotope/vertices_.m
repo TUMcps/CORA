@@ -27,53 +27,106 @@ function V = vertices_(Z,alg,varargin)
 %
 % See also: contSet/vertices, interval, polytope
 
-% Authors:       Matthias Althoff, Niklas Kochdumper
+% Authors:       Matthias Althoff, Niklas Kochdumper, Daniel Heß
 % Written:       14-September-2006 
 % Last update:   30-January-2008
 %                23-June-2009
 %                24-June-2010
 %                11-July-2012
+%                28-June-2016 (DH, implemented fast 2D computation)
 %                30-July-2016
 %                28-October-2019 (NK, added new algorithm)
 %                02-June-2023 (TL, convHull with degenerate zonotopes)
+%                11-October-2024 (TL, moved fast 2D method here)
 % Last revision: 27-March-2023 (MW, rename vertices_)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    % different cases for different dimensions
-    n = dim(Z);
-    
-    if n == 1
+% different cases for different dimensions
+n = dim(Z);
 
-        % compute the two vertices for one-dimensional case
-        c = Z.c;
-        temp = sum(abs(Z.G),2);
-        V = [c - temp,c + temp];
+if n == 1
+    % compute the two vertices for one-dimensional case
+    c = Z.c;
+    temp = sum(abs(Z.G),2);
+    V = [c - temp,c + temp];
 
-    elseif n == 2
+elseif n == 2
+    % use fast method
+    V = aux_vertices2Dfast(Z);
 
-        % use function "polygon" for two dimensional zonotopes -> faster
-        V = polygon(Z);
-
+else
+    % apply the selected algorithm
+    if strcmp(alg,'iterate')
+        V = aux_verticesIterate(Z);
+    elseif strcmp(alg,'polytope')
+        V = aux_verticesPolytope(Z);
     else
-        
-        % apply the selected algorithm
-        if strcmp(alg,'iterate')
-            V = aux_verticesIterate(Z);
-        elseif strcmp(alg,'polytope')
-            V = aux_verticesPolytope(Z);
-        else
-            V = aux_verticesConvHull(Z);
-        end
+        V = aux_verticesConvHull(Z);
     end
+end
 
-    % remove duplicates
-    V = unique(V','rows','stable')';
+% remove duplicates
+V = unique(V','rows','stable')';
     
 end
 
 
 % Auxiliary functions -----------------------------------------------------
+
+function V = aux_vertices2Dfast(Z)
+    % use fast method for 2D zonotopes
+    % (this function was previously in zonotope/polygon)
+    
+    % empty case
+    if representsa_(Z,'emptySet',eps)
+        V = zeros(dim(Z),0); return
+    end
+    
+    % delete zero generators
+    Z = compact_(Z,'zeros',eps);
+    
+    % obtain center and generator matrix
+    c = Z.c;
+    G = Z.G;
+    
+    % obtain number of generators
+    nrGens = size(G,2);
+    
+    % obtain size of enclosing intervalhull of first two dimensions
+    xmax = sum(abs(G(1,:)));
+    ymax = sum(abs(G(2,:)));
+     
+    % Z with normalized direction: All generators pointing "up"
+    Gnorm = G;
+    Gnorm(:,G(2,:)<0)=G(:,G(2,:)<0)*-1;
+    
+    %compute angles
+    angles = atan2(Gnorm(2,:),Gnorm(1,:));
+    angles(angles<0) = angles(angles<0) +2*pi;%handle numerical imprecision/deficiency in atan2, wraparound is not at pi?!?
+    
+    % assert(~any(angles>pi));
+    
+    %sort all generators by their angle
+    [~,IX] = sort(angles,'ascend');
+    
+    %cumsum the generators in order of angle
+    V = zeros(2,nrGens+1);
+    for i = 1:nrGens
+        V(:,i+1) = V(:,i) + 2*Gnorm(:,IX(i));
+    end
+    
+    V(1,:) = V(1,:) + xmax - max(V(1,:));
+    V(2,:) = V(2,:) - ymax;
+    
+    %flip/mirror upper half to get lower half of zonotope (point symmetry)            
+    V = [V(1,:),V(1,end)+V(1,1)-V(1,2:end);...
+        V(2,:),V(2,end)+V(2,1)-V(2,2:end)];
+    
+    %consider center
+    V = c + V;
+
+end
 
 function V = aux_verticesPolytope(Z)
 

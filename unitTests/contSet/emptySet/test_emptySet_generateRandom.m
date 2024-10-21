@@ -22,6 +22,9 @@ function res = test_emptySet_generateRandom
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % without input arguments
 O = emptySet.generateRandom();
@@ -29,6 +32,6 @@ O = emptySet.generateRandom();
 % dimension given
 n = 2;
 O = emptySet.generateRandom('Dimension',n);
-res = dim(O) == n;
+assert(dim(O) == n);
 
 % ------------------------------ END OF CODE ------------------------------

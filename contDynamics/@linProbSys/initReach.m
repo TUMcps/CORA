@@ -1,20 +1,18 @@
-function [Rfirst,options] = initReach(obj,Rinit,options)
+function [Rfirst,options] = initReach(obj,Rinit,params,options)
 % initReach - computes the reachable continuous set for the first time step
 %
 % Syntax:
-%    [obj,Rfirst] = initReach(obj,Rinit,options)
+%    [obj,Rfirst] = initReach(obj,Rinit,params,options)
 %
 % Inputs:
 %    obj - linProbSys object
 %    Rinit - initial reachable set struct
+%    params - model parameters
 %    options - options for the computation of the reachable set
 %
 % Outputs:
 %    obj - linIntSys object
 %    Rfirst - first reachable set struct
-%
-% Example:
-%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -37,7 +35,7 @@ obj = pexpm(obj,options);
 % compute time interval error (tie)
 obj = tie(obj,options);
 % compute reachable set due to input
-obj = inputSolution(obj,options);
+obj = inputSolution(obj,params,options);
 %change the time step
 obj.taylor.timeStep=options.timeStep;
 

@@ -32,17 +32,17 @@ dir = [1;1];
 
 % upper
 [val,x] = supportFunc(O,dir);
-res = val == -Inf && all(size(x) == [n,0]);
+assert(val == -Inf && all(size(x) == [n,0]));
 
 % lower
 [val,x] = supportFunc(O,dir,'lower');
-res(end+1,1) = val == Inf && all(size(x) == [n,0]);
+assert(val == Inf && all(size(x) == [n,0]));
 
 % range
 val = supportFunc(O,dir,'range');
-res(end+1,1) = val == interval(-Inf,Inf);
+assert(val == interval(-Inf,Inf));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -76,50 +76,32 @@ function [bound,xMin,domMin,xMax,domMax] = globVerBounds(func,dom,tol,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    % Implementation of the Verified Global Optimizer concept from
-    % reference paper [1]
+narginchk(3,7);
 
-    % default values
-    max_order = 10;
-    opt_method = 'int';
-    eps = 0.001;
-    tolerance = 1e-8;
-    
-    % parse input arguments
-    if nargin < 3
-        throw(CORAerror('CORA:notEnoughInputArgs',3));
-    end
-    if nargin >= 4 && ~isempty(varargin{1})
-       max_order = varargin{1}; 
-    end
-    if nargin >= 5 && ~isempty(varargin{2})
-       opt_method = varargin{2}; 
-    end
-    if nargin >= 6 && ~isempty(varargin{3})
-       eps = varargin{3}; 
-    end
-    if nargin >= 7 && ~isempty(varargin{4})
-       tolerance = varargin{4}; 
-    end
-    
-    % create taylor models
-    t = taylm(dom,max_order,'x',opt_method,eps,tolerance);
-    T = func(t);
-    
-    % create affine arithmetic objects
-    a = affine(dom,'x',opt_method,eps,tolerance);
-    A = func(a);
-    
-    % Minimum
-    [minVal,xMin,domMin] = globVerMinimization(func,dom,tol,...
-        max_order,opt_method,eps,tolerance,T,A);
-    
-    % Maximum
-    func_ = @(x) -func(x);
-    [maxVal,xMax,domMax] = globVerMinimization(func_,dom,tol,...
-        max_order,opt_method,eps,tolerance,-T,-A);
-    
-    % overall bounds
-    bound = interval(minVal,-maxVal);
+% Implementation of the Verified Global Optimizer concept from
+% reference paper [1]
+
+% default values
+[max_order,opt_method,eps,tolerance] = setDefaultValues({10,'int',0.001,1e-8},varargin);
+
+% create taylor models
+t = taylm(dom,max_order,'x',opt_method,eps,tolerance);
+T = func(t);
+
+% create affine arithmetic objects
+a = affine(dom,'x',opt_method,eps,tolerance);
+A = func(a);
+
+% Minimum
+[minVal,xMin,domMin] = globVerMinimization(func,dom,tol,...
+    max_order,opt_method,eps,tolerance,T,A);
+
+% Maximum
+func_ = @(x) -func(x);
+[maxVal,xMax,domMax] = globVerMinimization(func_,dom,tol,...
+    max_order,opt_method,eps,tolerance,-T,-A);
+
+% overall bounds
+bound = interval(minVal,-maxVal);
     
 % ------------------------------ END OF CODE ------------------------------

@@ -50,13 +50,11 @@ R = [R1;R2];
 
 % properties: 'location', 'parent', 'time'
 R_loc = find(R,'location',locs(2));
-if ~isequal(R_loc,R2)
-    res = false;
-end
+assert(isequal(R_loc,R2))
 
 R_parent = find(R,'parent',parents(1));
-if ~isequal(R_parent,R1)
-    res = false;
+assert(isequal(R_parent,R1))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

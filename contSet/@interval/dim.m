@@ -33,13 +33,23 @@ if isempty(infi)
     n = size(infi,1); return;
 end
 
-[rows, cols] = size(infi);
-if rows == 1
-    n = cols;
-elseif cols == 1
-    n = rows;
+% determine size
+dims = size(infi);
+
+if numel(dims) <= 2
+    % 1-d or 2-d interval
+    rows = dims(1);
+    cols = dims(2);
+    if rows == 1
+        n = cols;
+    elseif cols == 1
+        n = rows;
+    else
+        n = [rows, cols];
+    end
 else
-    n = [rows, cols];
+    % n-d interval
+    n = dims;
 end
 
 

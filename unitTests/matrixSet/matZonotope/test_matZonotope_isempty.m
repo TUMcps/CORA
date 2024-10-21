@@ -23,7 +23,7 @@ function res = test_matZonotope_isempty
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = isempty(matZonotope());
+assert(isempty(matZonotope()));
 
 % instantiate matrix zonotope
 C = [0 0; 0 0];
@@ -31,9 +31,9 @@ G(:,:,1) = [1 3;1 2];
 G(:,:,2) = [2 0; 1 -1];
 matZ = matZonotope(C,G);
 
-res(end+1,1) = ~isempty(matZ);
+assert(~isempty(matZ));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

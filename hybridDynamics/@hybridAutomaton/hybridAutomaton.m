@@ -4,11 +4,13 @@ classdef hybridAutomaton < hybridDynamics
 % Syntax:
 %    HA = hybridAutomaton()
 %    HA = hybridAutomaton(loc)
+%    HA = hybridAutomaton(name,loc)
 %
 % Inputs:
 %    loc - location-array storing location objects
 %
 % Outputs:
+%    name - name of automaton
 %    HA - generated hybridAutomaton object
 %
 % Example:
@@ -16,9 +18,8 @@ classdef hybridAutomaton < hybridDynamics
 %    inv = polytope([-1,0],0);
 % 
 %    % transition
-%    c = [-1;0]; d = 0; C = [0,1]; D = 0;
-%    guard = conHyperplane(c,d,C,D);
-%    reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
+%    guard = polytope([0,1],0,[-1,0],0);
+%    reset = linearReset([1,0;0,-0.75]);
 %    trans(1) = transition(guard,reset,1);
 % 
 %    % flow equation
@@ -28,7 +29,7 @@ classdef hybridAutomaton < hybridDynamics
 %    loc(1) = location('S1',inv,trans,dynamics);
 % 
 %    % instantiate hybrid automaton
-%    HA = hybridAutomaton(loc);
+%    HA = hybridAutomaton('bouncingball',loc);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -40,17 +41,25 @@ classdef hybridAutomaton < hybridDynamics
 % Written:       03-May-2007 
 % Last update:   16-June-2022 (MW, add checks for object properties)
 %                21-June-2023 (MW, add internal properties, restructure)
+%                15-October-2024 (MW, add name property)
+%                16-October-2024 (TL, renames dim to nrOfStates)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 properties (SetAccess = private, GetAccess = public)
+    name = '';                  % name of automaton
     location = location();	    % cell-array of location objects
 
     % internally-set properties
-    dim;                        % state dimension of each location
+    nrOfStates;                 % number of states of each location
     nrOfInputs;                 % number of inputs for each location
     nrOfOutputs;                % number of outputs for each location
+    nrOfDisturbances;           % number of disturbances for each location
+    nrOfNoises;                 % number of noises for each location
+
+    % legacy
+    dim;                        % (also) state dimension
 end
 
 methods
@@ -58,32 +67,53 @@ methods
     % class constructor
     function HA = hybridAutomaton(varargin)
 
+        % 0. empty
+        assertNarginConstructor(0:2,nargin);
+        if nargin == 0
+            return
+        end
+
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'hybridAutomaton')
             HA = varargin{1}; return
         end
 
         % 2. parse input arguments: varargin -> vars
-        if nargin == 0
-            return
-        elseif nargin > 1
-            throw(CORAerror('CORA:tooManyInputArgs',1));
-        else
-            locs = varargin{1};
-        end
+        [name,locs] = aux_parseInputArgs(varargin{:});
 
         % 3. check correctness of input arguments
-        aux_checkInputArgs(locs,nargin);
+        aux_checkInputArgs(name,locs,nargin);
 
         % 4. compute internal properties
-        [n,m,r] = aux_computeProperties(locs);
+        [states,inputs,outputs,dists,noises] = aux_computeProperties(locs);
 
         % 5. assign properties
-        HA.location = locs;
-        HA.dim = n;
-        HA.nrOfInputs = m;
-        HA.nrOfOutputs = r;        
+        HA.name = name;
+        HA.location = reshape(locs,[],1);
+        HA.nrOfStates = states;
+        HA.nrOfInputs = inputs;
+        HA.nrOfOutputs = outputs;
+        HA.nrOfDisturbances = dists;
+        HA.nrOfNoises = noises;
 
+    end
+end
+
+
+% getter & setter ---------------------------------------------------------
+
+methods 
+    function dim = get.dim(sys)
+        CORAwarning('CORA:deprecated', 'property', 'contDynamics.dim', 'CORA v2025', ...
+            'Please use contDynamics.nrOfStates instead.', ...
+            'This change was made to be consistent with the other properties.')
+        dim = sys.nrOfStates;
+    end
+    function sys = set.dim(sys,dim)
+        CORAwarning('CORA:deprecated', 'property', 'contDynamics.dim', 'CORA v2025', ...
+            'Please use contDynamics.nrOfStates instead.', ...
+            'This change was made to be consistent with the other properties.')
+        sys.nrOfStates = dim;
     end
 end
 
@@ -92,9 +122,24 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function aux_checkInputArgs(locs,n_in)
+function [name,locs] = aux_parseInputArgs(varargin)
+% nargin may only be 1 or 2
+
+name = 'hybridAutomaton';
+if nargin == 1
+    locs = varargin{1};
+elseif nargin == 2
+    [name,locs] = varargin{:};
+end
+
+end
+
+function aux_checkInputArgs(name,locs,n_in)
 
     if CHECKS_ENABLED && n_in > 0
+
+        inputArgsCheck({{name,'att',{'char','string'}};...
+                        {locs,'att',{'location','cell'}}});  % cell checked below (legacy)...
 
         if ~isa(locs,'location')
             if iscell(locs)
@@ -112,24 +157,24 @@ function aux_checkInputArgs(locs,n_in)
         
         for i=1:numLoc
 
-            % 1. invariant of each location has to have same dimension as
+            % 1. invariant of each location must have same dimension as
             % flow equation of that same location (unless empty)
-            if dim(locs(i).invariant) ~= locs(i).contDynamics.dim
+            if dim(locs(i).invariant) ~= locs(i).contDynamics.nrOfStates
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'Ambient dimension of invariant has to match state dimension of flow.'));
             end
 
-            % 2. guard set of each transition of a location has to have
+            % 2. guard set of each transition of a location must have
             % same dimension as flow equation of that same location
             for j=1:length(locs(i).transition)
                 if ~isnumeric(locs(i).transition(j).guard) && ...
-                        dim(locs(i).transition(j).guard) ~= locs(i).contDynamics.dim
+                        dim(locs(i).transition(j).guard) ~= locs(i).contDynamics.nrOfStates
                     throw(CORAerror('CORA:wrongInputInConstructor',...
                         'Ambient dimension of guard set has to match state dimension of flow.'));
                 end
             end
 
-            % 3. target of each transition has to be <= number of locations
+            % 3. target of each transition must be <= number of locations
             % (emptiness, integer value, and larger than 0 already checked)
             for j=1:length(locs(i).transition)
                 if any(locs(i).transition(j).target > numLoc)
@@ -138,30 +183,16 @@ function aux_checkInputArgs(locs,n_in)
                 end
             end
 
-            % 4. output dimension of reset function has to have same
+            % 4. output dimension of reset function must have same
             % dimension as flow equation of target dimension
             for j=1:length(locs(i).transition)
-                msg = ['Output dimension of reset function has to match '...
-                        'the state dimension of the flow equation of the target location.'];
-                if isfield(locs(i).transition(j).reset,'A') && ...
-                        size(locs(i).transition(j).reset.A,1) ...
-                            ~= locs(locs(i).transition(j).target).contDynamics.dim
-                    % linear reset function -> A checked
-                    throw(CORAerror('CORA:wrongInputInConstructor',msg));
-                end
-                if isfield(locs(i).transition(j).reset,'c') && ...
-                        ~all(size(locs(i).transition(j).reset.c) ...
-                            == [locs(locs(i).transition(j).target).contDynamics.dim,1])
-                    % linear reset function -> dimension of c checked
+                % skip empty transitions
+                if ~isemptyobject(locs(i).transition(j)) ...
+                        && locs(i).transition(j).reset.postStateDim ...
+                        ~= locs(locs(i).transition(j).target).contDynamics.nrOfStates
                     throw(CORAerror('CORA:wrongInputInConstructor',...
-                        'The offset must be a column vector of proper dimension.'));
-                end
-                if isfield(locs(i).transition(j).reset,'f')
-                    % nonlinear reset function -> output dim of f checked
-                    [~,nrOutputStates] = inputArgsLength(locs(i).transition(j).reset.f);
-                    if nrOutputStates ~= locs(locs(i).transition(j).target).contDynamics.dim
-                        throw(CORAerror('CORA:wrongInputInConstructor',msg));
-                    end
+                        ['Output dimension of reset function has to match '...
+                         'the state dimension of the flow equation of the target location.']));
                 end
             end
     
@@ -207,13 +238,16 @@ function aux_checkInputArgs(locs,n_in)
 
 end
 
-function [n,m,r] = aux_computeProperties(locs)
-% compute the number of states, inputs, and outputs for each location
+function [states,inputs,outputs,dists,noises] = aux_computeProperties(locs)
+% compute the number of states, inputs, outputs, disturbances, and noises
+% for each location
 
     % loop over flows of all locations
-    n = arrayfun(@(x) x.contDynamics.dim,locs,'UniformOutput',true);
-    m = arrayfun(@(x) x.contDynamics.nrOfInputs,locs,'UniformOutput',true);
-    r = arrayfun(@(x) x.contDynamics.nrOfOutputs,locs,'UniformOutput',true);
+    states = arrayfun(@(x) x.contDynamics.nrOfStates,locs,'UniformOutput',true);
+    inputs = arrayfun(@(x) x.contDynamics.nrOfInputs,locs,'UniformOutput',true);
+    outputs = arrayfun(@(x) x.contDynamics.nrOfOutputs,locs,'UniformOutput',true);
+    dists = arrayfun(@(x) x.contDynamics.nrOfDisturbances,locs,'UniformOutput',true);
+    noises = arrayfun(@(x) x.contDynamics.nrOfNoises,locs,'UniformOutput',true);
 
 end
 

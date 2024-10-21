@@ -58,10 +58,7 @@ Int_split_true{3,2} = interval(lower_up,upper_up);
 res = true;
 for d=1:dim
     for s=1:2    % ...2 splits
-        if Int_split{d,s} ~= Int_split_true{d,s}
-            res = false;
-            break
-        end
+        assertLoop(Int_split{d,s} == Int_split_true{d,s},d,s)
     end
 end
 

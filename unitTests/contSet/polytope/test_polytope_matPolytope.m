@@ -23,15 +23,13 @@ function res = test_polytope_matPolytope
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % 2D, instantiation via vertices
 V = [1 0; 0 1; -1 1; -1 -1; 0 -1]';
 P = polytope(V);
 matP = matPolytope(P);
-res(end+1,1) = all(all(V == reshape(matP.V,[2,5])));
+assert(all(all(V == reshape(matP.V,[2,5]))));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

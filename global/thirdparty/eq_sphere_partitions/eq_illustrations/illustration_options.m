@@ -123,9 +123,9 @@ if ~isempty(pos)
         gopt.long_title = false;
     case 'hide'
         gopt.show_title = false;
-    case 'hide'
-        gopt.show_title = false;
-        gopt.long_title = false;
+    % case 'hide'
+    %     gopt.show_title = false;
+    %     gopt.long_title = false;
     case 'show'
         gopt.show_title = true;
     otherwise

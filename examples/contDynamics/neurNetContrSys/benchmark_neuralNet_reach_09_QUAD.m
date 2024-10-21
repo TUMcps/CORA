@@ -46,10 +46,10 @@ options.tensorOrder = 2;
 options.taylorTerms = 1;
 options.zonotopeOrder = 80;
 
-% Parameters for NN evaluation --------------------------------------------
+% Options for NN evaluation -----------------------------------------------
 
-evParams = struct();
-evParams.poly_method = 'regression';
+options.nn = struct();
+options.nn.poly_method = 'regression';
 
 % System Dynamics ---------------------------------------------------------
 
@@ -60,7 +60,7 @@ sys = nonlinearSys(f);
 % load neural network controller
 % [12, 64, 64, 64, 3]
 nn = neuralNetwork.readONNXNetwork('quad_controller_3_64_torch.onnx');
-nn.evaluate(params.R0, evParams);
+nn.evaluate(params.R0, options);
 nn.refine(2, "layer", "both", params.R0.c, true);
 
 % construct neural network controlled system
@@ -77,7 +77,7 @@ spec = specification(goalSet, 'safeSet', interval(params.tFinal));
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, evParams, true);
+[res, R, simRes] = verify(sys, spec, params, options, true);
 tTotal = toc(t);
 disp(['Result: ' res])
 

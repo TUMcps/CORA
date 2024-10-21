@@ -67,9 +67,6 @@ if empty
     
         case 'hyperplane'
             res = true;
-            if nargout == 3
-                S_conv = conHyperplane.empty(n);
-            end
 
         case 'interval'
             res = true;
@@ -94,10 +91,12 @@ if empty
     
         otherwise
             % all fully empty objects represent the empty set (except for
-            % polytopes with empty H representation); all sets can
-            % represent the empty set
-            res = dim(S) == 0 || ~isa(S,'polytope') || ...
+
+            % polytopes and spectrahedral shadow); all sets can represent
+            % the empty set
+            res = dim(S) == 0 || (~isa(S,'polytope') && ~isa(S,'spectraShadow')) || ...
                 (isa(S,'polytope') && S.isVRep.val && isempty(S.V));
+
             if nargout == 3 && res
                 S_conv = eval([type, '.empty(', num2str(n), ')']);
             end

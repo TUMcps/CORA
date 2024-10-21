@@ -29,6 +29,12 @@ function V = vertices_(I,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% check if not a matrix set
+n = dim(I);
+if numel(n) > 1
+    throw(CORAerror('CORA:wrongValue','first','Interval must not be an n-d array with n > 1.'))
+end
+
 % empty case
 if dim(I) == 0
     V = []; return
@@ -63,6 +69,11 @@ if any(idxZeroDim)
     V = zeros(dim(I),size(V_,2));
     V(idxZeroDim,:) = ones(1,size(V_,2)) .* valZeroDim;
     V(~idxZeroDim,:) = V_;
+end
+
+% 2D: sort vertices couter-clockwise
+if dim(I) == 2
+    V = V(:,[1 2 4 3]);
 end
 
 % fix for all zero dims

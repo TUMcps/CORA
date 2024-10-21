@@ -1,5 +1,5 @@
 function V = vertices_(E,varargin)
-% vertices_ - computes the vertices of a ellipsoid
+% vertices_ - computes the vertices of a ellipsoid (only 1D supported)
 %
 % Syntax:
 %    V = vertices_(E)
@@ -38,7 +38,7 @@ end
 [~,Vmax] = supportFunc_(E,1,'upper');
 
 if withinTol(Vmin,Vmax)
-    % only pick one vertex
+    % only return one vertex
     V = Vmin;
 else
     V = [Vmin,Vmax];

@@ -31,10 +31,8 @@ eps = 10^-3;
 s = sin(1);
 c = cos(1);
 
-if ~appeq( getCoef(t),[s; c; -s/2; -c/6], eps ) ||...
-        ~appeq( getRem(t), interval(0, 0.04167), eps)
-    res = false;
-end   
+assert(appeq( getCoef(t),[s; c; -s/2; -c/6], eps ))
+assert(appeq( getRem(t), interval(0, 0.04167), eps))
 
 
 %% Test 2
@@ -45,10 +43,8 @@ eps = 10^-3;
 s = sin(1);
 c = cos(1);
 
-if ~appeq( getCoef(t),[s; c; -s/2; -c/6], eps ) ||...
-        ~appeq( getRem(t), interval(0, 0.04167), eps)
-    res = false;
-end   
+assert(appeq( getCoef(t),[s; c; -s/2; -c/6], eps ))
+assert(appeq( getRem(t), interval(0, 0.04167), eps))
 
 
 %% Test 3
@@ -58,9 +54,8 @@ a = interval(0,pi/2);
 for i = 1:10
     t = taylm(a,i);
     int = interval(sin(t));
-    if supremum(int) < 1 || infimum(int) > 0
-       res = false;
-    end
+    assertLoop(supremum(int) >= 1,i)
+    assertLoop(infimum(int) <= 0,i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

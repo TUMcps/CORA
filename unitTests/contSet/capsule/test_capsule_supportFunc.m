@@ -23,20 +23,17 @@ function res = test_capsule_supportFunc
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% Analytical test: generator aligned on x_1, unit length; unit radius
-res = true(0);
-
 % empty capsule
 C_e = capsule.empty(2);
-res(end+1,1) = supportFunc(C_e,[1;1],'upper') == -Inf ...
-    && supportFunc(C_e,[1;1],'lower') == Inf;
+assert(supportFunc(C_e,[1;1],'upper') == -Inf ...
+    && supportFunc(C_e,[1;1],'lower') == Inf);
 
 % 2D capsule without radius
 C = capsule([1;-1],[0;0],3);
 dir = [1;-2];
 [valC,xC] = supportFunc(C,dir);
 % check result
-res(end+1,1) = withinTol(dir'*xC,valC) && contains(C,xC);
+assert(withinTol(dir'*xC,valC) && contains(C,xC));
 
 
 % loop over different dimensions
@@ -53,31 +50,32 @@ for n = 2:4:30
     %    -1|1 for all other basis vectors (lower|upper)
     
     % loop over basis vectors
-    id = eye(n);
     for e=1:n
         % compute support function in direction of all basis vectors
-        basisvector = id(:,e);
+        basisvector = unitvector(e,n);
         [val_upper,vec_upper] = supportFunc(C,basisvector,'upper');
         [val_lower,vec_lower] = supportFunc(C,basisvector,'lower');
         [vals,vecs] = supportFunc(C,basisvector,'range');
         
         % compare to analytical solution
-        if e==1 && ( ~withinTol(val_lower,-2) || ~withinTol(val_upper,2) ...
-                || ~isequal(vals,interval(-2,2)) ...
-                || ~compareMatrices([vec_lower,vec_upper],[[-2;zeros(n-1,1)],[2;zeros(n-1,1)]]) ...
-                || ~compareMatrices(vecs,[[-2;zeros(n-1,1)],[2;zeros(n-1,1)]]) )
-            throw(CORAerror('CORA:testFailed'));
-        elseif e~=1 && (~withinTol(val_lower,-1) || ~withinTol(val_upper,1) ...
-                || ~isequal(vals,interval(-1,1)) ...
-                || ~compareMatrices([vec_lower,vec_upper],[-basisvector,basisvector]) ...
-                || ~compareMatrices(vecs,[-basisvector,basisvector]) )
-            throw(CORAerror('CORA:testFailed'));
+        if e==1
+            assertLoop(withinTol(val_lower,-2),n,e)
+            assertLoop(withinTol(val_upper,2),n,e)
+            assertLoop(isequal(vals,interval(-2,2)),n,e)
+            assertLoop(compareMatrices([vec_lower,vec_upper],[[-2;zeros(n-1,1)],[2;zeros(n-1,1)]]),n,e)
+            assertLoop(compareMatrices(vecs,[[-2;zeros(n-1,1)],[2;zeros(n-1,1)]]),n,e)
+        else 
+            assertLoop(withinTol(val_lower,-1),n,e)
+            assertLoop(withinTol(val_upper,1),n,e)
+            assertLoop(isequal(vals,interval(-1,1)),n,e)
+            assertLoop(compareMatrices([vec_lower,vec_upper],[-basisvector,basisvector]),n,e)
+            assertLoop(compareMatrices(vecs,[-basisvector,basisvector]),n,e)
         end
     end
 
 end
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

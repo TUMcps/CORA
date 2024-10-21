@@ -1,4 +1,4 @@
-function S = projectHighDim_(varargin)
+function S = projectHighDim_(S,N,proj,varargin)
 % projectHighDim_ - project a set to a higher-dimensional space,
 %    having the new dimensions bounded at 0
 %
@@ -18,7 +18,7 @@ function S = projectHighDim_(varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: contSet/projectHighDim_, contSet/project, contSet/lift
+% See also: contSet/projectHighDim, contSet/project, contSet/lift
 
 % Authors:       Tobias Ladner
 % Written:       13-September-2023
@@ -27,7 +27,10 @@ function S = projectHighDim_(varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% is overridden in subclass if implemented; throw error
-throw(CORAerror("CORA:noops",varargin{:}))
+% init identity matrix
+I = eye(N);
+
+% project
+S = I(:,proj) * S;
 
 % ------------------------------ END OF CODE ------------------------------

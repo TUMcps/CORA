@@ -24,9 +24,6 @@ function res = testLong_linearSys_generateRandom
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% init result
-res = true;
-
 % values, ranges
 states = [2;10;50];
 inputs = [2;4;10];
@@ -52,21 +49,23 @@ for ii=1:length(imagInts)
     imagInt = imagInts{ii};
     
     for t=1:nrTests
+        seed = randi(2^32);
+        rng(seed);
 
         % generate random linear system
-        linSys = linearSys.generateRandom('StateDimension',nrStates,...
+        linsys = linearSys.generateRandom('StateDimension',nrStates,...
             'InputDimension',nrInputs,'OutputDimension',nrOutputs,...
             'realInterval',realInt,'ImaginaryInterval',imagInt);
         
         % compute eigenvalues
-        ev = eigs(linSys.A);
+        ev = eigs(linsys.A);
         
         % check if all properties satisfy prescribed values/ranges
-        if linSys.dim ~= nrStates || linSys.nrOfInputs ~= nrInputs || ...
-                linSys.nrOfOutputs ~= nrOutputs || ...
-                ~all(contains(realInt,real(ev)')) || ~all(contains(imagInt,imag(ev)'))
-            res = false; return
-        end
+        assertLoop(linsys.nrOfStates == nrStates,n,m,ell,rr,ii)
+        assertLoop(linsys.nrOfInputs == nrInputs,n,m,ell,rr,ii)
+        assertLoop(linsys.nrOfOutputs == nrOutputs,n,m,ell,rr,ii)
+        assertLoop(all(contains(realInt,real(ev)')),n,m,ell,rr,ii)
+        assertLoop(all(contains(imagInt,imag(ev)')),n,m,ell,rr,ii)
 
     end
 
@@ -75,5 +74,7 @@ end
 end
 end
 end
+
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

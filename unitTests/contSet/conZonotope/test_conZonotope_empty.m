@@ -23,14 +23,12 @@ function res = test_conZonotope_empty
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty case
 cZ = conZonotope.empty(3);
-res(end+1,1) = dim(cZ) == 3;
-res(end+1,1) = representsa(cZ,'emptySet');
+assert(dim(cZ) == 3);
+assert(representsa(cZ,'emptySet'));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

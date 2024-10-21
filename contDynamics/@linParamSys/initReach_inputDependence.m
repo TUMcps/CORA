@@ -1,22 +1,21 @@
-function [obj,Rfirst,options] = initReach_inputDependence(obj,Rinit,options)
+function [sys,Rfirst,options] = initReach_inputDependence(sys,Rinit,params,options)
 % initReach_inputDependence - computes the continuous reachable continuous 
 %    for the first time step when the constant input is parameterized and
 %    correlated to the parameters of the system
 %
 % Syntax:
-%    [obj,Rfirst,options] = initReach_inputDependence(obj,Rinit,options)
+%    [sys,Rfirst,options] = initReach_inputDependence(sys,Rinit,params,options)
 %
 % Inputs:
-%    obj - linParamSys object
+%    sys - linParamSys object
 %    Rinit - initial reachable set
+%    params - model parameters
 %    options - options for the computation of the reachable set
 %
 % Outputs:
-%    obj - linParamSys object
+%    sys - linParamSys object
 %    Rfirst - first reachable set 
 %    options - options for the computation of the reachable set
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,29 +31,29 @@ function [obj,Rfirst,options] = initReach_inputDependence(obj,Rinit,options)
 % ------------------------------ BEGIN CODE -------------------------------
  
 % store taylor terms and time step as object properties
-obj.stepSize = options.timeStep;
-obj.taylorTerms = options.taylorTerms;
+sys.stepSize = options.timeStep;
+sys.taylorTerms = options.taylorTerms;
 
 % compute mapping matrix
-obj = mappingMatrix(obj,options);
+sys = mappingMatrix(sys,params,options);
 % compute high order mapping matrix
-obj = highOrderMappingMatrix(obj,options.intermediateTerms);
+sys = highOrderMappingMatrix(sys,options.intermediateTerms);
 % compute time interval error (tie)
-obj = tie(obj);
+sys = tie(sys);
 % compute reachable set due to input
-obj = inputSolution(obj,options);
+sys = inputSolution(sys,params,options);
 
 %compute reachable set of first time interval
 %first time step homogeneous solution
-Rhom_tp = dependentHomSol(obj, Rinit, options.Uconst);
+Rhom_tp = dependentHomSol(sys, Rinit, params.Uconst);
 
 %time interval solution
-inputCorr = obj.inputF*obj.B*zonotope(options.uTrans + center(options.Uconst));
-Rhom = enclose(Rinit,Rhom_tp) + obj.F*Rinit + inputCorr;
+inputCorr = sys.inputF*sys.B*zonotope(params.uTrans + center(params.Uconst));
+Rhom = enclose(Rinit,Rhom_tp) + sys.F*Rinit + inputCorr;
 
 %total solution
-Rtotal = Rhom + obj.RV;
-Rtotal_tp = Rhom_tp + obj.RV;
+Rtotal = Rhom + sys.RV;
+Rtotal_tp = Rhom_tp + sys.RV;
 
 %write results to reachable set struct Rfirst
 Rfirst.tp = reduce(Rtotal_tp,options.reductionTechnique,options.zonotopeOrder);

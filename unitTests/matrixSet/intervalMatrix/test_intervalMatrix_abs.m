@@ -29,6 +29,9 @@ function res = test_intervalMatrix_abs
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 %% create interval matrix
 % center
@@ -49,6 +52,6 @@ C_true = [1, 2; 1, 2];
 C = abs(A);
 
 % same result?
-res = (max(max(abs(C - C_true))) == 0);
+assert((max(max(abs(C - C_true))) == 0));
 
 % ------------------------------ END OF CODE ------------------------------

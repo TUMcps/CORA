@@ -1,12 +1,12 @@
-function Rint = observe_intersectionMethod_II(obj,R,y,options)
+function Rint = observe_intersectionMethod_II(sys,R,y,options)
 % observe_intersectionMethod_II - intersects the reachable set with
 %    measurement strips according to intersection method II in [1]. 
 %
 % Syntax:
-%    Rint = observe_intersectionMethod_II(obj,R,y,options)
+%    Rint = observe_intersectionMethod_II(sys,R,y,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    sys - discrete-time linear system object
 %    R - reachable set
 %    y - current measurement
 %    options - options for the computation
@@ -37,11 +37,11 @@ function Rint = observe_intersectionMethod_II(obj,R,y,options)
 
 % refresh system matrix if system is nonlinear and the intersection method
 % is 'wang-FRad'
-if isa(obj,'nonlinearSysDT') && strcmp(options.intersectionTechnique.method,'wang-FRad')
-    options.intersectionTechnique.A = obj.jacobian(center(R),[]); % system matrix
+if isa(sys,'nonlinearSysDT') && strcmp(options.intersectionTechnique.method,'wang-FRad')
+    options.intersectionTechnique.A = sys.jacobian(center(R),[]); % system matrix
 end
 
 % intersection of zonotope with strips
-Rint = intersectStrip(R,obj.C,options.sigma,y,options.intersectionTechnique);
+Rint = intersectStrip(R,sys.C,options.sigma,y,options.intersectionTechnique);
 
 % ------------------------------ END OF CODE ------------------------------

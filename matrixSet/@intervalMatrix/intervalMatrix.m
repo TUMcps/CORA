@@ -1,4 +1,4 @@
-classdef (InferiorClasses = {?mp}) intervalMatrix 
+classdef (InferiorClasses = {?mp}) intervalMatrix < matrixSet
 % intervalMatrix class 
 %
 % Syntax:
@@ -21,7 +21,7 @@ classdef (InferiorClasses = {?mp}) intervalMatrix
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: interval
+% See also: interval, matrixSet, matZonotope, matPolytope
 
 % Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       18-June-2010
@@ -60,6 +60,7 @@ methods
             matrixDelta=abs(matrixDelta);
             obj.int = interval(matrixCenter-matrixDelta,matrixCenter+matrixDelta);
         end
+
     end
          
     %methods in seperate files 
@@ -100,6 +101,10 @@ end
 
 methods (Static = true)
     intMat = generateRandom(varargin) % generates random interval matrix
+end
+
+methods (Access = protected)
+    [printOrder] = getPrintSystemInfo(S)
 end
 
 end

@@ -1,18 +1,19 @@
-function err = linError(obj,options,R)
+function err = linError(sys,options,R)
 % linError - computes the linearization error
 %
 % Syntax:
-%    err = linError(obj,options)
+%    err = linError(sys,options)
 %
 % Inputs:
-%    obj - nonlinearSys or nonlinParamSys object
+%    sys - nonlinearSys or nonlinParamSys object
 %    options - options struct
 %    R - actual reachable set
 %
 % Outputs:
 %    err - linearization error
 %
-% Example: 
+% Example:
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -37,12 +38,12 @@ function err = linError(obj,options,R)
 % compute interval of reachable set
 IHx = interval(R);
 % compute intervals of total reachable set
-totalInt = IHx + obj.linError.p.x;
+totalInt = IHx + sys.linError.p.x;
 
 % compute intervals of input
 inputInt = interval(options.U) + options.uTrans;
 % translate intervals by linearization point
-IHu = inputInt + (-obj.linError.p.u);
+IHu = inputInt + (-sys.linError.p.u);
 
 % obtain maximum absolute values within IH, IHinput
 dx = max(abs(infimum(IHx)),abs(supremum(IHx)));
@@ -56,16 +57,16 @@ if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ..
     [objX,objU] = initRangeBoundingObjects(totalInt,inputInt,options);
 
     % evaluate the Lagrange remainder 
-    if isa(obj,'nonlinParamSys')
-        H = obj.hessian(objX,objU,options.paramInt);
+    if isa(sys,'nonlinParamSys')
+        H = sys.hessian(objX,objU,options.paramInt);
     else
-        H = obj.hessian(objX,objU);
+        H = sys.hessian(objX,objU);
     end
 else
-    if isa(obj,'nonlinParamSys')
-        H = obj.hessian(totalInt,inputInt,options.paramInt);
+    if isa(sys,'nonlinParamSys')
+        H = sys.hessian(totalInt,inputInt,options.paramInt);
     else
-        H = obj.hessian(totalInt,inputInt);
+        H = sys.hessian(totalInt,inputInt);
     end
 end
 

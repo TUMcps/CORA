@@ -24,6 +24,9 @@ function res = testLong_converter_powerSystem2cora_IEEE30()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 %% create CORA models
 % full system
@@ -129,7 +132,7 @@ for i = 1:length(sys)
 
     for iRun = 1:10
         % create random values for deviations of states, inputs, and constraints
-        x = x0 + (0.2*rand(sys{i}.dim,1) - 0.1*ones(sys{i}.dim,1)).*x0; %+-10% of steady state
+        x = x0 + (0.2*rand(sys{i}.nrOfStates,1) - 0.1*ones(sys{i}.nrOfStates,1)).*x0; %+-10% of steady state
         y = y0 + (0.2*rand(sys{i}.nrOfConstraints,1) - 0.1*ones(sys{i}.nrOfConstraints,1)).*y0; %+-10% of steady state
         u = u0 + (0.2*rand(sys{i}.nrOfInputs,1) - 0.1*ones(sys{i}.nrOfInputs,1)).*u0; %+-10% of steady state
         
@@ -142,8 +145,8 @@ for i = 1:length(sys)
         g_saved = sys_saved{i}.conFile(x,y,u);
         
         %check if slightly bloated versions enclose each other
-        resPartial(end+1) = (norm(f - f_saved) <= accuracy);
-        resPartial(end+1) = (norm(g - g_saved) <= accuracy);
+        assert((norm(f - f_saved) <= accuracy));
+        assert((norm(g - g_saved) <= accuracy));
     end
 end
 

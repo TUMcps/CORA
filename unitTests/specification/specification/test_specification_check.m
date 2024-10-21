@@ -24,7 +24,7 @@ function res = test_specification_check
 % ------------------------------ BEGIN CODE -------------------------------
 
 % init specifications
-set = halfspace([1 1]/sqrt(2),1);
+set = polytope([1 1]/sqrt(2),1);
 specUnsafe = specification(set,'unsafeSet');
 specSafe = specification(set,'safeSet');
 specInvariant = specification(set,'invariant');
@@ -32,9 +32,9 @@ specInvariant = specification(set,'invariant');
 
 % check set
 Z = zonotope([-10;-8],[1 0 -2; 2 -1 1]);
-res = ~check(specUnsafe,Z);
-res(end+1,1) = check(specSafe,Z);
-res(end+1,1) = check(specInvariant,Z);
+assert(~check(specUnsafe,Z));
+assert(check(specSafe,Z));
+assert(check(specInvariant,Z));
 
 % init system
 sys = linearSys([-4 -1; 1 -4],1);
@@ -52,17 +52,17 @@ simOpt.points = 10;
 simRes = simulateRandom(sys,params,simOpt);
 
 % check reachable set
-res(end+1,1) = ~check(specUnsafe,R);
-res(end+1,1) = check(specSafe,R);
-res(end+1,1) = check(specInvariant,R);
+assert(~check(specUnsafe,R));
+assert(check(specSafe,R));
+assert(check(specInvariant,R));
 
 % check simulation results
-res(end+1,1) = ~check(specUnsafe,simRes);
-res(end+1,1) = check(specSafe,simRes);
-res(end+1,1) = check(specInvariant,simRes);
+assert(~check(specUnsafe,simRes));
+assert(check(specSafe,simRes));
+assert(check(specInvariant,simRes));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

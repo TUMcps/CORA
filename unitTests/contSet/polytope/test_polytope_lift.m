@@ -23,8 +23,6 @@ function res = test_polytope_lift
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % 1D, fully empty
 A = zeros(0,1); b = zeros(0,0);
 P = polytope(A,b);
@@ -32,7 +30,7 @@ P_lift = lift(P,3,2);
 % true result
 A_true = zeros(0,3); b_true = zeros(0,0);
 P_true = polytope(A_true,b_true);
-res(end+1,1) = P_lift == P_true;
+assert(P_lift == P_true);
 
 
 % 2D, bounded
@@ -42,10 +40,10 @@ P_lift = lift(P,10,[4,5]);
 % true result
 A_true = [zeros(5,3), A, zeros(5,5)]; b_true = b;
 P_true = polytope(A_true,b_true);
-res(end+1,1) = P_lift == P_true;
+assert(P_lift == P_true);
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

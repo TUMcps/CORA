@@ -71,24 +71,24 @@ end
 function E = aux_ellipsoid_inner(P,n)
 % inner approximation of a polytope with an ellipsoid
 
-% read out inequality constraints
-A = P.A_.val;
-d = P.b_.val;
+% rewrite equality constraints as inequality constraints
+[A,d] = priv_equalityToInequality(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val);
+
 % normalize to prevent numerical issues
-fac = 1./sqrt(sum(A.^2,2));
-A = 1./sqrt(sum(A.^2,2)).*A;
-d = fac.*d;
-M = size(A,1);
+[A,d] = priv_normalizeConstraints(A,d,[],[],'A');
+
+% number of inequality constraints
+nrCon = size(A,1);
 
 if isSolverInstalled('mosek')
-    [Q,q] = aux_ellipsoid_mosek(A,d,M,n);
+    [Q,q] = aux_ellipsoid_mosek(A,d,nrCon,n);
 
 elseif isSolverInstalled('sdpt3')
     % IMPORTANT: Vectorization is upper-triangular (in contrast to MOSEK,
     % which is lower-triangular)
     % ALSO: For some reason, off-diagonal elements when stacking upper- 
     % triangular matrices should be multiplied by sqrt(2)...
-    [Q,q] = aux_ellipsoid_sdpt3(A,d,M,n);
+    [Q,q] = aux_ellipsoid_sdpt3(A,d,nrCon,n);
 
 elseif isYalmipInstalled()
     [Q,q] = aux_ellipsoid_yalmip(A,d,n);
@@ -247,7 +247,7 @@ prob.g = zeros(size(prob.f,1),1);
 
 % construct 3d cones and M (n_nd+1)-dim quadratic cones
 prob.cones = [repmat([res.symbcon.MSK_CT_QUAD 3],1,n_cones),...
-            repmat([res.symbcon.MSK_CT_QUAD n+1],1,M)];
+              repmat([res.symbcon.MSK_CT_QUAD n+1],1,M)];
 
 % inequality constraints (equality constraints just have same lb & ub)
 prob.blc = [zeros(1,n_y-1),1];

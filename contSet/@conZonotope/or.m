@@ -1,20 +1,20 @@
-function cZ = or(cZ1,varargin)
+function S_out = or(cZ,S,varargin)
 % or - Computes an over-approximation for the union of a constrained
 %    zonotope and other sets
 %
 % Syntax:
-%    cZ = or(cZ1, cZ2)
-%    cZ = or(cZ1, ... , cZm)
-%    cZ = or(cZ1, ... , cZm, alg)
-%    cZ = or(cZ1, ... , cZm, alg, order)
+%    S_out = cZ | S
+%    S_out = or(cZ,S)
+%    S_out = or(cZ,S,alg,order)
 %
 % Inputs:
-%    cZ1,...,cZm - conZonotope objects
-%    alg - algorithm used to compute the union ('linProg', or 'tedrake')
+%    cZ - conZonotope objects
+%    S - contSet object, numeric, cell array
+%    alg - algorithm used to compute the union ('linprog' or 'tedrake')
 %    order - zonotope order of the enclosing zonotope
 %
 % Outputs:
-%    cZ - resulting conZonotope object enclosing the union
+%    S_out - convex hull enclosing the union
 %
 % Example: 
 %    % create constrained zonotopes
@@ -25,18 +25,14 @@ function cZ = or(cZ1,varargin)
 %    Z = [4 2 0 0;4 1 1 0];
 %    A = [1 1 -1]; b = 0;
 %    cZ2 = conZonotope(Z,A,b);
-%  
-%    Z = [4 2 0 0;-4 1 1 0];
-%    cZ3 = conZonotope(Z,[],[]);
 % 
 %    % compute conZonotope that encloses the union
-%    res = or(cZ1,cZ2,cZ3);
+%    res = or(cZ1,cZ2);
 % 
 %    % visualization
 %    figure; hold on;
 %    plot(cZ1,[1,2],'FaceColor','r');
 %    plot(cZ2,[1,2],'FaceColor','b');
-%    plot(cZ3,[1,2],'FaceColor','g');
 %    plot(res,[1,2],'k');
 %
 % References:
@@ -56,90 +52,45 @@ function cZ = or(cZ1,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    % default values
-    alg = 'linProg';
-    order = [];
+% default values
+[alg,order] = setDefaultValues({'linprog',[]},varargin);
 
-    % distinguish case with two and case with more sets
-    if nargin == 2 || ( nargin > 2 && ...
-            (ischar(varargin{2}) || ...
-            (isa(varargin{2},'contSet') && representsa(varargin{2},'emptySet'))) )
-                  
-        S = varargin{1};
+% check input arguments
+inputArgsCheck({{cZ,'att',{'conZonotope','numeric'}},...
+                {S,'att',{'contSet','numeric'}},...
+                {alg,'str',{'linprog','tedrake'}},...
+                {order,'att','numeric'}});
 
-        % determine conZonotope object
-        [cZ1,S] = findClassArg(cZ1,S,'conZonotope');
+% ensure that numeric is second input argument
+[cZ,S] = reorderNumeric(cZ,S);
 
-        % different cases depending on the class of the second set
-        if isa(S,'conPolyZono')
-            
-            cZ = S | cZ1;
-        
-        elseif isa(S,'conZonotope') || isa(S,'zonotope') || ...
-           isa(S,'interval') || isa(S,'zonoBundle') || ...
-           isa(S,'polytope') || isnumeric(S)
-            
-            if ~isa(S,'conZonotope')
-                S = conZonotope(S); 
-            end
-            
-            % parse input arguments
-            if nargin > 2 && ~isempty(varargin{2})
-                alg = varargin{2};
-            end
-            
-            if nargin > 3 && ~isempty(varargin{3})
-                order = varargin{3};
-            end
-            
-            % compute over-approximation of the union with the selected 
-            % algorithm
-            if strcmp(alg,'linProg')
-               cZ = aux_unionLinProg({cZ1,S},order);
-            elseif strcmp(alg,'tedrake')
-               cZ = aux_unionTedrake({S,S},order);
-            else
-                throw(CORAerror('CORA:wrongValue','second',"'linProg' or 'tedrake'"));
-            end
+% check dimensions
+equalDimCheck(cZ,S);
 
-        else
-            % throw error for given arguments
-            throw(CORAerror('CORA:noops',cZ1,S));
-        end
+% write all into a cell-array
+if iscell(S)
+    S_cell = [{cZ}; S];
+else
+    S_cell = {cZ; S};
+end
+
+% only some class allowed
+if ~all(cellfun(@(S) isa(S,'conZonotope') || isa(S,'zonotope') || ...
+        isa(S,'interval') || isa(S,'zonoBundle') || isnumeric(S),...
+        S_cell,'UniformOutput',true))
+    throw(CORAerror('CORA:noops',Z,S));
+end
+
+% convert all to constrained zonotopes
+S_cell = cellfun(@(S) conZonotope(S),S_cell,'UniformOutput',false);
     
-    else
-        
-        % parse input arguments
-        Zcell = {};
-        counter = [];
+% compute over-approximation of the union with the selected algorithm
+if strcmp(alg,'linprog')
+    S_out = aux_unionLinprog(S_cell,order);
+elseif strcmp(alg,'tedrake')
+    S_out = aux_unionTedrake(S_cell,order);
+end
 
-        for i = 2:nargin
-           if isa(varargin{i-1},'contSet')
-              Zcell{end+1,1} = conZonotope(varargin{i-1});
-           else
-              counter = i;
-              break;
-           end
-        end
-
-        if ~isempty(counter)
-            if nargin >= counter && ~isempty(varargin{counter-1})
-                alg = varargin{counter-1}; 
-            end
-            if nargin >= counter+1 && ~isempty(varargin{counter})
-                order = varargin{counter};
-            end
-        end
-
-        % compute over-approximation of the union with the selected algorithm
-        if strcmp(alg,'linProg')
-           cZ = aux_unionLinProg([{cZ1};Zcell],order);
-        elseif strcmp(alg,'tedrake')
-           cZ = aux_unionTedrake([{cZ1};Zcell],order);
-        else
-            throw(CORAerror('CORA:wrongValue','second',"'linProg' or 'tedrake'"));
-        end
-    end
 end
 
 
@@ -150,16 +101,15 @@ function Z = aux_unionTedrake(Zcell,order)
 % zonotope containment constraints presented in [1]
 
     % construct generator matrix of the enclosing zonotope
-    list = cell(length(Zcell),1);
-    
-    for i = 1:length(Zcell)
-       temp = Zcell{i};      
-       if ~isempty(temp.A)
-          temp = rescale(temp);
-       end
-       list{i} = zonotope(temp.c,temp.G);
+    nrZ = length(Zcell);
+    list = cell(nrZ,1);
+    for i = 1:nrZ
+        Zcell_i = Zcell{i};      
+        if ~isempty(Zcell_i.A)
+            Zcell_i = rescale(Zcell_i);
+        end
+        list{i} = zonotope(Zcell_i.c,Zcell_i.G);
     end
-    
     Z_ = or(list{:},'iterative',order);
     G = generators(Z_);
     
@@ -168,15 +118,13 @@ function Z = aux_unionTedrake(Zcell,order)
     Hy = [eye(ny);-eye(ny)];
     
     % construct linear constraints for each zonotope
-    Aeq = [];
-    beq = [];
-    A = [];
-    A_ = [];
+    Aeq = []; beq = [];
+    A = []; A_ = [];
     
-    for i = 1:length(Zcell)
-       
+    for i = 1:nrZ
+        
         % obtain generator matrix and center from the current zonotope
-        [X,x,Hx,hx] = AHpolytope(Zcell{i});
+        [X,x,Hx,hx] = priv_AHpolytope(Zcell{i});
         
         nx = size(X,2);
         px = size(Hx,1);
@@ -240,32 +188,27 @@ function Z = aux_unionTedrake(Zcell,order)
     val = CORAlinprog(problem);
     
     % construct the resulting zonotope
-    ub = val(1:ny);
-    lb = -val(ny+1:2*ny);
-    int = interval(lb,ub);
-    
-    c = Y*center(int);
-    G = Y * diag(rad(int));
-    
-    Z = conZonotope([c,G],[],[]);
-
+    I = interval(-val(ny+1:2*ny),val(1:ny));
+    c = Y*center(I);
+    G = Y * diag(rad(I));
+    Z = conZonotope(c,G);
 end
 
-function Z = aux_unionLinProg(Zcell,order)
+function Z = aux_unionLinprog(Zcell,order)
 % compute an enclosing conZonotope using linear programming. As the
 % constraints for the linear program we compute the upper and lower bound
 % for all zonotopes that are enclosed in the normal directions of the
 % halfspace representation of the enclosing zonotope
 
     % construct generator matrix of the final zonotope
-    list = cell(length(Zcell),1);
-    
-    for i = 1:length(Zcell)
-       temp = Zcell{i};      
-       if ~isempty(temp.A)
-          temp = rescale(temp);
-       end
-       list{i} = zonotope(temp.c,temp.G);
+    nrZ = length(Zcell);
+    list = cell(nrZ,1);
+    for i = 1:nrZ
+        Zcell_i = Zcell{i};      
+        if ~isempty(Zcell_i.A)
+            Zcell_i = rescale(Zcell_i);
+        end
+        list{i} = zonotope(Zcell_i.c,Zcell_i.G);
     end
     
     Z_ = or(list{:},'iterative',order);
@@ -273,51 +216,29 @@ function Z = aux_unionLinProg(Zcell,order)
     G = generators(Z_);
     
     G = G*diag(1./sqrt(sum(G.^2,1)));
+    [n,nrGen] = size(G);
     
     % compute the directions of the boundary halfspaces
-    [dimG,m] = size(G);
-    
-    Z = zonotope([zeros(dimG,1),G]);
-    Z = halfspace(Z);
-    
-    C = Z.halfspace.H;
-    
+    P = polytope(Z_ - Z_.c);
+    nrIneq = size(P.A,1);
+
     % compute bounds for each halfspace
-    d = zeros(size(C,1),1);
-    
-    for i = 1:size(C,1)
-       
-        val = -inf;
-        
+    val = zeros(nrIneq,nrZ);
+    for i = 1:nrIneq
         % loop over all zonotopes
-        for j = 1:length(Zcell)
-           
+        for j = 1:nrZ
             % compute bound for the current zonotope
-            valTemp = supportFunc_(Zcell{j},C(i,:)','upper');
-            
-            % update bound
-            val = max(val,valTemp);
+            val(i,j) = supportFunc_(Zcell{j},P.A(i,:)','upper');
         end
-        
-        d(i) = val;
     end
+    d = max(val,[],2);
 
     % solve linear program
-    f = [zeros(dimG,1);ones(m,1)];
-    
-    A = [];
-    b = -d;
-    
-    for i = 1:size(C,1)
-       A = [A;-[C(i,:),abs(C(i,:)*G)]];
-    end
-    
-    A = [A;[zeros(m,dimG),-eye(m)]];
-    b = [b;zeros(m,1)];
+    f = [zeros(n,1);ones(nrGen,1)];
 
     problem.f = f';
-    problem.Aineq = A;
-    problem.bineq = b;
+    problem.Aineq = [-P.A, -abs(P.A*G); zeros(nrGen,n),-eye(nrGen)];
+    problem.bineq = [-d;zeros(nrGen,1)];
     problem.Aeq = [];
     problem.beq = [];
     problem.lb = [];
@@ -326,11 +247,9 @@ function Z = aux_unionLinProg(Zcell,order)
     x = CORAlinprog(problem);
     
     % construct final zonotope
-    c = x(1:dimG);
-    scal = x(dimG+1:end);
-    
-    Z = conZonotope([c,G*diag(scal)],[],[]);
-      
+    c = x(1:n);
+    scal = x(n+1:end);
+    Z = conZonotope(c,G*diag(scal));
 end
 
 % ------------------------------ END OF CODE ------------------------------

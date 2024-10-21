@@ -1,4 +1,4 @@
-function res = simulateGaussian(obj, options)
+function res = simulateGaussian(sys,params,options)
 % simulateGaussian - performs several random simulation of the system 
 %    assuming Gaussian distributions of the initial states, the
 %    disturbance, and the sensor noise. In order to respect hard limits of
@@ -10,10 +10,10 @@ function res = simulateGaussian(obj, options)
 %    linProbSys.
 %
 % Syntax:
-%    res = simulateGaussian(obj, options)
+%    res = simulateGaussian(sys,params,options)
 %
 % Inputs:
-%    obj - contDynamics object
+%    sys - contDynamics object
 %    options - model parameters and settings for random simulation
 %
 % Outputs:
@@ -29,10 +29,10 @@ function res = simulateGaussian(obj, options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check if trajectory tracking is required
-tracking = isfield(options,'uTransVec');
+tracking = isfield(params,'uTransVec');
 
 % output equation only handled for linear systems
-comp_y = (isa(obj,'linearSys') || isa(obj,'linearSysDT')) && ~isempty(obj.C);
+comp_y = (isa(sys,'linearSys') || isa(sys,'linearSysDT')) && ~isempty(sys.C);
 
 % location for contDynamics always zero
 loc = 0;
@@ -45,10 +45,10 @@ for r = 1:options.points
     
     % start of trajectory
     t = 0; % dummy, will be overwritten
-    options.x0 = randPoint(options.R0,1,'gaussian',options.p_conf);
-    x = options.x0';
+    params.x0 = randPoint(params.R0,1,'gaussian',options.p_conf);
+    x = params.x0';
     if comp_y
-        y = zeros(1,obj.nrOfOutputs);
+        y = zeros(1,sys.nrOfOutputs);
     end
     
     % loop over number of constant inputs per partial simulation
@@ -56,50 +56,50 @@ for r = 1:options.points
         
         % update initial state
         if block > 1
-            options.x0 = xTemp(end,:)';
+            params.x0 = xTemp(end,:)';
         end
         
         % update input
         if tracking
-            options.uTrans = options.uTransVec(:,block);
+            params.uTrans = params.uTransVec(:,block);
         end
         
-        options.tStart = options.tu(block);
-        options.tFinal = options.tu(block+1);
+        params.tStart = params.tu(block);
+        params.tFinal = params.tu(block+1);
         
         % obtain random input
-        if ~representsa_(options.U,'emptySet',eps)
+        if ~representsa_(params.U,'emptySet',eps)
             % set input
-            uRand = randPoint(options.U,1,'gaussian',options.p_conf);
+            uRand = randPoint(params.U,1,'gaussian',options.p_conf);
 
             % combine inputs (random input + tracking) 
-            options.u = uRand + options.uTrans;
+            params.u = uRand + params.uTrans;
         else
-            options.u = options.uTrans;
+            params.u = params.uTrans;
         end
 
         if comp_y
             % obtain disturbance
-            options.w = randPoint(options.W,1,'gaussian',options.p_conf);
+            params.w = randPoint(params.W,1,'gaussian',options.p_conf);
             % obtain sensor noise
-            options.v = randPoint(options.V,1,'gaussian',options.p_conf);
+            params.v = randPoint(params.V,1,'gaussian',options.p_conf);
         end
 
         % uncertain parameters
-        if isfield(options,'paramInt')
-            pInt = options.paramInt;
+        if isfield(params,'paramInt')
+            pInt = params.paramInt;
             if isa(pInt,'interval')
-                options.p = pInt.inf + 2*pInt.rad*rand;
+                params.p = pInt.inf + 2*pInt.rad*rand;
             else
-                options.p = pInt;
+                params.p = pInt;
             end
         end
 
         % simulate dynamic system
         if comp_y
-            [tTemp,xTemp,~,yTemp] = simulate(obj,options);
+            [tTemp,xTemp,~,yTemp] = simulate(sys,params);
         else
-            [tTemp,xTemp] = simulate(obj,options);
+            [tTemp,xTemp] = simulate(sys,params);
         end
 
         t(end:end+length(tTemp)-1,1) = tTemp;
@@ -112,7 +112,7 @@ for r = 1:options.points
     
     if comp_y
         % final point of output trajectory uses different input and sensor noise
-        ylast = aux_outputTrajectoryEnd(obj,options,x);
+        ylast = aux_outputTrajectoryEnd(sys,params,x);
         y(end,:) = ylast';
 
         % append simResult object for r-th trajectory
@@ -129,13 +129,13 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function ylast = aux_outputTrajectoryEnd(obj,options,xtraj)
+function ylast = aux_outputTrajectoryEnd(obj,params,xtraj)
 
-    if isfield(options,'uTransVec')
-        options.uTrans = options.uTransVec(:,end);
+    if isfield(params,'uTransVec')
+        params.uTrans = params.uTransVec(:,end);
     end
-    ulast = randPoint(options.U) + options.uTrans;
-    vlast = randPoint(options.V);
+    ulast = randPoint(params.U) + params.uTrans;
+    vlast = randPoint(params.V);
     ylast = obj.C*xtraj(end,:)' + obj.D*ulast + obj.k + vlast;
 
 end

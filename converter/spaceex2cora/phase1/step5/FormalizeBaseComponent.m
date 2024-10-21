@@ -139,15 +139,12 @@ for i = 1:length(BC.States)
         BC.States(i).Trans(j).guard.set = set;
         
         % derive linear representation of assignment
-        [isLin,A,B,c,eqs,containsInput] = eq2linSys(Tran.reset.varNames,...
+        [isLin,A,B,c,eqs] = eq2linSys(Tran.reset.varNames,...
             Tran.reset.expressions,BC.states,BC.inputs,'assignment');
         if isLin
             BC.States(i).Trans(j).reset.A = A;
+            BC.States(i).Trans(j).reset.B = B;
             BC.States(i).Trans(j).reset.c = c;
-            if containsInput
-                % reset is input-dependent
-                BC.States(i).Trans(j).reset.B = B;
-            end
         else
             if strlength(eqs) ~= 0
                 BC.States(i).Trans(j).reset.FormalEqs = eqs;
@@ -155,6 +152,7 @@ for i = 1:length(BC.States)
                 CORAwarning('CORA:converter',"Transition from ""%s"" to ""%s"" does not have a reset function. " + ...
                     "Using identity...",State.name,BC.States(Tran.destination).name);
                 BC.States(i).Trans(j).reset.A = diag(ones(size(BC.states)));
+                BC.States(i).Trans(j).reset.B = zeros(size(BC.states),size(BC.inputs));
                 BC.States(i).Trans(j).reset.c = zeros(size(BC.states));
             end
         end

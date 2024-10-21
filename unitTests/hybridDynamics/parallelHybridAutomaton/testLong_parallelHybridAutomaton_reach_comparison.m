@@ -14,15 +14,15 @@ function res = testLong_parallelHybridAutomaton_reach_comparison
 % Outputs:
 %    res - true/false 
 %
+% References: 
+%   [1] A. Fehnker and F. Ivancic. "Benchmarks for Hybrid Systems 
+%       Verification", HSCC 2004
+%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
 % See also: roomHeating, roomHeatingParallel
-%
-% References: 
-%   [1] A. Fehnker and F. Ivancic. "Benchmarks for Hybrid Systems 
-%       Verification", HSCC 2004
 
 % Authors:       Niklas Kochdumper
 % Written:       29-June-2020
@@ -30,6 +30,9 @@ function res = testLong_parallelHybridAutomaton_reach_comparison
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % Parameters --------------------------------------------------------------
 
@@ -81,6 +84,6 @@ res_1 = (I_HA <= enlarge(I_PHA,1+1e-10));
 res_2 = (I_PHA <= enlarge(I_HA,1+1e-10));
 
 % final result
-res = res_1 && res_2;
+assert(res_1 && res_2);
     
 % ------------------------------ END OF CODE ------------------------------

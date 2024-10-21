@@ -55,9 +55,7 @@ for i=1:nrTests
     I = interval([lb1;lb2],[ub1;ub2]);
 
     % compare results
-    if ~isequal(I,I_,1e-14)
-        res = false; break
-    end
+    assertLoop(isequal(I,I_,1e-14),i)
 
     % 2. interval-numeric case
 
@@ -68,9 +66,7 @@ for i=1:nrTests
     I = interval([lb1;num],[ub1;num]);
 
     % compare results
-    if ~isequal(I,I_,1e-14)
-        res = false; break
-    end
+    assertLoop(isequal(I,I_,1e-14),i)
 
     % 2. interval-numeric case
 
@@ -81,9 +77,7 @@ for i=1:nrTests
     I = interval([num;lb1],[num;ub1]);
 
     % compare results
-    if ~isequal(I,I_,1e-14)
-        res = false; break
-    end
+    assertLoop(isequal(I,I_,1e-14),i)
 
 end
 

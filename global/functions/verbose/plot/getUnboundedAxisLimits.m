@@ -5,6 +5,8 @@ function [xLim,yLim,zLim] = getUnboundedAxisLimits(V)
 %
 % Syntax:
 %    [xLim,yLim] = getUnboundedAxisLimits()
+%    [xLim,yLim] = getUnboundedAxisLimits(V)
+%    [xLim,yLim,zLim] = getUnboundedAxisLimits(V)
 %
 % Inputs:
 %    V - vertices to be plotted
@@ -29,18 +31,26 @@ plotDim = numel(axis)/2;
 if nargin < 1
     V = zeros(plotDim,0);
 end
-if size(V,1) < 2 || size(V,1) > 3
+plotDim = max(plotDim,size(V,1));
+if size(V,1) < 1 || size(V,1) > 3
     throw(CORAerror('CORA:specialError','Specified vertices have to be 2- or 3-dimensional.'))
 end
 
 % append boundary
-if size(V,1) == 2 && plotDim == 2
-    V = [V, [xlim;ylim]];
-elseif size(V,1) == 2 % && plotDim == 3
-    V = [V;zeros(1,size(V,2))];
-    V = [V, [xlim;ylim;zlim]];
-else % size(V,1) == 3 && plotDim == 3
-    V = [V, [xlim;ylim;zlim]];
+if plotDim == 2
+    if size(V,1) == 1
+        V = [V, xlim];
+        V = [V;zeros(1,size(V,2))];
+    else 
+        V = [V, [xlim;ylim]];
+    end
+else % plotDim == 3
+    if size(V,1) == 2 % && plotDim == 3
+        V = [V;zeros(1,size(V,2))];
+        V = [V, [xlim;ylim;zlim]];
+    else % size(V,1) == 3 && plotDim == 3
+        V = [V, [xlim;ylim;zlim]];
+    end
 end
 
 % set mode to 'auto'

@@ -28,8 +28,6 @@ function res = testLong_conZonotope_interval
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
 % Generate random conZonotope object
 points = rand(3,100);
 ind = convhulln(points');
@@ -43,14 +41,12 @@ cZ = conZonotope(P);
 I = interval(cZ);
 
 % compare with ground-truth for the vertices
-V = vertices(cZ);
 I_ = interval(min(V,[],2),max(V,[],2));
 
-for i = 1:length(I)
-    if ~isequal(I,I_,1e-10)
-        res = false;
-        break
-    end
+assert(isequal(I,I_,1e-14));
+
+res = true;
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

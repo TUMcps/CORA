@@ -24,6 +24,9 @@ function res = test_nonlinParamSys_reach_01_tank
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 % Parameters --------------------------------------------------------------
@@ -67,6 +70,6 @@ IH_saved = interval( ...
     [2.262073865676699, 3.903416158189166, 4.183332823383807, 2.542076505174605, 9.273530229545282, 4.853518289475275]');
 
 %final result
-res = isequal(IH,IH_saved,1e-8);
+assert(isequal(IH,IH_saved,1e-8));
 
 % ------------------------------ END OF CODE ------------------------------

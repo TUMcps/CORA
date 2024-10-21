@@ -23,8 +23,7 @@ function trans = guard2polytope(trans)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if ~isa(trans.guard,'levelSet') && ~isa(trans.guard,'polytope') && ...
-        ~isa(trans.guard,'conHyperplane')
+if ~isa(trans.guard,'levelSet') && ~isa(trans.guard,'polytope')
     trans.guard = polytope(trans.guard);
 end
 

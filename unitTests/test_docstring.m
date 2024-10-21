@@ -21,6 +21,7 @@ function res = test_docstring()
 % Last update:   21-April-2023 (unix bugfix: author follows empty line)
 %                19-July-2023 (ignore script files)
 %                19-January-2024 (stricter syntax check)
+%                15-February-2024 (FL, also check specification directory)
 %                10-May-2024 (improved usability in command window)
 %                16-July-2024 (TL, checks for CORAwarning and CORAlinprog)
 % Last revision: ---
@@ -33,12 +34,13 @@ files = [
     findfiles([CORAROOT filesep 'contDynamics']);
     findfiles([CORAROOT filesep 'contSet']);
     findfiles([CORAROOT filesep 'converter']);
-    findfiles([CORAROOT filesep 'contDynamics']);
     % findfiles([CORAROOT filesep 'discrDynamics']);
     findfiles([CORAROOT filesep 'examples']);
     findfiles([CORAROOT filesep 'global']);
     findfiles([CORAROOT filesep 'hybridDynamics']);
     findfiles([CORAROOT filesep 'matrixSet']);
+    findfiles([CORAROOT filesep 'nn']);
+    findfiles([CORAROOT filesep 'specification']);
     findfiles([CORAROOT filesep 'unitTests']);
 ];
 
@@ -133,7 +135,7 @@ for i=1:length(files)
         end
         lcnt = lcnt + 1;
 
-        % should have at least one exemplary call
+        % should have at least one example call
         cnt = 0;
         while lcnt <= length(lines) && startsWith(lines{lcnt},'%') && ~isEmptyCommentLine(lines{lcnt})
             if ~isempty(regexp(lines{lcnt}, sprintf('[\\.= ]%s(\\(.*|)$',filename), 'once','emptymatch'))
@@ -142,7 +144,7 @@ for i=1:length(files)
             lcnt = lcnt + 1;
         end
         if cnt == 0
-            issues{end+1} = 'At least one exemplary syntax call should be stated.';
+            issues{end+1} = 'At least one example syntax call should be stated.';
         end
 
         if ~isEmptyCommentLine(lines{lcnt})
@@ -373,7 +375,7 @@ for i=1:length(files)
 
         % check see also for function_ files
 
-        if endsWith(file.name, '_.m')
+        if endsWith(file.name, '_.m') && contains(file_path,'contSet')
             lcnt = 1;
             while lcnt <= length(lines) && ~startsWith(lines{lcnt}, '% See also')
                 lcnt = lcnt + 1;
@@ -398,7 +400,7 @@ for i=1:length(files)
 
         % check CORAerror(...) -> throw(CORAerror(...))
         probCall = 'CORAerror(';
-        allowedCalls = {'throw(CORAerror('};
+        allowedCalls = {'throw(CORAerror(','throwAsCaller(CORAerror('};
         if ~ismember(filename,{'CORAerror','test_docstring'}) && ...
                 ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
             issues{end+1} = "Please replace CORAerror(...) calls with throw(CORAerror(id, ...))";
@@ -427,6 +429,25 @@ for i=1:length(files)
             ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
             issues{end+1} = "Please replace quadprog(...) calls with CORAquadprog(problem)";
         end
+    
+        % spelling
+    
+        if contains(lower(filetext),['un' 'kown'])
+            issues{end+1} = "Misspelled 'unknown'.";
+        end
+
+        % check evParams -> options.nn
+        if ~strcmp(filename,'test_docstring') && contains(filetext, 'evParams')
+            issues{end+1} = 'With appropriate changes, please replace evParams with options.nn.';
+        end
+
+        % test deprecated error messages
+        if contains(filetext,['CORA:' 'testFailed'])
+            issues{end+1} = "Please replace 'testFailed' CORA errors with assert/assertLoop.";
+        end
+        if contains(filetext,['CORA:' 'tooManyInputArgs']) || contains(filetext,['CORA:' 'notEnoughInputArgs'])
+            issues{end+1} = "Please replace number of input argument checks with narginchk.";
+        end
 
 
         % everything tested -----------------------------------------------
@@ -438,12 +459,6 @@ for i=1:length(files)
     % check if everything was tested
     if ~everythingTested
         issues{end+1} = '... and potentially some others.';
-    end
-
-    % spelling
-
-    if contains(lower(filetext),['un' 'kown'])
-        issues{end+1} = "Misspelled 'unknown'.";
     end
 
     % display information

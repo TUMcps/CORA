@@ -1,13 +1,13 @@
-function [OGain,tComp] = observe_gain_PRadE(obj,options)
+function [OGain,tComp] = observe_gain_PRadE(linsysDT,params,options)
 % observe_gain_PRadE - computes the gain for the guaranteed state estimation
-% approach from [1].
-%
+%    approach from [1].
 %
 % Syntax:
-%    [OGain,tComp] = observe_gain_PRadE(obj,options)
+%    [OGain,tComp] = observe_gain_PRadE(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -19,8 +19,6 @@ function [OGain,tComp] = observe_gain_PRadE(obj,options)
 %        Zhenhua Wang. Zonotopic fault detection observer with H −
 %        performance. In Proc. of the 36th IEEE Chinese Control
 %        Conference, pages 7230–7235, 2017.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -40,12 +38,12 @@ tic
 % E and F in [1] are chosen such that they are multiplied with unit
 % uncertainties; thus, E and F can be seen as generators of zonotopes
 % representing the disturbance and noise set
-sys.E = generators(options.W);
-sys.F = generators(options.V);
+sys.E = generators(params.W);
+sys.F = generators(params.V);
 
 % obtain system dimension and nr of outputs
-n = obj.dim; 
-nrOfOutputs = obj.nrOfOutputs;
+n = linsysDT.nrOfStates; 
+nrOfOutputs = linsysDT.nrOfOutputs;
 
 %% define YALMIPs symbolic decision variables
 % state
@@ -71,7 +69,7 @@ while(beta_up-beta_lo)> beta_tol
     % implementation of symmetric matrix SM of eq. (17) in [1]
     SM = blkvar;
     SM(1,1) = -beta_tst*P;
-    SM(1,4) = obj.A'*P-obj.C'*Y';
+    SM(1,4) = linsysDT.A'*P-linsysDT.C'*Y';
     SM(2,2) = -sys.E'*sys.E;
     SM(2,4)= sys.E'*P;
     SM(3,3) = -sys.F'*sys.F; 

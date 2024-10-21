@@ -23,8 +23,6 @@ function res = test_conPolyZono_mtimes
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = true(0);
-
 % init
 c = [0;0];
 G = [2 0 2; 0 2 2];
@@ -38,36 +36,34 @@ EC = [1 0 1 0; 0 1 1 0; 0 0 0 1];
 cPZ = conPolyZono(c,G,E,A,b,EC,GI);
 M = [1 2; 3 4];
 McPZ = M * cPZ;
-resvec(end+1) = compareMatrices(McPZ.c, M*c);
-resvec(end+1) = compareMatrices(McPZ.G, M*G);
-resvec(end+1) = compareMatrices(McPZ.GI, M*GI);
-resvec(end+1) = compareMatrices(McPZ.E, E);
-resvec(end+1) = compareMatrices(McPZ.A, A);
-resvec(end+1) = compareMatrices(McPZ.b, b);
-resvec(end+1) = compareMatrices(McPZ.EC, EC);
+assert(compareMatrices(McPZ.c, M*c));
+assert(compareMatrices(McPZ.G, M*G));
+assert(compareMatrices(McPZ.GI, M*GI));
+assert(compareMatrices(McPZ.E, E));
+assert(compareMatrices(McPZ.A, A));
+assert(compareMatrices(McPZ.b, b));
+assert(compareMatrices(McPZ.EC, EC));
 
 % test without GI
 cPZ = conPolyZono(c,G,E,A,b,EC);
 M = [1 2; 3 4];
 McPZ = M * cPZ;
 
-resvec(end+1) = compareMatrices(McPZ.c, M*c);
-resvec(end+1) = compareMatrices(McPZ.G, M*G);
-resvec(end+1) = isempty(McPZ.GI);
+assert(compareMatrices(McPZ.c, M*c));
+assert(compareMatrices(McPZ.G, M*G));
+assert(isempty(McPZ.GI));
 
 % test with only c
 cPZ = conPolyZono(c);
 M = [1 2; 3 4];
 McPZ = M * cPZ;
 
-resvec(end+1) = compareMatrices(McPZ.c, M*c);
-resvec(end+1) = isempty(McPZ.G);
-resvec(end+1) = isempty(McPZ.GI);
+assert(compareMatrices(McPZ.c, M*c));
+assert(isempty(McPZ.G));
+assert(isempty(McPZ.GI));
 
-% test empty case
-resvec(end+1) = isemptyobject([] * conPolyZono.empty(1));
 
 % add results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

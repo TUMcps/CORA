@@ -53,8 +53,8 @@ classdef specification
 %    obj - generated specification object
 %
 % Example:
-%    h = halfspace([1,2],0);
-%    spec = specification(h,'unsafeSet');
+%    P = polytope([1,2],0);
+%    spec = specification(P,'unsafeSet');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -90,20 +90,23 @@ methods
     % class constructor
     function obj = specification(varargin)
         
-        % parse input arguments
-        if nargin > 4
-            throw(CORAerror('CORA:tooManyInputArgs',4));
-        end
-
+        % 0. check number of input arguments
         if nargin == 0
             % empty object
             return
-        elseif nargin >= 1
-            if isa(varargin{1},'specification')
-                % copy constructor
-                obj = varargin{1}; return
+        end
+        assertNarginConstructor(1:4,nargin);
+
+        % 1. copy constructor
+        if nargin == 1 && isa(varargin{1},'specification')
+            obj = varargin{1};
+            return
+        end
+
+        % 2. parse input arguments
+        if nargin >= 1
             % first input argument: func, eq, set, list
-            elseif isa(varargin{1},'function_handle')
+            if isa(varargin{1},'function_handle')
                 % syntax: obj = specification(func)
                 obj.set = varargin{1};
                 obj.type = 'custom';
@@ -248,7 +251,7 @@ methods
                 end
             end
         end
-    end   
+    end
 
 end
 end

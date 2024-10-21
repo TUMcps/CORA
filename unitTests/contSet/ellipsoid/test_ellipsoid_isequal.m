@@ -29,6 +29,9 @@ E2 = ellipsoid([1 0;0 2],[0; 0]);
 E3 = E1;
 
 % compare results
-res = ~isequal(E1,E2) && isequal(E1,E3);
+assert(~isequal(E1,E2) && isequal(E1,E3));
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -23,13 +23,6 @@ function res = test_equalDimCheck
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-res = true;
-
-if ~CHECKS_ENABLED
-    return
-end
-
 % set and set
 Z = zonotope(zeros(2,1),eye(2));
 I = interval(-ones(2,1),ones(2,1));
@@ -72,41 +65,31 @@ equalDimCheck(s,Z);
 % set and set
 Z = zonotope(zeros(3,1),eye(3));
 I = interval(-ones(2,1),ones(2,1));
-try 
-    equalDimCheck(Z,I);
-    res = false;
-end
+assertThrowsAs(@equalDimCheck,'CORA:dimensionMismatch',Z,I);
+
 
 % set and numeric vector
 E = ellipsoid(eye(2),[1;-1]);
 p = [2;1;-1];
-try 
-    equalDimCheck(E,p);
-    res = false;
-end
+assertThrowsAs(@equalDimCheck,'CORA:dimensionMismatch',E,p);
 
 % square matrix and set
 M = [2 3 1; -3 -2 0; 1 4 2];
 I = interval([-3;5],[0;10]);
-try
-    equalDimCheck(M,I);
-    res = false;
-end
+assertThrowsAs(@equalDimCheck,'CORA:dimensionMismatch',M,I);
 
 % non-square matrix and set
 M = [2 1; -1 2; 0 3];
 C = capsule([1;-1;1],[2;1;-1],0.5);
-try
-    equalDimCheck(M,C);
-    res = false;
-end
+assertThrowsAs(@equalDimCheck,'CORA:dimensionMismatch',M,C);
 
 % matrix set and set
 intMat = intervalMatrix([-1 1 2; 0 1 1],[1 2 0; 1 0 3]);
 pZ = polyZonotope([1;-1],[1 0 2; -1 1 -1],[0; 1],[2 1 0]);
-try
-    equalDimCheck(intMat,pZ);
-    res = false;
-end
+assertThrowsAs(@equalDimCheck,'CORA:dimensionMismatch',intMat,pZ);
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

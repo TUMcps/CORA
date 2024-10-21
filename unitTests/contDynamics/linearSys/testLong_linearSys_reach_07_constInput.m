@@ -26,14 +26,12 @@ function res = testLong_linearSys_reach_07_constInput(~)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
 % System dynamics ---------------------------------------------------------
 
 A = [0 1; 0 0];
 B = [0; 0];
 c = [0; -9.81];
-linSys = linearSys('linearSys',A,B,c);
+linsys = linearSys('linearSys',A,B,c);
 
 % Parameters --------------------------------------------------------------
 
@@ -50,52 +48,22 @@ options.zonotopeOrder = 20;
 
 % Reachability Analysis ---------------------------------------------------
 
-R = reach(linSys,params,options);
+R = reach(linsys,params,options);
 
 
 % Simulation --------------------------------------------------------------
 
 % number of initial points
 simOpt.points = 5;
-simRes = simulateRandom(linSys,params,simOpt); 
-
-
-% Visualization -----------------------------------------------------------
-
-plotting = false;
-if plotting
-    figure; hold on; box on;
-    plot(R);
-    plot(simRes);
-end
+simRes = simulateRandom(linsys,params,simOpt); 
 
 
 % Numerical check ---------------------------------------------------------
 
-% for every run, the simulation results must be within R
-for i=1:simOpt.points
-    disp("Trajectory " + i + "/" + simOpt.points + "...");
-    results = simRes(i).x{1};
-    
-    for p=1:size(results,1)
-        % loop over all points of the simulated trajectory
-        p_curr = results(p,:)';
-        
-        for iSet=1:length(R.timeInterval.set)
-            % check every time-interval set
-            if contains(R.timeInterval.set{iSet},p_curr)
-                break
-            end
-            if iSet == length(R.timeInterval.set)
-                % simulated point not in computed reachable sets
-                throw(CORAerror('CORA:testFailed'));
-            end
-        end
-        
-    end
-end
+assert(contains(R,simRes));
 
 
-end
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

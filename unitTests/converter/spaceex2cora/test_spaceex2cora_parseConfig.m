@@ -17,6 +17,9 @@ function pass = test_spaceex2cora_parseConfig()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 pass = true;
 
@@ -40,7 +43,7 @@ if ~isequal(expectedParams,configParams)
 end
 
 % specifications
-expectedSpecs = specification(halfspace.empty(2));
+expectedSpecs = specification(polytope.empty(2));
 A = [-1 0]; b = -100;
 expectedSpecs = add(expectedSpecs,specification(polytope(A,b)));
 % Specifciations are compared for number of specifications, type, and

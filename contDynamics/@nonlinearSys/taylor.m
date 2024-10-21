@@ -1,13 +1,13 @@
-function taylor(obj,varargin)
+function taylor(nlnsys,varargin)
 % taylor - computes symbolically the Taylor expansion of the nonlinear 
-% system; the result is stored in a m-file and passed by a handle
+%    system; the result is stored in a m-file and passed by a handle
 %
 % Syntax:
-%    taylor(obj)
-%    taylor(obj,order,expPoint)
+%    taylor(nlnsys)
+%    taylor(nlnsys,order,expPoint)
 %
 % Inputs:
-%    obj - nonlinear system object
+%    nlnsys - nonlinearSys object
 %    order - order of Taylor expansion (optional)
 %    expPoint - expansion point (optional)
 %
@@ -30,26 +30,17 @@ function taylor(obj,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% create symbolic variables
-[x,u] = symVariables(obj,'LRbrackets');
-
 % obtain optional arguments
-if nargin == 2
-    order = varargin{1};
-    expPoint = zeros(length([x;u]),1);
-elseif nargin == 3
-    order = varargin{1};
-    expPoint = varargin{2};
-else
-    order = 6;
-    expPoint = zeros(length([x;u]),1);
-end
+[order,expPoint] = setDefaultValues({6,zeros(sys.nrOfStates+sys.nrOfInputs,1)},varargin);
+
+% create symbolic variables
+[x,u] = symVariables(nlnsys,true);
 
 % set path for reading and writing files
 path = [CORAROOT 'contDynamics' filesep 'stateSpaceModels'];
 
 % insert symbolic variables into the system equations
-fdyn = obj.mFile(x,u);
+fdyn = nlnsys.mFile(x,u);
 
 % compute Taylor expansion
 disp('create Taylor expansion');
@@ -63,6 +54,6 @@ end
 
 % write results to file
 disp('create Taylor file');
-createTaylorFile(fdyn_taylor,path,obj.name);
+createTaylorFile(fdyn_taylor,path,nlnsys.name);
 
 % ------------------------------ END OF CODE ------------------------------

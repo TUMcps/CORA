@@ -30,9 +30,9 @@ function res = test_polyZonotope_polyMap
     pZres = polyMap(pZ,1,2);
 
     % check correctness
-    if pZres.c ~= 0 || pZres.G ~= 1 || ~all(all(pZres.E == [4;6]))
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(pZres.c == 0)
+    assert(pZres.G == 1)
+    assert(all(pZres.E == [4;6],"all"))
 
     res = true;
 end

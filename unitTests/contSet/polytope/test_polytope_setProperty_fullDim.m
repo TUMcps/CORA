@@ -25,35 +25,33 @@ function res = test_polytope_setProperty_fullDim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % --- polytope ------------------------------------------------------------
 % init set via vertex representation
 
 % 1D, unbounded, non-degenerate
 V = [-Inf, 2];
 P = polytope(V);
-res(end+1,1) = ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(~isempty(P.fullDim.val) && P.fullDim.val);
 
 % 1D, bounded, non-degenerate
 V = [-3 -1 4 5];
 P = polytope(V);
-res(end+1,1) = ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(~isempty(P.fullDim.val) && P.fullDim.val);
 
 % 1D, bounded, degenerate
 V = 2;
 P = polytope(V);
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % 2D, bounded, non-degenerate
 V = [2 1; -1 4; -4 0; -1 -2; 3 -1]';
 P = polytope(V);
-res(end+1,1) = ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(~isempty(P.fullDim.val) && P.fullDim.val);
 
 % 2D, bounded, degenerate
 V = [-1 1; 2 0]';
 P = polytope(V);
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 
 % --- and -----------------------------------------------------------------
@@ -65,7 +63,7 @@ P2 = polytope(zeros(0,2),[],[0 1],0);
 isFullDim(P2);
 % compute intersection and check degeneracy of result
 P = P1 & P2;
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 
 % --- box -----------------------------------------------------------------
@@ -73,19 +71,19 @@ res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
 % 2D, empty set
 P = polytope([1 0; -1 0],[2;-3]);
 P_ = box(P);
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
-res(end+1,1) = ~isempty(P_.fullDim.val) && ~P_.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val);
+assert(~isempty(P_.fullDim.val) && ~P_.fullDim.val);
 
 % 2D, unbounded, non-degenerate, non-empty
 P = polytope([1 0 0; 0 1 0],[1;-3]);
 P_ = box(P);
-res(end+1,1) = ~isempty(P_.fullDim.val) && P_.fullDim.val;
+assert(~isempty(P_.fullDim.val) && P_.fullDim.val);
 
 % 2D, bounded, degenerate, non-empty
 P = polytope([1 0 0; 0 1 0; -1 -1 0],[1;2;2],[0,0,1],0);
 P_ = box(P);
-res(end+1,1) = ~isempty(P.emptySet.val) && ~P.emptySet.val;
-res(end+1,1) = ~isempty(P_.emptySet.val) && ~P_.emptySet.val;
+assert(~isempty(P.emptySet.val) && ~P.emptySet.val);
+assert(~isempty(P_.emptySet.val) && ~P_.emptySet.val);
 
 
 % --- cartProd ------------------------------------------------------------
@@ -94,9 +92,9 @@ res(end+1,1) = ~isempty(P_.emptySet.val) && ~P_.emptySet.val;
 P = polytope([1 1; -1 1; 0 -1],[1;1;1]);
 S = 3;
 P_ = cartProd(P,S);
-res(end+1,1) = ~isempty(P_.fullDim.val) && ~P_.fullDim.val;
+assert(~isempty(P_.fullDim.val) && ~P_.fullDim.val);
 P_ = cartProd(S,P);
-res(end+1,1) = ~isempty(P_.fullDim.val) && ~P_.fullDim.val;
+assert(~isempty(P_.fullDim.val) && ~P_.fullDim.val);
 
 
 % --- compact -------------------------------------------------------------
@@ -104,13 +102,13 @@ res(end+1,1) = ~isempty(P_.fullDim.val) && ~P_.fullDim.val;
 % 1D, empty
 P = polytope([1;-1],[1;-2]);
 P_ = compact(P);
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val ...
-    && ~isempty(P_.fullDim.val) && ~P_.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val ...
+    && ~isempty(P_.fullDim.val) && ~P_.fullDim.val);
 % 3D, empty
 P = polytope([1 1 0; -1 1 0; 0 -1 0; 1 0 0],[1;1;1;-3],[0 0 1],3);
 P_ = compact(P);
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val ...
-    && ~isempty(P_.fullDim.val) && ~P_.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val ...
+    && ~isempty(P_.fullDim.val) && ~P_.fullDim.val);
 
 
 % --- convHull ------------------------------------------------------------
@@ -120,29 +118,29 @@ P1 = polytope([1 1; -1 1; 0 -1],[1;1;1]);
 P2 = polytope([0 1; -1 -1; 1 -1],[-1;0.1;0.1]);
 P = convHull(P1,P2);
 % P2 and P are empty
-res(end+1,1) = ~isempty(P2.fullDim.val) && ~P2.fullDim.val ...
-    && ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isempty(P2.fullDim.val) && ~P2.fullDim.val ...
+    && ~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % 1D, bounded, bounded
 P1 = polytope([],[],1,2);
 P2 = polytope([1;-1],[0;5]);
 P = convHull(P1,P2);
 % result is non-empty
-res(end+1,1) = ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(~isempty(P.fullDim.val) && P.fullDim.val);
 
 
 % --- empty ---------------------------------------------------------------
 
 n = 2;
 P = polytope.empty(n);
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 
 % --- Inf -----------------------------------------------------------------
 
 n = 2;
 P = polytope.Inf(n);
-res(end+1,1) = ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(~isempty(P.fullDim.val) && P.fullDim.val);
 
 
 % --- isFullDim -----------------------------------------------------------
@@ -150,17 +148,17 @@ res(end+1,1) = ~isempty(P.fullDim.val) && P.fullDim.val;
 % 2D, empty
 P = polytope([0 1; -1 -1; 1 -1],[-1;0.1;0.1]);
 isFullDim(P);
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % 3D, full-dimensional
 P = polytope([1 1 1; -1 1 1; 1 -1 1; 1 1 -1; -1 -1 1; -1 1 -1; 1 -1 -1; -1 -1 -1],ones(8,1));
 isFullDim(P);
-res(end+1,1) = ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(~isempty(P.fullDim.val) && P.fullDim.val);
 
 % 4D, degenerate
 P = polytope([1 1 0 0; -1 1 0 0; 0 -1 0 0],[1;1;1],[0 0 2 0; 0 0 0 -2],[3;4]);
 isFullDim(P);
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 
 % --- plus ----------------------------------------------------------------
@@ -172,7 +170,7 @@ isFullDim(P);
 v = [-1;1];
 P_sum = P + v;
 % resulting polytope is also non-empty
-res(end+1,1) = ~isempty(P_sum.fullDim.val) && P_sum.fullDim.val;
+assert(~isempty(P_sum.fullDim.val) && P_sum.fullDim.val);
 
 
 % --- polytope ------------------------------------------------------------
@@ -183,7 +181,7 @@ P = polytope([1 1; -1 1; 0 -1],ones(3,1));
 isFullDim(P);
 % copy polytope, property should also be copied
 P_ = polytope(P);
-res(end+1,1) = ~isempty(P_.fullDim.val) && P_.fullDim.val;
+assert(~isempty(P_.fullDim.val) && P_.fullDim.val);
 
 
 % --- project ------------------------------------------------------------
@@ -191,7 +189,7 @@ res(end+1,1) = ~isempty(P_.fullDim.val) && P_.fullDim.val;
 % 3D, empty
 P = polytope([1 0 0; -1 0 0],[2;-3]);
 P_ = project(P,[1,2]);
-res(end+1,1) = ~isempty(P_.fullDim.val) && ~P_.fullDim.val;
+assert(~isempty(P_.fullDim.val) && ~P_.fullDim.val);
 
 
 % --- lift ----------------------------------------------------------------
@@ -203,7 +201,7 @@ isFullDim(P);
 % project to higher-dimensional space
 P_ = lift(P,5,[2,3]);
 % higher-dimensional polytope also non-empty
-res(end+1,1) = ~isempty(P_.fullDim.val) && P_.fullDim.val;
+assert(~isempty(P_.fullDim.val) && P_.fullDim.val);
 
 % 1D, degenerate
 P = polytope([],[],1,-2);
@@ -212,7 +210,7 @@ isFullDim(P);
 % project to higher-dimensional space
 P_ = lift(P,5,2);
 % higher-dimensional polytope also non-empty
-res(end+1,1) = ~isempty(P_.fullDim.val) && ~P_.fullDim.val;
+assert(~isempty(P_.fullDim.val) && ~P_.fullDim.val);
 
 
 % --- representsa ---------------------------------------------------------
@@ -221,13 +219,13 @@ res(end+1,1) = ~isempty(P_.fullDim.val) && ~P_.fullDim.val;
 P = polytope([1 1; -1 1; 0 -1],zeros(3,1));
 % determine degeneracy
 representsa(P,'origin');
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % 1D, just a point
 P = polytope([],[],1,2);
 % determine degeneracy
 representsa(P,'point');
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 
 % --- vertices ------------------------------------------------------------
@@ -235,20 +233,20 @@ res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
 % 2D, empty set
 P = polytope([1 0; -1 0],[2;-3]);
 V = vertices(P);
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 % 2D, bounded, non-degenerate
 P = polytope([1 0; 0 1; -1 -1],[2;1;2]);
 V = vertices(P);
-res(end+1,1) = ~isempty(P.fullDim.val) && P.fullDim.val;
+assert(~isempty(P.fullDim.val) && P.fullDim.val);
 
 % 2D, bounded, degenerate
 P = polytope([1 0; -1 0],[2;1],[0 1],3);
 V = vertices(P);
-res(end+1,1) = ~isempty(P.fullDim.val) && ~P.fullDim.val;
+assert(~isempty(P.fullDim.val) && ~P.fullDim.val);
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

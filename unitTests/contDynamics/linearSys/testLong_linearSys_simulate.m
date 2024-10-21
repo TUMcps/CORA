@@ -46,8 +46,14 @@ D = [0 0 1;
      0 0 0];
 dim_y = size(D,1);
 
+% disturbance matrix: n x r
+E = [1 0 0 0; -2 0 0.5 0; 0 0 -0.5 1; 1 0 1 -1];
+
+% noise matrix: q x s
+F = [1 0; -1 1];
+
 % initialize linearSys object
-sys_lin = linearSys(A,B,[],C,D);
+sys_lin = linearSys(A,B,[],C,D,[],E,F);
 
 
 % Model parameters --------------------------------------------------------
@@ -116,9 +122,7 @@ for k=1:length(y_lin)
     end
     
     for j=1:length(S.timeInterval.set)
-        if ~contains(S.timeInterval.set{j},y_lin(k,:)')
-            res = false; break
-        end
+        assert(contains(S.timeInterval.set{j},y_lin(k,:)'))        
     end
 end
 

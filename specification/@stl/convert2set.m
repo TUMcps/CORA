@@ -53,19 +53,19 @@ function res = aux_convertToSetRecursiveLinear(obj,n,vars)
 
         case '<'
             [c,d] = aux_getHalfspace(obj.lhs,n,vars);
-            res = halfspace(c,obj.rhs-d);
+            res = polytope(c,obj.rhs-d);
 
         case '<='
             [c,d] = aux_getHalfspace(obj.lhs,n,vars);
-            res = halfspace(c,obj.rhs-d);
+            res = polytope(c,obj.rhs-d);
 
         case '>'
             [c,d] = aux_getHalfspace(obj.lhs,n,vars);
-            res = halfspace(-c,-(obj.rhs-d));
+            res = polytope(-c,-(obj.rhs-d));
 
         case '>='
             [c,d] = aux_getHalfspace(obj.lhs,n,vars);
-            res = halfspace(-c,-(obj.rhs-d));
+            res = polytope(-c,-(obj.rhs-d));
 
         otherwise
             throw(CORAerror('CORA:notSupported',...
@@ -109,14 +109,14 @@ function [c,d] = aux_getHalfspace(obj,n,vars)
 % convert a logic formula to a halfspace
 
     if isnumeric(obj)
-        c = zeros(n,1); d = obj;
+        c = zeros(1,n); d = obj;
         return;
     end
 
     switch obj.type
 
         case 'variable'
-            c = zeros(n,1); d = 0;
+            c = zeros(1,n); d = 0;
             ind = find(contains(vars,obj.var));
             c(ind(1)) = 1;
 

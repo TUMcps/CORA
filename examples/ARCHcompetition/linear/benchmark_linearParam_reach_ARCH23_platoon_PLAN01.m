@@ -77,22 +77,21 @@ A_gen = 0.5*(A_c - A_n);
 matZ_A = matZonotope(A_mid, A_gen);
 
 % instantiate linear dynamics with constant parameters
-linSys  = linParamSys(matZ_A, B,'varParam');
+linsys = linParamSys(matZ_A, B,'varParam');
 
 
 % Reachability Analysis ---------------------------------------------------
 
 % reachable set computations
 tic
-R = reach(linSys, params, options);
+R = reach(linsys, params, options);
 
 % invariant computation
 Rlast = reduce(R.timeInterval.set{end},'girard', 400);
-options.R0 = enlarge(Rlast,1.01);
+params.R0 = enlarge(Rlast,1.01);
 options.zonotopeOrder = 800;
-options.U = params.U;
 
-[RcontInv,tadd] = aux_reachInv(linSys, options, options.R0);
+[RcontInv,tadd] = aux_reachInv(linsys, params, options);
 
 tComp = toc;
 
@@ -130,7 +129,7 @@ params.tFinal = params.tFinal + tadd;
 simOpt.points = 10;
 
 % random simulation
-simRes = simulateRandom(linSys, params, simOpt);
+simRes = simulateRandom(linsys, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -161,16 +160,16 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [Rcont,t] = aux_reachInv(obj,options,inv)
+function [Rcont,t] = aux_reachInv(linsys,params,options)
 % compute the reachable set until it is fully contained inside the
 % invariant set
 
     % adapt options
-    options.uTrans = center(options.U);
-    options.U = options.U - options.uTrans;
-    options.originContained = 1;
+    params.uTrans = center(params.U);
+    params.U = params.U - params.uTrans;
+    options.originContained = true;
     options.reductionTechnique = 'girard';
-    options.tStart = 0;
+    params.tStart = 0;
 
     % obtain factors for initial state and input solution
     for i = 1:(options.taylorTerms+1)
@@ -179,14 +178,13 @@ function [Rcont,t] = aux_reachInv(obj,options,inv)
     end
 
     % initialize reachable set computations
-    [Rnext, options] = initReach(obj, options.R0, options);
+    [Rnext, options] = initReach(linsys, params.R0, params, options);
 
     % loop until not in invariant set anymore
-    t = options.tStart;
+    t = params.tStart;
     iSet = 1;
-    notInInv = 1;
 
-    while notInInv
+    while true
 
         % save reachable set in cell structure
         Rcont{iSet} = Rnext.ti; 
@@ -198,11 +196,11 @@ function [Rcont,t] = aux_reachInv(obj,options,inv)
         options.t = t;
 
         % compute next reachable set
-        [Rnext,options]=post(obj,Rnext,options);
+        [Rnext,options] = post(linsys,Rnext,params,options);
 
         % check if reachable set is contained in invariant
-        if aux_inViaProj(Rnext.ti, inv)
-            notInInv=0;
+        if aux_inViaProj(Rnext.ti, params.R0)
+            break
         end
     end
 end

@@ -1,4 +1,4 @@
-classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonoBundle  < contSet
+classdef zonoBundle < contSet
 % zonoBundle - object constructor for zonotope bundles
 %
 % Description:
@@ -45,7 +45,7 @@ classdef (InferiorClasses = {?intervalMatrix, ?matZonotope}) zonoBundle  < contS
 % ------------------------------ BEGIN CODE -------------------------------
 
 
-properties (SetAccess = private, GetAccess = public)
+properties (SetAccess = {?contSet, ?matrixSet}, GetAccess = public)
     Z;              % list of zonotopes
 
     % internally-set properties
@@ -60,6 +60,7 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor(1,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'zonoBundle')
@@ -79,19 +80,21 @@ methods
         obj.Z = Z;
         obj.parallelSets = parallelSets;
 
+        % 6. set precedence (fixed)
+        obj.precedence = 100;
+
     end
          
     % methods in seperate files
     c = center(zB) % center (only approximation)
     cPZ = conPolyZono(zB) % conversion to conPolyZono object
-    zB = convHull(zB,varargin) % convex hull
     cZ = conZonotope(zB) % conversion to conZonotope object
     n = dim(zB) % dimension
     zB = enclose(zB,varargin) % enclose zonotope bundle and affine transformation
     zB = encloseTight(zB1,zB2,W) % enclose zonotope bundle and affine transformation
     zB = enlarge(zB,factor) % enlarge extensions
     I = interval(zB) % conversion to interval object
-    res = isequal(zB1,zB2) % equality check
+    res = isequal(zB1,zB2,varargin) % equality check
     res = isFullDim(zB) % full-dimensionality check
     P = polytope(zB) % conversion to polytope
     zB = mtimes(factor1,factor2) % overloaded * operator
@@ -109,7 +112,6 @@ methods
     Z = zonotope(zB) % conversion to zonotope object
         
     %display functions
-    han = plot(zB,varargin) % plot set
     display(zB) % display to console
 
 end
@@ -117,6 +119,11 @@ end
 methods (Static = true)
     zB = generateRandom(varargin) % generate random zonotope bundle
     zB = empty(n) % instantiates an empty zonotope bundle
+    zB = origin(n) % instantiates a zonotope bundle representing the origin
+end
+
+methods (Access = protected)
+    [abbrev,printOrder] = getPrintSetInfo(S)
 end
 
 end
@@ -126,11 +133,6 @@ end
 
 function Z = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin > 1
-        throw(CORAerror('CORA:tooManyInputArgs',1));
-    end
 
     % set default values
     Z = setDefaultValues({{}},varargin);

@@ -45,9 +45,7 @@ for i=1:nrOfTests
     I_high = I + shift;
 
     % check with correct solution
-    if isIntersecting(I_low,I_high)
-        res = false; break;
-    end
+    assertLoop(~isIntersecting(I_low,I_high),i)
 
     % interval [-1,1]
     I = interval(-ones(n,1),ones(n,1));
@@ -56,9 +54,7 @@ for i=1:nrOfTests
     I_high = I + rand(1);
 
     % check with correct solution
-    if ~isIntersecting(I_low,I_high)
-        res = false; break;
-    end
+    assertLoop(isIntersecting(I_low,I_high),i)
     
     % intervals meet at origin
     I = interval(-ones(n,1),ones(n,1));
@@ -66,9 +62,7 @@ for i=1:nrOfTests
     I_low = I - shift;
     I_high = I + shift;
 
-    if ~isIntersecting(I_low,I_high)
-        res = false; break;
-    end
+    assertLoop(isIntersecting(I_low,I_high),i)
 
 end
 

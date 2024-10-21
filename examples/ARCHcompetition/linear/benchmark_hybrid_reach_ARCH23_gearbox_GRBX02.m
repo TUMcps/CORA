@@ -92,8 +92,8 @@ guard1 = trans(1).guard;
 guard2 = trans(2).guard;
 
 spec = specification({
-    halfspace(guard1.a(3:4)',guard1.b);
-    halfspace(guard2.a(3:4)',guard2.b)
+    polytope(guard1.Ae(3:4),guard1.be);
+    polytope(guard2.Ae(3:4),guard2.be)
     });
 
 axis([-2e-2,-3e-3,-1e-2,1e-2]);

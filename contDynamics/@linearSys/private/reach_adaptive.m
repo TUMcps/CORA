@@ -1,15 +1,16 @@
-function [timeInt,timePoint,res,savedata] = reach_adaptive(obj,options)
+function [timeInt,timePoint,res,savedata] = reach_adaptive(linsys,params,options)
 % reach_adaptive - computes an outer-approximation of the reachable set
 %    for linear time-invariant systems given a maximum error in terms of
 %    the Hausdorff distance to the exact reachable set; all internal
 %    reachability settings are set automatically
 %
 % Syntax:
-%    [Rout,Rout_tp,res,savedata] = reach_adaptive(obj,options)
+%    [Rout,Rout_tp,res,savedata] = reach_adaptive(linsys,params,options)
 %
 % Inputs:
-%    obj - linearSys object
-%    options - model parameters and options for the computation of reachable sets
+%    linsys - linearSys object
+%    params - model parameters
+%    options - options for the computation of reachable sets
 %
 % Outputs:
 %    timeInt - array of time-interval reachable / output sets
@@ -45,7 +46,7 @@ end
 
 % init step and time (shift so that start at 0), and spec satisfaction
 k = 0; t = 0; res = true;
-options.tFinal = options.tFinal - options.tStart;
+params.tFinal = params.tFinal - params.tStart;
 
 % init struct which keeps sets/expmat/timeStep in order to avoid
 % recomputations (possibly also useful as a return argument)
@@ -53,48 +54,48 @@ savedata = aux_initSavedata(options);
 
 % time intervals where specifications are not yet verified
 % TODO: integrate in validateOptions later...
-[options.specUnsat,options.tFinal] = aux_initSpecUnsat(options,savedata);
+[options.specUnsat,params.tFinal] = aux_initSpecUnsat(params,savedata);
 
 % initialize time step vector and previous time step (dummy value)
 tVec = -1;
 
 % initialize all variables for sets
-[set,Rcont_error,Rcont_tp_error,timeInt,timePoint] = aux_initSets(obj,options);
+[set,Rcont_error,Rcont_tp_error,timeInt,timePoint] = aux_initSets(linsys,params,options);
 
 % initialize all variables for exponential (propagation) matrix
-expmat = aux_initExpmat(obj);
+expmat = aux_initExpmat(linsys);
 
 % rewrite equations in canonical form
-options = aux_canonicalForm(obj,options);
+params = aux_canonicalForm(linsys,params);
 
 % init all auxiliary structs and flags
-[e,ebar,isU,G_U,isuconst,coeff,bisect,quickCheck,options] = ...
-    aux_initStructsFlags(obj,options);
+[e,ebar,isU,G_U,isuconst,coeff,bisect,quickCheck,params,options] = ...
+    aux_initStructsFlags(linsys,params,options);
 
 % pre-compute allocation of reduction error
-[ebar,savedata] = aux_ebarred(obj,isU,G_U,e,ebar,options,savedata);
+[ebar,savedata] = aux_ebarred(linsys,isU,G_U,e,ebar,params.tFinal,options,savedata);
 
 % struct to store near-all values (helpful for debugging)
 debugdata = [];
 
 % compute first output solution and corresponding error
-timePoint.set{1} = obj.C * options.R0 + options.V + options.vTransVec(:,1);
+timePoint.set{1} = linsys.C * params.R0 + params.V + params.vTransVec(:,1);
 timePoint.error(1) = 0;
 % -------------------------------------------------------------------------
 
 
 % main loop until the time is up
-while options.tFinal - t > 1e-9
+while params.tFinal - t > 1e-9
     
     % update step counter
     k = k + 1;
     
     % log information
-    verboseLog(k,t,options);
+    verboseLog(options.verbose,k,t,params.tStart,params.tFinal);
     
     % update constant input vector (if necessary)
-    [options.uTrans, options.vTrans] = aux_uTrans_vTrans(t,...
-        options.uTransVec,options.vTransVec,options.tu);
+    [params.uTrans, params.vTrans] = aux_uTrans_vTrans(t,...
+        params.uTransVec,params.vTransVec,params.tu);
     
     % flag whether full computation required (only where specifications are 
     % not yet satisfied), additionally return time until next change
@@ -103,19 +104,19 @@ while options.tFinal - t > 1e-9
     % compute maximum admissible time step size for current step (either
     % until the time horizon or the delayed start, or shorter if there is a
     % time-varying input vector)
-    maxTimeStep = aux_maxTimeStep(t,options.uTransVec,options.tu,...
-        options.tFinal,maxTimeStepSpec);
+    maxTimeStep = aux_maxTimeStep(t,params.uTransVec,params.tu,...
+        params.tFinal,maxTimeStepSpec);
     
     % take care of initializations in first step
     if k == 1
         % initialize start set
-        set.startset = options.R0;
+        set.startset = params.R0;
         
         % initialize expmat
-        expmat.tk = eye(obj.dim);
+        expmat.tk = eye(linsys.nrOfStates);
 
         % guess initial time step size as the time horizon
-        timeStep = min([maxTimeStep, options.tFinal]);
+        timeStep = min([maxTimeStep, params.tFinal]);
         
         % time step adaptation using approximation functions or bisection:
         % first step always bisection (more robust)
@@ -146,7 +147,7 @@ while options.tFinal - t > 1e-9
         cnti = cnti + 1;
         
         % compute error bounds
-        ebar = aux_ebar(t,k,e,ebar,timeStep,options.tFinal);
+        ebar = aux_ebar(t,k,e,ebar,timeStep,params.tFinal);
         
         % check if time step size was used before: note that this call is
         % not redundant if maxTimeStep used or in first step
@@ -159,8 +160,8 @@ while options.tFinal - t > 1e-9
         end
         
         % compute error bounds and errors for given timeStep
-        [e,set,expmat] = aux_errors(fullcomp(k),obj,isU,isuconst,G_U,...
-            options.uTrans,set,e,expmat,timeStep,cnt.timeStepIdx(cnti,1),savedata);
+        [e,set,expmat] = aux_errors(fullcomp(k),linsys,isU,isuconst,G_U,...
+            params.uTrans,set,e,expmat,timeStep,cnt.timeStepIdx(cnti,1),savedata);
         % if time step size is too big, then Inf in aux_F_Ftilde
         % -> repeat with smaller time step size
         if ~expmat.conv
@@ -227,7 +228,7 @@ while options.tFinal - t > 1e-9
         % predict timeStep necessary to satisfy both (non-acc/acc) bounds
         if approxfuncs
             timeStep = aux_predTimeStep_approxfuncs(t,k,fullcomp(k),coeff,...
-                e,ebar,timeStep,maxTimeStep,options.tFinal);
+                e,ebar,timeStep,maxTimeStep,params.tFinal);
             % approx. function method proposes a value for the time step
             % size which we cannot accept if:
             % 1) value smaller than any lower bound (where errors fulfilled)
@@ -243,7 +244,7 @@ while options.tFinal - t > 1e-9
         
         if ~approxfuncs
             timeStep = aux_predTimeStep_bisect(t,k,fullcomp(k),bisect,isU,...
-                e,ebar,timeStep,maxTimeStep,options.tFinal);
+                e,ebar,timeStep,maxTimeStep,params.tFinal);
         end
         
         % adjust chosen time step size to avoid recomputations
@@ -267,13 +268,13 @@ while options.tFinal - t > 1e-9
         expmat.tkplus1 = expmat.Deltatk * expmat.tk;
     elseif ~fullcomp(k) && abs(timeStep - maxTimeStepSpec) < 1e-9
         % switch from partial computation to full computation in next step
-        expmat.tkplus1 = expm(obj.A*(t+timeStep));
+        expmat.tkplus1 = expm(linsys.A*(t+timeStep));
     end
     
     % accumulate particular solution
     e.red = 0;
     if isU
-        [set,e] = aux_reduce(obj,k,set,e,ebar,expmat); % omega_max
+        [set,e] = aux_reduce(linsys,k,set,e,ebar,expmat); % omega_max
 %         [set,e] = aux_reduce_rad(obj,k,set,e,ebar,expmat); % omega_rad
     end
     
@@ -287,12 +288,12 @@ while options.tFinal - t > 1e-9
     end
     
     
-    if any(any(options.uTransVec))
+    if any(any(params.uTransVec))
     % compute particular solution due to input vector
     % due to current method of computation, this induces no error as the
     % solution is just a point!
     if ~isuconst || isempty(savedata.Pu{cnt.timeStepIdx(timeStepIdxs(k))})
-        [set.Pu,expmat] = aux_Pu(obj,options.uTrans,expmat,timeStep);
+        [set.Pu,expmat] = aux_Pu(linsys,params.uTrans,expmat,timeStep);
         if isuconst
             savedata.Pu{cnt.timeStepIdx(timeStepIdxs(k)),1} = set.Pu;
         end
@@ -321,7 +322,7 @@ while options.tFinal - t > 1e-9
         % compute time-point affine solution at the end of the step, which is
         % required to start the full computation in the next step
         if abs(timeStep - maxTimeStepSpec) < 1e-9
-            set.Hstartp = expmat.tkplus1*options.R0 + set.Putotal;
+            set.Hstartp = expmat.tkplus1*params.R0 + set.Putotal;
         end
         
         % set Rout entry to empty and error to NaN for consistency with tVec
@@ -330,7 +331,7 @@ while options.tFinal - t > 1e-9
         
         % propagate auxiliary term for quick check of inner-approximations
         if quickCheck
-            [res,set,savedata] = aux_quickCheck(obj,set,[t,t+timeStep],[],...
+            [res,set,savedata] = aux_quickCheck(linsys,set,[t,t+timeStep],[],...
                 e.redtotal(k),Rout_error(k),options,savedata);
         end
     
@@ -351,10 +352,10 @@ while options.tFinal - t > 1e-9
 
         % compute output set and contained over-approximation error
         [timeInt.set{k,1},timeInt.error(k,1),timePoint.set{k+1,1},timePoint.error(k+1,1),set] = ...
-            aux_outputset(obj,isU,set,Rcont_error(k),options,Rcont_tp_error(k));
+            aux_outputset(linsys,isU,set,Rcont_error(k),params,options.errR2Y,Rcont_tp_error(k));
         if options.verify && quickCheck
             % check violation of inner-approximation for quick exit
-            [res,set,savedata] = aux_quickCheck(obj,set,[t,t+timeStep],...
+            [res,set,savedata] = aux_quickCheck(linsys,set,[t,t+timeStep],...
                 center(timeInt.set{k}),e.redtotal(k),timeInt.error(k),options,savedata);
         end
     
@@ -378,7 +379,7 @@ while options.tFinal - t > 1e-9
 end
 
 % log information
-verboseLog(k,t,options);
+verboseLog(options.verbose,k,t,params.tStart,params.tFinal);
 
 % debug: plot errors and bounds
 % aux_plot_errorcurve(isdebug,fullcomp,e,ebar,tVec,debugdata);
@@ -387,13 +388,13 @@ verboseLog(k,t,options);
 % aux_plot_e2ebar(isdebug,fullcomp,debugdata,timeStepIdxs);
 
 % debug: plot error curve
-% aux_plot_R_error(isdebug,fullcomp,tVec,Rcont_error,Rcont_tp_error,e,options.tu);
+% aux_plot_R_error(isdebug,fullcomp,tVec,Rcont_error,Rcont_tp_error,e,params.tu);
 
 % check if all errors below respective bounds
 % aux_check_errors(fullcomp,e,ebar,Rcont_error,Rcont_tp_error,tVec,debugdata,timeStepIdxs);
 
 % write time to output structs
-timePoint.time = num2cell([0;cumsum(tVec)]+options.tStart);
+timePoint.time = num2cell([0;cumsum(tVec)]+params.tStart);
 timeInt.time = cell(length(timePoint.time)-1,1);
 for k=1:length(timePoint.time)-1
     timeInt.time{k} = interval(timePoint.time{k},timePoint.time{k+1});
@@ -528,7 +529,7 @@ disp("--------------------------------");
 end
 
 % initializations (all before main loop)
-function [set,Rcont_error,Rcont_tp_error,timeInt,timePoint] = aux_initSets(obj,options)
+function [set,Rcont_error,Rcont_tp_error,timeInt,timePoint] = aux_initSets(sys,params,options)
 % init over-approximation error w.r.t the corresponding exact reachable
 % sets (this is not a return value, but might still be convenient to have)
 Rcont_error = [];
@@ -550,85 +551,85 @@ timePoint.error = [];
 set.startset = [];
 set.Hstarti = [];
 set.Hstartp = [];
-set.Pu = zeros(obj.dim,1);
-set.Putotal = zeros(obj.dim,1);
+set.Pu = zeros(sys.nrOfStates,1);
+set.Putotal = zeros(sys.nrOfStates,1);
 set.PU = [];
 set.PUtotal = [];
-set.Rcont_tp_kminus1 = options.R0;
+set.Rcont_tp_kminus1 = params.R0;
 % for reduction and propagation of particular solution
 set.girard_PUtotal_zero = [];
-set.G_PUtotal_infty = zeros(obj.dim,1);
-set.G_PUtotal_zero = double.empty(obj.dim,0);
-set.Gabs_PUtotal_zero = double.empty(obj.dim,0); % only omega_rad
-set.Ghat_PUtotal_zero = double.empty(obj.dim,0); % only omega_max
+set.G_PUtotal_infty = zeros(sys.nrOfStates,1);
+set.G_PUtotal_zero = double.empty(sys.nrOfStates,0);
+set.Gabs_PUtotal_zero = double.empty(sys.nrOfStates,0); % only omega_rad
+set.Ghat_PUtotal_zero = double.empty(sys.nrOfStates,0); % only omega_max
 set.nrG_PUtotal_zero = 0;
-% set.nrG_PUtotal_zero_incr = floor(1024^2/8/obj.dim); % ~1MB storage space
+% set.nrG_PUtotal_zero_incr = floor(1024^2/8/obj.nrOfStates); % ~1MB storage space
 % set.nrG_PUtotal_zero_full = set.nrG_PUtotal_zero_incr;
-% set.G_PUtotal_zero = zeros(obj.dim,set.nrG_PUtotal_zero_full);
-% set.Gabs_PUtotal_zero = zeros(obj.dim,set.nrG_PUtotal_zero_full); % only omega_rad
-% set.Ghat_PUtotal_zero = zeros(obj.dim,set.nrG_PUtotal_zero_full); % only omega_max
+% set.G_PUtotal_zero = zeros(obj.nrOfStates,set.nrG_PUtotal_zero_full);
+% set.Gabs_PUtotal_zero = zeros(obj.nrOfStates,set.nrG_PUtotal_zero_full); % only omega_rad
+% set.Ghat_PUtotal_zero = zeros(obj.nrOfStates,set.nrG_PUtotal_zero_full); % only omega_max
 % only fast inner-approximation check
 if isfield(options,'savedata')
     if isfield(options.savedata,'safeSet_unsat')
     for i=1:length(options.savedata.safeSet_unsat)
-        if options.safeSet{i}.fastInner
+        if params.safeSet{i}.fastInner
             set.G_GfastInner{i} = 0;
         end
     end
     end
     if isfield(options.savedata,'unsafeSet_unsat')
     for i=1:length(options.savedata.unsafeSet_unsat)
-        if options.unsafeSet{i}.fastInner
+        if params.unsafeSet{i}.fastInner
             set.F_GfastInner{i} = 0;
         end
     end
     end
 end
-set.GfastInner_add = zeros(obj.nrOfOutputs,1);
+set.GfastInner_add = zeros(sys.nrOfOutputs,1);
 
 end
 
-function options = aux_canonicalForm(obj,options)
+function params = aux_canonicalForm(linsys,params)
 % put inhomogeneity to canonical forms:
-%    Ax + Bu + c + w  ->  Ax + u, where u \in U + uTransVec
-%    Cx + Du + k + v  ->  Cx + v, where v \in V + vTransVec
+%    Ax + Bu + c + Ew  ->  Ax + u, where u \in U + uTransVec
+%    Cx + Du + k + Fv  ->  Cx + v, where v \in V + vTransVec
 
 % read-out disturbance and sensor noise
-centerW = center(options.W);
-W = options.W + (-centerW);
-centerV = center(options.V);
-V = options.V + (-centerV);
+centerW = center(linsys.E*params.W);
+W = linsys.E*params.W + (-centerW);
+centerV = center(linsys.F*params.V);
+V = linsys.F*params.V + (-centerV);
 
 % initialize input vector if sequence given
-if isfield(options,'uTransVec')
+if isfield(params,'uTransVec')
     % time-varying input vector
-    uVec = options.uTransVec;
+    uVec = params.uTransVec;
 else
     % no time-varying input vector, but uTrans given
-    uVec = options.uTrans;
+    uVec = params.uTrans;
 end
 
 % output equation
-if any(any(obj.D))
-    options.V = obj.D * options.U + V;
+if any(any(linsys.D))
+    params.V = linsys.D * params.U + V;
 else
-    options.V = V;
+    params.V = V;
 end
 
 % state equation
-options.U = obj.B * options.U + W;
-options.uTransVec = obj.B * uVec + obj.c + centerW;
+params.U = linsys.B * params.U + W;
+params.uTransVec = linsys.B * uVec + linsys.c + centerW;
 
 % initialize input vector for output equation
 % note: this CANNOT the same as the input vector for the state equation
-options.vTransVec = obj.k + centerV;
+params.vTransVec = linsys.k + centerV;
 
 % assign first values
-options.uTrans = options.uTransVec(:,1);
-options.vTrans = options.vTransVec(:,1);
+params.uTrans = params.uTransVec(:,1);
+params.vTrans = params.vTransVec(:,1);
 
 % remove fields for safety
-options = rmfield(options,'W');
+params = rmfield(params,'W');
 % note: U and V now overwritten!
 
 end
@@ -649,7 +650,7 @@ expmat.tk = [];          % propagation until start of current step
 expmat.tkplus1 = [];     % propagation until end of current step
 
 % precompute inverse of A matrix
-expmat.isAinv = rank(full(obj.A)) == obj.dim;
+expmat.isAinv = rank(full(obj.A)) == obj.nrOfStates;
 expmat.Ainv = [];
 if expmat.isAinv
     expmat.Ainv = inv(obj.A);
@@ -657,25 +658,26 @@ end
 
 end
 
-function [e,ebar,isU,G_U,isuconst,coeff,bisect,quickCheck,options] = aux_initStructsFlags(obj,options)
+function [e,ebar,isU,G_U,isuconst,coeff,bisect,quickCheck,params,options] = ...
+    aux_initStructsFlags(sys,params,options)
 
 % saving of operations for affine systems (u = const. over entire time
 % horizon) vs. system with varying u or even uncertainty U
 % -> the resulting if-else branching looks quite ugly, but still yields
 % large speed-ups for high-dimensional systems
-G_U = generators(options.U);
+G_U = generators(params.U);
 isU = ~isempty(G_U);
-isuconst = ~(isfield(options,'uTransVec') && size(options.uTransVec,2) > 1);
+isuconst = ~(isfield(params,'uTransVec') && size(params.uTransVec,2) > 1);
 % isaffineuconst = size(options.uTransVec,2) == 1 && ~isU;
 % sparsity for speed up (acc. to numeric tests only for very sparse
 % matrices actually effective)
-if nnz(obj.A) / numel(obj.A) < 0.1
-    obj.A = sparse(obj.A);
+if nnz(sys.A) / numel(sys.A) < 0.1
+    sys.A = sparse(sys.A);
 end
 
 % compute factor for scaling of Hausdorff distance from state space to
 % output space and vice versa due to linear transformation with C
-options.errR2Y = norm(sqrtm(full(obj.C * obj.C')),2); % same as norm(obj.C)
+options.errR2Y = norm(sqrtm(full(sys.C * sys.C')),2); % same as norm(obj.C)
 % scale options.error so that it corresponds to R (this is only relevant in
 % case an output equation is provided as options.errR2Y = 1 otherwise)
 options.error = options.error / options.errR2Y;
@@ -719,7 +721,7 @@ end
 
 end
 
-function [ebar,savedata] = aux_ebarred(obj,isU,G_U,e,ebar,options,savedata)
+function [ebar,savedata] = aux_ebarred(obj,isU,G_U,e,ebar,tFinal,options,savedata)
 % heuristics to determine a curve (params.tStart always shifted to 0!)
 %   x-axis (time):  0 -> params.tFinal
 %   y-axis (error): 0 -> (maximum) e.emax
@@ -732,19 +734,19 @@ function [ebar,savedata] = aux_ebarred(obj,isU,G_U,e,ebar,options,savedata)
 
 if ~isU
     % no reduction, entire error margin is available for nonacc errors
-    ebar.red_t = [0;options.tFinal];
+    ebar.red_t = [0;tFinal];
     ebar.red_e = [0;0];
     savedata.reductionerrorpercentage = ebar.red_e(end)/e.emax;
     return
 elseif isfield(options,'reductionerrorpercentage')
     % define error curve manually
-    ebar.red_t = [0;options.tFinal];
+    ebar.red_t = [0;tFinal];
     ebar.red_e = [0;e.emax * options.reductionerrorpercentage];
     savedata.reductionerrorpercentage = ebar.red_e(end)/e.emax;
     return
 elseif isfield(savedata,'reductionerrorpercentage')
     % reduction error defined by previous run (only verify)
-    ebar.red_t = [0;options.tFinal];
+    ebar.red_t = [0;tFinal];
     ebar.red_e = [0;e.emax * options.savedata.reductionerrorpercentage];
     return
 end
@@ -756,8 +758,8 @@ end
 
 % heuristics for near-optimal allocation
 stepsforebar = 100;
-timeStep = options.tFinal / stepsforebar;
-expmat_aux = eye(obj.dim);
+timeStep = tFinal / stepsforebar;
+expmat_aux = eye(obj.nrOfStates);
 expmat_Deltatk = expm(obj.A * timeStep);
 
 % 1. compute auxiliary sets V_k and errors e(V_k)
@@ -811,107 +813,12 @@ for i=1:meshsize-1
     end
 end
 
-% use sets V_k to generate a curve of admissible reduction errors over time
-% ebar.red_t = (timeStep:timeStep:tFinal)';
-% % append time horizon at the end of time vector
-% if abs(ebar.red_t(end) - tFinal) > 10*eps
-%     ebar.red_t = [ebar.red_t; tFinal];
-% end
-% ebar.red_e = zeros(length(ebar.red_t),1);
-% for i=1:min_idx
-%     ebar.red_e(tau(i)) = errV(tau(i));
-% end
-% ebar.red_e = cumsum(ebar.red_e);
-% add zero at the start
-% ebar.red_t = [0;ebar.red_t];
-% ebar.red_e = [0;ebar.red_e];
-
 % simpler method
-ebar.red_t = [0;options.tFinal];
+ebar.red_t = [0;tFinal];
 ebar.red_e = [0;e.emax * emax_percentage4ered(min_idx)];
 
 % save value
 savedata.reductionerrorpercentage = ebar.red_e(end)/e.emax;
-
-% previous method... (U = options.U)
-% % note: omit last step for now...
-% % 1. compute auxiliary sets V_k and errors e(V_k)
-% steps = 1000; % TODO: adapt this value
-% timeStep = tFinal / steps;
-% expmat_aux = eye(obj.dim);
-% expmat_Deltatk = expm(obj.A * timeStep);
-% 
-% V = cell(steps,1);
-% errV = zeros(steps,1);
-% 
-% DeltatkU = timeStep * U;
-% for i=1:steps
-%     % compute auxiliary set
-%     V{i} = expmat_aux * DeltatkU;
-%     % propagate exponential matrix for next V
-%     expmat_aux = expmat_aux * expmat_Deltatk;
-%     % compute error
-%     errV(i) = aux_errOp(V{i});
-% end
-% 
-% % 2. compute weights and ordering
-% weights = errV ./ sum(errV);
-% % TODO: clarify how are ties decided?
-% [~,tau] = sort(weights);
-% % 3. sort V
-% errVsort_cumsum = cumsum(errV(tau));
-% 
-% % alternative (but practically not feasible)
-% % Vsort = V(tau);
-% % errVsort_cumsum = zeros(steps,1);
-% % errVsort_cumsum(1) = aux_errOp(Vsort{1});
-% % V_sum_temp = Vsort{1};
-% % for i=2:steps
-% %     V_sum_temp = V_sum_temp + Vsort{2};
-% %     errVsort_cumsum(i) = aux_errOp(V_sum_temp);
-% % end
-% 
-% % question: how much could we reduce if we allocate some portion of emax?
-% meshsize = 1000;
-% emax_cont = linspace(0,e.emax,meshsize)';
-% finalorder = zeros(meshsize,1);
-% % best final order is a priori the one where we do not reduce at all
-% bestfinalorder = steps+1;
-% 
-% % loop over the mesh of emax to find a near-optimal result
-% for i=1:meshsize-1
-%     % find chi* = number of V_k that can be reduced for current red error
-%     idx = find(errVsort_cumsum < emax_cont(i),1,'last');
-%     % fraction 1/N is allocated to the reduction error
-%     N = 1/(1-emax_cont(i));
-%     % compute resulting zonotope order
-%     if isempty(idx)
-%         finalorder(i) = N*(steps+1);
-%     else
-%         finalorder(i) = N*(steps+1) - idx;
-%     end
-%     % best reduction error allocation is the one which results in the lowest
-%     % zonotope order, also save the corresponding idx
-%     if finalorder(i) < bestfinalorder
-%         bestfinalorder = finalorder(i);
-%         min_idx = idx;
-%     end
-% end
-% 
-% % use sets V_k to generate a curve of admissible reduction errors over time
-% ebar.red_t = (timeStep:timeStep:tFinal)';
-% % append time horizon at the end of time vector
-% if abs(ebar.red_t(end) - tFinal) > 10*eps
-%     ebar.red_t = [ebar.red_t; tFinal];
-% end
-% ebar.red_e = zeros(length(ebar.red_t),1);
-% for i=1:min_idx
-%     ebar.red_e(tau(i)) = errV(tau(i));
-% end
-% ebar.red_e = cumsum(ebar.red_e);
-% % add zero at the start
-% ebar.red_t = [0;ebar.red_t];
-% ebar.red_e = [0;ebar.red_e];
 
 end
 
@@ -1011,11 +918,11 @@ end
 
 end
 
-function [specUnsat,tFinal] = aux_initSpecUnsat(options,savedata)
+function [specUnsat,tFinal] = aux_initSpecUnsat(params,savedata)
 % initialize time intervals where all specifications are (not) satisfied
 % assume tStart = 0 for now...
 
-tFinal = options.tFinal;
+tFinal = params.tFinal;
 specUnsat = [];
 
 if isfield(savedata,'unsafeSet_unsat') || isfield(savedata,'safeSet_unsat')
@@ -1027,12 +934,12 @@ if isfield(savedata,'unsafeSet_unsat') || isfield(savedata,'safeSet_unsat')
     
     % add unverified time intervals (unsafe sets)
     if isfield(savedata,'unsafeSet_unsat')
-        specUnsat = aux_unifySpecUnsat(specUnsat,savedata.unsafeSet_unsat,options.tStart,options.tFinal);
+        specUnsat = aux_unifySpecUnsat(specUnsat,savedata.unsafeSet_unsat,params.tStart,params.tFinal);
     end
     
     % add unverified time intervals (safe sets)
     if isfield(savedata,'safeSet_unsat')
-        specUnsat = aux_unifySpecUnsat(specUnsat,savedata.safeSet_unsat,options.tStart,options.tFinal);
+        specUnsat = aux_unifySpecUnsat(specUnsat,savedata.safeSet_unsat,params.tStart,params.tFinal);
     end
     
     % adjust time horizon if specifications are already satisfied from some
@@ -1289,7 +1196,7 @@ end
 end
 
 function [Rout,Rout_error,Rout_tp,Rout_tp_error,set] = ...
-	aux_outputset(obj,isU,set,Rcont_error,options,Rcont_tp_error)
+	aux_outputset(obj,isU,set,Rcont_error,params,errR2Y,Rcont_tp_error)
 % computes the time-point and time-interval output set as well as the
 % contained over-approximation error;
 % remark: tp ... end of current step, ti ... start to end of current step
@@ -1299,7 +1206,7 @@ function [Rout,Rout_error,Rout_tp,Rout_tp_error,set] = ...
 
 % additional inclusion of check...?
 
-if isscalar(obj.C) && obj.C == 1 && representsa_(options.V,'origin',eps) && ~any(options.vTrans)
+if isscalar(obj.C) && obj.C == 1 && representsa_(params.V,'origin',eps) && ~any(params.vTrans)
     % y = x ... consequently, errors are also equal
     if isU
         Rout = zonotope([center(set.enc) + set.boxFstartset_center + ...
@@ -1324,7 +1231,7 @@ if isscalar(obj.C) && obj.C == 1 && representsa_(options.V,'origin',eps) && ~any
     
 else
     
-    if ~isscalar(obj.C) && representsa_(options.V,'origin',eps) && ~any(options.vTrans)
+    if ~isscalar(obj.C) && representsa_(params.V,'origin',eps) && ~any(params.vTrans)
         % y = Cx ... errors are scaled
         
         if isU
@@ -1337,7 +1244,7 @@ else
                 set.FtildeuTrans_center), ...
                 obj.C * generators(set.enc), obj.C * diag(set.boxFstartset_Gbox + set.FtildeuTrans_Gbox)]);
         end
-        Rout_error = options.errR2Y * Rcont_error;
+        Rout_error = errR2Y * Rcont_error;
         
         % time-point solution
         if isU
@@ -1346,7 +1253,7 @@ else
         else
             Rout_tp = obj.C * set.Hstartp;
         end
-        Rout_tp_error = options.errR2Y * Rcont_tp_error;
+        Rout_tp_error = errR2Y * Rcont_tp_error;
         
 
     else
@@ -1355,29 +1262,29 @@ else
         % compute output set and contained over-approximation error
         if isU
             Rout = zonotope([obj.C * (center(set.enc) + set.boxFstartset_center + ...
-                set.FtildeuTrans_center) + options.vTrans, ...
+                set.FtildeuTrans_center) + params.vTrans, ...
                 obj.C * generators(set.enc), obj.C * set.G_PUtotal_zero, ...
                 obj.C * diag(set.G_PUtotal_infty + set.boxFstartset_Gbox + set.FtildeuTrans_Gbox), ...
-                generators(options.V)]);
+                generators(params.V)]);
         else
             Rout = zonotope([obj.C * (center(set.enc) + set.boxFstartset_center + ...
-                set.FtildeuTrans_center) + options.vTrans, ...
+                set.FtildeuTrans_center) + params.vTrans, ...
                 obj.C * generators(set.enc), ...
                 obj.C * diag(set.boxFstartset_Gbox + set.FtildeuTrans_Gbox), ...
-                generators(options.V)]);
+                generators(params.V)]);
         end
-        Rout_error = options.errR2Y * Rcont_error;
+        Rout_error = errR2Y * Rcont_error;
         
         % time-point solution
         if isU
-            Rout_tp = zonotope([obj.C * center(set.Hstartp) + options.vTrans ...
+            Rout_tp = zonotope([obj.C * center(set.Hstartp) + params.vTrans ...
                 obj.C * generators(set.Hstartp), ...
                 obj.C * set.G_PUtotal_zero, ...
-                obj.C * diag(set.G_PUtotal_infty), generators(options.V)]);
+                obj.C * diag(set.G_PUtotal_infty), generators(params.V)]);
         else
-            Rout_tp = obj.C * set.Hstartp + options.V + options.vTrans;
+            Rout_tp = obj.C * set.Hstartp + params.V + params.vTrans;
         end
-        Rout_tp_error = options.errR2Y * Rcont_tp_error;
+        Rout_tp_error = errR2Y * Rcont_tp_error;
         
     end
 end
@@ -1472,7 +1379,7 @@ expmat.conv = true;
 
 % compute PU and eps_PU_tkplus1 (eps_PU_tauk only if fullcomp, see below)
 if ~isU
-    set.eAtkPU = zeros(obj.dim,1);
+    set.eAtkPU = zeros(obj.nrOfStates,1);
     e.PU_tkplus1 = 0;
 elseif timeStepIdx == 0
     [set.G_PU_zero,set.G_PU_infty,set.PU_A_sum_error,expmat] = aux_PU(obj,G_U,expmat,timeStep);
@@ -1500,7 +1407,7 @@ if fullcomp
 % - consists of eps_linComb + 2*err(F H*) + 2*err(Ftilde u) + eps_PU_tauk
 
 % eps_linComb
-G_minus = (expmat.Deltatk - eye(obj.dim)) * generators(set.startset);
+G_minus = (expmat.Deltatk - eye(obj.nrOfStates)) * generators(set.startset);
 if strcmp(obj.name,'iss')
     % much faster and similarly precise for ISS system
     % TODO: investigate why this is the case and generalize
@@ -1543,8 +1450,8 @@ e.F = 2 * vecnorm(set.boxFstartset_Gbox + abs(set.boxFstartset_center));
 % - set.FtildeuTrans = set.Ftilde * zonotope(u);
 % - e.Ftilde = 2 * aux_errOp(set.FtildeuTrans);
 % following version to increase computational efficiency
-set.FtildeuTrans_center = zeros(obj.dim,1);
-set.FtildeuTrans_Gbox = zeros(obj.dim,1);
+set.FtildeuTrans_center = zeros(obj.nrOfStates,1);
+set.FtildeuTrans_Gbox = zeros(obj.nrOfStates,1);
 e.Ftilde = 0;
 if any(u)
     if isuconst && timeStepIdx > 0 && savedata.fullcomp(timeStepIdx)
@@ -1611,7 +1518,7 @@ function [set,expmat] = aux_F_Ftilde(obj,u,set,expmat,timeStep)
 
 % load data from object/options structure
 A = obj.A;
-n = obj.dim;
+n = obj.nrOfStates;
 
 % is there an input vector?
 isu = any(u);
@@ -1827,10 +1734,10 @@ function [Pu,expmat] = aux_Pu(obj,u,expmat,timeStep)
 % only computed until finite precision)
 
 if ~any(u)
-    Pu = zeros(obj.dim,1);
+    Pu = zeros(obj.nrOfStates,1);
 
 elseif expmat.isAinv
-    Pu = expmat.Ainv * (expmat.Deltatk - eye(obj.dim)) * u;
+    Pu = expmat.Ainv * (expmat.Deltatk - eye(obj.nrOfStates)) * u;
     
 else    
     % compute by sum until floating-point precision (same as for PU)
@@ -1840,7 +1747,7 @@ else
     eta = 1;
     
     % first term
-    Asum = timeStep * eye(obj.dim);
+    Asum = timeStep * eye(obj.nrOfStates);
     
     % loop until Asum no longer changes (additional values too small)
     while true
@@ -1893,7 +1800,7 @@ PU_diag = sum(abs(G_PU_zero),2);
 
 % initialize errors
 G_PU_infty = [];
-A_sum_error = zeros(obj.dim);
+A_sum_error = zeros(obj.nrOfStates);
 
 A = obj.A;
 

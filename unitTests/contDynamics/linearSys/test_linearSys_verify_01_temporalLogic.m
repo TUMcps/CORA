@@ -24,7 +24,7 @@ function res = test_linearSys_verify_01_temporalLogic
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
+res = true;
 
 % Analytical Test (Until) -------------------------------------------------
 
@@ -59,8 +59,8 @@ resSafe = verify(sys,params,options,specSafe);
 resUnsafe = verify(sys,params,options,specUnsafe);
 
 % check results
-res(end+1,1) = resSafe;
-res(end+1,1) = ~resUnsafe;
+assert(resSafe);
+assert(~resUnsafe);
 
 
 % Analytical Test (Finally) -----------------------------------------------
@@ -98,11 +98,11 @@ resSafe = verify(sys,params,options,specSafe);
 resUnsafe = verify(sys,params,options,specUnsafe);
 
 % check results
-res(end+1,1) = resSafe;
-res(end+1,1) = ~resUnsafe;
+assert(resSafe);
+assert(~resUnsafe);
 
 
 % all checks ok
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

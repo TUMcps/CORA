@@ -1,11 +1,11 @@
-function display(sys)
+function display(linsys)
 % display - Displays a linearSys object on the command window
 %
 % Syntax:
-%    display(sys)
+%    display(linsys)
 %
 % Inputs:
-%    sys - linearSys object
+%    linsys - linearSys object
 %
 % Outputs:
 %    ---
@@ -20,7 +20,7 @@ function display(sys)
 %    C = [1 1 0 0; 0 -0.5 0.5 0];
 %    D = [0 0 1; 0 0 0];
 %    k = [0; 0.02];
-%    sys = linearSys(A,B,c,C,D,k)
+%    linsys = linearSys(A,B,c,C,D,k)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -40,44 +40,55 @@ function display(sys)
 dispInput(inputname(1))
 
 %display parent object
-display@contDynamics(sys);
+display@contDynamics(linsys);
 
 %display type
 disp("Type: Linear continuous-time time-invariant system");
 
 % state equation
-disp("x' = Ax + Bu + c");
+disp("State-space equation: x' = Ax + Bu + c + Ew");
 
 % display state matrix
 disp("System matrix:");
-displayMatrixVector(sys.A,"A");
+displayMatrixVector(linsys.A,"A");
 
 % display input matrix
 disp("Input matrix:");
-displayMatrixVector(sys.B,"B");
+displayMatrixVector(linsys.B,"B");
 
 % display constant offset
 disp("Constant offset:");
-displayMatrixVector(sys.c,"c");
+displayMatrixVector(linsys.c,"c");
+
+% display constant offset
+disp("Disturbance matrix:");
+displayMatrixVector(linsys.E,"E");
 
 % check if there is an output equation
-isOutput = ~isscalar(sys.C) || sys.C ~= 1 || any(any(sys.D)) || any(sys.k);
+isOutput = ~isscalar(linsys.C) || linsys.C ~= 1 || any(any(linsys.D)) ...
+    || any(linsys.k) || any(any(linsys.F));
 
 % output equation
-if isOutput
-    disp("y = Cx + Du + k");
+if ~isOutput
+    disp("Output equation: y = x");
+else
+    disp("Output equation: y = Cx + Du + k + Fv");
     
     % display output matrix
     disp("Output matrix:");
-    displayMatrixVector(sys.C,"C");
+    displayMatrixVector(linsys.C,"C");
     
     % display feedthrough matrix
     disp("Feedthrough matrix:");
-    displayMatrixVector(sys.D,"D");
+    displayMatrixVector(linsys.D,"D");
     
     % display constant offset
     disp("Constant offset:");
-    displayMatrixVector(sys.k,"k");
+    displayMatrixVector(linsys.k,"k");
+
+    % display noise matrix
+    disp("Noise matrix:");
+    displayMatrixVector(linsys.F,"F");
 end
 
 % ------------------------------ END OF CODE ------------------------------

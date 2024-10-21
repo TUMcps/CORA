@@ -23,26 +23,23 @@ function res = test_contSet_times
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true
-resvec = true(0);
-
 % test interval
 I = interval([1;3],[2;5]);
 M = [3;-1];
 MI = M .* I;
-resvec(end+1) = all(MI.inf == [3;-5] & MI.sup == [6;-3], 'all');
+assert(all(MI.inf == [3;-5] & MI.sup == [6;-3], 'all'));
 
 % test empty case
 I = interval.empty(2);
 I = 2 .* I;
-resvec(end+1) = representsa_(I,'emptySet',eps);
+assert(representsa_(I,'emptySet',eps));
 
 % test zonotope
 Z = zonotope([1 0; 2 1]);
 M = [-1;2];
 MZ = M .* Z;
-resvec(end+1) = all([MZ.c,MZ.G] == [-1 0; 4 2], 'all');
+assert(all([MZ.c,MZ.G] == [-1 0; 4 2], 'all'));
 
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

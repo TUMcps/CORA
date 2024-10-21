@@ -47,8 +47,8 @@ for i=1:nTests
     % get id indices
     [~,~,ii_rem] = intersect(id_rem,pZ_res.id,'stable');
     [~,~,ii_in] = intersect(id_in,pZ_res.id,'stable'); 
-    assert(isempty(setdiff([ii_rem;ii_in],(1:length(pZ_res.id)))),...
-            'Error: Remaining and subs id should be all');
+    assertLoop(isempty(setdiff([ii_rem;ii_in],(1:length(pZ_res.id)))),...
+            'Error: Remaining and subs id should be all',[],i);
     
     % compare with ...
     
@@ -66,9 +66,8 @@ for i=1:nTests
         a_max = max(abs(val_res),abs(fval_res));
         ind_0 = a_max==0;
         a_max(ind_0) = 1;
-        if any(abs(val_res-fval_res)./a_max>1e-6)
-            throw(CORAerror('CORA:testFailed'));
-        end
+
+        assertLoop(all(abs(val_res-fval_res)./a_max <= 1e-6),i,k)
     end
 end
 

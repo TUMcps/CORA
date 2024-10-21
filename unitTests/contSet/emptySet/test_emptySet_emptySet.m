@@ -23,26 +23,21 @@ function res = test_emptySet_emptySet
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % dimension is zero
 n = 0;
 O = emptySet(n);
-res(end+1,1) = O.dimension == n;
+assert(O.dimension == n);
 
 % dimension greater or equal to one
 n = 2;
 O = emptySet(n);
-res(end+1,1) = O.dimension == n;
+assert(O.dimension == n);
 
 % combine results
-res = all(res);
+res = true;
 
 
 % too many input arguments
-try
-    O = emptySet(n,n);
-    res = false;
-end
+assertThrowsAs(@emptySet,'CORA:numInputArgsConstructor',n,n);
 
 % ------------------------------ END OF CODE ------------------------------

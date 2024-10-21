@@ -63,7 +63,7 @@ for i=1:length(ind)
 end
 
 % remove last set if it is located outside the invariant
-if ~isIntersecting_(loc.invariant,timeInt.set{end},'exact')
+if ~isIntersecting_(loc.invariant,timeInt.set{end},'exact',1e-8)
     timeInt.set = timeInt.set(1:end-1); 
     timeInt.time = timeInt.time(1:end-1); 
     timePoint.set = timePoint.set(1:end-1); 

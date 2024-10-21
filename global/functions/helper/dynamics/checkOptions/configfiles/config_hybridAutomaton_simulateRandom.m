@@ -1,14 +1,12 @@
-function [paramsList,optionsList] = config_hybridAutomaton_simulateRandom(sys,params,options)
+function [paramsList,optionsList] = config_hybridAutomaton_simulateRandom
 % config_hybridAutomaton_simulateRandom - configuration file for validation of
 %    model parameters and algorithm parameters
 %
 % Syntax:
-%    [paramsList,optionsList] = config_hybridAutomaton_simulateRandom(sys,params,options)
+%    [paramsList,optionsList] = config_hybridAutomaton_simulateRandom
 %
 % Inputs:
-%    sys - hybridAutomaton object
-%    params - user-defined model parameters
-%    options - user-defined algorithm parameters
+%    -
 %
 % Outputs:
 %    paramsList - list of model parameters

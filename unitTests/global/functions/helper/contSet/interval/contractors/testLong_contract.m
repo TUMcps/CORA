@@ -23,8 +23,7 @@ function res = testLong_contract()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = false;
-
+tol = 1e-10;
 
 % Test 1: Different Contractors -------------------------------------------
 
@@ -36,7 +35,7 @@ f = @(x) x(1)^2 + x(2)^2 - 4;
 dom = interval([1;1],[3;3]);
 
 % optimal result
-res_ = interval([1;1],[sqrt(3);sqrt(3)]);
+Iopt = interval([1;1],[sqrt(3);sqrt(3)]);
 
 % contractors
 cont = {'forwardBackward','polynomial','linearize','interval','all'};
@@ -47,14 +46,8 @@ splits = 2;
 for i = 1:length(cont)
     
     % contract the domain
-    res = contract(f,dom,cont{i},iter,splits);
-    
-    % check the result for correctness
-    res = enlarge(res,1+1e-10);
-    
-    if ~contains(res,res_)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    I1 = contract(f,dom,cont{i},iter,splits);
+    assertLoop(contains(I1,Iopt,'exact',tol),i);
 end
 
 
@@ -79,18 +72,13 @@ splits = 2;
 for i = 1:length(cont)
     
     % contract with "contract"
-    res1 = contract(f,dom,cont{i},iter,splits);
+    I1 = contract(f,dom,cont{i},iter,splits);
     
     % contract with "contractPoly"
-    res2 = contractPoly(c,G,GI,E,dom,cont{i},iter,splits);
+    I2 = contractPoly(c,G,GI,E,dom,cont{i},iter,splits);
     
     % check the result for correctness
-    res1_ = enlarge(res1,1+1e-10);
-    res2_ = enlarge(res2,1+1e-10);
-    
-    if ~contains(res1_,res2) || ~contains(res2_,res1)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(isequal(I1,I2,tol),i);
 end
 
 
@@ -113,20 +101,13 @@ splits = 2;
 for i = 1:length(cont)
     
     % contract with "contract"
-    res1 = contract(f,dom,cont{i},iter,splits);
+    I1 = contract(f,dom,cont{i},iter,splits);
     
     % contract with "contractPoly"
-    res2 = contractPoly(c,G,GI,E,dom,cont{i},iter,splits);
+    I2 = contractPoly(c,G,GI,E,dom,cont{i},iter,splits);
     
     % check the result for correctness
-    res1_ = enlarge(res1,1+1e-10);
-    res2_ = enlarge(res2,1+1e-10);
-    
-    if (~contains(res1_,res2) || ~contains(res2_,res1)) && ...
-       (max(abs(supremum(res1)-supremum(res2))) > 1e-10) || ...
-       (max(abs(infimum(res1)-infimum(res2))) > 1e-10)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(isequal(I1,I2,tol),i)
 end
 
 res = true;

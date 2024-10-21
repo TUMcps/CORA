@@ -1,13 +1,13 @@
-function [obj,A_lin,U] = linearize(obj,R,options)
+function [nlnsysDT,A_lin,U] = linearize(nlnsysDT,R,params)
 % linearize - linearizes the nonlinearSysDT object
 %
 % Syntax:
-%    [obj,A_lin,U] = linearize(obj,R,options)
+%    [nlnsysDT,A_lin,U] = linearize(nlnsysDT,R,params)
 %
 % Inputs:
 %    obj - nonlinearSysDT system object
 %    R - initial reachable set
-%    options - options struct
+%    params - model parameters
 %
 % Outputs:
 %    obj - nonlinearSysDT system object with additional properties
@@ -18,7 +18,7 @@ function [obj,A_lin,U] = linearize(obj,R,options)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: none
 
 % Authors:       Matthias Althoff, Niklas Kochdumper
 % Written:       21-August-2012
@@ -27,8 +27,8 @@ function [obj,A_lin,U] = linearize(obj,R,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%linearization point p.u of the input is the center of the input u
-p.u = center(options.U) + options.uTrans;
+%linearization point p.u of the input is the center of the input set U
+p.u = center(params.U);
 
 %linearization point p.x and p.y
 x0 = center(R);
@@ -36,17 +36,15 @@ p.x = x0;
 
 %substitute p into the system equation in order to obtain the constant
 %input
-f0 = obj.mFile(p.x, p.u);
+f0 = nlnsysDT.mFile(p.x, p.u);
 
 %get jacobian matrices
-[A_lin,B_lin] = obj.jacobian(p.x, p.u);
+[A_lin,B_lin] = nlnsysDT.jacobian(p.x, p.u);
 
-
-uTrans = f0; %B*Ucenter from linOptions.U not added as the system is linearized around center(U)
-Udelta = B_lin*(options.U+(-center(options.U)));
-U = Udelta + uTrans;
+Udelta = B_lin*(params.U+(-center(params.U))); %B*Ucenter from linOptions.U not added as the system is linearized around center(U)
+U = Udelta + f0;
 
 %save linearization point
-obj.linError.p=p;
+nlnsysDT.linError.p=p;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -65,9 +65,7 @@ for i=1:nrTests
         % compare values support function
         val = supportFunc(P,l);
         val_ = supportFunc(P_,l_);
-        if ~withinTol(val,val_,1e-5)
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(all(withinTol(val,val_,1e-5)),i,j);
     end
 
     % compare to interval projection
@@ -84,9 +82,7 @@ for i=1:nrTests
     V_P = vertices(P_);
 
     % compare vertices
-    if ~compareMatrices(V_I,V_P,1e-12)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(compareMatrices(V_I,V_P,1e-12),i);
 
 
     % compare to zonotope projection
@@ -103,9 +99,7 @@ for i=1:nrTests
     V_P = vertices(P_);
 
     % compare vertices
-    if ~compareMatrices(V_Z,V_P,1e-12)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(compareMatrices(V_Z,V_P,1e-12),i);
 end
 
 % ------------------------------ END OF CODE ------------------------------

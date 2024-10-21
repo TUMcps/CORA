@@ -1,11 +1,11 @@
 function [Rguard,actGuards,minInd,maxInd] = ...
-    guardIntersect(loc,guards,setInd,setType,Rcont,options)
+    guardIntersect(loc,guards,setInd,setType,Rcont,params,options)
 % guardIntersect - computes an enclosure of the intersection between the
 %    reachable set and the guard sets
 %
 % Syntax:
 %    [Rguard,actGuards,minInd,maxInd] = 
-%       guardIntersect(loc,guards,setInd,setType,Rcont,options)
+%       guardIntersect(loc,guards,setInd,setType,Rcont,params,options)
 %
 % Inputs:
 %    loc - location object
@@ -14,6 +14,7 @@ function [Rguard,actGuards,minInd,maxInd] = ...
 %    setType - which set has been determined to intersect the guard set
 %              ('time-interval' or 'time-point')
 %    Rcont - reachSet object storing the reachable set
+%    params - model parameters
 %    options - struct with settings for reachability analysis
 %
 % Outputs:
@@ -33,6 +34,8 @@ function [Rguard,actGuards,minInd,maxInd] = ...
 %       Analysis of Hybrid Automata"
 %   [5] N. Kochdumper et al. "Reachability Analysis for Hybrid Systems with 
 %       Nonlinear Guard Sets", HSCC 2020
+%   [6] M. Althoff et al. "Zonotope bundles for the efficient computation 
+%       of reachable sets", 2011
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -86,10 +89,10 @@ function [Rguard,actGuards,minInd,maxInd] = ...
         % remove all intersections where the flow does not point in the
         % direction of the guard set (only check if there is no instant
         % transition, i.e., there is a time-interval reachable set)
-        if strcmp(setType,'time-interval') && ...
-                (isa(guard,'conHyperplane') || isa(guard,'levelSet'))
+        if strcmp(setType,'time-interval') && ( isa(guard,'levelSet') || ...
+                (isa(guard,'polytope') && representsa_(guard,'conHyperplane',1e-12)) )
             try
-                [res,P{i}] = checkFlow(loc,guard,P{i},options);
+                [res,P{i}] = checkFlow(loc,guard,P{i},params);
                 if ~res
                     continue;
                 end
@@ -113,41 +116,42 @@ function [Rguard,actGuards,minInd,maxInd] = ...
 
             % compute intersection using constrained zonotopes
             case 'conZonotope'
-
-                Rguard{i} = guardIntersect_conZonotope(loc,P{i},guard,options);
+                % calculate orthogonal basis with the methods in Sec. V.A in [6]
+                B = calcBasis(loc,P{i},guard,options,params);
+                Rguard{i} = guardIntersect_conZonotope(loc,P{i},guard,B,options);
                
             % compute intersection with the method in [2]
             case 'zonoGirard'
-                
-                Rguard{i} = guardIntersect_zonoGirard(loc,P{i},guard,options);
+                % calc. orthogonal basis with the methods described in Sec. V.A in [6]
+                B = calcBasis(loc,P{i},guard,options,params);
+                Rguard{i} = guardIntersect_zonoGirard(loc,P{i},guard,B);
                 
             % compute intersection with the method in [3]
             case 'hyperplaneMap'
-                
                 R0 = aux_getInitialSet(Rtp,minInd(i));
-                Rguard{i} = guardIntersect_hyperplaneMap(loc,guard,R0,options);   
+                Rguard{i} = guardIntersect_hyperplaneMap(loc,guard,R0,params,options);   
 
             % compute intersection with the method in [4]
             case 'pancake'
-                
                 R0 = aux_getInitialSet(Rtp,minInd(i));
-                Rguard{i} = guardIntersect_pancake(loc,R0,guard,actGuards(i),options);
+                Rguard{i} = guardIntersect_pancake(loc,R0,guard,actGuards(i),params,options);
                 
             % compute intersection with method for nondeterministic guards
             case 'nondetGuard'
-                
-                Rguard{i} = guardIntersect_nondetGuard(loc,P{i},guard,options);
+                % calc. orthogonal basis with the methods described in Sec. V.A in [6]
+                B = calcBasis(loc,P{i},guard,options,params);
+                Rguard{i} = guardIntersect_nondetGuard(loc,P{i},guard,B);
                 
             % compute intersection with the method in [5]    
             case 'levelSet'
-                
-                if isa(guard,'conHyperplane')
+                if isa(guard,'polytope') && representsa_(guard,'conHyperplane',1e-12)
                     guard = levelSet(guard);
                 end
                 Rguard{i} = guardIntersect_levelSet(loc,P{i},guard);
                 
             otherwise
-                throw(CORAerror('CORA:wrongFieldValue','options.guardIntersect',...
+                throw(CORAerror('CORA:wrongFieldValue',...
+                    'options.guardIntersect',...
                     {'polytope','conZonotope','zonoGirard',...
                     'hyperplaneMap','pancake','nondetGuard','levelSet'}));
 
@@ -159,7 +163,7 @@ function [Rguard,actGuards,minInd,maxInd] = ...
                                                        maxInd,actGuards);
                                                    
     % convert sets back to polynomial zonotopes
-    if isa(options.R0,'polyZonotope')
+    if isa(params.R0,'polyZonotope')
         for i = 1:length(Rguard)
             if isa(Rguard{i},'zonotope')
                 Rguard{i} = polyZonotope(Rguard{i}); 

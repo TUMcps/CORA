@@ -67,11 +67,7 @@ function pZ = cubMap(pZ, varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
-if nargin < 2
-    throw(CORAerror('CORA:notEnoughInputArgs', 2));
-elseif nargin > 5
-    throw(CORAerror('CORA:tooManyInputArgs', 5));
-end
+narginchk(2,5);
 
 % cubic multiplication or mixed cubic multiplication
 if nargin == 4 || nargin == 5
@@ -139,7 +135,7 @@ function res = aux_cubMapSingle(pZ, T, ind)
 
 % remove independent generators for pZdep
 pZdep = pZ;
-pZdep.GI = [];
+pZdep.GI = zeros(dim(pZ),0);
 
 % create new pZ with unique ids for indepedent generators
 % this makes the computation more accurate but will be removed later
@@ -230,8 +226,8 @@ if ~isempty(pZ.GI) && ~all(all(pZ.GI == 0))
     cnew = Zind.c;
 
 else
-    GInew = [];
-    cnew = zeros(n, 1);
+    GInew = zeros(n,0);
+    cnew = zeros(n,1);
 end
 
 % construct the resulting polynomial zonotope

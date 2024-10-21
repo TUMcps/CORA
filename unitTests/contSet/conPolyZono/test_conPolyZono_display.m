@@ -23,14 +23,11 @@ function res = test_conPolyZono_display
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = [];
-
 % test empty set
 cPZ = conPolyZono.empty(3);
 display(cPZ);
-res(end+1) = true;
 
-% test example in doctring
+% test example in docstring
 c = [0;0];
 G = [1 0 1 -1; 0 1 1 1];
 E = [1 0 1 2; 0 1 1 0; 0 0 1 1];
@@ -42,14 +39,12 @@ cPZ = conPolyZono(c,G,E,A,b,EC);
 
 % check display function
 display(cPZ);
-res(end+1) = true;
 
 % check direct output
 cPZ
-res(end+1) = true;
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,13 +1,13 @@
-function [R,tcomp] = observe_PRadB(obj,options)
+function [R,tcomp] = observe_PRadB(linsysDT,params,options)
 % observe_PRadB - computes the guaranteed state estimation approach
-% from [1].
-%
+%    from [1].
 %
 % Syntax:
-%    [R,tcomp] = observe_PRadB(obj,options)
+%    [R,tcomp] = observe_PRadB(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -20,8 +20,6 @@ function [R,tcomp] = observe_PRadB(obj,options)
 %        multi-output uncertain systems. In Proc. of the IEEE
 %        International Symposium on Intelligent Control (ISIC),
 %        pages 212–217, 2013.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,8 +36,7 @@ function [R,tcomp] = observe_PRadB(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % obtain offline gains
-
-OGain = observe_gain_PRadB(obj,options);
+OGain = observe_gain_PRadB(linsysDT,params,options);
 
 % set intersection procedure
 options.intersectionType = 2;
@@ -47,7 +44,7 @@ options.intersectionTechnique = OGain; % gain directly provided
 
 % apply set-membership approach
 tic
-R = observe_stripBased(obj,options);
+R = observe_stripBased(linsysDT,params,options);
 tcomp = toc;
 
 % ------------------------------ END OF CODE ------------------------------

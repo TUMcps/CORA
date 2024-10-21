@@ -66,44 +66,38 @@ disp(['computation time of reachable set with remainder added to system matrix: 
 
 % Visualization -----------------------------------------------------------
 
-plotting = false;
+% for plotRun=1:3
+%     % plot different projections
+%     if plotRun==1
+%         projDims=[1 2];
+%     elseif plotRun==2
+%         projDims=[3 4];    
+%     elseif plotRun==3
+%         projDims=[5 6]; 
+%     end 
+% 
+%     figure; hold on; box on;
+% 
+%     % plot reachable set (normal lagrange remainder)
+%     plot(R_wo_linear,projDims,'b');
+% 
+%     % plot reachable sets (lagrange remainder added to system matrices
+%     % (A,B))
+%     plot(R,projDims,'r');
+% 
+%     %plot initial set
+%     plot(params.R0,projDims,'k','FaceColor','w');
+% 
+% 
+%     %plot simulation results      
+%     plot(simRes,projDims,'k');
+% 
+%     %label plot
+%     xlabel(['x_{',num2str(projDims(1)),'}']);
+%     ylabel(['x_{',num2str(projDims(2)),'}']);
+% end
 
-if plotting
-
-    for plotRun=1:3
-        % plot different projections
-        if plotRun==1
-            projDims=[1 2];
-        elseif plotRun==2
-            projDims=[3 4];    
-        elseif plotRun==3
-            projDims=[5 6]; 
-        end 
-
-        figure; hold on; box on;
-
-        % plot reachable set (normal lagrange remainder)
-        plot(R_wo_linear,projDims,'b');
-
-        % plot reachable sets (lagrange remainder added to system matrices
-        % (A,B))
-        plot(R,projDims,'r');
-
-        %plot initial set
-        plot(params.R0,projDims,'k','FaceColor','w');
-
-
-        %plot simulation results      
-        plot(simRes,projDims,'k');
-
-        %label plot
-        xlabel(['x_{',num2str(projDims(1)),'}']);
-        ylabel(['x_{',num2str(projDims(2)),'}']);
-    end
-
-end
-
-% example completed
+% test completed
 res = true;
 
 % ------------------------------ END OF CODE ------------------------------

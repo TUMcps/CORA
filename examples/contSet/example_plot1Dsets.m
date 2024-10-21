@@ -48,26 +48,6 @@ hold on;
 plot(S,1,'Color',colorblind('r'));
 ylabel("plot(S, 1)")
 
-% conHyperplane
-i = i + 1;
-c = [1, 1];
-d = 2;
-A = [1, 0];
-b = 2.5;
-S = conHyperplane(c, d, A, b);
-
-subplot(nrows, ncols, i)
-hold on;
-xlim([0, 4])
-ylim([-1, 1])
-plot(S);
-title("conHyperplane")
-
-subplot(nrows, ncols, ncols+i)
-hold on;
-xlim([0, 4])
-plot(S,1,'Color',colorblind('r'));
-
 % conPolyZono
 i = i + 1;
 S = conPolyZono(I);
@@ -107,24 +87,6 @@ title("ellipsoid")
 
 subplot(nrows, ncols, ncols+i)
 hold on;
-plot(S,1,'Color',colorblind('r'));
-
-% halfspace
-i = i + 1;
-c = [1, 1];
-d = 2;
-S = halfspace(c, d);
-
-subplot(nrows, ncols, i)
-hold on;
-xlim([0, 4])
-ylim([-1, 1])
-title("halfspace")
-plot(S);
-
-subplot(nrows, ncols, ncols+i)
-hold on;
-xlim([0, 4])
 plot(S,1,'Color',colorblind('r'));
 
 % interval

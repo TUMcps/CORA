@@ -72,21 +72,25 @@ sys = linearSys('fiveDimSys',A,B,c,C,D,k);
 % Check for completion ----------------------------------------------------
 
 % loop over all R0 / U
-res = false(length(R0),1);
 for r=1:length(R0)
     params.R0 = R0{r};
     params.U = U{r};
+    
+    % generate seed
+    seed = randi(2^32);
+    rng(seed);
+
     try
         simRes = simulateRandom(sys, params);
         res(r,1) = true;
     catch ME
         % run-time error
-        res(r,1) = false;
+        assert(false,"Loop index: %d, seed: %d",r,int2str(seed));
     end
 end
 
 % combine results
-res = all(res);
+res = true;
 
 
 end

@@ -28,7 +28,7 @@ classdef linParamSys < contDynamics
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       23-September-2010
@@ -42,15 +42,16 @@ properties (SetAccess = private, GetAccess = public)
 
     A = 1;                          % state matrix
     B = 0;                          % input matrix
+    type = '';
     constParam logical = true;      % constant or time-varying parameters
     
-    % ...
+    % TODO: check if these are still necessary...
     stepSize = 1;
     taylorTerms = [];
     mappingMatrixSet = [];
     power = [];
-    E = [];
-    F = [];
+    E = []; % note: not disturbance matrix
+    F = []; % note: not noise matrix
     inputF = [];
     inputCorr = [];
     Rinput = [];
@@ -63,6 +64,9 @@ methods
     
     % class constructor
     function obj = linParamSys(varargin)
+
+        % 0. check number of input arguments
+        assertNarginConstructor(0:4,nargin);
 
         % 1. copy constructor: not allowed due to obj@contDynamics below
 %         if nargin == 1 && isa(varargin{1},'linParamSys')
@@ -80,13 +84,18 @@ methods
         
         % 5. instantiate parent class, assign properties
         obj@contDynamics(name,states,inputs,0); 
-        obj.A = A; obj.B = B; obj.constParam = true;
+        obj.A = A; obj.B = B; obj.type = type; obj.constParam = true;
         if strcmp(type,'varParam')
             obj.constParam = false;
         end
 
     end
 end
+
+methods (Access = protected)
+    [printOrder] = getPrintSystemInfo(S)
+end
+
 end
 
 
@@ -95,16 +104,8 @@ end
 function [name,A,B,type] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
 
-    % check number of input arguments
-    if nargin > 4
-        throw(CORAerror('CORA:tooManyInputArgs',4));
-    end
-
     % default name and type
-    def_name = 'linParamSys';
-    type = 'constParam';
-    % init properties
-    A = []; B = [];
+    def_name = 'linParamSys'; type = 'constParam'; A = []; B = [];
 
     % no input arguments
     if nargin == 0

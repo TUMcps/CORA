@@ -19,13 +19,13 @@ function res = testLong_stl_modelCheckReachSet_01()
 
 % Authors:       Niklas Kochdumper
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   21-February-2024 (FL, add incremental algorithm and speed up by reusing reach set)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
     
 res = true;
-alg = {'rtl','sampledTime','signals'};
+alg = {'rtl','sampledTime','signals','incremental'};
 
 % analytical test for the until-operator
 
@@ -45,18 +45,14 @@ point = sqrt(2)/2;
 eq = until(y(2) < -point,y(1) > point,interval(0,2));
 
 % loop over different time step sizes and algorithms
-for j = 1:length(alg)
-    for i = 1:4
-    
-        % reachability analysis
-        options.timeStep = options.timeStep/2;
-    
-        R = reach(sys,params,options);
-    
+for i = 1:4
+    % reachability analysis
+    options.timeStep = options.timeStep/2;
+    R = reach(sys,params,options);
+
+    for j = 1:length(alg)
         % model checking (should be false for arbitrary time steps)
-        if modelChecking(R,eq,alg{j}) ~= false
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(~modelChecking(R,eq,alg{j}),i,j)
     end
 end
 
@@ -68,26 +64,24 @@ eq = until(y(2) < -point,y(1) > point,interval(0,2));
 % refine time step until equation satisfied
 options.timeStep = 1;
 
-for j = 1:length(alg)
 
-    resTmp = false;
+for i = 1:5
+    resTmp = false(length(alg),1);
+    % reachability analysis
+    options.timeStep = options.timeStep/2;
+    R = reach(sys,params,options);
 
-    for i = 1:5
-    
-        % reachability analysis
-        options.timeStep = options.timeStep/2;
-    
-        R = reach(sys,params,options);
-    
-        % model checking (should become true for small enought time steps)
-        if modelChecking(R,eq,alg{j}) == true
-            resTmp = true; break;
-        end
+    for j = 1:length(alg)
+        % model checking (should become true for small enough time steps)
+        resTmp(j) = modelChecking(R,eq,alg{j});
     end
 
-    if ~resTmp
-        throw(CORAerror('CORA:testFailed'));
+    if all(resTmp)
+        break;
     end
 end
+
+% if still not true...
+assert(all(resTmp))
 
 % ------------------------------ END OF CODE ------------------------------

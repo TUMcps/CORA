@@ -39,8 +39,8 @@ timeInt = [];
 R = reachSet(timePoint,timeInt);
 
 % reset initial set instantly according to reset function
-Rjump{1,1}.set = reset(loc.transition(options.instantTransition),...
-                R0,options.U);
+Rjump{1,1}.set = evaluate(loc.transition(options.instantTransition).reset,...
+                    R0,options.U);
 
 % target location of instant transition
 Rjump{1,1}.loc = loc.transition(options.instantTransition).target;

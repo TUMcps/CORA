@@ -18,17 +18,20 @@ function HA = gearbox()
 %   [1] H. Chen and et al. "Motor-transmission drive system: a benchmark 
 %       example for safety verification"
 %
-% See also: example_hybrid_reach_ARCH20_gearbox_GRBX01
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% Author:        Matthias Althoff, Niklas Kochdumper
+% Authors:       Matthias Althoff, Niklas Kochdumper
 % Written:       19-Dec-2016 
 % Last update:   13-May-2020 (NK, moved to seperate file)
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
-
-% Parameter ---------------------------------------------------------------
+% Parameters --------------------------------------------------------------
 
 theta = 0.9;                    % coefficient of restitution
 m_s = 3.2;                      % [kg], mass of sleve
@@ -41,8 +44,6 @@ delta_p = -0.003;               % [m], p_x sleeve meshes with gear
 n = 0;                          % integer number in guard
 F_s = 70;                       % [N], shifting force
 T_f = 1;                        % [Mm], resisting moment
-
-
 
 
 % Continuous Dynamics -----------------------------------------------------
@@ -62,9 +63,7 @@ c = B*F_s + [0; -R_s*T_f/J_g2; 0; 0; 0];
 dim_x = length(A);
 
 % instantiate linear dynamics 
-linSys  = linearSys('linearSys',A, B, c);
-
-
+linsys  = linearSys('linearSys',A, B, c);
 
 
 % Transition 1 ------------------------------------------------------------
@@ -80,7 +79,7 @@ ch_C(1,:) = [0, 0, 1, 0, 0];
 ch_C(2,:) = [0, 0, -1, 0, 0];
 ch_C(3,:) = [-sin(Theta), -cos(Theta), 0, 0, 0];
 ch_D = [delta_p; b/tan(Theta); 0];
-guard1 = conHyperplane(halfspace(ch_n,ch_d),ch_C,ch_D);
+guard1 = polytope(ch_C,ch_D,ch_n,ch_d);
 
 % inequality constraints for invariant set
 C1(1,:) = [0, 0, -tan(Theta), -1, 0];
@@ -98,16 +97,14 @@ a_21 = (-1*(theta+1)*m_s*sin(Theta)*cos(Theta))/denominator;
 a_22 = (m_g2*sin(Theta)^2 - m_s*theta*cos(Theta)^2)/denominator;
 a_51 = ((theta+1)*m_s*m_g2*sin(Theta))/denominator;
 a_52 = ((theta+1)*m_s*m_g2*cos(Theta))/denominator;
-reset1.A = [a_11, a_12, 0, 0, 0; ...
+reset1 = linearReset([a_11, a_12, 0, 0, 0; ...
     a_21, a_22, 0, 0, 0; ...]
     0, 0, 1, 0, 0; ...
     0, 0, 0, 1, 0; ...
-    a_51, a_52, 0, 0, 1]; 
-reset1.c = zeros(dim_x,1);
+    a_51, a_52, 0, 0, 1]);
 
 % transition 
 trans(1) = transition(guard1,reset1,1);
-
 
 
 % Transition 2 ------------------------------------------------------------
@@ -119,7 +116,7 @@ ch_C(1,:) = [0, 0, 1, 0, 0];
 ch_C(2,:) = [0, 0, -1, 0, 0];
 ch_C(3,:) = [-sin(Theta), +cos(Theta), 0, 0, 0];
 ch_D = [delta_p; b/tan(Theta); 0];
-guard2 = conHyperplane(halfspace(ch_n,ch_d),ch_C,ch_D);
+guard2 = polytope(ch_C,ch_D,ch_n,ch_d);
 
 % inequality constraints for invariant set
 C2(1,:) = [0, 0, -tan(Theta), 1, 0];
@@ -137,12 +134,11 @@ a_21 = ((theta+1)*m_s*sin(Theta)*cos(Theta))/denominator;
 a_22 = (m_g2*sin(Theta)^2 - m_s*theta*cos(Theta)^2)/denominator;
 a_51 = ((theta+1)*m_s*m_g2*sin(Theta))/denominator;
 a_52 = (-1*(theta+1)*m_s*m_g2*cos(Theta))/denominator;
-reset2.A = [a_11, a_12, 0, 0, 0; ...
+reset2 = linearReset([a_11, a_12, 0, 0, 0; ...
     a_21, a_22, 0, 0, 0; ...]
     0, 0, 1, 0, 0; ...
     0, 0, 0, 1, 0; ...
-    a_51, a_52, 0, 0, 1]; 
-reset2.c = zeros(dim_x,1);
+    a_51, a_52, 0, 0, 1]);
 
 % transition
 trans(2) = transition(guard2,reset2,1);
@@ -154,19 +150,17 @@ trans(2) = transition(guard2,reset2,1);
 % guard set
 C3(1,:) = [0, 0, -1, 0, 0];
 d3 = [-delta_p]; % different from paper!!
-guard3 = conHyperplane(C3,d3);
+guard3 = polytope([],[],C3,d3);
 
 % reset function
-reset3.A = [0, 0, 0, 0, 0; ...
+reset3 = linearReset([0, 0, 0, 0, 0; ...
     0, 0, 0, 0, 0; ...
     0, 0, 1, 0, 0; ...
     0, 0, 0, 1, 0; ...
-    m_s, m_s, 0, 0, 1]; 
-reset3.c = zeros(dim_x,1);
+    m_s, m_s, 0, 0, 1]);
 
 % transition
 trans(3) = transition(guard3,reset3,2);
-
 
 
 % Hybrid Automaton --------------------------------------------------------
@@ -178,11 +172,11 @@ dinv = dinv + ones(length(dinv),1)*1e-3;
 inv = polytope(Cinv,dinv);
 
 % location
-loc(1) = location('loc1',inv,trans,linSys);
+loc(1) = location('loc1',inv,trans,linsys);
 
 loc(2) = location('loc2',inv,transition(),linearSys(zeros(5),zeros(5,1)));
 
 % hybrid automaton
-HA = hybridAutomaton(loc);
+HA = hybridAutomaton('gearbox',loc);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

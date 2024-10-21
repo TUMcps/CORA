@@ -14,7 +14,7 @@ function res = test_interval_reshape
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       29-August-2019
@@ -27,11 +27,11 @@ function res = test_interval_reshape
 initSize = [6, 4];
 lower = -rand(initSize);
 upper = rand(initSize);
-Int = interval(lower, upper);
+I = interval(lower, upper);
 
 % compute reshape
 reshapeSize = [8, 3];
-Int_reshape = reshape(Int, reshapeSize);
+Int_reshape = reshape(I, reshapeSize);
 
 % true solution
 lower_true = reshape(lower, reshapeSize);
@@ -39,28 +39,13 @@ upper_true = reshape(upper, reshapeSize);
 Int_true = interval(lower_true, upper_true);
 
 % compare results
-res = Int_reshape == Int_true;
+assert(Int_reshape == Int_true);
 
 % wrong reshape dimensions should throw error
-if CHECKS_ENABLED
+reshapeSize = [9,2];
+assertThrowsAs(@reshape,'MATLAB:getReshapeDims:notSameNumel',I,reshapeSize);
 
-reshapeSize = [9, 2];
-try
-    reshape(Int, reshapeSize);
-    res = false;
-end
-
-% reshaping to larger array dimension should throw error
-reshapeSize = [4, 3, 2];
-try
-    reshape(Int, reshapeSize);
-    res = false;
-end
-
-end
-
-
-% add results
-res = all(res);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

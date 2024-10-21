@@ -33,7 +33,7 @@ N = 6;
 dims = [1,2,5,6];
 fs_ = lift(fs,N,dims);
 fs_true = fullspace(N);
-res = isequal(fs_true,fs_);
+assert(isequal(fs_true,fs_));
 
 % not enough specified dimensions: fix error message before this...
 % projDims = [1,2,5];
@@ -44,30 +44,17 @@ res = isequal(fs_true,fs_);
 %     res(end+1,1) = true;
 % end
 
-if CHECKS_ENABLED
-
 % dimensions out of range
 projDims = [-1,2,3,5];
-try
-    fs_ = lift(fs,N,projDims);
-    res(end+1,1) = false;
-catch
-    res(end+1,1) = true;
-end
+assertThrowsAs(@lift,'CORA:wrongValue',fs,N,projDims);
 
 % higher-dimensional space smaller than original space
 N = 3;
-dims = [1,2,5,6];
-try
-    fs_ = lift(fs,N,projDims);
-    res(end+1,1) = false;
-catch
-    res(end+1,1) = true;
-end
+projDims = [1,2,5,6];
+assertThrowsAs(@lift,'CORA:wrongValue',fs,N,projDims);
 
-end
 
-% combine results
-res = all(res);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

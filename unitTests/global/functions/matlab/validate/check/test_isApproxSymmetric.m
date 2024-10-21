@@ -25,15 +25,15 @@ function res = test_isApproxSymmetric
 
 % identity matrix
 Q = eye(2);
-res = isApproxSymmetric(Q,0);
+assert(isApproxSymmetric(Q,0));
 
 % slightly skewed
 skew = 1e-10;
 Q = [1 0; 0+skew, 0];
-res(end+1,1) = ~isApproxSymmetric(Q,0);
-res(end+1,1) = isApproxSymmetric(Q,skew);
+assert(~isApproxSymmetric(Q,0));
+assert(isApproxSymmetric(Q,skew));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

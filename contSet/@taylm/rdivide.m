@@ -11,7 +11,7 @@ function res = rdivide(numerator, denominator)
 % Outputs:
 %    res - resulting taylm object
 %
-% Other m-files required: inverse
+% Other m-files required: priv_inverse
 % Subfunctions: none
 % MAT-files required: none
 %
@@ -26,9 +26,9 @@ function res = rdivide(numerator, denominator)
 
     if isa(numerator,'taylm') && isa(denominator,'taylm')
         
-        %res = numerator .* inverse(denominator);
+        %res = numerator .* priv_inverse(denominator);
         
-        res = arrayfun(@(a, b) a .* inverse(b), numerator, denominator, 'UniformOutput', 0);
+        res = arrayfun(@(a, b) a .* priv_inverse(b), numerator, denominator, 'UniformOutput', 0);
         
     
     elseif isa(numerator,'taylm') && isa(denominator,'double')
@@ -39,8 +39,8 @@ function res = rdivide(numerator, denominator)
         
     elseif isa(denominator,'taylm') && isa(numerator,'double')
 
-        %res = numerator .* inverse(denominator);
-        res = arrayfun(@(b) numerator .* inverse(b), denominator, 'UniformOutput', 0);
+        %res = numerator .* priv_inverse(denominator);
+        res = arrayfun(@(b) numerator .* priv_inverse(b), denominator, 'UniformOutput', 0);
 
         
     end

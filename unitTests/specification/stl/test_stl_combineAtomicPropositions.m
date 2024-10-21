@@ -24,22 +24,24 @@ function res = test_stl_combineAtomicPropositions
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+res = true;
+
 % setup
 x = stl('x', 3);
 
 % cases
 p1 = finally(globally(x(1) < 5 & x(2) > 7, interval(1,2)), interval(2,3));
-ap1 = atomicProposition(halfspace([1 0 0], 5));
-ap2 = atomicProposition(halfspace([0 -1 0], -7));
+ap1 = atomicProposition(polytope([1 0 0], 5));
+ap2 = atomicProposition(polytope([0 -1 0], -7));
 r1 = finally(globally(stl('x1 < 5',ap1) & stl('x2 > 7',ap2), interval(1,2)), interval(2,3));
 
 [e1,m1] = combineAtomicPropositions(p1);
 
-res = isequal(r1, e1);
-res(end+1,1) = isequal(ap1, m1("x1 < 5"));
-res(end+1,1) = isequal(ap2, m1("x2 > 7"));
+assert(isequal(r1, e1));
+assert(isequal(ap1, m1("x1 < 5")));
+assert(isequal(ap2, m1("x2 > 7")));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

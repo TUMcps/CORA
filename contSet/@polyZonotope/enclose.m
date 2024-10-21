@@ -43,13 +43,13 @@ function pZ = enclose(pZ,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,3);
+
 % parse input arguments
 if nargin == 2
     pZ2 = varargin{1};
 elseif nargin == 3
     pZ2 = (varargin{1}*pZ) + varargin{2};
-else
-    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
 % check if exponent matrices are identical

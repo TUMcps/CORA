@@ -21,27 +21,20 @@ function res = testLong_nonlinearSys_tensorCreation
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = false;
-dim_x = 6;
-
 % Parameters --------------------------------------------------------------
 
-params.tFinal=8; % final time
-params.R0=zonotope([[2; 4; 4; 2; 10; 4],0.2*eye(dim_x)]); % initial set
+params.tFinal = 8; % final time
+params.R0 = zonotope([[2; 4; 4; 2; 10; 4],0.2*eye(6)]); % initial set
 params.U = zonotope([0,0.005]); %input for reachability analysis
 
 
 % Reachability Settings ---------------------------------------------------
 
-options.timeStep=4; %time step size 
-options.taylorTerms=4; % number of taylor terms 
-options.zonotopeOrder=50; % maximum zonotope order
-options.intermediateOrder=5;
-options.alg = 'poly';
-options.tensorOrder = 3;
-options.errorOrder=1;
-options.reductionInterval=1e3;
-options.maxError = 1*ones(dim_x,1);
+options.timeStep = 4;
+options.taylorTerms = 4;
+options.zonotopeOrder = 50;
+options.intermediateOrder = 5;
+options.errorOrder = 1;
 
 
 % Test Cases --------------------------------------------------------------
@@ -80,7 +73,11 @@ for i = 1:2
                     end
                     
                     % tensor order
-                    if m == 1 && ~strcmp(options.alg,'poly')
+                    if m == 1
+                        if strcmp(options_.alg,'poly')
+                            % tensorOrder = 2 not valid for poly -> skip
+                            continue
+                        end
                         options_.tensorOrder = 2;
                     else
                         options_.tensorOrder = 3;
@@ -97,7 +94,7 @@ for i = 1:2
     end
 end
 
-% test is successful if no error occured during execution
+% test is successful if no error occurred during execution
 res = true;
 
 % ------------------------------ END OF CODE ------------------------------

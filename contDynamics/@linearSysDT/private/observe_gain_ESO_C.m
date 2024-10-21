@@ -1,13 +1,13 @@
-function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_C(obj,options)
+function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_C(linsysDT,params,options)
 % observe_gain_ESO_C - computes the gain for the guaranteed state estimation
-% approach from [1]. 
-%
+%    approach from [1]. 
 %
 % Syntax:
-%    [OGain,tComp]= observe_gain_ESO_C(obj,options)
+%    [OGain,tComp]= observe_gain_ESO_C(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
@@ -21,8 +21,6 @@ function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_C(obj,options)
 %    [1] Nassim Loukkas, John J. Martinez, and Nacim Meslem. Set-
 %        membership observer design based on ellipsoidal invariant
 %        sets. IFAC-Papers On Line, 50(1):6471-6476, 2017.
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -40,7 +38,7 @@ function [OGain,P,gamma,lambda,tComp] = observe_gain_ESO_C(obj,options)
 tic
 
 % obtain system dimension and nr of outputs
-n = obj.dim; 
+n = linsysDT.nrOfStates; 
 
 % set options of solver
 options_sdp = sdpsettings;
@@ -52,7 +50,7 @@ options_sdp.verbose = 1;
 Q = eye(n); 
 
 % line 2-6 of Alg. 1 in [1]
-[~, ~, ~, ~, Ao] = aux_compute_Q(obj,Q,options,options_sdp);
+[~, ~, ~, ~, Ao] = aux_compute_Q(linsysDT,Q,params.W,params.V,options_sdp);
 
 % Compute the disturbance variance W; we use a more precise method compared
 % to using (27) in [1]. Quantile function for probability p of the 
@@ -62,7 +60,7 @@ p = 0.999;
 quantileFctValue = chi2inv(p,dim);
 
 % obtain covariance matrix
-W = options.W.Q/quantileFctValue;
+W = params.W.Q/quantileFctValue;
 
 % Obtain the covariance matrix V using (26) in [1]
 V = sdpvar(n, n, 'symmetric');
@@ -74,7 +72,7 @@ V = value(V);
 Q = inv(V);
 
 % go back to line 2-6 of Alg. 1 in [1]
-[Q, P, Y, gamma] = aux_compute_Q(obj,Q,options,options_sdp);
+[Q, P, Y, gamma] = aux_compute_Q(linsysDT,Q,params.W,params.V,options_sdp);
 
 % Compute λ as the minimum generalized eigenvalue of the pair (Q,P), line 7
 lambda = min(eigs(Q,P));
@@ -91,9 +89,9 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 % This function realizes line 2-6 of Alg. 1 in [1]
-function [Q, P, Y, gamma, Ao] = aux_compute_Q(obj,Q,options,options_sdp)
+function [Q, P, Y, gamma, Ao] = aux_compute_Q(obj,Q,W,V,options_sdp)
     % solve LMI, line 2 of Alg. 1
-    [P,Y,gamma] = aux_solveLMI(obj,Q,options,options_sdp);
+    [P,Y,gamma] = aux_solveLMI(obj,Q,W,V,options_sdp);
 
     % compute L, line 3 of Alg. 1
     L = P\Y;
@@ -102,15 +100,15 @@ function [Q, P, Y, gamma, Ao] = aux_compute_Q(obj,Q,options,options_sdp)
     Ao = obj.A-L*obj.C;
 
     % Compute E, line 5 of Alg. 1
-    E = [options.W.Q, -L*options.V.Q];
+    E = [W.Q, -L*V.Q];
 
     %% Using P and γ, find a new matrix Q which satisfies the LMI in (20) 
     % of [1] and minimizes (− log(det(Q)))
     
     % obtain system dimension and nr of outputs
-    n = obj.dim; 
-    nrOfOutputs = size(obj.C,1);
-    nrOfDistGens = size(options.W.Q,2);
+    n = obj.nrOfStates; 
+    nrOfOutputs = size(obj.C,1); % obj.nrOfOutputs?
+    nrOfDistGens = size(W.Q,2);
     
     % identity matrix
     I = eye(nrOfDistGens + nrOfOutputs);
@@ -134,14 +132,14 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [P,Y,gamma] = aux_solveLMI(obj,Q,options,options_sdp)
+function [P,Y,gamma] = aux_solveLMI(obj,Q,W,V,options_sdp)
     
     % shape matrices of the disturbance and porcess noise sets
-    F = options.W.Q;
-    E = options.V.Q;
+    F = W.Q;
+    E = V.Q;
     
     % obtain system dimension and nr of outputs
-    n = obj.dim;
+    n = obj.nrOfStates;
     nrOfOutputs = size(obj.C,1);
     nrOfDistGens = size(F,2);
 
@@ -185,6 +183,5 @@ function [P,Y,gamma] = aux_solveLMI(obj,Q,options,options_sdp)
         end
     end
 end
-
 
 % ------------------------------ END OF CODE ------------------------------

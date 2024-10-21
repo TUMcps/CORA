@@ -296,23 +296,38 @@ function val = aux_robustnessSimResult(sim,phi,sets)
     end
 end
 
-function val = aux_robustnessPoint(p,set)
+function val = aux_robustnessPoint(p,S)
 % compute robustness of a single point (=min. distance from the unsafe set)
 
-    if ~iscell(set)     % single unsafe set
+    % union of unsafe sets
+    if iscell(S)
 
-        if isa(set,'polytope')
-            if contains(set,p)
-                len = sqrt(sum(set.A.^2,2));
-                val = max((set.A * p - set.b)./len);
+        val = Inf;
+
+        % loop over all unsafe sets
+        for i = 1:length(S)
+            val = min(val,aux_robustnessPoint(p,S{i}));
+        end
+
+    % single unsafe set
+    else
+
+        if isa(S,'polytope')
+            if contains(S,p)
+                len = sqrt(sum(S.A.^2,2));
+                val = max((S.A * p - S.b)./len);
+                
+            elseif representsa_(S,'halfspace',1e-12)
+                val = (S.A(1,:)*p - min(S.b))/norm(S.A(1,:));
+
             else
                 n = length(p);
                 
                 % define quadratic program
                 problem.H = eye(n);
                 problem.f = -p;
-                problem.Aineq = set.A;
-                problem.bineq = set.b;
+                problem.Aineq = S.A;
+                problem.bineq = S.b;
                 problem.Aeq = [];
                 problem.beq = [];
                 problem.lb = [];
@@ -322,32 +337,36 @@ function val = aux_robustnessPoint(p,set)
                 p_ = CORAquadprog(problem);
                 val = norm(p-p_);
             end
-        elseif isa(set,'halfspace')
-            val = (set.c'*p - set.d)/norm(set.c);
+
         else
-            val = max(set.funHan(p));
+            val = max(S.funHan(p));
         end
-
-    else                % union of unsafe sets
-
-        val = inf;
-
-        % loop over all unsafe sets
-        for i = 1:length(set)
-            val = min(val,aux_robustnessPoint(p,set{i}));
-        end
+        
     end
 end
 
 function val = aux_robustnessSet(S,set)
 % compute robustness of a single point (=min. distance from the unsafe set)
 
-    if ~iscell(set)     % single unsafe set
+    % union of unsafe sets
+    if iscell(set)          
+
+        val = Inf;
+        % loop over all unsafe sets
+        for i = 1:length(set)
+            val = min(val,aux_robustnessSet(S,set{i}));
+        end
+        
+    % single unsafe set
+    else
 
         if isa(set,'polytope')
             S = zonotope(S);
-            if ~isIntersecting_(set,S,'approx') || ...
-                                    ~isIntersecting_(set,S,'exact')
+            if representsa_(S,'halfspace',1e-12)
+                val = (supportFunc(S,set.c,'lower') - set.d)/norm(set.c);
+
+            elseif ~isIntersecting_(set,S,'approx',1e-8) || ...
+                                    ~isIntersecting_(set,S,'exact',1e-8)
 
                 % solve quadratic program with variables [d;x;\alpha]
                 %
@@ -425,20 +444,10 @@ function val = aux_robustnessSet(S,set)
                 [~,val] = CORAlinprog(problem);
             end
 
-        elseif isa(set,'halfspace')
-            val = (supportFunc(S,set.c,'lower') - set.d)/norm(set.c);
         else
             val = max(infimum(set.funHan(interval(S))));
         end
 
-    else                % union of unsafe sets
-
-        val = inf;
-
-        % loop over all unsafe sets
-        for i = 1:length(set)
-            val = min(val,aux_robustnessSet(S,set{i}));
-        end
     end
 end
 
@@ -494,8 +503,8 @@ function list = aux_safe2unsafe(sets)
         for j = 1:length(tmp)
             for k = 1:length(list)
                 if isa(list{k},'levelSet') || isa(tmp{j},'levelSet') || ...
-                        isIntersecting_(list{k},tmp{j},'exact')
-                    if isa(list{k},'halfspace') && isa(tmp{j},'halfspace')
+                        isIntersecting_(list{k},tmp{j},'exact',1e-8)
+                    if isa(list{k},'polytope') && isa(tmp{j},'polytope')
                         list_{end+1} = and_(polytope(list{k}),...
                                                     polytope(tmp{j}),'exact');
                     else
@@ -509,33 +518,28 @@ function list = aux_safe2unsafe(sets)
     end
 end
 
-function res = aux_reverseInequalityConstraints(set)
+function res = aux_reverseInequalityConstraints(S)
 % get a list of reversed inequality constraints for a given set
 
     res = {};
 
-    if isa(set,'levelSet')
+    if isa(S,'levelSet')
 
-        compOp = set.compOp;
+        compOp = S.compOp;
 
         if ~iscell(compOp)
            compOp = {compOp};
         end
 
-        for i = 1:size(set.eq,1)
-            res{end+1} = levelSet(-set.eq(i),set.vars,compOp{i});
+        for i = 1:size(S.eq,1)
+            res{end+1} = levelSet(-S.eq(i),S.vars,compOp{i});
         end
-
-    elseif isa(set,'halfspace')
-
-        res = {halfspace(-set.c,-set.d)};
 
     else
 
-        poly = polytope(set);
-    
+        poly = polytope(S);
         for i = 1:length(poly.b)
-            res{end+1} = polytope(-poly.A(i,:),-poly.b(i));
+            res{end+1} = ~polytope(poly.A(i,:),poly.b(i));
         end
     end
 end

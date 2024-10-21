@@ -34,146 +34,149 @@ sysname = 'sys';
 f_1D = @(x,y,u) x(1)^2;
 g_1D = @(x,y,u) y(1) + x(1);
 sys = nonlinDASys(f_1D,g_1D);
-if sys.dim ~= 1 || sys.nrOfInputs ~= 1 || sys.nrOfConstraints ~= 1 || sys.nrOfOutputs ~= 1
-    res = false;
-end
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 1)
+assert(sys.nrOfOutputs == 1)
+
 sys = nonlinDASys(sysname,f_1D,g_1D);
-if ~strcmp(sys.name,sysname) || sys.dim ~= 1 ...
-        || sys.nrOfInputs ~= 1 || sys.nrOfConstraints ~= 1 || sys.nrOfOutputs ~= 1
-    res = false;
-end
+assert(strcmp(sys.name,sysname))
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 1)
+assert(sys.nrOfOutputs == 1)
+
 sys = nonlinDASys(f_1D,g_1D,1,1,1);
-if sys.dim ~= 1 || sys.nrOfInputs ~= 1 || sys.nrOfConstraints ~= 1 || sys.nrOfOutputs ~= 1
-    res = false;
-end
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 1)
+assert(sys.nrOfOutputs == 1)
+
 sys = nonlinDASys(sysname,f_1D,g_1D,1,1,1);
-if ~strcmp(sys.name,sysname) || sys.dim ~= 1 ...
-        || sys.nrOfInputs ~= 1 || sys.nrOfConstraints ~= 1 || sys.nrOfOutputs ~= 1
-    res = false;
-end
+assert(strcmp(sys.name,sysname))
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 1)
+assert(sys.nrOfOutputs == 1)
+
 
 % one-dimensional, with inputs
 f_1D = @(x,y,u) x(1)^2 + u(1);
 g_1D = @(x,y,u) x(1) - y(1);
 sys = nonlinDASys(f_1D,g_1D);
-if sys.dim ~= 1 || sys.nrOfInputs ~= 1 || sys.nrOfConstraints ~= 1 || sys.nrOfOutputs ~= 1
-    res = false;
-end
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 1)
+assert(sys.nrOfOutputs == 1)
+
 sys = nonlinDASys(sysname,f_1D,g_1D);
-if ~strcmp(sysname,sys.name) || sys.dim ~= 1 || sys.nrOfInputs ~= 1 ...
-        || sys.nrOfConstraints ~= 1 || sys.nrOfOutputs ~= 1
-    res = false;
-end
+assert(strcmp(sysname,sys.name))
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 1)
+assert(sys.nrOfOutputs == 1)
+
 sys = nonlinDASys(f_1D,g_1D,1,1,1);
-if sys.dim ~= 1 || sys.nrOfInputs ~= 1 || sys.nrOfConstraints ~= 1 || sys.nrOfOutputs ~= 1
-    res = false;
-end
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 1)
+assert(sys.nrOfOutputs == 1)
+
 sys = nonlinDASys(sysname,f_1D,g_1D,1,1,1);
-if ~strcmp(sysname,sys.name) || sys.dim ~= 1 || sys.nrOfInputs ~= 1 ...
-        || sys.nrOfConstraints ~= 1 || sys.nrOfOutputs ~= 1
-    res = false;
-end
+assert(strcmp(sysname,sys.name))
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 1)
+assert(sys.nrOfOutputs == 1)
 
 % three-dimensional, no inputs, no constaints
 f_3D = @(x,y,u) [sqrt(x(1)) - x(2)*u(1); x(2)-y(1); x(3)*x(2)];
 g_2D = @(x,y,u) [x(1) - y(1); y(2) + x(2)];
 sys = nonlinDASys(f_3D,g_2D);
-if sys.dim ~= 3 || sys.nrOfInputs ~= 1 || sys.nrOfConstraints ~= 2 || sys.nrOfOutputs ~= 3
-    res = false;
-end
+assert(sys.nrOfStates == 3)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 2)
+assert(sys.nrOfOutputs == 3)
+
 sys = nonlinDASys(f_3D,g_2D,3,1,2);
-if sys.dim ~= 3 || sys.nrOfInputs ~= 1 || sys.nrOfConstraints ~= 2 || sys.nrOfOutputs ~= 3
-    res = false;
-end
+assert(sys.nrOfStates == 3)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 2)
+assert(sys.nrOfOutputs == 3)
+
 sys = nonlinDASys(sysname,f_3D,g_2D);
-if ~strcmp(sys.name,sysname) || sys.dim ~= 3 || sys.nrOfInputs ~= 1 ...
-        || sys.nrOfConstraints ~= 2 || sys.nrOfOutputs ~= 3
-    res = false;
-end
+assert(strcmp(sysname,sys.name))
+assert(sys.nrOfStates == 3)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 2)
+assert(sys.nrOfOutputs == 3)
+
 sys = nonlinDASys(sysname,f_3D,g_2D,3,1,2);
-if ~strcmp(sys.name,sysname) || sys.dim ~= 3 || sys.nrOfInputs ~= 1 ...
-        || sys.nrOfConstraints ~= 2 || sys.nrOfOutputs ~= 3
-    res = false;
-end
+assert(strcmp(sysname,sys.name))
+assert(sys.nrOfStates == 3)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 2)
+assert(sys.nrOfOutputs == 3)
 
 % with output equation
 h_2D = @(x,y,u) [x(1)*y(1); x(2) - u(1)];
 sys = nonlinDASys(f_3D,g_2D,h_2D);
-if sys.dim ~= 3 || sys.nrOfInputs ~= 1 || sys.nrOfConstraints ~= 2 || sys.nrOfOutputs ~= 2
-    res = false;
-end
+assert(sys.nrOfStates == 3)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 2)
+assert(sys.nrOfOutputs == 2)
+
 sys = nonlinDASys(sysname,f_3D,g_2D,h_2D);
-if ~strcmp(sys.name,sysname) || sys.dim ~= 3 || sys.nrOfInputs ~= 1 ...
-        || sys.nrOfConstraints ~= 2 || sys.nrOfOutputs ~= 2
-    res = false;
-end
+assert(strcmp(sysname,sys.name))
+assert(sys.nrOfStates == 3)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 2)
+assert(sys.nrOfOutputs == 2)
+
 sys = nonlinDASys(f_3D,g_2D,3,1,2,h_2D,2);
-if sys.dim ~= 3 || sys.nrOfInputs ~= 1 || sys.nrOfConstraints ~= 2 || sys.nrOfOutputs ~= 2
-    res = false;
-end
+assert(sys.nrOfStates == 3)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 2)
+assert(sys.nrOfOutputs == 2)
+
 sys = nonlinDASys(sysname,f_3D,g_2D,3,1,2,h_2D,2);
-if ~strcmp(sys.name,sysname) || sys.dim ~= 3 || sys.nrOfInputs ~= 1 ...
-        || sys.nrOfConstraints ~= 2 || sys.nrOfOutputs ~= 2
-    res = false;
-end
+assert(strcmp(sysname,sys.name))
+assert(sys.nrOfStates == 3)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfConstraints == 2)
+assert(sys.nrOfOutputs == 2)
 
 
 % wrong instantiations
 
 % only name
-try
-    nonlinDASys(sysname);
-    res = false;
-end
+assertThrowsAs(@nonlinDASys,'CORA:numInputArgsConstructor',sysname);
 % name is numeric
-try
-    nonlinDASys(1,f_1D,g_1D,1,1);
-    res = false;
-end
+assertThrowsAs(@nonlinDASys,'MATLAB:UndefinedFunction',1,f_1D,g_1D,1,1);
 % only states, not inputs or constraints given
-try
-    nonlinDASys(f_1D,g_1D,1);
-    res = false;
-end
+assertThrowsAs(@nonlinDASys,'CORA:wrongInputInConstructor',f_1D,g_1D,1);
 % only states and inputs, but no constraints given
-try
-    nonlinDASys(f_1D,g_1D,1,1);
-    res = false;
-end
+assertThrowsAs(@nonlinDASys,'CORA:wrongInputInConstructor',f_1D,g_1D,1,1);
 % more states in output equation
-try
-    nonlinDASys(f_1D,g_1D,h_2D);
-    res = false;
-end
+assertThrowsAs(@nonlinDASys,'CORA:wrongInputInConstructor',f_1D,g_1D,h_2D);
 % states, inputs, and constraints, but not outputs given
-try
-    nonlinDASys(f_3D,g_2D,3,1,2,h_2D);
-    res = false;
-end
+assertThrowsAs(@nonlinDASys,'CORA:wrongInputInConstructor',f_3D,g_2D,3,1,2,h_2D);
 % only dynamic function as input argument
-try
-    nonlinDASys(f_1D);
-    res = false;
-end
+assertThrowsAs(@nonlinDASys,'CORA:numInputArgsConstructor',f_1D);
 % only x as input argument
 f_x = @(x) x(1)^2;
 g_x = @(x) x(1);
-try
-    nonlinDASys(f_x,g_x);
-    res = false;
-end
+assertThrowsAs(@nonlinDASys,'CORA:wrongInputInConstructor',f_x,g_x);
 % only x and y as input arguments
 f_xy = @(x,y) x(1)^2 - y(1);
 g_xy = @(x,y) x(1) + y(1);
-try
-    nonlinDASys(f_xy,g_xy);
-    res = false;
-end
+assertThrowsAs(@nonlinDASys,'CORA:wrongInputInConstructor',f_xy,g_xy);
 % too many input arguments
 f_xyup = @(x,y,u,p) x(1)^2;
-try
-    nonlinDASys(f_xyup);
-    res = false;
-end
+assertThrowsAs(@nonlinDASys,'CORA:numInputArgsConstructor',f_xyup);
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

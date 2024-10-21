@@ -24,28 +24,28 @@ function res = test_intervalMatrix_dim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
+res = true;
 
 % only one row
 c = [1 2 3 4];
 d = [1 1 1 1];
 intMat = intervalMatrix(c,d);
-res(end+1,1) = all(dim(intMat) == [1,4]);
+assert(all(dim(intMat) == [1,4]));
 
 % only one column
 c = [1 2 3 4]';
 d = [1 1 1 1]';
 intMat = intervalMatrix(c,d);
-res(end+1,1) = all(dim(intMat) == [4,1]);
+assert(all(dim(intMat) == [4,1]));
 
 
 % multiple rows and columns
 c = [2 3 4; 5 6 7];
 d = [1 0 1; 0 0 1];
 intMat = intervalMatrix(c,d);
-res(end+1,1) = all(dim(intMat) == [2,3]);
+assert(all(dim(intMat) == [2,3]));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

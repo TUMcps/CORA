@@ -284,7 +284,7 @@ end
 
 % polyZono.maxPolyZonoRatio
 function res = aux_getCondfunOptions_polyZono_maxPolyZonoRatio(sys,func,params,options)
-    if startsWith(func,'reachInner')
+    if startsWith(func,'reachInner') || isa(sys, 'nonlinearARX')
         res = true;
     else
         res = contains(options.alg,'poly');

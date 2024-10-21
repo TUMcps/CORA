@@ -1,12 +1,12 @@
-function [Rin,Rout] = reachInnerScaling(sys,params,options)
+function [Rin,Rout] = reachInnerScaling(nlnsys,params,options)
 % reachInnerScaling - compute an inner-approximation of the reachable set
-%                     with the algorithm in [1]
+%    with the algorithm in [1]
 %
 % Syntax:
-%    [Rin,Rout] = reachInnerScaling(sys,params,options)
+%    [Rin,Rout] = reachInnerScaling(nlnsys,params,options)
 %
 % Inputs:
-%    sys - nonlinearSys object
+%    nlnsys - nonlinearSys object
 %    params - parameters defining the reachability problem
 %    options - struct containing the algorithm settings
 %
@@ -37,30 +37,28 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
     % options preprocessing
-    input = false;
-    if isfield(params,'U')
-        input = true;
-    else
-        params.U = interval(zeros(sys.nrOfInputs));
+    input = isfield(params,'U');
+    if input
+        params.U = interval(zeros(nlnsys.nrOfInputs));
     end
     
-    options = validateOptions(sys,mfilename,params,options);
+    [params,options] = validateOptions(nlnsys,params,options);
 
     % compute outer-approximation of the reachable set
-    [params,options_outer] = aux_getOuterReachOptions(options);
+    options_outer = aux_getOuterReachOptions(options);
     
     if ~input
-        Rout = reach(sys,params,options_outer);
+        Rout = reach(nlnsys,params,options_outer);
         Rout_ = Rout;
     else
-        Rout_ = aux_reachWithInputs(sys,params,options_outer,options);
+        Rout_ = aux_reachWithInputs(nlnsys,params,options_outer,options);
         if nargout > 1
-            Rout = reach(sys,params,options_outer);
+            Rout = reach(nlnsys,params,options_outer);
         end
     end
 
     % loop over all time steps for the inner-approximation
-    set = {options.R0}; time = {options.tStart};
+    set = {params.R0}; time = {params.tStart};
     
     for i = options.N:options.N:length(Rout_.timePoint.set)
        
@@ -157,7 +155,7 @@ function [Rin,Rout] = reachInnerScaling(sys,params,options)
         end
         
         if input && ~representsa_(R,'emptySet',1e-12)
-            set{end+1} = project(R,1:sys.dim);
+            set{end+1} = project(R,1:nlnsys.nrOfStates);
         else
             set{end+1} = R;
         end
@@ -259,11 +257,11 @@ function pZ = aux_reduceOrderInd(pZ)
     [B,~,~] = svd([-pZ.G,pZ.G]);
     
     % compute interval enclosure in the transformed space
-    zono = zonotope([zeros(length(pZ.c),1),pZ.GI]);
-    zono = B * zonotope(interval(B'*zono));
+    Z = zonotope(zeros(dim(pZ),1),pZ.GI);
+    Z = B * zonotope(interval(B'*Z));
 
     % construct the resulting polynomial zonotope
-    pZ = polyZonotope(pZ.c,pZ.G,generators(zono),pZ.E);
+    pZ = polyZonotope(pZ.c,pZ.G,generators(Z),pZ.E);
 end
 
 function pZ = aux_removeAddGens(pZ)
@@ -281,56 +279,38 @@ function pZ = aux_removeAddGens(pZ)
        
        % enclose generators belonging to add. genertors with a zonotope
        temp = polyZonotope(zeros(n,1), pZ.G(:,ind), [], pZ.E(:,ind));
-       zono = zonotope(temp);
+       Z = zonotope(temp);
        
        % construct the resulting polynomial zonotope
-       pZ = polyZonotope(pZ.c+zono.c, pZ.G(:,ind_), ...
-           [pZ.GI,zono.G], pZ.E(1:n,ind_)); 
+       pZ = polyZonotope(pZ.c+Z.c, pZ.G(:,ind_), ...
+           [pZ.GI,Z.G], pZ.E(1:n,ind_)); 
     end
 end
 
-function [params,options] = aux_getOuterReachOptions(options)
-% extract params and options for outer-reachability analysis
-
-    % copy relevant fields to the params struct
-    params.R0 = options.R0;
-    params.tFinal = options.tFinal;
-    if isfield(options,'U')
-       params.U = zonotope(options.U);
-    end
-    if isfield(options,'u')
-       params.u = options.u; 
-    end
-    if isfield(options,'tStart')
-       params.tStart = options.tStart;
-    end
+function options = aux_getOuterReachOptions(options)
+% extract options for outer reachability analysis
     
     % remove irrelevant fields from the options struct
-    list = {'R0','U','u','tStart','tFinal','N','orderInner','algInner', ...
+    list = {'N','orderInner','algInner', ...
             'contractor','iter','splits','scaleFac','timeStepInner', ...
             'inpChanges','linAlg'};
-        
-    for i = 1:length(list)
-       if isfield(options,list{i})
-          options = rmfield(options,list{i}); 
-       end
-    end
+    options = rmiffield(options,list); 
     
     options.polyZono = rmfield(options.polyZono,'volApproxMethod');
 end
 
-function Rout = aux_reachWithInputs(sys,params,options_outer,options)
+function Rout = aux_reachWithInputs(nlnsys,params,options_outer,options)
 % compute outer-approximation of the reachable set with piecewise constant
 % inputs to obtain a more accurate inner-approximation
 
     inputChanges = options.inpChanges + 1;
-    m = sys.nrOfInputs;
-    n = sys.dim;
+    m = nlnsys.nrOfInputs;
+    n = nlnsys.nrOfStates;
     
     % define extended initial set
     R0 = interval(params.R0);
     for i = 1:inputChanges
-       R0 = cartProd(R0,interval(params.U));
+        R0 = cartProd(R0,interval(params.U));
     end
     params.R0 = polyZonotope(R0);
     params = rmfield(params,'U');
@@ -341,9 +321,9 @@ function Rout = aux_reachWithInputs(sys,params,options_outer,options)
     for i = 1:inputChanges
         
         % define extended system dynamics
-        fun = @(x,u) [sys.mFile(x,x(n+(i-1)*m+1:n+i*m )); ...
+        fun = @(x,u) [nlnsys.mFile(x,x(n+(i-1)*m+1:n+i*m )); ...
                       zeros(inputChanges*m,1)];
-        sysExt = nonlinearSys([sys.name,'Extended', ...
+        sysExt = nonlinearSys([nlnsys.name,'Extended', ...
                               num2str(inputChanges),'_',num2str(i)],fun);
         
         % compute reachable set

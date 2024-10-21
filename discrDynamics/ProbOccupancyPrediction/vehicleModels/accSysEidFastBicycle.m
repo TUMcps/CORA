@@ -1,4 +1,4 @@
-function [dx]=accSysEidFastBicycle(t,x,u)
+function [dx]=accSysEidFastBicycle(x,u)
 
 aMax=2.5;
 c1=2.5;

@@ -23,8 +23,6 @@ function res = test_conZonotope_uminus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = true(0);
-
 % init
 c = [0;0];
 G = [2 0 2; 0 2 2];
@@ -34,18 +32,18 @@ cZ = conZonotope(c,G,A,b);
 
 % negate
 ncZ = -cZ;
-resvec(end+1) = all(ncZ.c == -c, 'all');
-resvec(end+1) = all(ncZ.G == -G, 'all');
-resvec(end+1) = all(ncZ.A == A, 'all');
-resvec(end+1) = all(ncZ.b == b, 'all');
+assert(all(ncZ.c == -c, 'all'));
+assert(all(ncZ.G == -G, 'all'));
+assert(all(ncZ.A == A, 'all'));
+assert(all(ncZ.b == b, 'all'));
 
 % compare with -1 * cZ
-resvec(end+1) = isequal(ncZ, -1*cZ);
+assert(isequal(ncZ, -1*cZ));
 
 % test empty case
-resvec(end+1) = isemptyobject(-conZonotope.empty(2));
+assert(isemptyobject(-conZonotope.empty(2)));
 
 % add results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

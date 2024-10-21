@@ -23,8 +23,6 @@ function res = test_polytope_cartProd
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % 1D and 2D (both only inequalities)
 A = 1; b = 0;
 P1 = polytope(A,b);
@@ -34,7 +32,7 @@ P_cartProd = cartProd(P1,P2);
 A_true = [1, 0, 0; 0, 1, 1; 0,-1,-1]; b_true = [0;1;1];
 P_true = polytope(A_true,b_true);
 % check for equality
-res(end+1,1) = isequal(P_cartProd,P_true,1e-10);
+assert(isequal(P_cartProd,P_true,1e-10));
 
 
 % 1D and 2D (fullspace and bounded)
@@ -45,7 +43,7 @@ P2 = polytope(A,b);
 P_cartProd = cartProd(P1,P2);
 A_true = [0 1 0; 0 -1 1; 0 -1 -1]; b_true = [1;1;1];
 P_true = polytope(A_true,b_true);
-res(end+1,1) = isequal(P_cartProd,P_true,1e-10);
+assert(isequal(P_cartProd,P_true,1e-10));
 
 
 % 2D and 2D (both only inequalities)
@@ -64,7 +62,7 @@ A_true = [-1, -1, 0; ...
 b_true = [2;3;2;3;2;3;2];
 P_true = polytope(A_true,b_true);
 % check for equality and emptiness
-res(end+1,1) = isequal(P_cartProd,P_true,1e-10);
+assert(isequal(P_cartProd,P_true,1e-10));
 
 % 2D and 2D (halfspace and vertex representations)
 A = [1 0; -1 1; -1 -1]; b = [1; 1; 1];
@@ -78,14 +76,14 @@ V_true = [1 2 1 0; 1 2 1 1; 1 2 0 0;
 P_true = polytope(V_true);
 % compute V rep for numerically more stable comparison
 vertices(P_cartProd);
-res(end+1,1) = isequal(P_cartProd,P_true,1e-10);
+assert(isequal(P_cartProd,P_true,1e-10));
 % re-order
 P_cartProd = cartProd(P2,P1);
 V_true = V_true([3,4,1,2],:);
 P_true = polytope(V_true);
 % compute V rep for numerically more stable comparison
 vertices(P_cartProd);
-res(end+1,1) = isequal(P_cartProd,P_true,1e-10);
+assert(isequal(P_cartProd,P_true,1e-10));
 
 
 % 1D and 3D (both only equalities)
@@ -98,7 +96,7 @@ Ae_true = [1 0 0 0; 0 1 0 1; 0 -1 0 0; 0 0 1 1];
 be_true = [0.2;2;4;-3];
 P_true = polytope([],[],Ae_true,be_true);
 % check for equality
-res(end+1,1) = isequal(P_cartProd,P_true,1e-10);
+assert(isequal(P_cartProd,P_true,1e-10));
 
 
 % 2D (only equalities) and 3D (only inequalities)
@@ -113,7 +111,7 @@ Ae_true = [1 0 0 0 0; 0 1 0 0 0];
 be_true = [1;1];
 P_true = polytope(A_true,b_true,Ae_true,be_true);
 % check for equality
-res(end+1,1) = isequal(P_cartProd,P_true,1e-10);
+assert(isequal(P_cartProd,P_true,1e-10));
 
 % 2D and 3D (both vertex instantiation)
 V1 = [1 -1; -3 -2; -1 2]';
@@ -125,7 +123,7 @@ V_true = [1 -1 -1 1 1; 1 -1 1 -1 1; 1 -1 1 1 -1; 1 -1 1 1 1;
          -3 -2 -1 1 1; -3 -2 1 -1 1; -3 -2 1 1 -1; -3 -2 1 1 1;
          -1 2 -1 1 1; -1 2 1 -1 1; -1 2 1 1 -1; -1 2 1 1 1]';
 P_true = polytope(V_true);
-res(end+1,1) = P_cartProd == P_true;
+assert(P_cartProd == P_true);
 
 
 % 1D and 4D (both with equalities and inequalities)
@@ -140,10 +138,10 @@ Ae_true = [1 0 0 0 0; 0 0 0 1 1];
 be_true = [0;1];
 P_true = polytope(A_true,b_true,Ae_true,be_true);
 % check for equality
-res(end+1,1) = isequal(P_cartProd,P_true,1e-10);
+assert(isequal(P_cartProd,P_true,1e-10));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

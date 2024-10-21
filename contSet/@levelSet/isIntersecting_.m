@@ -1,15 +1,15 @@
-function res = isIntersecting_(ls,S,type,varargin)
+function res = isIntersecting_(ls,S,type,tol,varargin)
 % isIntersecting_ - determines if a level set intersects a set using
 %    the method described in Sec. 4.1 in [1]
 %
 % Syntax:
-%    res = isIntersecting_(ls,S)
-%    res = isIntersecting_(ls,S,type)
+%    res = isIntersecting_(ls,S,type,tol)
 %
 % Inputs:
 %    ls - levelSet object
 %    S - contSet object
 %    type - type of check ('exact' or 'approx')
+%    tol - tolerance
 %
 % Outputs:
 %    res - true/false
@@ -41,7 +41,7 @@ function res = isIntersecting_(ls,S,type,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: contSet/isIntersecting, lfspace/isIntersecting_, conHyperplane/isIntersecting_
+% See also: contSet/isIntersecting
 
 % Authors:       Niklas Kochdumper
 % Written:       19-July-2019
@@ -50,13 +50,41 @@ function res = isIntersecting_(ls,S,type,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% currently, no exact method
-if strcmp(type,'exact')
-    throw(CORAerror('CORA:noops',ls,S));
+% ensure that numeric is second input argument
+[ls,S] = reorderNumeric(ls,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < ls.precedence
+    res = isIntersecting_(S,ls,type,tol);
+    return
 end
 
-% interval over-approximation
-I = interval(S);
+% numeric case: check containment
+if isnumeric(S)
+    res = contains_(ls,S,type,tol);
+    return
+end
+
+% currently, no exact method
+if strcmp(type,'exact')
+    throw(CORAerror('CORA:noExactAlg',ls,S));
+end
+
+% for all: convert to interval and check for intersection
+if isa(S,'contSet')
+    S = interval(S);
+    res = aux_isIntersecting_interval(ls,S,tol);
+    return
+end
+
+throw(CORAerror('CORA:noops',ls,S));
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_isIntersecting_interval(ls,I,tol)
 
 % evaluate non-linear function with interval arithmetic
 I = ls.funHan(I);
@@ -70,9 +98,9 @@ if ~iscell(ls.compOp)
 
     % switch case for the different types of level sets
     if strcmp(ls.compOp,'==')
-        res = (ub > 0 | withinTol(ub,0)) & (lb < 0 | withinTol(lb,0)); 
+        res = (ub > 0 | withinTol(ub,0,tol)) & (lb < 0 | withinTol(lb,0,tol)); 
     elseif strcmp(ls.compOp,'<=')
-         res = lb < 0 | withinTol(lb,0);
+         res = lb < 0 | withinTol(lb,0,tol);
     else
         res = lb < 0;
     end
@@ -85,13 +113,15 @@ else
     for i = 1:length(ls.compOp)
 
         if strcmp(ls.compOp{i},'<=')
-            resVec(i) = lb(i) < 0 | withinTol(lb(i),0);
+            resVec(i) = lb(i) < 0 | withinTol(lb(i),0,tol);
         else
             resVec(i) = lb(i) < 0;
         end
     end
 
     res = all(resVec);
+end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

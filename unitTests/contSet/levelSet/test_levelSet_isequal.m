@@ -42,20 +42,15 @@ eq = -a^2 - b^2 + 5;
 ls1__ = levelSet(eq,[a;b],'<=');
 
 % compare equal sets
-if ~isequal(ls1,ls1_)
-    res = false;
-elseif ~isequal(ls1,ls1__)
-    res = false;
-end
+assert(isequal(ls1,ls1_))
+assert(isequal(ls1,ls1__))
 
 
 % different level set function
 eq = sin(a) + cos(b);
 ls2 = levelSet(eq,[a;b],'<=');
 
-if isequal(ls1,ls2)
-    res = false;
-end
+assert(~isequal(ls1,ls2))
 
 
 % multiple equations
@@ -70,8 +65,8 @@ eq2 = 2*c;
 eq3 = b^2 - 5 - a^2;
 ls2 = levelSet([eq1;eq2;eq3],[a;b;c],{'<','<=','<='});
 
-if ~isequal(ls1,ls2)
-    res = false;
+assert(isequal(ls1,ls2))
+
 end
 
 

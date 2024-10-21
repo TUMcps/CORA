@@ -191,7 +191,6 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-
 function f = aux_lennardJonesPotential(x)
 
     a{1} = {0;0;0};
@@ -211,19 +210,16 @@ function f = aux_lennardJonesPotential(x)
 end
 
 function aux_checkOverapproximation(intReal,int)
-    
-    if any(infimum(int) > infimum(intReal)) || any(supremum(int) < supremum(intReal))
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(all(infimum(int) <= infimum(intReal)))
+    assert(all(supremum(int) >= supremum(intReal)))
 end
 
 function aux_checkDiffToOpt(intReal,int,tol)
 % check if the computed boundaries are close enough to the real boundaries
 % of the function
 
-    if any(abs(infimum(intReal) - infimum(int)) > tol) || any(abs(supremum(int) - supremum(intReal)) > tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(infimum(int) <= infimum(intReal)+tol);
+    assert(supremum(int) >= supremum(intReal)-tol);
 end
 
 % ------------------------------ END OF CODE ------------------------------

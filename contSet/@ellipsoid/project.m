@@ -29,13 +29,13 @@ function E = project(E,dims)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
-inputArgsCheck({{E,'att','ellipsoid','scalar'};
+inputArgsCheck({{E,'att','ellipsoid'};
                 {dims,'att',{'numeric','logical'},{{'nonnan','vector',...
                      'integer','>=',1,'<=',dim(E)},{'vector'}}}});
 
 % project set
 I = eye(length(E.Q));
-P = I(:,dims);
-E = P'*E;
+P = I(dims,:);
+E = P * E;
 
 % ------------------------------ END OF CODE ------------------------------

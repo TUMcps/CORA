@@ -27,6 +27,7 @@ Run the following command once in the current folder to build the docker image:
 	docker image build . -t <name>
 
 This might take a while the first time you run it.
+Please make sure you specified the desired Matlab version within `Dockerfile`.
 
 ## Run docker
 
@@ -105,3 +106,6 @@ or interactively:
 and open in your local browser:
 
     http://localhost:6080/
+
+You should see a desktop with a Matlab icon.
+Open Matlab and add CORA located at `/code/cora` to the Matlab path.

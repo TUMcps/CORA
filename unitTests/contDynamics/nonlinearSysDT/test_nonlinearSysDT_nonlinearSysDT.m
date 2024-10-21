@@ -23,9 +23,6 @@ function res = test_nonlinearSysDT_nonlinearSysDT
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true, wait for failure
-res = true;
-
 % name
 sysname = 'sys';
 % sampling time
@@ -35,121 +32,114 @@ dt = 0.5;
 % one-dimensional, without inputs
 f_1D = @(x,u) x(1)^2;
 sys = nonlinearSysDT(f_1D,dt);
-if sys.dim ~= 1 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 1 ...
-        || sys.dt ~= dt
-    res = false;
-end
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfOutputs == 1)
+assert(sys.dt == dt)
+
 sys = nonlinearSysDT(sysname,f_1D,dt);
-if ~strcmp(sys.name,sysname) ...
-        || sys.dim ~= 1 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 1 ...
-        || sys.dt ~= dt
-    res = false;
-end
+assert(strcmp(sys.name,sysname))
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfOutputs == 1)
+assert(sys.dt == dt)
+
 sys = nonlinearSysDT(sysname,f_1D,dt,1,1);
-if ~strcmp(sys.name,sysname) ...
-        || sys.dim ~= 1 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 1 ...
-        || sys.dt ~= dt
-    res = false;
-end
+assert(strcmp(sys.name,sysname))
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfOutputs == 1)
+assert(sys.dt == dt)
+
 sys = nonlinearSysDT(f_1D,dt,1,1);
-if sys.dim ~= 1 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 1 ...
-        || sys.dt ~= dt
-    res = false;
-end
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfOutputs == 1)
+assert(sys.dt == dt)
+
 
 % one-dimensional, with inputs
 f_1D = @(x,u) x(1)^2 - u(1);
 sys = nonlinearSysDT(f_1D,dt);
-if sys.dim ~= 1 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 1 ...
-        || sys.dt ~= dt
-    res = false;
-end
-sys = nonlinearSysDT(f_1D,dt,1,1);
-if sys.dim ~= 1 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 1 ...
-        || sys.dt ~= dt
-    res = false;
-end
-sys = nonlinearSysDT(sysname,f_1D,dt,1,1);
-if ~strcmp(sys.name,sysname) || sys.dim ~= 1 || sys.nrOfInputs ~= 1 ...
-        || sys.nrOfOutputs ~= 1 || sys.dt ~= dt
-    res = false;
-end
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfOutputs == 1 )
+assert(sys.dt == dt)
 
+sys = nonlinearSysDT(f_1D,dt,1,1);
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfOutputs == 1)
+assert(sys.dt == dt)
+
+sys = nonlinearSysDT(sysname,f_1D,dt,1,1);
+assert(strcmp(sys.name,sysname))
+assert(sys.nrOfStates == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfOutputs == 1)
+assert(sys.dt == dt)
 
 % three-dimensional
 f_3D = @(x,u) [sqrt(x(1)) - x(2)*u(1); x(2)-x(1); x(3)*x(2)];
 sys = nonlinearSysDT(f_3D,dt);
-if sys.dim ~= 3 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 3 ...
-        || sys.dt ~= dt
-    res = false;
-end
+assert(sys.nrOfStates == 3)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfOutputs == 3)
+assert(sys.dt == dt)
+
 sys = nonlinearSysDT(sysname,f_3D,dt,3,1);
-if ~strcmp(sysname,sys.name) ...
-        || sys.dim ~= 3 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 3 ...
-        || sys.dt ~= dt
-    res = false;
-end
+assert(strcmp(sysname,sys.name))
+assert(sys.nrOfStates == 3)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfOutputs == 3)
+assert(sys.dt == dt)
 
 % with output equation
 f_3D = @(x,u) [sqrt(x(1)) - x(2)*u(1); x(2)-exp(x(1)); x(3)*x(2)];
 g_1D = @(x,u) x(1)*x(2);
 sys = nonlinearSysDT(f_3D,dt,g_1D);
-if sys.dim ~= 3 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 1 ...
-        || sys.dt ~= dt
-    res = false;
-end
+assert(sys.nrOfStates == 3)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfOutputs == 1)
+assert(sys.dt == dt)
+
 sys = nonlinearSysDT(sysname,f_3D,dt,g_1D);
-if ~strcmp(sysname,sys.name) ...
-        || sys.dim ~= 3 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 1 ...
-        || sys.dt ~= dt
-    res = false;
-end
+assert(strcmp(sysname,sys.name))
+assert(sys.nrOfStates == 3)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfOutputs == 1)
+assert(sys.dt == dt)
+
 sys = nonlinearSysDT(sysname,f_3D,dt,3,1,g_1D,1);
-if ~strcmp(sysname,sys.name) ...
-        || sys.dim ~= 3 || sys.nrOfInputs ~= 1 || sys.nrOfOutputs ~= 1 ...
-        || sys.dt ~= dt
-    res = false;
-end
+assert(strcmp(sysname,sys.name))
+assert(sys.nrOfStates == 3)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfOutputs == 1)
+assert(sys.dt == dt)
 
 
 % wrong instantiations (should not reach next line)
 
 % only name
-try
-    nonlinearSysDT(sysname);
-    res = false;
-end
+assertThrowsAs(@nonlinearSysDT,'CORA:numInputArgsConstructor',sysname);
+
 % name is numeric
-try
-    nonlinearSysDT(1,f_1D,dt,1,1);
-    res = false;
-end
+assertThrowsAs(@nonlinearSysDT,'CORA:wrongInputInConstructor',1,f_1D,dt,1,1);
 % only states, not inputs given
-try
-    nonlinearSysDT(f_1D,dt,1);
-    res = false;
-end
+assertThrowsAs(@nonlinearSysDT,'CORA:wrongInputInConstructor',f_1D,dt,1);
 % more states in output equation
-try
-    nonlinearSysDT(f_1D,dt,g_1D);
-    res = false;
-end
+assertThrowsAs(@nonlinearSysDT,'CORA:wrongInputInConstructor',f_1D,dt,g_1D);
 % states and inputs, but not outputs given
-try
-    nonlinearSysDT(f_3D,dt,3,1,g_1D);
-    res = false;
-end
+assertThrowsAs(@nonlinearSysDT,'CORA:wrongInputInConstructor',f_3D,dt,3,1,g_1D);
 % only x as input argument
 f_x = @(x) x(1)^2;
-try
-    nonlinearSysDT(f_x,dt);
-    res = false;
-end
+assertThrowsAs(@nonlinearSysDT,'CORA:wrongInputInConstructor',f_x,dt);
 % too many input arguments
 f_xup = @(x,u,p) x(1)^2;
-try
-    nonlinearSysDT(f_xup,dt);
-    res = false;
-end
+assertThrowsAs(@nonlinearSysDT,'CORA:wrongInputInConstructor',f_xup,dt);
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

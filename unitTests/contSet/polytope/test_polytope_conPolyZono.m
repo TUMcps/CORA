@@ -23,6 +23,9 @@ function res = test_polytope_conPolyZono
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % init polytope
 A = [2 1; -1 3; -2 -2; 1 -3];
@@ -36,6 +39,6 @@ cPZ = conPolyZono(P);
 % contained in the polytope
 p_pZ = randPoint(cPZ,100);
 
-res = all(contains(P,p_pZ));
+assert(all(contains(P,p_pZ)));
 
 % ------------------------------ END OF CODE ------------------------------

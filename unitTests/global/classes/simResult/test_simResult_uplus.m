@@ -23,8 +23,6 @@ function res = test_simResult_uplus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % init simResult object
 n = 3;
 N = 100;
@@ -36,10 +34,10 @@ simRes = simResult(x,t);
 
 % simple cases
 simRes_out = +simRes;
-resvec(end+1) = isequal(simRes_out.x{1},x{1}) ...
-    && isequal(simRes_out.x{2},x{2});
+assert(isequal(simRes_out.x{1},x{1}) ...
+    && isequal(simRes_out.x{2},x{2}));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

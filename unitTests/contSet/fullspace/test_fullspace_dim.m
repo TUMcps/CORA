@@ -23,14 +23,12 @@ function res = test_fullspace_dim
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
 % n-dimensional fullspace
 n = 2;
 fs = fullspace(n);
-res(end+1,1) = dim(fs) == n;
+assert(dim(fs) == n);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

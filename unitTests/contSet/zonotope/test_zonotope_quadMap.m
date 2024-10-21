@@ -46,7 +46,7 @@ true_G = [27.5, 35, 95, 110, 125; ...
             -5.75, -9.5, -14, -26, -32];
 
 % compare solutions
-res(1) = compareMatrices(c,true_c) && compareMatrices(G,true_G);
+assert(compareMatrices(c,true_c) && compareMatrices(G,true_G));
 
 % 2. quadMapMixed: Z1*Q*Z2 ------------------------------------------------
 
@@ -63,10 +63,10 @@ true_G = [-51, -59, -4, -8, -12, -26, -32, -38;
              8.5, 14, -2, 6, 14, 1, 7, 13];
 
 % compare solutions
-res(2) = compareMatrices(c,true_c) && compareMatrices(G,true_G);
+assert(compareMatrices(c,true_c) && compareMatrices(G,true_G));
 
 
 % gather results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

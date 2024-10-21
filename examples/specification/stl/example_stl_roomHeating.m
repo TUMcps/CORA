@@ -18,11 +18,6 @@ function res = example_stl_roomHeating
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% Warning
-disp('Warning: This example typically runs for many hours. Please comment the following lines to run it.');
-completed = false;
-return
-
 % System Dynamics ---------------------------------------------------------
 
 HA = roomHeating();
@@ -70,45 +65,48 @@ res = true;
 tic
 
 for i = 1:length(phi)
-    res = res && modelChecking(R,phi{i},'signals');
-
-    if ~res
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(modelChecking(R,phi{i},'signals'),i);
 end
 
 tComp = toc;
 disp(['computation time with signals: ',num2str(tComp)]);
 
+% 2. Incremental with four-valued signals
 
-% 2. Reachset Temporal Logic
+tic
+
+for i = 1:length(phi)
+    assertLoop(modelChecking(R,phi{i},'incremental','propFreq',100,'verbose',true),i);
+end
+
+tComp = toc;
+disp(['computation time with incremental: ',num2str(tComp)]);
+
+% Warning
+disp('Warning: The next part of this example typically runs for many hours. Please comment the following lines to run it.');
+completed = false;
+return
+
+% 3. Reachset Temporal Logic
 % takes a very long time
 
 tic
 
 for i = 1:length(phi)
-    res = res && modelChecking(R,phi{i},'rtl');
-
-    if ~res
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(modelChecking(R,phi{i},'rtl'),i);
 end
 
 tComp = toc;
 disp(['computation time with rtl: ',num2str(tComp)]);
 
 
-% 3. Sampled Time
+% 4. Sampled Time
 % takes a very long time
 
 tic
 
 for i = 1:length(phi)
-    res = res && modelChecking(R,phi{i},'sampledTime');
-
-    if ~res
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(modelChecking(R,phi{i},'sampledTime'),i);
 end
 
 tComp = toc;

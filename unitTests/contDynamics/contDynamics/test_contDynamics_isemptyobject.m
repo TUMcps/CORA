@@ -24,18 +24,18 @@ function res = test_contDynamics_isemptyobject
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty object
-res = isemptyobject(contDynamics());
+assert(isemptyobject(contDynamics()));
 
 % only name not enough
-res(end+1,1) = isemptyobject(contDynamics('sys'));
+assert(isemptyobject(contDynamics('sys')));
 
 % dimension given, but zero
-res(end+1,1) = isemptyobject(contDynamics('sys',0));
+assert(isemptyobject(contDynamics('sys',0)));
 
 % non-zero dimension given
-res(end+1,1) = ~isemptyobject(contDynamics('sys',1));
+assert(~isemptyobject(contDynamics('sys',1)));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

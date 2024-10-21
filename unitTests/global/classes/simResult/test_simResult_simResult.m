@@ -23,15 +23,8 @@ function res = test_simResult_simResult
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% init result
-res = true;
-
 % empty simResult
-try
-    simRes = simResult();
-catch
-    res = false; return
-end
+simRes = simResult();
 
 % initialize some sets for instantiations
 steps = 10;
@@ -72,76 +65,36 @@ for i=1:runs
 end
 
 % correct instantiations according to constructor (all with correct length)
-try
-    simRes = simResult(x,t);
-    simRes = simResult(x,t,loc);
-    simRes = simResult(x,t,{},y);
-    simRes = simResult(x,t,{},y,a);
-catch
-    res = false; return
-end
+simRes = simResult(x,t);
+simRes = simResult(x,t,loc);
+simRes = simResult(x,t,{},y);
+simRes = simResult(x,t,{},y,a);
 
 % check wrong instantiations
-if CHECKS_ENABLED
 
 % empty time
-try
-    simRes = simResult(x,{});
-    res = false; return
-end
+assertThrowsAs(@simResult,'CORA:wrongInputInConstructor',x,{});
 
 % non-matching number of steps
-try
-    simRes = simResult(x1,t);
-    res = false; return
-end
-try
-    simRes = simResult(x,t,{},y1);
-    res = false; return
-end
-try
-    simRes = simResult(x,t,{},y,a1);
-    res = false; return
-end
+assertThrowsAs(@simResult,'CORA:wrongInputInConstructor',x1,t);
+assertThrowsAs(@simResult,'CORA:wrongInputInConstructor',x,t,{},y1);
+assertThrowsAs(@simResult,'CORA:wrongInputInConstructor',x,t,{},y,a1);
 
 % non-matching number of runs
-try
-    simRes = simResult(x2,t,{},y);
-    res = false; return
-end
-try
-    simRes = simResult(x,t,{},y2);
-    res = false; return
-end
-try
-    simRes = simResult(x,t,{},y,a2);
-    res = false; return
-end
+assertThrowsAs(@simResult,'CORA:wrongInputInConstructor',x2,t,{},y);
+assertThrowsAs(@simResult,'CORA:wrongInputInConstructor',x,t,{},y2);
+assertThrowsAs(@simResult,'CORA:wrongInputInConstructor',x,t,{},y,a2);
 
 % different number of columns in between runs
-try
-    simRes = simResult(x3,t);
-    res = false; return
-end
-try
-    simRes = simResult(x,t,{},y3);
-    res = false; return
-end
-try
-    simRes = simResult(x,t,{},y,a3);
-    res = false; return
-end
+assertThrowsAs(@simResult,'CORA:wrongInputInConstructor',x3,t);
+assertThrowsAs(@simResult,'CORA:wrongInputInConstructor',x,t,{},y3);
+assertThrowsAs(@simResult,'CORA:wrongInputInConstructor',x,t,{},y,a3);
 
-% too little/many input arguments
-try
-    simRes = simResult(x);
-    res = false; return
-end
-try
-    simRes = simResult(x,t,{},y,a,x);
-    res = false; return
-end
+% too many input arguments
+assertThrowsAs(@simResult,'CORA:numInputArgsConstructor',x,t,{},y,a,x);
 
-end
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

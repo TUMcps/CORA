@@ -1,15 +1,15 @@
 function [errorStat, errorDyn, errorInt] = ...
-    linError_thirdOrder(obj, options, Rall, Rdiff, ...
+    linError_thirdOrder(sys, options, Rall, Rdiff, ...
     H, Zdelta, errorStat, T, ind3, Zdelta3)
 % linError_thirdOrder - computes the linearization error
 %
 % Syntax:
 %    [errorStat, errorDyn, errorInt] = 
-%           linError_thirdOrder(obj, options, Rall, Rdiff, H, Zdelta, 
+%           linError_thirdOrder(sys, options, Rall, Rdiff, H, Zdelta, 
 %                               errorStat, T, ind3, Zdelta3)
 %
 % Inputs:
-%    obj - nonlinear system object
+%    sys - nonlinear system object
 %    options - options struct
 %    Rall - time-interval reachable set
 %    Rdiff - difference between the reachable set at the beginning of the
@@ -53,11 +53,11 @@ function [errorStat, errorDyn, errorInt] = ...
 
 % compute interval of reachable set
 dx = interval(Rall);
-totalInt_x = dx + obj.linError.p.x;
+totalInt_x = dx + sys.linError.p.x;
 
 % compute intervals of input
 du = interval(options.U);
-totalInt_u = du + obj.linError.p.u;
+totalInt_u = du + sys.linError.p.u;
 
 % obtain intervals and combined interval z
 dz = [dx; du];
@@ -86,22 +86,22 @@ if options.tensorOrder == 3
         [objX,objU] = initRangeBoundingObjects(totalInt_x,totalInt_u,options);
 
         % evaluate third order tensor 
-        if isa(obj,'nonlinParamSys')
-            [T,ind] = obj.thirdOrderTensor(objX, objU, options.paramInt);
+        if isa(sys,'nonlinParamSys')
+            [T,ind] = sys.thirdOrderTensor(objX, objU, options.paramInt);
         else
-            [T,ind] = obj.thirdOrderTensor(objX, objU);
+            [T,ind] = sys.thirdOrderTensor(objX, objU);
         end
 
     else
-        if isa(obj,'nonlinParamSys')
-            [T,ind] = obj.thirdOrderTensor(totalInt_x, totalInt_u,options.paramInt);
+        if isa(sys,'nonlinParamSys')
+            [T,ind] = sys.thirdOrderTensor(totalInt_x, totalInt_u,options.paramInt);
         else
-            [T,ind] = obj.thirdOrderTensor(totalInt_x,totalInt_u);
+            [T,ind] = sys.thirdOrderTensor(totalInt_x,totalInt_u);
         end
     end
     
     % calculate the Lagrange remainder term
-    error_thirdOrder_dyn = interval(zeros(obj.dim,1),zeros(obj.dim,1));
+    error_thirdOrder_dyn = interval(zeros(sys.nrOfStates,1),zeros(sys.nrOfStates,1));
     for i=1:length(ind)
         error_sum = interval(0,0);
         for j=1:length(ind{i})
@@ -113,7 +113,7 @@ if options.tensorOrder == 3
     error_thirdOrder_dyn = zonotope(error_thirdOrder_dyn);
     
     % no terms of order >= 4
-    remainder = zonotope(zeros(obj.dim,1));
+    remainder = zonotope(zeros(sys.nrOfStates,1));
     
 else
     % tensorOrder >= 4
@@ -138,18 +138,18 @@ else
                                 cubMap(Z_diff3,Z_diff3,Zdelta3,T,ind3));
     
     % init higher-order error
-    remainder = interval(zeros(obj.dim,1),zeros(obj.dim,1));
+    remainder = interval(zeros(sys.nrOfStates,1),zeros(sys.nrOfStates,1));
 
     % exact evaluation of intermediate taylor terms
     for i=4:options.tensorOrder-1
-        handle = obj.tensors{i-3};
-        remainder = remainder + handle(obj.linError.p.x,obj.linError.p.u,dx,du);
+        handle = sys.tensors{i-3};
+        remainder = remainder + handle(sys.linError.p.x,sys.linError.p.u,dx,du);
     end
 
     % lagrange remainder over-approximating the last taylor term
-    handle = obj.tensors{options.tensorOrder-3};
+    handle = sys.tensors{options.tensorOrder-3};
 
-    if isa(obj,'nonlinParamSys')
+    if isa(sys,'nonlinParamSys')
         remainder = remainder + handle(totalInt_x,totalInt_u,dx,du,options.paramInt);
     else
         remainder = remainder + handle(totalInt_x,totalInt_u,dx,du);

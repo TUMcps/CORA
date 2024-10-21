@@ -25,7 +25,7 @@ function res = consistentTimeStep(obj,dt)
 
 % Authors:       Niklas Kochdumper
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   08-February-2024 (FL, use interval property of stl instead of from and to)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -42,9 +42,9 @@ function res = consistentTimeStep(obj,dt)
         from = scale*res.from; to = scale*res.to;
 
         if abs(round(from) - from) > 1e-10 || abs(round(to) - to) > 1e-10
-            res.from = ceil(from)*dt; res.to = floor(to)*dt;
+            res.interval = stlInterval(ceil(from)*dt,floor(to)*dt);
         else
-            res.from = round(from)*dt; res.to = round(to)*dt;
+            res.interval = stlInterval(round(from)*dt,round(to)*dt);
         end
 
         res.lhs = consistentTimeStep(res.lhs,dt);
@@ -56,9 +56,9 @@ function res = consistentTimeStep(obj,dt)
         from = scale*res.from; to = scale*res.to;
 
         if abs(round(from) - from) > 1e-10 || abs(round(to) - to) > 1e-10
-            res.from = floor(from)*dt; res.to = ceil(to)*dt;
+            res.interval = stlInterval(floor(from)*dt,ceil(to)*dt);
         else
-            res.from = round(from)*dt; res.to = round(to)*dt;
+            res.interval = stlInterval(round(from)*dt,round(to)*dt);
         end
 
         res.lhs = consistentTimeStep(res.lhs,dt);
@@ -70,9 +70,9 @@ function res = consistentTimeStep(obj,dt)
         from = scale*res.from; to = scale*res.to;
 
         if abs(round(from) - from) > 1e-10 || abs(round(to) - to) > 1e-10
-            res.from = floor(from)*dt; res.to = ceil(to)*dt;
+            res.interval = stlInterval(floor(from)*dt,ceil(to)*dt);
         else
-            res.from = round(from)*dt; res.to = round(to)*dt;
+            res.interval = stlInterval(round(from)*dt,round(to)*dt);
         end
 
         res.lhs = consistentTimeStep(res.lhs,dt);
@@ -83,9 +83,9 @@ function res = consistentTimeStep(obj,dt)
         from = scale*res.from; to = scale*res.to;
 
         if abs(round(from) - from) > 1e-10 || abs(round(to) - to) > 1e-10
-            res.from = ceil(from)*dt; res.to = floor(to)*dt;
+            res.interval = stlInterval(ceil(from)*dt,floor(to)*dt);
         else
-            res.from = round(from)*dt; res.to = round(to)*dt;
+            res.interval = stlInterval(round(from)*dt,round(to)*dt);
         end
 
         res.lhs = consistentTimeStep(res.lhs,dt);
@@ -99,7 +99,7 @@ function res = consistentTimeStep(obj,dt)
             inner = consistentTimeStep(res.lhs,dt);
             res = globally(inner,interval(floor(from)*dt,ceil(from)*dt));
         else
-            res.from = round(from)*dt;
+            res.interval = stlInterval(round(from)*dt);
             res.lhs = consistentTimeStep(res.lhs,dt);
         end
 

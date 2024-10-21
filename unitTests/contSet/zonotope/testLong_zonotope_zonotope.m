@@ -14,7 +14,7 @@ function res = testLong_zonotope_zonotope
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       20-March-2021
@@ -44,20 +44,16 @@ for i=1:nrOfTests
     
     % admissible initializations
     Z = zonotope(c,G);
-    if ~compareMatrices(center(Z),c) || ~compareMatrices(generators(Z),G)
-        res = false; break;
-    end
+    assertLoop(compareMatrices(center(Z),c),i)
+    assertLoop(compareMatrices(generators(Z),G),i)
     
     Z = zonotope(c,Gempty);
-    if ~compareMatrices(center(Z),c) || ~isempty(generators(Z))
-        res = false; break;
-    end
+    assertLoop(compareMatrices(center(Z),c),i)
+    assertLoop(isempty(generators(Z)),i)
     
     Z = zonotope(Zmat);
-    if ~compareMatrices(center(Z),Zmat(:,1)) ...
-            || ~compareMatrices(generators(Z),Zmat(:,2:end))
-        res = false; break;
-    end
+    assertLoop(compareMatrices(center(Z),Zmat(:,1)),i)
+    assertLoop(compareMatrices(generators(Z),Zmat(:,2:end)),i)
     
     % wrong initializations
     c_plus1 = randn(n+1,1);
@@ -71,39 +67,21 @@ for i=1:nrOfTests
     end
     
     % center and generator matrix do not match
-    try
-        Z = zonotope(c_plus1,G); % <- should throw error here
-        res = false; break;
-    end
-    try
-        Z = zonotope(c,G_plus1); % <- should throw error here
-        res = false; break;
-    end
+    assertThrowsAs(@zonotope,'CORA:wrongInputInConstructor',c_plus1,G);
+    assertThrowsAs(@zonotope,'CORA:wrongInputInConstructor',c,G_plus1);
     
     % center is empty
-    try
-        Z = zonotope([],G); % <- should throw error here
-        res = false; break;
-    end
-    
+    assertThrowsAs(@zonotope,'CORA:wrongInputInConstructor',[],G);
     
     % center has NaN entry
-    try
-        Z = zonotope(c_NaN,G); % <- should throw error here
-        res = false; break;
-    end
+    assertThrowsAs(@zonotope,'CORA:wrongValue',c_NaN,G);
     
     % generator matrix has NaN entries
-    try
-        Z = zonotope(c,G_NaN); % <- should throw error here
-        res = false; break;
-    end
+    assertThrowsAs(@zonotope,'CORA:wrongValue',c,G_NaN);
     
     % too many input arguments
-    try
-        Z = zonotope(c,G,G); % <- should throw error here
-        res = false; break;
-    end 
+    assertThrowsAs(@zonotope,'CORA:numInputArgsConstructor',c,G,G);
+    
 end
 
 % ------------------------------ END OF CODE ------------------------------

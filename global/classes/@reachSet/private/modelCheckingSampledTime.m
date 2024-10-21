@@ -191,19 +191,19 @@ function res = aux_evaluatePredicate(R,set)
     if ~iscell(set)     % single unsafe set
 
         if isa(set,'polytope')
-            res = ~isIntersecting(set,R,'approx');
+            res = ~isIntersecting_(set,R,'approx',1e-8);
             if res
                 try
-                    res = ~isIntersecting_(set,R,'exact');
+                    res = ~isIntersecting_(set,R,'exact',1e-8);
                 catch
                     res = false;
                 end
             end
         else
             try
-                res = ~isIntersecting_(set,R,'exact');
+                res = ~isIntersecting_(set,R,'exact',1e-8);
             catch
-                res = ~isIntersecting_(set,R,'approx');
+                res = ~isIntersecting_(set,R,'approx',1e-8);
             end
         end
 
@@ -235,8 +235,8 @@ function list = aux_safe2unsafe(sets)
         for j = 1:length(tmp)
             for k = 1:length(list)
                 if isa(list{k},'levelSet') || isa(tmp{j},'levelSet') || ...
-                        isIntersecting_(list{k},tmp{j},'exact')
-                    if isa(list{k},'halfspace') && isa(tmp{j},'halfspace')
+                        isIntersecting_(list{k},tmp{j},'exact',1e-8)
+                    if isa(list{k},'polytope') && isa(tmp{j},'polytope')
                         list_{end+1} = and_(polytope(list{k}), polytope(tmp{j}),'exact');
                     else
                         list_{end+1} = and_(list{k},tmp{j},'exact');
@@ -249,39 +249,36 @@ function list = aux_safe2unsafe(sets)
     end
 end
 
-function res = aux_reverseInequalityConstraints(set)
+function res = aux_reverseInequalityConstraints(S)
 % get a list of reversed inequality constraints for a given set
 
     res = {};
 
-    if isa(set,'levelSet')
+    if isa(S,'levelSet')
 
-        compOp = set.compOp;
+        compOp = S.compOp;
 
         if ~iscell(compOp)
            compOp = {compOp};
         end
 
-        for i = 1:size(set.eq,1)
-            res{end+1} = levelSet(-set.eq(i),set.vars,compOp{i});
+        for i = 1:size(S.eq,1)
+            res{end+1} = levelSet(-S.eq(i),S.vars,compOp{i});
         end
-
-    elseif isa(set,'halfspace')
-
-        res = {halfspace(-set.c,-set.d)};
 
     else
 
-        poly = polytope(set);
-    
+        poly = polytope(S);
         for i = 1:length(poly.b)
-            res{end+1} = polytope(-poly.A(i,:),-poly.b(i));
+            res{end+1} = ~polytope(poly.A(i,:),poly.b(i));
         end
     end
 end
 
 function sets = aux_findReachSets(R,time)
 % get all sets that belong to the given time
+
+    % TODO: check if reachSet/query can do this
 
     sets = {};
 

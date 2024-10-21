@@ -46,38 +46,24 @@ options.error = 0.1;
 % 1. homogeneous system
 params.R0 = zonotope(10*ones(dim_x,1),0.5*eye(dim_x));
 params.U = zonotope(zeros(dim_x,1));
-tic
 R = reach(sys,params,options);
-tComp = toc;
-disp("Computation time (homogeneous case): " + tComp);
 
 
 % 2. inhomogeneous system
 params.U = zonotope(ones(dim_x,1),0.25*eye(dim_x));
-tic
 R = reach(sys,params,options);
-tComp = toc;
-disp("Computation time (inhomogeneous case): " + tComp);
 
 
 % 3. system with output matrix
 C = [2 -1];
-sys = linearSys('sys',A,B,[],C); %initialize system
-tic
+sys = linearSys('sys',A,B,[],C);
 R = reach(sys,params,options);
-tComp = toc;
-disp("Computation time (output matrix case): " + tComp);
 
 
 % 4. with specification
-sys = linearSys('sys',A,B); %initialize system
-spec = specification(halfspace([-1,0],-15));
-tic
-[R,res] = reach(sys,params,options,spec);
-tComp = toc;
-disp("Computation time (specification): " + tComp);
+sys = linearSys('sys',A,B);
+spec = specification(polytope([-1,0],-15));
+R = reach(sys,params,options,spec);
 
-
-end
 
 % ------------------------------ END OF CODE ------------------------------

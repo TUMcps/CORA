@@ -28,13 +28,13 @@ function varargout = size(matP,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(1,2);
+
 % parse input
 if nargin == 1
     dim = 1:2;
 elseif nargin == 2
     dim = varargin{1};
-else
-    throw(CORAerror('CORA:tooManyInputArgs',2));
 end
 
 % read size of vertices

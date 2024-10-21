@@ -11,8 +11,8 @@ function display(trans)
 %    ---
 %
 % Example:
-%    guard = conHyperplane([1 0],0);
-%    reset = struct('A',eye(2),'c',zeros(2,1));
+%    guard = polytope([],[],[1 0],0);
+%    reset = linearReset.eye(2);
 %    target = 1;
 %    transition(guard,reset,target)
 %
@@ -54,49 +54,39 @@ else
     fprintf(newline);
     
     % display reset function
-    if isempty(fields(trans.reset))
+    if isnumeric(trans.reset) && isempty(trans.reset)
         % no reset function (empty transition)
         disp("Reset function: (none)");
 
-    elseif isfield(trans.reset,'A')
+    elseif isa(trans.reset,'linearReset')
         % linear reset function
-        if trans.reset.hasInput
-            disp("Reset function: Ax + Bu + c");
-        else
-            disp("Reset function: Ax + c");
-        end
+        disp("Reset function: Ax + Bu + c");
         
         % display state matrix
         displayMatrixVector(trans.reset.A,"A");
         
         % display input matrix
-        if trans.reset.hasInput
-            displayMatrixVector(trans.reset.B,"B");
-        end
+        displayMatrixVector(trans.reset.B,"B");
         
         % display constant offset
         displayMatrixVector(trans.reset.c,"c");
         
-    elseif isfield(trans.reset,'f')
+    elseif isfield(trans.reset,'nonlinearReset')
         % nonlinear reset function
         disp("Reset function: nonlinear");
         
         % use try-block to avoid annoying error messages
         try
             % create symbolic variables
-            sys = nonlinearSys(trans.reset.f,trans.reset.stateDim,...
-                trans.reset.inputDim);
+            sys = nonlinearSys(trans.reset.f,...
+                trans.reset.preStateDim,trans.reset.inputDim);
             vars = symVariables(sys);
             
             % insert symbolic variables into the system equations
-            if trans.reset.hasInput
-                f = trans.reset.f([vars.x;vars.u]);
-            else
-                f = trans.reset.f(vars.x);
-            end
+            f = trans.reset.f(vars.x,vars.u);
             % display equations
             for i=1:length(f)
-                disp(['  f(',num2str(i),') = ',char(f(i))]);
+                fprintf('  f(%i) = %s\n', i, char(f(i)));
             end
             fprintf(newline);
         end

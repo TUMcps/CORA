@@ -1,4 +1,4 @@
-function res = simulateConstrainedRandom(obj, options)
+function res = simulateConstrainedRandom(sys,params,options)
 % simulateConstrainedRandom - performs several random simulation of the system
 %    so that the simulations stay within a given reachable set; this 
 %    reachable set is typically a backwards minmax reachable set. These 
@@ -10,11 +10,12 @@ function res = simulateConstrainedRandom(obj, options)
 %    vertices of the initial set.
 %
 % Syntax:
-%    res = simulateConstrainedRandom(obj, options)
+%    res = simulateConstrainedRandom(sys,params,options)
 %
 % Inputs:
-%    obj - contDynamics object
-%    options - model parameters and settings for random simulation
+%    sys - contDynamics object
+%    params - model parameters
+%    options - settings for random simulation
 %
 % Outputs:
 %    res - object of class simResult storing time and states of the 
@@ -32,10 +33,10 @@ nrExtreme = ceil(options.points*options.fracVert);
 nrStandard = options.points - nrExtreme;
 X0 = [];
 if nrExtreme > 0
-	X0 = [X0, randPoint(options.R0,nrExtreme,'extreme')]; 
+	X0 = [X0, randPoint(params.R0,nrExtreme,'extreme')]; 
 end
 if nrStandard > 0
-	X0 = [X0, randPoint(options.R0,nrStandard,'standard')];
+	X0 = [X0, randPoint(params.R0,nrStandard,'standard')];
 end
 
 % check number of generated points (might be different for e.g. empty sets)
@@ -45,7 +46,7 @@ nrPoints = size(X0,2);
 t = cell(nrPoints,1);
 x = cell(nrPoints,1);
 % output equation only for linearSys and linearSysDT currently
-comp_y = (isa(obj,'linearSys') || isa(obj,'linearSysDT')) && ~isempty(obj.C);
+comp_y = (isa(sys,'linearSys') || isa(sys,'linearSysDT')) && ~isempty(sys.C);
 if comp_y; y = cell(nrPoints,1); end
 
 % loop over all starting points in X0
@@ -53,17 +54,17 @@ for r = 1:nrPoints
     
     % Is output desired?
     if comp_y
-        y{r} = zeros(1,obj.nrOfOutputs); 
+        y{r} = zeros(1,sys.nrOfOutputs); 
     end
     
     % start of trajectory
-    options.x0 = X0(:,r);
+    params.x0 = X0(:,r);
 
     % simulate dynamical system
     if comp_y
-        [t{r},x{r},~,y{r}] = simulateConstrained(obj,options);
+        [t{r},x{r},~,y{r}] = simulateConstrained(sys,params,options);
     else
-        [t{r},x{r}] = simulateConstrained(obj,options);
+        [t{r},x{r}] = simulateConstrained(sys,params,options);
     end
     
 end
@@ -75,8 +76,6 @@ else
     res = simResult(x,t);
 end
 
-
 end
-
 
 % ------------------------------ END OF CODE ------------------------------

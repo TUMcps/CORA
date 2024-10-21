@@ -22,10 +22,9 @@ function ME = CORAerror(identifier,varargin)
 %                 'CORA:emptyProperty'
 %                 'CORA:wrongFieldValue'
 %                 'CORA:plotProperties'
-%                 'CORA:notEnoughInputArgs'
-%                 'CORA:tooManyInputArgs'
 %                 'CORA:evenNumberInputArgs'
 %                 'CORA:oddNumberInputArgs'
+%                 'CORA:numInputArgsConstructor'
 %                 'CORA:degenerateSet'
 %                 'CORA:YALMIP'
 %                 'CORA:outOfDomain'
@@ -35,7 +34,6 @@ function ME = CORAerror(identifier,varargin)
 %                 'CORA:nnLayerNotSupported'
 %                 'CORA:reachSetExplosion'
 %                 'CORA:outOfMemory'
-%                 'CORA:testFailed'
 %                 'CORA:noops'
 %                 'CORA:install'
 %    varargin - further information depending on specific error
@@ -293,7 +291,11 @@ switch identifier
         % name of field
         field = varargin{1};
         % allowed values for field
-        allowedValues = "'" + strjoin(varargin{2},"', '") + "'";
+        allowedValues = varargin{2};
+        if ~iscell(allowedValues) && ischar(allowedValues)
+            allowedValues = string(allowedValues);
+        end
+        allowedValues = "'" + strjoin(allowedValues,"', '") + "'";
 
         % error message
         errmsg_form = "Wrong value for the field '%s'.\n" + ...
@@ -315,24 +317,6 @@ switch identifier
             errmsg = 'Incorrect number of dimensions specified.';
         end
 
-
-    % function does not receive enough input arguments; input args:
-    % - (numeric) number of minimally required input arguments
-    case 'CORA:notEnoughInputArgs'
-        input_num = varargin{1};
-        errmsg_form = 'The function %s requires at least %d input argument(s).\n %s';
-        errmsg = sprintf(errmsg_form,filename,input_num,helpmsg);
-
-
-    % function receives too many input arguments (should be used for all
-    % functions with varargin apart from name-value pairs); input args:
-    % - (numeric) maximum number of input arguments
-    case 'CORA:tooManyInputArgs'
-        input_num = varargin{1};
-        errmsg_form = 'The function %s requires no more than %d input argument(s).\n %s';
-        errmsg = sprintf(errmsg_form,filename,input_num,helpmsg);
-
-
     % function requires an even number of input arguments (likely because
     % of name-value pairs, e.g., generateRandom)
     case 'CORA:evenNumberInputArgs'
@@ -344,6 +328,26 @@ switch identifier
     case 'CORA:oddNumberInputArgs'
         errmsg_form = 'The function %s requires an odd number of input argument(s).\n %s';
         errmsg = sprintf(errmsg_form,filename,helpmsg);
+
+    % constructor requires a specific number of input arguments with gaps
+    % in between so that narginchk cannot be used
+    case 'CORA:numInputArgsConstructor'
+        numValidArgs = varargin{1};
+        if numValidArgs(end) == Inf
+            numstr = char(strjoin(string(numValidArgs(1:end-2)),", ") ...
+                + " or " + string(numValidArgs(end-1)) + " to Inf");
+        else
+            numstr = char(strjoin(string(numValidArgs(1:end-1)),", ")) ...
+                + " or " + string(numValidArgs(end));
+        end
+        if numel(numValidArgs) == 1
+            errmsg_form = 'The constructor of the %s class requires exactly %s input argument.\n %s';
+        else
+            errmsg_form = 'The constructor of the %s class requires either %s input arguments.\n %s';
+        end
+        % remove '.m' from filename for better text
+        errmsg = sprintf(errmsg_form,filename(1:end-2),numstr,helpmsg);
+
 
     % function takes name-value pairs, but provided pair has a name which
     % is not within the list of admissible names for all pairs; input args:
@@ -376,10 +380,18 @@ switch identifier
     % pairs with names
     % - 'validDomain': description of valid domain
     case 'CORA:outOfDomain'
-        [~,validDomain] = readNameValuePair(NVpairs,'validDomain');
-        errmsg_form = ['The interval is not inside the valid domain of the function %s.'...
-            '\n  Valid domain is: %s \n %s'];
-        errmsg = sprintf(errmsg_form,filename,validDomain,helpmsg);
+        [NVpairs,validDomain] = readNameValuePair(NVpairs,'validDomain');
+        % validDomain may be an interval -> convert to string
+        if isa(validDomain,'interval')
+            validDomain = string(validDomain);
+        end
+        varname = 'interval';
+        if ~isempty(NVpairs) && (isstring(NVpairs{1}) || ischar(NVpairs{1}))
+            varname = varargin{1};
+        end
+        errmsg_form = ['%s is not inside the valid domain (function %s).'...
+            '\n   Valid domain is: %s \n %s'];
+        errmsg = sprintf(errmsg_form,varname,filename,validDomain,helpmsg);
 
 
     % specific errors which strongly depend on the context of the
@@ -437,13 +449,6 @@ switch identifier
         end
         errmsg = sprintf('%s%s',errmsg,varargin{1});
 
-
-    % standard message for failed unit tests (sometimes quicker than
-    % exiting a number of loops and returning false)
-    case 'CORA:testFailed'
-        errmsg = 'Unit test failed.';
-
-        
     % certain set operation not implemented for given input arguments
     case 'CORA:noops'
         classlist = "";
@@ -509,8 +514,10 @@ errIdx = [];
 for i=1:stlength
     if ~any(strcmp(st(i).name,{'CORAerror','inputArgsCheck'}))
         errIdx = i;
-        % checkNameValuePairs shifts index by one
-        if strcmp(st(i).name,'checkNameValuePairs')
+        % checkNameValuePairs and assertNarginConstructor shift index by
+        % one because they take over checking for calling function
+        if any(strcmp(st(i).name,...
+                {'checkNameValuePairs','assertNarginConstructor'}))
             errIdx = i+1;
         end
         break

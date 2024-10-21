@@ -1,20 +1,18 @@
-function [OGain, tComp] = observe_gain_PRadA(obj,options)
+function [OGain, tComp] = observe_gain_PRadA(linsysDT,params,options)
 % observe_gain_PRadA - computes the gain for the guaranteed state estimation
 % approach according to Sec. 4.1 of [1].
 %
 % Syntax:
-%    [R,Rout] = observe_gain_PRadA(obj,options)
+%    [R,Rout] = observe_gain_PRadA(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
 %    OGain - observer gain
 %    tComp - computation time
-%
-% Example:
-%    -
 %
 % Reference:
 %    [1] V. T. H. Le, C. Stoica, T. Alamo, E. F. Camacho, and
@@ -43,27 +41,27 @@ function [OGain, tComp] = observe_gain_PRadA(obj,options)
 tic;
 
 % store full output matrix and noise set
-tmpC = obj.C;
-V = options.V;
+tmpC = linsysDT.C;
+V = params.V;
 
 % obtain system dimension and nr of outputs
-nrOfOutputs = obj.nrOfOutputs;
+nrOfOutputs = linsysDT.nrOfOutputs;
 
 % find optimal gain for each output
 for i = 1:nrOfOutputs
     
     % extract i-th output
-    obj.C = tmpC(i,:);
-    options.V = box(project(V,i));
+    linsysDT.C = tmpC(i,:);
+    params.V = box(project(V,i));
     
     % PRadA computes for all inputs simultaneously; using only a single
     % output is a special case
     % The approach in Sec. 4.1 of [1] can be seen as a special case of [2] 
-    OGain(:,i) = observe_gain_PRadB(obj,options);
+    OGain(:,i) = observe_gain_PRadB(linsysDT,params,options);
 end
 
 % restore old C matrix since system object makes only shallow copies
-obj.C = tmpC;
+linsysDT.C = tmpC;
 
 % computation time
 tComp = toc;

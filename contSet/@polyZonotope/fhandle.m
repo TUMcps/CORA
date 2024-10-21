@@ -36,9 +36,8 @@ function [f,fvec,fGI] = fhandle(pZ,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments
-if nargin > 2
-    throw(CORAerror('CORA:tooManyInputArgs',2));
-elseif nargin == 1
+narginchk(1,2);
+if nargin == 1
     id = pZ.id;
 elseif nargin == 2
     if iscell(varargin{1})

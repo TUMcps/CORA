@@ -31,11 +31,7 @@ function res = contains(S1,S2,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
-if nargin < 2
-    throw(CORAerror('CORA:notEnoughInputArgs',2));
-elseif nargin > 5
-    throw(CORAerror('CORA:tooManyInputArgs',5));
-end
+narginchk(2,5);
 
 % right order of objects
 % [S1,S2] = findClassArg(S1,S2,classname);

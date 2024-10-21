@@ -3,11 +3,12 @@ function res = vertices(S,varargin)
 %
 % Syntax:
 %    res = vertices(S)
-%    res = vertices(S,method)
+%    res = vertices(S,method,varargin)
 %
 % Inputs:
 %    S - contSet object
 %    method - method for computation of vertices
+%    varargin - further parameters
 %
 % Outputs:
 %    res - array of vertices
@@ -16,7 +17,7 @@ function res = vertices(S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: contSet/polygon
 
 % Authors:       Mark Wetzlinger
 % Written:       18-August-2022
@@ -28,30 +29,18 @@ function res = vertices(S,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
-if nargin < 1
-    throw(CORAerror('CORA:notEnoughInputArgs',1));
-elseif nargin > 2
-    throw(CORAerror('CORA:tooManyInputArgs',2));
-end
+narginchk(1,3);
 
 % default values and input argument check
-if isa(S,'polytope')
-    method = setDefaultValues({'lcon2vert'},varargin);
-    inputArgsCheck({{S,'att','polytope'}, ...
-                    {method,'str',{'cdd','lcon2vert'}}});
-else
-    method = setDefaultValues({'convHull'},varargin);
-    inputArgsCheck({{S,'att','contSet'};
-                    {method,'str',{'convHull','iterate','polytope'}}});
-end
+[S,method,addargs] = aux_parseInput(S,varargin{:});
 
 % call subclass method
 try
-    res = vertices_(S,method);
+    res = vertices_(S,method,addargs{:});
 
 catch ME
     % catch empty set case
-    if representsa_(S,'emptySet',eps)
+    if representsa_(S,'emptySet',eps,'linearize',0,1)
         res = [];
     else
         rethrow(ME);
@@ -63,6 +52,37 @@ if isempty(res)
     res = zeros(dim(S),0);
 end
     
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function [S,method,addargs] = aux_parseInput(S,varargin)
+    if isa(S,'polytope')
+        % uses different methods
+        method = setDefaultValues({'lcon2vert'},varargin);
+        inputArgsCheck({{S,'att','polytope'}, ...
+                        {method,'str',{'cdd','lcon2vert'}}});
+    elseif isa(S,'conPolyZono')
+        % 'method' is number of splits
+        method = setDefaultValues({10},varargin);
+        inputArgsCheck({{S,'att','conPolyZono'}, ...
+                        {method,'att','numeric',{'scalar','nonnan'}}});
+    elseif isa(S,'conZonotope')
+        [method,numDirs] = setDefaultValues({'default',1},varargin);
+        inputArgsCheck({ ...
+            {S,'att','conZonotope'}; ...
+            {method,'str',{'default','template'}}; ...
+            {numDirs,'att','numeric','isscalar'}; ...
+        })
+        varargin = {method,numDirs};
+    
+    else
+        method = setDefaultValues({'convHull'},varargin);
+        inputArgsCheck({{S,'att','contSet'};
+                        {method,'str',{'convHull','iterate','polytope'}}});
+    end
+    addargs = varargin(2:end);
 end
 
 % ------------------------------ END OF CODE ------------------------------

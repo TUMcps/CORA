@@ -47,9 +47,7 @@ for i = 1:20
     % check if all points are inside polygon enclosures
     pgon = polygon(cPZ_,splits);
 
-    if ~contains(pgon,points)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(contains(pgon,points),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

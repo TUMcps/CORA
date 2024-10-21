@@ -20,7 +20,7 @@ function res = triu(I,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Victor Gassmann
 % Written:       12-October-2022 
@@ -29,14 +29,15 @@ function res = triu(I,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isempty(varargin)
+narginchk(1,2);
+
+if nargin == 1
     K = 0;
-elseif length(varargin) == 1
+elseif nargin == 2
     K = varargin{1};
     inputArgsCheck({{K,'att',{'double'},{'scalar','>=',0}}});
-else
-    throw(CORAerror('CORA:tooManyInputArgs',1));
 end
+
 res = I;
 res.inf = triu(res.inf,K);
 res.sup = triu(res.sup,K);

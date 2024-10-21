@@ -1,15 +1,16 @@
-function Y = outputSet(obj,options,R)
+function Y = outputSet(linsysDT,R,params,options)
 % outputSet - calculates output set based on output equation given by
-% 	 y = Cx + Du + k + v and sets for x (R) and u (options.U + uTrans)
+% 	 y = Cx + Du + k + v and sets for x (R) and u (params.U + params.uTrans)
 %    and v (options.V)
 %
 % Syntax:
-%    Y = outputSet(obj,options,R)
+%    Y = outputSet(linsysDT,R,params,options)
 %
 % Inputs:
-%    obj - linearSysDT object
-%    options - options for the computation of reachable sets
+%    linsysDT - linearSysDT object
 %    R - reachable set of current step
+%    params - model parameters
+%    options - options for the computation of reachable sets
 %
 % Outputs:
 %    Y - time-point output set
@@ -37,35 +38,44 @@ if ~options.compOutputSet
 end
 
 % no output equation or output equation is y = x
-if isempty(obj.C) || ...
-        ( isscalar(obj.C) && obj.C == 1 && ~any(any(obj.D)) ...
-        && ~any(obj.k) && representsa_(options.V,'origin',eps) )
+if isempty(linsysDT.C) || ...
+        ( isscalar(linsysDT.C) && linsysDT.C == 1 && ~any(any(linsysDT.D)) ...
+        && ~any(linsysDT.k) && representsa_(params.V,'origin',eps) )
     Y = R;
     return;
 end
 
 isD = false;
-if any(any(obj.D))
+if iscell(linsysDT.D) || any(any(linsysDT.D))
     isD = true;
-    U = options.U + options.uTrans;
+    U = params.U + params.uTrans;
 end
 
 if ~isfield(options,'saveOrder')
     % no additional reduction
-    if isD
-        Y = obj.C*R + obj.D * U + obj.k + options.V;
+    if iscell(linsysDT.C)
+        Y = linsysDT.C{options.i}*R + linsysDT.D{options.i} * U + linsysDT.k + params.V;
     else
-        Y = obj.C*R + obj.k + options.V;
+        if isD
+            Y = linsysDT.C*R + linsysDT.D * U + linsysDT.k + params.V;
+        else
+            Y = linsysDT.C*R + linsysDT.k + params.V;
+        end
     end
 
 else
     % reduction by saveOrder
-    if isD
-        Y = reduce(zonotope(obj.C*R) + obj.D * U + obj.k + options.V,...
-            options.reductionTechnique,options.saveOrder);
+    if iscell(linsysDT.C)
+        Y = reduce(zonotope(linsysDT.C{options.i}*R) + linsysDT.D{options.i} * U + linsysDT.k + params.V,...
+                options.reductionTechnique,options.saveOrder);
     else
-        Y = reduce(zonotope(obj.C*R) + obj.k + options.V,...
-            options.reductionTechnique,options.saveOrder);
+        if isD
+            Y = reduce(zonotope(linsysDT.C*R) + linsysDT.D * U + linsysDT.k + params.V,...
+                options.reductionTechnique,options.saveOrder);
+        else
+            Y = reduce(zonotope(linsysDT.C*R) + linsysDT.k + params.V,...
+                options.reductionTechnique,options.saveOrder);
+        end
     end
 
 end

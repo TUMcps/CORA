@@ -23,12 +23,11 @@ function res = test_capsule_ne
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
 tol = 1e-9;
 
 % empty capsule
 C = capsule.empty(2);
-res(end+1,1) = ~(C ~= C);
+assert(~(C ~= C));
 
 % define properties
 c = [2; 0; -1];
@@ -39,13 +38,13 @@ C_tol = capsule(c,g,r+tol/2);
 C_red = capsule(c(1:end-1),g(1:end-1),r);
 
 % compare
-res(end+1,1) = ~(C ~= C);
-res(end+1,1) = ~ne(C,C);
-res(end+1,1) = C ~= C_tol;
-res(end+1,1) = ~ne(C,C_tol,tol);
-res(end+1,1) = C ~= C_red;
+assert(~(C ~= C));
+assert(~ne(C,C));
+assert(C ~= C_tol);
+assert(~ne(C,C_tol,tol));
+assert(C ~= C_red);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

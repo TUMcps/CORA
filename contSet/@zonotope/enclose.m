@@ -43,6 +43,8 @@ function Z = enclose(Z,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,3);
+
 % parse input arguments
 if nargin == 2
     Z2 = varargin{1};
@@ -50,8 +52,6 @@ elseif nargin == 3
     M = varargin{1};
     Zplus = varargin{2};
     Z2 = (M*Z) + Zplus;
-else
-    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
 % retrieve number of generators of the zonotopes

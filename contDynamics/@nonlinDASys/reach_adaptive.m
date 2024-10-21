@@ -1,12 +1,12 @@
-function [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,options)
+function [timeInt,timePoint,res,tVec,options] = reach_adaptive(nlnsysDA,params,options)
 % reach_adaptive - computes the reachable set for a nonlinear
 %    differential-algebraic system using adaptive parameter tuning
 %
 % Syntax:
-%    [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,options)
+%    [timeInt,timePoint,res,tVec,options] = reach_adaptive(nlnsysDA,params,options)
 %
 % Inputs:
-%    obj - nonlinDASys object
+%    nlnsysDA - nonlinDASys object
 %    params - model parameters
 %    options - options for the computation of reachable sets
 %
@@ -16,8 +16,6 @@ function [timeInt,timePoint,res,tVec,options] = reach_adaptive(obj,params,option
 %    res - satisfaction / violation of specifications
 %    tVec - vector of time steps
 %    options - options for the computation of reachable sets (param tracking)
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,7 +36,7 @@ timeInt.time = {};
 timeInt.algebraic = {};
 timePoint.set = {};
 timePoint.time = {};
-res = 0;
+res = true;
 tVec = 0;
 
 % remove 'adaptive' from alg (just for tensor computation)
@@ -48,37 +46,33 @@ end
 
 % iteration counter and time for main loop
 options.i = 1;
-options.t = options.tStart;
+options.t = params.tStart;
+options.R = params.R0;
 
 % obtain consistent initial algebraic set
-y0 = options.y0guess;
-y0 = consistentInitialState(obj, center(options.R), y0, options.uTrans);
+y0 = params.y0guess;
+y0 = consistentInitialState(nlnsysDA, center(options.R), y0, params.uTrans);
 Rstart_y = zonotope(y0);
 % set linearization errors (separate values for Delta and optimal Delta t)
-options.error_adm_x_horizon = eps*ones(obj.dim,1);
-options.error_adm_x_Deltatopt = eps*ones(obj.dim,1);
-options.error_adm_y_horizon = eps*ones(obj.nrOfConstraints,1);
-options.error_adm_y_Deltatopt = eps*ones(obj.nrOfConstraints,1);
+options.error_adm_x_horizon = eps*ones(nlnsysDA.nrOfStates,1);
+options.error_adm_x_Deltatopt = eps*ones(nlnsysDA.nrOfStates,1);
+options.error_adm_y_horizon = eps*ones(nlnsysDA.nrOfConstraints,1);
+options.error_adm_y_Deltatopt = eps*ones(nlnsysDA.nrOfConstraints,1);
 % init abortion flag
 abortAnalysis = false;
 
-% options.redFactor = 5e-5;
 % MAIN LOOP
-while options.tFinal - options.t > 1e-12 && ~abortAnalysis
+while params.tFinal - options.t > 1e-12 && ~abortAnalysis
     
     % log information
-    verboseLog(options.i,options.t,options);
+    verboseLog(options.verbose,options.i,options.t,params.tStart,params.tFinal);
     
     % reachable set propagation
-    [Rnext.ti,Rnext.tp,Rstart_y,options] = linReach_adaptive(obj,options,options.R,Rstart_y);
+    [Rnext.ti,Rnext.tp,Rstart_y,options] = linReach_adaptive(nlnsysDA,options.R,Rstart_y,params,options);
     
     % reduction for next step
     Rnext.ti = reduce(Rnext.ti,'adaptive',options.redFactor*5); % not reused
     Rnext.tp = reduce(Rnext.tp,'adaptive',options.redFactor);
-    % track zonotope orders
-    options.zonordersRtp(options.i,1) = size(generators(Rnext.tp),2) / obj.dim;
-    % track abstraction order
-    options.kappa(options.i,1) = options.tensorOrder;
     
 
     % save to output variables
@@ -100,11 +94,11 @@ while options.tFinal - options.t > 1e-12 && ~abortAnalysis
     options.R = Rnext.tp;
     
     % check for timeStep -> 0
-    abortAnalysis = aux_checkForAbortion(tVec,options.t,options.tFinal);
+    abortAnalysis = aux_checkForAbortion(tVec,options.t,params.tFinal);
 end
 
 % log information
-verboseLog(options.i,options.t,options);
+verboseLog(options.verbose,options.i,options.t,params.tStart,params.tFinal);
 
 end
 

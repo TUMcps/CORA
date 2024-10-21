@@ -1,4 +1,4 @@
-function [res,fals,savedata] = verifyRA_supportFunc(obj,params,options,spec)
+function [res,fals,savedata] = verifyRA_supportFunc(linsys,params,options,spec)
 % verifyRA_supportFunc - verification for linear systems
 %    via reach-avoid with support functions:
 %    quicker verification algorithm based on non-trivial
@@ -8,10 +8,10 @@ function [res,fals,savedata] = verifyRA_supportFunc(obj,params,options,spec)
 %    caution: specification needs to be given as a safe set!
 %
 % Syntax:
-%    res = verifyRA_supportFunc(obj,params,options,spec)
+%    res = verifyRA_supportFunc(linsys,params,options,spec)
 %
 % Inputs:
-%    obj - linearSys object
+%    linsys - linearSys object
 %    params - model parameters
 %    options - algorithm parameters
 %    spec - safe set as object of class specification
@@ -38,9 +38,7 @@ function [res,fals,savedata] = verifyRA_supportFunc(obj,params,options,spec)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % integrate in verify?
-options = validateOptions(obj,mfilename,params,options);
-% remove after development phase
-options.verbose = false;
+[params,options] = validateOptions(linsys,params,options);
 
 % start stopwatch
 onlyLoop = tic;
@@ -50,7 +48,7 @@ if options.verbose
 end
 
 % init time shift
-options.tFinal = options.tFinal - options.tStart;
+params.tFinal = params.tFinal - params.tStart;
 
 % initialize satisfaction of specification
 res = false;
@@ -60,7 +58,7 @@ res = false;
 [safeSet,unsafeSet] = aux_getSetsFromSpec(spec);
 % get halfspaces from specifications (transform all to safe sets)
 nrSpecs = length(safeSet) + length(unsafeSet);
-Cs = zeros(nrSpecs,obj.nrOfOutputs);
+Cs = zeros(nrSpecs,linsys.nrOfOutputs);
 ds = zeros(nrSpecs,1);
 for i=1:length(safeSet)
     % if all values satisfy C*x <= d, system is safe
@@ -78,33 +76,33 @@ end
 % TODO: integrate in validateOptions later...
 specUnsat = cell(nrSpecs,1);
 for s=1:nrSpecs
-    specUnsat{s} = [0,options.tFinal];
+    specUnsat{s} = [0,params.tFinal];
 end
 
 % initialize all variables for exponential (propagation) matrix
-expmat = aux_initExpmat(obj);
+expmat = aux_initExpmat(linsys);
 
 % rewrite equations in canonical form
-[options,origInput] = aux_canonicalForm(obj,options);
+[params,origInput] = aux_canonicalForm(linsys,params);
 
 % compute directions for support function evaluation: the specifications
 %    Cs*y <= ds
 % are defined in the output space, thus we insert y=C*x to obtain
 %    Cs*y <= d  ->  Cs*(C*x) <= d  ->  (Cs * C)*x <= d
 % and map all Cs to l(i) = Cs(i)*C for further use
-l = (Cs * full(obj.C))';
+l = (Cs * full(linsys.C))';
 
 % scaling factor due to output matrix (only used for heuristic to adapt the
 % time step size)
-options.normC = norm(full(obj.C));
+options.normC = norm(full(linsys.C));
 
 % init all auxiliary structs and flags
-[dist,fals,isU,G_U,isu,isuconst,options] = aux_initStructsFlags(obj,options);
+[dist,fals,isU,G_U,isu,isuconst] = aux_initStructsFlags(linsys,params);
 
 % initialize time step size as largest whole number divisor over all
 % individual piecewise-constant inputs
 nrStepsStart = 100;
-timeStep = aux_timeStep(options.tFinal/nrStepsStart,options.tFinal,isuconst,options.tu);
+timeStep = aux_timeStep(params.tFinal/nrStepsStart,params.tFinal,isuconst,params.tu);
 % maximum factor by which time step size may decrease in one iteration
 timeStepFactor = 1/50;
 % factor by which time step size decreases if a sum does not converge
@@ -113,7 +111,7 @@ timeStepFactor_nonconverged = 0.2;
 timeStepFactor_fixed = 0.2;
 
 % init savedata
-savedata.tFinal = options.tFinal;
+savedata.tFinal = params.tFinal;
 savedata.isU = isU;
 savedata.nrSpecs = nrSpecs;
 savedata.iterations = 0;
@@ -130,9 +128,9 @@ if isplot
     figure; 
     for s=1:nrSpecs
         subplot(1,nrSpecs,s); hold on; box on;
-        plot([0,options.tFinal],[ds(s) ds(s)],'Color',colorblind('r'));
-        scatter(0,supremum(interval(l(:,s)' * options.R0 + options.V ...
-            + options.vTransVec(:,1))),blobsize,'k','filled');
+        plot([0,params.tFinal],[ds(s) ds(s)],'Color',colorblind('r'));
+        scatter(0,supremum(interval(l(:,s)' * params.R0 + params.V ...
+            + params.vTransVec(:,1))),blobsize,'k','filled');
     end
 end
 % debug ---
@@ -141,14 +139,14 @@ end
 % (from y = C*x + v, v \in V... only accounting for constant V!),
 % so that now we have already dealt with V for all sets;
 % note: we use only Cs instead of l = Cs*C as V is defined in output space!
-ds = ds - Cs*center(options.V) - sum(abs(Cs*generators(options.V)),2);
+ds = ds - Cs*center(params.V) - sum(abs(Cs*generators(params.V)),2);
 
 % read data from initial set (these remain constant for the algorithm!)
-c_X0 = center(options.R0);
-G_X0 = generators(options.R0);
+c_X0 = center(params.R0);
+G_X0 = generators(params.R0);
 
 % compute distance of initial output set to each specification
-dist_affine_tp_0 = (-ds + l'*c_X0 + sum(abs(l'*G_X0),2) + Cs*options.vTransVec(:,1))';
+dist_affine_tp_0 = (-ds + l'*c_X0 + sum(abs(l'*G_X0),2) + Cs*params.vTransVec(:,1))';
 
 % check initial output set (outside of verification loop below)
 if any(dist_affine_tp_0 > 0)
@@ -177,7 +175,7 @@ while true
     savedata.iterations = savedata.iterations + 1;
 
     % compute number of steps (we use fixed time step sizes)
-    nrSteps = round(options.tFinal/timeStep);
+    nrSteps = round(params.tFinal/timeStep);
 
     % save data
     savedata.timeStep = timeStep;
@@ -186,7 +184,7 @@ while true
     % log
     if options.verbose
         disp("Iteration " + savedata.iterations + ": no. of steps = " + nrSteps + ...
-            " (time step size = " + timeStep + ", horizon = " + options.tFinal + ")");
+            " (time step size = " + timeStep + ", horizon = " + params.tFinal + ")");
     end
 
     % initialize contributions to distance to unsafe set from piecewise
@@ -197,24 +195,24 @@ while true
     % initialize contribution to distance to unsafe set from input vector
     % in output equation (assuming constant input vector for now,
     % recomputed below if necessary); note: included in dist.affine_tp!
-    dist.vTrans = repmat((Cs*options.vTransVec(:,1))',nrSteps+1,1);
+    dist.vTrans = repmat((Cs*params.vTransVec(:,1))',nrSteps+1,1);
 
     % compute exponential matrix for given time step size (+ transposed)
     if options.verbose
         disp("...compute propagation matrix");
     end
-    expmat.Deltatk = expm(obj.A * timeStep);
+    expmat.Deltatk = expm(linsys.A * timeStep);
     expmat.Deltatk_T = expmat.Deltatk';
 
     % compute constant input solution
     if isu
         % assign constant shifts
         [u,vnext,tnextSwitch] = aux_uTrans_vTrans(0,timeStep,...
-            options.uTransVec,options.vTransVec,options.tu,0,...
-            options.uTransVec(:,1),options.vTransVec(:,1));
-        Pu = aux_Pu(obj,u,expmat,timeStep);
+            params.uTransVec,params.vTransVec,params.tu,0,...
+            params.uTransVec(:,1),params.vTransVec(:,1));
+        Pu = aux_Pu(linsys,u,expmat,timeStep);
         % initialize accumulated solution
-        Pu_total = zeros(obj.dim,1);
+        Pu_total = zeros(linsys.nrOfStates,1);
         % reduce time step size if computation has not converged
         if ~expmat.conv
             timeStep = timeStep * timeStepFactor_nonconverged;
@@ -230,7 +228,7 @@ while true
     if options.verbose
         disp("...compute interval matrices for curvature errors");
     end
-    [expmat,intmatF,intmatG] = aux_intmat(obj,isu,expmat,timeStep);
+    [expmat,intmatF,intmatG] = aux_intmat(linsys,isu,expmat,timeStep);
     % reduce time step size if computation has not converged
     if ~expmat.conv
         timeStep = timeStep * timeStepFactor_nonconverged;
@@ -242,7 +240,7 @@ while true
     end
 
     % original computation (not taking time-varying u into account)
-%     Cbloat = intmatF.set * options.R0 + intmatG.set * u;
+%     Cbloat = intmatF.set * params.R0 + intmatG.set * u;
 %     c_Cbloat = center(Cbloat); G_Cbloat = generators(Cbloat);
     % speed-up
     cx_Cbloat = intmatF.center * c_X0;
@@ -268,7 +266,7 @@ while true
     l_prop = cell(nrSpecs,1);
     l_prop_T = cell(nrSpecs,1);
     for s=1:nrSpecs
-        l_prop{s} = [l(:,s), zeros(obj.dim,nrSteps)];
+        l_prop{s} = [l(:,s), zeros(linsys.nrOfStates,nrSteps)];
         l_prop_T{s} = l_prop{s}';
     end
 
@@ -302,12 +300,12 @@ while true
             if ~isuconst
                 % compute next(!) Pu and contribution to bloating term
                 [u,vnext,tnextSwitch] = aux_uTrans_vTrans((k-1)*timeStep,...
-                    timeStep,options.uTransVec,options.vTransVec,...
-                    options.tu,tnextSwitch,u,vnext);
+                    timeStep,params.uTransVec,params.vTransVec,...
+                    params.tu,tnextSwitch,u,vnext);
 
                 if k > 1 && ~all(withinTol(u,u_prev))
                     % only update Pu if necessary
-                    Pu = aux_Pu(obj,u,expmat,timeStep);
+                    Pu = aux_Pu(linsys,u,expmat,timeStep);
                     % update values for Cbloat
                     cu_Cbloat = intmatG.center * u;
                     % note: Gu requires diag(.), but we can omit it here in
@@ -372,9 +370,9 @@ while true
                 fals.u = origInput.u;
                 fals.tu = 0;
             else
-                idx = find(k*timeStep >= options.tu,1,'last');
+                idx = find(k*timeStep >= params.tu,1,'last');
                 fals.u = origInput.u(:,1:idx);
-                fals.tu = options.tu(1:idx);
+                fals.tu = params.tu(1:idx);
             end
             % save data
             savedata.fals_tFinal = fals.tFinal;
@@ -460,12 +458,12 @@ while true
         % suggest refinement based on H(tauk) (important if no input set)
         if ~all(cellfun(@isempty,specUnsat,'UniformOutput',true))
             % shorten time horizon if possible
-            options.tFinal = max(cellfun(@(x) x(end,2),specUnsat,'UniformOutput',true));
+            params.tFinal = max(cellfun(@(x) x(end,2),specUnsat,'UniformOutput',true));
             % method from paper: fixed factor
             timeStep = timeStep * timeStepFactor_fixed;
             % propose smaller time step size
-%             timeStep = aux_affineTimeStep(obj,dist,options.tFinal,...
-%                 timeStep,timeStepFactor,isuconst,options.tu,options.normC);
+%             timeStep = aux_affineTimeStep(obj,dist,params.tFinal,...
+%                 timeStep,timeStepFactor,isuconst,params.tu,options.normC);
         end
 
 
@@ -475,7 +473,7 @@ while true
             disp("...compute inner/outer-approximation of particular solution");
         end
         % compute inner-approximation underPU(Delta t)
-        underPU_G = aux_underPU(obj,G_U,expmat,timeStep);
+        underPU_G = aux_underPU(linsys,G_U,expmat,timeStep);
         % reduce time step size if computation has not converged
         if ~expmat.conv
             timeStep = timeStep * timeStepFactor_nonconverged;
@@ -486,7 +484,7 @@ while true
             continue;
         end
         % compute outer-approximation overPU(Delta t)
-        overPU_G = aux_overPU(obj,G_U,expmat,timeStep);
+        overPU_G = aux_overPU(linsys,G_U,expmat,timeStep);
         % reduce time step size if computation has not converged
         if ~expmat.conv
             timeStep = timeStep * timeStepFactor_nonconverged;
@@ -562,7 +560,7 @@ while true
             % input contribution: different length depending on whether we
             % have feedthrough or not
             u_tIdx = tIdx - 1;
-            if any(any(obj.D))
+            if any(any(linsys.D))
                 u_tIdx = tIdx;
             end
             % contribution from input set
@@ -574,7 +572,7 @@ while true
             else
                 % contribution from piecewise-constant input vectors
                 for j=1:u_tIdx
-                    idx = find((j-1)*timeStep >= options.tu,1,'last');
+                    idx = find((j-1)*timeStep >= params.tu,1,'last');
                     fals.u(:,j) = fals.u(:,j) + origInput.u(:,idx);
                 end
             end
@@ -614,8 +612,8 @@ while true
                         % suggest refinement for Delta t by using quadratic
                         % dependence of the size of overPU (and Cbloat...)
 %                         timeStep_prop(k,s) = aux_affinePUTimeStep(obj,...
-%                             dist,options.tFinal,timeStep,timeStepFactor,...
-%                             isuconst,options.tu,options.normC,k);
+%                             dist,params.tFinal,timeStep,timeStepFactor,...
+%                             isuconst,params.tu,options.normC,k);
                     end
         
                     % shift time interval
@@ -708,57 +706,57 @@ end
 
 
 % initializations
-function [options,origInput] = aux_canonicalForm(obj,options)
+function [params,origInput] = aux_canonicalForm(linsys,params)
 % put inhomogeneity to canonical forms:
 %    Ax + Bu + c + w  ->  Ax + u, where u \in U + uTransVec
 %    Cx + Du + k + v  ->  Cx + v, where v \in V + vTransVec
-% the sets options.U and options.V return being centered at the origin, all
+% the sets params.U and params.V return being centered at the origin, all
 % (potentially piecewise-constant) offsets are comprised in the vectors
-% options.uTransVec and options.vTransVec
+% params.uTransVec and params.vTransVec
 
-if isa(options.W,'interval')
-    options.W = zonotope(options.W);
+if isa(params.W,'interval')
+    params.W = linsys.E*zonotope(params.W);
 end
-if isa(options.V,'interval')
-    options.V = zonotope(options.V);
+if isa(params.V,'interval')
+    params.V = linsys.F*zonotope(params.V);
 end
 
 % read out disturbance
-centerW = center(options.W);
-W = options.W + (-centerW);
+centerW = center(params.W);
+W = params.W + (-centerW);
 % read out sensor noise, combine with feedthrough if given
-if any(any(obj.D))
-    options.V = obj.D * options.U + options.V;
+if any(any(linsys.D))
+    params.V = linsys.D * params.U + params.V;
 end
-centerV = center(options.V);
-options.V = options.V + (-centerV);
+centerV = center(params.V);
+params.V = params.V + (-centerV);
 
 % initialize input vector for state and output equation (if sequence given)
-if isfield(options,'uTransVec')
+if isfield(params,'uTransVec')
     % time-varying input vector
-    uVec = options.uTransVec;
+    uVec = params.uTransVec;
 else
     % no time-varying input vector, but uTrans given
-    uVec = options.uTrans;
+    uVec = params.uTrans;
 end
 
 % save original input for falsifying trajectory
-origInput.U = options.U;
+origInput.U = params.U;
 origInput.u = uVec;
 
 % put output equation in canonical form
-if any(any(obj.D))
-    options.vTransVec = obj.D * uVec + obj.k + centerV;
+if any(any(linsys.D))
+    params.vTransVec = linsys.D * uVec + linsys.k + centerV;
 else
-    options.vTransVec = obj.k + centerV;
+    params.vTransVec = linsys.k + centerV;
 end
 
 % put state equation in canonical form
-options.U = obj.B * options.U + W;
-options.uTransVec = obj.B * uVec + obj.c + centerW;
+params.U = linsys.B * params.U + W;
+params.uTransVec = linsys.B * uVec + linsys.c + centerW;
 
 % remove fields for safety
-options = rmfield(options,'W');
+params = rmfield(params,'W');
 % note: U and V now overwritten!
 
 end
@@ -777,7 +775,7 @@ expmat.Aneg = cell(0);
 expmat.Deltatk = [];
 
 % precompute inverse of A matrix
-expmat.isAinv = rank(full(obj.A)) == obj.dim;
+expmat.isAinv = rank(full(obj.A)) == obj.nrOfStates;
 expmat.Ainv = [];
 if expmat.isAinv
     expmat.Ainv = inv(obj.A);
@@ -785,7 +783,7 @@ end
 
 end
 
-function [dist,fals,isU,G_U,isu,isuconst,options] = aux_initStructsFlags(obj,options)
+function [dist,fals,isU,G_U,isu,isuconst] = aux_initStructsFlags(obj,params)
 
 % struct for distances
 dist = [];
@@ -794,10 +792,10 @@ dist = [];
 % horizon) vs. system with varying u or even uncertainty U
 % -> the resulting if-else branching looks quite ugly, but still yields
 % large speed-ups for high-dimensional systems
-G_U = generators(options.U);
+G_U = generators(params.U);
 isU = ~isempty(G_U);
-isu = any(any(options.uTransVec));
-isuconst = size(options.uTransVec,2) == 1;
+isu = any(any(params.uTransVec));
+isuconst = size(params.uTransVec,2) == 1;
 % sparsity for speed up (acc. to numeric tests only for very sparse
 % matrices actually effective)
 if nnz(obj.A) / numel(obj.A) < 0.1
@@ -1089,7 +1087,7 @@ function [expmat,intmatF,intmatG] = aux_intmat(obj,isu,expmat,timeStep)
 
 % load data from object/options structure
 A = obj.A;
-n = obj.dim;
+n = obj.nrOfStates;
 
 % initialize auxiliary variables and flags for loop
 Asum_pos_F = zeros(n);
@@ -1290,10 +1288,10 @@ function [Pu,expmat] = aux_Pu(obj,u,expmat,timeStep)
 % only computed until finite precision)
 
 if ~any(u)
-    Pu = zeros(obj.dim,1);
+    Pu = zeros(obj.nrOfStates,1);
 
 elseif expmat.isAinv
-    Pu = expmat.Ainv * (expmat.Deltatk - eye(obj.dim)) * u;
+    Pu = expmat.Ainv * (expmat.Deltatk - eye(obj.nrOfStates)) * u;
     
 else    
     % compute by sum until floating-point precision (same as for PU)
@@ -1303,7 +1301,7 @@ else
     eta = 1;
     
     % first term
-    Asum = timeStep * eye(obj.dim);
+    Asum = timeStep * eye(obj.nrOfStates);
     
     % loop until Asum no longer changes (additional values too small)
     while true
@@ -1351,7 +1349,7 @@ function [G_underPU,expmat] = aux_underPU(obj,G_U,expmat,timeStep)
 
 
 if expmat.isAinv
-    G_underPU = expmat.Ainv * (expmat.Deltatk - eye(obj.dim)) * G_U;
+    G_underPU = expmat.Ainv * (expmat.Deltatk - eye(obj.nrOfStates)) * G_U;
     
 else    
     % compute by sum until floating-point precision
@@ -1361,7 +1359,7 @@ else
     eta = 1;
     
     % first term
-    Asum = timeStep * eye(obj.dim);
+    Asum = timeStep * eye(obj.nrOfStates);
     
     % loop until Asum no longer changes (additional values too small)
     while true
@@ -1410,7 +1408,7 @@ maxeta = 75;
 
 % initialize particular solution
 G_U_size = size(G_U,2);
-G_overPU = zeros(obj.dim,G_U_size*maxeta);
+G_overPU = zeros(obj.nrOfStates,G_U_size*maxeta);
 G_overPU(:,1:G_U_size) = timeStep * G_U;
 PU_diag = sum(abs(G_overPU),2);
 

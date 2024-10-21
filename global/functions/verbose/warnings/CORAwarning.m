@@ -20,15 +20,13 @@ function CORAwarning(identifier, varargin)
 
 % Authors:       Tobias Ladner
 % Written:       17-April-2024
-% Last update:   ---
+% Last update:   07-October-2024 (MW, add CORA:interface)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
-if nargin < 2
-    throw(CORAerror('CORA:notEnoughInputArgs',2))
-end
+narginchk(2,Inf);
 aux_checkIdentifier(identifier)
 
 % check if CORA warning should be shown (global/specific)
@@ -43,21 +41,28 @@ switch identifier
         % identifier, type, name, version, replacement, reason
 
         % read input
-        if numel(varargin) ~= 5
-            throw(CORAerror('CORA:notEnoughInputArgs',5))
-        end
+        narginchk(6,6);
         type = varargin{1};
         name = varargin{2};
         version = varargin{3};
         replacement = varargin{4};
         reason = varargin{5};
 
-        % compose replacment and reason
+        % compose replacement and reason
         replacement = aux_formatString(replacement);
         reason = aux_formatString(reason);
         
         desc = sprintf('The %s ''%s'' is deprecated (since %s) and will be removed in a future release.\n  %s\n  %s', ...
             type, name, version, replacement, reason);
+
+    case 'CORA:interface'
+        % read input
+        narginchk(3,3);
+        name = varargin{1};
+        version = varargin{2};
+        
+        desc = sprintf('The interface of the function ''%s'' has changed (since %s):\n  Please check the function header for details', ...
+            name, version);
 
     otherwise
         % identifier, msg, args for sprintf
@@ -96,6 +101,7 @@ function aux_checkIdentifier(identifier)
         'CORA:solver', ...
         'CORA:deprecated', ...
         'CORA:redundant', ...
+        'CORA:interface', ...
     }}})
 end
 

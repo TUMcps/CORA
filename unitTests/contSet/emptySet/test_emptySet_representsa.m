@@ -23,22 +23,20 @@ function res = test_emptySet_representsa
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % init empty set
 n = 2;
 O = emptySet(n);
 
 % compare to other representations
-res(end+1,1) = ~representsa(O,'origin');
-res(end+1,1) = ~representsa(O,'point');
+assert(~representsa(O,'origin'));
+assert(~representsa(O,'point'));
 
-res(end+1,1) = representsa(O,'emptySet');
-res(end+1,1) = representsa(O,'interval');
-res(end+1,1) = representsa(O,'zonotope');
+assert(representsa(O,'emptySet'));
+assert(representsa(O,'interval'));
+assert(representsa(O,'zonotope'));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

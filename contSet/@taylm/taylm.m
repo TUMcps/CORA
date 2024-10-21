@@ -110,9 +110,10 @@ methods
     function obj = taylm(varargin)
 
         % 0. avoid empty instantiation
-%         if nargin == 0
-%             throw(CORAerror('CORA:noInputInSetConstructor'));
-%         end
+        % if nargin == 0
+        %     throw(CORAerror('CORA:noInputInSetConstructor'));
+        % end
+        % assertNarginConstructor(1:6,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'taylm')
@@ -222,11 +223,6 @@ function [func,int,max_order,names,opt_method,eps,tolerance] = ...
         % syntaxes:
         % - obj = taylm(int)
         % - obj = taylm(int,max_order,names,opt_method,eps,tolerance)
-
-        % check number of input arguments
-        if nargin > 6
-            throw(CORAerror('CORA:tooManyInputArgs',6));
-        end
         
         % read out values
         [int,max_order,names,opt_method,eps,tolerance] = ...
@@ -240,13 +236,6 @@ function [func,int,max_order,names,opt_method,eps,tolerance] = ...
         % syntaxes:
         % - obj = taylm(func,int)
         % - obj = taylm(func,int,max_order,opt_method,eps,tolerance)
-
-       % check number of input arguments
-       if nargin < 2
-           throw(CORAerror('CORA:notEnoughInputArgs',2));
-       elseif nargin > 6
-           throw(CORAerror('CORA:tooManyInputArgs',6));
-       end
 
        % read out values
        [func,int,max_order,opt_method,eps,tolerance] = ...
@@ -322,7 +311,7 @@ function obj = aux_computeObject(obj,func,int,max_order,names,opt_method,eps,tol
         if isscalar(int)
         
             obj.coefficients = [center(int); rad(int)];
-            obj.monomials = hashFunction([0; 1]);
+            obj.monomials = priv_hashFunction([0; 1]);
             obj.max_order = max_order;
             obj.opt_method = opt_method;
             obj.eps = eps;
@@ -344,7 +333,7 @@ function obj = aux_computeObject(obj,func,int,max_order,names,opt_method,eps,tol
             for i = 1:size(int,1)
                 for j = 1:size(int,2)
                     obj(i,j).coefficients = [center(int(i,j)); rad(int(i,j))];
-                    obj(i,j).monomials = hashFunction([0; 1]);
+                    obj(i,j).monomials = priv_hashFunction([0; 1]);
                     obj(i,j).max_order = max_order;
                     obj(i,j).opt_method = opt_method;
                     obj(i,j).eps = eps;

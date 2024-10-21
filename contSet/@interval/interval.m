@@ -58,6 +58,7 @@ methods
         if nargin == 0
             throw(CORAerror('CORA:noInputInSetConstructor'));
         end
+        assertNarginConstructor(1:2,nargin);
 
         % 1. copy constructor
         if nargin == 1 && isa(varargin{1},'interval')
@@ -77,6 +78,9 @@ methods
         obj.inf = lb;
         obj.sup = ub;
 
+        % 6. set precedence (fixed)
+        obj.precedence = 120;
+
     end
     
 
@@ -93,10 +97,10 @@ methods
     I = asinh(I) % inverse hyperbolic sine function
     I = atan(I) % inverse tangent function
     I = atanh(I) % inverse hyperbolic tangent function
+    I = cat(dims,varargin) % concatenate given intervals
     C = capsule(I) % conversion to capsule object
     c = center(I) % center of interval
     cPZ = conPolyZono(I) % conversion to conPolyZono object
-    res = convHull(I,varargin) % convex hull
     cZ = conZonotope(I) % conversion to conZonotope object
     res = cos(I) % cosine function
     I = cosh(I) % hyperbolic cosine function
@@ -105,11 +109,11 @@ methods
     n = dim(I) % dimension of interval
     E = ellipsoid(I,varargin) % conversion to ellipsoid object
     I = enlarge(I,factor) % enlargement by factor
-    res = eq(I1,I2) % equality check
     I = exp(I) % overloaded exp-function
     p = gridPoints(I,segments) % generate grid points
     I = horzcat(varargin) % overloaded horizontal concatenation
     res = infimum(I) % read lower limit
+    intMat = intervalMatrix(I) % convert to intervalMatrix
     res = isequal(I1,I2,varargin) % equal objects check
     res = isFullDim(I) % full dimensionality check
     res = isscalar(I) % one-dimensionality check
@@ -127,10 +131,8 @@ methods
     P = polytope(I) % conversion to polytope object
     res = mrdivide(numerator,denominator) % overloaded / operator
     res = mtimes(factor1,factor2) % overloaded * operator
-    res = ne(I1,I2) % overloaded ~= operator
     res = or(I,S) % union
     dzNew = partition(I, splits) % partition into subintervals
-    han = plot(I,varargin) % plot
     res = plus(summand1,summand2) % overloaded + operator
     pZ = polyZonotope(I) % conversion to polyZonotope object
     res = power(base,exponent) % overloaded .^ operator
@@ -140,6 +142,7 @@ methods
     I = quadMap(varargin) % quadratic map
     r = rad(I) % radius (half of diameter)
     r = radius(I) % radius of enclosing hyperball
+    r = round(I,varargin) % rounds the digits of the interval
     [res,S] = representsa_(I,type,tol,varargin) % comparison to other representations
     res = rdivide(numerator,denominator) % overloaded ./ operator
     I = reshape(I,varargin) % overloaded reshape-function
@@ -171,6 +174,11 @@ methods (Static = true)
     I = enclosePoints(points) % enclosure of point cloud
     I = empty(n) % instantiates an empty interval
     I = Inf(n) % instantiates a fullspace interval
+    I = origin(n) % instantiates an interval representing the origin in R^n
+end
+
+methods (Access = protected)
+    [abbrev,printOrder] = getPrintSetInfo(S)
 end
 
 end
@@ -180,11 +188,6 @@ end
 
 function [lb,ub] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin > 2
-        throw(CORAerror('CORA:tooManyInputArgs',2));
-    end
     
     % assign lower and upper bound
     [lb,ub] = setDefaultValues({[],[]},varargin);
@@ -211,12 +214,14 @@ function aux_checkInputArgs(lb,ub,n_in)
             if ~all(size(lb) == size(ub))
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'Limits are of different dimension.'));
-            elseif length(size(lb)) > 2
-                throw(CORAerror('CORA:wrongInputInConstructor',...
-                    'Only 1d and 2d intervals are supported.'));
-            elseif ~all(all(lb <= ub))
+            % elseif length(size(lb)) > 2
+            %     throw(CORAerror('CORA:wrongInputInConstructor',...
+            %         'Only 1d and 2d intervals are supported.'));
+            elseif ~all(lb <= ub,"all")
                 % check again using tolerance (little bit slower)
-                if ~all(all(lb < ub | withinTol(double(lb),double(ub))))
+                % tolerance is chosen as 1e-6 since many interval
+                % enclosures are computed using linear programs
+                if ~all(lb < ub | withinTol(double(lb),double(ub),1e-6),"all")
                     throw(CORAerror('CORA:wrongInputInConstructor',...
                         'Lower limit larger than upper limit.'));
                 end

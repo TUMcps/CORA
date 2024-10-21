@@ -23,7 +23,7 @@ function [val,x] = supportFunc_(C,dir,type,varargin)
 %   
 %    figure; hold on;
 %    plot(C,[1,2],'r');
-%    plot(conHyperplane(halfspace([1;1],val)),[1,2],'g');
+%    plot(polytope([],[],[1,1],val),[1,2],'g');
 %
 % Other m-files required: none
 % Subfunctions: none

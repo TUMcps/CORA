@@ -21,7 +21,7 @@ function S=dominantDirections(Z,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: 
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       19-July-2010
@@ -41,11 +41,8 @@ inputArgsCheck({{Z,'att','zonotope'};
                 {filterLength1,'att','numeric',{'nonnan','scalar','positive'}};
                 {filterLength2,'att','numeric',{'nonnan','scalar','positive'}}});
 
-%extract generator matrix
-G = Z.G;
-
 %Delete zero-generators
-G=nonzeroFilter(G);
+G = nonzeroFilter(Z.G);
 
 % number of generators
 nrOfGens = size(G,2);
@@ -68,16 +65,15 @@ if filterLength2 > nrOfGens
 end
 
 %length filter
-G=lengthFilter(G,filterLength1);
+G = priv_lengthFilter(G,filterLength1);
 
 %apply generator volume filter
-Gcells=generatorVolumeFilter(G,filterLength2);
+Gcells = priv_generatorVolumeFilter(G,filterLength2);
 
 %pick generator with the best volume
-Gtemp=volumeFilter(Gcells,Z);
-Gpicked=Gtemp{1};
+G_picked = priv_volumeFilter(Gcells,Z);
 
 %Select dominant directions S
-S(:,1:n)=Gpicked(:,1:n);
+S(:,1:n) = G_picked{1}(:,1:n);
 
 % ------------------------------ END OF CODE ------------------------------

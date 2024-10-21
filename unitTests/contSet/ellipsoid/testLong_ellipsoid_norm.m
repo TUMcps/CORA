@@ -38,9 +38,7 @@ for i=1:nrOfTests
     E = ellipsoid(Q,q);
     
     % check result
-    if ~withinTol(norm(E),1)
-        res = false; break;
-    end
+    assertLoop(withinTol(norm(E),1),i)
 
 end
 

@@ -23,6 +23,7 @@ function [completed,res,tTotal] = example_neuralNet_reach_04_singlePendulum
 % Written:       08-November-2021
 % Last update:   23-May-2022 (TL, ARCH'22 revisions)
 %                30-March-2023 (TL, verify violated runs, ARCH'23 revisions)
+%                02-May-2024 (TL, ARCH'24 revisions)
 % Last revision: 14-November-2022 (TL, clean up)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -32,23 +33,23 @@ rng(1)
 
 % Parameters --------------------------------------------------------------
 
-R0 = interval([1; 0], [1.2; 0.2]);
+R0 = interval([1; 0], [1.175; 0.2]);
 
 params.tFinal = 1;
 params.R0 = polyZonotope(R0);
 
 % Reachability Settings ---------------------------------------------------
 
-options.timeStep = 0.05;
+options.timeStep = 0.01;
 options.alg = 'lin';
 options.tensorOrder = 2;
 options.taylorTerms = 4;
 options.zonotopeOrder = 50;
 
-% Parameters for NN evaluation --------------------------------------------
+% Options for NN evaluation -----------------------------------------------
 
-evParams = struct();
-evParams.poly_method = "singh";
+options.nn = struct();
+options.nn.poly_method = "singh";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -78,7 +79,7 @@ specUnsafe = specification(safeSet * 0.5 + 1, 'unsafeSet', spec.time);
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, evParams, true);
+[res, R, simRes] = verify(sys, spec, params, options, true);
 tTotal = toc(t);
 disp(['Result: ' res])
 

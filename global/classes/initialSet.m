@@ -31,11 +31,7 @@ classdef initialSet
         % constructor
         function obj = initialSet(set)
             % parse input
-            if nargin < 1
-                throw(CORAerror('CORA:notEnoughInputArgs', 1))
-            elseif nargin > 1
-                throw(CORAerror('CORA:tooManyInputArgs', 1))
-            end
+            assertNarginConstructor(1,nargin);
             inputArgsCheck({{set, 'att', 'contSet'}})
             obj.set = set;
         end

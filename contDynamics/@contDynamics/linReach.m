@@ -1,13 +1,14 @@
-function [Rti,Rtp,dimForSplit,options] = linReach(obj,options,Rstart)
+function [Rti,Rtp,dimForSplit,options] = linReach(sys,Rstart,params,options)
 % linReach - computes the reachable set after linearization
 %
 % Syntax:
-%    [Rti,Rtp,dimForSplit,options] = linReach(obj,options,Rstart)
+%    [Rti,Rtp,dimForSplit,options] = linReach(sys,Rstart,params,options)
 %
 % Inputs:
-%    obj - nonlinearSys or nonlinParamSys object
-%    options - struct with algorithm settings
+%    sys - nonlinearSys or nonlinParamSys object
 %    Rstart - initial reachable set
+%    params - model parameters
+%    options - struct with algorithm settings
 %
 % Outputs:
 %    Rti - reachable set for time interval
@@ -48,30 +49,37 @@ abstrerr = Rstart.error;
 % necessary to update part of abstraction that is dependent on x0 when
 % linearization remainder is not computed
 if isfield(options,'updateInitFnc')
-    currentStep = round((options.t-options.tStart)/options.timeStep)+1;
+    currentStep = round((options.t-params.tStart)/options.timeStep)+1;
     Rinit = options.updateInitFnc(Rinit,currentStep);
 end
 
 % linearize the nonlinear system
-[obj,linSys,linOptions] = linearize(obj,options,Rinit); 
+[sys,linsys,linParams,linOptions] = linearize(sys,Rinit,params,options); 
 
 % translate Rinit by linearization point
-Rdelta = Rinit + (-obj.linError.p.x);
+Rdelta = Rinit + (-sys.linError.p.x);
 
 % compute reachable set of the linearized system
-if isa(obj,'nonlinParamSys') && isa(options.paramInt,'interval')
-    [linSys,R] = initReach_inputDependence(linSys,Rdelta,linOptions);
+if isa(sys,'nonlinParamSys') && isa(params.paramInt,'interval')
+    [linsys,R] = initReach_inputDependence(linsys,Rdelta,linParams,linOptions);
+    Rtp = R.tp; Rti = R.ti;
+elseif isa(linsys,'linParamSys')
+    R = initReach(linsys,Rdelta,linParams,linOptions);
+    Rtp = R.tp; Rti = R.ti;
 else
-    R = initReach(linSys,Rdelta,linOptions);
+    [Rtp,Rti,~,~,PU,Pu,~,C_input] = oneStep(linsys,Rdelta,...
+        linParams.U,linParams.uTrans,options.timeStep,options.taylorTerms);
 
     if strcmp(options.alg,'poly')
-        % precompute set of state differences
-        Rdiff = deltaReach(linSys,Rdelta,linOptions);
+        % pre-compute set of state differences
+        Rdiff = aux_deltaReach(linsys,Rdelta,PU,Pu,C_input,...
+            options.timeStep,options.taylorTerms,...
+            options.reductionTechnique,options.intermediateOrder);
         
-        % precompute static abstraction error
+        % pre-compute static abstraction error
         if options.tensorOrder > 2
             [H,Zdelta,errorStat,T,ind3,Zdelta3] = ...
-                precompStatError(obj,Rdelta,options);
+                precompStatError(sys,Rdelta,params,options);
         end
     end
 end
@@ -79,18 +87,18 @@ if isfield(options,'approxDepOnly') && options.approxDepOnly
     if ~exist('errorStat','var')
         errorStat = [];
     end
-    [Rtp,Rti,dimForSplit,options] = aux_approxDepReachOnly(linSys,obj,R,options,errorStat);
+    [Rtp,Rti,dimForSplit,options] = aux_approxDepReachOnly(linsys,sys,R,options,errorStat);
     return;
 end
 % compute reachable set of the abstracted system including the
 % abstraction error using the selected algorithm
 if strcmp(options.alg,'linRem')
-    [Rtp,Rti,perfInd] = aux_linReach_linRem(obj,R,Rinit,Rdelta,options);
+    [Rtp,Rti,perfInd] = aux_linReach_linRem(sys,R,Rinit,Rdelta,params,options);
 else
 
     % loop until the actual abstraction error is smaller than the 
     % estimated linearization error
-    Rtp = R.tp; Rti = R.ti; perfIndCurr = inf; perfInd = 0;
+    perfIndCurr = Inf; perfInd = 0;
     
     % used in AROC for reachsetOptimalControl (reachSet with previous
     % linearization error)
@@ -107,8 +115,13 @@ else
     while perfIndCurr > 1 && perfInd <= 1
         % estimate the abstraction error 
         appliedError = 1.1*abstrerr;
-        Verror = zonotope([0*appliedError,diag(appliedError)]);
-        RallError = errorSolution(linSys,options,Verror); 
+        Verror = zonotope(0*appliedError,diag(appliedError));
+        if isa(linsys,'linParamSys')
+            RallError = errorSolution(linsys,options,Verror);
+        else
+            RallError = particularSolution_timeVarying(linsys,...
+                Verror,options.timeStep,options.taylorTerms);
+        end
 
         % compute the abstraction error using the conservative
         % linearization approach described in [1]
@@ -117,8 +130,8 @@ else
             % compute overall reachable set including linearization error
             Rmax = Rti+RallError;
             % compute linearization error
-            [trueError,VerrorDyn] = abstrerr_lin(obj,options,Rmax);
-            VerrorStat = [];
+            [trueError,VerrorDyn] = abstrerr_lin(sys,Rmax,params,options);
+            VerrorStat = zeros(sys.nrOfStates,1);
             
         % compute the abstraction error using the conservative
         % polynomialization approach described in [2]    
@@ -128,7 +141,7 @@ else
             Rmax = Rdelta+zonotope(Rdiff)+RallError;
             % compute abstraction error
             [trueError,VerrorDyn,VerrorStat] = ...
-                abstrerr_poly(obj,options,Rmax,Rdiff+RallError, ...
+                abstrerr_poly(sys,Rmax,Rdiff+RallError,params,options, ...
                                     H,Zdelta,errorStat,T,ind3,Zdelta3);
 
         end
@@ -146,15 +159,19 @@ else
     end
 
     % translate reachable sets by linearization point
-    Rti = Rti+obj.linError.p.x;
-    Rtp = Rtp+obj.linError.p.x;
+    Rti = Rti+sys.linError.p.x;
+    Rtp = Rtp+sys.linError.p.x;
 
     % compute the reachable set due to the linearization error
     if ~exist('Rerror','var')
-        if isa(linSys,'linParamSys')
-            Rerror = errorSolution(linSys,options,VerrorDyn);
+        if isa(linsys,'linParamSys')
+            Rerror = errorSolution(linsys,options,VerrorDyn);
         else
-            Rerror = errorSolution(linSys,options,VerrorDyn,VerrorStat);
+            Rerror_dyn = particularSolution_timeVarying(linsys,...
+                VerrorDyn,options.timeStep,options.taylorTerms);
+            Rerror_stat = particularSolution_constant(linsys,...
+                VerrorStat,options.timeStep,options.taylorTerms);
+            Rerror = Rerror_dyn + Rerror_stat;
         end
         if isfield(options,'approxErr') && options.approxErr
             options.prevErr = Rerror;
@@ -177,7 +194,7 @@ end
 dimForSplit = [];
 
 if perfInd > 1
-    dimForSplit = select(obj,options,Rstart);
+    dimForSplit = select(sys,Rstart,params,options);
 end
 
 % store the linearization error
@@ -191,49 +208,98 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [Rtp,Rti,perfInd] = aux_linReach_linRem(obj,R,Rinit,Rdelta,options)
+function Rdelta = aux_deltaReach(sys,Rinit,RV,Rtrans,inputCorr,...
+    timeStep,truncationOrder,reductionTechnique,intermediateOrder)
+% compute delta reachable set (set of states differences): the notable
+% different to linearSys functions is that we have (e^At - I)*Rinit and an
+% enclose-call with the origin
+
+% compute/read out helper variables
+options = struct('timeStep',timeStep,'ithpower',truncationOrder);
+eAt = getTaylor(sys,'eAdt',options);
+F = readFieldForTimeStep(sys.taylor,'F',timeStep);
+
+% first time step homogeneous solution
+n = sys.nrOfStates;
+Rhom_tp_delta = (eAt - eye(n))*Rinit + Rtrans;
+
+if isa(Rinit,'zonotope')
+    %original computation
+    O = zonotope(zeros(n,1));
+    Rhom=enclose(O,Rhom_tp_delta)+F*Rinit+inputCorr;
+elseif isa(Rinit,'polyZonotope') || isa(Rinit,'conPolyZono')
+    O = zeros(n)*Rhom_tp_delta;  % to retain dependencies!
+    Rhom=enclose(O,Rhom_tp_delta)+F*zonotope(Rinit)+inputCorr;
+elseif isa(Rinit,'zonoBundle')
+    O = zonoBundle({zonotope(zeros(n,1))});
+    Rhom=enclose(O,Rhom_tp_delta)+F*Rinit.Z{1}+inputCorr;
+end
+
+%reduce zonotope
+Rhom=reduce(Rhom,reductionTechnique,intermediateOrder);
+if ~isnumeric(RV)
+    RV=reduce(RV,reductionTechnique,intermediateOrder);
+end
+
+%total solution
+if isa(Rinit,'polytope')
+    %convert zonotopes to polytopes
+    Radd=polytope(RV);
+    Rdelta=Rhom+Radd;
+else
+    %original computation
+    Rdelta=Rhom+RV;
+end
+
+end
+
+function [Rtp,Rti,perfInd] = aux_linReach_linRem(sys,R,Rinit,Rdelta,params,options)
 % Compute the reachable set for the linearized system using an algorithm
 % that is based on the linearization of the Lagrange remainder
     
     % compute the reachable set for the linearized system
     options.alg = 'lin';
     
-    [obj,linSys,linOptions] = linearize(obj,options,Rinit); 
-    if isa(linSys,'linParamSys')
-        linOptions.compTimePoint = 1;
+    [sys,linsys,linParams,linOptions] = linearize(sys,Rinit,params,options);
+    if isa(linsys,'linParamSys')
+        linOptions.compTimePoint = true;
     end
-    if isa(obj,'nonlinParamSys') && isa(options.paramInt,'interval')
-        [~,Rlin] = initReach_inputDependence(linSys,Rdelta,linOptions);
-    else
-        Rlin = initReach(linSys,Rdelta,linOptions);
+    if isa(sys,'nonlinParamSys') && isa(params.paramInt,'interval')
+        [~,Rlin] = initReach_inputDependence(linsys,Rdelta,linParams,linOptions);
+        Ro_int = interval(Rlin.ti);
+    elseif isa(linsys,'linParamSys')
+        Rlin = initReach(linsys,Rdelta,linParams,linOptions);
+        Ro_int = interval(Rlin.ti);
+    elseif isa(linsys,'linearSys')
+        Rlinti = oneStep(linsys,Rdelta,linParams.U,...
+            linParams.uTrans,options.timeStep,options.taylorTerms);
+        Ro_int = interval(Rlinti);
     end
     
     % compare the computed reachable set to the reachable set of the
     % linearized system in order to decide if splitting is required
-    Ro_int = interval(Rlin.ti);
     Rti_int = interval(R.ti);
-    
-    assert(Ro_int<=Rti_int,'Bug: should be always contained');
     
     trueError = max(abs(Rti_int.inf-Ro_int.inf),abs(Rti_int.sup-Ro_int.sup));
     perfInd = max(trueError./options.maxError);
     
     % translate reachable sets by linearization point
-    Rti = R.ti + obj.linError.p.x;
-    Rtp = R.tp + obj.linError.p.x;
+    Rti = R.ti + sys.linError.p.x;
+    Rtp = R.tp + sys.linError.p.x;
     
 end
 
-function [Rtp,Rti,dimForSplit,options] = aux_approxDepReachOnly(linSys,obj,R,options,errorStat)
+% TODO: put this somewhere else
+function [Rtp,Rti,dimForSplit,options] = aux_approxDepReachOnly(linsys,nlnsys,R,options,errorStat)
     R_tp = R.tp;
     R_ti = R.ti;
     if ~representsa_(errorStat,'emptySet',eps) && ~all(representsa_(errorStat,'origin',eps))
-        Rerror = linSys.taylor.eAtInt*errorStat;
-        R_tp = exactPlus(R_tp,Rerror) + obj.linError.p.x;
-        R_ti = exactPlus(R_ti,Rerror) + obj.linError.p.x;
+        Rerror = linsys.taylor.eAtInt*errorStat;
+        R_tp = exactPlus(R_tp,Rerror) + nlnsys.linError.p.x;
+        R_ti = exactPlus(R_ti,Rerror) + nlnsys.linError.p.x;
     else
-        R_tp = R_tp + obj.linError.p.x;
-        R_ti = R_ti + obj.linError.p.x;
+        R_tp = R_tp + nlnsys.linError.p.x;
+        R_ti = R_ti + nlnsys.linError.p.x;
     end
     R_tp = noIndep(reduce(R_tp,options.reductionTechnique,options.zonotopeOrder));
     R_ti = noIndep(reduce(R_ti,options.reductionTechnique,options.zonotopeOrder));

@@ -23,8 +23,6 @@ function res = test_zonotope_enlarge
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % create zonotope
 c = [-4; 1];
 G = [-3, -2, -1; 2, 3, 4];
@@ -43,7 +41,7 @@ true_G = [-6, -4, -2; ...
             3, 4.5, 6];
 
 % check result
-resvec(end+1) = compareMatrices(c_,true_c) && compareMatrices(G_,true_G);
+assert(compareMatrices(c_,true_c) && compareMatrices(G_,true_G));
 
 % check with scalar factor
 Z_ = enlarge(Z,-3);
@@ -58,14 +56,14 @@ true_G = [9, 6, 3; ...
             -6, -9, -12];
 
 % check result
-resvec(end+1) = compareMatrices(c_,true_c) && compareMatrices(G_,true_G);
+assert(compareMatrices(c_,true_c) && compareMatrices(G_,true_G));
 
 % check empty generator matrix
 Z = zonotope([1;2]);
 Z = enlarge(Z,2);
-resvec(end+1) = isempty(Z.G);
+assert(isempty(Z.G));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

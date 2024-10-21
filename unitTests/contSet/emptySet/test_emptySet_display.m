@@ -23,16 +23,14 @@ function res = test_emptySet_display
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = false;
-
 % 0-dimensional empty set
 O = emptySet(0)
 
 % n-dimensional empty set
 n = 2;
-O = emptySet(2);
+O = emptySet(n)
 
-% only has to run through without errors...
+% test completed
 res = true;
 
 % ------------------------------ END OF CODE ------------------------------

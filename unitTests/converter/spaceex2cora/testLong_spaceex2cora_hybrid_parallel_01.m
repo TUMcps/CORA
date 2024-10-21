@@ -11,6 +11,12 @@ function res = testLong_spaceex2cora_hybrid_parallel_01
 %
 % Outputs:
 %    res - true/false
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       11-January-2023
@@ -18,10 +24,6 @@ function res = testLong_spaceex2cora_hybrid_parallel_01
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-
-% assume true
-res = true;
-
 
 % directory to SpaceEx model file
 dir_spaceex = [CORAROOT filesep 'unitTests' filesep 'converter' ...
@@ -42,16 +44,16 @@ sys_spaceex = feval(filename);
 % first component, first location
 dynamics = linearSys([0 -1; 1 0],[1 0; 0 1],[],[0.05 0.05]);
 inv = polytope([1 1],0);
-guard = conHyperplane([1 1],0);
-reset = struct('A',[1 0; 0 1],'c',[3;3]);
+guard = polytope([],[],[1 1],0);
+reset = linearReset(eye(2),zeros(2),[3;3]);
 trans = transition(guard,reset,2);
 loc(1) = location('loc1',inv,trans,dynamics);
 
 % first component, second location
 dynamics = linearSys([0 -1; -1 0],[0 1; 1 0],[],[0.05 -0.05]);
 inv = polytope([-1 -1],0);
-guard = conHyperplane([1 1],0);
-reset = struct('A',[1 0; 0 1],'c',[-3;3]);
+guard = polytope([],[],[1 1],0);
+reset = linearReset(eye(2),zeros(2),[-3;3]);
 trans = transition(guard,reset,1);
 loc(2) = location('loc2',inv,trans,dynamics);
 
@@ -61,16 +63,16 @@ HA1 = hybridAutomaton(loc);
 % second component, first location
 dynamics = linearSys([0 1 -1; 1 0 0; 0 1 0],[0;-1;0],[],[0 0 0.05; 0.05 0.05 0]);
 inv = polytope([1 1 1],1);
-guard = conHyperplane([1 1 1],1);
-reset = struct('A',[1 0 0; 0 1 0; 0 0 1],'c',[1;1;1]);
+guard = polytope([],[],[1 1 1],1);
+reset = linearReset(eye(3),zeros(3,1),[1;1;1]);
 trans = transition(guard,reset,2);
 loc(1) = location('loc1',inv,trans,dynamics);
 
 % second component, second location
 dynamics = linearSys([0 -1 1; 1 0 0; 0 1 0],[0;0;1],[],[0.05 0 0; 0 0.05 -0.05]);
 inv = polytope([-1 -1 -1],-1);
-guard = conHyperplane([1 1 1],1);
-reset = struct('A',[1 0 0; 0 1 0; 0 0 1],'c',[-1;-1;-1]);
+guard = polytope([],[],[1 1 1],1);
+reset = linearReset(eye(3),zeros(3,1),[-1;-1;-1]);
 trans = transition(guard,reset,1);
 loc(2) = location('loc2',inv,trans,dynamics);
 
@@ -85,10 +87,11 @@ inputBinds{2} = [1 1];
 % instantiate parallel hybrid automaton
 sys_cora = parallelHybridAutomaton(components,inputBinds);
 
-
 % compare systems
-if ~isequal(sys_cora,sys_spaceex,1e-4)
-    res = false;
-end
+assert(isequal(sys_cora,sys_spaceex,1e-4))
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

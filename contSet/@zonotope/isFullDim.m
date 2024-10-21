@@ -1,4 +1,4 @@
-function res = isFullDim(Z,tol)
+function res = isFullDim(Z,varargin)
 % isFullDim - checks if the dimension of the affine hull of a zonotope is
 %    equal to the dimension of its ambient space
 %
@@ -34,16 +34,18 @@ function res = isFullDim(Z,tol)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin < 2
-    tol = 1e-6;
+% parse input
+tol = setDefaultValues({1e-6},varargin);
+
+% check emptyness
+if representsa_(Z,'emptySet',eps)
+    res = false;
+    return
 end
 
-if ~representsa_(Z,'emptySet',eps)
-    Zdim = dim(Z);
-    Grank = rank(Z.G,tol);
-    res = Zdim == Grank;
-else
-    res = false;
+% check whether rank of generator matrix is equal to ambient dimension
+res = dim(Z) == rank(Z.G,tol);
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

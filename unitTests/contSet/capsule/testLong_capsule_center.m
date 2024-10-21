@@ -37,7 +37,7 @@ for n=1:50
     
     % check result
     if ~compareMatrices(c,c_true)
-        res = false; break;
+        assert(false);
     end
 end
 

@@ -80,15 +80,11 @@ for i=1:size(comb,1)
     for j=1:length(spec1)+length(spec2)
         if j <= length(spec1)
             % from first part
-            if ~isequal(spec_add(j),spec1(j))
-                res = false; return
-            end
+            assertLoop(isequal(spec_add(j),spec1(j)),i,j)
         
         else
             % from second part
-            if ~isequal(spec_add(j),spec2(j-length(spec1)))
-                res = false; return
-            end
+            assertLoop(isequal(spec_add(j),spec2(j-length(spec1))),i,j)
 
         end
     end

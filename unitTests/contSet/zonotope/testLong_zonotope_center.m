@@ -45,9 +45,7 @@ for i=1:nrTests
     Zcenter = center(Z);
 
     % check if centers are the same
-    if ~compareMatrices(c,Zcenter)
-        res = false; return
-    end
+    assertLoop(compareMatrices(c,Zcenter),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

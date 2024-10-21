@@ -26,6 +26,7 @@ function res = testLong_zonotope_compact
 
 % assume true
 res = true;
+tol = 1e-12;
 
 % number of tests
 nrTests = 1000;
@@ -33,40 +34,38 @@ nrTests = 1000;
 % compare randomly generated zonotopes
 for test=1:nrTests
 
-    % random dimension
+    % random dimension, random number of generators
     n = randi(10);
-
-    % random number of generators
     nrOfGens = randi([2*n,5*n]);
     
-    % center
+    % center, generator matrix without any all-zero generators
     c = zeros(n,1);
-    % generator matrix without any all-zero generators
-    Gnozeros = -1+2*rand(n,nrOfGens);
-    Znozeros = zonotope(c,Gnozeros);
-    
-    Zdel1 = compact_(Znozeros,'zeros',eps);
+    G_nozeros = 1+rand(n,nrOfGens);
+
+    % zonotope without all-zero generators
+    Z_nozeros = zonotope(c,G_nozeros);
+
+    % representation without zero-generators
+    Z_compact = compact_(Z_nozeros,'zeros',tol);
     
     % since no zero generators, results has to be the same as before
-    res1 = compareMatrices(c,center(Zdel1)) ...
-        && compareMatrices(generators(Zdel1),Gnozeros);
+    assert(compareMatrices(Z_compact.c,c) ...
+        && compareMatrices(Z_compact.G,G_nozeros));
     
-    % insert zero generators in matrix at random position
-    Gzeros = [Gnozeros,zeros(n,randi([5,25],1,1))];
-    Gzeros = Gzeros(:,randperm(size(Gzeros,2)));
-    Zzeros = zonotope(c,Gzeros);
+    % append zero generators
+    G_withzeros = [G_nozeros, zeros(n,randi([5,25],1,1))];
+    % shuffle matrix
+    G_withzeros = G_withzeros(:,randperm(size(G_withzeros,2)));
+    Z_withzeros = zonotope(c,G_withzeros);
     
-    % delete zero generators
-    Zdel2 = compact_(Zzeros,'zeros',eps);
+    % representation without zero-generators
+    Z_compact = compact_(Z_withzeros,'zeros',tol);
     
     % result has to be the same as original zonotope
-    res2 = isequal(Znozeros,Zdel2);
+    assert(isequal(Z_compact,Z_nozeros,tol));
+    assert(compareMatrices(Z_compact.c,c) ...
+        && compareMatrices(Z_compact.G,G_nozeros));
 
-    % add results
-    if ~(res1 && res2)
-        throw(CORAerror('CORA:testFailed'));
-    end
-    
 end
 
 % ------------------------------ END OF CODE ------------------------------

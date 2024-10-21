@@ -4,8 +4,8 @@ classdef linearSys < contDynamics
 % Description:
 %    Generates a linear system object according to the following
 %    first-order differential equations:
-%       x'(t) = A x(t) + B u(t) + c + w(t)
-%       y(t)  = C x(t) + D u(t) + k + v(t)
+%       x'(t) = A x(t) + B u(t) + c + E w(t)
+%       y(t)  = C x(t) + D u(t) + k + F v(t)
 %
 % Syntax:
 %    obj = linearSys()
@@ -15,11 +15,15 @@ classdef linearSys < contDynamics
 %    obj = linearSys(A,B,c,C)
 %    obj = linearSys(A,B,c,C,D)
 %    obj = linearSys(A,B,c,C,D,k)
+%    obj = linearSys(A,B,c,C,D,k,E)
+%    obj = linearSys(A,B,c,C,D,k,E,F)
 %    obj = linearSys(name,A,B)
 %    obj = linearSys(name,A,B,c)
 %    obj = linearSys(name,A,B,c,C)
 %    obj = linearSys(name,A,B,c,C,D)
 %    obj = linearSys(name,A,B,c,C,D,k)
+%    obj = linearSys(name,A,B,c,C,D,k,E)
+%    obj = linearSys(name,A,B,c,C,D,k,E,F)
 %
 % Inputs:
 %    name - name of system
@@ -29,6 +33,8 @@ classdef linearSys < contDynamics
 %    C - output matrix
 %    D - feedthrough matrix
 %    k - output offset
+%    E - disturbance matrix
+%    F - output disturbance matrix
 %
 % Outputs:
 %    obj - generated linearSys object
@@ -58,6 +64,7 @@ classdef linearSys < contDynamics
 %                19-November-2021 (MW, default values for c, D, k)
 %                14-December-2022 (TL, property check in inputArgsCheck)
 %                15-January-2023 (MW, allow 0 and 1 input arguments)
+%                30-August-2024 (MW, integrate E and F matrices)
 % Last revision: 18-June-2023 (MW, restructure using auxiliary functions)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -69,8 +76,10 @@ properties (SetAccess = private, GetAccess = public)
     C     % output matrix: q x n
     D     % feedthrough matrix: q x m
     k     % output offset: q x 1
+    E     % disturbance matrix: n x r
+    F     % noise matrix: q x s
 
-    % internally-set properties
+    % internally set properties
     taylor = [];    % struct storing values from Taylor expansion
     krylov = [];    % struct storing values for Krylov subspace
 end
@@ -78,32 +87,47 @@ end
 methods
     
     % class constructor
-    function obj = linearSys(varargin)
+    function linsys = linearSys(varargin)
+
+        % 0. check number of input arguments
+        assertNarginConstructor(0:9,nargin);
         
         % 1. copy constructor: not allowed due to obj@contDynamics below
-%         if nargin == 1 && isa(varargin{1},'linearSys')
-%             obj = varargin{1}; return
-%         end
+        % if nargin == 1 && isa(varargin{1},'linearSys')
+        %     obj = varargin{1}; return
+        % end
 
         % 2. parse input arguments: varargin -> vars
-        [name,A,B,c,C,D,k] = aux_parseInputArgs(varargin{:});
+        [name,A,B,c,C,D,k,E,F] = aux_parseInputArgs(varargin{:});
 
         % 3. check correctness of input arguments
-        aux_checkInputArgs(name,A,B,c,C,D,k,nargin);
+        aux_checkInputArgs(name,A,B,c,C,D,k,E,F,nargin);
 
         % 4. compute number of states, inputs, and outputs
-        [name,A,B,c,C,D,k,states,inputs,outputs] = ...
-            aux_computeProperties(name,A,B,c,C,D,k);
+        [name,A,B,c,C,D,k,E,F,states,inputs,outputs,dists,noises] = ...
+            aux_computeProperties(name,A,B,c,C,D,k,E,F);
         
         % 5. instantiate parent class, assign properties
-        obj@contDynamics(name,states,inputs,outputs); 
-        obj.A = A; obj.B = B; obj.c = c;
-        obj.C = C; obj.D = D; obj.k = k;
+        linsys@contDynamics(name,states,inputs,outputs,dists,noises);
+        linsys.A = A; linsys.B = B; linsys.c = c;
+        linsys.C = C; linsys.D = D; linsys.k = k;
+        linsys.E = E; linsys.F = F;
+%         obj.taylor = taylorLinSys(A);
+    end
+
+    % wrapper function to read out auxiliary values stored in sys.taylor,
+    % if the requested value is not there, we compute it
+    function val = getTaylor(linsys,name,varargin)
+        val = computeField(linsys.taylor,name,varargin{:});
     end
 end
 
 methods (Static = true)
-    linSys = generateRandom(varargin) % generates random linear system
+    linsys = generateRandom(varargin) % generates random linear system
+end
+
+methods (Access = protected)
+    [printOrder] = getPrintSystemInfo(S)
 end
 
 end
@@ -111,40 +135,28 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [name,A,B,c,C,D,k] = aux_parseInputArgs(varargin)
+function [name,A,B,c,C,D,k,E,F] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
-
-    % check number of input arguments
-    if nargin > 7
-        throw(CORAerror('CORA:tooManyInputArgs',7));
-    end
 
     % default name
     def_name = 'linearSys';
-    % init properties
-    A = []; B = []; c = []; C = []; D = []; k = [];
-
-    % no input arguments
-    if nargin == 0
-        name = def_name;
-        return
-    end
+    A = []; B = []; c = []; C = []; D = []; k = []; E = []; F = [];
 
     % parse depending on whether first input argument is the name
-    if ischar(varargin{1})
+    if nargin > 0 && ischar(varargin{1})
         % first input argument: name
-        [name,A,B,c,C,D,k] = setDefaultValues({def_name,A,B,c,C,D,k},varargin);
+        [name,A,B,c,C,D,k,E,F] = setDefaultValues({def_name,A,B,c,C,D,k,E,F},varargin);
 
     else
         % set default name
         name = def_name;
-        [A,B,c,C,D,k] = setDefaultValues({A,B,c,C,D,k},varargin);
+        [A,B,c,C,D,k,E,F] = setDefaultValues({A,B,c,C,D,k,E,F},varargin);
 
     end
     
 end
 
-function aux_checkInputArgs(name,A,B,c,C,D,k,n_in)
+function aux_checkInputArgs(name,A,B,c,C,D,k,E,F,n_in)
 % check correctness of input arguments
 
     % only check if macro set to true
@@ -162,6 +174,8 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,n_in)
                 {C, 'att', 'numeric', 'matrix'}
                 {D, 'att', 'numeric', 'matrix'}
                 {k, 'att', 'numeric'}
+                {E, 'att', 'numeric', 'matrix'}
+                {F, 'att', 'numeric', 'matrix'}
             });
             
         else
@@ -174,6 +188,8 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,n_in)
                 {C, 'att', 'numeric', 'matrix'}
                 {D, 'att', 'numeric', 'matrix'}
                 {k, 'att', 'numeric'}
+                {E, 'att', 'numeric', 'matrix'}
+                {F, 'att', 'numeric', 'matrix'}
             });
 
         end
@@ -192,7 +208,7 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,n_in)
                 'Length of offset c must match row/column dimension of state matrix A.'));
         end
 
-        % check if dimensions fit
+        % check if input matrix/feedthrough have the correct size
         if ~isempty(B)
             if ~isscalar(B)
                 if size(A,1) ~= size(B,1)
@@ -211,6 +227,17 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,n_in)
             end
         end
 
+        % check if disturbance matrix has the correct size
+        if ~isempty(E)
+            if ~isscalar(E) && size(A,1) ~= size(E,1)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    ['Column dimension of disturbance matrix E must match '...
+                    'row/column dimension of state matrix A.']));
+            end
+        end
+
+        % check if output matrix/feedthrough matrix have the correct size
+        outputs = size(A,1); % assume outputs = states
         if ~isempty(C)
             if ~isscalar(C)
                 if size(A,1) ~= size(C,2)
@@ -219,8 +246,6 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,n_in)
                         'row/column dimension of state matrix A.']));
                 end
                 outputs = size(C,1);
-            else % isscalar(C)
-                outputs = size(A,1);
             end
             if ~isempty(D) && ~isscalar(D) && outputs ~= size(D,1)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
@@ -232,26 +257,33 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,n_in)
                     'Length of offset k must match row dimension of output matrix C.'));
             end
         end
+
+        % check if noise matrix has the correct size
+        if ~isempty(F)
+            if ~isscalar(F) && outputs ~= size(F,1)
+                throw(CORAerror('CORA:wrongInputInConstructor',...
+                    ['Column dimension of noise matrix F must match '...
+                    'row/column dimension of state matrix A.']));
+            end
+        end
         
     end
 
 end
 
-function [name,A,B,c,C,D,k,states,inputs,outputs] = ...
-    aux_computeProperties(name,A,B,c,C,D,k)
+function [name,A,B,c,C,D,k,E,F,states,inputs,outputs,dists,noises] = ...
+    aux_computeProperties(name,A,B,c,C,D,k,E,F)
 % assign zero vectors/matrices for [] values (from user or by default)
-% compute number of states, inputs, and outputs
+% compute number of states, inputs, outputs, dists, and noises
 % difficulty: MATLAB can use 1 instead of eye(n) for multiplication
 
     % number of states
     states = size(A,1);
 
-    % input matrix
+    % input matrix and number of inputs
     if ~isempty(A) && isempty(B)
         B = zeros(states,1);
     end
-
-    % number of inputs
     inputs = states;
     if ~isscalar(B)
         inputs = size(B,2);
@@ -262,12 +294,10 @@ function [name,A,B,c,C,D,k,states,inputs,outputs] = ...
         c = zeros(states,1);
     end
 
-    % output matrix
+    % output matrix and number of outputs
     if isempty(C)
         C = 1;
     end
-
-    % number of outputs
     outputs = states;
     if ~isscalar(C)
         outputs = size(C,1);
@@ -281,6 +311,26 @@ function [name,A,B,c,C,D,k,states,inputs,outputs] = ...
     % output offset
     if isempty(k)
         k = zeros(outputs,1);
+    end
+
+    % disturbance matrix and number of disturbances
+    if isempty(E)
+        E = zeros(states,1);
+    end
+    if ~isscalar(E)
+        dists = size(E,2);
+    else
+        dists = states;
+    end
+
+    % noise matrix and number of noises
+    if isempty(F)
+        F = zeros(outputs,1);
+    end
+    if ~isscalar(F)
+        noises = size(F,2);
+    else
+        noises = outputs;
     end
 
 end

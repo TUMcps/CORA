@@ -25,8 +25,6 @@ function res = testLong_conZonotope_plot
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % construct zonotope
 Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
 A = [1 1 1];
@@ -39,38 +37,31 @@ try
     
     % one argument: object
     plot(cZ);
-    resvec(end+1) = true;
     
     % two arguments: object, dimensions
     plot(cZ,1);
     plot(cZ,[1,2]);
-    resvec(end+1) = true;
     
     % three arguments: object, dimensions, linespec
     plot(cZ,[1,2],'r+');
-    resvec(end+1) = true;
     
     % three arguments: object, dimensions, NVpairs
     plot(cZ,[1,2],'LineWidth',2);
     plot(cZ,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
-    resvec(end+1) = true;
     
     % three arguments: object, dimensions, NVpair 'Splits'
     plot(cZ,[1,2],'Splits',4);
     plot(cZ,[1,2],'Splits',4,'LineWidth',2);
     plot(cZ,[1,2],'Splits',4,'EdgeColor','k','FaceColor',[.8 .8 .8]);
-    resvec(end+1) = true;
 
     % three arguments: object, dimensions, NVpair 'Template'
     plot(cZ,[1,2],'Template',16);
     plot(cZ,[1,2],'Template',16,'LineWidth',2);
     plot(cZ,[1,2],'Template',16,'EdgeColor','k','FaceColor',[.8 .8 .8]);
-    resvec(end+1) = true;
     
     % four arguments: object, dimensions, linespec, NVpairs
     plot(cZ,[1,2],'r','LineWidth',2);
     plot(cZ,[1,2],'r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
-    resvec(end+1) = true;
 
     % check if plotted correctly
     ax = gca();
@@ -78,21 +69,21 @@ try
     
     % plot set
     plot(cZ,[1,2]);
-    V = [3.5 -0.5 -2.5 3.5
-        -0.5 2.5 -1.5 -0.5];
+    V = [3.5 -2.5 -0.5 3.5
+        -0.5 -1.5 2.5 -0.5];
     % check points
-    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true);
+    assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
     % test color
-    resvec(end+1) = isequal(colorOrder(1,:), ax.Children(1).Color);
+    assert(isequal(colorOrder(1,:), ax.Children(1).Color));
     
     % close figure
     close;
 catch ME
     close;
-    resvec(end+1) = false;
+    rethrow(ME)
 end
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -42,7 +42,7 @@ plot(E4,[1,2],'k'); % plot E4 in black
 
 E5 = ellipsoid([0.8,-0.6; -0.6,0.8],[1; -4]); % create ellipsoid E5
 Zo_box = zonotope(E5); % overapproximate E5 by a parallelotope
-Zu_norm = zonotope(E5,10,'outer:norm'); % overapproximate E5 using zonotope norm
+Zu_norm = zonotope(E5,'outer:norm',10); % overapproximate E5 using zonotope norm
 
 f2 = figure; hold on
 plot(E5); % plot E5

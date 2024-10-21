@@ -68,8 +68,10 @@ oldColorIndex = ax.ColorOrderIndex;
 hold on
 for r=1:length(simRes)
     for i=1:length(simRes(r).(whichtraj))
-        han_i = plotPolygon(simRes(r).(whichtraj){i}(:,dims)',NVpairs{:});
-        
+        for j = 1:size(simRes(r).(whichtraj){i},3)
+            han_i = plotPolygon(simRes(r).(whichtraj){i}(:,dims,j)',NVpairs{:});
+        end
+
         if i == 1
             han = han_i;
             % don't display subsequent plots in legend

@@ -32,7 +32,7 @@ try
     p = randPoint(conZono);
 catch ME
     if ~strcmp(ME.identifier,'CORA:emptySet')
-        res = false;
+        rethrow(ME)
     end
 end
 
@@ -85,9 +85,7 @@ for j=1:nrOfTests
         beta(k) = conZono.b(k) / conZono.A(k,k);
         
         % check if beta_k in [-1,1]
-        if abs(beta(k)) > 1
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(abs(beta(k)) <= 1,j,k)
         
         % contribution of k-th generator
         kthGen = beta(k) * conZonoG(:,k);
@@ -97,9 +95,7 @@ for j=1:nrOfTests
     p = p_analytical;
     
     % compare results
-    if ~compareMatrices(p,p_analytical)
-        res = false; break;
-    end
+    assertLoop(compareMatrices(p,p_analytical),i)
     
 end
 end

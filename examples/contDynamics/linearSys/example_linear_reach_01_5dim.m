@@ -74,7 +74,7 @@ for k = 1:length(dims)
     projDims = dims{k};
 
     % plot reachable sets
-    plot(R,projDims, 'DisplayName', 'Reachable set');
+    plot(R,projDims, 'DisplayName', 'Reachable set','Unify',true);
 
     % plot initial set
     plot(R.R0,projDims,'DisplayName','Initial set');

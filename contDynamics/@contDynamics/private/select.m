@@ -1,14 +1,15 @@
-function dimForSplit = select(obj,options,Rinit)
+function dimForSplit = select(sys,Rinit,params,options)
 % select - selects the split strategy of the reachable set causing the
 %    least linearization error
 %
 % Syntax:
-%    dimForSplit = select(obj,options,Rinit)
+%    dimForSplit = select(sys,Rinit,params,options)
 %
 % Inputs:
-%    obj - nonlinearSys or nonlinParamSys object
-%    options - struct containing the algorithm settings
+%    sys - nonlinearSys or nonlinParamSys object
 %    Rinit - initial reachable set
+%    params - model parameters
+%    options - struct containing the algorithm settings
 %
 % Outputs:
 %    dimForSplit - dimension that is split to reduce the linearization
@@ -53,7 +54,7 @@ perfInd = zeros(length(R),1);
 for i=1:length(R)
     
     % compute the reachable set for the splitted set
-    [~,Rtp] = linReach(obj,options,R{i});
+    [~,Rtp] = linReach(sys,R{i},params,options);
     
     % compute performance index (max lin. error) for the split 
     perfInd(i) = max(Rtp.error./maxError);

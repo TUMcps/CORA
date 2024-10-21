@@ -72,7 +72,7 @@ P_hull = polytope(params.R0);
 for s=1:6
     P_hull = P_hull | polytope(R(1).timeInterval.set{s});
 end
-res = contains(P_hull,Premain);
+assert(contains(P_hull,Premain));
 
 
 % fix polytope/mldivide for test below...
@@ -91,10 +91,8 @@ res = contains(P_hull,Premain);
 % end
 % 
 % % obtain result
-% if representsa(Premain,'emptySet')
-%     res = true;
-% else
-%     res = false;
-% end
+% assert(representsa(Premain,'emptySet'))
+
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

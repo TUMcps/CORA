@@ -23,26 +23,21 @@ function res = test_zonotope_or
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % check empty zonotope
 Z = zonotope.empty(2);
 Zres = Z | Z;
-resvec(end+1) = true;
 
 % instantiate zonotope
 zono1 = zonotope([4 2 2;1 2 0]);
 zono2 = zonotope([3 1 -1 1;3 1 2 0]);
 Zres = zono1 | zono2;
-resvec(end+1) = true;
 
 % axis aligned zonotopes
 zono1 = zonotope(interval([2;3],[3;4]));
 zono2 = zonotope(interval([6;3],[7;4]));
-Zres = zono1 | zono2;
-resvec(end+1) = true;
+Zres = (zono1 | zono2);
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

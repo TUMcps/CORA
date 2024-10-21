@@ -1,15 +1,16 @@
-function [Rti,Rtp,Rti_y,options] = linReach_adaptive(obj,options,Rstart,Rstart_y)
+function [Rti,Rtp,Rti_y,options] = linReach_adaptive(nlnsysDA,Rstart,Rstart_y,params,options)
 % linReach_adaptive - computes the reachable set after linearization;
 %    automated tuning from [2] applied to algorithm from [1]
 %
 % Syntax:
-%    [Rti,Rtp,options] = linReach_adaptive(obj,options,Rstart)
+%    [Rti,Rtp,options] = linReach_adaptive(nlnsysDA,Rstart,Rstart_y,params,options)
 %
 % Inputs:
-%    obj - nonlinDASys object
-%    options - struct with algorithm settings
+%    nlnsysDA - nonlinDASys object
 %    Rstart - reachable set (state variables)
 %    Rstart_y - reachable set (algebraic variables)
+%    params - model parameters
+%    options - struct with algorithm settings
 %
 % Outputs:
 %    Rti - reachable set for time interval
@@ -27,7 +28,7 @@ function [Rti,Rtp,Rti_y,options] = linReach_adaptive(obj,options,Rstart,Rstart_y
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Mark Wetzlinger
 % Written:       17-June-2021
@@ -54,12 +55,12 @@ lastStep = false; veryfirststep = false; timeStepequalHorizon = false;
 if options.i == 1
     veryfirststep = true;
     % initial guess for time step size / finite horizon
-    options.timeStep = (options.tFinal - options.tStart) * 0.05; % initial guess
+    options.timeStep = (params.tFinal - params.tStart) * 0.05; % initial guess
     finitehorizon = options.timeStep;
     
     % first step: adaptive tensor order
     options.run = 0;
-    options = aux_initStepTensorOrder(obj,options,Rstart,Rstart_y);
+    options = aux_initStepTensorOrder(nlnsysDA,Rstart,Rstart_y,params,options);
     
     % init reduction indices
     options.gredIdx.Rhomti = {};
@@ -72,9 +73,9 @@ if options.i == 1
     options.gredIdx.Z_error_y = {};
     
 % last step
-elseif options.timeStep > options.tFinal - options.t
+elseif options.timeStep > params.tFinal - options.t
     lastStep = true;
-    options.timeStep = options.tFinal - options.t;
+    options.timeStep = params.tFinal - options.t;
     finitehorizon = options.timeStep;
     
 % non-start/end step
@@ -88,7 +89,7 @@ elseif options.i > 1
         (options.decrFactor - options.varphi(options.i-1));
 
     % finitehorizon is capped by remaining time
-    finitehorizon = min([finitehorizon,options.tFinal - options.t]);
+    finitehorizon = min([finitehorizon,params.tFinal - options.t]);
 
     % init time step size for current step as finitehorizon
     options.timeStep = finitehorizon;
@@ -109,21 +110,21 @@ abscount = 0;
 while true
 
     % linearize nonlinDA system
-    [obj,linSys,options,linOptions] = linearize(obj,options,Rstart,Rstart_y); 
+    [nlnsysDA,linsys,linParams,linOptions] = linearize(nlnsysDA,Rstart,Rstart_y,params,options); 
 
     if options.run == 1
         % scaling over delta t, required for optimization function
-        zetaP = exp(trace(linSys.A*options.timeStep));
+        zetaP = exp(trace(linsys.A*options.timeStep));
     end
 
     % translate Rstart by linearization point
-    Rdelta = Rstart + (-obj.linError.p.x);
+    Rdelta = Rstart + (-nlnsysDA.linError.p.x);
 
     % compute reachable set of linearized system
     % ti: time interval, tp: time point
-    linOptions.p = obj.linError.p.x;
+    linOptions.p = nlnsysDA.linError.p.x;
     try
-        [Rlin,options] = initReach_adaptive(linSys,Rdelta,options,linOptions);
+        [Rlin,options] = initReach_adaptive(linsys,Rdelta,options,linParams,linOptions);
     catch ME % if time step size is too big, then Inf/NaN in expmtie
         if strcmp(ME.identifier,'expmtie:notconverging')
             options.timeStep = options.timeStep * 0.5;
@@ -149,20 +150,20 @@ while true
         abscount = abscount + 1;
 
         % convert error to zonotope
-        Verror_x = zonotope([0*error_adm_x,diag(error_adm_x)]);
-        Verror_y = zonotope([0*error_adm_y,diag(error_adm_y)]);
+        Verror_x = zonotope(0*error_adm_x,diag(error_adm_x));
+        Verror_y = zonotope(0*error_adm_y,diag(error_adm_y));
         % compute Lagrange remainder, see [1, eq.(15)]
-        Verror = Verror_x + obj.linError.CF_inv * Verror_y;
+        Verror = Verror_x + nlnsysDA.linError.CF_inv * Verror_y;
         
         % estimate the abstraction error
 %         if any(error_adm_x) || any(error_adm_y)
         % compute abstraction error as input solution
-        [RallError,options] = errorSolution_adaptive(linSys,options,Verror);
+        [RallError,options] = errorSolution_adaptive(linsys,options,Verror);
 %         disp("step|deltat|run|gens(RallError):" + options.i + "|" + options.timeStep + ...
 %              "|" + options.run + "|" + size(generators(RallError),2));
 %         else
 %             % only used in options.run == 1, but important for adaptive
-%             RallError = zonotope(zeros(obj.dim,1));
+%             RallError = zonotope(zeros(nlnsysDA.nrOfStates,1));
 %         end
         
         try
@@ -171,7 +172,7 @@ while true
             
             % compute abstraction error
             [Verror, errorInt, errorInt_x, errorInt_y, Rti_y, options] = ...
-            	abstractionError_adaptive(obj, options, Rmax, Verror_y);
+            	abstractionError_adaptive(nlnsysDA, Rmax, Verror_y, params, options);
             
         catch ME
             if strcmp(ME.identifier,'reach:setoutofdomain')
@@ -215,11 +216,11 @@ while true
     % compute order of abstraction error
     if veryfirststep || ~all(zeroWidthDim == options.zeroWidthDim)
         options.zeroWidthDim = zeroWidthDim;
-        options = aux_getPowers(obj,options,linSys,zeroWidthDim,Verror);
+        options = aux_getPowers(nlnsysDA,options,linsys,zeroWidthDim,Verror);
     end
     
     % compute set of abstraction errors
-    [Rerror,options] = errorSolution_adaptive(linSys,options,Verror);
+    [Rerror,options] = errorSolution_adaptive(linsys,options,Verror);
     
     % measure abstraction error
     abstrerr = sum(abs(generators(Rerror)),2)';
@@ -237,7 +238,7 @@ while true
                 abstrerr_h = abstrerr;
                 Rerror_h = Rerror;
                 Rti_h = Rlinti; Rtp_h = Rlintp;
-                linx_h = obj.linError.p.x;
+                linx_h = nlnsysDA.linError.p.x;
                 zetaP_h = zetaP;
                 % decrease time step size and linearization error
                 options.timeStep = options.decrFactor * options.timeStep;
@@ -268,7 +269,7 @@ while true
                 abstrerr_h = abstrerr;
                 Rerror_h = Rerror;
                 Rti_h = Rlinti; Rtp_h = Rlintp;
-                linx_h = obj.linError.p.x;
+                linx_h = nlnsysDA.linError.p.x;
                 zetaP_h = zetaP;
                 continue;
             end
@@ -290,7 +291,7 @@ while true
             abstrerr_h = abstrerr;
             Rerror_h = Rerror;
             Rti_h = Rlinti; Rtp_h = Rlintp;
-            linx_h = obj.linError.p.x;
+            linx_h = nlnsysDA.linError.p.x;
             % solve optimization problem for time step size
             [options.timeStep,~] = aux_optimaldeltat(Rstart,Rerror_h,...
                 finitehorizon,options.varphi(options.i-1),zetaP,options);
@@ -337,11 +338,11 @@ while true
             elseif ~lastStep
                 % compensate for the difference between the current time
                 % step size and stored time step size by varphi
-                options = aux_nextStepTensorOrder(obj,options,...
-                    vecnorm(abstrerr),linSys,Rmax,Verror_y);
+                options = aux_nextStepTensorOrder(nlnsysDA,...
+                    vecnorm(abstrerr),linsys,Rmax,Verror_y,params,options);
             
-                options = aux_nextStepTensorOrder_new(obj,options,...
-                    abstrerr,linSys,Rmax,Verror_y,Rlintp);
+                options = aux_nextStepTensorOrder_new(nlnsysDA,...
+                    abstrerr,linsys,Rmax,Verror_y,Rlintp,params,options);
             end
             
             % update gain (how much gain kp would have been necessary to
@@ -380,8 +381,8 @@ if timeStepequalHorizon
     Rerror = Rerror_h;
 else
     % translate reachable sets by linearization point
-    Rti = Rlinti + obj.linError.p.x;
-    Rtp = Rlintp + obj.linError.p.x;
+    Rti = Rlinti + nlnsysDA.linError.p.x;
+    Rtp = Rlintp + nlnsysDA.linError.p.x;
 end
 
 % add the abstraction error to the reachable sets
@@ -397,7 +398,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 % adaptation of tensorOrder: init step
-function options = aux_initStepTensorOrder(obj,options,Rstartset,R_y)
+function options = aux_initStepTensorOrder(nlnsysDA,Rstartset,R_y,params,options)
 % computes the lower bound for the Lagrange remainder
 % ... that is, L and Rerr for the start set of the current step
 
@@ -408,37 +409,37 @@ if isfield(options,'tensorOrder') && any(options.tensorOrder == [2,3])
 end
 
 % linearization point u* of the input is the center of the current input set
-obj.linError.p.u = center(options.U) + options.uTrans;
+nlnsysDA.linError.p.u = center(params.U) + params.uTrans;
 
 % linearization points in differential set (x*) and algebraic set (y*)
-obj.linError.p.x = center(Rstartset);
-obj.linError.p.y = consistentInitialState(obj, obj.linError.p.x, center(R_y), obj.linError.p.u);
+nlnsysDA.linError.p.x = center(Rstartset);
+nlnsysDA.linError.p.y = consistentInitialState(nlnsysDA, nlnsysDA.linError.p.x, center(R_y), nlnsysDA.linError.p.u);
 
 % substitute p into the system equation to obtain the constant input
-f0_dyn = obj.dynFile(obj.linError.p.x, obj.linError.p.y, obj.linError.p.u); % f(z*) in [1]
-f0_con = obj.conFile(obj.linError.p.x, obj.linError.p.y, obj.linError.p.u); % g(z*) in [1]
+f0_dyn = nlnsysDA.dynFile(nlnsysDA.linError.p.x, nlnsysDA.linError.p.y, nlnsysDA.linError.p.u); % f(z*) in [1]
+f0_con = nlnsysDA.conFile(nlnsysDA.linError.p.x, nlnsysDA.linError.p.y, nlnsysDA.linError.p.u); % g(z*) in [1]
 
 % evaluate Jacobians
-[A,B,C,D,E,F] = obj.jacobian(obj.linError.p.x, obj.linError.p.y, obj.linError.p.u);
+[A,B,C,D,E,F] = nlnsysDA.jacobian(nlnsysDA.linError.p.x, nlnsysDA.linError.p.y, nlnsysDA.linError.p.u);
 
 % matrices of the linearized system (see [1, eq.(14)])
-obj.linError.D = D;
-obj.linError.E = E;
-obj.linError.F_inv = pinv(F);
-obj.linError.CF_inv = C*obj.linError.F_inv;
-obj.linError.f0 = f0_dyn - obj.linError.CF_inv*f0_con;
-obj.linError.f0_con = f0_con;
+nlnsysDA.linError.D = D;
+nlnsysDA.linError.E = E;
+nlnsysDA.linError.F_inv = pinv(F);
+nlnsysDA.linError.CF_inv = C*nlnsysDA.linError.F_inv;
+nlnsysDA.linError.f0 = f0_dyn - nlnsysDA.linError.CF_inv*f0_con;
+nlnsysDA.linError.f0_con = f0_con;
 
 % shift start set by linearization point
-Rdelta = Rstartset + (-obj.linError.p.x);
+Rdelta = Rstartset + (-nlnsysDA.linError.p.x);
 % estimate at the beginning of the loop also all-zero
-Verror_y = zonotope(zeros(obj.nrOfConstraints,1));
+Verror_y = zonotope(zeros(nlnsysDA.nrOfConstraints,1));
 
 % compute L for both kappas
 options.tensorOrder = 2;
-[~, L_2, L2_x, L2_y] = abstractionError_adaptive(obj, options, Rdelta, Verror_y);
+[~, L_2, L2_x, L2_y] = abstractionError_adaptive(nlnsysDA, Rdelta, Verror_y, params, options);
 options.tensorOrder = 3;
-[~, L_3, L3_x, L3_y] = abstractionError_adaptive(obj, options, Rdelta, Verror_y);
+[~, L_3, L3_x, L3_y] = abstractionError_adaptive(nlnsysDA, Rdelta, Verror_y, params, options);
 
 % remove linear dimensions for comparison
 L_2lin = L_2(L_2 ~= 0);
@@ -459,7 +460,7 @@ end
 end
 
 % adaptation of tensorOrder: every step for next step
-function options = aux_nextStepTensorOrder(obj,options,abstrerr,linSys,Rmax,Verror_y)
+function options = aux_nextStepTensorOrder(nlnsysDA,abstrerr,linsys,Rmax,Verror_y,params,options)
 
 % time step sizes
 timeStep = options.timeStep;
@@ -487,8 +488,8 @@ if options.tensorOrder == 2
     end
     
     % compute set of abstraction errors
-    Verror = abstractionError_adaptive(obj, options, Rmax, Verror_y);
-    Rerror = errorSolution_adaptive(linSys,options,Verror);
+    Verror = abstractionError_adaptive(nlnsysDA, Rmax, Verror_y, params, options);
+    Rerror = errorSolution_adaptive(linsys,options,Verror);
     % simplify to scalar value
     err_3 = sum(abs(generators(Rerror)),2);
     abstrerr_3 = vecnorm(err_3);
@@ -498,7 +499,7 @@ if options.tensorOrder == 2
         options.kappa_deltat = options.timeStep;
         options.kappa_abstrerr = abstrerr_3;
         options.error_adm_Deltatopt = err_3;
-        options.error_adm_horizon = zeros(obj.dim,1);
+        options.error_adm_horizon = zeros(nlnsysDA.nrOfStates,1);
     else
         options.tensorOrder = 2;
     end
@@ -514,8 +515,8 @@ elseif options.tensorOrder == 3
     end
     
     % compute set of abstraction errors
-    Verror = abstractionError_adaptive(obj,options,Rmax,Verror_y);
-    Rerror = errorSolution_adaptive(linSys,options,Verror);
+    Verror = abstractionError_adaptive(nlnsysDA,Rmax,Verror_y,params,options);
+    Rerror = errorSolution_adaptive(linsys,options,Verror);
     % simplify to scalar value
     err_2 = sum(abs(generators(Rerror)),2);
     abstrerr_2 = vecnorm(err_2);
@@ -525,7 +526,7 @@ elseif options.tensorOrder == 3
         options.kappa_deltat = options.timeStep;
         options.kappa_abstrerr = abstrerr_2;
         options.error_adm_Deltatopt = err_2;
-        options.error_adm_horizon = zeros(obj.dim,1);
+        options.error_adm_horizon = zeros(nlnsysDA.nrOfStates,1);
     else
         options.tensorOrder = 3;
     end
@@ -534,7 +535,7 @@ end
 end
 
 % adaptation of tensorOrder: every step for next step
-function options = aux_nextStepTensorOrder_new(obj,options,abstrerr,linSys,Rmax,Verror_y,Rlintp)
+function options = aux_nextStepTensorOrder_new(nlnsysDA,options,abstrerr,linsys,Rmax,Verror_y,Rlintp)
 
 % time step sizes
 timeStep = options.timeStep;
@@ -562,13 +563,13 @@ if options.tensorOrder == 2
     end
     
     % compute set of abstraction errors
-    Verror = abstractionError_adaptive(obj, options, Rmax, Verror_y);
-    Rerror = errorSolution_adaptive(linSys,options,Verror);
+    Verror = abstractionError_adaptive(nlnsysDA, Rmax, Verror_y, params, options);
+    Rerror = errorSolution_adaptive(linsys,options,Verror);
     % compute diameter
     abstrerr_3 = sum(abs(generators(Rerror)),2);
     % compute cost values
     diamRtp = sum(abs(generators(Rlintp)),2);
-    remSteps = (options.tFinal - options.t) / timeStep_prev;
+    remSteps = (params.tFinal - options.t) / timeStep_prev;
     estval_2 = (1 + abstrerr_2 ./ diamRtp) .^ remSteps;
     estval_3 = (1 + abstrerr_3 ./ diamRtp) .^ remSteps;
     
@@ -577,7 +578,7 @@ if options.tensorOrder == 2
         options.kappa_deltat = options.timeStep;
         options.kappa_abstrerr = vecnorm(abstrerr_3);
         options.error_adm_Deltatopt = abstrerr_3;
-        options.error_adm_horizon = zeros(obj.dim,1);
+        options.error_adm_horizon = zeros(nlnsysDA.nrOfStates,1);
     else
         options.tensorOrder = 2;
     end
@@ -593,13 +594,13 @@ elseif options.tensorOrder == 3
     end
     
     % compute set of abstraction errors
-    Verror = abstractionError_adaptive(obj,options,Rmax,Verror_y);
-    Rerror = errorSolution_adaptive(linSys,options,Verror);
+    Verror = abstractionError_adaptive(nlnsysDA,Rmax,Verror_y,params,options);
+    Rerror = errorSolution_adaptive(linsys,options,Verror);
     % simplify to scalar value
     abstrerr_2 = sum(abs(generators(Rerror)),2);
     % compute cost values
     diamRtp = sum(abs(generators(Rlintp)),2);
-    remSteps = (options.tFinal - options.t) / timeStep_prev;
+    remSteps = (params.tFinal - options.t) / timeStep_prev;
     estval_2 = (1 + abstrerr_2 ./ diamRtp) .^ remSteps;
     estval_3 = (1 + abstrerr_3 ./ diamRtp) .^ remSteps;
     
@@ -608,7 +609,7 @@ elseif options.tensorOrder == 3
         options.kappa_deltat = options.timeStep;
         options.kappa_abstrerr = vecnorm(abstrerr_2);
         options.error_adm_Deltatopt = abstrerr_2;
-        options.error_adm_horizon = zeros(obj.dim,1);
+        options.error_adm_horizon = zeros(nlnsysDA.nrOfStates,1);
     else
         options.tensorOrder = 3;
     end
@@ -796,7 +797,7 @@ end
 end
 
 % order of abstraction error
-function options = aux_getPowers(obj,options,linSys,zeroWidthDim,Vdyn)
+function options = aux_getPowers(nlnsysDA,options,linsys,zeroWidthDim,Vdyn)
 % generally, only called once after the very first converged L!
 
 % hard-coded shortcut
@@ -806,8 +807,8 @@ if options.i == 1 && isfield(options,'orders')
 end
 
 % propagation matrix
-A = linSys.A;
-n = obj.dim;
+A = linsys.A;
+n = nlnsysDA.nrOfStates;
     
 % start set is just a point
 if all(zeroWidthDim)
@@ -837,12 +838,12 @@ elseif any(zeroWidthDim)
         Hess = options.hessianConst;
     else
         if strcmp(options.alg,'poly')
-            Hess = obj.hessian(obj.linError.p.x,obj.linError.p.y,obj.linError.p.u);
+            Hess = nlnsysDA.hessian(nlnsysDA.linError.p.x,nlnsysDA.linError.p.y,nlnsysDA.linError.p.u);
         else
             % Hessian requires evaluation on intervals for x and u...
             % try eval on linearization point, set handle to correct file
-            obj = setHessian(obj,'standard');
-            Hess = obj.hessian(obj.linError.p.x,obj.linError.p.y,obj.linError.p.u);
+            nlnsysDA = setHessian(nlnsysDA,'standard');
+            Hess = nlnsysDA.hessian(nlnsysDA.linError.p.x,nlnsysDA.linError.p.y,nlnsysDA.linError.p.u);
         end
     end
     

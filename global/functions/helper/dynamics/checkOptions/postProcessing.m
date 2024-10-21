@@ -54,7 +54,10 @@ if isa(sys,'contDynamics')
         
         % correct splitting of inputs into U (containing origin) and uTrans
         % (if shift is constant) or uTransVec (if shift is time-varying)
-        [params,options] = aux_set_U_uTrans_uTransVec(sys,params,options);
+        if ~isa(sys,'nonlinearARX') && isfield(params,'u')
+            [params,options] = aux_set_U_uTrans_uTransVec(sys,params,options);
+        end
+        
         % adjust params.uTransVec|tu for verify
         if contains(func,'verify')
             [params,options] = aux_set_u_tu(sys,params,options);
@@ -103,6 +106,11 @@ if isa(sys,'contDynamics')
         end
     end
 
+    % inner approximation using Minkowski difference
+    if isfield(options,'algInner') && strcmp(options.algInner,'minkdiff')
+        [params,options] = aux_set_nonlinearSys_reachInnerMinkdiff(sys,params,options);
+    end
+
     % verification: specifications and corresponding time intervals
     if strcmp(func,'verifyRA_zonotope')
         % initialize time intervals where (un)safe sets are not yet verified
@@ -113,7 +121,7 @@ if isa(sys,'contDynamics')
         [params,options] = aux_set_safeUnsafeSetFastInner(sys,params,options);
     end
 
-    if strcmp(func,'confCheck')
+    if strcmp(func,'isconform')
         if isinf(options.postProcessingOrder)
             options.postProcessingOrder = options.zonotopeOrder;
         end
@@ -132,6 +140,8 @@ if isa(sys,'hybridAutomaton')
     if any(strcmp(func,{'reach','simulateRandom'}))
         % set input for locations
         [params,options] = aux_set_HA_inputs(sys,params,options);
+        [params,options] = aux_set_HA_disturbances(sys,params,options);
+        [params,options] = aux_set_HA_noises(sys,params,options);
     end
     if strcmp(func,'simulate')
         % set input for locations
@@ -147,6 +157,8 @@ if isa(sys,'parallelHybridAutomaton')
     % set input for locations
     if any(strcmp(func,{'reach','simulateRandom'}))
         [params,options] = aux_set_pHA_inputs(sys,params,options);
+        [params,options] = aux_set_pHA_disturbances(sys,params,options);
+        [params,options] = aux_set_pHA_noises(sys,params,options);
     end
     if strcmp(func,'simulate')
         [params,options] = aux_set_pHA_sim_inputs(sys,params,options);
@@ -266,7 +278,7 @@ end
 B = sys.B;
 if isscalar(B)
     if B == 1
-        B = eye(sys.dim);
+        B = eye(sys.nrOfStates);
     elseif B == 0
         % 0 * U is only the origin, check offset
         options.originContained = ~any(sys.c); return
@@ -295,8 +307,8 @@ if isa(sys,'linearSys') && ~isempty(sys.c)
                 continue;
             end
         end
-        hp = conHyperplane(B(i,:),-sys.c(i));
-        if ~isIntersecting_(hp,U,'exact')
+        P = polytope([],[],B(i,:),-sys.c(i));
+        if ~isIntersecting_(P,U,'exact',1e-8)
             options.originContained = false;
             found = true;
             break;
@@ -416,7 +428,7 @@ elseif contains(options.alg,'poly')
     options.zetaphi = [0.80; 0.75; 0.63];
     options.tensorOrder = 3;                        % fixed
 end
-options.R.error = zeros(sys.dim,1);                 % for consistency
+options.R.error = zeros(sys.nrOfStates,1);                 % for consistency
 
 % options to speed up tensor computation
 options.thirdOrderTensorempty = false;
@@ -435,7 +447,7 @@ params.R = params.R0;               % for initial set
 options.redFactor = 0.0005;         % zeta_Z (zonotope order)
 options.zetaK = 0.90;               % zeta_K (tensorOrder)
 options.zetaphi = 0.85;             % zeta_Delta (timeStep)
-options.R.error = zeros(sys.dim,1);                 % for consistency
+options.R.error = zeros(sys.nrOfStates,1);                 % for consistency
 
 % options to speed up tensor computation
 options.thirdOrderTensorempty = false;
@@ -462,6 +474,18 @@ elseif contains(options.alg,'poly')
     % zeta_h (timeStep) ... depends on order (chosen in code) and decrFactor
     options.tensorOrder = 3;                        % fixed
 end
+
+end
+
+function [params,options] = aux_set_nonlinearSys_reachInnerMinkdiff(sys,params,options)
+% set options for reachInnerMinkdiff algorithm to re-use parts of the code
+% for computing outer approximations
+
+options.alg = 'lin';
+% options.tensorOrder = 2;
+options.reductionTechnique = 'girard';
+options.errorOrder = 1;
+options.intermediateOrder = 100;
 
 end
 
@@ -600,6 +624,86 @@ params = rmfield(params,'u');
 
 end
 
+function [params,options] = aux_set_HA_disturbances(sys,params,options)
+% internal values options.Wloc stores the disturbance set for each location
+
+% number of locations
+numLoc = length(sys.location);
+
+% small hack for nonlinear dynamics which do not yet support params.W
+if ~isfield(params,'W')
+    params.W = zonotope(zeros(sys.nrOfStates(1),1));
+end
+
+% disturbance set
+if ~iscell(params.W)
+    % same input set for each location
+    % (likely only works if all have same dimension...)
+
+    if isa(params.W,'interval')
+        params.W = zonotope(params.W);
+    end
+    % same input set for each location
+    Wloc = repmat({params.W},numLoc,1);
+    
+else
+    % copy input set, convert to zonotope if necessary
+    Wloc = cell(numLoc,1);
+    for i = 1:numLoc
+        if isa(params.W{i},'interval')
+            Wloc{i} = zonotope(params.W{i});
+        else
+            Wloc{i} = params.W{i};
+        end
+    end
+end
+
+% assign internal params and remove old
+params.Wloc = Wloc;
+params = rmfield(params,'W');
+
+end
+
+function [params,options] = aux_set_HA_noises(sys,params,options)
+% internal values options.Vloc stores the noise set for each location
+
+% number of locations
+numLoc = length(sys.location);
+
+% small hack for nonlinear dynamics which do not yet support params.V
+if ~isfield(params,'V')
+    params.V = zonotope(zeros(sys.nrOfOutputs(1),1));
+end
+
+% noise set
+if ~iscell(params.V)
+    % same input set for each location
+    % (likely only works if all have same dimension...)
+
+    if isa(params.V,'interval')
+        params.V = zonotope(params.V);
+    end
+    % same input set for each location
+    Vloc = repmat({params.V},numLoc,1);
+    
+else
+    % copy input set, convert to zonotope if necessary
+    Vloc = cell(numLoc,1);
+    for i = 1:numLoc
+        if isa(params.V{i},'interval')
+            Vloc{i} = zonotope(params.V{i});
+        else
+            Vloc{i} = params.V{i};
+        end
+    end
+end
+
+% assign internal params and remove old
+params.Vloc = Vloc;
+params = rmfield(params,'V');
+
+end
+
 function [params,options] = aux_set_HA_sim_inputs(sys,params,options)
 % internal value options.uLoc which the input set for each location
 
@@ -688,6 +792,102 @@ params.uloc = uloc;
 % remove params
 params = rmfield(params,'U');
 params = rmfield(params,'u');
+
+end
+
+function [params,options] = aux_set_pHA_disturbances(sys,params,options)
+% internal value options.Wloc stores the disturbance set for each location
+
+% read out number of components
+numComp = length(sys.components);
+
+if ~iscell(params.W)
+    % same input set for each location of each component
+    % (likely only works if all have same dimension...)
+
+    % convert to zonotope if given as interval
+    if isa(params.W,'interval')
+        params.W = zonotope(params.W);
+    end
+    
+    % init input set for each location of each component
+    Wloc = cell(numComp,1);
+    % loop over all components
+    for i = 1:numComp
+        % number of locations of given component
+        numLoc = length(sys.components(i).location);
+        % init given input set for all locations
+        Wloc{i} = repmat({params.W},numLoc,1);
+    end
+else
+    % loop over all components
+    for i = 1:numComp
+        % number of locations of i-th component
+        numLoc = length(sys.components(i).location);
+        for j = 1:numLoc
+            % convert to zonotope
+            if isa(params.W{i}{j},'interval')
+                Wloc{i}{j} = zonotope(params.W{i}{j});
+            else
+                Wloc{i}{j} = params.W{i}{j};
+            end
+        end
+    end
+end
+
+% init params with appended 'loc' for location
+params.Wloc = Wloc;
+
+% remove params
+params = rmfield(params,'W');
+
+end
+
+function [params,options] = aux_set_pHA_noises(sys,params,options)
+% internal value options.Vloc stores the noise set for each location
+
+% read out number of components
+numComp = length(sys.components);
+
+if ~iscell(params.V)
+    % same input set for each location of each component
+    % (likely only works if all have same dimension...)
+
+    % convert to zonotope if given as interval
+    if isa(params.V,'interval')
+        params.V = zonotope(params.V);
+    end
+    
+    % init input set for each location of each component
+    Vloc = cell(numComp,1);
+    % loop over all components
+    for i = 1:numComp
+        % number of locations of given component
+        numLoc = length(sys.components(i).location);
+        % init given input set for all locations
+        Vloc{i} = repmat({params.V},numLoc,1);
+    end
+else
+    % loop over all components
+    for i = 1:numComp
+        % number of locations of i-th component
+        numLoc = length(sys.components(i).location);
+        for j = 1:numLoc
+            % convert to zonotope
+            if isa(params.V{i}{j},'interval')
+                Vloc{i}{j} = zonotope(params.V{i}{j});
+            else
+                Vloc{i}{j} = params.V{i}{j};
+            end
+        end
+    end
+end
+
+% init params with appended 'loc' for location
+params.Vloc = Vloc;
+
+% remove params
+params = rmfield(params,'V');
 
 end
 

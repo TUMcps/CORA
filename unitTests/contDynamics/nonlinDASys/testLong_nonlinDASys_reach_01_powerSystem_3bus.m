@@ -23,6 +23,9 @@ function res = testLong_nonlinDASys_reach_01_powerSystem_3bus
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 % Parameters --------------------------------------------------------------
@@ -69,6 +72,6 @@ IH_saved = interval( ...
     [381.7573146744116457; 0.7970152076943415]);
         
 % compare results
-res = isequal(IH,IH_saved,1e-8);
+assert(isequal(IH,IH_saved,1e-8));
 
 % ------------------------------ END OF CODE ------------------------------

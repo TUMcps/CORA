@@ -24,8 +24,6 @@ function res = test_linearSys_reach_11_differentsets
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = false;
-
 % define linearSys --------------------------------------------------------
 
 % stable system matrix: n x n
@@ -33,14 +31,14 @@ A = [-0.3780    0.2839    0.5403   -0.2962
     0.1362    0.2742    0.5195    0.8266
     0.0502   -0.1051   -0.6572    0.3874
     1.0227   -0.4877    0.8342   -0.2372];
-n = length(A);
+states = length(A);
 
 % input matrix: n x m
 B = 0.25 * [-2 0 3;
             2 1 0;
             0 0 1;
             0 -2 1];
-m = size(B,2);
+inputs = size(B,2);
 
 % constant offset: n x 1
 c = 0.05 * [-4; 2; 3; 1];
@@ -48,7 +46,7 @@ c = 0.05 * [-4; 2; 3; 1];
 % output matrix: q x n
 C = [1 1 0 0;
      0 -0.5 0.5 0];
-y = 2;
+outputs = 2;
 
 % feedthrough matrix: q x m
 D = [0 0 1;
@@ -57,13 +55,24 @@ D = [0 0 1;
 % constant input: q x 1
 k = [0; 0.02];
 
+% disturbance matrix: n x r
+E = [1 0.5; 0 -0.5; 1 -1; 0 1];
+dists = size(E,2);
+
+% noise matrix: q x s
+F = [1; 0.5];
+noises = size(F,2);
+
+
 % initialize different linearSys-objects
 sys_A = linearSys(A,1);
 sys_AB = linearSys(A,B);
 sys_ABC = linearSys(A,B,[],C);
 sys_ABCD = linearSys(A,B,[],C,D);
 sys_ABcCDk = linearSys(A,B,c,C,D,k);
-list = {sys_A, sys_AB, sys_ABC, sys_ABCD, sys_ABcCDk};
+sys_ABcCDkE = linearSys(A,B,c,C,D,k,E);
+sys_ABcCDkEF = linearSys(A,B,c,C,D,k,E,F);
+list = {sys_A, sys_AB, sys_ABC, sys_ABCD, sys_ABcCDk, sys_ABcCDkE, sys_ABcCDkEF};
 
 
 % reachability settings and model parameters ------------------------------
@@ -76,20 +85,19 @@ options.zonotopeOrder = 50;
 params.tFinal = 0.20;
 dt_steps = params.tFinal / options.timeStep;
 % initial set
-params.R0 = zonotope(10*ones(n,1),0.5*diag(ones(n,1)));
+params.R0 = zonotope(10*ones(states,1),0.5*diag(ones(states,1)));
 % input vector
-u_n = randn(n,dt_steps+1);
-u_n_noD = randn(n,dt_steps);
-u_m = randn(m,dt_steps+1);
-u_m_noD = randn(m,dt_steps);
+u_n = randn(states,dt_steps+1);
+u_n_noD = randn(states,dt_steps);
+u_m = randn(inputs,dt_steps+1);
+u_m_noD = randn(inputs,dt_steps);
 % input set
 U_n = interval([-4;-2;-1;-1],[-2;2;1;0]);
 U_m = interval([-2;-1;-1],[2;1;0]);
 % disturbance set
-W = zonotope(0.02+zeros(n,1),0.02*diag(ones(n,1)));
+W = zonotope(0.02+zeros(dists,1),0.02*diag(ones(dists,1)));
 % sensor noise set
-V_n = zonotope(zeros(n,1),diag(ones(n,1)));
-V_y = zonotope(-0.01+zeros(y,1),0.01*diag(ones(y,1)));
+V = zonotope(-0.01+zeros(noises,1),0.01*diag(ones(noises,1)));
 
 
 % reach -------------------------------------------------------------------
@@ -106,25 +114,25 @@ for j = 1:length(list)
             options_cont.linAlg = methods{k};
         end
     
-        % no input set, disturbace, or sensor noise
+        % no input set, disturbance, or sensor noise
         R = reach(sys,params,options);
 
         % input set
-        if sys.nrOfInputs == n
+        if sys.nrOfInputs == states
             params.U = U_n;
-        elseif sys.nrOfInputs == m
+        elseif sys.nrOfInputs == inputs
             params.U = U_m;
         end
         R = reach(sys,params,options);
 
         % input vector
-        if sys.nrOfInputs == n
+        if sys.nrOfInputs == states
             if ~isempty(sys.D)
                 params.u = u_n;
             else
                 params.u = u_n_noD;
             end
-        elseif sys.nrOfInputs == m
+        elseif sys.nrOfInputs == inputs
             if ~isempty(sys.D)
                 params.u = u_m;
             else
@@ -134,36 +142,33 @@ for j = 1:length(list)
         R = reach(sys,params,options);
 
         % disturbance
-        params.W = W;
+        if sys.nrOfDisturbances == dists
+            params.W = W;
+        end
         R = reach(sys,params,options);
 
-        % disturbance and sensor noise
-        if sys.nrOfOutputs == n
-            params.V = V_n;
-        elseif sys.nrOfOutputs == y
-            params.V = V_y;
+        % sensor noise
+        if sys.nrOfNoises == noises
+            params.V = V;
         end
         R = reach(sys,params,options);
 
         % remove fields for clean next iteration
-        params = rmfield(params,'U');
-        params = rmfield(params,'u');
-        params = rmfield(params,'W');
-        params = rmfield(params,'V');
+        params = rmiffield(params,'U');
+        params = rmiffield(params,'u');
+        params = rmiffield(params,'W');
+        params = rmiffield(params,'V');
         
         if k > 1
             options_cont = rmfield(options_cont,'linAlg');
         end
-        
     end
         
 end
-
 
 % all checks ok
 res = true;
 
 end
-
 
 % ------------------------------ END OF CODE ------------------------------

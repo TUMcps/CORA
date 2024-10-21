@@ -90,6 +90,6 @@ if ~isempty(cPZ.A)
 end
 
 % check containment using the function for higher-dimensional zonotopes
-res = contains_(pZ,S,'approx');
+res = contains_(pZ,S,'approx',1e-6);
 
 % ------------------------------ END OF CODE ------------------------------

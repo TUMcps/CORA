@@ -23,11 +23,9 @@ function res = test_interval_norm
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty case
 I = interval.empty(2);
-res(end+1,1) = norm(I) == -Inf;
+assert(norm(I) == -Inf);
 
 % init interval, where upper bound vertex defines max-norm
 lb = [-2; -1]; ub = [3; 4];
@@ -39,9 +37,9 @@ normI_2 = norm(I,2);
 normI_Inf = norm(I,Inf);
 
 % check with correct result
-res(end+1,1) = normI_1 == 7 && normI_2 == 5 && normI_Inf == 4;
+assert(normI_1 == 7 && normI_2 == 5 && normI_Inf == 4);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

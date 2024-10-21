@@ -23,7 +23,7 @@ function sig = evaluateSignal(phi, dur, signals, logic)
 
 % Authors:       Benedikt Seidl
 % Written:       24-August-2022
-% Last update:   ---
+% Last update:   08-February-2024 (FL, rename from signal to finiteSignal and use interval of stl class)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -75,9 +75,9 @@ function sig = evaluateSignal(phi, dur, signals, logic)
     function sig = inner(phi)
         % pattern matching on the formula
         if strcmp(phi.type, 'true')
-            sig = signal(inputDuration, tt);
+            sig = finiteSignal(inputDuration, tt);
         elseif strcmp(phi.type, 'false')
-            sig = signal(inputDuration, ff);
+            sig = finiteSignal(inputDuration, ff);
         elseif strcmp(phi.type, 'variable')
             sig = cutoff(signals(formattedDisplayText(phi)), inputDuration);
         elseif strcmp(phi.type, '&')
@@ -90,7 +90,7 @@ function sig = evaluateSignal(phi, dur, signals, logic)
             lsig = inner(phi.lhs);
             rsig = inner(phi.rhs);
     
-            int = interval(phi.from, phi.to);
+            int = phi.interval;
     
             if strcmp(logic, 'logical')
                 % calculate until operator on signal

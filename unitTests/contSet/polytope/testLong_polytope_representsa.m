@@ -51,9 +51,7 @@ for i=1:nrTests
     P = polytope(A,b);
 
     % emptiness check
-    if representsa(P,'emptySet')
-        res = false; return
-    end
+    assertLoop(~representsa(P,'emptySet'),i)
 
     % init polytope where one pair of constraints is unfulfillable
 
@@ -82,9 +80,7 @@ for i=1:nrTests
     P = polytope(A',b);
 
     % emptiness check
-    if ~representsa(P,'emptySet')
-        res = false; return
-    end
+    assertLoop(representsa(P,'emptySet'),i)
 
 end
 

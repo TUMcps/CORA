@@ -184,10 +184,9 @@ for k=1:length(pHA.components)
     if idxIdReset(k)
         % append virtual self-transition with fullspace guard set and
         % identity reset function
-        stateDim = pHA.components(k).location(locID(k)).contDynamics.dim;
-        resetStruct.A = eye(stateDim);
-        resetStruct.c = zeros(stateDim,1);
-        transList{k,1} = transition(fullspace(stateDim),resetStruct,locID(k),syncLabel);
+        stateDim = pHA.components(k).location(locID(k)).contDynamics.nrOfStates;
+        reset = linearReset.eye(stateDim);
+        transList{k,1} = transition(fullspace(stateDim),reset,locID(k),syncLabel);
 
         % append to list of all labels
         allLabels(idxSyncLabel).component = [allLabels(idxSyncLabel).component; k];

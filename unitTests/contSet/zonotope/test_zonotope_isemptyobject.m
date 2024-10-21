@@ -29,6 +29,8 @@ Z2 = zonotope([1;1]);
 Z3 = zonotope([1;1],[1 3 -2; 2 -4 2]);
 
 % check results
-res = isemptyobject(Z1) && ~isemptyobject(Z2) && ~isemptyobject(Z3);
+assert(isemptyobject(Z1) && ~isemptyobject(Z2) && ~isemptyobject(Z3));
+
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

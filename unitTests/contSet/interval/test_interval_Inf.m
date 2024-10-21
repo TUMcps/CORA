@@ -23,19 +23,17 @@ function res = test_interval_Inf
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % 1D
 n = 1;
 I = interval.Inf(n);
-res(end+1,1) = representsa(I,'fullspace') && dim(I) == 1;
+assert(representsa(I,'fullspace') && dim(I) == 1);
 
 % 5D
 n = 5;
 I = interval.Inf(n);
-res(end+1,1) = representsa(I,'fullspace') && dim(I) == 5;
+assert(representsa(I,'fullspace') && dim(I) == 5);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

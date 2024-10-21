@@ -23,6 +23,9 @@ function res = testLong_interval_rdivide
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 numberRandTests = 5000;
 

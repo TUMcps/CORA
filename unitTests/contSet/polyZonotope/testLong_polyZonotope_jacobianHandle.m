@@ -49,10 +49,7 @@ for i=1:nTests
     f_val = F_val(:);
     for j=1:length(f_val)
         cj = coeffs(f_val(j),x);
-        if any(cj>1e-8)
-            res = false;
-            return;
-        end
+        assertLoop(all(cj <= 1e-8),i,j)
     end
 end
 

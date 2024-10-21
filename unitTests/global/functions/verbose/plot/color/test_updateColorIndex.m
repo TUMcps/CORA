@@ -23,8 +23,6 @@ function res = test_updateColorIndex
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % create figure
 f = figure;
 ax = gca();
@@ -33,15 +31,15 @@ ax = gca();
 hold off
 oldColorIndex = 1;
 updateColorIndex(oldColorIndex)
-resvec(end+1) = ax.ColorOrderIndex == 2;
+assert(ax.ColorOrderIndex == 2);
 
 aux_plotNPlots(1);
 updateColorIndex(oldColorIndex)
-resvec(end+1) = ax.ColorOrderIndex == 2;
+assert(ax.ColorOrderIndex == 2);
 
 aux_plotNPlots(5);
 updateColorIndex(oldColorIndex)
-resvec(end+1) = ax.ColorOrderIndex == 2;
+assert(ax.ColorOrderIndex == 2);
 
 
 % test with hold on
@@ -49,29 +47,29 @@ hold on
 oldColorIndex = ax.ColorOrderIndex;
 aux_plotNPlots(1);
 updateColorIndex(oldColorIndex)
-resvec(end+1) = ax.ColorOrderIndex == (oldColorIndex+1);
+assert(ax.ColorOrderIndex == (oldColorIndex+1));
 
 oldColorIndex = ax.ColorOrderIndex;
 aux_plotNPlots(2);
 updateColorIndex(oldColorIndex)
-resvec(end+1) = ax.ColorOrderIndex == (oldColorIndex+1);
+assert(ax.ColorOrderIndex == (oldColorIndex+1));
 
 oldColorIndex = ax.ColorOrderIndex;
 aux_plotNPlots(5);
 updateColorIndex(oldColorIndex)
-resvec(end+1) = ax.ColorOrderIndex == (oldColorIndex+1);
+assert(ax.ColorOrderIndex == (oldColorIndex+1));
 
 % reset color index (pass index < 1)
 updateColorIndex(0)
-resvec(end+1) = ax.ColorOrderIndex == 1;
+assert(ax.ColorOrderIndex == 1);
 
 updateColorIndex(-1)
-resvec(end+1) = ax.ColorOrderIndex == 1;
+assert(ax.ColorOrderIndex == 1);
 
 close(f);
 
 % gather results
-res = all(resvec);
+res = true;
 
 end
 
@@ -79,7 +77,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function aux_plotNPlots(n)
-    color = CORAcolor('CORA:next');
+    color = nextcolor;
     for i=1:n
         plot(1:5, rand(5, 1),'Color',color);
     end

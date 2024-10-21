@@ -23,8 +23,6 @@ function res = test_zonotope_enclose
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % create zonotopes
 Z1 = zonotope([1,2,3,4; 5 6 7 8]);
 Z2 = zonotope([9, 10, 11; 12, 13, 14]);
@@ -42,15 +40,15 @@ true_G = [6, 7, -4, -4, -4, 4; ...
             9.5, 10.5, -3.5, -3.5, -3.5, 8];
 
 % check result
-resvec(end+1) = compareMatrices(c_,true_c) && compareMatrices(G_,true_G);
+assert(compareMatrices(c_,true_c) && compareMatrices(G_,true_G));
 
 % compute either
 Z12 = enclose(Z1,Z2);
 Z21 = enclose(Z1,Z2);
 
-resvec(end+1) = isequal(Z12, Z21);
+assert(isequal(Z12, Z21));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

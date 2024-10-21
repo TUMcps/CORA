@@ -37,13 +37,7 @@ function pZ = project(pZ,dims)
 % ------------------------------ BEGIN CODE -------------------------------
 
 pZ.c = pZ.c(dims,:);
-
-if ~isempty(pZ.G)
-    pZ.G = pZ.G(dims,:);
-end
-
-if ~isempty(pZ.GI)
-    pZ.GI = pZ.GI(dims,:);
-end
+pZ.G = pZ.G(dims,:);
+pZ.GI = pZ.GI(dims,:);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,14 +1,18 @@
-function [Rin,Rout] = reachInner(sys,params,options)
-% reachInner - compute an inner-approximation of the reachable set
+function [Rin,Rout] = reachInner(nlnsys,params,options)
+% reachInner - computes an inner-approximation of the reachable set
 %
 % Syntax:
-%    Rin = reachInner(sys,params,options)
-%    [Rin,Rout] = reachInner(sys,params,options)
+%    Rin = reachInner(nlnsys,params,options)
+%    [Rin,Rout] = reachInner(nlnsys,params,options)
 %
 % Inputs:
-%    sys - nonlinearSys object
+%    nlnsys - nonlinearSys object
 %    params - parameter defining the reachability problem
-%    options - struct containing the algorithm settings
+%    options - struct containing the algorithm settings, crucially,
+%              options.algInner = 'scale' -> algorithm in [1]
+%              options.algInner = 'proj' -> algorithm in [2]
+%              options.algInner = 'parallelo' -> algorithm in [3]
+%              options.algInner = 'minkdiff' -> algorithm in [4]
 %
 % Outputs:
 %    Rin - object of class reachSet storing the inner-approximation of the 
@@ -25,6 +29,9 @@ function [Rin,Rout] = reachInner(sys,params,options)
 %    [3] E. Goubault and S. Putot. "Robust Under-Approximations and 
 %        Application to Reachability of Non-Linear Control Systems With 
 %        Disturbances", Control System Letters 2021
+%    [4] M. Wetzlinger, A. Kulmburg, and M. Althoff. "Inner approximations
+%        of reachable sets for nonlinear systems using the Minkowski
+%        difference". IEEE Control Systems Letters, 2024.
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,14 +39,14 @@ function [Rin,Rout] = reachInner(sys,params,options)
 %
 % See also: linearSys/reachInner
 
-% Authors:       Niklas Kochdumper
+% Authors:       Niklas Kochdumper, Mark Wetzlinger
 % Written:       14-August-2020
-% Last update:   ---
+% Last update:   17-December-2023 (MW, add MinkDiff algorithm)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% note: options preprocessing in reachInner* functions
+% note: options preprocessing in subsequently called reachInner* functions
 
 % compute inner-approximation with the selected algorithm
 switch options.algInner
@@ -47,22 +54,27 @@ switch options.algInner
     % compute inner-approximation with the algorithm in [1]
     case 'scale'
         if nargout > 1
-            [Rin,Rout] = reachInnerScaling(sys,params,options);
+            [Rin,Rout] = reachInnerScaling(nlnsys,params,options);
         else
-            Rin = reachInnerScaling(sys,params,options);
+            Rin = reachInnerScaling(nlnsys,params,options);
         end
 
     % compute inner-approximation with the algorithm in [2]
     case 'proj'
-        [Rin,Rout] = reachInnerProjection(sys,params,options);
+        [Rin,Rout] = reachInnerProjection(nlnsys,params,options);
         
     % compute inner-approximation with the algorithm in [3]    
     case 'parallelo'
-        [Rin,Rout] = reachInnerParallelotope(sys,params,options);
+        [Rin,Rout] = reachInnerParallelotope(nlnsys,params,options);
+
+    % compute inner-approximation with the algorithm in [4]
+    case 'minkdiff'
+        Rin = reachInnerMinkdiff(nlnsys,params,options);
+        Rout = [];
 
     otherwise
         throw(CORAerror('CORA:wrongFieldValue',...
-            'options.algInner',{'scale','proj','parallelo'}));
+            'options.algInner',{'scale','proj','parallelo','minkdiff'}));
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -22,6 +22,9 @@ function res = test_fullspace_interval
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % init fullspace
 n = 3;
@@ -34,6 +37,6 @@ I = interval(fs);
 I_true = interval(-Inf(n,1),Inf(n,1));
 
 % compare results
-res = I == I_true;
+assert(I == I_true);
 
 % ------------------------------ END OF CODE ------------------------------

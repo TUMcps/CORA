@@ -26,7 +26,7 @@ classdef stl
 
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022
-% Last update:   ---
+% Last update:   07-February-2024 (FL, replace from and to by interval)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -35,8 +35,7 @@ properties (SetAccess = private, GetAccess = public)
     type = 'variable'       % type of the opeartor ('until', '&', etc.)
     lhs = []                % object forming left hand side of operator
     rhs = []                % object forming right hand side of operator
-    from = []               % start of the time interval
-    to = []                 % end of the time interval
+    interval = []           % time interval of the formula
     variables = {}          % list of variables present in the formula
     var = []                % name of the current variable
     temporal = false        % temporal (true) or non-temporal (false)
@@ -48,6 +47,9 @@ methods
     
     % class constructor
     function obj = stl(name,varargin)
+
+        % check number of input arguments
+        assertNarginConstructor(1:2,nargin);
         
         % catch the case where the input is a logic value
         if islogical(name)
@@ -70,9 +72,7 @@ methods
         num = [];
         
         if nargin > 1
-            
             num = varargin{1};
-        
             if ~isa(num, 'atomicProposition') && (~isnumeric(num) || ...
                     ~isscalar(num) || floor(num) ~= ceil(num))
                 throw(CORAerror('CORA:wrongInputInConstructor',...
@@ -86,21 +86,27 @@ methods
             obj.variables = {name};
             obj.var = name;
             obj.logic = true;
-
             return;
         end
 
         % construct variable names
         if ~isempty(num)
-        
             obj.variables = cell(num,1);
-
             for i = 1:num
-               obj.variables{i} = [name, num2str(i)];
+                obj.variables{i} = [name, num2str(i)];
             end
         else
             obj.variables = {name}; 
         end
+    end
+
+    % functions to access legacy properties
+    function t = from(obj)
+        t = obj.interval.infimum();
+    end
+
+    function t = to(obj)
+        t = obj.interval.supremum();
     end
 
     % operator overloading

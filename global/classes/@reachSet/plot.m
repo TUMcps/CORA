@@ -188,55 +188,35 @@ function han = aux_plotUnified(R,dims,NVpairs,order,splits,totalsets,whichset)
             idxCurr = idxCurr + 1;
 
             % project set to desired dimensions
-            temp = project(Rset{j},dims);
+            S_ij = project(Rset{j},dims);
 
             % order reduction
             if ~isempty(order)
-                temp = reduce(temp,'girard',order);
+                S_ij = reduce(S_ij,'girard',order);
             end
            
             % convert set to polygon object
-            if isa(temp,'polyZonotope') || isa(temp,'conPolyZono')
-                if isempty(splits)
-                    V = vertices(zonotope(temp));
-                    % polygon (zonotope/vertices are already 'simple')
-                    temp = polygon(V(1,:),V(2,:),'Simplify',false);
+            try
+                % special treatment for polynomial zonotopes
+                if isa(S_ij,'polyZonotope') || isa(S_ij,'conPolyZono')
+                    % consider number of splits
+                    if isempty(splits)
+                        pgon_ij = polygon(zonotope(S_ij));
+                    else
+                        pgon_ij = polygon(S_ij,splits);   
+                    end
                 else
-                    temp = polygon(temp,splits);   
+                    % convert directly to polygon
+                    pgon_ij = polygon(S_ij);
                 end
-            elseif isa(temp,'zonotope') || isa(temp,'interval') || ...
-                   isa(temp,'polytope') || isa(temp,'conZonotope')
-                V = vertices(temp);
-                temp = polygon(V(1,:),V(2,:));
-            elseif isa(temp,'zonoBundle')                
-                % compute polytopes
-                P = cell(temp.parallelSets,1);
-                for p = 1:temp.parallelSets
-                    % delete zero-length generators
-                    Z = compact_(temp.Z{p},'zeros',eps);
-                    % convert to polyshape (Matlab built-in class)
-                    temp_poly = polygon(Z);
-                    V = temp_poly(:,2:end);
-                    P{p} = polyshape(V(1,:),V(2,:));
-                end
-
-                % intersect polytopes
-                Pint = P{1};
-                for p = 2:temp.parallelSets
-                    Pint = intersect(Pint,P{p});
-                end
-
-                % get vertices, init polygon
-                V = Pint.Vertices';
-                temp = polygon(V(1,:),V(2,:));
-            else
-                CORAwarning('CORA:plot','Setting "Unify" is not supported for this set representation (%s)! Plotting them individually instead.', class(temp));
+            catch ME
+                 CORAwarning('CORA:plot','Setting "Unify" failed for %s (Error: %s)!\nPlotting them individually instead.', class(S_ij),ME.message);
                 han = aux_plotSingle(R,dims,NVpairs,order,splits,whichset);
                 return
             end
-            
+
             % unite all polygons
-            pgon = pgon | temp;
+            pgon = pgon | pgon_ij;
 
             if any(idxCurr == idxSplit(:,2))
                 % end of partition reached -> plot

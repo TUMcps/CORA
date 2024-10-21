@@ -46,7 +46,7 @@ simOpt.fracVert = 0.8;             % fraction of vertices initial set
 simRes = simulateRandom(sys,params,simOpt);
 
 % computation of gamma_min
-endpoints = zeros(sys.dim,simOpt.points);
+endpoints = zeros(sys.nrOfStates,simOpt.points);
 for i=1:simOpt.points
     endpoints(:,i) = simRes(i).x{1}(end,:)';
 end
@@ -61,15 +61,14 @@ gamma_min = min(gamma_u ./ gamma_o);
 fontsize = 12;
 
 % 1. reachable sets and simulation
-figure; hold on;
+figure; subplot(1,2,1); hold on; box on;
 useCORAcolors("CORA:contDynamics")
 plot(R,[1,2]);
 plot(R(1).R0,[1,2]);
 plot(simRes,[1,2]);
 
 % 2. time step size
-figure;
-subplot(2,2,1); hold on; box on;
+subplot(1,2,2); hold on; box on;
 title('Time Step Size');
 useCORAcolors('CORA:default')
 tVec = query(R,'tVec');
@@ -81,47 +80,6 @@ plot(tVecSteps,repelem(tVec,2));
 ax = gca; ax.FontSize = 11;
 xlabel('t','FontSize',fontsize,'interpreter','latex');
 ylabel('$\Delta t$','FontSize',fontsize,'interpreter','latex');        
-
-% 3. taylor terms (Rlin and Rerr)
-subplot(2,2,2);  hold on; box on;
-title('Taylor Orders');
-useCORAcolors('CORA:default')
-plot(tVecSteps,repelem(opt.tt_lin,2));
-plot(tVecSteps,repelem(opt.tt_err,2));
-axis([0,params.tFinal,0,max([opt.tt_lin;opt.tt_err])+1]);
-ax = gca; ax.FontSize = 11;
-legend('$\eta_{lin}$','$\eta_{abs}$','Location','southeast',...
-    'FontSize',fontsize-2,'interpreter','latex');
-legend box off;
-xlabel('t','FontSize',fontsize,'interpreter','latex');
-ylabel('$\eta$','FontSize',fontsize,'interpreter','latex');
-
-% 4. zonotope order
-subplot(2,2,3); hold on; box on;
-title('Zonotope Order');
-useCORAcolors('CORA:default')
-fullzonorderRtp = sum(opt.zonordersRtp,2);
-plot(tVecSteps,repelem(fullzonorderRtp,2));
-% legend('Location','northwest');
-% axes and labels
-axis([0,params.tFinal,0,ceil(1.1*max(fullzonorderRtp))]);
-ax = gca; ax.FontSize = 11;
-xlabel('t','FontSize',fontsize,'interpreter','latex');
-if strcmp(options.alg,'lin')
-    ylabel('$\rho$','FontSize',fontsize,'interpreter','latex');
-elseif strcmp(options.alg,'poly')
-    ylabel('$\rho$','FontSize',fontsize,'interpreter','latex');
-end
-
-% 5. abstraction order
-subplot(2,2,4); hold on; box on;
-title('Abstraction Order');
-useCORAcolors('CORA:default')
-ax = gca; ax.FontSize = 11;
-xlabel('t','FontSize',fontsize,'interpreter','latex');
-ylabel('$\kappa$','FontSize',fontsize,'interpreter','latex');
-plot(tVecSteps,repelem(opt.kappa,2));
-axis([0,params.tFinal,1,4]);
 
 
 % completion successful

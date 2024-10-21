@@ -46,28 +46,20 @@ R = reachSet(timePoint,timeInt);
 % queries: 'reachSet', 'reachSetTimePoint', 'finalSet', 'tVec'
 R1 = query(R,'reachSet');
 for i=1:length(R1)
-    if ~isequal(R1{i},R.timeInterval.set{i})
-        res = false; break
-    end
+    assertLoop(isequal(R1{i},R.timeInterval.set{i}),i)
 end
 
 R2 = query(R,'reachSetTimePoint');
 for i=1:length(R2)
-    if ~isequal(R2{i},R.timePoint.set{i})
-        res = false; break
-    end
+    assertLoop(isequal(R2{i},R.timePoint.set{i}),i)
 end
 
 Rfinal = query(R,'finalSet');
-if ~isequal(Rfinal,R.timePoint.set{end})
-    res = false;
-end
+assert(isequal(Rfinal,R.timePoint.set{end}))
 
 tVec = query(R,'tVec');
 for i=1:length(tVec)
-    if ~withinTol(tVec(i),t(i+1)-t(i))
-        res = false; break
-    end
+    assertLoop(withinTol(tVec(i),t(i+1)-t(i)),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

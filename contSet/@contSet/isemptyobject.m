@@ -64,14 +64,18 @@ switch classname
             && isnumeric(S.Dim) && isscalar(S.Dim) && S.Dim == 0 ...
             && isnumeric(S.Data) && isempty(S.Data);
 
-<<<<<<< HEAD
+
     case 'polytope'
         res = isnumeric(S.A) && isempty(S.A) ...
             && isnumeric(S.b) && isempty(S.b) ...
             && isnumeric(S.Ae) && isempty(S.Ae) ...
             && isnumeric(S.be) && isempty(S.be);
 
- 
+
+    case 'spectrahedron'
+        res = isnumeric(S.A) && isempty(S.A) ...
+            && isnumeric(S.c) && isempty(S.c) ...
+            && isnumeric(S.G) && isempty(S.G);
 end
 
 end
@@ -120,8 +124,8 @@ function res = aux_checkIfEmpty_old(S,S_empty,props)
                 end
     
             otherwise
-                % check if the property is a contSet object (e.g., halfspace
-                % object in conHyperplane object)
+                % check if the property is a contSet object (e.g.,
+                % halfspace object in conHyperplane object)
                 if isa(prop,'contSet')
                     % recursive call
                     if ~isemptyobject(prop)

@@ -28,15 +28,13 @@ function res = test_conZonotope_generators
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
 % check empty conZonotope
 n = 2;
 cZ_empty = conZonotope.empty(n);
 G =  generators(cZ_empty);
-res(end+1,1) = isempty(G) && isnumeric(G) && size(G,1) == n;
+assert(isempty(G) && isnumeric(G) && size(G,1) == n);
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

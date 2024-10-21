@@ -30,11 +30,7 @@ function varargout = norm(S,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
-if nargin < 1
-    throw(CORAerror('CORA:notEnoughInputArgs',1));
-elseif nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(1,3);
 
 % set default values: type (2) and mode ('ub')
 [type,mode] = setDefaultValues({2,'ub'},varargin);

@@ -21,7 +21,7 @@ function han = plotPolytope3D(V,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: plotPolygon
+% See also: plotPolygon, plotPoints
 
 % Authors:       Niklas Kochdumper
 % Written:       02-December-2020
@@ -31,7 +31,7 @@ function han = plotPolytope3D(V,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % default
-NVpairs = {'Color',CORAcolor('CORA:next')};
+NVpairs = {'Color',nextcolor};
 
 % read plot options if provided
 if ~isempty(varargin)
@@ -44,13 +44,23 @@ end
 if isempty(V)
     
     % plot dummy set...
-    han = plot3(nan,nan,nan,'HandleVisibility','off');
+    han = plot3(nan,nan,nan,NVpairs{:});
 
 else
-
     % compute triangulation using the convex hull
     V = V';
-    [k,~] = convhulln(V);
+    try
+        [k,~] = convhulln(V);
+    catch ME
+        % not really 3D...
+
+        try % try with plotPolygon            
+            han = plotPolygon(V',NVpairs{:},'ConvHull',true);
+            return
+        catch 
+            rethrow(ME)
+        end
+    end
     
     % compute normal vectors of facets
     C = zeros(size(k,1),3);
@@ -123,7 +133,11 @@ else
     % update color order index
     updateColorIndex(oldColorOrderIndex);
     
-    view([1,1,1]);
+    % show z-axis if currently not visible
+    [az,~] = view();
+    if az == 0
+        view(-35, 30);
+    end
 end
 end
 

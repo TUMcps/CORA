@@ -14,12 +14,13 @@ function [x,fval,exitflag,output,lambda] = CORAquadprog(problem)
 %    problem - quadratic program definition, with mandatory fields
 %              - problem.H (quadratic cost function min f*x)
 %              - problem.f (linear cost function min f*x)
-%              - problem.A (inequality constraint Aineq * x <= bineq)
-%              - problem.b (inequality constraint Aineq * x <= bineq)
+%              - problem.Aineq (inequality constraint Aineq * x <= bineq)
+%              - problem.Aineq (inequality constraint Aineq * x <= bineq)
 %              - problem.Aeq (equality constraint Aeq * x == beq)
 %              - problem.beq (equality constraint Aeq * x == beq)
 %              - problem.lb (lower bound for optimization variable)
 %              - problem.ub (upper bound for optimization variable)
+%              - problem.x0 (initial point)
 %
 % Outputs:
 %    x - minimizer

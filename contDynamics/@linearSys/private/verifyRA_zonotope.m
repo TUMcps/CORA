@@ -1,18 +1,18 @@
-function [res,R] = verifyRA_zonotope(sys,params,options,spec)
+function [res,R] = verifyRA_zonotope(linsys,params,options,spec)
 % verifyRA_zonotope - verification for linear systems
 %    via reach-avoid with zonotopes
 %
 % Syntax:
-%    [res,R] = verifyRA_zonotope(sys,params,spec)
+%    [res,R] = verifyRA_zonotope(linsys,params,spec)
 %
 % Inputs:
-%    sys - linearSys object
+%    linsys - linearSys object
 %    params - model parameters
 %    spec - object of class specification
 %
 % Outputs:
 %    res - true/false (true if specifications verified, otherwise false)
-%    R - reachSet object with outer-approx. of the reachable set
+%    R - reachSet object, outer-/inner-approximative depending on res
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,6 +23,7 @@ function [res,R] = verifyRA_zonotope(sys,params,options,spec)
 % Authors:       Niklas Kochdumper, Mark Wetzlinger
 % Written:       16-August-2021
 % Last update:   08-November-2022 (MW, proper integration in master)
+%                29-September-2024 (TL, init R if desired)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -32,10 +33,10 @@ function [res,R] = verifyRA_zonotope(sys,params,options,spec)
     % idea: allow to overwrite initial error (skipping initError call)
 
     % input argument pre-processing
-    options = validateOptions(sys,mfilename,params,options);
+    [params,options] = validateOptions(linsys,params,options);
     
     % estimate the required max. allowed error with simulations
-    emax = aux_initError(sys,options,options.safeSet,options.unsafeSet);
+    emax = aux_initError(linsys,params);
 
     % verification algorithm using adaptive reachability algorithm
     options.verify = true;
@@ -63,12 +64,12 @@ function [res,R] = verifyRA_zonotope(sys,params,options,spec)
         if options.verbose
             disp("Iteration " + cnt + ", current error: " + options.error);
         end
-        [timeInt,timePoint,res,savedata] = reach_adaptive(sys,options);
+        [timeInt,timePoint,res,savedata] = reach_adaptive(linsys,params,options);
         
         % save first time-point solution (same in every iteration)
         if cnt == 1
             RtimePoint.set = [RtimePoint.set; timePoint.set(1)];
-            RtimePoint.time = [RtimePoint.time; {options.tStart}];
+            RtimePoint.time = [RtimePoint.time; {params.tStart}];
             RtimePoint.error = [RtimePoint.error; timePoint.error(1)];
         end
         
@@ -78,7 +79,10 @@ function [res,R] = verifyRA_zonotope(sys,params,options,spec)
                     isempty(cell2mat(savedata.safeSet_unsat))) && ...
                 (isempty(savedata.unsafeSet_unsat) || ...
                     isempty(cell2mat(savedata.unsafeSet_unsat))) )
-            % TODO: add missing reachable sets!
+            % create reachSet object if desired
+            if nargout == 2
+                R = aux_initReachableSet(RtimePoint,RtimeInt);
+            end
             return
         end
         
@@ -86,7 +90,7 @@ function [res,R] = verifyRA_zonotope(sys,params,options,spec)
         time = repmat(cell2mat(timePoint.time(2:end)),1,2);
         time(:,1) = [0; time(1:end-1,1)];
         % flag to see which sets can be saved in R
-        allSAT = false(length(timeInt.set),length(options.safeSet)+length(options.unsafeSet));
+        allSAT = false(length(timeInt.set),length(params.safeSet)+length(params.unsafeSet));
         allSATbefore = true(length(timeInt.set),1);
         % save data for next run
         options.savedata = savedata;
@@ -96,17 +100,17 @@ function [res,R] = verifyRA_zonotope(sys,params,options,spec)
         R_i = {}; ind_Ri = [];
         
         % check if the reachable set is inside the safe sets       
-        for i = 1:length(options.safeSet)
+        for i = 1:length(params.safeSet)
             for j = 1:length(timeInt.set)
                 
                 % check if specification is active and whether it has been
                 % verified before
-                if ( representsa(options.safeSet{i}.time,"emptySet") || ...
-                    aux_intersectionCheckInterval(options.safeSet{i}.time,time(j,:)) ) ...
+                if ( representsa(params.safeSet{i}.time,"emptySet") || ...
+                    aux_intersectionCheckInterval(params.safeSet{i}.time,time(j,:)) ) ...
                         && aux_checkSet(options.savedata.safeSet_unsat{i},time(j,:))
                 
                     % outer-approximation
-                    d = aux_containmentCheckZono(timeInt.set{j},options.safeSet{i}.set);
+                    d = aux_containmentCheckZono(timeInt.set{j},params.safeSet{i}.set);
                     
                     if d < 0
                         % outer-approximation is fully contained in the
@@ -124,13 +128,17 @@ function [res,R] = verifyRA_zonotope(sys,params,options,spec)
                     end
                     
                     % quick check for inner-approximation
-                    if options.safeSet{i}.fastInner && d > timeInt.error(j)
+                    if params.safeSet{i}.fastInner && d > timeInt.error(j)
                         % the distance d from the over-approximation to
                         % the safe set is larger than the contained
                         % error so that the inner-approximation will
                         % never be fully contained in the safe set
                         % -> provably unsafe in this special case
-                        res = false; return;
+                        res = false; 
+                        if nargout == 2
+                            R = aux_initReachableSet(RtimePoint,RtimeInt);
+                        end
+                        return;
                     end
                     
                     % inner-approximation
@@ -140,11 +148,15 @@ function [res,R] = verifyRA_zonotope(sys,params,options,spec)
                         % intersects the safe set
                         [R_i,ind_Ri,ind_now] = aux_compInnerApprox(...
                             R_i,ind_Ri,timeInt.set,timeInt.error,j);
-                        d = aux_containmentCheckConZono(R_i{ind_now},options.safeSet{i}.set);
+                        d = aux_containmentCheckConZono(R_i{ind_now},params.safeSet{i}.set);
                         if d > 0
                             % inner-approximation not fully contained in
                             % the safe set -> provably unsafe
-                            res = false; return
+                            res = false; 
+                            if nargout == 2
+                                R = aux_initReachableSet(RtimePoint,RtimeInt);
+                            end
+                            return
                         end
                     else
                         d = d - timeInt.error(j);
@@ -161,44 +173,52 @@ function [res,R] = verifyRA_zonotope(sys,params,options,spec)
         end
         
         % check if the reachable set is inside the unsafe sets
-        for i = 1:length(options.unsafeSet)
+        for i = 1:length(params.unsafeSet)
             for j = 1:length(timeInt.set)
                 
                 % check if specification is active (empty .time means that
                 % the specification covers the entire time horizon)
-                if ( representsa_(options.unsafeSet{i}.time,'emptySet',eps) || ...
-                        aux_intersectionCheckInterval(options.unsafeSet{i}.time,time(j,:)) ) ...
+                if ( representsa_(params.unsafeSet{i}.time,'emptySet',eps) || ...
+                        aux_intersectionCheckInterval(params.unsafeSet{i}.time,time(j,:)) ) ...
                         && aux_checkSet(options.savedata.unsafeSet_unsat{i},time(j,:))
                 
                     % fast intersecting check for speed-up
-                    if aux_intersectionCheckFast(timeInt.set{j},options.unsafeSet{i})
+                    if aux_intersectionCheckFast(timeInt.set{j},params.unsafeSet{i})
 
                         % outer-approximation
-                        d = aux_distanceIntersectionZono(timeInt.set{j},options.unsafeSet{i}.set);
+                        d = aux_distanceIntersectionZono(timeInt.set{j},params.unsafeSet{i}.set);
 
                         if d > d_Fo
                             d_Fo = d; ind_Fo = j; 
                         end
 
-                        if options.unsafeSet{i}.fastInner && d > timeInt.error(j)
+                        if params.unsafeSet{i}.fastInner && d > timeInt.error(j)
                             % the distance d from the over-approximation to
                             % the halfspace is larger than the error, so the
                             % inner-approximation will definitely intersect
                             % the unsafe set -> provably unsafe in this
                             % special case
-                            res = false; return
+                            res = false;                     
+                            if nargout == 2
+                                R = aux_initReachableSet(RtimePoint,RtimeInt);
+                            end
+                            return
                         end
                         
                         % compute inner-approximation (unless already
                         % computed) and check intersection with unsafe set
                         [R_i,ind_Ri,ind_now] = aux_compInnerApprox(...
                             R_i,ind_Ri,timeInt.set,timeInt.error,j);
-                        d = aux_intersectionCheck(R_i{ind_now},options.unsafeSet{i}.set);
+                        d = aux_intersectionCheck(R_i{ind_now},params.unsafeSet{i}.set);
                         
                         if d < 0
                             % intersection between inner-approximation and
                             % unsafe set -> provably unsafe
-                            res = false; return
+                            res = false; 
+                            if nargout == 2
+                                R = aux_initReachableSet(RtimePoint,RtimeInt);
+                            end
+                            return
                         elseif d < d_Fi
                             d_Fi = d; ind_Fi = j;  
                         end
@@ -209,12 +229,12 @@ function [res,R] = verifyRA_zonotope(sys,params,options,spec)
                             aux_removeFromUnsat(options.savedata.unsafeSet_unsat{i},time(j,:));
 
                         % append to reachable set
-                        allSAT(j,length(options.safeSet)+i) = true;
+                        allSAT(j,length(params.safeSet)+i) = true;
                         allSATbefore(j) = false;
                     end
                 else
                     % append to reachable set
-                    allSAT(j,length(options.safeSet)+i) = true;
+                    allSAT(j,length(params.safeSet)+i) = true;
                 end
             end
         end
@@ -240,11 +260,11 @@ function [res,R] = verifyRA_zonotope(sys,params,options,spec)
             d = d_Fi; ind = ind_Fi;
         end
         
-        if ~isempty(options.unsafeSet) && d_Fo ~= 0 && d_Fo < d
+        if ~isempty(params.unsafeSet) && d_Fo ~= 0 && d_Fo < d
             d = d_Fo; ind = ind_Fo;
         end
         
-        if ~isempty(options.safeSet) && d_Go >= 0 && d_Go < d
+        if ~isempty(params.safeSet) && d_Go >= 0 && d_Go < d
             d = d_Go; ind = ind_Go;
         end
         
@@ -257,12 +277,7 @@ function [res,R] = verifyRA_zonotope(sys,params,options,spec)
 
     % create reachSet object if desired
     if nargout == 2
-        % remove duplicates (overlapping interval, multiple time points)
-        [RtimePoint,RtimeInt] = aux_removeDuplicates(RtimePoint,RtimeInt);
-        % splice reachSet object from different iterations in main loop
-        R = reachSet(RtimePoint,RtimeInt);
-        % re-order reachable set (note: time-interval solutions overlap)
-        R = order(R);
+        R = aux_initReachableSet(RtimePoint,RtimeInt);
     end
 end
 
@@ -303,12 +318,13 @@ function [G,F] = aux_getSetsFromSpec(spec)
 end
 
 % initializations
-function err = aux_initError(sys,options,G,F)
+function err = aux_initError(sys,params)
 % estimate the initial value for the maximum allowed error from simulations
 
+    G = params.safeSet; F = params.unsafeSet;
     % initial points: center of facets from interval enclosure, where we
     % limit the number of points to a maximum of 20
-    I = interval(options.R0); r = rad(I);
+    I = interval(params.R0); r = rad(I);
     Z = zonotope(I); c = center(Z); g = generators(Z);
     
     if ~isempty(g)
@@ -320,24 +336,24 @@ function err = aux_initError(sys,options,G,F)
         end
 
         if ~representsa_(Z,'interval',eps)
-            points = aux_getInitPoints(options.R0,points);
+            points = aux_getInitPoints(params.R0,points);
         end
     else
         points = c;
     end
     
     % initialization
-    paramSim.tFinal = options.tFinal;
-    if isfield(options,'U')
-        if isfield(options,'u')
-            paramSim.u = options.u + center(options.U);
+    paramSim.tFinal = params.tFinal;
+    if isfield(params,'U')
+        if isfield(params,'u')
+            paramSim.u = params.u + center(params.U);
         else
-            paramSim.u = center(options.U);
+            paramSim.u = center(params.U);
         end
     end
     
     % disturbance (required for getfcn... not yet added by validateOptions)
-    paramSim.w = center(options.W);
+    paramSim.w = center(params.W);
         
     err = Inf;
     
@@ -421,10 +437,6 @@ function points = aux_getInitPoints(R0,points)
 
     % get zonotope properties
     c = center(R0); G = generators(R0); [n,m] = size(G);
-
-    % init linprog struct
-    problem.solver = 'linprog';
-    problem.options = optimoptions('linprog','Display','off');
 
     % loop over all points
     for i = 1:size(points,2)
@@ -825,6 +837,15 @@ while i < length(RtimeInt.error)
     end
 end
 
+end
+
+function R = aux_initReachableSet(RtimePoint,RtimeInt)
+    % remove duplicates (overlapping interval, multiple time points)
+    [RtimePoint,RtimeInt] = aux_removeDuplicates(RtimePoint,RtimeInt);
+    % splice reachSet object from different iterations in main loop
+    R = reachSet(RtimePoint,RtimeInt);
+    % re-order reachable set (note: time-interval solutions overlap)
+    R = order(R);
 end
 
 % ------------------------------ END OF CODE ------------------------------

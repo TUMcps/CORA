@@ -23,26 +23,24 @@ function res = test_ellipsoid_vertices
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty case
 n = 2;
 E = ellipsoid.empty(n);
 V = vertices(E);
-res(end+1,1) = isempty(V) && isnumeric(V) && size(V,1) == n;
+assert(isempty(V) && isnumeric(V) && size(V,1) == n);
 
 % 1D case, just a point
 E = ellipsoid(0,1);
 V = vertices(E);
-res(end+1,1) = size(V,2) == 1 && withinTol(V,1);
+assert(size(V,2) == 1 && withinTol(V,1));
 
 % 1D case, bounded line
 E = ellipsoid(4,-1);
 V = vertices(E);
-res(end+1,1) = size(V,2) == 2 && compareMatrices(V,[-3,1]);
+assert(size(V,2) == 2 && compareMatrices(V,[-3,1]));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

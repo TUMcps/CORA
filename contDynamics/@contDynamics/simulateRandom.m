@@ -1,4 +1,4 @@
-function simRes = simulateRandom(obj, params, varargin)
+function simRes = simulateRandom(sys, params, varargin)
 % simulateRandom - performs several random simulation of the system. It 
 %    can be set how many simulations should be performed, what percentage
 %    of initial states should start at vertices of the initial set, what 
@@ -6,10 +6,10 @@ function simRes = simulateRandom(obj, params, varargin)
 %    and of how many piecewise constant parts the input is constructed.
 %
 % Syntax:
-%    res = simulateRandom(obj, params, options)
+%    res = simulateRandom(sys, params, options)
 %
 % Inputs:
-%    obj - contDynamics object
+%    sys - contDynamics object
 %    params - system parameters
 %    options - settings for random simulation, depending on .type (see below)
 %       .type = 'gaussian', 'standard' (default), 'rrt', 'constrained';
@@ -53,24 +53,19 @@ function simRes = simulateRandom(obj, params, varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % input argument validation
-
-options = struct();
-if nargin == 3 && isstruct(varargin{1})
-    options = varargin{1};
-end
-
-% input preprocessing
-options = validateOptions(obj,mfilename,params,options);
+options = setDefaultValues({struct()},varargin);
+[params,options] = validateOptions(sys,params,options);
 
 % call private simulation function based on type
-if strcmp(options.type,'standard')
-    simRes = simulateStandard(obj,options);
-elseif strcmp(options.type,'gaussian')
-    simRes = simulateGaussian(obj,options);
-elseif strcmp(options.type,'rrt')
-    simRes = simulateRRT(obj,options);
-elseif strcmp(options.type,'constrained')
-    simRes = simulateConstrainedRandom(obj,options);
+switch options.type
+    case 'standard'
+        simRes = simulateStandard(sys,params,options);
+    case 'gaussian'
+        simRes = simulateGaussian(sys,params,options);
+    case 'rrt'
+        simRes = simulateRRT(sys,params,options);
+    case 'constrained'
+        simRes = simulateConstrainedRandom(sys,params,options);
 end
 
 % ------------------------------ END OF CODE ------------------------------

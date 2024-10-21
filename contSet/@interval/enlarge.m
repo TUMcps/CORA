@@ -40,7 +40,7 @@ I.sup = c + r.*factor;
 % unbounded dimensions: r is Inf
 if any(r == Inf & factor < 1)
     % if factor < 1, there is no center -> return error (NaN)
-    throw(CORAerror('CORA:notSupported'));
+    throw(CORAerror('CORA:notSupported','Factor must be finite and non-zero.'));
 else
     % factor > 1, dimension expands to [-Inf,Inf]
     Infdims = r == Inf & factor > 1;

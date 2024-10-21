@@ -57,6 +57,9 @@ methods
     % class constructor
     function obj = linProbSys(varargin)
 
+        % 0. check number of input arguments
+        assertNarginConstructor(0:4,nargin);
+
         % 1. copy constructor: not allowed due to obj@contDynamics below
 %         if nargin == 1 && isa(varargin{1},'linProbSys')
 %             obj = varargin{1}; return
@@ -77,6 +80,11 @@ methods
 
     end
 end
+
+methods (Access = protected)
+    [printOrder] = getPrintSystemInfo(S)
+end
+
 end
 
 
@@ -85,15 +93,8 @@ end
 function [name,A,B,C] = aux_parseInputArgs(varargin)
 % parse input arguments from user and assign to variables
 
-    % check number of input arguments
-    if nargin > 4
-        throw(CORAerror('CORA:tooManyInputArgs',4));
-    end
-
     % default name
-    def_name = 'linProbSys';
-    % init properties
-    A = []; B = []; C = [];
+    def_name = 'linProbSys'; A = []; B = []; C = [];
 
     % no input arguments
     if nargin == 0

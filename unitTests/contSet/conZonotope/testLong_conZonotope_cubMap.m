@@ -80,9 +80,7 @@ for i = 1:3
 %     plot(pointsRes(1,:),pointsRes(2,:),'.k');
     
     % check if all points are located inside the calculated zonotope
-    if ~all(contains_(cZres,pointsRes,'exact',1e-6))
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(all(contains_(cZres,pointsRes,'exact',1e-6)),i)
 end
 
 
@@ -123,9 +121,7 @@ for i = 1:3
 %     plot(pointsRes(1,:),pointsRes(2,:),'.k');
     
     % check if all points are located inside the calculated zonotope
-    if ~all(contains_(cZres,pointsRes,'exact',1e-5))
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(all(contains_(cZres,pointsRes,'exact',1e-5)),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

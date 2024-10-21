@@ -7,7 +7,7 @@ function [t,x,nextloc,xJump] = simulate(loc,params)
 %
 % Inputs:
 %    loc - location object
-%    params - struct storing the simulation parameter
+%    params - struct storing the simulation parameters
 %
 % Outputs:
 %    t - time vector
@@ -39,11 +39,11 @@ function [t,x,nextloc,xJump] = simulate(loc,params)
 currentLoc = params.loc;
 params = rmfield(params,'loc');
 
-% check if initial state is inside the invariant of the current location
 if size(params.x0,2) > size(params.x0,1)
     params.x0 = params.x0';
 end
 
+% check if initial state is inside the invariant of the current location
 if ~contains_(loc.invariant,params.x0,'exact',1e-6)
     throw(CORAerror('CORA:specialError',...
             'Trajectory is located outside the invariant set after transition!')); 
@@ -63,60 +63,59 @@ options = odeset(eventOptions);
 [t,x,index] = simulate(loc.contDynamics,params,options);
 
 % determine the guard set which is crossed by the trajectory
-if ~isempty(index)
-    % final time not reached
-
-    % recompute index because simulate often just returns the first of 
-    % potentially multiple events that occured at the same time
-    temp = fun(t(end),x(end,:)');
-    indexNew = find(abs(temp) < 1e-6);
-    index = unique([index;indexNew]);
-
-    % determine active guard
-    list = indexList(loc);
-    
-    nActivatedGuards = length(index);
-    activatedGuards = [];
-    
-    % check if invariant set was left without hitting a guard set
-    if all(list(index) == 0)
-        throw(CORAerror('CORA:specialError',...
-            'Trajectory left the invariant set without hitting a guard set!')); 
-    end
-    
-    % loop over all active guards
-    for iActivatedGuard = 1:nActivatedGuards
-        
-        guard = list(index(iActivatedGuard));
-        
-        if guard ~= 0 && (~any(activatedGuards == guard))
-            
-            guardSet = loc.transition(guard).guard;
-            
-            % check whether only one halfspace has beed crossed or if 
-            % the point is indeed inside the guard set
-            if contains_(guardSet,x(end,:)','exact',1e-6)
-                
-                % next location and reset function
-                nextloc = loc.transition(guard).target;
-                xJump = reset(loc.transition(guard),x(end,:));
-                break;
-                
-            else
-                
-                % only one halfspace crossed -> continue simulation in
-                % the current location
-                nextloc = currentLoc;
-                xJump = x(end,:);
-            end
-            
-            activatedGuards = [activatedGuards,guard];
-        end
-    end
-    
-else
+if isempty(index)
     % final time reached
     nextloc = []; xJump = [];
+    return
+end
+
+% final time not reached
+
+% re-compute index because simulate often just returns the first of 
+% potentially multiple events that occurred at the same time
+indexNew = find(abs(fun(t(end),x(end,:)')) < 1e-6);
+index = unique([index;indexNew]);
+
+% determine active guard
+list = indexList(loc);
+
+nActivatedGuards = length(index);
+activatedGuards = [];
+
+% check if invariant set was left without hitting a guard set
+if all(list(index) == 0)
+    throw(CORAerror('CORA:specialError',...
+        'Trajectory left the invariant set without hitting a guard set!')); 
+end
+
+% loop over all active guards
+for iActivatedGuard = 1:nActivatedGuards
+    
+    guard = list(index(iActivatedGuard));
+    
+    if guard ~= 0 && (~any(activatedGuards == guard))
+        
+        guardSet = loc.transition(guard).guard;
+        
+        % check whether only one halfspace has beed crossed or if 
+        % the point is indeed inside the guard set
+        if contains_(guardSet,x(end,:)','exact',1e-6)
+            
+            % next location and reset function
+            nextloc = loc.transition(guard).target;
+            xJump = evaluate(loc.transition(guard).reset,x(end,:)');
+            break;
+            
+        else
+            
+            % only one halfspace crossed -> continue simulation in
+            % the current location
+            nextloc = currentLoc;
+            xJump = x(end,:);
+        end
+        
+        activatedGuards = [activatedGuards,guard];
+    end
 end
 
 % ------------------------------ END OF CODE ------------------------------

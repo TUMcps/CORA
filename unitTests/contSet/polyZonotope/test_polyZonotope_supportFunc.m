@@ -24,8 +24,6 @@ function res = test_polyZonotope_supportFunc
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % TEST 1
 
 % create polynomial zonotope
@@ -42,12 +40,12 @@ I = interval(pZ,'bnb');
 I_ = interval([0;1],[6;7]);
 
 % check for correctness
-res(end+1,1) = isequal(I,I_);
+assert(isequal(I,I_));
 
 % test empty set
 pZ_e = polyZonotope.empty(2);
-res(end+1,1) = supportFunc(pZ_e,[1;1],'upper') == -Inf ...
-        && supportFunc(pZ_e,[1;1],'lower') == +Inf;
+assert(supportFunc(pZ_e,[1;1],'upper') == -Inf);
+assert(supportFunc(pZ_e,[1;1],'lower') == +Inf);
 
 % test [lower, upper] = range
 dir = [1 1];
@@ -55,7 +53,7 @@ range = supportFunc(pZ, dir, 'range');
 lower = supportFunc(pZ, dir, 'lower');
 upper = supportFunc(pZ, dir, 'upper');
 
-res(end+1,1) = isequal(range, interval(lower, upper));
+assert(isequal(range, interval(lower, upper)));
 
 
 % TEST 2 (check point containment)
@@ -72,16 +70,14 @@ ground_truth = interval([-0.5059;-2.1168], [0.9; 3.34]);
 methods = ["interval", 'split', 'bnb', 'bnbAdv'];
 for method = methods
     I = cartProd( ...
-      supportFunc(pZ, [1 0], 'range', method), ...
-      supportFunc(pZ, [0 1], 'range', method) ...
+      supportFunc(pZ, [1;0], 'range', method), ...
+      supportFunc(pZ, [0;1], 'range', method) ...
     );
 
-    if ~I.contains(ground_truth, 'exact', 1e-15)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assert(all(I.contains(ground_truth, 'exact', 1e-15)))
 end
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -23,18 +23,13 @@ function res = test_reachSetAnalyzer
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = [];
-
-% shortcodes
-tt = kleene.True;
-ff = kleene.False;
-uu = kleene.Unknown;
+res = true;
 
 % atomic propositions
 aps = containers.Map;
 
-aps('p1') = atomicProposition(halfspace([0 1], 3));
-aps('p2') = atomicProposition(halfspace([1 1], 5));
+aps('p1') = atomicProposition(polytope([0 1], 3));
+aps('p2') = atomicProposition(polytope([1 1], 5));
 
 
 % analyzer
@@ -65,13 +60,13 @@ a1.analyzeTimeInterval(t1{9}, 1, interval(8, 10));
 s1 = a1.signals();
 
 % test
-res(end+1,1) = isequal([5 8 10], s1('p1').time);
-res(end+1,1) = isequal([tt uu ff], s1('p1').value);
+assert(isequal([5 8 10], s1('p1').time));
+assert(isequal([kleene.True kleene.Unknown kleene.False], s1('p1').value));
 
-res(end+1,1) = isequal([4 7 10], s1('p2').time);
-res(end+1,1) = isequal([tt uu ff], s1('p2').value);
+assert(isequal([4 7 10], s1('p2').time));
+assert(isequal([kleene.True kleene.Unknown kleene.False], s1('p2').value));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

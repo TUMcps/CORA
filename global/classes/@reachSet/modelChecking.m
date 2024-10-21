@@ -8,8 +8,10 @@ function res = modelChecking(R,eq,varargin)
 % Inputs:
 %    R - reachable set (class reachSet)
 %    eq - logic formula (class stl)
-%    alg - algorithm used, 'sampledTime' (Section 4.2 in [1]) or 
-%           'rtl' (Theorem 1 in [1]) or 'signals'
+%    alg - algorithm used, 'sampledTime' (Section 4.2 in [1]),
+%          'rtl' (Theorem 1 in [1]), 'signals', or 'incremental'
+%          (Corollary 1 in [2]). Note that some algorithms may accept
+%          additional parameters.
 %
 % Outputs:
 %    res - formula satisfied (true) or not (false)
@@ -35,6 +37,9 @@ function res = modelChecking(R,eq,varargin)
 %    [1] H. Roehm et al. "STL Model Checking of Continuous and Hybrid
 %        Systems", International Symposium on Automated Technology for 
 %        Verification and Analysis, pp. 412-427, 2016.
+%    [2] F. Lercher and M. Althoff, "Using Four-Valued Signal Temporal
+%        Logic for Incremental Verification of Hybrid Systems", Computer
+%        Aided Verification, 2024.
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -42,9 +47,9 @@ function res = modelChecking(R,eq,varargin)
 %
 % See also: stl
 
-% Authors:       Niklas Kochdumper, Benedikt Seidl
+% Authors:       Niklas Kochdumper, Benedikt Seidl, Florian Lercher
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   15-February-2024 (FL, add incremental algorithm)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -55,15 +60,18 @@ alg = setDefaultValues({'sampledTime'},varargin);
 % check input arguments
 inputArgsCheck({{R,'att','reachSet'}; ...
                {eq,'att','stl'};...
-               {alg,'str',{'sampledTime','rtl','signals'}}});
+               {alg,'str',{'sampledTime','rtl','signals','incremental'}}});
 
 % call the selected model checking algorithm
-if strcmp(alg,'sampledTime')
-    res = modelCheckingSampledTime(R,eq);
-elseif strcmp(alg,'rtl')
-    res = modelCheckingRTL(R,eq);
-elseif strcmp(alg,'signals')
-    res = modelCheckingSignals(R,eq);
+switch alg
+    case 'sampledTime'
+        res = modelCheckingSampledTime(R,eq);
+    case 'rtl'
+        res = modelCheckingRTL(R,eq);
+    case 'signals'
+        res = modelCheckingSignals(R,eq,varargin{2:end});
+    case 'incremental'
+        res = modelCheckingIncremental(R,eq,varargin{2:end});
 end
     
 % ------------------------------ END OF CODE ------------------------------

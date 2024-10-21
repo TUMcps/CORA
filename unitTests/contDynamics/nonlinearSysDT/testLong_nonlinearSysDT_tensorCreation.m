@@ -21,8 +21,6 @@ function res = testLong_nonlinearSysDT_tensorCreation()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = false;
-
 % Options -----------------------------------------------------------------
 
 % time
@@ -49,6 +47,7 @@ for i = 1:2
     for j = 1:2
         for h = 1:2
             for m = 1:2
+                % fprintf("..%i/%i/%i/%i \n",i,j,h,m);
 
                 options_ = options;
 
@@ -86,7 +85,7 @@ for i = 1:2
     end
 end
 
-% test is successfull if no error occured during execution
+% test is successful if no error occurred during execution
 res = true;
 
 % ------------------------------ END OF CODE ------------------------------

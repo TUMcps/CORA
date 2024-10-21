@@ -31,7 +31,7 @@ function R = guardIntersect_levelSet(loc,R,guard)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % compute enclosing interval for all reachable sets 
-I = [];
+I = interval.empty(dim(R{1}));
 
 for i = 1:length(R)
    

@@ -30,6 +30,9 @@ function res = test_zonotope_intersectStrip_volumeOptimum
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 %% Simple 2D example which can be easily visualized
 % zonotope
@@ -63,7 +66,7 @@ Zopt = intersectStrip(Z,C,sigma,y_strip,'alamo-volume');
 
 % check if volume of op5timal solution is below brute force method
 volOpt = volume(Zopt);
-res = volOpt < 1.01*min(vol);
+assert(volOpt < 1.01*min(vol));
 
 % % create plot
 % figure;

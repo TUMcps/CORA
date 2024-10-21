@@ -27,6 +27,9 @@ function res = test_nonlinearSysDT_reach_02_tank
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % Parameters --------------------------------------------------------------
 
@@ -71,6 +74,6 @@ IH_saved = interval( ...
 [1.9563699892722184; 1.9755297952057655; 2.2953017401028579; 2.6705455134974536; 4.3116242652586525; 5.4868053393744178]);
 
 %final result
-res = isequal(IH,IH_saved,1e-8);
+assert(isequal(IH,IH_saved,1e-8));
 
 % ------------------------------ END OF CODE ------------------------------

@@ -1,8 +1,7 @@
 function res = test_nonlinearSys_reach_06_tank_linearRemainder
 % test_nonlinearSys_reach_06_tank_linearRemainder - example of
 %    nonlinear reachability  analysis;
-%
-% This example can be found in [1, Sec. 3.4.5] or in [2].
+%    This example can be found in [1, Sec. 3.4.5] or in [2].
 %
 % Syntax:
 %    test_nonlinearSys_reach_06_tank_linearRemainder
@@ -71,43 +70,37 @@ simRes = simulateRandom(tank, params);
 
 % Visualization -----------------------------------------------------------
 
-plotting = false;
-
-if plotting
-
-    for plotRun=1:3
-        % plot different projections
-        if plotRun==1
-            projDims=[1 2];
-        elseif plotRun==2
-            projDims=[3 4];    
-        elseif plotRun==3
-            projDims=[5 6]; 
-        end 
-
-        figure; hold on; box on;
-
-        % plot reachable set (normal lagrange remainder)
-        plot(R_wo_linear,projDims,'b');
-
-        % plot reachable sets (lagrange remainder added to system matrices
-        % (A,B))
-        plot(R,projDims,'r');
-
-
-        %plot initial set
-        plot(params.R0,projDims,'k','FaceColor','w');
-
-
-        %plot simulation results      
-        plot(simRes,projDims,'k');
-
-        %label plot
-        xlabel(['x_{',num2str(projDims(1)),'}']);
-        ylabel(['x_{',num2str(projDims(2)),'}']);
-    end
-
-end
+% for plotRun=1:3
+%     % plot different projections
+%     if plotRun==1
+%         projDims=[1 2];
+%     elseif plotRun==2
+%         projDims=[3 4];    
+%     elseif plotRun==3
+%         projDims=[5 6]; 
+%     end 
+% 
+%     figure; hold on; box on;
+% 
+%     % plot reachable set (normal lagrange remainder)
+%     plot(R_wo_linear,projDims,'b');
+% 
+%     % plot reachable sets (lagrange remainder added to system matrices
+%     % (A,B))
+%     plot(R,projDims,'r');
+% 
+% 
+%     %plot initial set
+%     plot(params.R0,projDims,'k','FaceColor','w');
+% 
+% 
+%     %plot simulation results      
+%     plot(simRes,projDims,'k');
+% 
+%     %label plot
+%     xlabel(['x_{',num2str(projDims(1)),'}']);
+%     ylabel(['x_{',num2str(projDims(2)),'}']);
+% end
 
 % example completed
 res = true;

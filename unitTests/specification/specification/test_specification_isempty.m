@@ -39,14 +39,14 @@ spec13 = [spec1;spec3];
 spec_empty = specification();
 
 % check emptiness
-res = isempty(spec_empty);
-res(end+1,1) = ~isempty(spec1);
-res(end+1,1) = ~isempty(spec2);
-res(end+1,1) = ~isempty(spec3);
-res(end+1,1) = ~isempty(spec12);
-res(end+1,1) = ~isempty(spec13);
+assert(isempty(spec_empty));
+assert(~isempty(spec1));
+assert(~isempty(spec2));
+assert(~isempty(spec3));
+assert(~isempty(spec12));
+assert(~isempty(spec13));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

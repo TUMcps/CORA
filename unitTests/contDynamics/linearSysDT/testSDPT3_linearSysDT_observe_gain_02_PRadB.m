@@ -29,6 +29,9 @@ function res = testSDPT3_linearSysDT_observe_gain_02_PRadB()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % enable access to private function "observe_gain_PRadB"
 path = CORAROOT;
@@ -59,7 +62,7 @@ error = abs(OGain - PRadB);
 maxError = max(max(error));
 
 % error acceptable?
-res = (maxError < 1e-8);
+assert((maxError < 1e-8));
 
 
 % revoke access to private function

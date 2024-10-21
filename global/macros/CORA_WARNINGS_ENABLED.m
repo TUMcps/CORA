@@ -107,6 +107,10 @@ switch identifier
         % controls redundancy warnings
         res = true;
 
+    case 'CORA:interface'
+        % controls warnings regarding changed function interfaces
+        res = true;
+
     otherwise
         throw(CORAerror('CORA:wrongValue','first',sprintf('Unknown identifier ''%s''',identifier)))
 end

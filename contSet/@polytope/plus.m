@@ -1,16 +1,17 @@
-function P_out = plus(P,S)
-% plus - overloaded '+' operator for the Minkowski addition of two
-%    polytopes or a polytope with a vector
+function S_out = plus(P,S)
+% plus - overloaded '+' operator for the Minkowski addition of a polytope
+%    and another set or vector
 %
 % Syntax:
-%    P_out = plus(P,S)
+%    S_out = P + S
+%    S_out = plus(P,S)
 %
 % Inputs:
-%    P - polytope object or numerical vector
-%    S - polytope object or numerical vector
+%    P - polytope object, numeric
+%    S - contSet object, numeric
 %
 % Outputs:
-%    P_out - polytope after Minkowski addition
+%    S_out - polytope after Minkowski addition
 %
 % Example:
 %    A = [2 1; -1 1; -2 -3; 0 -4; 2 -1]; b = ones(5,1);
@@ -39,8 +40,14 @@ function P_out = plus(P,S)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% sort arguments (Minkowski addition is commutative)
-[P,S] = findClassArg(P,S,'polytope');
+% ensure that numeric is second input argument
+[P,S] = reorderNumeric(P,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < P.precedence
+    S_out = S + P;
+    return
+end
 
 % check dimensions
 equalDimCheck(P,S);
@@ -53,7 +60,7 @@ tol = 1e-10;
 
 % check for fullspace
 if representsa_(P,'fullspace',tol) || representsa_(S,'fullspace',tol)
-    P_out = polytope.Inf(n); return
+    S_out = polytope.Inf(n); return
 end
 
 % polytope + polytope
@@ -61,46 +68,45 @@ if isa(S,'polytope')
 
     % check for empty set
     if representsa_(P,'emptySet',tol) || representsa_(S,'emptySet',tol)
-        P_out = polytope.empty(n); return
+        S_out = polytope.empty(n); return
     end
     % check if one of the sets is the origin
     if representsa_(P,'origin',tol)
-        P_out = S; return
+        S_out = S; return
     elseif representsa_(S,'origin',tol)
-        P_out = P; return
+        S_out = P; return
     end
 
     % check which representations are given
     if P.isHRep.val && S.isHRep.val
-        P_out = aux_plus_Hpoly_Hpoly(P,S,n);
+        S_out = aux_plus_Hpoly_Hpoly(P,S,n);
     elseif P.isVRep.val && S.isVRep.val
-        P_out = aux_plus_Vpoly_Vpoly(P,S,n);
+        S_out = aux_plus_Vpoly_Vpoly(P,S,n);
     else
         % convert to H-rep (since probably more useful for subsequent
         % operations) and compute sum
         constraints(P);
         constraints(S);
-        P_out = aux_plus_Hpoly_Hpoly(P,S,n);
+        S_out = aux_plus_Hpoly_Hpoly(P,S,n);
     end
-
-elseif isnumeric(S)
-    P_out = aux_plus_poly_point(P,S);
-
-elseif isa(S,'zonotope') || isa(S,'interval') || ...
-    isa(S,'conZonotope') || isa(S,'zonoBundle')
-    S = polytope(S);
-    P_out = P + S;
-
-elseif isa(S,'polyZonotope')
-    P_out = S + P;
-
-else
-    throw(CORAerror('CORA:noops',P,S));
-    
+    S_out = aux_setproperties(S_out,P,S);
+    return
 end
 
-% set properties
-P_out = aux_setproperties(P_out,P,S);
+if isnumeric(S) && iscolumn(S)
+    S_out = aux_plus_poly_point(P,S);
+    S_out = aux_setproperties(S_out,P,S);
+    return
+end
+
+% other set representations: convert to polytope
+if isa(S,'zonotope') || isa(S,'interval') || isa(S,'conZonotope') || isa(S,'zonoBundle')
+    S = polytope(S);
+    S_out = P + S;
+    return
+end
+
+throw(CORAerror('CORA:noops',P,S));
 
 end
 
@@ -152,17 +158,21 @@ function P_out = aux_plus_poly_point(P,S)
 % avoid addition with matrices
 if size(S,2) > 1
     throw(CORAerror('CORA:noops',P,S));
+elseif size(S,1) ~= dim(P)
+    throw(CORAerror('CORA:notSupported',...
+        'Minkowski addition with scalar is not supported unless the set is 1-dimensional.'));
 end
 
 % copy polytope (and properties!)
 P_out = polytope(P);
 
 % shift offsets
-P_out.b_.val = P_out.b_.val + P_out.A_.val*S;
-P_out.be_.val = P_out.be_.val + P_out.Ae_.val*S;
+if P_out.isHRep.val
+    [~,P_out.b_.val,~,P_out.be_.val] = priv_plus_minus_vector(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val,S);
+end
 
 % shift vertices if V representation is given
-if P.isVRep.val
+if P_out.isVRep.val
     P_out.V_.val = P.V_.val + S;
 end
 

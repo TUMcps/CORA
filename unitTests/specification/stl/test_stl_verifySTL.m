@@ -22,6 +22,9 @@ function res = test_stl_verifySTL
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % specification
 x = stl('x',2);
@@ -39,6 +42,6 @@ options.taylorTerms = 10;
 options.zonotopeOrder = 10;
 
 % verify
-res = verify(sys,params,options,eq);
+assert(verify(sys,params,options,eq));
 
 % ------------------------------ END OF CODE ------------------------------

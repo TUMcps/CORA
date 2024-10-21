@@ -1,13 +1,13 @@
-function [t,x,ind,y] = simulate(obj,params,varargin)
+function [t,x,ind,y] = simulate(linsys,params,varargin)
 % simulate - simulates a linear system 
 %
 % Syntax:
-%    [t,x] = simulate(obj,params)
-%    [t,x,ind] = simulate(obj,params,options)
-%    [t,x,ind,y] = simulate(obj,params,options)
+%    [t,x] = simulate(linsys,params)
+%    [t,x,ind] = simulate(linsys,params,options)
+%    [t,x,ind,y] = simulate(linsys,params,options)
 %
 % Inputs:
-%    obj - linearSys object
+%    linsys - linearSys object
 %    params - struct containing the parameters for the simulation
 %       .tStart: initial time
 %       .tFinal: final time
@@ -33,12 +33,12 @@ function [t,x,ind,y] = simulate(obj,params,varargin)
 % Example: 
 %    A = [1 0; 0 2];
 %    B = [1;2];
-%    sys = linearSys('test',A,B);
+%    linsys = linearSys('test',A,B);
 %
 %    params.x0 = [1;2];
 %    params.tFinal = 2;
 %
-%    [t,x] = simulate(sys,params);
+%    [t,x] = simulate(linsys,params);
 %
 %    plot(x(:,1),x(:,2),'r');
 %
@@ -96,7 +96,7 @@ else
 end
 
 % check values of u, w, and v
-[params,steps,tSpan] = aux_uwv(obj,params,steps,tSpan);
+[params,steps,tSpan] = aux_uwv(linsys,params,steps,tSpan);
 tSpan = tSpan(1:2);
 
 % initializations
@@ -108,7 +108,7 @@ y = [];
 x0 = params.x0;
 
 % computation of output set desired / possible
-comp_y = nargout == 4 && ~isempty(obj.C);
+comp_y = nargout == 4 && ~isempty(linsys.C);
 
 % loop over all time steps
 for i = 1:steps
@@ -120,15 +120,15 @@ for i = 1:steps
     % simulate using MATLABs ode45 function
     try
         if isOpt
-            [t_,x_,~,~,ind] = ode45(getfcn(obj,params_),tSpan,x0,options);
+            [t_,x_,~,~,ind] = ode45(getfcn(linsys,params_),tSpan,x0,options);
         else
-            [t_,x_,~,~,ind] = ode45(getfcn(obj,params_),tSpan,x0);
+            [t_,x_,~,~,ind] = ode45(getfcn(linsys,params_),tSpan,x0);
         end
     catch
         if isOpt
-            [t_,x_] = ode45(getfcn(obj,params_),tSpan,x0,options);
+            [t_,x_] = ode45(getfcn(linsys,params_),tSpan,x0,options);
         else
-            [t_,x_] = ode45(getfcn(obj,params_),tSpan,x0);
+            [t_,x_] = ode45(getfcn(linsys,params_),tSpan,x0);
         end
     end
 
@@ -159,9 +159,9 @@ for i = 1:steps
     % instead, this will be covered by the next input
     if comp_y
         if timeStepGiven
-            y_ = obj.C * x_(1,:)' + obj.D * params.u(:,i) + obj.k + params.v(:,i);
+            y_ = linsys.C * x_(1,:)' + linsys.D * params.u(:,i) + linsys.k + params.v(:,i);
         else
-            y_ = obj.C * x_(1:end-1,:)' + obj.D * params.u(:,i) + obj.k + params.v(:,i);
+            y_ = linsys.C * x_(1:end-1,:)' + linsys.D * params.u(:,i) + linsys.k + params.v(:,i);
         end
         y = [y;y_'];
     end
@@ -174,7 +174,7 @@ end
 
 % compute last output
 if comp_y
-    ylast = obj.C * x_(end,:)' + obj.D * params.u(:,end) + obj.k + params.v(:,end);
+    ylast = linsys.C * x_(end,:)' + linsys.D * params.u(:,end) + linsys.k + params.v(:,end);
     y = [y; ylast'];
 end
 
@@ -191,10 +191,10 @@ if ~isfield(params,'u')
     params.u = zeros(obj.nrOfInputs,1); 
 end
 if ~isfield(params,'w')
-    params.w = zeros(obj.dim,1);
+    params.w = zeros(obj.nrOfDisturbances,1);
 end
 if ~isfield(params,'v')
-    params.v = zeros(obj.nrOfOutputs,1);
+    params.v = zeros(obj.nrOfNoises,1);
 end
 
 % check sizes

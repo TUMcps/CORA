@@ -44,9 +44,9 @@ S = [];
 
 % exclude matrix interval cases
 [r,c] = size(I.inf);
-if ~strcmp(type,'emptySet') && r > 1 && c > 1
+if ~strcmp(type,'emptySet') && ~strcmp(type,'origin') && r > 1 && c > 1
     throw(CORAerror('CORA:notSupported',...
-        'representsa only supports vector interval objects (except type = ''emptySet'').'));
+        'representsa only supports vector interval objects (except type = ''emptySet'', ''origin'').'));
 end
 
 % is interval a point?
@@ -55,9 +55,9 @@ isPoint = all(withinTol(rad(I),0,tol));
 switch type
     case 'origin'
         res = ~isempty(I.inf) ...
-            && all(withinTol(I.inf,0,tol)) && all(withinTol(I.sup,0,tol));
+            && all(withinTol(I.inf,0,tol),"all") && all(withinTol(I.sup,0,tol),"all");
         if nargout == 2 && res
-            S = zeros(n,1);
+            S = zeros(r,c);
         end
 
     case 'point'
@@ -76,10 +76,6 @@ switch type
     case 'conHyperplane'
         % only if 1D, a point, or at least one dimension has zero width
         res = n == 1 || isPoint || nnz(withinTol(rad(I),0,tol)) >= 1;
-        if nargout == 2 && res
-            throw(CORAerror('CORA:notSupported',...
-                ['Conversion from interval to ' type ' not supported.']));
-        end
         
     case 'conPolyZono'
         res = true;

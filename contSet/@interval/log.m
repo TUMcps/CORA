@@ -45,7 +45,7 @@ I.inf(imag(I.inf) ~= 0) = NaN;
 I.sup(imag(I.sup) ~= 0) = NaN;
 
 % return error if NaN occures
-if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
+if any(isnan(I.inf),"all") || any(isnan(I.sup),"all")
     throw(CORAerror('CORA:outOfDomain','validDomain','>= 0'));
 end
 

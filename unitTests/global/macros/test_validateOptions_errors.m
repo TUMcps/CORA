@@ -22,7 +22,10 @@ function res = test_validateOptions_errors
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
-res = VALIDATEOPTIONS_ERRORS;
+assert(VALIDATEOPTIONS_ERRORS);
 
 % ------------------------------ END OF CODE ------------------------------

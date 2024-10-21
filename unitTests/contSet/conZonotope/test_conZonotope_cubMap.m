@@ -59,9 +59,7 @@ b_ = [0;0;0];
 cZ = conZonotope(Z_,A_,b_);
 
 % check for correctness
-if ~isequal(cZres,cZ)
-    res = false;
-end
+assert(isequal(cZres,cZ))
 
 
 % TEST 2: Cubic Multiplication
@@ -90,8 +88,8 @@ b_ = 0;
 cZ = conZonotope(Z_,A_,b_);
 
 % check for correctness
-if ~isequal(cZres,cZ)
-    res = false;
+assert(isequal(cZres,cZ))
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -68,7 +68,8 @@ classdef nonlinParamSys < contDynamics
 
 properties (SetAccess = private, GetAccess = public)
     constParam = true;              % constant or time-varying parameters
-    nrOfParam = 1;                  % number of parameters
+    nrOfParam = [];                 % number of parameters
+    type = '';                      % time-dependency of parameters
 
     % dynamic equation
     mFile = [];                     % function handle to dynamic file
@@ -90,11 +91,14 @@ properties (SetAccess = private, GetAccess = public)
     derivative = [];
     linError = [];
 end
-    
+
 methods
     
     % class constructor
     function obj = nonlinParamSys(varargin)
+
+        % 0. check number of input arguments
+        assertNarginConstructor(0:8,nargin);
 
         % 1. copy constructor: not allowed due to obj@contDynamics below
 %         if nargin == 1 && isa(varargin{1},'nonlinParamSys')
@@ -112,13 +116,15 @@ methods
             aux_computeProperties(fun,states,inputs,params,out_fun,outputs);
 
         % 5. instantiate parent class
-        obj@contDynamics(name,states,inputs,outputs);
+        % note: currently, we only support unit disturbance matrices
+        %       (same as number of states) and unit noise matrices (same as
+        %       number of outputs)
+        obj@contDynamics(name,states,inputs,outputs,states,outputs);
         
         % 6a. assign object properties: dynamic equation
         obj.nrOfParam = params;
-        if strcmp(type,'varParam')
-           obj.constParam = false;
-        end
+        obj.type = type;
+        obj.constParam = ~strcmp(type,'varParam');
         obj.mFile = fun;
         obj.jacobian = eval(['@jacobian_',name]);
         obj.jacobian_freeParam = eval(['@jacobian_freeParam_',name]);
@@ -173,6 +179,11 @@ methods
     end
     
 end
+
+methods (Access = protected)
+    [printOrder] = getPrintSystemInfo(S)
+end
+
 end
 
 
@@ -180,13 +191,8 @@ end
 
 function [name,fun,states,inputs,params,type,out_fun,outputs] = aux_parseInputArgs(varargin)
 
-    % check number of input arguments
-    if nargin > 8
-        throw(CORAerror('CORA:tooManyInputArgs',8));
-    end
-
     % default values
-    name = []; states = []; inputs = []; params = []; 
+    name = []; fun = @(x,u,p)[]; states = []; inputs = []; params = []; 
     type = 'constParam';
     out_fun = []; outputs = [];
 
@@ -202,114 +208,62 @@ function [name,fun,states,inputs,params,type,out_fun,outputs] = aux_parseInputAr
     elseif nargin == 2
         if ischar(varargin{1})
             % syntax: obj = nonlinParamSys(name,fun)
-            name = varargin{1};
-            fun = varargin{2};
+            [name,fun] = varargin{:};
         elseif ischar(varargin{2})
             % syntax: obj = nonlinParamSys(fun,type)
-            fun = varargin{1};
-            type = varargin{2};
+            [fun,type] = varargin{:};
         elseif isa(varargin{2},'function_handle')
             % syntax: obj = nonlinParamSys(fun,out_fun)
-            fun = varargin{1};
-            out_fun = varargin{2};
+            [fun,out_fun] = varargin{:};
         end
     elseif nargin == 3
         if ischar(varargin{1})
             if ischar(varargin{3})
                 % syntax: obj = nonlinParamSys(name,fun,type)
-                name = varargin{1};
-                fun = varargin{2};
-                type = varargin{3};
+                [name,fun,type] = varargin{:};
             else
                 % syntax: obj = nonlinParamSys(name,fun,out_fun)
-                name = varargin{1};
-                fun = varargin{2};
-                out_fun = varargin{3};
+                [name,fun,out_fun] = varargin{:};
             end
         else
             % syntax: obj = nonlinParamSys(fun,type,out_fun)
-            fun = varargin{1};
-            type = varargin{2};
-            out_fun = varargin{3};
+            [fun,type,out_fun] = varargin{:};
         end
     elseif nargin == 4
         if ischar(varargin{1})
             % syntax: obj = nonlinParamSys(name,fun,type,out_fun)
-            name = varargin{1};
-            fun = varargin{2};
-            type = varargin{3};
-            out_fun = varargin{4};
+            [name,fun,type,out_fun] = varargin{:};
         else
             % syntax: obj = nonlinParamSys(fun,states,inputs,params)
-            fun = varargin{1};
-            states = varargin{2};
-            inputs = varargin{3};
-            params = varargin{4};
+            [fun,states,inputs,params] = varargin{:};
         end
     elseif nargin == 5
         if ischar(varargin{1})
             % syntax: obj = nonlinParamSys(name,fun,states,inputs,params)
-            name = varargin{1};
-            fun = varargin{2};
-            states = varargin{3};
-            inputs = varargin{4};
-            params = varargin{5};
+            [name,fun,states,inputs,params] = varargin{:};
         else
             % syntax: obj = nonlinParamSys(fun,states,inputs,params,type)
-            fun = varargin{1};
-            states = varargin{2};
-            inputs = varargin{3};
-            params = varargin{4};
-            type = varargin{5};
+            [fun,states,inputs,params,type] = varargin{:};
         end
     elseif nargin == 6
         if ischar(varargin{1})
             % syntax: obj = nonlinParamSys(name,fun,states,inputs,params,type)
-            name = varargin{1};
-            fun = varargin{2};
-            states = varargin{3};
-            inputs = varargin{4};
-            params = varargin{5};
-            type = varargin{6};
+            [name,fun,states,inputs,params,type] = varargin{:};
         else
             % syntax: obj = nonlinParamSys(fun,states,inputs,params,out_fun,outputs)
-            fun = varargin{1};
-            states = varargin{2};
-            inputs = varargin{3};
-            params = varargin{4};
-            out_fun = varargin{5};
-            outputs = varargin{6};
+            [fun,states,inputs,params,out_fun,outputs] = varargin{:};
         end
     elseif nargin == 7
         if ischar(varargin{1})
             % syntax: obj = nonlinParamSys(name,fun,states,inputs,params,out_fun,outputs)
-            name = varargin{1};
-            fun = varargin{2};
-            states = varargin{3};
-            inputs = varargin{4};
-            params = varargin{5};
-            out_fun = varargin{6};
-            outputs = varargin{7};
+            [name,fun,states,inputs,params,out_fun,outputs] = varargin{:};
         else
             % syntax: obj = nonlinParamSys(fun,states,inputs,params,type,out_fun,outputs)
-            fun = varargin{1};
-            states = varargin{2};
-            inputs = varargin{3};
-            params = varargin{4};
-            type = varargin{5};
-            out_fun = varargin{6};
-            outputs = varargin{7};
+            [fun,states,inputs,params,type,out_fun,outputs] = varargin{:};
         end
     elseif nargin == 8
         % syntax: obj = nonlinParamSys(name,fun,states,inputs,params,type,out_fun,outputs)
-        name = varargin{1};
-        fun = varargin{2};
-        states = varargin{3};
-        inputs = varargin{4};
-        params = varargin{5};
-        type = varargin{6};
-        out_fun = varargin{7};
-        outputs = varargin{8};
+        [name,fun,states,inputs,params,type,out_fun,outputs] = varargin{:};
     end
 
     % get name from function handle
@@ -390,8 +344,10 @@ function [states,inputs,params,out_fun,outputs,out_isLinear] = ...
 
     % default output equation and number of outputs (= states)
     if isempty(out_fun)
-        out_fun = @(x,u,p) eye(states)*x(1:states);
+        % init out_fun via eval to have numeric values 
+        % within function handle
         outputs = states;
+        out_fun = eval(sprintf('@(x,y,u) eye(%i)*x(1:%i)',outputs,outputs));
         out_isLinear = true(outputs,1);
 
     else

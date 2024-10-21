@@ -24,6 +24,9 @@ function res = testMATPOWER_converter_loadPowerSystemCase_IEEE14()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % set path
 path = [CORAROOT filesep 'converter' filesep 'powerSystem2cora' filesep 'cases'];
@@ -75,37 +78,37 @@ accuracy = 1e-6;
 
 %% perform evaluation
 % check Pd
-resPartial(end+1) = (norm(Pd - Pd_created) <= accuracy);
+assert((norm(Pd - Pd_created) <= accuracy));
 % check Qd
-resPartial(end+1) = (norm(Qd - Qd_created) <= accuracy);
+assert((norm(Qd - Qd_created) <= accuracy));
 % check VM (the previous version only used values for generators)
-resPartial(end+1) = (norm(VM(bus.generator) - VM_created(bus.generator)) <= accuracy);
+assert((norm(VM(bus.generator) - VM_created(bus.generator)) <= accuracy));
 % check Y
-resPartial(end+1) = (norm(full(Y) - full(Y_created)) <= accuracy);
+assert((norm(full(Y) - full(Y_created)) <= accuracy));
 % check genParam.D
-resPartial(end+1) = (norm(genParam.D - genParam_created.D) <= accuracy);
+assert((norm(genParam.D - genParam_created.D) <= accuracy));
 % check genParam.M
-resPartial(end+1) = (norm(genParam.M - genParam_created.M) <= accuracy);
+assert((norm(genParam.M - genParam_created.M) <= accuracy));
 % check genParam.R_d
-resPartial(end+1) = (norm(genParam.R_d - genParam_created.R_d) <= accuracy);
+assert((norm(genParam.R_d - genParam_created.R_d) <= accuracy));
 % check genParam.T_sv
-resPartial(end+1) = (norm(genParam.T_sv - genParam_created.T_sv) <= accuracy);
+assert((norm(genParam.T_sv - genParam_created.T_sv) <= accuracy));
 % check genParam.X_m
-resPartial(end+1) = (norm(genParam.Y_m - genParam_created.Y_m) <= accuracy);
+assert((norm(genParam.Y_m - genParam_created.Y_m) <= accuracy));
 % check genParam.omega_s
-resPartial(end+1) = (norm(genParam.omega_s - genParam_created.omega_s) <= accuracy);
+assert((norm(genParam.omega_s - genParam_created.omega_s) <= accuracy));
 % check bus.load
-resPartial(end+1) = (norm(bus.load - bus_created.load) <= accuracy);
+assert((norm(bus.load - bus_created.load) <= accuracy));
 % check bus.generator
-resPartial(end+1) = (norm(bus.generator - bus_created.generator) <= accuracy);
+assert((norm(bus.generator - bus_created.generator) <= accuracy));
 % check bus.slack
-resPartial(end+1) = (norm(bus.slack - bus_created.slack) <= accuracy);
+assert((norm(bus.slack - bus_created.slack) <= accuracy));
 % check bus.input
-resPartial(end+1) = (norm(bus.input - bus_created.input) <= accuracy);
+assert((norm(bus.input - bus_created.input) <= accuracy));
 % check bus.output
-resPartial(end+1) = (norm(bus.output - bus_created.output) <= accuracy);
+assert((norm(bus.output - bus_created.output) <= accuracy));
 % check bus.fault
-resPartial(end+1) = (norm(bus.fault - bus_created.fault) <= accuracy);
+assert((norm(bus.fault - bus_created.fault) <= accuracy));
 
 end
 

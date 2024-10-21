@@ -21,6 +21,9 @@ function res = testLong_nonlinearSys_reach_time
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 
 % Parameters --------------------------------------------------------------
@@ -67,16 +70,10 @@ simRes = simulateRandom(vehicle,params,simOpt);
 % check if end points are inside the final reachable set
 R = Rset.timeInterval.set{end};
 R = reduce(R,'girard',1);
-R = halfspace(R);
+P = polytope(R);
 
-for i = 1:length(simRes)
-    temp = simRes(i).x{1}(end,:);
-    res = all(R.halfspace.H*temp'<=R.halfspace.K);
-    
-    if ~res
-       break; 
-    end
-end
+simEndPoints = reshape(cell2mat(arrayfun(@(s) s.x{1}(end,:)', simRes, 'UniformOutput', false)),8,[]);
+res = all(contains(P,simEndPoints));
 
 % plot the result
 % counter = 1;

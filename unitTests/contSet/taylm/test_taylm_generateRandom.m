@@ -22,6 +22,9 @@ function res = test_taylm_generateRandom
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % without input arguments
 tay = taylm.generateRandom();
@@ -29,6 +32,6 @@ tay = taylm.generateRandom();
 % dimension given
 n = 2;
 tay = taylm.generateRandom('Dimension',n);
-res = dim(tay) == n;
+assert(dim(tay) == n);
 
 % ------------------------------ END OF CODE ------------------------------

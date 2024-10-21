@@ -25,8 +25,6 @@ function res = test_interval_plot
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 I = interval([1;1;2],[3;4;7]);
 
 try
@@ -35,32 +33,26 @@ try
     
     % one argument: object
     plot(I);
-    resvec(end+1) = true;
     
     % two arguments: object, dimensions
     plot(I,1);
     plot(I,[1,2]);
     plot(I,[2,3]);
-    resvec(end+1) = true;
     
     % three arguments: object, dimensions, linespec
     plot(I,[1,2],'r+');
-    resvec(end+1) = true;
     
     % three arguments: object, dimensions, NVpairs
     plot(I,[1,2],'LineWidth',2);
     plot(I,[1,2],'Color',[.6 .6 .6],'LineWidth',2);
     plot(I,[1,2],'EdgeColor','k','FaceColor',[.8 .8 .8]);
-    resvec(end+1) = true;
     
     % four arguments: object, dimensions, linespec, NVpairs
     plot(I,[1,2],'r','LineWidth',2);
     plot(I,[1,2],'r','LineWidth',2,'EdgeColor',[.6 .6 .6]);
-    resvec(end+1) = true;
 
     % plot 3d
     plot(I,[1,2,3]);
-    resvec(end+1) = true;
 
     close;
 
@@ -71,19 +63,19 @@ try
     
     % plot first set
     plot(I,[1,2]);
-    V = [1 3 3 1 1; 1 1 4 4 1];
+    V = [1 1 3 3 1; 1 4 4 1 1];
     % check points
-    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true);
+    assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
     % test color
-    resvec(end+1) = isequal(colorOrder(1,:), ax.Children(1).Color);
+    assert(isequal(colorOrder(1,:), ax.Children(1).Color));
 
     % plot second set
     plot(I,[1,3]);
-    V = [1 3 3 1 1; 2 2 7 7 2];
+    V = [1 1 3 3 1; 2 7 7 2 2];
     % check points
-    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true);
+    assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
     % test color
-    resvec(end+1) = isequal(colorOrder(2,:), ax.Children(1).Color);
+    assert(isequal(colorOrder(2,:), ax.Children(1).Color));
 
     % plot 3d set
     plot(I,[1,2,3]);
@@ -93,9 +85,9 @@ try
      2.000, 2.000, 2.000, 2.000, 2.000 ; ...
     ];
     % check points (only first facet)
-    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData;ax.Children(1).ZData],1e-4,'equal',true);
+    assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData;ax.Children(1).ZData],1e-4,'equal',true));
     % test color
-    resvec(end+1) = isequal(colorOrder(3,:), ax.Children(1).Color);
+    assert(isequal(colorOrder(3,:), ax.Children(1).Color));
     
     % close figure
     close;
@@ -113,24 +105,30 @@ try
     plot(I);
 
     % check points
-    V = [1 2 2 1 1; -2 -2 3 3 -2];
-    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true);
+    V = [1 1 2 2 1; -2 3 3 -2 -2];
+    assert(compareMatrices(V, [ax.Children(1).XData';ax.Children(1).YData'],1e-4,'equal',true));
 
     % plot interval with some inf bounds
     I = interval([1.5;-Inf],[Inf;2]);
     plot(I);
 
     % check points
-    V = [1.5 2 2 1.5 1.5; -2 -2 2 2 -2];
-    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true);
+    V = [1.5 1.5 2 2 1.5; -2 2 2 -2 -2];
+    assert(compareMatrices(V, [ax.Children(1).XData';ax.Children(1).YData'],1e-4,'equal',true));
 
     % plot interval outside of xlim
     I = interval([-Inf;4],[2;Inf]);
     plot(I);
 
     % check points
-    V = [1 1 2 2; 4 4 4 4];
-    resvec(end+1) = compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true);
+    V = [1 2 1; 4 4 4];
+    assert(compareMatrices(V, [ax.Children(1).XData';ax.Children(1).YData'],1e-4,'equal',true));
+
+    % check single point
+    p = [1.5;1];
+    I = interval(p);
+    plot(I);
+    assert(compareMatrices(p, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
 
     % close figure
     close;
@@ -138,10 +136,10 @@ try
 
 catch ME
     close;
-    resvec(end+1) = false;
+    rethrow(ME)
 end
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -58,10 +58,7 @@ for i=1:nrTests
         sF_P = supportFunc(P,l);
 
         % compare
-        if ~withinTol(sF_Z,sF_P,tol)
-            res = false;
-            return
-        end
+        assertLoop(withinTol(sF_Z,sF_P,tol),i)
     end
 
     % instantiate random polytope
@@ -79,10 +76,7 @@ for i=1:nrTests
         sF = supportFunc(P,l);
 
         % compare
-        if ~withinTol(sF,P.b(j),tol)
-            res = false;
-            return
-        end
+        assertLoop(withinTol(sF,P.b(j),tol),i)
     end
 
 
@@ -98,12 +92,8 @@ for i=1:nrTests
     b = [P.b; -val];
     P_ = polytope(A,b);
 
-    if ~withinTol(supportFunc(P_,dir,'upper'),val) ...
-            || ~withinTol(supportFunc(P_,dir,'lower'),val)
-        res = false;
-        return
-    end
-    
+    assertLoop(withinTol(supportFunc(P_,dir,'upper'),val),i)
+    assertLoop(withinTol(supportFunc(P_,dir,'lower'),val),i)    
 
 end
 

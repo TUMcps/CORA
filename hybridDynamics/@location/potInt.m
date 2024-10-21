@@ -1,14 +1,14 @@
-function [guards,setIndices,setType] = potInt(loc,R,options)
+function [guards,setIndices,setType] = potInt(loc,R,finalLoc)
 % potInt - determines which reachable sets potentially intersect with which
 %    guard sets
 %
 % Syntax:
-%    [guards,setIndices,setType] = potInt(loc,R,options)
+%    [guards,setIndices,setType] = potInt(loc,R,finalLoc)
 %
 % Inputs:
 %    loc - location object
 %    R - reachSet object storing reachable sets of location/reach
-%    options - struct containing the algorithm settings
+%    finalLoc - final location of the automaton
 %
 % Outputs:
 %    guards - guards that are potentially intersected
@@ -65,13 +65,13 @@ for i = 1:nrTrans
     target = loc.transition(i).target;
     
     % only check if target location is not one of the terminal locations
-    if ~all(target == options.finalLoc)
+    if ~all(target == finalLoc)
     
         % loop over all reachable sets
         for j = 1:nrSets
 
             % check if reachable set intersects the guard set
-            if isIntersecting_(guardSet,Rset{j},'approx')
+            if isIntersecting_(guardSet,Rset{j},'approx',1e-8)
                 guards(counter) = i;
                 setIndices(counter) = j;
                 counter = counter + 1;
@@ -105,7 +105,8 @@ if ~isempty(R.timeInterval) ...
         && ( (length(guards) == 1 && length(setIndices) == 1) ...
         || ( length(guards) == 2 && guards(1) == guards(2) ...
         && length(setIndices) == 2 && diff(setIndices) == 1 ) ) ...
-        && isa(loc.transition(guards(1)).guard,'conHyperplane') ...
+        && isa(loc.transition(guards(1)).guard,'polytope') ...
+        && representsa_(loc.transition(guards(1)).guard,'conHyperplane',1e-12) ...
         && ( isa(Rset{setIndices(1)},'zonotope') || isa(Rset{setIndices(1)},'zonoBundle') ...
         || isa(Rset{setIndices(1)},'conZonotope') )
     % check containment of time-point solution

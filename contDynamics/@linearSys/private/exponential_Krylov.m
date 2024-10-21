@@ -1,13 +1,13 @@
-function [R,R_Krylov] = exponential_Krylov(obj,R,options)
+function [R,R_Krylov] = exponential_Krylov(linsys,R,options)
 % exponential_Krylov - computes the overapproximation of the exponential of 
 %    a system matrix up to a certain accuracy using a Krylov subspace
 %
 % Syntax:
-%    [R,R_Krylov] = exponential_Krylov(obj,options)
+%    [R,R_Krylov] = exponential_Krylov(linsys,R,options)
 %
 % Inputs:
-%    obj - linearSys object
-%    linRed - reduced linear system
+%    linsys - linearSys object
+%    R - ?
 %    options - reachability options
 %
 % Outputs:
@@ -21,7 +21,7 @@ function [R,R_Krylov] = exponential_Krylov(obj,R,options)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ---
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       03-March-2017 
@@ -33,8 +33,8 @@ function [R,R_Krylov] = exponential_Krylov(obj,R,options)
 % Multiply previous reachable set with exponential matrix
 
 % obtain center and generators of previous reachable set
-c = sparse(center(R));
-G = sparse(generators(R));
+c = sparse(R.c);
+G = sparse(R.G);
 
 % check if center is zero
 c_norm = norm(c);
@@ -42,7 +42,7 @@ if c_norm == 0
     c_new = c;
 else
     %Arnoldi
-    [V_c,H_c] = arnoldi(obj,c,options.redDim);
+    [V_c,H_c] = arnoldi(linsys,c,options.redDim);
     
     %Compute new center
     expMatrix = expm(H_c*options.timeStep);
@@ -52,7 +52,7 @@ end
 
 
 % preallocation
-nrOfGens = length(G(1,:));
+nrOfGens = size(G,2);
 g_norm = zeros(nrOfGens,1);
 V_g = cell(nrOfGens,1);
 H_g = cell(nrOfGens,1);
@@ -66,7 +66,7 @@ if nrOfGens>0
             G_new(:,iGen) = G(:,iGen);
         else
             %Arnoldi
-            [V_g{iGen},H_g{iGen}] = arnoldi(obj,G(:,iGen),options.redDim);
+            [V_g{iGen},H_g{iGen}] = arnoldi(linsys,G(:,iGen),options.redDim);
 
             %Compute new generator
             expMatrix = expm(H_g{iGen}*options.timeStep);
@@ -80,17 +80,17 @@ end
 
 if options.krylovError > 2*eps
     % Krylov error computation
-    error_normalized = obj.krylov.errorBound_normalized;
-    error = norm(Rinit)*error_normalized;
-    Krylov_interval = interval(-1,1)*ones(obj.dim,1)*error;
+    error_normalized = linsys.krylov.errorBound_normalized;
+    err = norm(Rinit)*error_normalized;
+    Krylov_interval = interval(-1,1)*ones(linsys.nrOfStates,1)*err;
     R_Krylov = zonotope(Krylov_interval);
 
     % initial-state-solution zonotope
-    R = zonotope([c_new,G_new,error*eye(obj.dim)]);
+    R = zonotope(c_new,G_new,err*eye(linsys.nrOfStates));
     
 else
     R_Krylov = 0;
-    R = zonotope([c_new,G_new]);
+    R = zonotope(c_new,G_new);
 end
 
 % ------------------------------ END OF CODE ------------------------------

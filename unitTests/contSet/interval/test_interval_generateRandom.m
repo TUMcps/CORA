@@ -25,8 +25,6 @@ function res = test_interval_generateRandom
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % empty call
 I = interval.generateRandom();
 
@@ -38,45 +36,35 @@ r_nd = [2;3;1];
 
 % only dimension
 I = interval.generateRandom('Dimension',n);
-resvec(end+1) = dim(I) == n;
+assert(dim(I) == n);
 
 % only center
 I = interval.generateRandom('Center',c);
-resvec(end+1) = all(withinTol(center(I),c));
+assert(all(withinTol(center(I),c)));
 
 % only max radius
 I = interval.generateRandom('MaxRadius',r);
-resvec(end+1) = r >= max(rad(I));
+assert(r >= max(rad(I)));
 
 % different max radius per dimension
 I = interval.generateRandom('MaxRadius',r_nd);
-resvec(end+1) = all(r_nd >= rad(I));
+assert(all(r_nd >= rad(I)));
 
 % dimension and center
 I = interval.generateRandom('Dimension',n,'Center',c);
-resvec(end+1) = dim(I) == n && all(withinTol(center(I),c));
+assert(dim(I) == n && all(withinTol(center(I),c)));
 
 % dimension, center, and max radius
 I = interval.generateRandom('Dimension',n,'Center',c,'MaxRadius',r);
-resvec(end+1) = dim(I) == n && all(withinTol(center(I),c)) && r >= max(rad(I));
+assert(dim(I) == n && all(withinTol(center(I),c)) && r >= max(rad(I)));
 
 % dimension and center don't match
-if CHECKS_ENABLED
-
-resvec(end+1) = true;
-try
-    I = interval.generateRandom('Dimension',2,'Center',ones(3,1));
-    resvec(end+1) = false; % <- should not get to here
-end
+assertThrowsAs(@interval.generateRandom,'CORA:wrongValue',...
+    'Dimension',2,'Center',ones(3,1));
 
 % dimension and center don't match
-resvec(end+1) = true;
-try
-    I = interval.generateRandom('Dimension',3,'Center',ones(3,2));
-    resvec(end+1) = false; % <- should not get to here
-end
-
-end
+assertThrowsAs(@interval.generateRandom,'CORA:wrongValue',...
+    'Dimension',3,'Center',ones(3,2));
 
 % test multi-dimensional --------------------------------------------------
 
@@ -87,30 +75,39 @@ r_nd = [1 0.5 2; 2 5 2];
 
 % only dimension
 I = interval.generateRandom('Dimension',n);
-resvec(end+1) = all(dim(I) == n);
+assert(all(dim(I) == n));
 
 % only center
 I = interval.generateRandom('Center',c);
-resvec(end+1) = all(withinTol(center(I),c),'all');
+assert(all(withinTol(center(I),c),'all'));
 
 % only max radius
 I = interval.generateRandom('MaxRadius',r);
-resvec(end+1) = r >= max(rad(I),[],'all');
+assert(r >= max(rad(I),[],'all'));
 
 % different max radius per dimension
 I = interval.generateRandom('MaxRadius',r_nd);
-resvec(end+1) = all(r_nd >= rad(I),'all');
+assert(all(r_nd >= rad(I),'all'));
 
 % dimension and center
 I = interval.generateRandom('Dimension',n,'Center',c);
-resvec(end+1) = all(dim(I) == n) && all(withinTol(center(I),c),'all');
+assert(all(dim(I) == n) && all(withinTol(center(I),c),'all'));
 
 % dimension, center, and max radius
 I = interval.generateRandom('Dimension',n,'Center',c,'MaxRadius',r);
-resvec(end+1) = all(dim(I) == n) && all(withinTol(center(I),c),'all') && r >= max(rad(I),[],'all');
+assert(all(dim(I) == n) && all(withinTol(center(I),c),'all') && r >= max(rad(I),[],'all'));
 
+% n-d arrays ---
+
+dims = [2,2,3];
+I = interval.generateRandom('Dimension',dims);
+assert(isequal(dim(I),dims))
+
+dims = [2,1,3,4];
+I = interval.generateRandom('Dimension',dims);
+assert(isequal(dim(I),dims))
 
 % unify results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

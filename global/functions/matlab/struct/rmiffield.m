@@ -2,11 +2,11 @@ function list = rmiffield(list,field)
 % rmiffield - removes a field from a struct if exists
 %
 % Syntax:
-%    str = rmiffield(list,field)
+%    list = rmiffield(list,field)
 %
 % Inputs:
 %    list - struct
-%    field - field name
+%    field - field name (cell of char arrays, char array)
 %
 % Outputs:
 %    list - struct
@@ -17,15 +17,25 @@ function list = rmiffield(list,field)
 %
 % See also: none
 
-% Authors:       Tobias Ladner
+% Authors:       Tobias Ladner, Mark Wetzlinger
 % Written:       17-October-2023
-% Last update:   ---
+% Last update:   30-August-2024 (MW, support cell-array of fields)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isfield(list,field)
-    list = rmfield(list,field);
+if iscell(field)
+    % cell array of fields
+    for i=1:length(field)
+        if isfield(list,field{i})
+            list = rmfield(list,field{i});
+        end 
+    end
+else
+    % single field
+    if isfield(list,field)
+        list = rmfield(list,field);
+    end
 end
 
 % ------------------------------ END OF CODE ------------------------------

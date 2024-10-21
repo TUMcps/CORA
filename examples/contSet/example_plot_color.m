@@ -79,15 +79,15 @@ end
 
 % or explicitly specify the EdgeColor according to colororder
 for i=1:3
-    plot(Z, [1 2], 'EdgeColor', 'next', ...
+    plot(Z, [1 2], 'EdgeColor', nextcolor, ...
         'DisplayName', 'EdgeColor')
     Z = M * Z;
 end
 
 
-% or fill with 'FaceColor' and 'next'
+% or fill with 'FaceColor' and nextcolor()
 for i=1:3
-    plot(Z, [1 2], 'FaceColor', 'next', ...
+    plot(Z, [1 2], 'FaceColor', nextcolor, ...
         'DisplayName', 'FaceColor')
     Z = M * Z;
 end

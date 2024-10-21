@@ -19,12 +19,12 @@ function res = testLong_stl_modelCheckReachSet_oscillator()
 
 % Authors:       Benedikt Seidl
 % Written:       16-May-2023
-% Last update:   ---
+% Last update:   21-February-2024 (FL, ad incremental algorithm and stop early if one algorithm fails)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-alg = {'signals'}; % 'rtl' and 'sampledTime' are too slow
+alg = {'signals','incremental'}; % 'rtl' and 'sampledTime' are too slow
 
 A = [-0.05 -7; 7 -0.05];
 B = 1;
@@ -41,8 +41,6 @@ R = reach(sys,params,options);
 
 x = stl('x',2);
 
-res = true;
-
 % some formulas that must hold
 
 pos{1} = globally(implies(x(1) < -5, finally(x(1) > 5, ...
@@ -52,7 +50,7 @@ pos{2} = finally(globally(x(1) < 10, interval(0,0.5)),interval(0,9));
 
 for i = 1:length(pos)
     for j = 1:length(alg)
-        res = res && modelChecking(R,pos{i},alg{j});
+        assertLoop(modelChecking(R,pos{i},alg{j}),i,j)
     end
 end
 
@@ -64,9 +62,11 @@ neg{3} = finally(globally(x(1) > 0, interval(0,1)), interval(0,9));
 
 for i = 1:length(neg)
     for j = 1:length(alg)
-        res = res && ~modelChecking(R,neg{i},alg{j});
+        assertLoop(~modelChecking(R,neg{i},alg{j}),i,j)
     end
 end
+
+res = true;
 
 end
 

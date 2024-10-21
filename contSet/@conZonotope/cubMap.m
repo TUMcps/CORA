@@ -64,11 +64,7 @@ function res = cubMap(cZ,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
     % check number of input arguments
-    if nargin < 2
-        throw(CORAerror('CORA:notEnoughInputArgs',2));
-    elseif nargin > 5
-        throw(CORAerror('CORA:tooManyInputArgs',5));
-    end
+    narginchk(2,5);
 
     % cubic multiplication or mixed cubic multiplication
     if nargin == 4 || nargin == 5

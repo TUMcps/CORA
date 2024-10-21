@@ -3,11 +3,12 @@ function zB = mtimes(factor1,factor2)
 %    interval matrix with a zonotope bundle (see Prop. 1 in [1])
 %
 % Syntax:
+%    zB = factor1 * factor2
 %    zB = mtimes(factor1,factor2)
 %
 % Inputs:
-%    factor1 - zonoBundle object or matrix set or matrix
-%    factor2 - zonoBundle object or matrix set or matrix 
+%    factor1 - zonoBundle object, numeric matrix or scalar
+%    factor2 - zonoBundle object, numeric scalar
 %
 % Outputs:
 %    zB - zonoBundle object
@@ -22,43 +23,44 @@ function zB = mtimes(factor1,factor2)
 %
 % See also: zonotope/mtimes
 
-% Authors:       Matthias Althoff
+% Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       09-November-2010
 % Last update:   ---
-% Last revision: ---
+% Last revision: 04-October-2024 (MW, remove InferiorClasses from zonootpe)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% determine zonotope bundle object
-[zB,factor] = findClassArg(factor1,factor2,'zonoBundle');
-
 try
 
-% calculate multiplication for each zonotope
-for i=1:zB.parallelSets
-    zB.Z{i} = factor*zB.Z{i};
-end
-
-catch ME
-    % note: error has already occured, so the operations below don't have
-    % to be efficient
-
-    % already know what's going on...
-    if startsWith(ME.identifier,'CORA')
-        rethrow(ME);
-    end
-
-    % check for empty sets
-    if representsa_(zB,'emptySet',eps)
+    % matrix/scalar * zonoBundle
+    if isnumeric(factor1)
+        % calculate multiplication for each zonotope, see [1]
+        list = cell(factor2.parallelSets,1);
+        for i=1:factor2.parallelSets
+            list{i} = factor1*factor2.Z{i};
+        end
+        zB = zonoBundle(list);
         return
     end
 
+    % zonoBundle * scalar
+    % (note that zonoBundle * matrix is not supported)
+    if isnumeric(factor2) && isscalar(factor2)
+        % calculate multiplication for each zonotope, see [1]
+        list = cell(factor1.parallelSets,1);
+        for i=1:factor1.parallelSets
+            list{i} = factor1.Z{i}*factor2;
+        end
+        zB = zonoBundle(list);
+        return
+    end
+
+catch ME
     % check whether different dimension of ambient space
     equalDimCheck(factor1,factor2);
-
-    % other error...
     rethrow(ME);
-
 end
+
+throw(CORAerror('CORA:noops',factor1,factor2));
 
 % ------------------------------ END OF CODE ------------------------------

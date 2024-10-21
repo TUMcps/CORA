@@ -37,10 +37,7 @@ V = vertices(cZ);
 V_proj = projVertices(cZ);
 
 % check vertices
-if ~compareMatrices(V,V_proj,1e-14)
-    res = false;
-end
-
+assert(compareMatrices(V,V_proj,1e-14))
 
 % higher-dimensional constrained zonotope
 Z = [0 1.5 -1.5 0.5;0 1 0.5 -1; 1 0 -0.5 -1];
@@ -58,9 +55,7 @@ for i=1:length(dims)
     V_proj = projVertices(cZ,dims{i});
 
     % check vertices
-    if ~compareMatrices(V_proj,V(dims{i},:),1e-14,'subset')
-        res = false;
-    end
+    assertLoop(compareMatrices(V_proj,V(dims{i},:),1e-6,'subset'),i)
 end
 
 
@@ -81,9 +76,8 @@ V = vertices(cZ_);
 V_proj = projVertices(cZ_);
 
 % check vertices
-if ~compareMatrices(V_proj,V,1e-14,'subset')
-    res = false;
-end
+assert(compareMatrices(V_proj,V,1e-14,'subset'),i)
 
+end
 
 % ------------------------------ END OF CODE ------------------------------

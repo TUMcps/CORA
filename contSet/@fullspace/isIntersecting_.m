@@ -1,17 +1,17 @@
-function res = isIntersecting_(fs,S,varargin)
+function res = isIntersecting_(fs,S,type,tol,varargin)
 % isIntersecting_ - checks if the dimension of the affine hull of a
 %    full-dimensional space is equal to the dimension of its ambient space
 %    case R^0: only point in vector space is 0 (not representable in
 %    MATLAB), so isIntersecting would always return true
 %
 % Syntax:
-%    res = isIntersecting_(fs,S)
-%    res = isIntersecting_(fs,S,type)
+%    res = isIntersecting_(fs,S,type,tol)
 %
 % Inputs:
 %    fs - fullspace object
 %    S - contSet object or numerical vector
-%    type - (optional) type of check
+%    type - type of check
+%    tol - tolerance
 %
 % Outputs:
 %    res - true/false
@@ -34,24 +34,32 @@ function res = isIntersecting_(fs,S,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-[fs,S] = findClassArg(fs,S,'fullspace');
+% ensure that numeric is second input argument
+[fs,S] = reorderNumeric(fs,S);
 
 if fs.dimension == 0
-    throw(CORAerror('CORA:notSupported','Intersection check of R^0 not supported'));
+    throw(CORAerror('CORA:notSupported',...
+        'Intersection check of R^0 not supported'));
 end
 
-if isa(S,'emptySet')
-    % intersection with empty set is empty
-    res = false;
-
-elseif isa(S,'contSet')
-    % other set must not be empty
-    res = ~representsa_(S,'emptySet',eps);
-
-elseif isnumeric(S)
-    % all singletons intersect the full space
+% all singletons intersect the full space
+if isnumeric(S)
     res = true;
-
+    return
 end
+
+% intersection with empty set is empty
+if isa(S,'emptySet')
+    res = false;
+    return
+end
+
+% other set must not be empty
+if isa(S,'contSet')
+    res = ~representsa_(S,'emptySet',tol);
+    return
+end
+
+throw(CORAerror('CORA:noops',fs,S));
 
 % ------------------------------ END OF CODE ------------------------------

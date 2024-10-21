@@ -1,14 +1,14 @@
-function res = isIntersecting_(I,S,type,varargin)
+function res = isIntersecting_(I,S,type,tol,varargin)
 % isIntersecting_ - determines if an interval intersects a set
 %
 % Syntax:
-%    res = isIntersecting_(I,S)
-%    res = isIntersecting_(I,S,type)
+%    res = isIntersecting_(I,S,type,tol)
 %
 % Inputs:
 %    I - interval object
 %    S - contSet object
 %    type - type of check ('exact' or 'approx')
+%    tol - tolerance
 %
 % Outputs:
 %    res - true/false
@@ -45,76 +45,70 @@ function res = isIntersecting_(I,S,type,varargin)
 % Last revision: 27-March-2023 (MW, rename isIntersecting_)
 
 % ------------------------------ BEGIN CODE -------------------------------
+
+% ensure that numeric is second input argument
+[I,S] = reorderNumeric(I,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < I.precedence
+    res = isIntersecting_(S,I,type,tol);
+    return
+end
+
+% numeric case: check containment
+if isnumeric(S)
+    res = contains_(I,S,type,tol);
+    return
+end
+
+% sets must not be empty
+if representsa_(I,'emptySet',0) || representsa_(S,'emptySet',0)
+    res = false;
+    return
+end
+
+% interval and interval intersection
+if isa(S,'interval')
     
-    if representsa_(I,'emptySet',0)
-        res = false;
-        return
-    end
-
-    % interval and interval intersection
-    if isa(S,'interval')
-
-        if representsa_(S,'emptySet',0)
+    % get object properties
+    sup1 = I.sup; inf1 = I.inf;
+    sup2 = S.sup; inf2 = S.inf;
+    
+    % loop over all dimensions separately
+    for i = 1:length(I)
+        if ~aux_isIntersecting1D(inf1(i),sup1(i),inf2(i),sup2(i),tol)
             res = false;
             return
         end
-        
-        res = true;
-        
-        % get object properties
-        sup1 = I.sup;
-        inf1 = I.inf;
-        sup2 = S.sup;
-        inf2 = S.inf;
-        
-        % loop over all dimensions
-        for i = 1:length(I)
-           if ~aux_isIntersecting1D(inf1(i),sup1(i),inf2(i),sup2(i))
-              res = false;
-              return
-           end
-        end
-        
-    % interval with other set intersection
-    elseif isa(S,'halfspace') || isa(S,'conHyperplane') || ...
-           isa(S,'polytope') || isa(S,'ellipsoid')
-        % check in their function
-        res = isIntersecting_(S,I,type);
-
-    % interval with numeric
-    elseif isnumeric(S)
-        % call contains
-        res = contains_(I,S,type,1e-8);
-        
-    else
-        
-        % exact or over-approximative algorithm
-        if strcmp(type,'exact')           
-            res = isIntersecting_(S,I,type);
-        else
-            res = isIntersecting_(polytope(I),S,type);
-        end
     end
+    res = true;
+    return
+end
+
+throw(CORAerror('CORA:noops',I,S));
+
+% if strcmp(type,'approx')
+%     res = isIntersecting_(polytope(I),S,type,tol);
+% end
     
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function res = aux_isIntersecting1D(inf1,sup1,inf2,sup2)
+function res = aux_isIntersecting1D(inf1,sup1,inf2,sup2,tol)
 % check if two one-dimensional intervals intersect
     res = false;
 
-    if inf1 <= inf2
-        if inf2 <= sup1
+    if inf1 <= inf2 || withinTol(inf1,inf2,tol)
+        if inf2 <= sup1 || withinTol(inf2,sup1,tol)
             res = true;
         end
         
     else % inf2 < inf1
-        if inf1 <= sup2
+        if inf1 <= sup2 || withinTol(inf1,sup2,tol)
             res = true;
         end
-        
     end
 
 end

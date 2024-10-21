@@ -65,8 +65,11 @@ switch type
             ['Comparison of conPolyZono to ' type ' not supported.']));
 
     case 'point'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
+        % Todo: check constraints
+        res = isempty(cPZ.G) && isempty(cPZ.GI);
+        if res
+            S = cPZ.c;
+        end
 
     case 'capsule'
         throw(CORAerror('CORA:notSupported',...

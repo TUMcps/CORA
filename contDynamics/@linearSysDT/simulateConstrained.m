@@ -1,14 +1,14 @@
-function [t,x,ind,y] = simulateConstrained(obj,params)
+function [t,x,ind,y] = simulateConstrained(linsysDT,params,options)
 % simulateConstrained - simulates a linear discrete-time system such that
-% it stays within the provided reachable set; this reachable set is
-% typically a backwards minmax reachable set
+%    it stays within the provided reachable set; this reachable set is
+%    typically a backwards minmax reachable set
 %
 % Syntax:
-%    [t,x] = simulateConstrained(obj,params)
-%    [t,x,ind,y] = simulateConstrained(obj,params)
+%    [t,x] = simulateConstrained(linsysDT,params,options)
+%    [t,x,ind,y] = simulateConstrained(linsysDT,params,options)
 %
 % Inputs:
-%    obj - linearSysDT object
+%    linsysDT - linearSysDT object
 %    params - struct containing the parameters for the simulation
 %       .tStart: initial time
 %       .tFinal: final time
@@ -16,7 +16,8 @@ function [t,x,ind,y] = simulateConstrained(obj,params)
 %       .U: input set
 %       .W: disturbance set
 %       .V: sensor noise set 
-%    R - reachSet object
+%    options - settings
+%       .R - reachSet object
 %
 % Outputs:
 %    t - time vector
@@ -28,13 +29,13 @@ function [t,x,ind,y] = simulateConstrained(obj,params)
 %    A = [1 2; -3 1];
 %    B = [2;1];
 %    dt = 1;
-%    sys = linearSysDT(A,B,dt);
+%    linsysDT = linearSysDT(A,B,dt);
 %
 %    params.x0 = [0;0];
 %    params.tFinal = 4;
 %    params.u = [0.1 0.05 0.05 -0.1];
 %
-%    [t,x] = simulate(sys,params);
+%    [t,x] = simulate(linsysDT,params);
 %
 %    plot(x(:,1),x(:,2),'.k','MarkerSize',20);
 %
@@ -61,7 +62,7 @@ ind = [];
 y = [];
 
 % compute time vector and number of steps
-t = (params.tStart:obj.dt:params.tFinal)';
+t = (params.tStart:linsysDT.dt:params.tFinal)';
 steps = length(t)-1;
 
 % check end of time vector
@@ -72,15 +73,15 @@ end
 
 
 % initial state
-x = zeros(steps+1,obj.dim);
+x = zeros(steps+1,linsysDT.nrOfStates);
 x(1,:) = params.x0';
 
 % computation of output set desired / possible
-comp_y = nargout == 4 && ~isempty(obj.C);
+comp_y = nargout == 4 && ~isempty(linsysDT.C);
 
 % init output
 if comp_y
-    y = zeros(steps+1,obj.nrOfOutputs);
+    y = zeros(steps+1,linsysDT.nrOfOutputs);
 end
 
 % loop over all time steps
@@ -90,13 +91,13 @@ for i = 1:steps
     w = randPoint(params.W);
     
     % obtain current reachable set (backwards in time)
-    R = params.R.timePoint.set{end-i};
+    R = options.R.timePoint.set{end-i};
     
     % compute u using linear programming
-    u = aux_linProg_sol(obj, params, R, x(i,:)', w);
+    u = aux_linProg_sol(linsysDT, params, R, x(i,:)', w);
     
     % compute successor state
-    temp = obj.A * x(i,:)' + obj.B * u + obj.c + w;
+    temp = linsysDT.A * x(i,:)' + linsysDT.B * u + linsysDT.c + w;
     x(i+1,:) = temp';
 
     % compute output
@@ -104,7 +105,7 @@ for i = 1:steps
         % sample v
         v = randPoint(params.V);
         % compute output
-        y(i,:) = obj.C * x(i,:)' + obj.D * u + obj.k + v;
+        y(i,:) = linsysDT.C * x(i,:)' + linsysDT.D * u + linsysDT.k + v;
     end
     
 end
@@ -116,7 +117,7 @@ if comp_y
     % sample v
     v = randPoint(params.V);
     % compute output
-    y(i+1,:) = obj.C * x(i+1,:)' + obj.D * u + obj.k + v;
+    y(i+1,:) = linsysDT.C * x(i+1,:)' + linsysDT.D * u + linsysDT.k + v;
 end
 
 end
@@ -124,9 +125,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function u = aux_linProg_sol(obj, params, Z, x, w)
-% obj: system object
-% params: system paramters
+function u = aux_linProg_sol(linsysDT, params, Z, x, w)
 % Z: constraint in form of a zonotope
 % constraint of zonotopic reachable set: x' = c + G \beta, \beta_i \in [-1,1]
 % next state: x' = Ax + Bu + w + k, u = c_u + G_u, \beta_{u,i} \in [-1,1]
@@ -168,10 +167,10 @@ A = [I; ...
 % b
 b = ones(2*(n_g + n_m),1); 
 % A_eq
-A_eq = [obj.B*G_u, -G];
+A_eq = [linsysDT.B*G_u, -G];
 
 % b_eq
-b_eq = -obj.A*x - obj.B*c_u - w - obj.k + c;
+b_eq = -linsysDT.A*x - linsysDT.B*c_u - w - linsysDT.k + c;
 
 % f minimizes \beta_u
 f = [ones(n_m,1); zeros(n_g,1)];

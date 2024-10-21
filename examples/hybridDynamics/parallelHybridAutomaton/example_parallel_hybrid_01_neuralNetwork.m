@@ -40,7 +40,7 @@ inputBinds{2} = [1,1;3 1];     % neuron 1 -> neuron 2, neuron 3 -> neuron 2
 inputBinds{3} = [1,1;0,1];     % neuron 1 -> neuron 3, input 1 -> neuron 3
 
 % parallel hybrid automaton
-pHA = parallelHybridAutomaton(comp,inputBinds);
+pHA = parallelHybridAutomaton('neuralNetwork',comp,inputBinds);
 
 
 % Parameter ---------------------------------------------------------------

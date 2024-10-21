@@ -43,6 +43,8 @@ function C = enclose(C,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,3);
+
 % check input arguments
 if length(varargin) == 1
     C2 = varargin{1};
@@ -58,8 +60,6 @@ elseif length(varargin) == 2
                     {M,'att','numeric',{'size',[dim(C),dim(Cplus)]}}});
     C2 = M*Cplus;
     
-else
-    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
 % compute enclosure using convex hull

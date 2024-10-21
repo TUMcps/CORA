@@ -79,35 +79,24 @@ for i=1:nrOfTests
 
     % checks
     % no generator matrix (no A,b) -> no change
-    if size(cZ_noG_.G,2) ~= 0
-        res = false; break;
-    end
+    assertLoop(size(cZ_noG_.G,2) == 0,i)
+
     % full G, no A,b -> no change
-    if size(cZ_noAb_.G,2) ~= nrGens
-        res = false; break;
-    end
+    assertLoop(size(cZ_noAb_.G,2) == nrGens,i)
+
     % full G,A,b -> no change
-    if size(cZ_.G,2) ~= nrGens
-        res = false; break;
-    end
-    if size(cZ_.A,1) ~= nrConstr
-        res = false; break;
-    end
+    assertLoop(size(cZ_.G,2) == nrGens,i)
+    assertLoop(size(cZ_.A,1) == nrConstr,i)
+
     % G with zeros, no A,b -> less gens
-    if size(cZ_Gzeros_noAb_.G,2) ~= nrGens - nrGensRemoved
-        res = false; break;
-    end
+    assertLoop(size(cZ_Gzeros_noAb_.G,2) == nrGens - nrGensRemoved,i)
+
     % full G, A,b with zeros -> less constr
-    if size(cZ_Abzeros_.G,2) ~= nrGens
-        res = false; break;
-    end
-    if size(cZ_Abzeros_.A,1) ~= nrConstr - nrConstrRemoved
-        res = false; break;
-    end
+    assertLoop(size(cZ_Abzeros_.G,2) == nrGens,i)
+    assertLoop(size(cZ_Abzeros_.A,1) == nrConstr - nrConstrRemoved,i)
+
     % G,A,b with zeros -> less gens, less constr
-    if size(cZ_GAbzeros_.A,1) ~= nrConstr - nrConstrRemoved
-        res = false; break;
-    end
+    assertLoop(size(cZ_GAbzeros_.A,1) == nrConstr - nrConstrRemoved,i)
 
 end
 

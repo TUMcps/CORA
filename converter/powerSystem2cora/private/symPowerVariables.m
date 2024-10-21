@@ -42,7 +42,7 @@ function [powVariables, NrOf] = symPowerVariables(scenario)
 
 % Authors:       Matthias Althoff
 % Written:       14-April-2022
-% Last update:   ---
+% Last update:   29-September-2024 (TL, added NoB.input>0 checks)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -109,7 +109,9 @@ end
 
 %% set voltages for load buses
 V(NoB.generator + 1 : NoB.total, 1) = y(NoB.generator + 1 : NoB.total, 1); %internal voltages
-V(NoB.total + 1 : NoB.total + NoB.input, 1) = u(NoB.generator + 1 : NoB.generator + NoB.input, 1); %external voltages
+if NoB.input > 0
+    V(NoB.total + 1 : NoB.total + NoB.input, 1) = u(NoB.generator + 1 : NoB.generator + NoB.input, 1); %external voltages
+end
 
 %% set phase angles
 % subsystem contains slack bus
@@ -120,7 +122,9 @@ if ~isempty(bus.slack)
 else
     Theta(1:NoB.total, 1) = y(NoB.total + 1 : 2*NoB.total, 1); %internal phases
 end
-Theta(NoB.total + 1 : NoB.total + NoB.input, 1) = u(NoB.generator + NoB.input + 1 : NoB.generator + 2*NoB.input, 1); %external phases
+if NoB.input > 0
+    Theta(NoB.total + 1 : NoB.total + NoB.input, 1) = u(NoB.generator + NoB.input + 1 : NoB.generator + 2*NoB.input, 1); %external phases
+end
 
 %% set dynamic state variables
 if NoB.generator>0

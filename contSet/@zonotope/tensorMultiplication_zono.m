@@ -30,7 +30,7 @@ function Zres = tensorMultiplication_zono(Z,M,options)
 Zres = tensorMultiplication(Z,M.center,options);
 
 %add results from generators
-for i = 1:M.gens
+for i = 1:M.numgens
     Zres = Zres + tensorMultiplication(Z,M.generator{i},options);
 end
 

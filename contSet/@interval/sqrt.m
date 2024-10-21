@@ -54,7 +54,7 @@ I.inf(ind3) = NaN;
 I.sup(ind3) = NaN;
 
 % return error if NaN occures
-if any(any(isnan(I.inf))) || any(any(isnan(I.sup)))
+if any(isnan(I.inf),"all") || any(isnan(I.sup),"all")
 	throw(CORAerror('CORA:outOfDomain','validDomain','>= 0'));
 end
 

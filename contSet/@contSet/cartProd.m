@@ -30,11 +30,7 @@ function res = cartProd(S1,S2,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check number of input arguments
-if nargin < 2
-    throw(CORAerror('CORA:notEnoughInputArgs',2));
-elseif nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(2,3);
 
 % parse input arguments
 if isa(S1,'ellipsoid') || isa(S2,'ellipsoid')

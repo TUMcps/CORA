@@ -29,6 +29,9 @@ O = emptySet(n);
 
 % center
 c = center(O);
-res = all(size(c) == [n,0]);
+assert(all(size(c) == [n,0]));
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -41,13 +41,13 @@ function P_out = enclose(P1,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(2,3);
+
 % parse input arguments
 if nargin == 2
     P2 = varargin{1};
 elseif nargin == 3
     P2 = (varargin{1}*P1) + varargin{2};
-else
-    throw(CORAerror('CORA:tooManyInputArgs',3));
 end
 
 % convex hull is equivalent to enclose (since result is convex)

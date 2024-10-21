@@ -30,13 +30,11 @@ function G = generators(E)
 
 Q = E.Q;
 if isempty(Q)
-    G = zeros([dim(E) 0]);
+    G = zeros(dim(E),0);
     return
 end
 
-
 [U,D,~] = svd(Q);
-
 G = U * sqrt(D);
 
 % ------------------------------ END OF CODE ------------------------------

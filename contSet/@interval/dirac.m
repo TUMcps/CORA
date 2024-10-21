@@ -36,6 +36,8 @@ function res = dirac(varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+narginchk(1,2);
+
 % parse input arguments
 if nargin == 1
     I = varargin{1};
@@ -43,8 +45,6 @@ if nargin == 1
 elseif nargin == 2
     n = varargin{1};
     I = varargin{2};
-else
-    throw(CORAerror('CORA:tooManyInputArgs',2));
 end
 
 % init with zeros

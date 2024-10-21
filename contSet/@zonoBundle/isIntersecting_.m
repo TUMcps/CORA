@@ -1,13 +1,14 @@
-function res = isIntersecting_(zB,S,varargin)
+function res = isIntersecting_(zB,S,type,tol,varargin)
 % isIntersecting_ - determines if zonotope bundle intersects a set
 %
 % Syntax:
-%    res = isIntersecting_(zB,S)
+%    res = isIntersecting_(zB,S,type,tol)
 %
 % Inputs:
 %    zB - zonoBundle object
 %    S - contSet object
 %    type - type of check ('exact' or 'approx')
+%    tol - tolerance
 %
 % Outputs:
 %    res - true/false
@@ -43,16 +44,38 @@ function res = isIntersecting_(zB,S,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% call function for other set representations
-if isa(S,'halfspace') || isa(S,'conHyperplane') || ...
-   isa(S,'polytope') || isa(S,'ellipsoid')
+% ensure that numeric is second input argument
+[zB,S] = reorderNumeric(zB,S);
 
-    res = isIntersecting_(S,zB,varargin{:});
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < zB.precedence
+    res = isIntersecting_(S,zB,type,tol);
+    return
+end
 
-else
-    
-    res = isIntersecting_(conZonotope(zB),S,varargin{:});
-    
-end     
+% numeric case: check containment
+if isnumeric(S)
+    res = contains_(zB,S,type,tol);
+    return
+end
+
+% sets must not be empty (LP too costly...)
+% if representsa_(zB,'emptySet',0) || representsa_(S,'emptySet',0)
+%     res = false;
+%     return
+% end
+
+if isa(S,'interval')
+    res = isIntersecting_(polytope(S),zB,type,tol,varargin{:});
+    return
+end
+
+% general idea: convert to constrained zonotope and check for intersection
+if isa(S,'contSet')
+    res = isIntersecting_(conZonotope(zB),conZonotope(S),type,tol,varargin{:});
+    return
+end
+
+throw(CORAerror('CORA:noops',zB,S));
 
 % ------------------------------ END OF CODE ------------------------------

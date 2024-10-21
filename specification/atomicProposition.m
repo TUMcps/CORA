@@ -12,13 +12,13 @@ classdef atomicProposition
 %    locs - list of locations that are allowed (hybrid automata)
 %
 % Outputs:
-%    obj - atomicProposition object
+%    ap - atomicProposition object
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also:
+% See also: none
 
 % Authors:       Benedikt Seidl
 % Written:       07-December-2022
@@ -39,64 +39,65 @@ properties (SetAccess = private, GetAccess = public)
 end
 
 methods
-    function obj = atomicProposition(set, dims, locs)
-        obj.set = set;
+    function ap = atomicProposition(set, dims, locs)
+        ap.set = set;
 
         if nargin < 3
-            obj.locs = [];
+            ap.locs = [];
         else
-            obj.locs = locs;
+            ap.locs = locs;
         end
 
         if nargin < 2
-            obj.dims = 1:dim(set);
+            ap.dims = 1:dim(set);
         else
-            obj.dims = dims;
+            ap.dims = dims;
         end
     end
 
-    function out = containsLoc(obj, loc)
-        if ~isempty(obj.locs)
-            out = in(obj.locs, loc);
+    function out = containsLoc(ap, loc)
+        if ~isempty(ap.locs)
+            out = in(ap.locs, loc);
         else
             out = true;
         end
     end
 
-    function out = evaluatePoint(obj, point, loc)
+    function out = evaluatePoint(ap, point, loc)
         % Check if the set contains the projection of the given point.
-
-        out = containsLoc(obj, loc) && contains(obj.set, point(obj.dims));
+        out = containsLoc(ap, loc) && contains(ap.set, point(ap.dims));
     end
 
-    function out = canBeTrue(obj, set, loc)
+    function out = canBeTrue(ap, set, loc)
+        if ~containsLoc(ap, loc)
+            out = false; return
+        end
+
         % If the set is intersecting with the proposition, it can be true.
-        set = project(set, obj.dims);
-
-        out = containsLoc(obj, loc);
-
+        set = project(set, ap.dims);
+        tol = 1e-12;
         try
-            out = out && isIntersecting(obj.set, set);
+            out = isIntersecting_(ap.set, set, 'exact', tol);
         catch e
             if ismember(e.identifier, {'CORA:noops','CORA:noExactAlg'})
-                out = out && isIntersecting(obj.set, set, 'approx');
+                out = isIntersecting_(ap.set, set, 'approx', tol);
             else
                 rethrow(e);
             end
         end
     end
 
-    function out = canBeFalse(obj, set, loc)
+    function out = canBeFalse(ap, set, loc)
         % If the set is not enclosed by the proposition, it can be false.
-        set = project(set, obj.dims);
+        set = project(set, ap.dims);
 
-        out = ~containsLoc(obj, loc);
+        out = ~containsLoc(ap, loc);
 
         try
-            out = out || ~contains(obj.set, set);
+            out = out || ~contains(ap.set, set);
         catch e
             if ismember(e.identifier, {'CORA:noops','CORA:noExactAlg'})
-                out = out || ~contains(obj.set, set, 'approx');
+                out = out || ~contains(ap.set, set, 'approx');
             else
                 rethrow(e);
             end

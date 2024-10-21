@@ -25,7 +25,8 @@ function zB = generateRandom(varargin)
 
 % Authors:       Mark Wetzlinger
 % Written:       17-September-2019
-% Last update:   19-May-2022 (name-value pair syntax)
+% Last update:   19-May-2022 (MW, name-value pair syntax)
+%                04-October-2024 (MW, faster algorithm)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -50,29 +51,22 @@ if isempty(n)
     n = randi(nmax);
 end
 
-% default number of generators
+% default number of zonotopes
 if isempty(nrZonos)
     nrZonos = 1+randi(4);
 end
 
-% construct random zonotope bundle
+% algorithm for random generation of a non-empty zonotope bundle:
 listZ = cell(nrZonos,1);
-listZ{1} = zonotope.generateRandom('Dimension',n);
-
-% to ensure that zonotope bundle not empty, the center of the next zonotope
-% in the list is a point contained in all previous zonotopes
-for z=2:nrZonos
-    inside = false;
-    while ~inside
-        inside = true;
-        c = randPoint_(listZ{1},1,'standard');
-        for i=2:z-1
-            if ~contains_(listZ{i},c,'exact',0)
-                inside = false; continue;
-            end
-        end
-    end
-    listZ{z,1} = zonotope.generateRandom('Dimension',n,'Center',c);
+% 1) fix a point that will be contained in all generated zonotopes
+p = randn(n,1);
+for z=1:nrZonos
+    % 2) randomly generate zonotopes centered at the origin
+    Z = zonotope.generateRandom('Dimension',n,'Center',zeros(n,1));
+    % 3) find the boundary point in the direction of the fixed point
+    boundary_point = boundaryPoint(Z,p);
+    % 4) random factor [0,1] to shift the zonotope
+    listZ{z} = Z + rand(1)*boundary_point;
 end
 
 % instantiate zonotope bundle

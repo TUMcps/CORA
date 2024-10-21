@@ -1,4 +1,4 @@
-function verboseLog(step,t,options)
+function verboseLog(verbose,step,t,tStart,tFinal)
 % verboseLog - standardized console output if options.verbose = true,
 %    only used in reach-functions
 %
@@ -6,12 +6,11 @@ function verboseLog(step,t,options)
 %    verboseLog(step,t,options)
 %
 % Inputs:
+%    verbose - true/false
 %    step - current step
 %    t - start time of current step
-%    options - options struct containing fields:
-%                   'verbose': (true/false)
-%                   'tStart': start time (for start message)
-%                   'tFinal': time horizon (for end message)
+%    tStart - start time of time horizon
+%    tFinal - end time of time horizon
 %
 % Outputs:
 %    ---
@@ -29,37 +28,37 @@ function verboseLog(step,t,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if options.verbose
+if ~verbose
+    return
+end
 
-    % check if this is called from hybrid system
-    st = dbstack("-completenames");
-    for i=1:length(st)
-        if contains(st(i).file,['@location' filesep 'reach'])
-            % no log in contDynamics evaluation for hybrid systems
-            return;
-        end
-    end
-    
-    % start message
-    if abs(t - options.tStart) < 1e-12
-        disp(newline + "Start analysis...");
-        disp("- step 1: " + t);
+% check if this is called from hybrid system
+st = dbstack("-completenames");
+for i=1:length(st)
+    if contains(st(i).file,['@location' filesep 'reach'])
+        % no log in contDynamics evaluation for hybrid systems
         return;
     end
-    
-    % end message
-    if abs(t - options.tFinal) < 1e-12
-        disp("...time horizon reached, analysis finished." + newline);
-        return;
-    end
-	
-    % every ... steps, information is logged
-    cycle = 10;
-    % shift by one to obtain clean start times
-    if mod(step-1,cycle) == 0
-        disp("- step " + step + ": " + t);
-    end
-    
+end
+
+% start message
+if abs(t - tStart) < 1e-12
+    disp(newline + "Start analysis...");
+    disp("- step 1: " + t);
+    return;
+end
+
+% end message
+if abs(t - tFinal) < 1e-12
+    disp("...time horizon reached, analysis finished." + newline);
+    return;
+end
+
+% every ... steps, information is logged
+cycle = 10;
+% shift by one to obtain clean start times
+if mod(step-1,cycle) == 0
+    disp("- step " + step + ": " + t);
 end
 
 % ------------------------------ END OF CODE ------------------------------

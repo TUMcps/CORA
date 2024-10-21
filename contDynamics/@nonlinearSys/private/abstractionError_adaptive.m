@@ -1,16 +1,17 @@
-function [VerrorDyn,VerrorStat,err,options] = abstractionError_adaptive(obj,options,R,Rdiff,...
-    H,Zdelta,VerrorStat,T,ind3,Zdelta3)
+function [VerrorDyn,VerrorStat,err,options] = abstractionError_adaptive(...
+    nlnsys,R,Rdiff,U,options,H,Zdelta,VerrorStat,T,ind3,Zdelta3)
 % abstractionError_adaptive - computes the abstraction error
 % note: no Taylor Model or zoo integration
 %
 % Syntax:
-%    [VerrorDyn,VerrorStat,err,options] = abstractionError_adaptive(obj,options,R,Rdiff,...
+%    [VerrorDyn,VerrorStat,err,options] = abstractionError_adaptive(nlnsys,options,R,Rdiff,...
 %     H,Zdelta,VerrorStat,T,ind3,Zdelta3)
 %
 % Inputs:
-%    obj - nonlinearSys object
-%    options - options struct
+%    nlnsys - nonlinearSys object
 %    R - time-interval solution of current step (incl. adm. abstr. err)
+%    U - input set
+%    options - options struct
 %    Rdiff - set of state differences [2,(6)]
 %    Rdelta - initial set of step translated by linearization point
 %    remaining inputs: same as outputs of precompStatError (only 'poly')
@@ -20,8 +21,6 @@ function [VerrorDyn,VerrorStat,err,options] = abstractionError_adaptive(obj,opti
 %    VerrorStat - set based on abstraction error
 %    err - over-approximated abstraction error
 %    options - options struct
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -45,10 +44,10 @@ function [VerrorDyn,VerrorStat,err,options] = abstractionError_adaptive(obj,opti
 
 % compute interval of reachable set and input (at origin)
 IH_x = interval(R);
-IH_u = interval(options.U);
+IH_u = interval(U);
 % translate intervals by linearization point (at traj / lin. point)
-totalInt_x = IH_x + obj.linError.p.x;
-totalInt_u = IH_u + obj.linError.p.u;
+totalInt_x = IH_x + nlnsys.linError.p.x;
+totalInt_u = IH_u + nlnsys.linError.p.u;
 
 
 % LIN; TENSOR 2 -----------------------------------------------------------
@@ -56,7 +55,7 @@ if strcmp(options.alg,'lin') && options.tensorOrder == 2
     % approach in [1]
     
     % assign correct hessian (using interval arithmetic)
-    obj = setHessian(obj,'int');
+    nlnsys = setHessian(nlnsys,'int');
 
     % obtain maximum absolute values within IH, IHinput
     IHinf = abs(infimum(IH_x));
@@ -73,10 +72,10 @@ if strcmp(options.alg,'lin') && options.tensorOrder == 2
     % evaluate the hessian matrix with interval arithmetic
     try
         if ~options.isHessianConst
-            H = obj.hessian(totalInt_x,totalInt_u);
+            H = nlnsys.hessian(totalInt_x,totalInt_u);
             % very first step: check if Hessian is constant
             if ~options.hessianCheck
-                options = aux_checkIfHessianConst(obj,options,H,totalInt_x,totalInt_u);
+                options = aux_checkIfHessianConst(nlnsys,options,H,totalInt_x,totalInt_u);
             end
         end
     catch ME
@@ -89,16 +88,16 @@ if strcmp(options.alg,'lin') && options.tensorOrder == 2
         end
     end
 
-    err = zeros(obj.dim,1);
+    err = zeros(nlnsys.nrOfStates,1);
     if ~options.isHessianConst
-        for i = 1:obj.dim
+        for i = 1:nlnsys.nrOfStates
             H_ = abs(H{i});
             H_ = max(infimum(H_),supremum(H_));
             err(i,1) = 0.5 * dz' * H_ * dz;
         end
     else
         % use saved H_ (the same in every step)
-        for i = 1:obj.dim
+        for i = 1:nlnsys.nrOfStates
             err(i,1) = 0.5 * dz' * options.hessianConst{i} * dz;
         end
     end
@@ -110,11 +109,11 @@ if strcmp(options.alg,'lin') && options.tensorOrder == 2
 elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
 
     % set handles to correct files
-    obj = setHessian(obj,'standard');
-    obj = setThirdOrderTensor(obj,'int');
+    nlnsys = setHessian(nlnsys,'standard');
+    nlnsys = setThirdOrderTensor(nlnsys,'int');
     
     % calculate hessian matrix
-    H = obj.hessian(obj.linError.p.x,obj.linError.p.u);
+    H = nlnsys.hessian(nlnsys.linError.p.x,nlnsys.linError.p.u);
     
     % concatenate to interval z
     dz = [IH_x; IH_u];
@@ -138,7 +137,7 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
     end
     
     % zonotope (states + input)
-    Z = cartProd(Rred,options.U);
+    Z = cartProd(Rred,U);
     
     % error second-order
     errorSec = 0.5 * quadMap(Z,H);
@@ -146,7 +145,7 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
     % calculate third-order tensor
     try
         if ~options.thirdOrderTensorempty
-            [T,ind] = obj.thirdOrderTensor(totalInt_x, totalInt_u);
+            [T,ind] = nlnsys.thirdOrderTensor(totalInt_x, totalInt_u);
         else
             ind = {};
         end
@@ -163,7 +162,7 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
     % calculate the Lagrange remainder term
     % skip tensors with all-zero entries using ind from tensor creation
     if ~isempty(cell2mat(ind))
-        errorLagr = interval(zeros(obj.dim,1),zeros(obj.dim,1));
+        errorLagr = interval(zeros(nlnsys.nrOfStates,1),zeros(nlnsys.nrOfStates,1));
         for i=1:length(ind)
             error_sum = interval(0,0);
             for j=1:length(ind{i})
@@ -207,15 +206,15 @@ elseif strcmp(options.alg,'lin') && options.tensorOrder == 3
 elseif strcmp(options.alg,'poly') && options.tensorOrder == 3
 
     % set handles to correct files
-    obj = setHessian(obj,'standard');
-    obj = setThirdOrderTensor(obj,'int');
+    nlnsys = setHessian(nlnsys,'standard');
+    nlnsys = setThirdOrderTensor(nlnsys,'int');
     
     % obtain intervals and combined interval z
     dz = [IH_x; IH_u];
 
     % compute zonotope of state and input
     Rred_diff = reduce(zonotope(Rdiff),'adaptive',sqrt(options.redFactor));
-    Z_diff = cartProd(Rred_diff,options.U);
+    Z_diff = cartProd(Rred_diff,U);
     
     % second-order error
     % use symmetry of H to simplify computation
@@ -224,7 +223,7 @@ elseif strcmp(options.alg,'poly') && options.tensorOrder == 3
     try
         % evaluate the third-order tensor
         if ~options.thirdOrderTensorempty
-            [T,ind] = obj.thirdOrderTensor(totalInt_x, totalInt_u);
+            [T,ind] = nlnsys.thirdOrderTensor(totalInt_x, totalInt_u);
         else
             ind = {};
         end
@@ -272,7 +271,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function options = aux_checkIfHessianConst(obj,options,H,totalInt_x,totalInt_u)
+function options = aux_checkIfHessianConst(nlnsys,options,H,totalInt_x,totalInt_u)
 % check if hessian is constant --- only once executed! (very first step)
 % returns: isHessianConst, hessianCheck, hessianConst
 
@@ -281,7 +280,7 @@ options.isHessianConst = true;
 
 % evaluate Hessians with larger set, check if result equal
 scalingFactor = 1.1;
-H_test = obj.hessian(enlarge(totalInt_x,scalingFactor),...
+H_test = nlnsys.hessian(enlarge(totalInt_x,scalingFactor),...
                      enlarge(totalInt_u,scalingFactor));
 for i=1:length(H)
     if ~all(H{i} == H_test{i})

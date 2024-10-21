@@ -76,7 +76,7 @@ elseif strcmp(prop,'time')
            ind = [];
            
            for j = 1:length(R(i).timeInterval.time) 
-              if isIntersecting_(R(i).timeInterval.time{j},val,'exact')
+              if isIntersecting_(R(i).timeInterval.time{j},val,'exact',1e-8)
                   ind = [ind;j];
               end
            end
@@ -93,7 +93,7 @@ elseif strcmp(prop,'time')
        ind = [];
            
        for j = 1:length(R(i).timePoint.time) 
-          if isIntersecting_(interval(R(i).timePoint.time{j}),val,'exact')
+          if isIntersecting_(interval(R(i).timePoint.time{j}),val,'exact',1e-8)
               ind = [ind;j];
           end
        end

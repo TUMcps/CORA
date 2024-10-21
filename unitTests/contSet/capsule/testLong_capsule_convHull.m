@@ -47,9 +47,7 @@ for i=1:nrTests
     p = lambda .* p1 + (1-lambda) .* p2;
 
     % check if those points are contained in the convex hull
-    if ~all(contains(C,[p1 p2 p]))
-        res = false; break
-    end
+    assertLoop(all(contains(C,[p1 p2 p])),i)
 
 end
 

@@ -103,24 +103,23 @@ sys = nonlinearSys(@coupledVanDerPol_ARCH23,5,1);
 % original specs: y1 <= 2.75, y2 <= 2.75 should be fulfilled at all times
 speclim = 2.75;
 
-hs1 = halfspace([0 -1 0 0 0],-speclim);
-% spec = specification(hs1,'unsafeSet');
-hs2 = halfspace([0 0 0 -1 0],-speclim);
-spec = specification({hs1,hs2},'unsafeSet');
+P1 = polytope([0 -1 0 0 0],-speclim);
+P2 = polytope([0 0 0 -1 0],-speclim);
+spec = specification({P1,P2},'unsafeSet');
 
 
 % Hybrid Automaton --------------------------------------------------------
 
 % artificial guard set
 c = [-0.9808 -0.7286 -0.9808 -0.7286 0]; d = -0.9811;
-guard12 = conHyperplane(c,d);
+guard12 = polytope([],[],c,d);
 inv1 = polytope(c,d);
-guard23 = conHyperplane(-c,-d);
+guard23 = polytope([],[],-c,-d);
 inv2 = polytope(-c,-d);
 inv3 = polytope([1 0 0 0 0],1000);
 
 % identity reset function
-reset.A = eye(5); reset.c = zeros(5,1);
+reset = linearReset.eye(5);
 
 % instantiate transitions
 trans12(1) = transition(guard12,reset,2);
@@ -132,7 +131,7 @@ loc(2) = location('loc2',inv2,trans23,sys);
 loc(3) = location('loc3',inv3,transition(),sys);
 
 % instantiate hybrid automaton for coupled van der Pol system
-HA = hybridAutomaton(loc);
+HA = hybridAutomaton('vanDerPol_hybrid',loc);
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -190,9 +189,9 @@ for i=1:length(projDim)
 
     % specs
     if i == 1
-        plot(conHyperplane(hs1),projDim{i},'r--');
+        plot(polytope([],[],P1.A,P1.b),projDim{i},'r--');
     elseif i == 2
-        plot(conHyperplane(hs2),projDim{i},'r--');
+        plot(polytope([],[],P2.A,P2.b),projDim{i},'r--');
     end
     
     % formatting

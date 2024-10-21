@@ -58,7 +58,7 @@ try
     close;
 catch
     close;
-    res = false;
+    rethrow(ME)
 end
 
 % ------------------------------ END OF CODE ------------------------------

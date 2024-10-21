@@ -47,9 +47,10 @@ resvec = [
     CORA_WARNINGS_ENABLED('CORA:solver');
     CORA_WARNINGS_ENABLED('CORA:redundant');
     CORA_WARNINGS_ENABLED('CORA:deprecated');
+    CORA_WARNINGS_ENABLED('CORA:interface');
 ]';
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

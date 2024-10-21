@@ -23,8 +23,6 @@ function res = test_polyZonotope_uplus
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = true(0);
-
 % init
 c = [1;2];
 G = [1 0 1; 0 1 1];
@@ -34,17 +32,17 @@ pZ = polyZonotope(c,G,GI,E);
 
 % plus
 ppZ = +pZ;
-resvec(end+1) = all(ppZ.c == c, 'all');
-resvec(end+1) = all(ppZ.G == G, 'all');
-resvec(end+1) = all(ppZ.GI == GI, 'all');
+assert(all(ppZ.c == c, 'all'));
+assert(all(ppZ.G == G, 'all'));
+assert(all(ppZ.GI == GI, 'all'));
 
 % compare with pZ
-resvec(end+1) = isequal(ppZ, pZ);
+assert(isequal(ppZ, pZ));
 
 % test empty case
-resvec(end+1) = isemptyobject(+polyZonotope.empty(2));
+assert(isemptyobject(+polyZonotope.empty(2)));
 
 % add results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

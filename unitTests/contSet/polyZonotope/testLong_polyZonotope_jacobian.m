@@ -50,10 +50,7 @@ for i=1:nTests
         valj = fj(x)-jac_sym(:,j);
         for k=1:n
             ck = coeffs(valj(k),x);
-            if any(ck>1e-8)
-                res = false;
-                return;
-            end
+            assertLoop(all(ck <= 1e-8),i,j,k)
         end
     end
 end

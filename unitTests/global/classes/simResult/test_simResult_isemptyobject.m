@@ -25,15 +25,15 @@ function res = test_simResult_isemptyobject
 
 % empty simResult
 simRes = simResult();
-res = isemptyobject(simRes);
+assert(isemptyobject(simRes));
 
 % simResult with trajectory
 t = {[0; 0.02; 0.05]};
 x = {[1 1; 0.9 1.1; 0.8 1.2]};
 simRes = simResult(x,t);
-res(end+1,1) = ~isemptyobject(simRes);
+assert(~isemptyobject(simRes));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

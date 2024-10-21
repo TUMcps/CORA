@@ -28,20 +28,20 @@ n = 2;
 O = emptySet(n);
 
 % comparison with itself
-res = isequal(O,O);
+assert(isequal(O,O));
 
 % different dimension
-res(end+1,1) = ~isequal(O,emptySet(n+1));
+assert(~isequal(O,emptySet(n+1)));
 
 % init zonotope
 Z = zonotope(zeros(2,1));
-res(end+1,1) = ~isequal(O,Z);
+assert(~isequal(O,Z));
 
 % init empty polytope
 P = polytope([1 1;-1 -1],[1;-2]);
-res(end+1,1) = isequal(O,P);
+assert(isequal(O,P));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

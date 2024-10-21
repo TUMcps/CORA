@@ -23,13 +23,13 @@ function res = test_intervalMatrix_isempty
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
+res = true;
 
 % instantiate interval matrix
 intMat = intervalMatrix([2 3; 1 2],[1 0; 1 1]);
-res(end+1,1) = ~isempty(intMat);
+assert(~isempty(intMat));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

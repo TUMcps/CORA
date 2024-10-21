@@ -41,8 +41,8 @@ A = [-(R+K^2/d_rot)/L, 0, K_P/L, K_I/L; ....
 B = [0;0;0;0];
 
 % reset
-reset.A = [1 0 0 0; 0 1 0 0; 0 -1 0 0;0 -T_sample 0 1];
-reset.c = [0; 0; x0; T_sample*x0];
+reset = linearReset([1 0 0 0; 0 1 0 0; 0 -1 0 0;0 -T_sample 0 1],...
+    [0;0;0;0],[0; 0; x0; T_sample*x0]);
 
 % linear system object
 sys = linearSys(A,B);

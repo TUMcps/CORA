@@ -19,37 +19,37 @@ function display(pHA)
 % 
 %    % first component, first location
 %    inv = polytope(1,T_off);
-%    guard = conHyperplane(1,T_off);
-%    reset = struct('A',1,'c',0);
+%    guard = polytope([],[],1,T_off);
+%    reset = linearReset(1);
 %    trans = transition(guard,reset,2);
-%    linSys = linearSys(-(a1 + b1),[b1,a1],c1,1);
-%    loc(1) = location('on',inv,trans,linSys);
+%    linsys = linearSys(-(a1 + b1),[b1,a1],c1,1);
+%    loc(1) = location('on',inv,trans,linsys);
 % 
 %    % first component, second location
 %    inv = polytope(-1,-T_on);
-%    guard = conHyperplane(1,T_on);
-%    reset = struct('A',1,'c',0);
+%    guard = polytope([],[],1,T_on);
+%    reset = linearReset(1);
 %    trans = transition(guard,reset,1);
-%    linSys = linearSys(-(a1 + b1),[b1,a1],[],1);
-%    loc(2) = location('off',inv,trans,linSys);
+%    linsys = linearSys(-(a1 + b1),[b1,a1],[],1);
+%    loc(2) = location('off',inv,trans,linsys);
 % 
 %    HA1 = hybridAutomaton(loc);
 % 
 %    % second component, first location
 %    inv = polytope(1,T_off);
-%    guard = conHyperplane(1,T_off);
-%    reset = struct('A',1,'c',0);
+%    guard = polytope([],[],1,T_off);
+%    reset = linearReset(1);
 %    trans = transition(guard,reset,2);
-%    linSys = linearSys(-(a2 + b2),[b2,a2],c2,1);
-%    loc(1) = location('on',inv,trans,linSys);
+%    linsys = linearSys(-(a2 + b2),[b2,a2],c2,1);
+%    loc(1) = location('on',inv,trans,linsys);
 % 
 %    % second component, second location
 %    inv = polytope(-1,-T_on);
-%    guard = conHyperplane(1,T_on);
-%    reset = struct('A',1,'c',0);
+%    guard = polytope([],[],1,T_on);
+%    reset = linearReset(1);
 %    trans = transition(guard,reset,1);
-%    linSys = linearSys(-(a2 + b2),[b2,a2],[],1);
-%    loc(2) = location('off',inv,trans,linSys);
+%    linsys = linearSys(-(a2 + b2),[b2,a2],[],1);
+%    loc(2) = location('off',inv,trans,linsys);
 % 
 %    HA2 = hybridAutomaton(loc);
 % 
@@ -70,7 +70,7 @@ function display(pHA)
 
 % Authors:       Mark Wetzlinger
 % Written:       18-June-2022
-% Last update:   ---
+% Last update:   15-October-2024 (MW, add name property)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -93,6 +93,9 @@ elseif length(pHA) > 1
     return
 
 end
+
+% display name
+fprintf('Parallel hybrid automaton: ''%s''\n', pHA.name);
 
 % number of components
 numComp = length(pHA.components);
@@ -170,7 +173,7 @@ for i=1:numComp
 
     % state dimension, input dimension (including input binds), output
     % dimension (has to be equal over all locations of a component)
-    disp("   State dimension: " + pHA.components(i).location(1).contDynamics.dim);
+    disp("   State dimension: " + pHA.components(i).location(1).contDynamics.nrOfStates);
 
     % input binds
     if isempty(pHA.bindsInputs{i})

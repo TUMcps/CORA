@@ -23,6 +23,9 @@ function res = test_probZonotope_polytope
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % generate probabilistic zonotope
 Z1 = [0 1 0; 0 0 1];
@@ -33,6 +36,6 @@ pZ3 = probZonotope(Z1,Z2,2);
 
 P = polytope(pZ3);
 
-res = 1;
+assert(1);
 
 % ------------------------------ END OF CODE ------------------------------

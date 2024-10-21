@@ -22,12 +22,15 @@ function res = test_emptySet_isFullDim
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % init empty set
 n = 2;
 O = emptySet(n);
 
 % check result
-res = ~isFullDim(O);
+assert(~isFullDim(O));
 
 % ------------------------------ END OF CODE ------------------------------

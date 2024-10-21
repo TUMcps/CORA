@@ -37,9 +37,8 @@ options.alg = 'lin';
 options.tensorOrder = 2;
 
 % Parameters for NN evaluation --------------------------------------------
-evParams = struct();
-evParams.bound_approx = true;
-evParams.poly_method = "singh";
+options.nn.bound_approx = true;
+options.nn.poly_method = "singh";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -79,20 +78,19 @@ sys = neurNetContrSys(sys, nn, dt);
 % Run ---------------------------------------------------------
 
 % compute reachable set
-R = reach(sys, params, options, evParams);
+R = reach(sys, params, options);
 
 % check if subsequent time intervals have matching time bounds
 T = [R.timeInterval];
 T = [T.time];
 
-resvec = [];
-resvec(end+1) = T{1}.inf == 0;
+assert(T{1}.inf == 0);
 for i=1:length(T)-1
-    resvec(end+1) = T{i}.sup == T{i+1}.inf;
+    assert(T{i}.sup == T{i+1}.inf);
 end
-resvec(end+1) = T{end}.sup == params.tFinal;
+assert(T{end}.sup == params.tFinal);
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

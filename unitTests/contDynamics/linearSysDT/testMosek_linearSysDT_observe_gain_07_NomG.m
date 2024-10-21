@@ -28,6 +28,9 @@ function res = testMosek_linearSysDT_observe_gain_07_NomG()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % enable access to private function "observe_gain_NomG"
 path = CORAROOT;
@@ -52,7 +55,7 @@ error = abs(OGain - NomG);
 maxError = max(max(error));
 
 % error acceptable?
-res = (maxError < 1e-8);
+assert((maxError < 1e-8));
 
 
 % revoke access to private function

@@ -1,17 +1,16 @@
-function Z = or(Z, varargin)
+function S_out = or(Z,S,varargin)
 % or - computes an over-approximation for the union of zonotopes
 %
 % Syntax:
-%    Z = or(Z, Z1)
-%    Z = or(Z, ... , Zm)
-%    Z = or(Z, ... , Zm, alg)
-%    Z = or(Z, ... , Zm, alg, order)
+%    S_out = Z | S;
+%    S_out = or(Z,S)
+%    S_out = or(Z,S,alg,order)
 %
 % Inputs:
 %    Z - zonotope object
-%    Z1,...,Zm - zonotope objects
+%    S - contSet object, numeric, cell-array
 %    alg - algorithm used to compute the union
-%               - 'linProg' (default)
+%               - 'linprog' (default)
 %               - 'tedrake'
 %               - 'iterative'
 %               - 'althoff'
@@ -19,19 +18,17 @@ function Z = or(Z, varargin)
 %    order - zonotope order of the enclosing zonotope
 %
 % Outputs:
-%    Z - zonotope object enclosing the union
+%    S_out - zonotope object enclosing the union
 %
 % Example: 
-%    zono1 = zonotope([4 2 2;1 2 0]);
-%    zono2 = zonotope([3 1 -1 1;3 1 2 0]);
+%    Z1 = zonotope([4 2 2;1 2 0]);
+%    Z2 = zonotope([3 1 -1 1;3 1 2 0]);
+%    S_out = Z1 | Z2;
 %
-%    res = zono1 | zono2;
-%
-%    figure
-%    hold on
-%    plot(zono1,[1,2],'r');
-%    plot(zono2,[1,2],'b');
-%    plot(res,[1,2],'g');
+%    figure; hold on;
+%    plot(Z1,[1,2],'r');
+%    plot(Z2,[1,2],'b');
+%    plot(S_out,[1,2],'g');
 %
 % References:
 %    [1] Sadraddini et. al: Linear Encodings for Polytope Containment
@@ -50,105 +47,63 @@ function Z = or(Z, varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    % default values
-    alg = 'linProg';
-    order = [];
+% TODO: solve cell-array case...
 
-    % distinguish case with two and case with more sets
-    if nargin == 2 || ( nargin > 2 && ...
-            (ischar(varargin{2}) || ...
-            (isa(varargin{2},'contSet') && representsa(varargin{2},'emptySet'))) )
-                  
-        S = varargin{1};
+% default values
+[alg,order] = setDefaultValues({'linprog',[]},varargin);
 
-        % determine zonotope object
-        [Z,S] = findClassArg(Z,S,'zonotope');
+% check input arguments
+inputArgsCheck({{Z,'att',{'zonotope','numeric'}},...
+                {S,'att',{'contSet','numeric'}},...
+                {alg,'str',{'linprog','tedrake','iterative','althoff','parallelotope'}},...
+                {order,'att','numeric'}});
 
-        % different cases depending on the class of the second set
-        if isa(S,'zonotope') || isa(S,'interval') || isnumeric(S)
-            
-            if ~isa(S,'zonotope')
-               S = zonotope(S); 
-            end
-            
-            % parse input arguments
-            if nargin > 2 && ~isempty(varargin{2})
-                alg = varargin{2};
-            end
-            
-            if nargin > 3 && ~isempty(varargin{3})
-                order = varargin{3};
-            end
-            if representsa_(S,'emptySet',eps)
-                return;
-            end 
-            % compute over-approximation of the union with the selected 
-            % algorithm
-            if strcmp(alg,'linProg')
-               Z = aux_unionLinProg({Z,S},order);
-            elseif strcmp(alg,'althoff')
-               Z = aux_unionAlthoff(Z,{S},order);
-            elseif strcmp(alg,'tedrake')
-               Z = aux_unionTedrake({Z,S},order);
-            elseif strcmp(alg,'iterative')
-               Z = aux_unionIterative({Z,S},order);
-            elseif strcmp(alg,'parallelotope')
-               Z = aux_unionParallelotope({Z,S});
-            else
-                throw(CORAerror('CORA:wrongValue','third',...
-                    "'linProg', 'tedrake', 'iterative', 'althoff', or 'parallelotope'"));
-            end
+% ensure that numeric is second input argument
+[Z,S] = reorderNumeric(Z,S);
 
-        elseif isa(S,'Polytope') || isa(S,'conZonotope') || ...
-               isa(S,'zonoBundle') || isa(S,'conPolyZono')
+% check dimensions
+equalDimCheck(Z,S);
 
-            Z = S | Z;     
+% write all into a cell-array
+if iscell(S)
+    S_cell = [{Z}; S];
+else
+    S_cell = {Z; S};
+end
 
-        else
-            % throw error for given arguments
-            throw(CORAerror('CORA:noops',Z,S));
-        end
-    
-    else
-        
-        % parse input arguments
-        Zcell = {};
-        counter = [];
+% only zonotopes, intervals, and numeric allowed
+if ~all(cellfun(@(S) isa(S,'zonotope') || isa(S,'interval') || isnumeric(S),...
+        S_cell,'UniformOutput',true))
+    throw(CORAerror('CORA:noops',Z,S));
+end
 
-        for i = 2:nargin
-           if isa(varargin{i-1},'zonotope')
-              Zcell{end+1,1} = varargin{i-1}; 
-           else
-              counter = i;
-              break;
-           end
-        end
+% convert all sets to zonotopes, skip empty sets
+S_cell = cellfun(@(S) zonotope(S),S_cell,'UniformOutput',false);
+S_cell = S_cell(cellfun(@(S) ~representsa_(S,'emptySet',eps),S_cell,'UniformOutput',true));
 
-        if ~isempty(counter)
-            if nargin >= counter && ~isempty(varargin{counter-1})
-                alg = varargin{counter-1}; 
-            end
-            if nargin >= counter+1 && ~isempty(varargin{counter})
-                order = varargin{counter};
-            end
-        end
+% if only one set remains, this is the union
+if isempty(S_cell)
+    S_out = emptySet(dim(Z));
+    return
+elseif numel(S_cell) == 1
+    S_out = S_cell{1};
+    return
+end
 
-        % compute over-approximation of the union with the selected algorithm
-        if strcmp(alg,'linProg')
-           Z = aux_unionLinProg([{Z};Zcell],order);
-        elseif strcmp(alg,'althoff')
-           Z = aux_unionAlthoff(Z,Zcell,order);
-        elseif strcmp(alg,'tedrake')
-           Z = aux_unionTedrake([{Z};Zcell],order);
-        elseif strcmp(alg,'iterative')
-           Z = aux_unionIterative([{Z};Zcell],order);
-        elseif strcmp(alg,'parallelotope')
-           Z = aux_unionParallelotope([{Z};Zcell]);
-        else
-             throw(CORAerror('CORA:wrongValue','second last',...
-                 "'linProg', 'tedrake', 'iterative', 'althoff', or 'parallelotope'"));
-        end
-    end
+% compute over-approximation of the union with the selected algorithm
+switch alg
+    case 'linprog'
+        S_out = aux_unionLinprog(S_cell,order);
+    case 'althoff'
+        S_out = aux_unionAlthoff(S_cell{1},S_cell(2:end),order);
+    case 'tedrake'
+        S_out = aux_unionTedrake(S_cell,order);
+    case 'iterative'
+        S_out = aux_unionIterative(S_cell,order);
+    case 'parallelotope'
+        S_out = aux_unionParallelotope(S_cell);
+end
+
 end
 
 
@@ -251,13 +206,14 @@ function Z = aux_unionTedrake(Zcell,order)
 
 end
 
-function Z = aux_unionLinProg(Zcell,order)
+function Z = aux_unionLinprog(Zcell,order)
 % compute an enclosing zonotope using linear programming. As the
 % constraints for the linear program we compute the upper and lower bound
 % for all zonotopes that are enclosed in the normal directions of the
 % halfspace representation of the enclosing zonotope
 
     % construct generator matrix of the final zonotope
+    nrZ = length(Zcell);
     Z_ = aux_unionIterative(Zcell,order);
     Z_ = compact_(Z_,'zeros',eps);
     G = generators(Z_);
@@ -265,47 +221,28 @@ function Z = aux_unionLinProg(Zcell,order)
     G = G*diag(1./sqrt(sum(G.^2,1)));
     
     % compute the directions of the boundary halfspaces
-    [n,m] = size(G);
+    [n,nrGen] = size(G);
+    P = polytope(Z_ - Z_.c);
+    nrIneq = length(P.b);
     
-    Z = zonotope([zeros(n,1),G]);
-    Z = halfspace(Z);
-    
-    C = Z.halfspace.H;
-    
-    % compute bounds for each halfspace
-    d = zeros(size(C,1),1);
-    
-    for i = 1:size(C,1)
-       
-        val = -inf;
-        
+    val = zeros(nrIneq,nrZ);
+    for i = 1:nrIneq
         % loop over all zonotopes
-        for j = 1:length(Zcell)
-           
-            % compute bound for the current zonotope
-            Ztemp = C(i,:)*Zcell{j};
-            valTemp = Ztemp.c + sum(abs(Ztemp.G));
-            
-            % update bound
-            val = max(val,valTemp);
+        for j = 1:nrZ
+            % compute bound for the current zonotope (note: this is a
+            % direct implementation of zonotope/supportFunc_ ...)
+            Z_proj = P.A(i,:)*Zcell{j};
+            val(i,j) = Z_proj.c + sum(abs(Z_proj.G));
         end
-        
-        d(i) = val;
     end
+    d = max(val,[],2);
 
     % solve linear program
-    f = [zeros(n,1);ones(m,1)];
-    
-    A = [];
-    b = -d;
-    
-    for i = 1:size(C,1)
-        A = [A;-[C(i,:),abs(C(i,:)*G)]];
-    end
+    f = [zeros(n,1);ones(nrGen,1)];
     
     problem.f = f';
-    problem.Aineq = [A;[zeros(m,n),-eye(m)]];
-    problem.bineq = [b;zeros(m,1)];
+    problem.Aineq = [[-P.A, -abs(P.A*G)];[zeros(nrGen,n),-eye(nrGen)]];
+    problem.bineq = [-d;zeros(nrGen,1)];
     problem.Aeq = [];
     problem.beq = [];
     problem.lb = [];
@@ -435,19 +372,18 @@ function Z = aux_unionParallelotope(Zcell)
 % enclose the union of the zonotopes with a parallelotope
 
     % obtain matrix of points from generator matrices
-    V = [];
-    
+    n = dim(Zcell{1});
+    V = zeros(n,0);
     for i = 1:length(Zcell)
         G = generators(Zcell{i});
-        V = [V,G,-G];
+        V = [V, G, -G];
     end
 
     % compute the arithmetic mean of the vertices
-    mean = sum(V,2)/length(V(1,:));
+    meanV = sum(V,2) / n;
 
     % obtain sampling matrix
-    translation = mean*ones(1,length(V(1,:)));
-    sampleMatrix = V-translation;
+    sampleMatrix = V - meanV;
 
     % compute the covariance matrix
     C = cov(sampleMatrix');
@@ -456,15 +392,13 @@ function Z = aux_unionParallelotope(Zcell)
     [U,~,~] = svd(C);
 
     % enclose zonotopes with intervals in the transformed space
-    int = [];
-    
+    I = interval.empty(n);
     for i = 1:length(Zcell)
-        temp = U.'*Zcell{i};
-        int = interval(temp) | int;
+        I = interval(U.' * Zcell{i}) | I;
     end
 
     % transform back to original space
-    Z = U*zonotope(int);
+    Z = U*zonotope(I);
 end
 
 % ------------------------------ END OF CODE ------------------------------

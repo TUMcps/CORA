@@ -62,7 +62,7 @@ indexE = accumarray(Indc,(1:size(E,2))',[],@(x){x});
 % extract all constant-in-v generators (includes center of course)
 G_0 = G(:,indexE{1});
 eMp_0 = E(ind_p,indexE{1});
-[eMp_0,G_0,c_0] = removeZeroExponents(eMp_0,G_0);
+[eMp_0,G_0,c_0] = priv_removeZeroExponents(eMp_0,G_0);
 % center zonotope only dependent on constants and p
 pZ_cp = polyZonotope(c_0,G_0,zeros(nx,0),eMp_0,idp);
 
@@ -80,7 +80,7 @@ for i=2:length(indexE)
     % all exponents with same v part
     eMp_i = E(ind_p,indexE{i});
     Gi = G(:,indexE{i});
-    [eMp_i,Gi,ci] = removeZeroExponents(eMp_i,Gi);
+    [eMp_i,Gi,ci] = priv_removeZeroExponents(eMp_i,Gi);
     if sum(mod(e_vi,2))==0
         % only even exponents
         pZtmp = polyZonotope(1/2*ci,1/2*Gi,zeros(nx,0),eMp_i,idp);

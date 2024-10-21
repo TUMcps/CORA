@@ -42,16 +42,12 @@ for i=1:nrOfTests
     % non-degenerate case: full-dimensional
     E = ellipsoid.generateRandom('Dimension',n,'IsDegenerate',false);
     % check result
-    if ~isFullDim(E)
-        res = false; break;
-    end
+    assertLoop(isFullDim(E),i)
     
     % degenerate case: not full-dimensional
     E = ellipsoid.generateRandom('Dimension',n,'IsDegenerate',true);
     % check result
-    if isFullDim(E)
-        res = false; break;
-    end
+    assertLoop(~isFullDim(E),i)
 
 end
 

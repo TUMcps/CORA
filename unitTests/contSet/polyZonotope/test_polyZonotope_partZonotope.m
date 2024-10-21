@@ -23,6 +23,9 @@ function res = test_polyZonotope_partZonotope
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % simple test for given polyZonotope
 G = [-8,8,-10,3;6,-7,3,-4];
@@ -73,39 +76,35 @@ while ~isempty(pZ_gi_c) && ~isempty(pZ_gi_c_)
         break;
     end
 end
-res = res_g && isempty(pZ_gi_c) && isempty(pZ_gi_c_);
+assert(res_g && isempty(pZ_gi_c) && isempty(pZ_gi_c_));
 
 % check if pZ_res is correct
 id_new = pZ_res.id(~ismember(pZ_res.id,id));
-res = res && length([0;id_new])==length(pZ_gi_c_save);
-if res
+assert(length([0;id_new])==length(pZ_gi_c_save));
+
+b = zeros(length(id_new),1);
+pZ_gi_center = resolve(pZ_res,b,id_new);
+assert(isequal(pZ_gi_center,pZ_gi_c_save{1}))
+
+pZ_res = exactPlus(pZ_res,-1*pZ_gi_center);
+pZ_gi_c_save(1) = [];
+
+for i=1:length(id_new)
+    ind = ismember(id_new,id_new(i));
     b = zeros(length(id_new),1);
-    pZ_gi_center = resolve(pZ_res,b,id_new);
-    if ~isequal(pZ_gi_center,pZ_gi_c_save{1})
-        res = false;
-    end
-    pZ_res = exactPlus(pZ_res,-1*pZ_gi_center);
-    pZ_gi_c_save(1) = [];
-    if res
-        for i=1:length(id_new)
-            ind = ismember(id_new,id_new(i));
-            b = zeros(length(id_new),1);
-            b(ind) = 1;
-            pZ_gi_cand = resolve(pZ_res,b,id_new);
-            % check if candidate is contained in 
-            for j=1:length(pZ_gi_c_save)
-                res_tmp = isequal(pZ_gi_cand,pZ_gi_c_save{j});
-                if res_tmp
-                    break;
-                end
-            end
-            pZ_gi_c_save(j) = [];
-            if ~res_tmp
-                res = false;
-                break;
-            end
+    b(ind) = 1;
+    pZ_gi_cand = resolve(pZ_res,b,id_new);
+    % check if candidate is contained in 
+    for j=1:length(pZ_gi_c_save)
+        res_tmp = isequal(pZ_gi_cand,pZ_gi_c_save{j});
+        if res_tmp
+            break;
         end
     end
+    pZ_gi_c_save(j) = [];
+    assertLoop(res_tmp,i)
+end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

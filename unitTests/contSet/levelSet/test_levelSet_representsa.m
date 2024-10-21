@@ -23,8 +23,6 @@ function res = test_levelSet_representsa
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % init levelSets ----------------------------------------------------------
 
 % single equation
@@ -45,22 +43,22 @@ ls_Inf = levelSet.Inf(2);
 
 % representsa emtpySet ----------------------------------------------------
 
-resvec(end+1) = ~representsa(ls1,'emptySet');
-resvec(end+1) = ~representsa(ls2,'emptySet');
-resvec(end+1) = representsa(ls_empty,'emptySet');
-resvec(end+1) = ~representsa(ls_Inf,'emptySet');
+assert(~representsa(ls1,'emptySet'));
+assert(~representsa(ls2,'emptySet'));
+assert(representsa(ls_empty,'emptySet'));
+assert(~representsa(ls_Inf,'emptySet'));
 
 
 % representsa fullspace ---------------------------------------------------
 
-resvec(end+1) = ~representsa(ls1,'fullspace');
-resvec(end+1) = ~representsa(ls2,'fullspace');
-resvec(end+1) = ~representsa(ls_empty,'fullspace');
-resvec(end+1) = representsa(ls_Inf,'fullspace');
+assert(~representsa(ls1,'fullspace'));
+assert(~representsa(ls2,'fullspace'));
+assert(~representsa(ls_empty,'fullspace'));
+assert(representsa(ls_Inf,'fullspace'));
 
 
 % gather results ----------------------------------------------------------
-res = all(resvec);
+res = true;
 
 
 % ------------------------------ END OF CODE ------------------------------

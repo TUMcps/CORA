@@ -48,21 +48,17 @@ E_ = [1 0 2 1 3 2 1 0;...
            0 1 0 1 0 1 2 3];
        
 % check for correctness
-if ~all(withinTol(pZres.c,c_)) || any(size(pZres.G)-size(G_)) ...
-        || any(size(pZres.E)-size(E_))
-    throw(CORAerror('CORA:testFailed'));
-else
-    for i = 1:size(E_,2)    
+assert(all(withinTol(pZres.c,c_)))
+assert(all(size(pZres.G) == size(G_)))
+assert(all(size(pZres.E) == size(E_)))
+    
+for i = 1:size(E_,2)    
 
-        ind = ismember(pZres.E',E_(:,i)','rows');  
-        ind_ = find(ind > 0);
+    ind = ismember(pZres.E',E_(:,i)','rows');  
+    ind_ = find(ind > 0);
 
-        if isempty(ind_)
-            throw(CORAerror('CORA:testFailed'));
-        elseif ~all(pZres.G(:,ind_(1)) == G_(:,i))
-            throw(CORAerror('CORA:testFailed'));
-        end
-    end
+    assertLoop(~isempty(ind_),i);
+    assertLoop(all(pZres.G(:,ind_(1)) == G_(:,i)),i)
 end
 
 % second test with extreme point
@@ -104,10 +100,7 @@ p0_res = cubMapPoint(p0, p0, p0, T);
 % plot(pZ_res,[1 2],'Splits',14);
 % scatter(p0_res(1,:),p0_res(2,:),'.k')
 
-if ~containsPointSet(pZ_res, p0_res, [], 30)
-    throw(CORAerror('CORA:testFailed'));
-end
-
+assert(containsPointSet(pZ_res, p0_res, [], 30))
 
 res = true;
 

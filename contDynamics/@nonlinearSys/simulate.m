@@ -1,13 +1,13 @@
-function [t,x,ind,y] = simulate(obj,params,varargin)
+function [t,x,ind,y] = simulate(nlnsys,params,varargin)
 % simulate - simulates the system within a location
 %
 % Syntax:
-%    [t,x] = simulate(obj,params)
-%    [t,x,ind] = simulate(obj,params,options)
-%    [t,x,ind,y] = simulate(obj,params,options)
+%    [t,x] = simulate(nlnsys,params)
+%    [t,x,ind] = simulate(nlnsys,params,options)
+%    [t,x,ind,y] = simulate(nlnsys,params,options)
 %
 % Inputs:
-%    obj - nonlinearSys object
+%    nlnsys - nonlinearSys object
 %    params - struct containing the parameters for the simulation
 %       .tStart: initial time
 %       .tFinal: final time
@@ -22,12 +22,12 @@ function [t,x,ind,y] = simulate(obj,params,varargin)
 %    y - output vector
 %
 % Example: 
-%    sys = nonlinearSys(@vanderPolEq);
+%    nlnsys = nonlinearSys(@vanderPolEq);
 %
 %    params.x0 = [1.4;2.3];
 %    params.tFinal = 6;
 %
-%    [t,x] = simulate(sys,params);
+%    [t,x] = simulate(nlnsys,params);
 %
 %    plot(x(:,1),x(:,2),'r');
 %
@@ -58,7 +58,7 @@ if nargin >= 3 && ~isempty(varargin{1})
 end
 
 if ~isfield(params,'u')
-	params.u = zeros(obj.nrOfInputs,1); 
+	params.u = zeros(nlnsys.nrOfInputs,1); 
 end
 
 if ~isfield(params,'tStart')
@@ -90,15 +90,15 @@ for i = 1:size(params.u,2)
     % simulate using MATLABs ode45 function
     try
         if isOpt
-            [t_,x_,~,~,ind] = ode45(getfcn(obj,params_),tSpan,x0,options);
+            [t_,x_,~,~,ind] = ode45(getfcn(nlnsys,params_),tSpan,x0,options);
         else
-            [t_,x_,~,~,ind] = ode45(getfcn(obj,params_),tSpan,x0);
+            [t_,x_,~,~,ind] = ode45(getfcn(nlnsys,params_),tSpan,x0);
         end
     catch
         if isOpt
-            [t_,x_] = ode45(getfcn(obj,params_),tSpan,x0,options);
+            [t_,x_] = ode45(getfcn(nlnsys,params_),tSpan,x0,options);
         else
-            [t_,x_] = ode45(getfcn(obj,params_),tSpan,x0);
+            [t_,x_] = ode45(getfcn(nlnsys,params_),tSpan,x0);
         end
     end
 

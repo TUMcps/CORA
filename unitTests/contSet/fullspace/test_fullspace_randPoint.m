@@ -29,21 +29,21 @@ fs = fullspace(n);
 
 % sample point
 p = randPoint(fs);
-res = contains(fs,p);
+assert(contains(fs,p));
 
 % more syntax variations
 p = randPoint(fs,5);
-res(end+1,1) = all(contains(fs,p));
+assert(all(contains(fs,p)));
 p = randPoint(fs,10,'standard');
-res(end+1,1) = all(contains(fs,p));
+assert(all(contains(fs,p)));
 
 % extreme points
 p = randPoint(fs,1,'extreme');
-res(end+1,1) = all(contains(fs,p));
+assert(all(contains(fs,p)));
 p = randPoint(fs,'all','extreme');
-res(end+1,1) = all(contains(fs,p));
+assert(all(contains(fs,p)));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

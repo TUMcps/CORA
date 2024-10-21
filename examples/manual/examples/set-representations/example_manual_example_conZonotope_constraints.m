@@ -37,7 +37,7 @@ P = polytope(-A,-b);
 
 figure; hold on; grid on;
 xlim([-1;1]); ylim([-1;1]); zlim([-1;1]);
-plot(P,1:3,'FaceColor','next');
+plot(P,1:3,'FaceColor',nextcolor);
 view(31,21);
 
 % enlargeAxis(1.2)

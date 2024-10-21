@@ -16,7 +16,7 @@ function res = test_zonotope_compact
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       26-July-2016
@@ -25,43 +25,29 @@ function res = test_zonotope_compact
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
+% 1D, zero removal/all
+Z = zonotope(4, [2 -3 1 0 2]);
+Z_compact = compact(Z,'zeros');
+G_true = [2 -3 1 2];
+assert(compareMatrices(Z_compact.G,G_true));
+Z_compact = compact(Z,'all');
+G_true = 8;
+assert(compareMatrices(Z_compact.G,G_true));
 
-% create zonotope
-c = [1;5];
-G = [2,0,4; 6 0 0];
-Z = zonotope(c,G);
+% 2D, zero removal
+Z = zonotope([1;5],[2 0 4; 6 0 0]);
+Z_compact = compact(Z,'zeros');
+G_true = [2, 4; 6, 0];
+assert(compareMatrices(Z_compact.G,G_true));
 
-% obtain zonotope without zeros
-Z_ = compact(Z,'zeros');
-G_ = Z_.G;
-
-% true result
-true_mat = [2, 4; 6, 0];
-
-% check result
-res(end+1,1) = compareMatrices(G_,true_mat);
-
-
-% create a zonotope
-Z_cent = zeros(2,1);
-% aligned generators differ by scaling, sign
-Z_gens = [4 2 2 3 1 -4;
-          2 3 1 0 2 -2];
-Z = zonotope(Z_cent, Z_gens);
-
-% delete aligned generators
-Z_del = compact(Z,'aligned');
-
-% true matrix
-Z_gens_true = [10 2 3 1;
-               5  3 0 2];
-
-% check results
-res(end+1,1) = compareMatrices(Z_gens_true,Z_del.G);
+% 2D, aligned generators differ by scaling, sign
+Z = zonotope(zeros(2,1), [4 2 2 3 1 -4; 2 3 1 0 2 -2]);
+Z_compact = compact(Z,'all');
+G_true = [10 2 3 1; 5 3 0 2];
+assert(compareMatrices(Z_compact.G,G_true));
 
 
-% combine results
-res = all(res);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

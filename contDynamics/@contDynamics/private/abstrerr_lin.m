@@ -1,30 +1,28 @@
-function [trueError,VerrorDyn] = abstrerr_lin(obj,options,R)
+function [trueError,VerrorDyn] = abstrerr_lin(sys,R,params,options)
 % abstrerr_lin - computes the abstraction error for linearization approach;
 %    to enter, options.alg = 'lin' and options.tensorOrder = 2|3
 %
 % Syntax:
-%    [trueError,VerrorDyn] = abstrerr_lin(obj,options,R)
+%    [trueError,VerrorDyn] = abstrerr_lin(sys,R,params,options)
 %
 % Inputs:
-%    obj - nonlinearSys or nonlinParamSys object
-%    options - options struct
+%    sys - nonlinearSys or nonlinParamSys object
 %    R - reachable set (time-interval solution from linearized system
 %           + estimated set of abstraction errors)
+%    params - model parameters
+%    options - options struct
 %
 % Outputs:
 %    trueError - abstraction error (interval)
 %    Verrordyn - abstraction error (zonotope)
 %
-% Example:
-%    -
+% References: 
+%   [1] M. Althoff et al. "Reachability Analysis of Nonlinear Systems with 
+%       Uncertain Parameters using Conservative Linearization"
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
-%
-% References: 
-%   [1] M. Althoff et al. "Reachability Analysis of Nonlinear Systems with 
-%       Uncertain Parameters using Conservative Linearization"
 %
 % See also: linReach
 %
@@ -40,18 +38,18 @@ function [trueError,VerrorDyn] = abstrerr_lin(obj,options,R)
 % compute interval of reachable set
 IHx = interval(R);
 % compute intervals of total reachable set
-totalInt_x = IHx + obj.linError.p.x;
+totalInt_x = IHx + sys.linError.p.x;
 
 % compute intervals of input
-IHu = interval(options.U);
+IHu = interval(params.U);
 % translate intervals by linearization point
-totalInt_u = IHu + obj.linError.p.u;
+totalInt_u = IHu + sys.linError.p.u;
 
 
 if options.tensorOrder == 2
     
     % assign correct hessian (using interval arithmetic)
-    obj = setHessian(obj,'int');
+    sys = setHessian(sys,'int');
 
     % evaluate the hessian matrix with the selected range-bounding technique
     if isfield(options,'lagrangeRem') && isfield(options.lagrangeRem,'method') && ...
@@ -61,16 +59,16 @@ if options.tensorOrder == 2
         [objX,objU] = initRangeBoundingObjects(totalInt_x,totalInt_u,options);
 
         % evaluate the Lagrange remainder 
-        if isa(obj,'nonlinParamSys')
-            H = obj.hessian(objX,objU,options.paramInt);
+        if isa(sys,'nonlinParamSys')
+            H = sys.hessian(objX,objU,params.paramInt);
         else
-            H = obj.hessian(objX,objU);
+            H = sys.hessian(objX,objU);
         end
     else
-        if isa(obj,'nonlinParamSys')
-            H = obj.hessian(totalInt_x,totalInt_u,options.paramInt);
+        if isa(sys,'nonlinParamSys')
+            H = sys.hessian(totalInt_x,totalInt_u,params.paramInt);
         else
-            H = obj.hessian(totalInt_x,totalInt_u);
+            H = sys.hessian(totalInt_x,totalInt_u);
         end
     end
 
@@ -93,7 +91,7 @@ if options.tensorOrder == 2
         end
         
         trueError = errorLagr;
-        VerrorDyn = zonotope([0*trueError,diag(trueError)]);
+        VerrorDyn = zonotope(0*trueError,diag(trueError));
 
     else
         % no interval arithmetic (?)
@@ -103,24 +101,24 @@ if options.tensorOrder == 2
 
         %compute zonotope of state and input
         Rred = reduce(zonotope(R),options.reductionTechnique,options.errorOrder);
-        Z = cartProd(Rred,options.U);
+        Z = cartProd(Rred,params.U);
 
         %obtain combined interval z and absolute values
         dz = [IHx; IHu];
         dz_abs = max(abs(infimum(dz)),abs(supremum(dz)));
         
         %separate evaluation
-        H_mid = cell(obj.dim,1);
-        H_rad = cell(obj.dim,1);
-        for i=1:obj.dim
+        H_mid = cell(sys.nrOfStates,1);
+        H_rad = cell(sys.nrOfStates,1);
+        for i=1:sys.nrOfStates
             H_mid{i} = sparse(center(H{i}));
             H_rad{i} = sparse(rad(H{i}));
         end
         error_mid = 0.5*quadMap(Z,H_mid);
         
         %interval evaluation
-        error_rad = zeros(obj.dim,1);
-        for i=1:obj.dim
+        error_rad = zeros(sys.nrOfStates,1);
+        for i=1:sys.nrOfStates
             error_rad(i,1) = 0.5*dz_abs'*H_rad{i}*dz_abs;
         end
         
@@ -136,8 +134,8 @@ if options.tensorOrder == 2
 elseif options.tensorOrder == 3
 
     % set handles to correct files
-    obj = setHessian(obj,'standard');
-    obj = setThirdOrderTensor(obj,'int');
+    sys = setHessian(sys,'standard');
+    sys = setThirdOrderTensor(sys,'int');
     
     % obtain intervals and combined interval z
     dz = [IHx; IHu];
@@ -146,13 +144,13 @@ elseif options.tensorOrder == 3
     Rred = reduce(R,options.reductionTechnique,options.errorOrder);
 
     % combined zonotope (states + input)
-    Z = cartProd(Rred,options.U);
+    Z = cartProd(Rred,params.U);
 
     % calculate hessian matrix
-    if isa(obj,'nonlinParamSys')
-        H = obj.hessian(obj.linError.p.x,obj.linError.p.u,options.paramInt);
+    if isa(sys,'nonlinParamSys')
+        H = sys.hessian(sys.linError.p.x,sys.linError.p.u,params.paramInt);
     else
-        H = obj.hessian(obj.linError.p.x,obj.linError.p.u);
+        H = sys.hessian(sys.linError.p.x,sys.linError.p.u);
     end
 
     % evaluate third-order tensor 
@@ -162,17 +160,17 @@ elseif options.tensorOrder == 3
         % create taylor models or zoo objects
         [objX,objU] = initRangeBoundingObjects(totalInt_x,totalInt_u,options);
 
-        if isa(obj,'nonlinParamSys')
-            [T,ind] = obj.thirdOrderTensor(objX, objU, options.paramInt);
+        if isa(sys,'nonlinParamSys')
+            [T,ind] = sys.thirdOrderTensor(objX, objU, params.paramInt);
         else
-            [T,ind] = obj.thirdOrderTensor(objX, objU);
+            [T,ind] = sys.thirdOrderTensor(objX, objU);
         end
 
     else
-        if isa(obj,'nonlinParamSys')
-            [T,ind] = obj.thirdOrderTensor(totalInt_x, totalInt_u, options.paramInt);
+        if isa(sys,'nonlinParamSys')
+            [T,ind] = sys.thirdOrderTensor(totalInt_x, totalInt_u, params.paramInt);
         else
-            [T,ind] = obj.thirdOrderTensor(totalInt_x, totalInt_u);
+            [T,ind] = sys.thirdOrderTensor(totalInt_x, totalInt_u);
         end
     end
 
@@ -182,10 +180,10 @@ elseif options.tensorOrder == 3
     % calculate the Lagrange remainder term (third-order error)
     if isempty(cell2mat(ind))
         % empty zonotope if all entries in T are empty
-        errorLagr = zonotope(zeros(obj.dim,1));
+        errorLagr = zonotope(zeros(sys.nrOfStates,1));
     else
         % skip tensors with all-zero entries using ind from tensor creation
-        errorLagr = interval(zeros(obj.dim,1),zeros(obj.dim,1));
+        errorLagr = interval(zeros(sys.nrOfStates,1),zeros(sys.nrOfStates,1));
         for i=1:length(ind)
             error_sum = interval(0,0);
             for j=1:length(ind{i})

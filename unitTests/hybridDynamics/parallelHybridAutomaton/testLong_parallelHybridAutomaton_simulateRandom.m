@@ -51,10 +51,10 @@ simRes = simulateRandom(PHA,params,simOpt);
 
 
 % five resulting trajectories
-res = length(simRes) == simOpt.points;
+assert(length(simRes) == simOpt.points);
 % reachable set has to contain trajectories
-res(end+1,1) = contains(R,simRes);
+assert(contains(R,simRes));
 
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -38,9 +38,7 @@ for i=1:nrOfTests
     I = interval(lb,ub);
 
     % check with correct solution
-    if ~isFullDim(I)
-        res = false; break;
-    end
+    assertLoop(isFullDim(I),i)
 
     % init random lower-dimensional interval
     % ... by setting random dimension to 0
@@ -50,9 +48,7 @@ for i=1:nrOfTests
     I = interval(lb,ub);
 
     % check with correct solution
-    if isFullDim(I)
-        res = false; break;
-    end
+    assertLoop(~isFullDim(I),i)
 
 end
 

@@ -27,8 +27,8 @@ function res = test_location_checkFlow
 
 % init location with simple dynamics
 inv = polytope([1 0],0);
-guard = conHyperplane([1 0],0);
-reset = struct('A',eye(2),'c',zeros(2,1));
+guard = polytope([],[],[1 0],0);
+reset = linearReset.eye(2);
 trans = transition(guard,reset,1);
 flow = linearSys(zeros(2),0,[-1;0]);
 loc = location(inv,trans,flow);
@@ -41,19 +41,20 @@ R{2} = R{1} + [1;-0.7];
 R{3} = R{2} + [1;-0.7];
 
 % set required options
-options.U = zonotope(0);
+params.U = zonotope(0);
+params.W = zonotope(0);
 
 % check flow
-[res_,R_] = checkFlow(loc,guard,R,options);
+[res_,R_] = checkFlow(loc,guard,R,params);
 % no sets should be left
-res = ~res_ && isempty(R_);
+assert(~res_ && isempty(R_));
 
 % init location with level set
 syms x y;
 eq = y - x^2;
 inv = levelSet(eq,[x;y],'<=');
 guard = levelSet(eq,[x;y],'==');
-reset = struct('A',eye(2),'c',zeros(2,1));
+reset = linearReset.eye(2);
 trans = transition(guard,reset,1);
 flow = linearSys(zeros(2),0,[1;1]);
 loc = location(inv,trans,flow);
@@ -64,12 +65,13 @@ R{2} = interval([-0.5;-1],[0.5;1]);
 R{3} = interval([1;-1],[2;1]);
 
 % check flow
-[res_,R_] = checkFlow(loc,guard,R,options);
+[res_,R_] = checkFlow(loc,guard,R,params);
+assert(res_)
+
 % all but last set should be left
-res(end+1,1) = res_ && length(R_) == 2 && ...
-    isequal(R_{1},R{1}) && isequal(R_{2},R{2});
+assert(length(R_) == 2 && isequal(R_{1},R{1}) && isequal(R_{2},R{2}));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

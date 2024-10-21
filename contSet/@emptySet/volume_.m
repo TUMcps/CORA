@@ -1,5 +1,5 @@
 function val = volume_(O)
-% volume_ - returns the volume of a full-dimensional space
+% volume_ - returns the volume of a empty set
 %
 % Syntax:
 %    val = volume_(O)

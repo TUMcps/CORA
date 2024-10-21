@@ -37,7 +37,8 @@ function res = abs(I)
 res = I;
 
 % use size(I.inf) since size(I) is a bit slow... include sparse handling
-res.inf = max(cat(3, zeros(size(I.inf)), full(I.inf), full(-I.sup)), [], 3);
-res.sup = max(cat(3, full(-I.inf), full(I.sup)), [], 3);
+maxDim = numel(size(I));
+res.inf = max(cat(maxDim+1, zeros(size(I.inf)), full(I.inf), full(-I.sup)), [], maxDim+1);
+res.sup = max(cat(maxDim+1, full(-I.inf), full(I.sup)), [], maxDim+1);
 
 % ------------------------------ END OF CODE ------------------------------

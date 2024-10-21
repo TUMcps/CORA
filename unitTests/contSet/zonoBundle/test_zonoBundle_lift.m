@@ -23,8 +23,6 @@ function res = test_zonoBundle_lift
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-resvec = [];
-
 % init
 Z1 = zonotope([1;1], [3 0; 0 2]);
 Z2 = zonotope([0;0], [2 2; 2 -2]);
@@ -34,17 +32,19 @@ zB = zonoBundle({Z1,Z2});
 try
     zB_lift = lift(zB,5,[2,1]);
     % should fail
-    resvec(end+1) = false;
+    assert(false);
 catch ME
-    resvec(end+1) = strcmp(ME.identifier,'CORA:notDefined');
+    if ~strcmp(ME.identifier,'CORA:notDefined')
+        rethrow(ME)
+    end
 end
 
 % except no new dimensions are created
 zB_lift = lift(zB,2,[2,1]);
 zB_proj = project(zB,[2,1]);
-resvec(end+1) = isequal(zB_proj,zB_lift);
+assert(isequal(zB_proj,zB_lift));
 
 % gather results
-res = all(resvec);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

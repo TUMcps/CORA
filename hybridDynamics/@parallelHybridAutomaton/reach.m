@@ -32,28 +32,20 @@ function [R,res] = reach(pHA,params,options,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+    spec = setDefaultValues({[]},varargin);
     res = true;
     
-    % new options preprocessing
-    options = validateOptions(pHA,mfilename,params,options);
-    % ensure that options are not checked again (in any contDynamics/reach)
-    options.validated = true;
+    % options preprocessing
+    [params,options] = validateOptions(pHA,params,options);
 
     % preprocessing of specifications
-    options.specification = [];
-    spec = [];
-    specLocSpecific = false;
-    
-    if nargin >= 4
-        spec = varargin{1};
+    if ~isempty(spec)
         % init that all specs are active everywhere
         options.specification = spec;
-        % check if location-specific specs given 
-        for i=1:length(spec)
-            if isempty(spec(i).location)
-                specLocSpecific = true; break
-            end
-        end
+        specLocSpecific = aux_checkSpecLocSpecific(spec);
+    else
+        options.specification = [];
+        specLocSpecific = false;
     end
     
     % initialize reachable set: we use a fixed size to start with and then
@@ -64,22 +56,19 @@ function [R,res] = reach(pHA,params,options,varargin)
     r = 0;
 
     % initialize queue
-    list.set = options.R0;
-    list.loc = options.startLoc;
-    list.time = interval(options.tStart);
+    list.set = params.R0;
+    list.loc = params.startLoc;
+    list.time = interval(params.tStart);
     list.parent = 0;
 
     % display information on command window
-    if options.verbose
-        disp("Start analysis...");
-        disp("  pre-process synchronization labels...");
-    end
+    aux_verbose_displayStart(options.verbose);
 
     % initialize tracker (for livelock detection)
     tracker = struct(...
         'switchingTime',interval.empty(1),...
-        'locID',double.empty(0,length(options.startLoc)),...
-        'transition',double.empty(0,length(options.startLoc)),...
+        'locID',double.empty(0,length(params.startLoc)),...
+        'transition',double.empty(0,length(params.startLoc)),...
         'syncLabel','');
 
     % create list of label occurences to check whether all labeled
@@ -115,13 +104,16 @@ function [R,res] = reach(pHA,params,options,varargin)
         end
         
         % compute input set for the constructed location
-        [options.U,options.u] = aux_mergeInputSet(locID,options.Uloc,options.uloc,options.inputCompMap);
+        [params.U,params.u] = aux_mergeInputSet(...
+            locID,params.Uloc,params.uloc,params.inputCompMap);
+        % compute disturbance set and noise set for the constructed location
+        [params.W,params.V] = aux_mergeDistNoiseSet(locID,params.Wloc,params.Vloc);
         
         % check for instant transitions
         [mergedTrans,tracker] = instantTransition(pHA,locID,allLabels,tracker);
         
         if false %%checkLivelock(tracker)
-            % check for livelock
+            % check for livelock (currently deactivated)
             break
         elseif ~isempty(mergedTrans)
             % restart if instant transition has occurred
@@ -146,27 +138,21 @@ function [R,res] = reach(pHA,params,options,varargin)
 
             % here, we overwrite the first entry in list and continue the
             % reachability analysis with this set -- in contrast to below,
-            % where the new sets are appended at the end of the list 
+            % where the new sets are appended at the end of the list
             
             % reset state
-            list(1).set = reset(mergedTrans,R0,options.U);
+            list(1).set = evaluate(mergedTrans.reset,R0,params.U);
             % reset location ID
             list(1).loc = mergedTrans.target;
             % reset parent
             list(1).parent = r;
             
             % print on command window that an instant transition has occurred
-            if options.verbose
-                disp("  transition: locations [" + ...
-                    strjoin(string(locID),",") + "] -> locations [" + ...
-                    strjoin(string(list(1).loc),",") + "]... " + ...
-                    "(time: " + string(list(1).time) + ")");
-            end
-
+            aux_verbose_displayInstantTransition(options.verbose,list,locID);
             continue
         end
 
-        % location for evaluation via local Automaton Product        
+        % location for evaluation via local Automaton Product
         % check if location product has been computed before
         locProdIdx = cellfun(@(x) all(x == locID),{pHA.locProd.locID});
         if k > 0 && any(locProdIdx)
@@ -174,21 +160,16 @@ function [R,res] = reach(pHA,params,options,varargin)
             locObj = pHA.locProd(locProdIdx).location;
         else
             % compute new location product
-            if options.verbose
-                disp("  compute location product of locations [" + ...
-                   strjoin(string(locID),',') + "]...");
-            end
+            aux_verbose_displayLocationProduct(options.verbose,locID);
             locObj = locationProduct(pHA,locID,allLabels);
             pHA.locProd = [pHA.locProd;...
                 struct('location',locObj,'locID',locID)];
         end
 
         % compute the reachable set within the constructed location
-        if options.verbose
-            disp("  compute reachable set in locations [" + ...
-               strjoin(string(locID),',') + "]...");
-        end
-        [Rtemp,Rjump,res] = reach(locObj,R0,tStart,options);
+        aux_verbose_displayProgress(options.verbose,locID);
+        params.R0 = R0; params.tStart = tStart;
+        [Rtemp,Rjump,res] = reach(locObj,params,options);
 
         % remove current element from the queue
         list = list(2:end);
@@ -200,9 +181,7 @@ function [R,res] = reach(pHA,params,options,varargin)
         list = [list; Rjump];
 
         % display transitions on command window
-        if options.verbose
-            aux_displayTransition(Rjump,locID);
-        end
+        aux_verbose_displayTransition(options.verbose,Rjump,locID);
 
         % store the computed reachable set
         for i = 1:size(Rtemp,1)
@@ -223,13 +202,22 @@ function [R,res] = reach(pHA,params,options,varargin)
     % pre-allocation of memory)
     R = R(1:r,1);
 
-    if options.verbose
-        disp("...time horizon reached, analysis finished." + newline);
+    aux_verbose_displayEnd(options.verbose);
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function specLocSpecific = aux_checkSpecLocSpecific(spec)
+
+% check if location-specific specs given 
+for i=1:length(spec)
+    if isempty(spec(i).location)
+        specLocSpecific = true; break
     end
 end
-    
-    
-% Auxiliary functions -----------------------------------------------------
+
+end
 
 function [U,u] = aux_mergeInputSet(loc,Uloc,uloc,inputCompMap)
 % compute the joint input set for the location generated via the automaton
@@ -260,6 +248,20 @@ function [U,u] = aux_mergeInputSet(loc,Uloc,uloc,inputCompMap)
             u = u + utemp;
         end
     end
+
+end
+
+function [W,V] = aux_mergeDistNoiseSet(locID,Wloc,Vloc)
+% current assumption: disturbances/noises for all locations are independent
+% from one another
+
+W = Wloc{1}{locID(1)};
+V = Vloc{1}{locID(1)};
+
+for i=2:length(locID)
+    W = cartProd(W,Wloc{i}{locID(i)});
+    V = cartProd(V,Vloc{i}{locID(i)});
+end
 
 end
 
@@ -298,9 +300,60 @@ function activeSpecs = aux_filterSpecifications(spec,locID)
 
 end
 
-function aux_displayTransition(list,locID)
+% logging functions below... (only print if options.verbose = true)
+
+function aux_verbose_displayStart(verbose)
+% display start message
+if ~verbose; return; end
+
+disp("Start analysis...");
+disp("  pre-process synchronization labels...");
+
+end
+
+function aux_verbose_displayEnd(verbose)
+% display end message
+if ~verbose; return; end
+
+disp("...time horizon reached, analysis finished." + newline);
+
+end
+
+function aux_verbose_displayInstantTransition(verbose,list,locID)
+% display if instant transition happened
+if ~verbose; return; end
+
+if options.verbose
+    disp("  transition: locations [" + ...
+        strjoin(string(locID),",") + "] -> locations [" + ...
+        strjoin(string(list(1).loc),",") + "]... " + ...
+        "(time: " + string(list(1).time) + ")");
+end
+
+end
+
+function aux_verbose_displayLocationProduct(verbose,locID)
+% display which location production is computed next
+if ~verbose; return; end
+
+disp("  compute location product of locations [" + ...
+   strjoin(string(locID),',') + "]...");
+
+end
+
+function aux_verbose_displayProgress(verbose,locID)
+% display which location's reachable set is computed next
+if ~verbose; return; end
+
+disp("  compute reachable set in locations [" + ...
+   strjoin(string(locID),',') + "]...");
+
+end
+
+function aux_verbose_displayTransition(verbose,list,locID)
 % only if verbose = true: print outgoing transitions with target location
 % identifier and time during which the transition has occurred
+if ~verbose; return; end
 
 if isempty(list)
     return

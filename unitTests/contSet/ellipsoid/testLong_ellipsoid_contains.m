@@ -14,23 +14,88 @@ function res = testLong_ellipsoid_contains
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Victor Gassmann
 % Written:       15-October-2019
 % Last update:   07-August-2020
 %                19-March-2021
-% Last revision: ---
+% Last revision: 22-September-2024 (MW, integrate components)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% check ellipsoid 
-res = testLong_component_ellipsoid_inEllipsoid;
+% containment of ellipsoids
+assert(aux_containsEllipsoid());
 
-% check zonotope
-res = res && testLong_component_ellipsoid_inZonotope;
+% containment of zonotopes
+assert(aux_containsZonotope());
 
-% check point containment
+% point containment
+assert(aux_containsPoint());
+
+
+% combine results
+res = true;
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_containsEllipsoid()
+
+res = true;
+nRuns = 2;
+for i=10:5:15
+    for j=1:nRuns
+        try
+            %%% generate all variables necessary to replicate results
+            E1 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',true);
+            E2 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',false);
+            %%%
+            
+            % check whether E1 dg, E2 non-d results in E2\subseteq E1 = false
+            assertLoop(~contains(E1,E2),i,j)
+
+            % E3 contains E2
+            E3 = ellipsoid(0.5*E2.Q,(1+1e-4)*E2.q);
+            % check if E3 contains E2
+            assertLoop(contains(E2,E3),i,j)
+
+        catch ME
+            if strcmp(ME.identifier,'CORA:solverIssue')
+                disp('Randomly generated ellipsoids caused solver issues! Ignoring...');
+                continue;
+            end
+            rethrow(ME);
+        end
+    end
+end
+
+end
+
+function res = aux_containsZonotope()
+
+res = true;
+nRuns = 2;
+for i=2:3
+    for j=1:nRuns
+        % do not test vertices in high dims as comp. complexity prevents it
+        % for high dimensions
+        Z = zonotope.generateRandom('Dimension',2);
+        E_Zo = ellipsoid(Z,'outer:exact');
+        assertLoop(contains(E_Zo,Z),i,j)
+
+        E_Zi = ellipsoid(Z,'inner:exact');
+        assertLoop(contains(E_Zo,E_Zi),i,j)
+    end
+end
+
+end
+
+function res = aux_containsPoint()
+
+res = true;
 runs = 10;
 bools = [false,true];
 for i=1:5:30
@@ -42,11 +107,11 @@ for i=1:5:30
             samples = randPoint(E,N);
             %%%
             
-            if ~all(contains(E,samples))
-                res = false; return
-            end
+            assertLoop(all(contains(E,samples)),i,j)
         end
     end
+end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

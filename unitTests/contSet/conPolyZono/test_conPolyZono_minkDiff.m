@@ -43,12 +43,10 @@ shift = [-0.5;0];
 % compute Minkowski difference (only center shifted)
 cPZ_ = minkDiff(cPZ,shift);
 
-if ~compareMatrices(cPZ_.c,c-shift) ...
-        || ~compareMatrices([cPZ.G;cPZ.E],[cPZ_.G;cPZ_.E]) ...
-        || ~compareMatrices([cPZ.A';cPZ.b']',[cPZ_.A';cPZ_.b']') ...
-        || ~compareMatrices(cPZ.GI,cPZ_.GI)
-    res = false;
-end
+assert(compareMatrices(cPZ_.c,c-shift))
+assert(compareMatrices([cPZ.G;cPZ.E],[cPZ_.G;cPZ_.E]))
+assert(compareMatrices([cPZ.A';cPZ.b']',[cPZ_.A';cPZ_.b']'))
+assert(compareMatrices(cPZ.GI,cPZ_.GI))
 
 % instantiate interval
 I = interval([-0.02;-0.05],[0.04;0.03]);

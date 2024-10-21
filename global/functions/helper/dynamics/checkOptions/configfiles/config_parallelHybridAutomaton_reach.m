@@ -1,15 +1,12 @@
-function [paramsList,optionsList] = config_parallelHybridAutomaton_reach(sys,params,options)
+function [paramsList,optionsList] = config_parallelHybridAutomaton_reach
 % config_parallelHybridAutomaton_reach - configuration file for validation
 %    of model parameters and algorithm parameters
 %
 % Syntax:
-%    [paramsList,optionsList] = ...
-%       config_parallelHybridAutomaton_reach(sys,params,options)
+%    [paramsList,optionsList] = config_parallelHybridAutomaton_reach
 %
 % Inputs:
-%    sys - parallelHybridAutomaton object
-%    params - user-defined model parameters
-%    options - user-defined algorithm parameters
+%    -
 %
 % Outputs:
 %    paramsList - list of model parameters

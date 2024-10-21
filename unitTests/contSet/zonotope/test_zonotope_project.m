@@ -42,7 +42,11 @@ true_G = [-3, -2, -1; ...
            5, 5, 5];
 
 % check result
-res = compareMatrices(c1,true_c) && compareMatrices(G1,true_G) ...
-    && compareMatrices(c2,true_c) && compareMatrices(G2,true_G);
+assert(compareMatrices(c1,true_c))
+assert(compareMatrices(G1,true_G))
+assert(compareMatrices(c2,true_c))
+assert(compareMatrices(G2,true_G))
+
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

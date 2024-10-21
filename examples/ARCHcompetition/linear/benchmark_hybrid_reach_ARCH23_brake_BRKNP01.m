@@ -46,8 +46,8 @@ A = matZonotope(Ac,Ag);
 B = [0;0;0;0;1];
 
 % reset
-reset.A = [1 0 0 0 0; 0 1 0 0 0; 0 -1 0 0 0;0 -T_sample 0 1 0;0 0 0 0 1];
-reset.c = [0; 0; x0; T_sample*x0; -T_sample];
+reset = linearReset([1 0 0 0 0; 0 1 0 0 0; 0 -1 0 0 0;0 -T_sample 0 1 0;0 0 0 0 1],...
+    zeros(5,1),[0; 0; x0; T_sample*x0; -T_sample]);
 
 % invariant set
 inv = polytope([0 0 0 0 1],T_sample + t_max);
@@ -63,7 +63,7 @@ sys = linParamSys(A,B,'constParam');
 trans(1) = transition(guard,reset,1);
 loc(1) = location(inv,trans,sys);
 
-HA = hybridAutomaton(loc);
+HA = hybridAutomaton('brake_BRKNP01',loc);
 
 
 % Parameter ---------------------------------------------------------------

@@ -23,8 +23,6 @@ function res = test_conZonotope_contains
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty set
 % cZ = conZonotope.empty(2);
 
@@ -40,8 +38,8 @@ p_in = [0 1 0  0 1 -1 -2;
 p_out = [3  0 1 -2  3;
          1 -2 2  0 -1];
 
-res(end+1,1) = all(contains(cZ,p_in));
-res(end+1,1) = ~any(contains(cZ,p_out));
+assert(all(contains(cZ,p_in)));
+assert(~any(contains(cZ,p_out)));
 
 % visualization
 % figure; hold on;
@@ -51,6 +49,6 @@ res(end+1,1) = ~any(contains(cZ,p_out));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

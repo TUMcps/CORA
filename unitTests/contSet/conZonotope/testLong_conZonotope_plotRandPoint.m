@@ -52,9 +52,9 @@ try
     
     % close figure
     close;
-catch
+catch ME
     close;
-    res = false;
+    rethrow(ME)
 end
 
 % ------------------------------ END OF CODE ------------------------------

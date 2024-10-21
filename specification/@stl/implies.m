@@ -23,7 +23,7 @@ function res = implies(obj1,obj2)
 
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   07-February-2024 (FL, replace from and to by interval)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -42,8 +42,7 @@ function res = implies(obj1,obj2)
     res.rhs = obj2;
     res.temporal = obj1.temporal | obj2.temporal;
     res.logic = obj1.logic & obj2.logic;
-    res.from = [];
-    res.to = [];
+    res.interval = [];
     res.variables = unique([obj1.variables;obj2.variables]);
 end
 

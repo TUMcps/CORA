@@ -23,6 +23,7 @@ function [completed,res,tTotal] = example_neuralNet_reach_05_doublePendulum_less
 % Written:       08-November-2021
 % Last update:   23-May-2022 (TL, ARCH'22 revisions)
 %                30-March-2023 (TL, verify violated runs, ARCH'23 revisions)
+%                02-May-2024 (TL, ARCH'24 revisions)
 % Last revision: 14-November-2022 (TL, clean up)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -44,10 +45,10 @@ options.tensorOrder = 2;
 options.taylorTerms = 4;
 options.zonotopeOrder = 200;
 
-% Parameters for NN evaluation --------------------------------------------
+% Options for NN evaluation -----------------------------------------------
 
-evParams = struct();
-evParams.poly_method = "singh";
+options.nn = struct();
+options.nn.poly_method = "singh";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -63,13 +64,13 @@ sys = neurNetContrSys(sys,nn,0.05);
 
 % Specification -----------------------------------------------------------
 
-safeSet = interval([-1.0;-1.0;-1.0;-1.0],[1.7;1.7;1.7;1.7]);
+safeSet = interval([-1.7;-1.7;-1.7;-1.7],[2;2;2;2]);
 spec = specification(safeSet,'safeSet');
 
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, evParams, true);
+[res, R, simRes] = verify(sys, spec, params, options, true);
 tTotal = toc(t);
 disp(['Result: ' res])
 

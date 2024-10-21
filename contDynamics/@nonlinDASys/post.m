@@ -1,21 +1,20 @@
-function [Rnext,options] = post(obj,R,options)
+function [Rnext,options] = post(nlnsysDA,R,params,options)
 % post - computes the reachable continuous set for one time step of a
 %    nonlinear differential-algebraic system by over-approximative
 %    abstraction
 %
 % Syntax:
-%    [Rnext,options] = post(obj,R,options)
+%    [Rnext,options] = post(nlnsysDA,R,params,options)
 %
 % Inputs:
-%    obj - nonlinearSys object
+%    nlnsysDA - nonlinDASys object
 %    R - reachable set of the previous time step
+%    params - model parameters
 %    options - options for the computation of the reachable set
 %
 % Outputs:
 %    Rnext - reachable set of the next time step
 %    options - options for the computation of the reachable set
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -32,7 +31,7 @@ function [Rnext,options] = post(obj,R,options)
 
 %despite the linear system: the nonlinear system has to be constantly
 %initialized due to the linearization procedure
-[Rnext,options] = initReach(obj,R,options);
+[Rnext,options] = initReach(nlnsysDA,R,params,options);
 
 %reduce zonotopes
 for i=1:length(Rnext.tp)

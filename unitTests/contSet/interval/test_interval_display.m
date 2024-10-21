@@ -47,9 +47,21 @@ I = interval(sparse(lb),ub)
 I = interval(lb,sparse(ub))
 I = interval(sparse(lb),sparse(ub))
 
+% sparse with all-zero entries
+lb = [0 0 0; 0 0 0; 0 0 0];
+ub = [0 0 0; 0 0 0; 0 0 0];
+I = interval(sparse(lb),ub)
+I = interval(lb,sparse(ub))
+I = interval(sparse(lb),sparse(ub))
+
 % large sparse matrix
 lb = [-1; zeros(14,1)];
 ub = [zeros(14,1); 1];
 I = interval(sparse(lb),sparse(ub))
+
+% n-d arrays
+lb = reshape([ 1.000 3.000 2.000 5.000 -3.000 0.000 2.000 1.000 0.000 -2.000 -1.000 3.000 0.000 0.000 0.000 0.000 1.000 -1.000 1.000 0.000 0.000 0.000 0.000 0.000 ], [2,2,2,3]);
+ub = reshape([ 1.500 4.000 4.000 10.000 -1.000 0.000 3.000 2.000 1.000 0.000 2.000 4.000 0.000 0.000 0.000 0.000 2.000 -0.500 3.000 2.000 0.000 0.000 0.000 0.000 ], [2,2,2,3]);
+I = interval(lb,ub)
 
 % ------------------------------ END OF CODE ------------------------------

@@ -28,7 +28,7 @@ function matP = mtimes(factor1,factor2)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-%factor1 is a numeric matrix
+% factor1 is a numeric matrix -> factor2 must be a matPolytope object
 if isnumeric(factor1)
     %initialize factor
     matrix=factor1;
@@ -36,18 +36,22 @@ if isnumeric(factor1)
     matP=factor2;
     %compute vertices
     matP.V = pagemtimes(matrix, matP.V);
+    return
+end
     
-%factor2 is a numeric matrix
-elseif isnumeric(factor2)
+% factor2 is a numeric matrix -> factor1 must be a matPolytope object
+if isnumeric(factor2)
     %initialize factor
     matrix=factor2;
     %initialize matrix polytope
     matP=factor1;
     %compute vertices
     matP.V = pagemtimes(matP.V,matrix);
+    return
+end
     
-%both factors are polytope matrices
-else
+% both factors are polytope matrices
+if isa(factor2,'matPolytope')
     % get vertices of first matPolytope
     matP1=factor1;
     V1 = matP1.V;
@@ -78,6 +82,9 @@ else
 
     % init resulting matrix polytope
     matP = matPolytope(V);
+    return
 end
+
+throw(CORAerror('CORAerror:noops',factor1,factor2));
 
 % ------------------------------ END OF CODE ------------------------------

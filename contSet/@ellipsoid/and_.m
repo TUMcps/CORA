@@ -7,8 +7,8 @@ function E = and_(E,S,mode)
 %    E = and_(E,S,mode)
 %
 % Inputs:
-%    E              - ellipsoid object
-%    S              - set representation (array)
+%    E - ellipsoid object
+%    S - contSet object, numeric, cell-array
 %    mode(optional) - approximation mode ('inner','outer')
 %
 % Outputs:
@@ -18,8 +18,8 @@ function E = and_(E,S,mode)
 %    E1 = ellipsoid([3 -1; -1 1],[1;0]);
 %    E2 = ellipsoid([5 1; 1 2],[1;-1]);
 %    E3 = ellipsoid([0.6 -0.4; -0.4 2.2],[0.5;0]);
-%    Eo = and(E1,[E2,E3],'outer');
-%    Ei = and(E1,[E2,E3],'inner');
+%    Eo = and(E1,{E2,E3},'outer');
+%    Ei = and(E1,{E2,E3},'inner');
 %    figure; hold on;
 %    plot(E1); plot(E2); plot(E3);
 %    plot(Eo); plot(Ei);
@@ -40,93 +40,69 @@ function E = and_(E,S,mode)
 %                15-March-2021
 %                04-July-2022 (VG, replaced cell arrays by class arrays)
 % Last revision: 27-March-2023 (MW, rename and_)
+%                28-September-2024 (MW, integrate precedence)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-N = length(S);
-% if only center remains
-if rank(E)==0 && isa(S,'contSet')
-    % if double, already taken care if in 93
-    if ~ismethod(S,'contains')
-        throw(CORAerror('CORA:noops',E,S{1}));
-    end
-    if all(arrayfun(@(ii)contains_(S(ii),E.q,'exact',0),1:N))
-        E = ellipsoid(zeros(dim(E)),E.q);
-    else
-        E = ellipsoid;
-    end
-    return;
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < E.precedence
+    E = and_(S,E,mode);
+    return
 end
 
-%% different intersections
+% read out dimension
+n = dim(E);
 
 % ellipsoid and point
-if isa(S,'double')
-    % if not all points are equal, overall intersection is empty
-    if ~all(all(withinTol(S,repmat(S(:,1),1,size(S,2)),E.TOL))) || ...
-        ~contains_(E,S(:,1),'exact',0)
-        E = ellipsoid;
+if isnumeric(S) && iscolumn(S)
+    if contains_(E,S,'exact',eps)
+        E = ellipsoid(zeros(n),S);
     else
-        E = ellipsoid(zeros(size(E.Q)),S(:,1));
+        E = ellipsoid.empty(n);
     end
     return;
 end
 
-% ellipsoid and conPolyZono
-if isa(S,'conPolyZono')
-    if strcmp(mode,'outer')
-        E = and_(S(1),E,'exact');
-        for i=2:N
-            E = and_(S(i),E,'exact');
-        end
+% rewrite S as cell-array for unified handling
+if ~iscell(S)
+    S = {S};
+end
+
+% ellipsoid is only a point
+if representsa_(E,'point',eps) 
+    % if all sets contain that point, the intersection is that point
+    if all(cellfun(@(S_i) contains_(S_i,E.q,'exact',eps), S, 'UniformOutput', true))
+        E = ellipsoid(zeros(n),E.q);
     else
-        throw(CORAerror('CORA:noops',E,S));
+        E = ellipsoid.empty(n);
+    end
+    return;
+end
+
+% ellipsoid and polytope (including hyperplanes)
+if all(cellfun(@(S_i) isa(S_i,'polytope'),S,'UniformOutput',true))
+    for i=1:numel(S)
+        if representsa_(S{i},'hyperplane',eps)
+            % note: evaluation is exact
+            E = priv_andHyperplane(E,S{i});
+        else
+            E = priv_andPolytope(E,S{i},mode);
+        end
     end
     return;
 end
 
 % ellipsoid and ellipsoid
-if isa(S,'ellipsoid')
+if all(cellfun(@(S_i) isa(S_i,'ellipsoid'),S,'UniformOutput',true))
     if strcmp(mode,'outer')
-        E = andEllipsoidOA(E,S(1));
-        for i=2:N
+        for i=1:numel(S)
+            E = priv_andEllipsoidOA(E,S{i});
             if representsa_(E,'emptySet',eps)
-                break;
+                return;
             end
-            E = andEllipsoidOA(E,S(i));
         end
     else
-        E = andEllipsoidIA(E,S);
-    end
-    return;
-end
-
-% ellipsoid and conHyperplane
-if isa(S,'conHyperplane')
-    for i=1:N
-        if representsa_(S(i),'hyperplane',eps)
-            E = andHyperplane(E,S(i));
-        else
-            E = and_(E,polytope(S(i)),mode);
-        end
-    end
-    return;
-end
-
-% ellipsoid and polytope
-if isa(S,'polytope')
-    E = andPolytope(E,S(1),mode);
-    for i=2:N
-        E = andPolytope(E,S(i),mode);
-    end
-    return;
-end
-
-% ellipsoid and halfspace
-if isa(S,'halfspace')
-    E = andHalfspace(E,S(1),mode);
-    for i=2:N
-        E = andHalfspace(E,S(i),mode);
+        E = priv_andEllipsoidIA([{E}, S]);
     end
     return;
 end

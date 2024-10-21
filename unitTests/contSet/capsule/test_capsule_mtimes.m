@@ -23,8 +23,6 @@ function res = test_capsule_mtimes
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % instantiate capsule
 C = capsule([1; 0], [1; -1], 2);
 
@@ -37,15 +35,15 @@ C_mtimes = R * C;
 C_mtimes_true = capsule([0; 1], [1; 1], 2);
 
 % compare results
-res(end+1,1) = compareMatrices(C_mtimes.c,C_mtimes_true.c);
-res(end+1,1) = compareMatrices(C_mtimes.g,C_mtimes_true.g);
-res(end+1,1) = withinTol(C_mtimes.r,C_mtimes_true.r);
+assert(compareMatrices(C_mtimes.c,C_mtimes_true.c));
+assert(compareMatrices(C_mtimes.g,C_mtimes_true.g));
+assert(withinTol(C_mtimes.r,C_mtimes_true.r));
 
 % empty set
 C = capsule.empty(2);
-res(end+1,1) = representsa_(R * C,'emptySet',eps);
+assert(representsa_(R * C,'emptySet',eps));
 
 % add results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

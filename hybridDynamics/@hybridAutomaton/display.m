@@ -16,9 +16,8 @@ function display(HA)
 %    inv = polytope([-1,0],0);
 % 
 %    % transition
-%    c = [-1;0]; d = 0; C = [0,1]; D = 0;
-%    guard = conHyperplane(c,d,C,D);
-%    reset = struct('A',[1,0;0,-0.75],'c',[0;0]);
+%    guard = polytope([0,1],0,[-1,0],0);
+%    reset = linearReset([1,0;0,-0.75]);
 %    trans(1) = transition(guard,reset,1);
 % 
 %    % flow equation
@@ -28,7 +27,7 @@ function display(HA)
 %    loc(1) = location('S1',inv,trans,dynamics);
 % 
 %    % instantiate hybrid automaton (and display)
-%    HA = hybridAutomaton(loc)
+%    HA = hybridAutomaton('HA',loc)
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -38,7 +37,7 @@ function display(HA)
 
 % Authors:       Mark Wetzlinger
 % Written:       18-June-2022
-% Last update:   ---
+% Last update:   15-October-2024 (MW, add name property)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -58,6 +57,9 @@ elseif length(HA) > 1
     disp("  " + length(HA) + "x1 hybridAutomaton array");
 
 else
+
+    % display name
+    fprintf('Hybrid automaton: ''%s''\n', HA.name);
 
     % number of locations
     numLoc = length(HA.location);

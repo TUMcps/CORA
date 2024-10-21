@@ -23,9 +23,6 @@ function res = test_compareMatrices
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume true, wait for failure
-res = true;
-
 % init matrices
 A = [1 2 3 4; 5 6 7 8; 9 10 11 12];
 B = [1 2 3 4; 5 6 7 8; 9 10 11 12];
@@ -37,97 +34,59 @@ C = [9 10 11 12; 5 6 7 8; 1 2 3 4];
 D = [];
 
 % completely equal matrices
-if ~compareMatrices(A,B)
-    res = false;
-elseif ~compareMatrices(A,B,eps,'subset')
-    res = false;
-end
+assert(compareMatrices(A,B))
+assert(compareMatrices(A,B,eps,'subset'))
 
 % compare with different order
-if ~compareMatrices(A,B_order)
-    res = false;
-elseif ~compareMatrices(A,B_order,eps,'subset')
-    res = false;
-end
+assert(compareMatrices(A,B_order))
+assert(compareMatrices(A,B_order,eps,'subset'))
 
 % check with tolerance
-if compareMatrices(A,B_eps,eps)
-    % tolerance too small
-    res = false;
-elseif ~compareMatrices(A,B_eps,100*eps)
-    % tolerance large enough
-    res = false;
-end
+assert(~compareMatrices(A,B_eps,eps))
+assert(compareMatrices(A,B_eps,100*eps))
 
 % check different sizes and subset
-if compareMatrices(A,B_plus)
-    res = false;
-elseif compareMatrices(A,B_minus)
-    res = false;
-end
+assert(~compareMatrices(A,B_plus))
+assert(~compareMatrices(A,B_minus))
 
 % check subset
-if ~compareMatrices(B_minus,B,eps,'subset')
-    res = false;
-elseif ~compareMatrices(A,B_plus,eps,'subset')
-    res = false;
-end
+assert(compareMatrices(B_minus,B,eps,'subset'))
+assert(compareMatrices(A,B_plus,eps,'subset'))
 
 % completely different matrices
-if compareMatrices(A,C)
-    res = false;
-end
+assert(~compareMatrices(A,C))
 
 % check ordered
-if ~compareMatrices(A,B,eps,'equal',true)
-    res = false;
-elseif compareMatrices(A(:,1:end-1),B,eps,'equal',true)
-    res = false;
-elseif ~compareMatrices(A,B,eps,'subset',true)
-    res = false;
-elseif ~compareMatrices(A(:,1:end-1),B,eps,'subset',true)
-    res = false;
-elseif compareMatrices(A,B_order,eps,'equal',true)
-    res = false;
-elseif compareMatrices(A,B_order,eps,'subset',true)
-    res = false;
-end
+assert(compareMatrices(A,B,eps,'equal',true))
+assert(~compareMatrices(A(:,1:end-1),B,eps,'equal',true))
+assert(compareMatrices(A,B,eps,'subset',true))
+assert(compareMatrices(A(:,1:end-1),B,eps,'subset',true))
+assert(~compareMatrices(A,B_order,eps,'equal',true))
+assert(~compareMatrices(A,B_order,eps,'subset',true))
 
 
-% check wrong input arguments (should not reach the next line)
-if CHECKS_ENABLED
+% check wrong input arguments
 
-try
-    % matrices have to be nonempty
-    compareMatrices(A,D);
-    res = false;
-end
-try
-    % matrices have to be nonempty
-    compareMatrices(D,B);
-    res = false;
-end
-try
-    % eps has to be nonnegative
-    compareMatrices(A,B,-1);
-    res = false;
-end
-try
-    % eps has to be a scalar
-    compareMatrices(A,B,[1 1]);
-    res = false;
-end
-try
-    % flag has to be fourth input argument
-    compareMatrices(A,B,'subset');
-    res = false;
-end
-try
-    % flag has to be 'equal' or 'subset'
-    compareMatrices(A,B,eps,'exact');
-    res = false;
-end
+% matrices have to be nonempty
+assertThrowsAs(@compareMatrices,'CORA:wrongValue',A,D);
 
-end
+% matrices have to be nonempty
+assertThrowsAs(@compareMatrices,'CORA:wrongValue',D,B);
+
+% eps has to be nonnegative
+assertThrowsAs(@compareMatrices,'CORA:wrongValue',A,B,-1);
+
+% eps has to be a scalar
+assertThrowsAs(@compareMatrices,'CORA:wrongValue',A,B,[1 1]);
+
+% flag has to be fourth input argument
+assertThrowsAs(@compareMatrices,'CORA:wrongValue',A,B,'subset');
+
+% flag has to be 'equal' or 'subset'
+assertThrowsAs(@compareMatrices,'CORA:wrongValue',A,B,eps,'exact');
+
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

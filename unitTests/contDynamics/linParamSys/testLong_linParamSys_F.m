@@ -37,9 +37,10 @@ Aint = intervalMatrix(S, deltaS);
 linSys  = linParamSys(Aint, 1);
 
 % compute overapproximative F matrix
+params = struct();
 options.intermediateTerms = 2;
 options.timeStep = 1;
-mappingMatrix(linSys,options); % required for tie method
+mappingMatrix(linSys,params,options); % required for tie method
 linSys = tie(linSys);
 
 % extract interval matrix of exponential matrices
@@ -124,18 +125,18 @@ rmpath(genpath(path));
 addpath(genpath(path));
 
 % check if lower bound of F included
-res(1) = all(all(infimum(linSys.F.int) <= F_min));
+assert(all(infimum(linSys.F.int) <= F_min,"all"));
 
 % check if upper bound of F included
-res(2) = all(all(supremum(linSys.F.int) >= F_max));
+assert(all(supremum(linSys.F.int) >= F_max,"all"));
 
 % check if lower bound of Expm included
-res(3) = all(all(infimum(expm_int.int) <= Expm_min));
+assert(all(infimum(expm_int.int) <= Expm_min,"all"));
 
 % check if upper bound of Expm included
-res(4) = all(all(supremum(expm_int.int) >= Expm_max));
+assert(all(supremum(expm_int.int) >= Expm_max,"all"));
 
 % check if lower and upper bound holds
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

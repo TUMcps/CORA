@@ -23,7 +23,6 @@ function res = testLong_hybridAutomaton_reach_03_spacecraft
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-
 % Reachability Settings ---------------------------------------------------
 
 % problem description
@@ -33,6 +32,7 @@ params.R0 = R0;                                     % initial set
 params.startLoc = 1;                                % initial location
 params.finalLoc = 0;                                % 0: no final location
 params.tFinal = 300;                                % final time
+params.tStart = 0;                                  % start time
 
 % uncertain input
 params.U = zonotope(0); 
@@ -47,12 +47,6 @@ options.zonotopeOrder = 10;
 options.reductionTechnique = 'girard';
 
 % copy some options (since we call location/reach)
-options.U = params.U;
-options.R0 = params.R0;
-options.finalLoc = params.finalLoc;
-options.tFinal = params.tFinal;
-options.tStart = 0;
-options.startLoc = params.startLoc;
 options.specification = [];
 options.intersectInvariant = false;
 
@@ -88,8 +82,8 @@ points = points(2:end,:);
 
 guardIntersect = {'polytope','zonoGirard','conZonotope', ...
                   'hyperplaneMap','pancake','nondetGuard'};
+params.tStart = interval(params.tStart);
 
-res = true(length(guardIntersect),1);
 for i = 1:length(guardIntersect)
 
     % set options for guard intersection 
@@ -116,15 +110,15 @@ for i = 1:length(guardIntersect)
     end
     
     % reachability analysis    
-    [~,Rjump,~] = reach(loc,params.R0,interval(options.tStart),options_);
+    [~,Rjump,~] = reach(loc,params,options_);
     
     % check if all simulated points are located inside the computed guard
     % intersection
     P = polytope(project(Rjump(1).set,2:5));
-    res(i) = all(contains(P,points,'exact',1e-3));
+    assert(all(contains(P,points,'exact',1e-3)));
 end
 
-% combine results
-res = all(res);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

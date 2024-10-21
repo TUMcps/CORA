@@ -79,7 +79,7 @@ function res = aux_s_power(base,exponent)
         
     % negative exponent
     else
-        res = inverse(base).^ -exponent;
+        res = priv_inverse(base).^ -exponent;
     end
 
 end

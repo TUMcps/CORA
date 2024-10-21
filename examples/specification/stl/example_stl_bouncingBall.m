@@ -17,13 +17,14 @@ function res = example_stl_bouncingBall
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
- 
-% Warning
-disp('Warning: This example typically runs for many hours. Please comment the following lines to run it.');
-completed = false;
-return
 
-alg = {'signals','sampledTime','rtl'}; %  % rtl takes a really long time
+% Algorithms --------------------------------------------------------------
+
+alg = {'signals','incremental','sampledTime'};
+
+% Warning
+disp('Warning: The RTL algorithm typically runs for many hours. Please uncomment the following line to run it.');
+% alg{end+1} = 'rtl';
 
 % Parameter ---------------------------------------------------------------
 

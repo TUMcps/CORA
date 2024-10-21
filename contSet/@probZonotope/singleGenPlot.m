@@ -33,17 +33,15 @@ function singleGenPlot(probZ,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargin <= 3
-    % parse input arguments
-    [type,m] = setDefaultValues({'solid',probZ.gamma},varargin);
+narginchk(1,3);
 
-    % check input arguments
-    inputArgsCheck({{probZ,'att','probZonotope'};
-                    {type,'str',{'solid','mesh'}};
-                    {m,'att','numeric','nonnan'}});  
-else
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+% parse input arguments
+[type,m] = setDefaultValues({'solid',probZ.gamma},varargin);
+
+% check input arguments
+inputArgsCheck({{probZ,'att','probZonotope'};
+                {type,'str',{'solid','mesh'}};
+                {m,'att','numeric','nonnan'}});  
 
 %dimension of the single generator
 n = dim(probZ);

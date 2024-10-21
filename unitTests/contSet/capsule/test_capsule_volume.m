@@ -23,11 +23,9 @@ function res = test_capsule_volume
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true(0);
-
 % empty case
 C = capsule.empty(2);
-res(end+1,1) = volume(C) == 0;
+assert(volume(C) == 0);
 
 % instantiate capsule as ball
 n = 3;
@@ -43,10 +41,10 @@ vol_true = (pi^(n/2) / gamma(1+n/2)) * r^n;
 
 % compare results
 tol = 1e-9;
-res(end+1,1) = withinTol(vol_true,vol,tol);
+assert(withinTol(vol_true,vol,tol));
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

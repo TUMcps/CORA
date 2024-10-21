@@ -30,8 +30,6 @@ dims = [2 5 10]; % Dimensions to be tested
 Ntests = 10; % Number of tests in each case
 Npoints = 10; % Number of points to be tested
 
-res = false;
-
 %% Points inside
 for dim = dims
     for i = 1:Ntests
@@ -39,9 +37,7 @@ for dim = dims
         P = randPoint(E,Npoints);
         for i_p = 1:size(P,2)
             eN = ellipsoidNorm(E,P(:,i_p)-E.center);
-            if eN > 1 && ~withinTol(eN,1,tol)
-                return;
-            end
+            assert(~(eN > 1) || withinTol(eN,1,tol))
         end
     end
 end
@@ -59,9 +55,7 @@ for dim = dims
         
         for i_p = 1:size(P,2)
             eN = ellipsoidNorm(E, P(:,i_p)-E.q);
-            if eN < 1 && ~withinTol(eN,1,tol)
-                return;
-            end
+            assert(~(eN < 1) || withinTol(eN,1,tol))
         end
     end
 end
@@ -80,14 +74,10 @@ for dim = dims
         end
         
         % Check symmetry
-        if ~(ellipsoidNorm(E,p1) <= ellipsoidNorm(E,-p1) + tol && ellipsoidNorm(E,p1) >= ellipsoidNorm(E,-p1) - tol)
-            return;
-        end
+        assert(ellipsoidNorm(E,p1) <= ellipsoidNorm(E,-p1) + tol && ellipsoidNorm(E,p1) >= ellipsoidNorm(E,-p1) - tol)
         
         % Check part of the positive definiteness
-        if ~(ellipsoidNorm(E, zeros(dim,1)) <= tol)
-            return;
-        end
+        assert(ellipsoidNorm(E, zeros(dim,1)) <= tol)
     end
 end
 

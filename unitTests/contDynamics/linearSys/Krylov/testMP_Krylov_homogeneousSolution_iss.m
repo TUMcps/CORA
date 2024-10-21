@@ -19,6 +19,9 @@ function res = testMP_Krylov_homogeneousSolution_iss(~)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % enable access to private function "initReach_Krylov"
 path = CORAROOT;
@@ -75,6 +78,6 @@ rmpath(genpath(path));
 addpath(genpath(path));
 
 % Is exact solution in zonotope?
-res = (R_exact_box <= Rnext_box);
+assert((R_exact_box <= Rnext_box));
 
 % ------------------------------ END OF CODE ------------------------------

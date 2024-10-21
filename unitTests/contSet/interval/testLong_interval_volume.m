@@ -44,9 +44,7 @@ for i=1:nrOfTests
     vol_true = prod(upperLimits - lowerLimits);
     
     % compare results
-    if ~withinTol(vol,vol_true,tol)
-        throw(CORAerror('CORA:testFailed'));
-    end
+    assertLoop(withinTol(vol,vol_true,tol),i)
 
 end
 

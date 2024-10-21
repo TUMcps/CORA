@@ -1,12 +1,12 @@
-function [Rnext,options] = post_Krylov_nonProjected(obj,R,options)
+function [Rnext,options] = post_Krylov_nonProjected(linsys,R,options)
 % post_Krylov_nonProjected - computes the reachable continuous set for one
 %    time step in the Krylov subspace
 %
 % Syntax:
-%    [Rnext,options] = post_Krylov_nonProjected(obj,R,options)
+%    [Rnext,options] = post_Krylov_nonProjected(linsys,R,options)
 %
 % Inputs:
-%    obj - linearSys object
+%    linsys - linearSys object
 %    R - reachable set of the previous time step
 %    options - options for the computation of the reachable set
 %
@@ -39,16 +39,16 @@ Rpar = options.Rpar;
 %R_hom_0 = options.Rhom_0;
 RV_0 = options.RV_0;
 % multiplications with exponential matrix
-[R_hom_tp,R_Krylov] = exponential_Krylov_precomputed(obj,options.R0,options,1);
-[RV,R_V_Krylov] = exponential_Krylov_precomputed(obj,RV_0,options,0);
+[R_hom_tp,R_Krylov] = exponential_Krylov_precomputed(linsys,options.R0,options,1);
+[RV,R_V_Krylov] = exponential_Krylov_precomputed(linsys,RV_0,options,0);
 
 % %COMMENT: old solution without precomputation
 % % retrieve last reachable sets
 % Rhom_tp = options.Rhom_tp;
 % RV = options.Raux;
 % % multiplications with exponential matrix
-% [R_hom_tp,R_Krylov] = exponential_Krylov(obj,Rhom_tp,options);
-% [RV,R_V_Krylov] = exponential_Krylov(obj,RV,options);
+% [R_hom_tp,R_Krylov] = exponential_Krylov(linsys,Rhom_tp,options);
+% [RV,R_V_Krylov] = exponential_Krylov(linsys,RV,options);
 
 
 % other results

@@ -32,9 +32,8 @@ function ratio = volumeRatio(Z,P,dims)
 % ------------------------------ BEGIN CODE -------------------------------
 
 %write inputs to variables
-if nargin == 1
-    throw(CORAerror('CORA:notEnoughInputArgs',2));
-elseif nargin == 2
+narginchk(2,3);
+if nargin == 2
     dims=dim(Z);
 end
 

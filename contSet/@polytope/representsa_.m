@@ -87,7 +87,11 @@ switch type
         end
 
     case 'conHyperplane'
-        [res,S] = aux_isConHyperplane(P);
+        if nargout == 2
+            [res,S] = aux_isConHyperplane(P,tol);
+        else
+            res = aux_isConHyperplane(P,tol);
+        end
 
     case 'conPolyZono'
         res = isBounded(P);
@@ -112,17 +116,13 @@ switch type
 
     case 'halfspace'
         % if only a single irredundant inequality constraint given
-        P = compact_(P,'all',tol);
-        res = size(P.A_.val,1) == 1 && isempty(P.Ae_.val);
-        if nargout == 2 && res
-            S = halfspace(P.A_.val,P.b_.val);
-        end
+        res = aux_isHalfspace(P,tol);
 
     case 'interval'
-        if nargout == 1
-            res = aux_isInterval(P,tol);
-        elseif nargout == 2
+        if nargout == 2
             [res,S] = aux_isInterval(P,tol);
+        else
+            res = aux_isInterval(P,tol);
         end
 
     case 'levelSet'
@@ -166,9 +166,6 @@ switch type
             P.bounded.val = false;
             P.emptySet.val = false;
         end
-        if nargout == 2 && res
-            S = conHyperplane(P.Ae_.val,P.be_.val);
-        end
 
     case 'parallelotope'
         throw(CORAerror('CORA:notSupported',...
@@ -178,7 +175,7 @@ switch type
         res = true;
 
     case 'emptySet'
-        res = aux_isEmptySet(P);
+        res = aux_isEmptySet(P,tol);
         P.emptySet.val = res;
         % save properties, now that P is known to be the empty set
         if res
@@ -218,174 +215,19 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [res,p] = aux_isZero(P,varargin)
-% former isZero function...
-
-    [tol,mode] = setDefaultValues({0,'approx'},varargin);
-    
-    % parse input arguments
-    inputArgsCheck({{P,'att','polytope'};
-                    {tol,'att','numeric',{'nonnegative','scalar','nonnan'}}; ...
-                    {mode,'str',{'approx','approx:para','exact'}}});
-    
-    % default result (if res = false)
-    p = [];
-
-    % empty set case
-    if isempty(P)
-        res = false; 
-        return;
-    end
-    
-    if strcmp(mode,'approx')
-        % requires 2*n LPs
-        r = norm(interval(P));
-    
-    elseif strcmp(mode,'approx:para')
-        % compute parallelotope enclosure of P (requires SDP)
-        Zp = zonotope(P);
-        
-        % radius of parallelotope is 
-        r = norm(center(Zp)+sum(abs(generators(Zp)),2));
-    
-    elseif strcmp(mode,'exact')
-        throw(CORAerror("CORA:noExactAlg",P));
-    end
-    
-    res = r <= tol;
-    if res
-        p = zeros(n,1);
-    end
-
-end
-
-function res = aux_isEmptySet(P)
+function res = aux_isEmptySet(P,tol)
 % checks if a polytope is empty
-%       A*x <= b
-%    is infeasible if
-%        min  b'*y
-%        s.t. A'*y =  0,
-%                y >= 0
-%    is feasible. If problem is either unbounded (below since minimization)
-%    or b'*y < 0, the polytope is empty. If the problem is infeasible or
-%    b'*y == 0, the polytope is not empty.
 
     % check if emptiness already known
     if ~isempty(P.emptySet.val)
-        res = P.emptySet.val; return
-    end
-    
-    % check if polytope has vertex representation
-    if P.isVRep.val
-        res = size(P.V_.val,2) > 0; return
-    end
-    
-    % dimension
-    n = dim(P);
-    
-    % special case: 1D
-    if n == 1    
-        % compute vertices (fast for 1D) and check whether empty
-        V = vertices_(P,'lcon2vert');
-        res = isempty(P.V_.val);
-        return
-    end
-    
-    % quick check: are there constraints of the form 0*x <= b with b < 0?
-    zero_rows = find(all(withinTol(P.A_.val,0),2));
-    if any(zero_rows) && any(P.b_.val(zero_rows) < 0)
-        res = true; return
-    end
-    
-    
-    % number of inequality and equality constraints
-    nrConIneq = size(P.A_.val,1);
-    nrConEq = size(P.Ae_.val,1);
-    
-    % normalize constraints
-    P = normalizeConstraints(P,'A');
-    
-    % read out properties
-    A = P.A_.val; b = P.b_.val;
-    Ae = P.Ae_.val; be = P.be_.val;
-    
-    if ~isempty(Ae)
-        % polytope can be already be declared empty if there is not point
-        % that satisfies the set of equality constraints
-        if rank(Ae) == min([nrConEq,n])
-            % if the rank of the equality constraint matrix is smaller than
-            % the minimum of the number of equality constraints and the
-            % dimension, then there are still degrees of freedom
-            
-            % check for aligned vectors: pre-compute dot product
-            dotprod_norm = Ae * Ae';
-            
-            for i=1:nrConEq
-                % if there are aligned constraints, then they have to have
-                % the same value in be (all but one of them are redundant),
-                % otherwise the polytope is the empty set because there is
-                % no point that can satisfy to parallel Ae*x = be at the
-                % same time
-    
-                % check for aligned vectors
-                alignedConstraints = all(...
-                    withinTol(Ae(i,:) - dotprod_norm(:,i)*Ae(i,:),...
-                    zeros(1,n)), 2);
-            
-                if nnz(alignedConstraints) > 1
-                    % at least two constraints are aligned
-                    if ~all(withinTol(be(alignedConstraints),be(i)))
-                        % polytope is the empty set
-                        res = true;
-                        P.emptySet.val = true;
-                        return
-                    end
-                end
-            end
-    
-        end
-    
-        % rewrite equality constraints as inequality constraints
-        A = [A; Ae; -Ae];
-        b = [b; be; -be];
-        % update number of inequality constraints
-        nrConIneq = length(b);
-    end
-    
-    
-    % solve the dual problem using linear programming
-    
-    % set options for MATLAB linprog
-    persistent options
-    if isempty(options)
-        options = optimoptions('linprog','display','off', ...
-                           'OptimalityTolerance',1e-10);
-    end
-
-    problem.f = b';
-    problem.Aineq = [-eye(nrConIneq);A';-A'];
-    problem.bineq = zeros(nrConIneq+2*n,1);
-    problem.Aeq = [];
-    problem.beq = [];
-    problem.lb = [];
-    problem.ub = [];
-    problem.options = options;
-    
-    % solve linear program (all inequalities)
-    [x,~,exitflag] = CORAlinprog(problem);
-    
-    % read out solution
-    if exitflag == -2 || (exitflag > 0 && b'*x >= -1e-10)
-        % if this problem is infeasible or if optimal objective value
-        % is 0, the polytope is not empty
-        res = false;
-    elseif exitflag == -3 || (exitflag > 0 && b'*x < 1e-10)
-        % if problem is unbounded (below since minimization) or
-        % objective value is smaller zero, polytope is empty
-        res = true;
+        res = P.emptySet.val;
+    elseif P.isVRep.val
+        res = size(P.V_.val,2) > 0;
     else
-        throw(CORAerror('CORA:solverIssue','linprog'))
+        res = priv_representsa_emptySet(P.A_.val,P.b_.val,...
+            P.Ae_.val,P.be_.val,dim(P),tol);
     end
+    P.emptySet.val = res;
 
 end
 
@@ -468,75 +310,83 @@ function [res,I] = aux_isInterval(P,tol)
 
 end
 
-function [res,hyp] = aux_isConHyperplane(P)
+function [res,P_out] = aux_isConHyperplane(P,tol)
 
-    % assume false
-    res = false;
-    hyp = [];
-
-    % check if equality constraints exist
-    if ~isempty(P.Ae)
-        
-        % first equality constraint defines hyperplane
-        c = P.Ae_.val(1,:);
-        d = P.be_.val(1);
-        
-        % convert all other equality constraints to inequality constraints
-        A = [P.A_.val; P.Ae_.val(2:end,:); -P.Ae_.val(2:end,:)];
-        b = [P.b_.val; P.be_.val(2:end); -P.be_.val(2:end)];
-        
-        % construct constrained hyperplane
+    % constrained hyperplane only makes sense if it is (n-1)-dimensional
+    % (or empty) so that we can use it for guard intersection: this occurs
+    % if and only if there is exactly one equality constraints
+    if length(P.be_.val) == 1
         res = true;
-        if isempty(A) && isempty(b)
-            hyp = conHyperplane(c,d);
-        else
-            hyp = conHyperplane(c,d,A,b);
+        if nargout == 2
+            P_out = copy(P);
         end
-        
-        
-    else
-        
-        % remove redundant halfspaces
-        P = compact_(P,'all',1e-9);
-        
-        % normalize the inequality constraints
-        A = P.A_.val;
-        b = P.b_.val;
-        
-        n = sum(A.^2,2);
-        A = diag(1./n)*A;
-        b = b./n;
-        
-        % check for the case A*x <= b && A*x >= b => A*x == b
-        for i = 1:size(A,1)-1
-            
-            % check if normal vectors are identical
-            [result,idx] = ismembertol(-A(i,:),A(i+1:end,:),'ByRows',true);
-            idx = idx(1) + i;
-         
-            if result
-                
-                % check if offsets are identical
-                if b(i) == -b(idx)
-                   
-                    % equality constraint detected -> construct hyperplane
-                    c = A(i,:);
-                    d = b(i);
-                    
-                    A([i,idx],:) = [];
-                    b([i,idx],:) = [];
-                    
-                    res = true;
-                    if isempty(A) && isempty(b)
-                        hyp = conHyperplane(c,d);
-                    else
-                        hyp = conHyperplane(c,d,A,b);
-                    end
-                    return;
-                end
-            end
-        end
+        return
     end
+
+    % compute truly minimal representation and try again
+    [A,b,Ae,be,empty] = priv_compact_zeros(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val,tol);
+    if empty
+        res = false;
+        P_out = [];
+        return
+    end
+    [A,b,Ae,be] = priv_normalizeConstraints(A,b,Ae,be,'A');
+    [A,b,Ae,be] = priv_compact_toEquality(A,b,Ae,be,tol);
+    res = length(be) == 1;
+
+    % instantiate 'converted' object
+    if nargout == 2
+        P_out = polytope(A,b,Ae,be);
+        P_out = priv_copyProperties(P,P_out,'all');
+    end
+
+    % note: the set could be empty due to the inequality constraints, but
+    % we skip that check for speed reasons
+end
+
+function res = aux_isHalfspace(P,tol)
+% check if a polytope is only a halfspace (equivalent to a single
+% inequality constraint)
+
+%%% V representation
+if P.isVRep.val
+    % only 1D can be a halfspace since higher dimensions do not support
+    % -Inf/+Inf vertices
+    if dim(P) == 1
+        % there must be either -Inf or Inf in the V representation
+        % (we do not assume a minimal representation)
+        signOfInfs = sign(V(isinf(V)));
+        res = min(signOfInfs) == max(signOfInfs);
+    else
+        res = false;
+    end
+    return
+
+%%% H representation
+elseif P.isHRep.val
+
+    % quick check
+    if length(P.b_.val) == 1 && isempty(P.be_.val)
+        res = true;
+        return
+    end
+    
+    % at least one equality constraint -> cannot be a halfspace
+    if ~isempty(P.be_.val)
+        res = false;
+        return
+    end
+
+    % remove all-zero constraints and normalize
+    [A,b,Ae,be,empty] = priv_compact_zeros(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val,tol);
+    
+    % general check: all inequality constraints must be aligned
+    [A,b,Ae,be] = priv_normalizeConstraints(A,b,Ae,be,'A');
+
+    dotproduct = A * A';
+    res = all(all(withinTol(dotproduct,1,tol)));
+
+end
 
 end
 

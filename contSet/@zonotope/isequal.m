@@ -1,14 +1,14 @@
-function res = isequal(Z1,Z2,varargin)
-% isequal - checks if two zonotopes are equal (note: no deletion of aligned
-%    generators since this is quite costly)
+function res = isequal(Z,S,varargin)
+% isequal - checks if a zonotope is equal to another set or point
+%    note: no deletion of aligned generators since this is quite costly
 %
 % Syntax:
-%    res = isequal(Z1,Z2)
-%    res = isequal(Z1,Z2,tol)
+%    res = isequal(Z,S)
+%    res = isequal(Z,S,tol)
 %
 % Inputs:
-%    Z1 - zonotope object
-%    Z2 - zonotope object
+%    Z - zonotope object
+%    S - contSet object, numeric
 %    tol - (optional) tolerance
 %
 % Outputs:
@@ -29,44 +29,68 @@ function res = isequal(Z1,Z2,varargin)
 % Written:       16-September-2019
 % Last update:   09-June-2020 (include re-ordering of generators)
 %                13-November-2022 (MW, integrate modular check)
+%                05-October-2024 (MW, fix 1D case)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% too many input arguments
-if nargin > 3
-    throw(CORAerror('CORA:tooManyInputArgs',3));
-end
+narginchk(2,3);
 
 % parse input arguments
 tol = setDefaultValues({eps},varargin);
 
 % check input arguments
-inputArgsCheck({{Z1,'att','zonotope'};
-                {Z2,'att',{'zonotope','interval'}};
+inputArgsCheck({{Z,'att',{'zonotope','numeric'}};
+                {S,'att',{'contSet','numeric'}};
                 {tol,'att','numeric',{'nonnan','scalar','nonnegative'}}});
+
+% ensure that numeric is second input argument
+[Z,S] = reorderNumeric(Z,S);
+
+% call function with lower precedence
+if isa(S,'contSet') && S.precedence < Z.precedence
+    res = isequal(S,Z,tol);
+    return
+end
+
+% ambient dimensions must match
+if ~equalDimCheck(Z,S,true)
+    res = false;
+    return
+end
+
+if isa(S,'zonotope')
+    res = aux_isequal_zonotope(Z,S,tol);
+    return
+end
+
+% other sets: convert to zonotope (exact)
+if isa(S,'interval') || isnumeric(S)
+    S = zonotope(S);
+    res = aux_isequal_zonotope(Z,S,tol);
+    return
+end
+
+throw(CORAerror('CORA:noops',Z,S));
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function res = aux_isequal_zonotope(Z,S,tol)
 
 % init result
 res = false;
 
-% convert interval to zonotope
-if isa(Z2,'interval')
-    Z2 = zonotope(Z2);
-end
-
-% compare dimensions (quick check)
-if dim(Z1) ~= dim(Z2)
-    return
-end
-
 % compare centers (quick check)
-if ~all(withinTol(Z1.c,Z2.c,tol))
+if ~all(withinTol(Z.c,S.c,tol))
     return
 end
 
-% delete zeros from generator matrices
-G1 = compact_(Z1,'zeros',tol).G;
-G2 = compact_(Z2,'zeros',tol).G;
+% obtain minimal representation
+G1 = compact_(Z,'all',tol).G;
+G2 = compact_(S,'all',tol).G;
 
 % compare number of generators
 if size(G1,2) ~= size(G2,2)
@@ -76,5 +100,7 @@ end
 % compare generator matrices: must match with no remainder, order is
 % irrelevant, sign may be inverted
 res = compareMatrices(G1,G2,tol,'equal',false,false);
+
+end
 
 % ------------------------------ END OF CODE ------------------------------

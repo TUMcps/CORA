@@ -50,11 +50,8 @@ for d=1:length(dims)
         Zempty = Z1 & Z3; % empty
 
         % test assumptions
-        if representsa(Znonempty,'emptySet') ...
-                || ~representsa(Zempty,'emptySet')
-            res = false;
-            return
-        end
+        assertLoop(~representsa(Znonempty,'emptySet'),d,test)
+        assertLoop(representsa(Zempty,'emptySet'),d,test)
     end
 end
 

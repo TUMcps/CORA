@@ -1,5 +1,5 @@
 function res = testLong_zonotope_polytope
-% testLong_zonotope_polytope - unit test function of polytope
+% testLong_zonotope_polytope - unit test function of conversion to polytope
 %
 % Syntax:
 %    res = testLong_zonotope_polytope
@@ -14,7 +14,7 @@ function res = testLong_zonotope_polytope
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: none
 
 % Authors:       Matthias Althoff
 % Written:       26-July-2016
@@ -66,19 +66,15 @@ for n = 1:4
         end
         
         % check if the inside points fulfill the inequality constraints
-        temp = A*pointsIn - b * ones(1,N);
+        margin = A*pointsIn - b * ones(1,N);
         
-        if any(temp > 0 & ~withinTol(temp,0,Tol))
-            throw(CORAerror('CORA:testFailed'));
-        end
+        assertLoop(margin <= 0 | withinTol(margin,0,Tol),n,m);
         
         % check if the outside points violate the inequality constraints
-        temp = A*pointsOut - b * ones(1,N);
+        margin = A*pointsOut - b * ones(1,N);
        
         for i = 1:N
-            if ~any(temp(:,i) > 0 | withinTol(temp(:,i),0,Tol))
-                throw(CORAerror('CORA:testFailed'));
-            end  
+            assertLoop(any(margin(:,i) > 0 | withinTol(margin(:,i),0,Tol)),m,n,i);
         end
     end
 end

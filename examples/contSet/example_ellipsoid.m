@@ -48,7 +48,7 @@ plot(E4,[1,2],'k');
 
 E5 = ellipsoid([0.8,-0.6; -0.6,0.8],[1; -4]); % create ellipsoid E5
 Zo_box = zonotope(E5); % over-approximate E5 by a parallelotope
-Zu_norm = zonotope(E5,10,'inner:norm'); % inner-approximate E5 using zonotope norm
+Zu_norm = zonotope(E5,'inner:norm',10); % inner-approximate E5 using zonotope norm
 
 subplot(1,2,2); hold on;
 % plot over-approximative zonotope Zo_box

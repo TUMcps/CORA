@@ -25,21 +25,21 @@ function res = test_capsule_isnan
 
 % empty capsule
 C = capsule.empty(2);
-res = ~isnan(C);
+assert(~isnan(C));
 
 % 3D capsule
 C = capsule([1;0;-1],[1;0;0],1);
-res(end+1,1) = ~isnan(C);
+assert(~isnan(C));
 
 % no radius
 C = capsule([1;0;-1],[1;0;0],0);
-res(end+1,1) = ~isnan(C);
+assert(~isnan(C));
 
 % all-zero generator
 C = capsule([1;0;-1],[0;0;0],0);
-res(end+1,1) = ~isnan(C);
+assert(~isnan(C));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -25,17 +25,17 @@ function res = test_matPolytope_isempty
 
 % empty matrix zonotope
 matP = matPolytope();
-res = isempty(matP);
+assert(isempty(matP));
 
 % scalar
 V = []; V(:,:,1) = 1; V(:,:,2) = -2;
 matP = matPolytope(V);
-res(end+1,1) = ~isempty(matP);
+assert(~isempty(matP));
 
 % nx1 vector
 V = []; V(:,:,1) = [0; 1; 1]; V(:,:,2) = [1; -1; -2]; V(:,:,3) = [-2; 0; 1];
 matP = matPolytope(V);
-res(end+1,1) = ~isempty(matP);
+assert(~isempty(matP));
 
 % matrix
 V = [];
@@ -43,9 +43,9 @@ V(:,:,1) = [0 2; 1 -1; 1 -2];
 V(:,:,2) = [1 1; -1 0; -2 1];
 V(:,:,3) = [-2 0; 0 1; 1 -1];
 matP = matPolytope(V);
-res(end+1,1) = ~isempty(matP);
+assert(~isempty(matP));
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

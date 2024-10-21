@@ -31,12 +31,10 @@ x = taylm(x, 3); %-> 0.5 + 0.5x + [0,0]
 y = taylm(y, 3); %-> 0.5 + 0.5y + [0,0]
 t = x - x*y; %-> 1/4 + 1/4*x - 1/4*y - 1/4*x*y  + [0, 0]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], eps ) ||...
-        ~appeq( getRem(t), interval(0,0), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], tol ))
+assert(appeq( getRem(t), interval(0,0), tol))
 
 %% Test 2
 x = interval(0,1);
@@ -45,12 +43,10 @@ x = taylm(x, 3); %-> 0.5 + 0.5x + [0,0]
 y = taylm(y, 3); %-> 0.5 + 0.5y + [0,0]
 t = x + x*y; %-> 2/4 + 3/4*x + 1/4*y + 1/4*x*y  + [0, 0]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], eps ) ||...
-        ~appeq( getRem(t), interval(0,0), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], tol ))
+assert(appeq( getRem(t), interval(0,0), tol))
 
 %% Test 3
 x = interval(0,1);
@@ -59,12 +55,10 @@ x = taylm(x, 3) + 2*x; %-> 1/2 + 1/2*x + [0,2]
 y = taylm(y, 3) - 4*y; %-> 1/2 + 1/2*y + [-4,0]
 t = x + x*y; %-> 3/4 + 3/4*x + 1/4*y + 1/4*x*y  + [-13, 4]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-12,4), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], tol ))
+assert(appeq( getRem(t), interval(-12,4), tol))
 
 %% Test 4
 x = interval(0,1);
@@ -73,12 +67,10 @@ x = taylm(x, 3) + 2*x; %-> 1/2 + 1/2*x + [0,2]
 y = taylm(y, 3) - 4*y; %-> 1/2 + 1/2*y + [-4,0]
 t = x - x*y; %-> 3/4 + 3/4*x + 1/4*y + 1/4*x*y  + [-13, 4]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-2,14), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], tol ))
+assert(appeq( getRem(t), interval(-2,14), tol))
 
 %% Test 5
 x = interval(0,1);
@@ -87,12 +79,10 @@ x = taylm(x, 3) + 2*x; %-> 1/2 + 1/2*x + [0,2]
 y = taylm(y, 3) - 4*y; %-> 1/2 + 1/2*y + [-4,0]
 t = 2*x*y; %-> 2/4 + 2/4*x + 2/4*y + 2/4*x*y  + [-24, 4]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [2/4; 2/4; 2/4; 2/4], eps ) ||...
-        ~appeq( getRem(t), interval(-24,4), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [2/4; 2/4; 2/4; 2/4], tol ))
+assert(appeq( getRem(t), interval(-24,4), tol))
 
 %% Test 6
 x = interval(0,1);
@@ -101,12 +91,10 @@ x = taylm(x, 3) + 2*x; %-> 1/2 + 1/2*x + [0,2]
 y = taylm(y, 3) - 4*y; %-> 1/2 + 1/2*y + [-4,0]
 t = x*y - 2; %-> -7/4 + 2/4*x + 2/4*y + 2/4*x*y  + [-12, 2]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [-7/4; 1/4; 1/4; 1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-12,2), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [-7/4; 1/4; 1/4; 1/4], tol ))
+assert(appeq( getRem(t), interval(-12,2), tol))
 
 %% Test 7
 x = interval(0,1);
@@ -115,12 +103,10 @@ x = taylm(x, 3) + 2*x; %-> 1/2 + 1/2*x + [0,2]
 y = taylm(y, 3) - 4*y; %-> 1/2 + 1/2*y + [-4,0]
 t = 2 - x*y; %-> 7/4 - 1/4*x - 1/4*y - 1/4*x*y  + [-2, 12]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [7/4; -1/4; -1/4; -1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-2,12), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [7/4; -1/4; -1/4; -1/4], tol ))
+assert(appeq( getRem(t), interval(-2,12), tol))
 
 %% Test 8
 x = interval(0,1);
@@ -129,12 +115,10 @@ x = taylm(x, 3) + 2*x; %-> 1/2 + 1/2*x + [0,2]
 y = taylm(y, 3) - 4*y; %-> 1/2 + 1/2*y + [-4,0]
 t = 2*y*x - x*y; %-> 1/4 + 1/4*x + 1/4*y + 1/4*x*y  + [-26, 16]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [1/4; 1/4; 1/4; 1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-26, 16), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [1/4; 1/4; 1/4; 1/4], tol ))
+assert(appeq( getRem(t), interval(-26, 16), tol))
 
 %% Test 9
 x = interval(0,1);
@@ -145,12 +129,10 @@ y = taylm(y, 3) - 4*y; %-> 1/2 + 1/2*y + [-4,0]
 z = taylm(z, 3); %-> 1/2 + 1/2*z + [0,0]
 t = 2*y*x*z - x*y; %-> 0 + 1/4*z + 1/4*y*z + 1/4*x*z + 1/4*x*y*z + [-26, 16]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [0; 1/4; 1/4; 1/4; 1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-26, 16), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [0; 1/4; 1/4; 1/4; 1/4], tol ))
+assert(appeq( getRem(t), interval(-26, 16), tol))
 
 %% Test 10
 x = interval(0,1);
@@ -164,24 +146,20 @@ b = taylm(b, 3);          %-> 1/2 + 1/2*b + [0,0]
 t = x*y - a*b;   %-> 0 + 1/4*x + 1/4*y + 1/4*x*y 
                 %     + 1/4*a + 1/4*b + 1/4*a*b + [-12, 2]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [0; -1/4; -1/4; 1/4; 1/4; -1/4; 1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-12, 2), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [0; -1/4; -1/4; 1/4; 1/4; -1/4; 1/4], tol ))
+assert(appeq( getRem(t), interval(-12, 2), tol))
 
 %% Test 11
 x = interval(-2,0);
 x = -taylm(x, 2); %-> 1 - x + [0,0]
 t = x*x*x; %-> 1 - 3x + 3x^2  + [-1, 1]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [1; -3; 3], eps ) ||...
-        ~appeq( getRem(t), interval(-1,1), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [1; -3; 3], tol ))
+assert(appeq( getRem(t), interval(-1,1), tol))
 
  %% Test 12
 syms x y
@@ -191,12 +169,10 @@ x = taylm(p1,interval(-1,1), 3); %-> 0.5 + 0.5x + [0,0]
 y = taylm(p2,interval(-1,1), 3); %-> 0.5 + 0.5y + [0,0]
 t = x - x*y; %-> 1/4 + 1/4*x - 1/4*y - 1/4*x*y  + [0, 0]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], eps ) ||...
-        ~appeq( getRem(t), interval(0,0), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], tol ))
+assert(appeq( getRem(t), interval(0,0), tol))
 
 %% Test 13
 syms x y
@@ -206,12 +182,10 @@ x = taylm(p1,interval(-1,1), 3); %-> 0.5 + 0.5x + [0,0]
 y = taylm(p2,interval(-1,1), 3); %-> 0.5 + 0.5y + [0,0]
 t = x + x*y; %-> 2/4 + 3/4*x + 1/4*y + 1/4*x*y  + [0, 0]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], eps ) ||...
-        ~appeq( getRem(t), interval(0,0), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], tol ))
+assert(appeq( getRem(t), interval(0,0), tol))
 
 %% Test 14
 syms x y
@@ -221,12 +195,10 @@ x = taylm(p1, interval(-1,1), 3) + interval(0,2); %-> 1/2 + 1/2*x + [0,2]
 y = taylm(p2, interval(-1,1), 3) + interval(-4,0); %-> 1/2 + 1/2*y + [-4,0]
 t = x + x*y; %-> 3/4 + 3/4*x + 1/4*y + 1/4*x*y  + [-13, 4]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-12,4), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], tol ))
+assert(appeq( getRem(t), interval(-12,4), tol))
 
 %% Test 15
 syms x y
@@ -236,12 +208,10 @@ x = taylm(p1, interval(-1,1), 3) + interval(0,2); %-> 1/2 + 1/2*x + [0,2]
 y = taylm(p2, interval(-1,1), 3) + interval(-4,0); %-> 1/2 + 1/2*y + [-4,0]
 t = x - x*y; %-> 3/4 + 3/4*x + 1/4*y + 1/4*x*y  + [-13, 4]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-2,14), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], tol ))
+assert(appeq( getRem(t), interval(-2,14), tol))
 
 %% Test 16
 syms x y
@@ -251,12 +221,10 @@ x = taylm(p1, interval(-1,1), 3) + interval(0,2); %-> 1/2 + 1/2*x + [0,2]
 y = taylm(p2, interval(-1,1), 3) + interval(-4,0); %-> 1/2 + 1/2*y + [-4,0]
 t = 2*x*y; %-> 2/4 + 2/4*x + 2/4*y + 2/4*x*y  + [-24, 4]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [2/4; 2/4; 2/4; 2/4], eps ) ||...
-        ~appeq( getRem(t), interval(-24,4), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [2/4; 2/4; 2/4; 2/4], tol ))
+assert(appeq( getRem(t), interval(-24,4), tol))
 
 %% Test 17
 syms x y
@@ -266,12 +234,10 @@ x = taylm(p1, interval(-1,1), 3) + interval(0,2); %-> 1/2 + 1/2*x + [0,2]
 y = taylm(p2, interval(-1,1), 3) + interval(-4,0); %-> 1/2 + 1/2*y + [-4,0]
 t = x*y - 2; %-> -7/4 + 2/4*x + 2/4*y + 2/4*x*y  + [-12, 2]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [-7/4; 1/4; 1/4; 1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-12,2), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [-7/4; 1/4; 1/4; 1/4], tol ))
+assert(appeq( getRem(t), interval(-12,2), tol))
 
 %% Test 18
 syms x y
@@ -281,12 +247,10 @@ x = taylm(p1, interval(-1,1), 3) + interval(0,2); %-> 1/2 + 1/2*x + [0,2]
 y = taylm(p2, interval(-1,1), 3) + interval(-4,0); %-> 1/2 + 1/2*y + [-4,0]
 t = 2 - x*y; %-> 7/4 - 1/4*x - 1/4*y - 1/4*x*y  + [-2, 12]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [7/4; -1/4; -1/4; -1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-2,12), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [7/4; -1/4; -1/4; -1/4], tol ))
+assert(appeq( getRem(t), interval(-2,12), tol))
 
 %% Test 19
 syms x y
@@ -296,12 +260,10 @@ x = taylm(p1, interval(-1,1), 3) + interval(0,2); %-> 1/2 + 1/2*x + [0,2]
 y = taylm(p2, interval(-1,1), 3) + interval(-4,0); %-> 1/2 + 1/2*y + [-4,0]
 t = 2*y*x - x*y; %-> 1/4 + 1/4*x + 1/4*y + 1/4*x*y  + [-26, 16]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [1/4; 1/4; 1/4; 1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-26, 16), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [1/4; 1/4; 1/4; 1/4], tol ))
+assert(appeq( getRem(t), interval(-26, 16), tol))
 
 %% Test 20
 syms x y z
@@ -313,12 +275,10 @@ y = taylm(p2, interval(-1,1), 3) + interval(-4,0); %-> 1/2 + 1/2*y + [-4,0]
 z = taylm(p3, interval(-1,1), 3); %-> 1/2 + 1/2*z + [0,0]
 t = 2*y*x*z - x*y; %-> 0 + 1/4*z + 1/4*y*z + 1/4*x*z + 1/4*x*y*z + [-26, 16]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [0; 1/4; 1/4; 1/4; 1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-26, 16), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [0; 1/4; 1/4; 1/4; 1/4], tol ))
+assert(appeq( getRem(t), interval(-26, 16), tol))
 
 %% Test 21
 syms x y a b
@@ -329,23 +289,19 @@ b = taylm(1/2 + 1/2*b, interval(-1,1), 3);          %-> 1/2 + 1/2*b + [0,0]
 t = x*y - a*b;   %-> 0 + 1/4*x + 1/4*y + 1/4*x*y 
                 %     + 1/4*a + 1/4*b + 1/4*a*b + [-12, 2]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [0; -1/4; -1/4; 1/4; 1/4; -1/4; 1/4], eps ) ||...
-        ~appeq( getRem(t), interval(-12, 2), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [0; -1/4; -1/4; 1/4; 1/4; -1/4; 1/4], tol ))
+assert(appeq( getRem(t), interval(-12, 2), tol))
 
 %% Test 22
 syms x
 x = -taylm(-1 + x,interval(-1,1), 2); %-> 1 - x + [0,0]
 t = x*x*x; %-> 1 - 3x + 3x^2  + [-1, 1]
 
-eps = 10^-3;
+tol = 10^-3;
 
-if ~appeq( getCoef(t), [1; -3; 3], eps ) ||...
-        ~appeq( getRem(t), interval(-1,1), eps)
-    res = false;
-end
+assert(appeq( getCoef(t), [1; -3; 3], tol ))
+assert(appeq( getRem(t), interval(-1,1), tol))
 
 % ------------------------------ END OF CODE ------------------------------

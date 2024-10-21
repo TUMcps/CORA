@@ -1,20 +1,18 @@
-function [OGain,tComp]= observe_gain_PRadB(obj,options)
+function [OGain,tComp]= observe_gain_PRadB(linsysDT,params,options)
 % observe_gain_PRadB - computes the gain for the guaranteed state estimation
 %    approach from [1].
 %
 % Syntax:
-%    [OGain,tComp] = observe_gain_PRadB(obj,options)
+%    [OGain,tComp] = observe_gain_PRadB(linsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time linear system object
+%    linsysDT - discrete-time linear system object
+%    params - model parameters
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
 %    OGain - observer gain
 %    tComp - computation time
-%
-% Example: 
-%    -
 %
 % Reference:
 %    [1] V. T. H. Le, C. Stoica, T. Alamo, E. F. Camacho, and
@@ -38,16 +36,15 @@ function [OGain,tComp]= observe_gain_PRadB(obj,options)
 
 tic
 
-
 % E and F in [1] are chosen such that they are multiplied with unit
 % uncertainties; thus, E and F can be seen as generators of zonotopes
 % representing the disturbance and noise set
-sys.E = generators(options.W);
-sys.F = generators(options.V);
+sys.E = generators(params.W);
+sys.F = generators(params.V);
 
 % obtain system dimension and nr of outputs
-n = obj.dim; 
-nrOfOutputs = size(obj.C,1); % not obj.nrOfOutputs since obj.C has been altered in the calling function!
+n = linsysDT.nrOfStates; 
+nrOfOutputs = size(linsysDT.C,1); % not obj.nrOfOutputs since obj.C has been altered in the calling function!
 
 %% define YALMIPs symbolic decision variables
 % state
@@ -58,8 +55,8 @@ Y = sdpvar(n,nrOfOutputs,'full');
 tau = sdpvar(1,1); 
 
 % auxiliary value epsilon, above eq. (11) of [1]
-phi = supremum(abs(interval(options.V)));
-epsilon = norm(options.W) + phi'*phi;
+phi = supremum(abs(interval(params.V)));
+epsilon = norm(params.W) + phi'*phi;
 
 %% optimization settings
 beta_up = 1;  % Max value of beta
@@ -78,9 +75,9 @@ while(beta_up-beta_lo)> beta_tol
     % implementation of symmetric matrix of eq. (17) in [1]
     SM = blkvar;
     SM(1,1) = beta_tst*P;
-    SM(1,4) = obj.A'*P-obj.A'*obj.C'*Y';
+    SM(1,4) = linsysDT.A'*P-linsysDT.A'*linsysDT.C'*Y';
     SM(2,2) = sys.E'*sys.E;
-    SM(2,4) = sys.E'*P-sys.E'*obj.C'*Y';
+    SM(2,4) = sys.E'*P-sys.E'*linsysDT.C'*Y';
     SM(3,3) = sys.F'*sys.F; 
     SM(3,4) = sys.F*Y'; % the paper uses Y'*sys.F, which is probably a mistake
     SM(4,4) = P;

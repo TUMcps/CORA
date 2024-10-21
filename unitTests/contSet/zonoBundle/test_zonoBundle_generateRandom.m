@@ -23,27 +23,31 @@ function res = test_zonoBundle_generateRandom
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
 % empty input arguments
 zB = zonoBundle.generateRandom();
+
+% 1D
+n = 1;
+zB = zonoBundle.generateRandom('Dimension',n);
+assert(dim(zB) == n);
 
 % only dimension
 n = 3;
 zB = zonoBundle.generateRandom('Dimension',n);
-res(end+1,1) = dim(zB) == n;
+assert(dim(zB) == n);
 
 % only number of parallel sets
 nrZonos = 5;
 zB = zonoBundle.generateRandom('NrZonotopes',nrZonos);
-res(end+1,1) = zB.parallelSets == nrZonos;
+assert(zB.parallelSets == nrZonos);
 
 % dimension and number of parallel sets
+n = 3; nrZonos = 5;
 zB = zonoBundle.generateRandom('Dimension',n,'NrZonotopes',nrZonos);
-res(end+1,1) = dim(zB) == n && zB.parallelSets == nrZonos;
+assert(dim(zB) == n && zB.parallelSets == nrZonos);
 
 
 % combine results
-res = all(res);
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

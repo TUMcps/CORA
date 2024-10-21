@@ -1,12 +1,12 @@
-function R = reach(obj,params,options,varargin)
+function [R, res, Verror] = reach(nlnsysDT,params,options,varargin)
 % reach - computes the reachable sets of the discrete time system
 %
 % Syntax:
-%    R = reach(obj,params,options)
-%    [R,res] = reach(obj,params,options,spec)
+%    [R,res,Verror] = reach(nlnsysDT,params,options)
+%    [R,res,Verror] = reach(nlnsysDT,params,options,spec)
 %
 % Inputs:
-%    obj - nonlinearSysDT object
+%    nlnsysDT - nonlinearSysDT object
 %    params - parameter defining the reachability problem
 %    options - options for the computation of the reachable set
 %    spec - object of class specification 
@@ -14,6 +14,7 @@ function R = reach(obj,params,options,varargin)
 % Outputs:
 %    R - object of class reachSet storing the reachable set
 %    res - true/false whether specifications are satisfied
+%    Verror - linearization error
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -26,59 +27,60 @@ function R = reach(obj,params,options,varargin)
 % Last update:   29-January-2018
 %                19-November-2022 (MW, integrate output equation)
 %                10-May-2023 (LL, integrate uTrans in U)
+%                06-November-2023 (LL, add Verror as output)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% options preprocessing
-options = validateOptions(obj,mfilename,params,options);
+res = true;
+spec = setDefaultValues({[]},varargin);
 
-spec = [];
-if nargin >= 4
-   spec = varargin{1}; 
-end
+% options preprocessing
+[params,options] = validateOptions(nlnsysDT,params,options);
 
 % compute symbolic derivatives
-derivatives(obj,options);
+derivatives(nlnsysDT,options);
 
 % initialize cell array that stores the reachable sets
-t = options.tStart:obj.dt:options.tFinal;
-
+t = params.tStart:nlnsysDT.dt:params.tFinal;
 steps = length(t)-1;
 timePoint.set = cell(steps+1,1);
+Verror.L_y = cell(steps+1,1);
+Verror.L_x = cell(steps+1,1);
 
 % add constant input
-if isfield(options,'uTrans')
-    options.U = options.U + options.uTrans;
-    options.uTrans = 0;
+if isfield(params,'uTrans')
+    params.U = params.U + params.uTrans;
+    params.uTrans = 0;
 end
-U0 = options.U;
+U0 = params.U;
 
 % add input for time 1
-if isfield(options,'uTransVec')
-    options.U = U0 + options.uTransVec(:,1);
+if isfield(params,'uTransVec')
+    params.U = U0 + params.uTransVec(:,1);
 end  
 
 % compute output for time 1
-timePoint.set{1} = outputSet(obj,options,params.R0);
+[timePoint.set{1}, Verror.L_y{1}] = outputSet(nlnsysDT,params.R0,params,options);
 Rnext = params.R0;
+Verror.L_x{1} = zonotope(zeros(size(Rnext.c)));
 
 % loop over all reachablity steps
 for i = 1:steps
 
     options.i = i;
     % compute next reachable set
-    [Rnext,options] = linReach(obj,Rnext,options);
+    [Rnext,options,Verror.L_x{i+1}] = linReach(nlnsysDT,Rnext,params,options);
 
-    % if a trajectory should be tracked
-    if isfield(options,'uTransVec')
-        options.U = U0 + options.uTransVec(:,i+1);
+    % add input for time i if a trajectory should be tracked
+    if isfield(params,'uTransVec')
+        params.U = U0 + params.uTransVec(:,i+1);
     end  
     % compute output set
-    timePoint.set{i+1} = outputSet(obj,options,Rnext);
+    [timePoint.set{i+1}, Verror.L_y{i+1}] = outputSet(nlnsysDT,Rnext,params,options);
 
     % log information
-    verboseLog(i,t(i),options);
+    verboseLog(options.verbose,i,t(i),params.tStart,params.tFinal);
     
     % check specification
     if ~isempty(spec)
@@ -86,6 +88,7 @@ for i = 1:steps
            timePoint.set = timePoint(1:i+1);
            timePoint.time = num2cell(t(1:i+1)');
            R = reachSet(timePoint);
+           res = false;
            return;
        end
     end
@@ -96,6 +99,6 @@ timePoint.time = num2cell(t(1:end)');
 R = reachSet(timePoint);
 
 % log information
-verboseLog(length(t),t(end),options);
+verboseLog(options.verbose,length(t),t(end),params.tStart,params.tFinal);
 
 % ------------------------------ END OF CODE ------------------------------

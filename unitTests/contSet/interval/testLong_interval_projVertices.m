@@ -51,15 +51,11 @@ for i=1:nrTests
     V_proj = projVertices(I,projDims);
 
     % has to have 4 vertices (all dimensions have non-zero extension)
-    if size(V_proj,2) ~= 4
-        res = false; return
-    end
+    assertLoop(size(V_proj,2) == 4,i)
 
     % check vertices
-    if ~compareMatrices(V_proj,V(projDims,:),1e-14,'subset') ...
-            || ~compareMatrices(V_,V_proj,1e-14)
-        res = false; return
-    end
+    assertLoop(compareMatrices(V_proj,V(projDims,:),1e-14,'subset'),i)
+    assertLoop(compareMatrices(V_,V_proj,1e-14),i)
 
 end
 

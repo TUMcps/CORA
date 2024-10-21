@@ -1,11 +1,12 @@
-function [x0,y0] = steadyState(obj, x0, y0, u0)
+function [x0,y0] = steadyState(nlnsysDA,x0,y0,u0)
 % steadyState - returns a steady state of a DAE system based on a
 %    Newton-Raphson iteration if one exists
 %
 % Syntax:
-%    [x0,y0] = steadyState(obj, x0, y0, u0)
+%    [x0,y0] = steadyState(nlnsysDA,x0,y0,u0)
 %
 % Inputs:
+%    nlnsysDA - nonlinDASys object
 %    x0 - guessed steady state of dynamic variables
 %    y0 - guessed steady state of algebraic variables
 %    u0 - input
@@ -26,10 +27,10 @@ function [x0,y0] = steadyState(obj, x0, y0, u0)
 
 % check if jacobian has been computed, otherwise call derivatives
 try
-    nargin(obj.jacobian);
+    nargin(nlnsysDA.jacobian);
 catch
     opt.tensorOrder = 1;
-    derivatives(obj,opt);
+    derivatives(nlnsysDA,opt);
 end
 
 %init
@@ -37,11 +38,11 @@ converged = false;
 
 while ~converged
     % returned value of dynamic equations
-    k = obj.dynFile(x0, y0, u0);
+    k = nlnsysDA.dynFile(x0, y0, u0);
     % returned value of algebraic equations
-    l = obj.conFile(x0, y0, u0);
+    l = nlnsysDA.conFile(x0, y0, u0);
     % Jacobians
-    [A,~,C,D,~,F] = obj.jacobian(x0, y0, u0);
+    [A,~,C,D,~,F] = nlnsysDA.jacobian(x0, y0, u0);
 
     %evaluate Jacobian
     M = [A C; D F];

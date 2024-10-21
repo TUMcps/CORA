@@ -41,9 +41,7 @@ for i=1:nrOfTests
     cZ = conZonotope(c,G);
     
     % assert correctness
-    if representsa_(cZ,'emptySet',eps)
-        res = false; break;
-    end
+    assertLoop(~representsa_(cZ,'emptySet',eps),i)
     
     % random constraints so that conZonotope represents just a point
     % as A being diagional forces each independent factor to one value
@@ -53,9 +51,7 @@ for i=1:nrOfTests
     cZ = conZonotope(c,G,A,b);
     
     % assert correctness
-    if representsa_(cZ,'emptySet',eps)
-        res = false; break;
-    end
+    assertLoop(~representsa_(cZ,'emptySet',eps),i)
 
     % choose constraints such that conZonotope has to be empty
     % because constraints ||beta|| <= 1 and A*beta = b cannot be fulfilled
@@ -65,9 +61,7 @@ for i=1:nrOfTests
     cZ = conZonotope(c,G,A,b);
     
     % assert correctness
-    if ~representsa_(cZ,'emptySet',eps)
-        res = false; break;
-    end
+    assertLoop(representsa_(cZ,'emptySet',eps),i)
     
 end
 

@@ -1,12 +1,11 @@
-function HA = rendezvous_SRNA01(~)
-% rendezvous_SRNA01 - linear spacecraft-rendezvous benchmark 
-%                     (see Sec. 3.2 in [1])
+function HA = rendezvous_SRNA01()
+% rendezvous_SRNA01 - linear spacecraft-rendezvous benchmark, see [1, Sec. 3.2] 
 %
 % Syntax:  
 %    HA = rendezvous_SRNA01()
 %
 % Inputs:
-%    ---
+%    -
 %
 % Outputs:
 %    HA - hybridAutomaton object
@@ -14,13 +13,19 @@ function HA = rendezvous_SRNA01(~)
 % References:
 %    [1] M. Althoff, “ARCH-COMP19 Category Report: Continuous and Hybrid 
 %        Systems with Linear Continuous Dynamics", 2019
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: none
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       22-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% Generated on 20-Apr-2018
 
@@ -69,20 +74,20 @@ trans = transition();
 %   
 resetA = ...
 [1,0,0,0,0;0,1,0,0,0;0,0,1,0,0;0,0,0,1,0;0,0,0,0,1];
+resetB = zeros(size(dynB,1),1);
 resetc = ...
 [0;0;0;0;0];
-reset = struct('A', resetA, 'c', resetc);
+reset = linearReset(resetA, resetB, resetc);
 
 %% equation:
 %   y>=-100 & x+y >=-141.1 & x>=-100 & y-x<=141.1 & y<=100 & x+y<=141.1 & x<=100 & y-x>=-141.1
-guardA = [-1;0;0;0;0];
+guardA = [-1,0,0,0,0];
 guardb = 100;
-guard = conHyperplane(guardA,guardb);
+guard = polytope([],[],guardA,guardb);
 
 trans = transition(guard, reset, 2);
 
 loc = location('S1',inv, trans, dynamics);
-
 
 
 %-------------------------------State P3-----------------------------------
@@ -112,10 +117,7 @@ trans = transition();
 loc(2) = location('S2',inv, trans, dynamics);
 
 
+% compose hybrid automaton
+HA = hybridAutomaton('rendezvous_SRNA01',loc);
 
-HA = hybridAutomaton(loc);
-
-
-end
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

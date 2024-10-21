@@ -22,6 +22,9 @@ function res = testLong_interval_dim
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
 % 1. Empty case
 I = interval.empty(0);
@@ -57,6 +60,6 @@ for i=1:nrOfTests
 end
 
 % combine results
-res = res_empty && res_rand;
+assert(res_empty && res_rand);
 
 % ------------------------------ END OF CODE ------------------------------

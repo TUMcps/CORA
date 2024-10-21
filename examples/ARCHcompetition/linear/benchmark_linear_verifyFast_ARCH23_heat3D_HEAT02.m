@@ -52,7 +52,7 @@ options.verifyAlg = 'reachavoid:supportFunc';
 
 % forall t: y1 <= 0.02976
 d = 0.02966+1e-4;
-spec = specification(halfspace(1,d),'safeSet');
+spec = specification(polytope(1,d),'safeSet');
 % according to ARCH report, maximum 0.02966 at time 22.62
 
 

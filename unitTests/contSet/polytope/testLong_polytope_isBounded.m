@@ -51,9 +51,7 @@ for i=1:nrTests
     P = polytope(V);
 
     % boundedness check
-    if ~isBounded(P)
-        res = false; return
-    end
+    assertLoop(isBounded(P),i)
 
     % sample normal vectors only from one halfspace -> polytope unbounded
     nrCon = randi([n+1,2*n]);
@@ -75,9 +73,7 @@ for i=1:nrTests
     P = polytope(A,b);
 
     % boundedness check
-    if isBounded(P)
-        res = false; return
-    end
+    assertLoop(~isBounded(P),i)
 
 end
 

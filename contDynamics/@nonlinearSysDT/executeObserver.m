@@ -1,18 +1,17 @@
-function [R,tcomp] = executeObserver(obj,options)
+function [R,tcomp] = executeObserver(nlnsysDT,params,options)
 % executeObserver - calls the appropriate observer
 %
 % Syntax:
-%    [R,tcomp] = executeObserver(obj,options)
+%    [R,tcomp] = executeObserver(nlnsysDT,params,options)
 %
 % Inputs:
-%    obj - discrete-time nonlinear system object
+%    nlnsysDT - nonlinearSysDT object
+%    params - model parameters for the guaranteed state estimation
 %    options - options for the guaranteed state estimation
 %
 % Outputs:
 %    R - observed set of points in time
 %    tcomp - computation time
-%
-% Example: 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,16 +27,17 @@ function [R,tcomp] = executeObserver(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % decide which observer to execute by options.alg
-if strcmp(options.alg,'VolMin-A') 
-    [R,tcomp] = observe_volMinA(obj, options);
-elseif strcmp(options.alg,'VolMin-B') 
-    [R,tcomp] = observe_volMinB(obj, options);
-elseif strcmp(options.alg,'FRad-A') 
-    [R,tcomp] = observe_FRadA(obj, options);
-elseif strcmp(options.alg,'FRad-B') 
-    [R,tcomp] = observe_FRadB(obj, options);
-elseif strcmp(options.alg,'FRad-C') 
-    [R,tcomp] = observe_FRadC(obj, options);
+switch options.alg
+    case 'VolMin-A'
+        [R,tcomp] = observe_volMinA(nlnsysDT,params,options);
+    case 'VolMin-B'
+        [R,tcomp] = observe_volMinB(nlnsysDT,params,options);
+    case 'FRad-A'
+        [R,tcomp] = observe_FRadA(nlnsysDT,params,options);
+    case 'FRad-B'
+        [R,tcomp] = observe_FRadB(nlnsysDT,params,options);
+    case 'FRad-C'
+        [R,tcomp] = observe_FRadC(nlnsysDT,params,options);
 end
 
 % ------------------------------ END OF CODE ------------------------------

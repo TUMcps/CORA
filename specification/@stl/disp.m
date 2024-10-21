@@ -22,7 +22,7 @@ function disp(obj)
 
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   07-February-2024 (FL, replace from and to by interval)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -56,26 +56,24 @@ function str = aux_displayRecursive(obj)
         case 'until'
             str1 = aux_displayRecursive(obj.lhs);
             str2 = aux_displayRecursive(obj.rhs);
-            str = ['(',str1,' U[',num2str(obj.from),',', ...
-                                            num2str(obj.to),'] ',str2,')'];
+            str = ['(',str1,' U',obj.interval.toStr(),' ',str2,')'];
 
         case 'release'
             str1 = aux_displayRecursive(obj.lhs);
             str2 = aux_displayRecursive(obj.rhs);
-            str = ['(',str1,' R[',num2str(obj.from),',', ...
-                                            num2str(obj.to),'] ',str2,')'];
+            str = ['(',str1,' R',obj.interval.toStr(),' ',str2,')'];
 
         case 'globally'
             str1 = aux_displayRecursive(obj.lhs);
-            str = ['G[',num2str(obj.from),',',num2str(obj.to),'](',str1,')'];
+            str = ['G',obj.interval.toStr(),'(',str1,')'];
 
         case 'finally'
             str1 = aux_displayRecursive(obj.lhs);
-            str = ['F[',num2str(obj.from),',',num2str(obj.to),'](',str1,')'];
+            str = ['F',obj.interval.toStr(),'(',str1,')'];
 
         case 'next'
             str1 = aux_displayRecursive(obj.lhs);
-            str = ['X[',num2str(obj.from),'](',str1,')'];
+            str = ['X',obj.interval.toStr(),'(',str1,')'];
 
         case '&'
             str1 = aux_displayRecursive(obj.lhs);

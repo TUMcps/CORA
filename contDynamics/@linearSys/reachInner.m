@@ -1,11 +1,11 @@
-function Rin = reachInner(sys,params,options)
+function Rin = reachInner(linsys,params,options)
 % reachInner - compute an inner-approximation of the reachable set
 %
 % Syntax:
-%    Rin = reachInner(sys,params,options)
+%    Rin = reachInner(linsys,params,options)
 %
 % Inputs:
-%    sys - linearSys object
+%    linsys - linearSys object
 %    params - model parameters
 %    options - struct containing the algorithm settings
 %
@@ -27,36 +27,31 @@ function Rin = reachInner(sys,params,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
     % options preprocessing
-    options = validateOptions(sys,mfilename,params,options);
+    [params,options] = validateOptions(linsys,params,options);
     
     % define set of inputs
-    V_ = sys.B * (options.U + options.u);
-    
-    if ~isempty(sys.c)
-       V_ = V_ + sys.c; 
-    end
+    V_ = linsys.B * (params.U + params.u) + linsys.c;
     
     % compute propagation matrices
-    n = sys.dim;
-    A_ = [sys.A eye(n); zeros(n,2*n)];
+    n = linsys.nrOfStates;
+    A_ = [linsys.A eye(n); zeros(n,2*n)];
     eAt_ = expm(A_*options.timeStep);
     
     eAt = eAt_(1:n,1:n);
     T = eAt_(1:n,n+1:end);
 
     % initialization
-    t = options.tStart:options.timeStep:options.tFinal;
+    t = params.tStart:options.timeStep:params.tFinal;
     set = cell(length(t),1);
-    set{1} = options.R0;
+    set{1} = params.R0;
+    V = V_;
     
     % loop over all time steps
     for i = 2:length(t)
         
         % time varying input
-        if isfield(options,'u') && size(options.u,2) > 1
-           V = V_ + options.u(:,i-1); 
-        else
-           V = V_; 
+        if size(params.u,2) > 1
+            V = V_ + params.u(:,i-1);
         end
         
         % set propagation
@@ -68,7 +63,7 @@ function Rin = reachInner(sys,params,options)
     end
     
     % compute output set
-    timePoint.set = aux_compOutputSet(sys,set,V_,options);
+    timePoint.set = aux_compOutputSet(linsys,set,V_,params.u);
     timePoint.time = num2cell(t');
     
     % construct reachSet object
@@ -79,33 +74,29 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function set = aux_compOutputSet(sys,set,V_,options)
+function set = aux_compOutputSet(linsys,set,V_,u)
 % compute the output set from the reachable set
 
+    % pre-compute input
+    V = V_ + u; 
     % check if output is not the identity
-    if ~isscalar(sys.C) || sys.C ~= 1 || ~isempty(sys.k) || ~isempty(sys.D)
+    if ~isscalar(linsys.C) || linsys.C ~= 1 || ~isempty(linsys.k) || ~isempty(linsys.D)
 
         % construct output equation
-        if any(any(sys.D)) && any(sys.k)
-            f = @(x,u) sys.C * x + sys.D*u + sys.k;
-        elseif any(any(sys.D)) && ~any(sys.k)
-            f = @(x,u) sys.C * x + sys.D*u;
+        if any(any(linsys.D)) && any(linsys.k)
+            f = @(x,u) linsys.C * x + linsys.D*u + linsys.k;
+        elseif any(any(linsys.D)) && ~any(linsys.k)
+            f = @(x,u) linsys.C * x + linsys.D*u;
         else
-            f = @(x,u) sys.C * x + sys.k;
+            f = @(x,u) linsys.C * x + linsys.k;
         end
         
         % output set for first time step
         set{1} = f(set{1},0);
         % compute output set for all other time steps
         for i = 2:length(set)
-            if isfield(options,'u') 
-                if size(options.u,2) > 1
-                    V = V_ + options.u(:,i-1); 
-                else
-                    V = V_ + options.u; 
-                end
-            else
-                V = V_; 
+            if size(u,2) > 1
+                V = V_ + u(:,i-1);
             end
             set{i} = f(set{i},V);
         end

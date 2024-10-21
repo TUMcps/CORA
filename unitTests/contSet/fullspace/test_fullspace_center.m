@@ -32,6 +32,9 @@ c = center(fs);
 c_true = zeros(n,1);
 
 % compare results
-res = all(c == c_true);
+assert(all(c == c_true));
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

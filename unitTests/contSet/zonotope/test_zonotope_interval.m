@@ -38,6 +38,8 @@ true_lb = [-10; -8];
 true_ub = [2; 10];   
 
 % check result
-res = compareMatrices(lb,true_lb) && compareMatrices(ub,true_ub);
+assert(compareMatrices(lb,true_lb) && compareMatrices(ub,true_ub));
+
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------
