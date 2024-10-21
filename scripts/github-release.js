@@ -5,30 +5,28 @@ function timeSince(date) {
 
     var interval = seconds;
     var timeUnit = Math.floor(interval);
-    const dividers = [31536000, 2592000, 86400, 3600, 60];
-    const names = ["year", "month", "day", "hour", "minute"];
+    const dividers = [31536000, 2592000, 86400, 3600, 60, 1];
+    const names = ["year", "month", "day", "hour", "minute", "second"];
 
     // loop over time units
-    var counter = 0;
-    while (counter < 5) {
+    timeText = timeUnit + " seconds"; // default to seconds
+    for (let counter = 0; counter < dividers.length; counter++) {
         interval = seconds / dividers[counter];
         timeUnit = Math.floor(interval);
-        if (interval > 1) {
+        if (interval >= 1) {
             if (timeUnit == 1) {
-                return timeUnit + " " + names[counter];
+                timeText =  timeUnit + " " + names[counter];
             } else {
-                return timeUnit + " " + names[counter] + "s";
+                timeText = timeUnit + " " + names[counter] + "s";
             }
+            break
         }
-        counter++;
     }
-    // seconds as last resort
-    timeUnit = Math.floor(seconds);
-    if (timeUnit == 1) {
-        return "1 second";
-    } else {
-        return timeUnit + " seconds";
-    }
+
+    // check if confetti (<= 7 days)
+    doConfetti = seconds <= 8 * 24 * 60 * 60;
+
+    return [timeText,doConfetti]
 }
 
 
@@ -40,13 +38,13 @@ getJSON('https://api.github.com/repos/TUMcps/CORA/commits?per_page=1',
             commit = data[0].commit;
             message = commit.message;
             date = commit.author.date;
-            timeText = timeSince(Date.parse(date));
+            [timeText, doConfetti] = timeSince(Date.parse(date));
 
             container = document.getElementById("release-version");
             container.innerHTML = `<object class="align-middle" data="https://img.shields.io/static/v1?label=Last update&message=${timeText} ago&color=4596FF" alt="TUMcps - CORA"></object>`;
 
             // confetti
-            if (timeText.includes('hour') || timeText.includes('minute')) {
+            if (timeText, doConfetti) {
                 const delay = ms => new Promise(res => setTimeout(res, ms));
                 const yourFunction = async () => {
                     await delay(1000);
