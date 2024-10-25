@@ -53,7 +53,7 @@ function pgon = aux_douglasPeucker(pgon,tol)
 end
 
 function pgon = aux_simplify(pgon,tol)
-    pgon = pgon(simplify(pgon.set));
+    pgon = polygon(simplify(pgon.set));
 end
 
 % ------------------------------ END OF CODE ------------------------------

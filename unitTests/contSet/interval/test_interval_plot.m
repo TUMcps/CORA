@@ -128,7 +128,13 @@ try
     p = [1.5;1];
     I = interval(p);
     plot(I);
-    assert(compareMatrices(p, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
+    children = findall(ax);
+    assert(compareMatrices(p, [children(2).XData;children(2).YData],1e-4,'equal',true));
+
+    % check with given xpos and ypos
+    I = interval(1,2);
+    plot(I,1,'XPos',1,'YPos',2);
+    assert(compareMatrices([ax.Children(1).XData;ax.Children(1).YData,;ax.Children(1).ZData],[ 1 1 ; 2 2 ; 1 2 ]))
 
     % close figure
     close;

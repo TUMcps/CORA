@@ -36,6 +36,7 @@ classdef polygon < contSet
 % Last update:   09-May-2023 (TL, constructor clean up)
 %                13-March-2024 (TL, enable polyshape NVpairs in constructor)
 %                08-October-2024 (TL, made proper class within contSet)
+%                23-October-2024 (TL, added V property)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -44,6 +45,11 @@ properties (SetAccess = private, GetAccess = public)
     set = []
     % dummy properties
     x = []; y = [];
+end
+
+properties (Access=private)
+    V;          % vertices (if present)
+    TOL = 1e-8; % for buffered degenerate polygons
 end
 
 methods
@@ -81,12 +87,12 @@ end
 
 methods
     function x = get.x(pgon)
-        V = vertices(pgon);
+        V = vertices_(pgon);
         x = V(1,:);
     end
 
     function y = get.y(pgon)
-        V = vertices(pgon);
+        V = vertices_(pgon);
         y = V(2,:);
     end
 end
@@ -183,36 +189,50 @@ function obj = aux_postprocessing(obj,set,x,y,NVpairs)
     end
 
     % x,y given
+    x = reshape(x,1,[]);
+    y = reshape(y,1,[]);
+
+    % init polyshape
     w = warning; warning off;
     set = polyshape(x,y,NVpairs{:});
     warning(w);
 
+    % read vertices
+    V = set.Vertices';
+
     % check if vertices are given
-    V = set.Vertices;
-    if isempty(V)
+    tol = obj.TOL;
+    while isempty(V)
         % make proper set by adding some buffer
-        tol = 1e-7;
+        tol = tol * 10;
         tol_x = [tol,tol,-tol,-tol];
         tol_y = [tol,-tol,-tol,tol];
-        
-        % compute boundary
-        x = [reshape(x,1,[]) x(1)];
-        y = [reshape(y,1,[]) y(1)];
 
         set = polyshape();
-        for i=1:(numel(x)-1)
-            p1 = polyshape(x(i)+tol_x,y(i)+tol_y);
-            p2 = polyshape(x(i+1)+tol_x,y(i+1)+tol_y);
+        for i=1:numel(x)
+            % buffered vertex
+            v = polyshape(x(i)+tol_x,y(i)+tol_y);
 
-            set = union(set, convhull(union(p1,p2)));
+            % compute convex hull of set and buffered vertex
+            set = convhull(union(set, v));
+
+            % should contain each subset
+            if ~overlaps(set,v)
+                % restart with higher tol
+                set = polyshape();
+                break
+            end
         end
         
         % remove holes
         set = rmholes(set);
+        V = [x;y];
     end
     
+    % set properties
     obj.set = set;
-    return
+    obj.TOL = tol;
+    obj.V = V;
 end
 
 % ------------------------------ END OF CODE ------------------------------

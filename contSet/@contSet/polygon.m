@@ -35,12 +35,13 @@ V = vertices(S,varargin{:});
 % init polygon
 pgon = polygon(V);
 
-% try if convHull does not change number of vertices
-pgon_conv = convHull(pgon);
-V_conv = vertices_(pgon_conv);
-if size(V,2) == size(V_conv,2)
-    % return polygon with proper vertex order
-    pgon = pgon_conv;
+try
+    if representsa(S,'convexSet')
+        pgon = convHull_(pgon);
+    end
+catch ME
+    % not always implemented / hard to determine for some sets
+    % keep pgon as is
 end
 
 end

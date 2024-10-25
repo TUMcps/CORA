@@ -195,6 +195,19 @@ A = [1 -0.1; 0.1 -1; -0.1 -1; -1 -0.1]; b = ones(4,1);
 P = polytope(A,b);
 assertThrowsAs(@vertices,'CORA:notSupported',P);
 
+% vertex representation ---
+
+V = [1 1 0; 0 1 0];
+P = polytope(V);
+assert(compareMatrices(vertices(P),V))
+
+V = [ 1.000 4.000 4.000 1.000 1.000 4.000 4.000 4.000 4.000 7.000 7.000 4.000 4.000 7.000 7.000 1.000 ; 3.000 3.000 6.000 3.000 3.000 3.000 6.000 0.000 0.000 0.000 3.000 2.000 2.000 2.000 5.000 3.000 ];
+P = polytope(V);
+V_true = [ ...
+ 1, 4, 4, 7, 7 ; ...
+ 3, 0, 6, 0, 5 ; ...
+];
+assert(compareMatrices(vertices(P),V_true,1e-8))
 
 % test completed
 res = true;

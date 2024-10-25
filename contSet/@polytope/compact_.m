@@ -61,7 +61,7 @@ if strcmp(type,'V')
         throw(CORAerror('CORA:notSupported',...
             'Vertex representation not provided.'));
     end
-    V = priv_compact_V(vertices_(P,'lcon2vert'),tol);
+    V = priv_compact_V(compact_(P,'lcon2vert').V,tol);
     P_out = polytope(P);
     P_out.V_.val = V;
     P_out.minVRep.val = true;

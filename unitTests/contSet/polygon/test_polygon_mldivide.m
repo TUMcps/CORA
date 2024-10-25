@@ -27,8 +27,8 @@ function res = test_polygon_mldivide()
 x = gallery('uniformdata',30,1,1);
 y = gallery('uniformdata',30,1,10);
 ind = boundary(x,y);
-x = x(ind);
-y = y(ind);
+x = x(ind(1:end-1));
+y = y(ind(1:end-1));
 
 % get polygon
 pgon = polygon(x,y);

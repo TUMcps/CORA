@@ -46,6 +46,11 @@ pgon_point = polygon(p);
 assert(res & all(withinTol(p,p_res)));
 assert(~representsa(pgon,'point'))
 
+% specify p multiple times
+pgon_point = polygon([p p p]);
+[res,p_res] = representsa(pgon_point,"point");
+assert(res & all(withinTol(p,p_res)));
+
 % check 'polygon'
 assert(representsa(pgon,'polygon'));
 assert(representsa(pgon_empty,'polygon'));

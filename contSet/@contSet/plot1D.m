@@ -32,11 +32,8 @@ function han = plot1D(S,varargin)
 % convert to interval
 I = interval(S,NVpairsInterval{:});
 
-% project back to 2-dimensions (with added 0)
-I = projectHighDim(I,2);
-
 % plot 2-dimensional set
-han = plot2D(I,NVpairsPlot);
+han = plotPolygon(vertices(I),NVpairsPlot{:});
 
 end
 

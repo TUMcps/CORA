@@ -29,15 +29,19 @@ function han = plot2D(S,varargin)
 % parse additional parameters
 [NVpairsPlot,NVpairsPolygon] = setDefaultValues({{},{}},varargin);
 
-if isBounded(S)
+if ~isBounded(S) || isa(S,'interval')
+    % compute vertices directly
+    % (+ direct computation for (degenerate) intervals to speed up reachSet/plotOverTime+timepoint)
+    % (TODO: find general solution to check if direct computation should be used)
+    V = vertices_(S);
+else
     % compute (outer-approximative) vertices via polygon
+    % (obtains tighter results for some set representations due to splits
+    %  or a result at all as e.g. ellipsoids/vertices is not feasible for 2D)
     pgon = polygon(S,NVpairsPolygon{:});
     
     % read vertices
     V = vertices_(pgon);
-else
-    % compute vertices directly
-    V = vertices_(S);
 end
 
 % add first vertex at the end to close the polygon

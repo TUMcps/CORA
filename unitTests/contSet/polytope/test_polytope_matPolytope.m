@@ -27,7 +27,7 @@ function res = test_polytope_matPolytope
 V = [1 0; 0 1; -1 1; -1 -1; 0 -1]';
 P = polytope(V);
 matP = matPolytope(P);
-assert(all(all(V == reshape(matP.V,[2,5]))));
+assert(compareMatrices(V,reshape(matP.V,[2,5]),1e-8,'equal',false));
 
 % combine results
 res = true;

@@ -26,6 +26,7 @@ function pgon = and_(pgon1, pgon2, varargin)
 
 % use polyshape/intersect
 pgon = polygon(intersect(pgon1.set, pgon2.set));
+pgon.TOL = max(pgon1.TOL,pgon2.TOL);
 
 end
 

@@ -98,7 +98,8 @@ try
     % test almost line polyZonotope
     plot(polyZonotope([1;1], [1 0; 0 0.000000000000001]))
     ax = gca();
-    assert(compareMatrices([0 2 0; 1 1 1], ...
+    % points should reflect that set is not just a single line
+    assert(compareMatrices([0 2 2 0 0; 1 1 1 1 1], ...
         [ax.Children(1).XData; ax.Children(1).YData], 1e-8,"equal"));
     
     % close figure

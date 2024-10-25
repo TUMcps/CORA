@@ -35,6 +35,11 @@ pgon = polygon(V_true);
 V = vertices(pgon);
 assert(compareMatrices(V_true,V))
 
+% check degenerate set
+V = [0 0;21 48];
+pgon = polygon(V);
+assert(compareMatrices(V,vertices(pgon),1e-8,"equal",false))
+
 % test completed
 res = true;
 

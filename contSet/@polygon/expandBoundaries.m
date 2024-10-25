@@ -25,6 +25,7 @@ function pgon = expandBoundaries(pgon, d)
 % ------------------------------ BEGIN CODE -------------------------------
 
 pgon.set = polybuffer(pgon.set, d);
+pgon.V = [];
 
 end
 

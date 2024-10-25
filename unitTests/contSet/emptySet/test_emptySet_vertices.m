@@ -1,29 +1,38 @@
-function vol = volume_(pgon,varargin)
-% volume_ - computes the volume of a polygon
+function res = test_emptySet_vertices
+% test_emptySet_vertices - unit test function of vertices
 %
 % Syntax:
-%    vol = volume_(pgon,varargin)
+%    res = test_emptySet_vertices
 %
 % Inputs:
-%    pgon - polygon object
+%    -
 %
 % Outputs:
-%    vol - volume
+%    res - true/false
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: contSet/volume
+% See also: -
 
 % Authors:       Tobias Ladner
-% Written:       ---
+% Written:       22-October-2024
 % Last update:   ---
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+ 
+% assume true
+res = true;
 
-vol = pgon.set.area;
+% init empty set
+n = 2;
+O = emptySet(n);
+
+% check vertices size
+V = vertices(O);
+assert(isequal(size(V),[2,0]))
 
 end
 

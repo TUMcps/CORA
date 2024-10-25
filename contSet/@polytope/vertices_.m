@@ -1,6 +1,5 @@
 function V = vertices_(P,method,varargin)
-% vertices_ - computes the vertices of a polytope; this function also
-%    serves as a getter function for the property 'V' of a polytope object
+% vertices_ - computes the vertices of a polytope
 %
 % Syntax:
 %    V = vertices_(P,method)
@@ -45,10 +44,21 @@ function V = vertices_(P,method,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% tolerance
+tol = 1e-12;
+
 % if polytope has V-representation, return it
 if P.isVRep.val
-    V = P.V;
-    return
+    
+    % check if vertices are already minimal
+    if ~isempty(P.minVRep.val) && P.minVRep.val
+        V = P.V;
+        return
+    end
+
+    % compact polytope
+    P = compact_(P,'V',tol);
+    V = vertices_(P);
 end
 
 % dimension

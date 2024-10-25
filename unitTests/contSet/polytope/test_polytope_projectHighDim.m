@@ -37,7 +37,7 @@ P = polytope(V);
 P_high = projectHighDim(P,3,[3,1]);
 V_true = [1 0 2; 0 0 -1; -2 0 0]';
 V_high = vertices(P_high);
-assert(compareMatrices(V_true,V_high));
+assert(compareMatrices(V_high,V_true,1e-8,"equal",false));
 
 % 2D, special case (no higher-dimensional space, just re-ordering)
 A = [1 0; -1 1; -1 -1]; b = [1;1;1];

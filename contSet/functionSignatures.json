@@ -45,7 +45,7 @@
      "inputs":
      [
         {"name":"obj", "kind":"required", "type":["contSet"], "purpose":"contSet"},
-        {"name":"type", "kind":"required", "type":["char","choices={'capsule','conPolyZono','conHyperplane','convexSet','conZonotope','ellipsoid','halfspace','interval','levelSet','polygon','polytope','polyZonotope','probZonotope','zonoBundle','zonotope','origin','point','hyperplane','emptySet','fullspace'}"],"purpose":"type"},
+        {"name":"type", "kind":"required", "type":["char","choices={'capsule','conPolyZono','conHyperplane','convexSet','conZonotope','ellipsoid','halfspace','interval','levelSet','polygon','polytope','polyZonotope','probZonotope','zonoBundle','zonotope','origin','point','hyperplane','emptySet','fullspace','convexSet'}"],"purpose":"type"},
         {"name":"tol", "kind":"ordered", "type":["numeric"],"purpose":"tolerance"},
         {"name":"varargin", "kind":"ordered","purpose":"varargin"}
      ],
@@ -60,7 +60,7 @@
      "inputs":
      [
         {"name":"obj", "kind":"required", "type":["contSet"], "purpose":"contSet"},
-        {"name":"type", "kind":"required", "type":["char","choices={'capsule','conPolyZono','conHyperplane','convexSet','conZonotope','ellipsoid','halfspace','interval','levelSet','polytope','polyZonotope','probZonotope','zonoBundle','zonotope','origin','point','hyperplane','emptySet','fullspace'}"],"purpose":"type"},
+        {"name":"type", "kind":"required", "type":["char","choices={'capsule','conPolyZono','conHyperplane','convexSet','conZonotope','ellipsoid','halfspace','interval','levelSet','polygon','polytope','polyZonotope','probZonotope','zonoBundle','zonotope','origin','point','hyperplane','emptySet','fullspace','convexSet'}"],"purpose":"type"},
         {"name":"tol", "kind":"ordered", "type":["numeric"],"purpose":"tolerance"},
         {"name":"varargin", "kind":"ordered","purpose":"varargin"}
      ],

@@ -29,13 +29,10 @@ function pgon = plus(pgon, summand)
 
 % different types of sets
 if isnumeric(summand)
-    if isscalar(summand)
-        % change to vector
-        summand = [summand; summand];
-    end
 
     % translate the polygon
-    pgon.set = translate(pgon.set, summand');
+    V = vertices_(pgon);
+    pgon = polygon(V+summand);
 
 elseif isa(summand, 'polygon')
     % compute Minkowski sum

@@ -1,12 +1,12 @@
-function res = isFullDim(varargin)
-% isFullDim - checks if the dimension of the affine hull of a set is
+function res = isFullDim(pgon,varargin)
+% isFullDim - checks if the dimension of the set is
 %    equal to the dimension of its ambient space
 %
 % Syntax:
 %    res = isFullDim(S)
 %
 % Inputs:
-%    S - contSet object
+%    S - polygon object
 %
 % Outputs:
 %    res - true/false
@@ -18,13 +18,16 @@ function res = isFullDim(varargin)
 % See also: -
 
 % Authors:       Tobias Ladner
-% Written:       12-September-2023
+% Written:       22-October-2024
 % Last update:   ---
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% is overridden in subclass if implemented; throw error
-throw(CORAerror("CORA:noops",varargin{:}))
+% get vertices
+V = vertices_(pgon);
+
+% if only 1 (point) or 2 (line) -> degenerate
+res = size(V,2) > 2;
 
 % ------------------------------ END OF CODE ------------------------------

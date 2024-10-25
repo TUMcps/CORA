@@ -13,6 +13,7 @@ function [t,x,ind,y] = simulate(nlnsys,params,varargin)
 %       .tFinal: final time
 %       .timeStep: time step size
 %       .x0: initial point
+%       .u: input
 %    options - ODE45 options (for hybrid systems)
 %
 % Outputs:

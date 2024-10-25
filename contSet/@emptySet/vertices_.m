@@ -16,13 +16,13 @@ function V = vertices_(O)
 %
 % See also: contSet/vertices
 
-% Authors:       Tobier Ladner
+% Authors:       Tobias Ladner
 % Written:       11-October-2024
 % Last update:   ---
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-V = vertices(dim(O),0);
+V = zeros(dim(O),0);
 
 % ------------------------------ END OF CODE ------------------------------

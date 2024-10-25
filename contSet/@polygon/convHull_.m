@@ -24,10 +24,28 @@ function S_out = convHull_(pgon, S, varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% compute convex hull of given pgon
 if nargin == 1
-    S_out = polygon(convhull(pgon.set));
+    % compute convex hull of underlying polyshape
+    pshape = pgon.set; 
+    pshape_conv = convhull(pshape); 
+
+    % read vertices
+    V = pshape.Vertices';
+    V_conv = pshape_conv.Vertices';
+    
+    % check if vertices changed
+    if ~any(isnan(V),'all') && compareMatrices(V,V_conv,pgon.TOL,"equal",false)
+        % polygon already convex, return original to keep add. properties
+        S_out = pgon;
+    else
+        % return convex hull
+        S_out = polygon(pshape_conv);
+    end
     return
 end
+
+% compute convex hull of two given sets
 
 % ensure that numeric is second input argument
 [pgon,S] = reorderNumeric(pgon,S);

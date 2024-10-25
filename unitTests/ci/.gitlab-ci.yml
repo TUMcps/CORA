@@ -171,12 +171,9 @@ test-compatibility-2024b:
   extends: .base-runTestSuite
   timeout: 24h
   rules: 
-    - !reference [.base-job, rules]
+    - !reference [.base-runTestSuite-ext, rules]
     # run all tests if commit message contains '--ci-run-examples'
-    - if: $DO_CI == "true" && 
-            ($CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-examples(.|\r|\n)*/
-                || $CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-merge(.|\r|\n)*/
-            )
+    - if: $DO_CI == "true" && $CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-examples(.|\r|\n)*/
       when: always
 
 # run examples

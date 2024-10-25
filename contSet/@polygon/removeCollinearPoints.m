@@ -32,7 +32,10 @@ tol = setDefaultValues({0}, varargin);
 V = vertices_(pgon);
 
 % remove collinear vertices
-pgon = polygon(removeCollinearVertices2D(V, tol));
+V = removeCollinearVertices2D(V, tol);
+
+% init polygon
+pgon = polygon(V);
 
 end
 

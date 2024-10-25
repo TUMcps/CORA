@@ -102,6 +102,14 @@ try
     plotPolygon(V(1,:),'ZPos',1);
     assert(isequal([V(1,:); 0 0 0 0 0; 1 1 1 1 1], [ax.Children(1).XData;ax.Children(1).YData;ax.Children(1).ZData]));
 
+    % check single point
+    V = [1;2];
+    plotPolygon(V);
+    % should still show line in legend
+    legendEntry = ax.Children(1);
+    assert(isequal(legendEntry.LineStyle, '-'))
+    assert(isequal(legendEntry.Color, [0 0.447000000000000 0.741000000000000]))
+
     close;
 
 catch ME

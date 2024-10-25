@@ -32,6 +32,11 @@ V = vertices(C);
 % check whether all points are contained in the capsule
 assert(all(contains(C,V)));
 
+% check only center
+c = [1;2];
+C = capsule(c);
+assert(compareMatrices(c,vertices(C)));
+
 res = true;
 
 % ------------------------------ END OF CODE ------------------------------

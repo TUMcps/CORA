@@ -75,7 +75,7 @@ try
     plot(zB)
 
     V = [
-        1 2 1
+        2 1 2
         2 2 2
     ];
     assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));

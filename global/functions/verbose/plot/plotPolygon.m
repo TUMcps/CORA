@@ -118,13 +118,7 @@ function [NVpairs, V] = aux_positionAtXYZ(V, NVpairs)
         V = [xpos * ones(1, n); V];
     end
     if ~isempty(ypos)
-        if size(V,1) == 2 && all(V(2,:) == 0)
-            % special case: most likely due extension in plot1D
-            % replace with YPos
-            V(2,:) = ypos;
-        else
-            V = [V(1, :); ypos * ones(1, n); V(2:end, :)];
-        end
+        V = [V(1, :); ypos * ones(1, n); V(2:end, :)];
     end
     if ~isempty(zpos)
         V = [V; zpos * ones(1, n)];
@@ -198,12 +192,14 @@ end
 
 function han = aux_plotSinglePoint(V,NVpairs,hasFaceColor,facecolor)
     % plot single point
+
+    % check hold status and reset if required
+    holdStatus = ishold;
     
     % plot empty (visible in legend)
-    % han = aux_plotEmpty(hasFaceColor, facecolor, NVpairs);
+    han = aux_plotEmpty(hasFaceColor, facecolor, NVpairs);
     % make scatter plot itself invisible
-    % NVpairs{end+1} = 'HandleVisibility';
-    % NVpairs{end+1} = 'off';
+    NVpairs = [NVpairs, {'HandleVisibility', 'off'}];
     
     % correct color in NVpairs for scatter plot
     
@@ -228,6 +224,9 @@ function han = aux_plotSinglePoint(V,NVpairs,hasFaceColor,facecolor)
 
     % remove line style
     NVpairs = [{'LineStyle','none'},NVpairs];
+
+    % set 'hold on' for actual plot to also show legend entry above
+    hold on;
     
     if size(V, 1) == 2 
         % plot point in 2d
@@ -236,6 +235,13 @@ function han = aux_plotSinglePoint(V,NVpairs,hasFaceColor,facecolor)
         % plot point in 3d
         han = plot3(V(1,:),V(2,:),V(3,:),NVpairs{:});
         aux_show3dAxis()
+    end
+
+    % reset hold status
+    if holdStatus
+        hold on;
+    else
+        hold off;
     end
 end
 

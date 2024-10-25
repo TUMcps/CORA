@@ -82,8 +82,8 @@ V = [1 1 1; -1 1 1; 1 -1 1; 1 1 -1]';
 P = polytope(V);
 P_proj = project(P,[1,3]);
 V_proj = vertices(P_proj);
-V_true = [1 1; -1 1; 1 1; 1 -1]';
-assert(compareMatrices(V_proj,V_true));
+V_true = [-1 1; 1 1; 1 -1]';
+assert(compareMatrices(V_proj,V_true,1e-8,"equal",false));
 
 
 % combine results

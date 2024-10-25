@@ -45,9 +45,15 @@ switch type
 
     case 'point'
         V = vertices_(pgon);
-        res = size(V,2) == 1;
-        if res
-            S = V(:,1);
+        V = unique(V',"rows")';
+        if isempty(V)
+            res = false;
+        else
+            res = all(withinTol(V(:,1),V,tol),"all");
+            if res
+                S = V(:,1);
+            end
+            
         end
 
     case 'origin'

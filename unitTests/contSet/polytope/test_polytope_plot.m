@@ -65,6 +65,19 @@ try
     assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
     % test color
     assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+
+    % check polytope with redundant vertices
+    V = [ 1.000 4.000 4.000 1.000 1.000 4.000 4.000 4.000 4.000 7.000 7.000 4.000 4.000 7.000 7.000 1.000 ; 3.000 3.000 6.000 3.000 3.000 3.000 6.000 0.000 0.000 0.000 3.000 2.000 2.000 2.000 5.000 3.000 ];
+    P = polytope(V);
+    plot(P)
+
+    V_true = [ ...
+     1, 4, 7, 7, 4, 1 ; ...
+     3, 6, 5, 0, 0, 3 ; ...
+    ];
+    % check points
+    assert(compareMatrices(V_true, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
+    assert(all(contains(P,V)))
     
     % close figure
     close;

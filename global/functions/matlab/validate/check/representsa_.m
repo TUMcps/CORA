@@ -62,6 +62,9 @@ switch type
     case 'origin'
         res = isPoint && all(withinTol(S,0,tol));
 
+    case 'convexSet'
+        res = isPoint;
+
     case 'point'
         res = isPoint;
 

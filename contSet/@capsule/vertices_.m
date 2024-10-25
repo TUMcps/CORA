@@ -28,6 +28,13 @@ function V = vertices_(C,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% check if point
+[res,p] = representsa_(C,'point',1e-8);
+if res
+    V = p;
+    return
+end
+
 % check dimension of set
 if dim(C) ~= 2
     throw(CORAerror('CORA:wrongValue','first','be a 2D set'));

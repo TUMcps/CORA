@@ -32,7 +32,7 @@ function res = isFullDim(cPZ)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % get dimension and rank
-if representsa_(cPZ,'emptySet',eps)
+if representsa(cPZ,'emptySet',eps)
     res = false; return;
 end
 n = length(cPZ.c);
