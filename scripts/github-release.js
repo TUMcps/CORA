@@ -23,8 +23,8 @@ function timeSince(date) {
         }
     }
 
-    // check if confetti (<= 7 days)
-    doConfetti = seconds <= 8 * 24 * 60 * 60;
+    // check if confetti (< 1 day)
+    doConfetti = seconds <= 24 * 60 * 60;
 
     return [timeText,doConfetti]
 }
@@ -44,7 +44,7 @@ getJSON('https://api.github.com/repos/TUMcps/CORA/commits?per_page=1',
             container.innerHTML = `<object class="align-middle" data="https://img.shields.io/static/v1?label=Last update&message=${timeText} ago&color=4596FF" alt="TUMcps - CORA"></object>`;
 
             // confetti
-            if (timeText, doConfetti) {
+            if (doConfetti) {
                 const delay = ms => new Promise(res => setTimeout(res, ms));
                 const yourFunction = async () => {
                     await delay(1000);

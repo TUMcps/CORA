@@ -185,12 +185,19 @@ img, embed, object[type="image/svg+xml"] {
 }
 
 .flyin {
-    /* Move the element below the screen */
     transform: translateY(5vh);
     opacity: 0;
-    /* Set the transition duration and easing */
     transition: transform 1s ease-out, opacity 1s ease-out;
     scroll-margin-top: 5vh;
+}
+
+.fadein {
+    opacity: 0;
+    transition: transform 1s ease-out, opacity 1s ease-out;
+}
+
+body.loaded .fadein {
+    opacity: 1;
 }
 
 .visible {

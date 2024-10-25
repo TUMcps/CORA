@@ -110,21 +110,19 @@
     <div class="text-center">
         A Tool for Continuous Reachability Analysis.
     </div>
-    <div class="text-center space-before-xs">
+
+    <!-- GitHub Labels / Shields -->
+    <div id="banner-labels" class="text-center space-before-xs fadein">
         <object class="align-middle" data="https://img.shields.io/static/v1?label=TUMcps&message=CORA&color=4596FF&logo=github&link=https://github.com/TUMcps/CORA" alt="TUMcps - CORA"></object>
         <object class="align-middle" data="https://img.shields.io/github/tag/TUMcps/CORA?include_prereleases=&sort=semver&color=4596FF&link=https://github.com/TUMcps/CORA/tags/" alt="TUMcps - CORA"></object>
         <object class="align-middle" data="https://img.shields.io/static/v1?label=CI&message=passing&color=78C57F" alt="CORA CI:passing"></object>
 
-	<span id="release-version">
-            <span class="spinner-border spinner-border-sm text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </span>
-        </span>
+	    <span id="release-version"></span>
     </div>
     <script src="./scripts/getJSON.js"></script>
     <script src="./scripts/github-release.js"></script>
 
-    <div class="row space-before">
+    <div class="row space-before flyin">
         <p>
             The <u>Co</u>ntinuous <u>R</u>eachability <u>A</u>nalyzer (CORA) is a collection of MATLAB classes
                 for the formal verification of cyber-physical systems using reachability analysis.
@@ -205,10 +203,10 @@
     <div class="row space-before flyin">
         <div class="col-12 col-md-6 col-xl-8 order-1 order-md-1">
             <h5>Formal Verification of Neural Networks</h5>
-            <p>CORA enables the formal verification of neural networks, both in open-loop as well as in closed loop scenarios. Open-loop verification
-                refers to the task where properties of the output set of a neural network are verified, e.g. correctly classified images given noisy
-                input. In closed-loop scenarios, the neural network is used as controller of a dynamic system and is neatly integrated in the
-                reachability algorithms above, e.g. controlling a car while keeping a safe distance.</p>
+            <p>CORA enables the formal verification of neural networks, both in open-loop and in closed-loop scenarios. Open-loop verification
+                refers to the task where properties of the output set of a neural network are verified, e.g., correctly classified images given noisy
+                input. In closed-loop scenarios, the neural network is used as a controller of a dynamic system and is neatly integrated in the
+                reachability algorithms above, e.g., controlling a car while keeping a safe distance.</p>
             <div class="text-start"><a href="./pages/neural-networks/index.html" class="btn btn-primary">Read more</a></div>
         </div>
         <div class="col-12 col-md-6 col-xl-4 order-0 order-md-0 text-center">
@@ -312,6 +310,10 @@
     navLinks.forEach((l) => {
         l.addEventListener('click', () => { bsCollapse.toggle() })
     })
+
+    window.onload = function() {
+        document.body.className += " loaded";
+    }
 </script>
 <script src="./scripts/animateFlyin.js"></script>
 </body>
