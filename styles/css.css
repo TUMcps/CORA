@@ -117,13 +117,13 @@ img, embed, object[type="image/svg+xml"] {
 }
 
 .code-sm {
-    height: 150px;
+    height: 160px;
     border: 0;
 }
 
 .code-btn-box {
-    padding-top: 16px;
-    padding-right: 16px;
+    padding-top: 25px;
+    padding-right: 15px;
     opacity: 50%;
 }
 
