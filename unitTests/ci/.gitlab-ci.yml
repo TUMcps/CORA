@@ -188,6 +188,12 @@ test-benchmarks:
   variables:
     testSuite: 'benchmarks'
 
+# run website live scripts
+test-website:
+  extends: .base-runTestSuite-examples
+  variables:
+    testSuite: 'website'
+
 # run examples in header
 test-header:
   extends: .base-runTestSuite-examples

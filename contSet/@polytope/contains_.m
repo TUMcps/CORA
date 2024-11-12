@@ -38,10 +38,11 @@ function res = contains_(P,S,type,tol,varargin)
 %
 % See also: contSet/contains, zonotope/contains_
 
-% Authors:       Niklas Kochdumper, Viktor Kotsev, Mark Wetzlinger
+% Authors:       Niklas Kochdumper, Viktor Kotsev, Mark Wetzlinger, Tobias Ladner
 % Written:       19-November-2019
 % Last update:   26-July-2021 (VG, extended to multiple points)
 %                26-April-2022 (added cases for empty objects)
+%                31-October-2024 (TL, added v-polytope/contains)
 % Last revision: 10-July-2024 (MW, refactor)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -124,72 +125,64 @@ if n == 1
     V_min = min(P.V_.val);
     V_max = max(P.V_.val);
     res = S >= V_min & S <= V_max;
-
-else
-    % save vertices from outer body, read number of points
-    V = P.V;
-    numVert = size(V,2);
-    numPoints = size(S,2);
-
-    % init logical output array
-    res = false(1,numPoints);
-
-    % check whether points from point cloud are vertices
-    for j=1:numPoints
-        res(j) = compareMatrices(S(:,j),V,tol,'subset');
-    end
-
-    % exit if all points in point cloud are vertices
-    if all(res)
-        return
-    end
-    
-    % compute convex hull of vertices and remaining point cloud
-    V_both = [V, S(:,~res)];
-
-    try
-        K = convhulln(V_both');
-        % use only indices of all vertices that make up the faces of the polytope
-        indices = unique(K);
-        V_both_min = V_both(:,indices);
-        
-        % compare to original set of vertices: all vertices that are part of
-        % the new convex hull are not contained in the original polytope
-        for j=1:numPoints
-            if ~res(j)
-                res(j) = ~compareMatrices(S(:,j),V_both_min,tol,"subset");
-            end
-        end
-
-    catch ME
-        % likely due to degenerate point cloud... loop over points in point
-        % cloud and evaluate linear program
-        % min_{beta} 1
-        % s.t.  v = V beta,
-        %       sum_k beta_k = 1
-        %       beta_k >= 0
-
-        problem.f = zeros(numVert,1);
-        problem.Aeq = [V; ones(1,numVert)];
-        problem.beq = [zeros(n,1); 1];
-        problem.Aineq = -eye(numVert);
-        problem.bineq = zeros(numVert,1);
-        problem.lb = [];
-        problem.ub = [];
-
-        for j=1:numPoints
-            if ~res(j)
-                % only update 'v' in LP
-                problem.beq(1:n,1) = S(:,j);
-                % solve linear program
-                [x,fval,exitflag] = CORAlinprog(problem);
-    
-                % infeasible -> point not in polytope
-                res(j) = exitflag ~= -2;
-            end
-        end
-    end
+    return
 end
+
+% save vertices from outer body, read number of points
+V = P.V;
+numVert = size(V,2);
+numPoints = size(S,2);
+
+% init logical output array
+res = false(1,numPoints);
+
+% check whether points from point cloud are vertices
+for j=1:numPoints
+    res(j) = compareMatrices(S(:,j),V,tol,'subset');
+end
+
+% exit if all points in point cloud are vertices
+if all(res)
+    return
+end
+
+for i=1:numPoints
+    if ~res(i)
+        % add point to set of vertices at the first index
+        V_added = [S(:,i) V];
+
+        try
+            K = convhulln(V_added');
+            % use only indices of all vertices that make up the faces of the polytope
+            indices = unique(K);
+            res(i) = all(indices ~= 1);
+    
+        catch ME
+            % likely due to degenerate point cloud... loop over points in point
+            % cloud and evaluate linear program
+            % min_{beta} 1
+            % s.t.  v = V beta,
+            %       sum_k beta_k = 1
+            %       beta_k >= 0
+    
+            problem.f = zeros(numVert,1);
+            problem.Aeq = [V; ones(1,numVert)];
+            problem.beq = [S(:,i); 1];
+            problem.Aineq = -eye(numVert);
+            problem.bineq = zeros(numVert,1);
+            problem.lb = [];
+            problem.ub = [];
+
+            % solve linear program
+            [~,~,exitflag] = CORAlinprog(problem);
+
+            % infeasible -> point not in polytope
+            res(i) = exitflag ~= -2;
+        end
+    end
+
+end
+
 
 end
 

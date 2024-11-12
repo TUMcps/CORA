@@ -23,15 +23,7 @@ function res = example_linear_verify_randomGeneration
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-res = true;
-
-% specify this directory for the loading of the saved parameters
-dataDirectory = [CORAROOT filesep 'examples' filesep 'contDynamics' ...
-    filesep 'linearSys' filesep 'data'];
-
 % random generation - satisfiable
-% ... provides us with sys, params, spec
-% load([dataDirectory filesep 'ARCH2024_verify.mat']);
 [sys,params,options,spec] = aux_load_ARCH2024_verify();
 
 % call verification algorithm
@@ -41,13 +33,16 @@ disp("Verifiable verification benchmark verified? " + res_verify);
 
 
 % random generation - unsatisfiable
-% load([dataDirectory filesep 'ARCH2024_falsify.mat']);
 [sys,params,options,spec] = aux_load_ARCH2024_falsify();
 
 % call verification algorithm
 options.verifyAlg = 'reachavoid:supportFunc';
 res_falsify = verify(sys,params,options,spec);
 disp("Falsifiable verification benchmark falsified? " + ~res_falsify);
+
+
+% example completed
+res = true;
 
 end
 

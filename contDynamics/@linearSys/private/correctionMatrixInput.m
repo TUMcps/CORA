@@ -31,21 +31,29 @@ function G = correctionMatrixInput(linsys,timeStep,truncationOrder)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check if it has already been computed
-G = readField(linsys.taylor,'G',timeStep);
-if ~isempty(G)
+G = readFieldForTimeStep(linsys.taylor,'G',timeStep);
+if isa(G,'interval')
     return
 end
 
-Asum_pos_G = 0;
-Asum_neg_G = 0;
+% set a maximum order in case truncation order is given as Inf (adaptive),
+% because running a for loop until Inf triggers a warning
+truncationOrderInf = isinf(truncationOrder);
+if truncationOrderInf
+    truncationOrder = 75;
+end
+
+Asum_pos_G = zeros(linsys.nrOfStates);
+Asum_neg_G = zeros(linsys.nrOfStates);
 options = struct('timeStep',timeStep,'ithpower',1);
 for eta=2:truncationOrder+1
     options.ithpower = eta;
     
     % compute factor
-    exp1 = -(eta)/(eta-1); exp2 = -1/(eta-1);
+    exp1 = -eta / (eta-1);
+    exp2 = -1 / (eta-1);
     dtoverfac = getTaylor(linsys,'dtoverfac',options);
-    factor = ((eta)^exp1 - (eta)^exp2) * dtoverfac;
+    factor = (eta^exp1 - eta^exp2) * dtoverfac;
     
     % positive and negative indices
     options.ithpower = eta - 1;
@@ -55,23 +63,26 @@ for eta=2:truncationOrder+1
     Asum_add_neg = factor * Asum_add_neg;
     
     % compute ratio for floating-point precision
-    if isinf(truncationOrder) ...
-            && all(all(Asum_add_pos <= eps * Asum_pos_G)) ...
-            && all(all(Asum_add_neg >= eps * Asum_neg_G)) 
-        break
+    if truncationOrderInf ...
+        if all(all(Asum_add_neg <= eps * Asum_pos_G)) ...
+            && all(all(Asum_add_pos >= eps * Asum_neg_G)) 
+            break
+        elseif eta == truncationOrder+1
+            throw(CORAerror('CORA:notConverged',...
+                'Time step size too big for computation of G.'));
+        end
     end
 
     % compute powers; factor is always negative
     Asum_pos_G = Asum_pos_G + Asum_add_neg; 
     Asum_neg_G = Asum_neg_G + Asum_add_pos;
-
 end
 
 % compute correction matrix for input
 G = interval(Asum_neg_G,Asum_pos_G);
 
 % compute/read remainder of exponential matrix (unless truncationOrder=Inf)
-if ~isinf(truncationOrder)
+if ~truncationOrderInf
     E = expmRemainder(linsys,timeStep,truncationOrder);
     G = G + E*timeStep;
 end

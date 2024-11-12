@@ -45,6 +45,7 @@ classdef conZonotope < contSet
 %                14-December-2022 (TL, property check in inputArgsCheck)
 %                29-March-2023 (TL, optimized constructor)
 %                13-September-2023 (TL, replaced Z property with c and G)
+%                29-October-2024 (TL, A & b get converted to double)
 % Last revision: 02-May-2020 (MW, methods list, rewrite methods(hidden), add property validation)
 %                16-June-2023 (MW, restructure using auxiliary functions)
 
@@ -264,6 +265,10 @@ function [c,G,A,b] = aux_computeProperties(c,G,A,b)
         A = zeros(0,size(G,2));
         b = zeros(0,1);
     end
+
+    % convert A,b to double for internal processing
+    A = double(A);
+    b = double(b);
 
 end
 

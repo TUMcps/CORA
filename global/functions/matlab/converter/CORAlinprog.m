@@ -19,7 +19,7 @@ function [x,fval,exitflag,output,lambda] = CORAlinprog(problem)
 %    [x,fval,exitflag,output,lambda] = CORAlinprog(problem)
 %
 % Inputs:
-%    problem - linear program definition, with mandatory fields
+%    problem - linear program definition, with fields
 %              - problem.f (cost function min f*x)
 %              - problem.Aineq (inequality constraint Aineq * x <= bineq)
 %              - problem.bineq (inequality constraint Aineq * x <= bineq)
@@ -28,6 +28,7 @@ function [x,fval,exitflag,output,lambda] = CORAlinprog(problem)
 %              - problem.lb (lower bound for optimization variable)
 %              - problem.ub (upper bound for optimization variable)
 %              - problem.x0 (initial point)
+%              where all numeric values should be of type double.
 %
 % Outputs:
 %    x - minimizer
@@ -46,6 +47,7 @@ function [x,fval,exitflag,output,lambda] = CORAlinprog(problem)
 % Written:       16-July-2024
 % Last update:   04-October-2024 (MW, switch to interior-point in MATLAB call)
 %                09-October-2024 (TL, compatibility >=R2024a)
+%                29-October-2024 (TL, problem fields should be doubles)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -166,8 +168,39 @@ function [x,fval,exitflag,output,lambda] = aux_MATLABlinprog(problem,algorithm)
 
 % call MATLAB linprog
 w = warning; warning off; % don't show legacy warning
-problem.options.Algorithm = algorithm; % set the solver
-[x,fval,exitflag,output,lambda] = linprog(problem);
+try
+    problem.options.Algorithm = algorithm; % set the solver
+    [x,fval,exitflag,output,lambda] = linprog(problem);
+
+catch ME
+    if strcmp(ME.identifier,'optim:linprog:NonDoubleInput')
+       % convert relevant fields of problem to double
+       % (done here for efficiency)
+
+       % show warning
+       warning on;
+       CORAwarning("CORA:solver",'Not all given fields for the linear program are of type double. Re-trying with converted values.')
+       warning off;
+
+       % convert fields
+       fields = {'f','Aineq','bineq','Aeq','beq','lb','ub','x0'};
+       for i=1:numel(fields)
+           field = fields{i};
+           % if field exists
+           if isfield(problem,field) && isnumeric(problem.(field))
+               % convert field to double
+               problem.(field) = double(problem.(field));
+           end
+       end
+
+       % re-call linprog
+       [x,fval,exitflag,output,lambda] = linprog(problem);
+    else
+        % rethrow all other exceptions
+        rethrow(ME)
+    end
+end
+% reset warning level
 warning(w);
 
 end

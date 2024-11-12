@@ -236,5 +236,14 @@
         {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:install'}"], "purpose":"ID of error"},
         {"name":"toolbox", "kind":"required", "purpose":"name of toolbox"}
      ]
+  },
+
+  "CORAerror":
+  {
+     "inputs":
+     [
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:reportToDev'}"], "purpose":"ID of error"},
+        {"name":"desc", "kind":"required", "purpose":"description of erroneous behavior"}
+     ]
   }
 }

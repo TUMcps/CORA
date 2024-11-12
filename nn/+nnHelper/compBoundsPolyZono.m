@@ -1,6 +1,6 @@
 function [l, u] = compBoundsPolyZono(c, G, GI, E, ind, ind_, approx)
 % compBoundsPolyZono - compute the lower and upper bound of a polynomial
-% zonotope in the given dimension
+% zonotope
 %
 % Syntax:
 %    [l, u] = nnHelper.compBoundsPolyZono(c, G, GI, E, ind, ind_, approx)
@@ -13,7 +13,7 @@ function [l, u] = compBoundsPolyZono(c, G, GI, E, ind, ind_, approx)
 %    ind - all even indices
 %
 % Outputs:
-%    [l, u] -  lower and upper bound in the given dimension
+%    [l, u] -  lower and upper bound
 %
 % Other m-files required: none
 % Subfunctions: none

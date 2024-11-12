@@ -31,21 +31,29 @@ function F = correctionMatrixState(linsys,timeStep,truncationOrder)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check if it has already been computed
-F = readField(linsys.taylor,'F',timeStep);
-if ~isempty(F)
+F = readFieldForTimeStep(linsys.taylor,'F',timeStep);
+if isa(F,'interval')
     return
 end
 
-Asum_pos_F = 0;
-Asum_neg_F = 0;
+% set a maximum order in case truncation order is given as Inf (adaptive),
+% because running a for loop until Inf triggers a warning
+truncationOrderInf = isinf(truncationOrder);
+if truncationOrderInf
+    truncationOrder = 75;
+end
+
+Asum_pos_F = zeros(linsys.nrOfStates);
+Asum_neg_F = zeros(linsys.nrOfStates);
 options = struct('timeStep',timeStep,'ithpower',1);
 for eta=2:truncationOrder
     options.ithpower = eta;
     
     % compute factor
-    exp1 = -(eta)/(eta-1); exp2 = -1/(eta-1);
+    exp1 = -eta / (eta-1);
+    exp2 = -1 / (eta-1);
     dtoverfac = getTaylor(linsys,'dtoverfac',options);
-    factor = ((eta)^exp1-(eta)^exp2) * dtoverfac;
+    factor = (eta^exp1 - eta^exp2) * dtoverfac;
 
     % get positive and negative indices
     Asum_add_pos = getTaylor(linsys,'Apos',options);
@@ -54,10 +62,14 @@ for eta=2:truncationOrder
     Asum_add_neg = factor * Asum_add_neg;
     
     % break condition in case truncation order is selected adaptively
-    if isinf(truncationOrder) ...
-            && all(all(Asum_add_neg <= eps * Asum_pos_F)) ...
+    if truncationOrderInf
+        if all(all(Asum_add_neg <= eps * Asum_pos_F)) ...
             && all(all(Asum_add_pos >= eps * Asum_neg_F))
-        break
+            break
+        elseif eta == truncationOrder
+            throw(CORAerror('CORA:notConverged',...
+                'Time step size too big for computation of F.'));
+        end
     end
 
     % compute powers; factor is always negative
@@ -69,7 +81,7 @@ end
 F = interval(Asum_neg_F,Asum_pos_F);
 
 % compute/read remainder of exponential matrix (unless truncationOrder=Inf)
-if ~isinf(truncationOrder)
+if ~truncationOrderInf
     E = expmRemainder(linsys,timeStep,truncationOrder);
     F = F + E;
 end

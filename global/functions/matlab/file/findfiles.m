@@ -7,7 +7,8 @@ function files = findfiles(path,varargin)
 % Inputs:
 %    path - directory in which to search for files
 %    includeSubfolders - (optional) true/false whether to include subfolders
-%    prefix - (optional) prefix for file name
+%    prefix - (optional) prefix for file name (default: '')
+%    fileext - (optional) file extension (default: 'm')
 %
 % Outputs:
 %    files - list of found files
@@ -20,13 +21,13 @@ function files = findfiles(path,varargin)
 
 % Authors:       Tobias Ladner
 % Written:       18-November-2022
-% Last update:   ---
+% Last update:   30-October-2024 (TL, added fileext)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % default values
-[includeSubfolders,prefix] = setDefaultValues({true,''},varargin);
+[includeSubfolders,prefix,fileext] = setDefaultValues({true,'','m'},varargin);
 
 % default: no subpath
 subpath = '';
@@ -36,6 +37,6 @@ if includeSubfolders
 end
 
 % list files
-files = dir([path filesep subpath prefix '*.m']);
+files = dir([path filesep subpath prefix '*.' fileext]);
 
 % ------------------------------ END OF CODE ------------------------------

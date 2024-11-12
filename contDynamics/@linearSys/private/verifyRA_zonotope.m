@@ -1,18 +1,24 @@
 function [res,R] = verifyRA_zonotope(linsys,params,options,spec)
-% verifyRA_zonotope - verification for linear systems
-%    via reach-avoid with zonotopes
+% verifyRA_zonotope - verification of reach-avoid specifications for linear
+%    systems using [1, Alg. 3]
 %
 % Syntax:
-%    [res,R] = verifyRA_zonotope(linsys,params,spec)
+%    [res,R] = verifyRA_zonotope(linsys,params,options,spec)
 %
 % Inputs:
 %    linsys - linearSys object
 %    params - model parameters
+%    options - settings for reachability analysis
 %    spec - object of class specification
 %
 % Outputs:
 %    res - true/false (true if specifications verified, otherwise false)
 %    R - reachSet object, outer-/inner-approximative depending on res
+%
+% References:
+%    [1] M. Wetzlinger et al. "Fully automated verification of linear
+%        systems using inner-and outer-approximations of reachable sets",
+%        TAC, 2023.
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,9 +34,8 @@ function [res,R] = verifyRA_zonotope(linsys,params,options,spec)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    % get safe sets G and unsafe sets F
+    % extract safe sets and unsafe sets from specifications
     [params.safeSet,params.unsafeSet] = aux_getSetsFromSpec(spec);
-    % idea: allow to overwrite initial error (skipping initError call)
 
     % input argument pre-processing
     [params,options] = validateOptions(linsys,params,options);
@@ -62,9 +67,19 @@ function [res,R] = verifyRA_zonotope(linsys,params,options,spec)
         % compute outer-approximation of the reachable set
         options.error = emax;
         if options.verbose
-            disp("Iteration " + cnt + ", current error: " + options.error);
+            fprintf("Iteration %i, current error: %d\n", cnt, options.error);
         end
         [timeInt,timePoint,res,savedata] = reach_adaptive(linsys,params,options);
+
+        % rewrite information about specification satisfaction into params
+        for i=1:numel(params.safeSet)
+            params.safeSet{i}.time_ = savedata.safeSet{i}.time_;
+        end
+        for i=1:numel(params.unsafeSet)
+            params.unsafeSet{i}.time_ = savedata.unsafeSet{i}.time_;
+        end
+        savedata = rmiffield(savedata,{'safeSet','unsafeSet'});
+        options.savedata = savedata;
         
         % save first time-point solution (same in every iteration)
         if cnt == 1
@@ -74,11 +89,9 @@ function [res,R] = verifyRA_zonotope(linsys,params,options,spec)
         end
         
         % already falsified or (completely!) verified in reach_adaptive
-        if ~res || ...
-                ( (isempty(savedata.safeSet_unsat) || ...
-                    isempty(cell2mat(savedata.safeSet_unsat))) && ...
-                (isempty(savedata.unsafeSet_unsat) || ...
-                    isempty(cell2mat(savedata.unsafeSet_unsat))) )
+        allSpecTimes = [cellfun(@(S) S.time_,params.safeSet,'UniformOutput',false); ...
+                        cellfun(@(S) S.time_,params.unsafeSet,'UniformOutput',false)];
+        if ~res || all(representsa(vertcat(allSpecTimes{:}),'emptySet',0))
             % create reachSet object if desired
             if nargout == 2
                 R = aux_initReachableSet(RtimePoint,RtimeInt);
@@ -90,33 +103,26 @@ function [res,R] = verifyRA_zonotope(linsys,params,options,spec)
         time = repmat(cell2mat(timePoint.time(2:end)),1,2);
         time(:,1) = [0; time(1:end-1,1)];
         % flag to see which sets can be saved in R
-        allSAT = false(length(timeInt.set),length(params.safeSet)+length(params.unsafeSet));
-        allSATbefore = true(length(timeInt.set),1);
-        % save data for next run
-        options.savedata = savedata;
+        allSAT = false(numel(timeInt.set),numel(params.safeSet)+numel(params.unsafeSet));
+        allSATbefore = true(numel(timeInt.set),1);
         
         
         % clear variables for inner-approximation between runs
         R_i = {}; ind_Ri = [];
         
         % check if the reachable set is inside the safe sets       
-        for i = 1:length(params.safeSet)
-            for j = 1:length(timeInt.set)
-                
-                % check if specification is active and whether it has been
-                % verified before
-                if ( representsa(params.safeSet{i}.time,"emptySet") || ...
-                    aux_intersectionCheckInterval(params.safeSet{i}.time,time(j,:)) ) ...
-                        && aux_checkSet(options.savedata.safeSet_unsat{i},time(j,:))
-                
+        for i = 1:numel(params.safeSet)
+            for j = 1:numel(timeInt.set)
+
+                if isIntersecting(params.safeSet{i}.time_,time(j,:))
                     % outer-approximation
                     d = aux_containmentCheckZono(timeInt.set{j},params.safeSet{i}.set);
                     
                     if d < 0
                         % outer-approximation is fully contained in the
                         % safe set -> extend already verified time intervals
-                        options.savedata.safeSet_unsat{i} = ...
-                            aux_removeFromUnsat(options.savedata.safeSet_unsat{i},time(j,:));
+                        params.safeSet{i}.time_ = ...
+                            setdiff(params.safeSet{i}.time_,time(j,:));
 
                         % append to reachable set
                         allSAT(j,i) = true;
@@ -173,14 +179,11 @@ function [res,R] = verifyRA_zonotope(linsys,params,options,spec)
         end
         
         % check if the reachable set is inside the unsafe sets
-        for i = 1:length(params.unsafeSet)
-            for j = 1:length(timeInt.set)
+        for i = 1:numel(params.unsafeSet)
+            for j = 1:numel(timeInt.set)
                 
-                % check if specification is active (empty .time means that
-                % the specification covers the entire time horizon)
-                if ( representsa_(params.unsafeSet{i}.time,'emptySet',eps) || ...
-                        aux_intersectionCheckInterval(params.unsafeSet{i}.time,time(j,:)) ) ...
-                        && aux_checkSet(options.savedata.unsafeSet_unsat{i},time(j,:))
+                % check if specification is (still) active
+                if isIntersecting(params.unsafeSet{i}.time_,time(j,:))
                 
                     % fast intersecting check for speed-up
                     if aux_intersectionCheckFast(timeInt.set{j},params.unsafeSet{i})
@@ -223,10 +226,11 @@ function [res,R] = verifyRA_zonotope(linsys,params,options,spec)
                             d_Fi = d; ind_Fi = j;  
                         end
                     else
-                        % no intersection of current set timeInt.set{j} with F{i}
-                        % -> extend already verified time intervals
-                        options.savedata.unsafeSet_unsat{i} = ...
-                            aux_removeFromUnsat(options.savedata.unsafeSet_unsat{i},time(j,:));
+                        % no intersection of current set timeInt.set{j}
+                        % with i-th unsafe set -> extend already verified
+                        % time intervals
+                        params.unsafeSet{i}.time_ = ...
+                            setdiff(params.unsafeSet{i}.time_,time(j,:));
 
                         % append to reachable set
                         allSAT(j,length(params.safeSet)+i) = true;
@@ -285,61 +289,83 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 % safe/unsafe set manipulation
-function [G,F] = aux_getSetsFromSpec(spec)
-% extract safe sets G and unsafe sets F from the specifications
+function [safeSet,unsafeSet] = aux_getSetsFromSpec(spec)
+% extract polytopic safe sets and unsafe sets from the specifications; we
+% also convert unsafe sets represented by halfspaces to safe sets and
+% compute the interval enclosure for unsafe sets if they are bounded to
+% speed up some intersection checks
 
-    G = {}; F = {};
+    % all specifications must be of type 'safeSet' or 'unsafeSet'
+    if ~all(arrayfun(@(s) any(strcmp(s.type,{'safeSet','unsafeSet'})),...
+            spec,'UniformOutput',true))
+        throw(CORAerror('CORA:notSupported',...
+            'Only specification types ''safeSet'' and ''unsafeSet'' are supported.'));
+    end
+
+    % pre-allocate length, truncate at the end
+    numSpec = numel(spec);
+    safeSet = cell(numSpec,1); unsafeSet = cell(numSpec,1);
+    idxSafeSet = 1; idxUnsafeSet = 1;
     
-    for i = 1:length(spec)
+    for i=1:numel(spec)
+        % convert set to a polytope and normalize constraint vectors
+        P_norm = normalizeConstraints(polytope(spec(i).set),'A');
+        
         if strcmp(spec(i).type,'safeSet')
-            G{end+1}.set = normalizeConstraints(polytope(spec(i).set),'A');
-            G{end}.time = spec(i).time;
+            safeSet{idxSafeSet}.set = P_norm;
+            safeSet{idxSafeSet}.time = spec(i).time;
+            idxSafeSet = idxSafeSet + 1;
+
         elseif strcmp(spec(i).type,'unsafeSet')
-            tmp = normalizeConstraints(polytope(spec(i).set),'A');
-            if size(tmp.A,1) > 1
-                F{end+1}.set = tmp;
-                F{end}.time = spec(i).time;
-                if size(F{end}.set.A,1) > size(F{end}.set.A,2)
-                   F{end}.int = interval(F{end}.set);
-                   F{end}.isBounded = ~(any(isinf(infimum(F{end}.int))) ...
-                                       | any(isinf(supremum(F{end}.int))));
-                else
-                   F{end}.isBounded = false; 
-                end
+            if representsa_(P_norm,'halfspace',eps)
+                % if the unsafe set is only a single halfspace, convert to
+                % a safe set using easy-to-compute set complement
+                safeSet{idxSafeSet}.set = ~P_norm;
+                safeSet{idxSafeSet}.time = spec(i).time;
+                idxSafeSet = idxSafeSet + 1;
             else
-                G{end+1}.set = polytope(-tmp.A,-tmp.b);
-                G{end}.time = spec(i).time;
+                unsafeSet{idxUnsafeSet}.set = P_norm;
+                unsafeSet{idxUnsafeSet}.time = spec(i).time;
+                % pre-compute boundedness property: if it is bounded, we
+                % use the interval enclosure for a quick intersection check
+                unsafeSet{idxUnsafeSet}.isBounded = isBounded(P_norm);
+                if unsafeSet{idxUnsafeSet}.isBounded
+                    unsafeSet{idxUnsafeSet}.int = interval(P_norm);
+                end
+                idxUnsafeSet = idxUnsafeSet + 1;
             end
-        else
-            throw(CORAerror('CORA:notSupported',...
-                'Given type of specification is not supported.'));
         end
     end
+
+    % truncate cell arrays according to collected specs
+    safeSet = safeSet(1:idxSafeSet-1);
+    unsafeSet = unsafeSet(1:idxUnsafeSet-1);
 end
 
 % initializations
 function err = aux_initError(sys,params)
 % estimate the initial value for the maximum allowed error from simulations
 
-    G = params.safeSet; F = params.unsafeSet;
+    % initialize error value
+    err = Inf;
+
     % initial points: center of facets from interval enclosure, where we
     % limit the number of points to a maximum of 20
-    I = interval(params.R0); r = rad(I);
-    Z = zonotope(I); c = center(Z); g = generators(Z);
+    I = interval(params.R0); r = rad(I); Z = zonotope(I);
     
-    if ~isempty(g)
-        if size(g,2) <= 10
-            points = [c + g, c - g];
+    if isempty(Z.G)
+        points = Z.c;
+    else
+        if size(Z.G,2) <= 10
+            points = [Z.c + Z.G, Z.c - Z.G];
         else
             [~,ind] = sort(r(r~=0),'descend');
-            points = [c + g(:,ind(1:10)), c - g(:,ind(1:10))];
+            points = [Z.c + Z.G(:,ind(1:10)), Z.c - Z.G(:,ind(1:10))];
         end
 
         if ~representsa_(Z,'interval',eps)
             points = aux_getInitPoints(params.R0,points);
         end
-    else
-        points = c;
     end
     
     % initialization
@@ -354,15 +380,12 @@ function err = aux_initError(sys,params)
     
     % disturbance (required for getfcn... not yet added by validateOptions)
     paramSim.w = center(params.W);
-        
-    err = Inf;
     
     % loop over all initial points
     for i = 1:size(points,2)
         
         % simulate trajectories
         paramSim.x0 = points(:,i);
-        
         if i == 1
             [t,~,~,y] = simulate(sys,paramSim);
             dt = paramSim.tFinal/ceil(paramSim.tFinal/(2*mean(diff(t))));
@@ -372,58 +395,63 @@ function err = aux_initError(sys,params)
         end
         
         % compute distance of output trajectory points to unsafe sets
-        for k = 1:length(F)
+        for k = 1:numel(params.unsafeSet)
+            % read out k-th unsafe set
+            P = params.unsafeSet{k}.set;
+
             for j = 1:size(y,1)
                 % check whether unsafe set is active
-                if contains(F{k}.time,t(j))
+                if contains(params.unsafeSet{k}.time,t(j))
                     scale = 10 - 9/t(end)*t;
 
                     % update error
-                    if contains(F{k}.set,y(j,:)')
+                    if contains(P,y(j,:)')
                         % trajectory is contained in unsafe set
-                        temp = min(abs(F{k}.set.A*y(j,:)'-F{k}.set.b));
-                        err = min(err,temp*min(scale));
+                        err_estimate = min(abs(P.A*y(j,:)'-P.b));
+                        err = min(err,err_estimate*min(scale));
 
-                    elseif F{k}.isBounded
+                    elseif params.unsafeSet{k}.isBounded
                         % trajectory outside of bounded unsafe set
                         % -> compute distance to interval enclosure
-                        if aux_distanceIntervalPoint(F{k}.int,y(j,:)') < err
-                            temp = aux_distancePolyPoint(F{k}.set,y(j,:)');
-                            err = min(err,temp*min(scale));
+                        if aux_distanceIntervalPoint(params.unsafeSet{k}.int,y(j,:)') < err
+                            err_estimate = aux_distancePolyPoint(P,y(j,:)');
+                            err = min(err,err_estimate*min(scale));
                         end
                     else
                         % trajectory outside of unbounded unsafe set
                         % -> compute distance to unsafe set
-                        if size(F{k}.set.A,1) == 1
-                            temp = F{k}.set.A*y(j,:)'-F{k}.set.b;
+                        if size(P.A,1) == 1
+                            err_estimate = P.A*y(j,:)'-P.b;
                         else
-                            temp = aux_distancePolyPoint(F{k}.set,y(j,:)');
+                            err_estimate = aux_distancePolyPoint(P,y(j,:)');
                         end
-                        err = min(err,temp*min(scale));
+                        err = min(err,err_estimate*min(scale));
                     end
                 end
             end
         end
            
         % compute distance of output trajectory points to safe sets
-        for k = 1:length(G)
-            if size(G{k}.set.A,1) == 1 && representsa(G{k}.time,"emptySet")
+        for k = 1:numel(params.safeSet)
+            % read out k-th safe set
+            P = params.safeSet{k}.set;
+
+            if size(P.A,1) == 1 && representsa(params.safeSet{k}.time,"emptySet")
                 scale = 10 - 9/t(end)*t;
-                tmp = min(abs(G{k}.set.A*y'-G{k}.set.b),[],1);
-                err_ = min(tmp .* scale');
-                err= min(err,err_);
+                err_ = min(min(abs(P.A*y'-P.b),[],1) .* scale');
+                err = min(err,err_);
             else
                 for j = 1:size(y,1)
-                   if contains(G{k}.time,t(j))
-                       if contains(G{k}.set,y(j,:)')
-                           temp = min(abs(G{k}.set.A*y(j,:)'-G{k}.set.b));
-                       elseif size(G{k}.set.A,1) == 1
-                           temp = G{k}.set.A*y(j,:)'-G{k}.set.b;
+                   if contains(params.safeSet{k}.time,t(j))
+                       if contains(P,y(j,:)')
+                           err_estimate = min(abs(P.A*y(j,:)'-P.b));
+                       elseif size(P.A,1) == 1
+                           err_estimate = P.A*y(j,:)'-P.b;
                        else
-                           temp = aux_distancePolyPoint(G{k}.set,y(j,:)');
+                           err_estimate = aux_distancePolyPoint(P,y(j,:)');
                        end
                        scale = 10 - 9/t(end)*t;
-                       err = min(err,temp*scale); 
+                       err = min(err,err_estimate*scale); 
                    end
                 end
             end
@@ -436,25 +464,26 @@ function points = aux_getInitPoints(R0,points)
 % given points on the boundary of the interval enclosure
 
     % get zonotope properties
-    c = center(R0); G = generators(R0); [n,m] = size(G);
+    c = R0.c; G = R0.G; [n,numGens] = size(G);
 
     % loop over all points
     for i = 1:size(points,2)
         
         % set-up linear program to minimize the norm 1 distance: 
         % min |points(:,i) - c + G*\alpha| s.t. -1 <= \alpha <= 1
-        problem.f = [zeros(m,1); ones(2*n,1)];
-        problem.Aeq = [-G eye(n) -eye(n)];
+        problem.f = [zeros(numGens,1); ones(2*n,1)];
+        problem.Aeq = [-G, eye(n), -eye(n)];
         problem.beq = points(:,i) - c;
-        problem.Aineq = [eye(m) zeros(m,2*n); -eye(m) zeros(m,2*n); ...
-             zeros(2*n,m), -eye(2*n)];
-        problem.bineq = [ones(2*m,1); zeros(2*n,1)];
+        problem.Aineq = [eye(numGens) zeros(numGens,2*n); ...
+                        -eye(numGens) zeros(numGens,2*n); ...
+                        zeros(2*n,numGens), -eye(2*n)];
+        problem.bineq = [ones(2*numGens,1); zeros(2*n,1)];
         problem.lb = [];
         problem.ub = [];
         
         % solve linear program
         x = CORAlinprog(problem);
-        points(:,i) = c + G*x(1:m);
+        points(:,i) = c + G*x(1:numGens);
     end
 end
 
@@ -479,13 +508,6 @@ else
     ind_now = length(ind_Ri);
 end
 
-% previously: full computation of inner-approximation of the reachable set
-% R_i = cell(size(R_o));
-% for i = 1:length(R_o)
-%    B = polytope((sqrt(n)*actError.timeInt(i)*[eye(n),-eye(n)]')');
-%    R_i{i} = conZonotope(R_o{i}) - B;
-% end
-
 end
 
 % containment checks
@@ -505,12 +527,12 @@ function dist = aux_containmentCheckConZono(cZ,P)
 % check if the constrained zonotope cZ is contained in the polytope P and
 % return the distance
 
-    % parameter for constrained zonotope and polytope
+    % parameters for constrained zonotope and polytope
     c = cZ.c; G = cZ.G; A = cZ.A; b = cZ.b; l = size(G,2);
     C = P.A; d = P.b;
     
     % distance
-    dist = -inf;
+    dist = -Inf;
 
     % init linprog struct
     problem.lb = -ones(l,1);
@@ -548,8 +570,11 @@ function dist = aux_intersectionCheck(cZ,P)
     
     problem.f = [ones(n,1);zeros(n+l,1)];
     
-    problem.Aineq = [zeros(size(C,1),n+l),C; -eye(n) G -eye(n); -eye(n) -G eye(n); ...
-                     zeros(l,n) eye(l) zeros(l,n); zeros(l,n) -eye(l) zeros(l,n)];
+    problem.Aineq = [zeros(size(C,1),n+l), C; ...
+                     -eye(n), G, -eye(n); ...
+                     -eye(n), -G, eye(n); ...
+                     zeros(l,n), eye(l), zeros(l,n); ...
+                     zeros(l,n), -eye(l), zeros(l,n)];
     problem.bineq = [d; -c; c; ones(l,1); ones(l,1)];
     
     problem.Aeq = [zeros(size(A,1),n) A zeros(size(A,1),n)];
@@ -568,8 +593,7 @@ function res = aux_intersectionCheckFast(Z,F)
     res = false;
 
     % fast check using halfspace containment
-    c = center(Z); G = generators(Z);
-    C = F.set.A; d = F.set.b;
+    c = Z.c; G = Z.G; C = F.set.A; d = F.set.b;
 
     if max(C*c - sum(abs(C*G),2) - d) > 0
        return; 
@@ -586,67 +610,44 @@ function res = aux_intersectionCheckFast(Z,F)
     end
 end
 
-function res = aux_intersectionCheckInterval(I1,I2)
-% copied and shortened from interval/isIntersecting/isIntersecting1D to
-% avoid costly instantiation of interval objects (I1 is still an interval)
-
-    % read infimum and supremum
-    I1 = [infimum(I1), supremum(I1)];
-
-    res = false;
-    if I1(1) <= I2(1)
-        if I2(1) <= I1(2)
-            res = true;
-        end
-    else % I2(1) < I1(1)
-        if I(1) <= I2(2)
-            res = true;
-        end
-    end
-
-end
-
 % distance computations
 function dist = aux_distanceIntersectionZono(Z,P)
-% return maximum distance between a zonotope and polytope in the case that
-% both are intersecting
-
+% return maximum distance between a zonotope and polytope that intersect
     w = rad(interval(conZonotope(Z) & P));
     dist = 2*sqrt(sum(w.^2));
 end
 
 function d = aux_distanceIntervalPoint(I,p)
-% compute the norm 1 distance between a point p and an interval int
+% compute the norm-1 distance between an interval and a point
 
     d = 0;
-    l = infimum(I);
-    u = supremum(I);
+    l = infimum(I); u = supremum(I);
     
     for i = 1:length(p)
-       if p(i) > u(i)
-          d = d + u(i) - p(i); 
-       elseif p(i) < l(i)
-          d = d + l(i) - p(i);
-       end
+        if p(i) > u(i)
+            d = d + u(i) - p(i); 
+        elseif p(i) < l(i)
+            d = d + l(i) - p(i);
+        end
     end
 end
 
 function d = aux_distancePolyPoint(P,p)
-% compute the norm 1 distance between a point p and a polytope P: C*x <= d    
+% compute the norm-1 distance between a polytope P: C*x <= d and a point p
 
     % get polytope properties
     C = P.A; d = P.b;
-    n = length(p); m = size(C,1);
+    n = length(p); nrCon = size(C,1);
     
     % check how many halfspace constraints are violated
-    temp = C*p - d;
-    ind = find(temp > 0);
+    offset = C*p - d;
+    ind = find(offset > 0);
     
     if length(ind) == 1
         
         % only one halfspace constraint violated -> distance to polytope is
         % equal to the distance to the halfspace constraint
-        d = temp(ind(1));
+        d = offset(ind(1));
         
     elseif length(ind) == n
         
@@ -661,7 +662,7 @@ function d = aux_distancePolyPoint(P,p)
         problem.f = [zeros(n,1); ones(2*n,1)];
         problem.Aeq = [eye(n) eye(n) -eye(n)];
         problem.beq = p;
-        problem.Aineq = [C zeros(m,2*n); zeros(2*n,n) -eye(2*n)];
+        problem.Aineq = [C zeros(nrCon,2*n); zeros(2*n,n) -eye(2*n)];
         problem.bineq = [d; zeros(2*n,1)];
         problem.lb = [];
         problem.ub = [];
@@ -669,93 +670,6 @@ function d = aux_distancePolyPoint(P,p)
         % solve linear program
         [~,d] = CORAlinprog(problem);
     end
-end
-
-% safe/unsafe set time interval check
-function doCheck = aux_checkSet(set_unsat,t)
-% returns whether the current safe/unsafe set has to be checked for the 
-% given time interval, which is not required if the verification has been
-% successful in a prior iteration
-
-doCheck = true;
-
-% quick check if set is already fully verified
-if isempty(set_unsat)
-    doCheck = false;
-    return;
-end
-
-% check for intersection
-if t(2) <= set_unsat(1,1) || t(1) > set_unsat(end,2)
-    % upper bound smaller than lower bound of first time interval
-    % lower bound larger than upper bound of last time interval
-    doCheck = false;
-    return;
-elseif any(t(1) >= set_unsat(1:end-1,2) & t(2) <= set_unsat(2:end,1))
-    % bounds between unverified time intervals
-    doCheck = false;
-    return;
-end
-
-end
-
-function set_unsat = aux_removeFromUnsat(set_unsat,t)
-% adapt FGunsat so that timeInterval is not part of time intervals covered
-
-FGunsat_col = reshape(set_unsat',numel(set_unsat),1);
-if mod(sum(t(1) >= FGunsat_col),2) ~= 0
-    % lower bound starts inside unverified time interval
-    % t(1) \in [ timeInterval )
-    idx = find(t(1) >= set_unsat(:,1) & t(1) <= set_unsat(:,2));
-    
-    if t(2) <= set_unsat(idx,2)
-        if t(1) > set_unsat(idx,1)
-            set_unsat = [set_unsat(1:idx-1,:); [set_unsat(idx,1), t(1)]; set_unsat(idx:end,:)];
-            idx = idx + 1;
-        end
-        % split, potential merge later
-        set_unsat(idx,1) = t(2);
-        t = [];
-    else
-        % remove interval, potential merge later
-        set_unsat(idx,2) = t(1);
-        if idx < size(set_unsat,1)
-            t(1) = set_unsat(idx+1,1);
-        end
-        if t(2) <= t(1)
-            t = [];
-        end
-    end
-end
-
-% now: lower bound starts in between unverified time intervals or at
-% maximum at the start point of an unverified set
-% t(1) \in [ notTimeInterval )
-while ~isempty(t)
-    idx = find(t(1) <= set_unsat(:,1),1,'first');
-    % upper bound is at least at the beginning of the next time interval
-    if t(2) <= set_unsat(idx,2)
-        % split, potential merge later
-        set_unsat(idx,1) = t(2);
-        t = [];
-    else
-        % remove entire thing (full time interval verified)
-        if idx < size(set_unsat,1)
-            t(1) = set_unsat(idx,2);
-            if t(2) < set_unsat(idx+1,1)
-                t = [];
-            end
-        else
-            t = [];
-        end
-        set_unsat(idx,:) = [];
-    end
-end
-
-% remove
-idxRemove = abs(set_unsat(:,2) - set_unsat(:,1)) < 1e-14;
-set_unsat(idxRemove,:) = [];
-
 end
 
 function [RtimePoint,RtimeInt] = aux_appendSets(RtimePoint,RtimeInt,...
@@ -772,13 +686,13 @@ function [RtimePoint,RtimeInt] = aux_appendSets(RtimePoint,RtimeInt,...
     RtimeInt.error = [RtimeInt.error; R_o_error(idxSAT)];
 
     % cell-array for time-interval solution more cumbersome...
-    temp = {};
+    RtimeInt_time = {};
     for jj=1:length(idxSAT)
         if idxSAT(jj)
-            temp = [temp; {interval(time(jj,1),time(jj,2))}];
+            RtimeInt_time = [RtimeInt_time; {interval(time(jj,1),time(jj,2))}];
         end
     end
-    RtimeInt.time = [RtimeInt.time; temp];
+    RtimeInt.time = [RtimeInt.time; RtimeInt_time];
 
 end
 

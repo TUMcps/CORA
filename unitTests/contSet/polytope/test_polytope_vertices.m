@@ -23,6 +23,9 @@ function res = test_polytope_vertices
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% tolerance
+tol = 1e-14;
+
 % 1D, empty, only inequalities
 A = [2; 1; -4]; b = [5; 0.5; -3];
 P = polytope(A,b);
@@ -84,14 +87,14 @@ P = polytope(A,b);
 V = vertices(P);
 V_comb = vertices_(P,'comb');
 V_ = [0.4 1.2; 1 0; 0 -1; -4/3 1/3]';
-assert(compareMatrices(V,V_) && compareMatrices(V,V_comb,1e-14));
+assert(compareMatrices(V,V_) && compareMatrices(V,V_comb,tol));
 
 % 2D, vertex instantiation
 V_ = [3 0; 2 2; -1 3; -2 0; 0 -1]';
 P = polytope(V_);
 V = vertices(P);
 V_comb = vertices_(P,'comb');
-assert(compareMatrices(V,V_,1e-14) && compareMatrices(V,V_comb,1e-14));
+assert(compareMatrices(V,V_,tol) && compareMatrices(V,V_comb,tol));
 
 % 2D, bounded, degenerate (single point)
 A = [1 1; 1 -1; -1 0]; b = zeros(3,1);
@@ -99,7 +102,7 @@ P = polytope(A,b);
 V = vertices(P);
 V_comb = vertices_(P,'comb');
 V_ = [0;0];
-assert(compareMatrices(V,V_,1e-14) && compareMatrices(V,V_comb,1e-14));
+assert(compareMatrices(V,V_,tol) && compareMatrices(V,V_comb,tol));
 
 % 2D, bounded, degenerate (line)
 A = [1 1; 1 -1; -1 -1; -1 1]; b = [1; 0; 1; 0];
@@ -107,7 +110,7 @@ P = polytope(A,b);
 V = vertices(P);
 V_comb = vertices_(P,'comb');
 V_ = [0.5 0.5; -0.5 -0.5]';
-assert(compareMatrices(V,V_,1e-14) && compareMatrices(V,V_comb,1e-14));
+assert(compareMatrices(V,V_,tol) && compareMatrices(V,V_comb,tol));
 
 
 % 3D, degenerate (2D simplex)
@@ -116,7 +119,7 @@ Ae = [0 0 1]; be = 0;
 P = polytope(A,b,Ae,be);
 V = vertices(P);
 V_ = [2 0 0; 0 2 0; 0 0 0]';
-assert(compareMatrices(V,V_,1e-14));
+assert(compareMatrices(V,V_,tol));
 
 % 3D, unit box
 n = 3; A = [eye(n); -eye(n)]; b = [ones(2*n,1)];
@@ -131,7 +134,7 @@ P = polytope(A,b);
 V = vertices(P);
 V_comb = vertices_(P,'comb');
 V_ = [1 1 0; -1 1 0; -1 -1 0; 1 -1 0]';
-assert(compareMatrices(V,V_,1e-14) && compareMatrices(V,V_comb,1e-14));
+assert(compareMatrices(V,V_,tol) && compareMatrices(V,V_comb,tol));
 
 
 % 4D, degenerate (unit square)
@@ -140,7 +143,7 @@ Ae = [0 0 1 0; 0 0 0 1]; be = [0;0];
 P = polytope(A,b,Ae,be);
 V = vertices(P);
 V_ = [1 1 0 0; 1 -1 0 0; -1 1 0 0; -1 -1 0 0]';
-assert(compareMatrices(V,V_,1e-14));
+assert(compareMatrices(V,V_,tol));
 
 % 4D, degenerate (rotated unit square)
 A = [eye(2) zeros(2); -eye(2) zeros(2)]; b = [ones(4,1)];
@@ -148,7 +151,7 @@ Ae = [0 0 1 0; 0 0 0 1]; be = [0;0];
 P = polytope(A,b,Ae,be);
 M = [1 3 -2 4; 3 -2 4 -1; 3 -2 -1 3; 4 -3 -2 1];
 V = vertices(M*P);
-assert(compareMatrices(V,M*V_,1e-14));
+assert(compareMatrices(V,M*V_,tol));
 
 
 % 7D, degenerate (subspace computation required)
@@ -196,10 +199,9 @@ P = polytope(A,b);
 assertThrowsAs(@vertices,'CORA:notSupported',P);
 
 % vertex representation ---
-
 V = [1 1 0; 0 1 0];
 P = polytope(V);
-assert(compareMatrices(vertices(P),V))
+assert(compareMatrices(vertices(P),V,tol))
 
 V = [ 1.000 4.000 4.000 1.000 1.000 4.000 4.000 4.000 4.000 7.000 7.000 4.000 4.000 7.000 7.000 1.000 ; 3.000 3.000 6.000 3.000 3.000 3.000 6.000 0.000 0.000 0.000 3.000 2.000 2.000 2.000 5.000 3.000 ];
 P = polytope(V);

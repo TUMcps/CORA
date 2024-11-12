@@ -35,6 +35,7 @@ dirs = files([files.isdir]);
 allowedNNPaths = {
     [CORAROOT filesep 'nn'];
     [CORAROOT filesep 'examples' filesep 'nn'];
+    [CORAROOT filesep 'examples' filesep 'website' filesep 'nn'];
     [CORAROOT filesep 'global' filesep 'functions' filesep 'helper' filesep 'nn'];
     [CORAROOT filesep 'models' filesep 'Cora' filesep 'nn'];
     [CORAROOT filesep 'unitTests' filesep 'nn'];

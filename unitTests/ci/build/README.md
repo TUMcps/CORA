@@ -1,5 +1,5 @@
 
-# CORA Docker Image
+# Building a new docker image
 
 This files describes the process to update the docker image for repeatability packages and the CI.
 
@@ -7,7 +7,7 @@ The `Dockerfile` in this folder pulls the desired docker matlab version
 and installs all dependencies for CORA automatically (see Sec. 1.3 in the [CORA manual](https://cora.in.tum.de/manual)).
 
 1. Update desired Matlab version in `Dockerfile`:
-    - Update `ARG MATLAB_RELEASE=<VERSION>` (e.g., 2023b)
+    - Update `ARG MATLAB_RELEASE=<VERSION>` (e.g., `2024b`)
     
 2. Copy `Dockerfile` from `./cora/unitTests/ci/build` to `./cora`
 3. Run within `./cora`:

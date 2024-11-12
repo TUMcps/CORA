@@ -1,13 +1,15 @@
-function c = center(P)
+function c = center(P,varargin)
 % center - computes the Chebyshev center of a polytope
 %    note: polytope in vertex representation are converted to halfspace
 %    representation, see [1], which is potentially time-consuming
+%    Use method 'avg' for average of vertices
 %
 % Syntax:
 %    c = center(P)
 %
 % Inputs:
 %    P - polytope object
+%    method - 'chebyshev', 'avg' (for v-polytope)
 %
 % Outputs:
 %    c - Chebyshev center of the polytope
@@ -23,17 +25,25 @@ function c = center(P)
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
-%
 % See also: none
 
-% Authors:       Viktor Kotsev, Mark Wetzlinger
+% Authors:       Viktor Kotsev, Mark Wetzlinger, Tobias Ladner
 % Written:       28-March-2022
 % Last update:   14-December-2022 (MW, add call to MOSEK)
 %                27-July-2023 (MW, add fast method for 1D)
 %                02-January-2024 (MW, fix fully empty polytopes)
+%                31-October-2024 (TL, added methods, added 'avg')
 % Last revision: 12-July-2024 (MW, refactor)
 
 % ------------------------------ BEGIN CODE -------------------------------
+
+% parse input
+method = setDefaultValues({'chebyshev'},varargin);
+allowedMethods = {'chebyshev','avg'};
+inputArgsCheck({ ...
+    {P,'att','polytope'}; ...
+    {method,'str',allowedMethods}; ...
+})
 
 % read out dimension
 n = dim(P);
@@ -47,21 +57,18 @@ end
 
 % fast and simple computation for 1D
 if n == 1
-    c = aux_center_1D(P);
-    return
+    c = aux_center_1D(P); return
 end
 
-% check whether there are only equalities: allows to avoid the linear
-% program from below (faster)
-if isempty(P.A_.val) && ~isempty(P.Ae_.val)
-    c = aux_center_only_equalityConstraints(P,n);
-    return
+% switch method
+switch method
+    case 'chebyshev'
+        c = aux_center_chebyshev(P);
+    case 'avg'
+        c = aux_center_avg(P);
+    otherwise
+        throw(CORAerror('CORA:wrongValue','second',allowedMethods))
 end
-
-% general method: compute Chebyshev center via linear program; to this end,
-% we require the halfspace representation
-constraints(P);
-c = aux_center_LP(P,n);
 
 end
 
@@ -87,6 +94,33 @@ else
     c = mean(V);
 end
 
+end
+
+function c = aux_center_chebyshev(P)
+
+% read out dimension
+n = dim(P);
+
+% check whether there are only equalities: allows to avoid the linear
+% program from below (faster)
+if isempty(P.A_.val) && ~isempty(P.Ae_.val)
+    c = aux_center_only_equalityConstraints(P,n);
+    return
+end
+
+% general method: compute Chebyshev center via linear program; to this end,
+% we require the halfspace representation
+constraints(P);
+c = aux_center_LP(P,n);
+
+end
+
+function c = aux_center_avg(P)
+    % compute vertices
+    V = vertices(P);
+
+    % compute mean
+    c = mean(V,2);
 end
 
 function c = aux_center_only_equalityConstraints(P,n)

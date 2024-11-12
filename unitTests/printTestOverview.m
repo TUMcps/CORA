@@ -43,7 +43,7 @@ format = setDefaultValues({'short'},varargin);
 % more leniency in writing of identifiers
 format = lower(format);
 % check if correct identifier provided
-inputArgsCheck({{format,'str',{'short','long','flaky','intlab','mosek','mp','sdpt3','nn','examples','benchmarks','header'}}});
+inputArgsCheck({{format,'str',{'short','long','flaky','intlab','mosek','mp','sdpt3','nn','examples','benchmarks','website','header'}}});
 
 % check list of name-value pairs
 checkNameValuePairs(NVpairs,{'LongestTests'});
@@ -117,7 +117,7 @@ end
 if longestTests > 0
     [compTime,idxMax] = maxk([results.time],longestTests);
     fprintf("  .. longest:\n");
-    for i=1:longestTests
+    for i=1:min(longestTests,numel(idxMax))
     fprintf("  .. .. %s (%.2fs)\n",results(idxMax(i)).fname,compTime(i));
     end
 end

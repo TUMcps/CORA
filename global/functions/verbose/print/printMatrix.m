@@ -33,9 +33,9 @@ function printMatrix(M,varargin)
 
 % parse input
 narginchk(0,4);
-[accuracy,doCompact,clearLine] = setDefaultValues({'%4.3f%s',false,true},varargin);
+[accuracy,doCompact,clearLine] = setDefaultValues({'%4.3f',false,true},varargin);
 if ischar(accuracy) && strcmp(accuracy,'high')
-    accuracy = '%16.16f%s';
+    accuracy = '%16.16f';
 end
 inputArgsCheck({ ...
     {M,'att','numeric'}, ...
@@ -70,6 +70,25 @@ if isscalar(M)
     return
 end
 
+% matrix of one value case
+if isscalar(full(unique(M)))
+    [n_rows,n_clmns] = size(M);
+    if M(1,1) == 0
+        mat_string = sprintf('zeros(%i,%i)',n_rows,n_clmns);
+    else
+        % use user-specified accuracy
+        format_string = strcat(accuracy,"*ones(%i,%i)");
+        mat_string = sprintf(format_string,full(M(1,1)),n_rows,n_clmns);
+    end
+    if issparse(M)
+        fprintf("sparse(%s)\n",mat_string);
+    else
+        fprintf(strcat(mat_string,"\n"));
+    end
+    return
+end
+
+% sparse case
 if issparse(M)
     [i,j,v] = find(M);
     fprintf('sparse(')

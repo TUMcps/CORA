@@ -18,6 +18,7 @@ function runTestSuite(varargin)
 %                   'nn': prefixes 'test_nn', 'test_neurNetContrSys', 'testnn'
 %                   'examples': prefix 'example'
 %                   'benchmark': prefix 'benchmark'
+%                   'website': prefix 'website'
 %                   'testHeader': examples in docstring headers
 %                 adding ':failed', only tests that failed in the last run
 %                 are executed
@@ -50,10 +51,11 @@ rootExamples = [CORAROOT filesep 'examples'];
 [testSuite,verbose,directory] = setDefaultValues(...
     {'short',true,[]},varargin);
 if isempty(directory) 
-    if strcmp(testSuite,'examples') || strcmp(testSuite,'benchmarks')
-        directory = rootExamples;
-    else
-        directory = rootUnitTests;
+    switch testSuite
+        case {'examples','benchmarks','website'}
+            directory = rootExamples;
+        otherwise
+            directory = rootUnitTests;
     end
 end
 
@@ -110,6 +112,8 @@ switch testSuite
         prefix = 'example';
     case 'benchmarks'
         prefix = 'benchmark';
+    case 'website'
+        prefix = 'website';
     case 'header'
         prefix = 'testHeader';
     otherwise

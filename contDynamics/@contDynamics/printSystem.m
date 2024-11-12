@@ -29,9 +29,9 @@ function printSystem(sys,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 narginchk(0,4);
-[accuracy,doCompact,clearLine] = setDefaultValues({'%4.3f%s',false,true},varargin);
+[accuracy,doCompact,clearLine] = setDefaultValues({'%4.3f',false,true},varargin);
 if ischar(accuracy) && strcmp(accuracy,'high')
-    accuracy = '%16.16f%s';
+    accuracy = '%16.16f';
 end
 inputArgsCheck({ ...
     {sys,'att',{'contDynamics'}}, ...

@@ -21,34 +21,44 @@ function tips = getCORAtipsoftheday(rs)
 
 if nargin < 1
     % init random number generator
-    rs = RandStream('mt19937ar', 'Seed', 0); 
+    rs = RandStream('mt19937ar', 'Seed', randi(2^32)); 
 end
 
-% gather static tips
-tips = [
-    % folder
-    aux_getTipsApp()
-    aux_getTipsContDynamics()
-    aux_getTipsContSet()
-    aux_getTipsConverter()
-    aux_getTipsDiscDynamics()
-    aux_getTipsExamples()
-    aux_getTipsGlobal()
-    aux_getTipsHybridDynamics()
-    aux_getTipsManual()
-    aux_getTipsMatrixSets()
-    aux_getTipsModels()
-    aux_getTipsNN()
-    aux_getTipsSpecification()
-    aux_getTipsUnitTests()
-    % other
-    aux_getTipsSolver()
-    aux_getTipsPlot()
-    % ___ of the day
-    aux_getClassOfTheDayCandidates(rs, 10)
-    aux_getContSetFunctionOfTheDayCandidates(rs, 10)
-    aux_getExampleOfTheDayCandidates(rs, 10)
-];
+% 1 in 10 chance to check if new update is available
+% (is quite slow due to url call, so not always computed)
+tips = [];
+if rs.rand() <= 0.1
+    tips = aux_addNewRelease();
+end
+
+% gather static tips if previous step did not produce any tips
+if isempty(tips)
+    % gather tips by category
+    tips = [
+        % folder
+        aux_getTipsApp()
+        aux_getTipsContDynamics()
+        aux_getTipsContSet()
+        aux_getTipsConverter()
+        aux_getTipsDiscDynamics()
+        aux_getTipsExamples()
+        aux_getTipsGlobal()
+        aux_getTipsHybridDynamics()
+        aux_getTipsManual()
+        aux_getTipsMatrixSets()
+        aux_getTipsModels()
+        aux_getTipsNN()
+        aux_getTipsSpecification()
+        aux_getTipsUnitTests()
+        % other
+        aux_getTipsSolver()
+        aux_getTipsPlot()
+        % ___ of the day
+        aux_getClassOfTheDayCandidates(rs, 10)
+        aux_getContSetFunctionOfTheDayCandidates(rs, 10)
+        aux_getExampleOfTheDayCandidates(rs, 10)
+    ];
+end
 
 end
 
@@ -236,6 +246,32 @@ function tips = aux_getTipsPlot()
     };
 end
 
+function tips = aux_addNewRelease()
+    tips = {};
+    try
+        % get latest release
+        tags = webread("https://api.github.com/repos/TUMcps/CORA/tags");
+        
+        % check if github ping was successful
+        if ~isempty(tags) && isstruct(tags) && isfield(tags(1),'name')
+            % read version on github ('v202x.x.x')
+            GITHUBVERSION = tags(1).name;
+            % check if matches CORAVERSION ('CORA v202x.x.x')
+            if ~contains(CORAVERSION,GITHUBVERSION)
+                % add tip about new CORAVERSION
+                tips{end+1} = sprintf( ...
+                    ['A new CORA version is available: <strong>CORA %s</strong> (currently %s is installed).\\n' ...
+                    'Make sure to update it soon to get the latest features and bug fixes!\\n' ...
+                    'Read more about it here: ' aux_addLinkText('https://cora.in.tum.de/pages/archive#release-notes')], ...
+                    GITHUBVERSION, CORAVERSION);
+            end
+        end
+    catch ME
+        % catch exception; output warning
+        CORAwarning('CORA:global','Unable to check if a new CORA version is available.')
+    end
+end
+
 % helper texts ---
 
 function visitmanualtext = aux_addVisitManualText(sec)
@@ -281,7 +317,16 @@ end
 function tips = aux_getClassOfTheDayCandidates(rs, n)
     
     % find classes of cora
-    classes = dir([CORAROOT filesep '**/@*']);
+    coraroot = CORAROOT;
+    classes = [
+        dir([coraroot '/contDynamics/@*']);
+        dir([coraroot '/contSet/@*']);
+        % dir([coraroot '/discrDynamics/@*']);
+        dir([coraroot '/hybridDynamics/@*']);
+        dir([coraroot '/global/classes/@*']);
+        dir([coraroot '/nn/@*']);
+        dir([coraroot '/specification/@*']);
+    ];
 
     % select n
     classes = classes(rs.randperm(numel(classes),n));
@@ -297,7 +342,7 @@ end
 function tips = aux_getContSetFunctionOfTheDayCandidates(rs, n)
     
     % find functions of contSet
-    funcs = dir([CORAROOT filesep '**/@contSet/*.m']);
+    funcs = dir([CORAROOT filesep 'contSet/@contSet/*.m']);
 
     % filter certain functions
     idx = arrayfun(@(file) ...

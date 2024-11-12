@@ -42,6 +42,14 @@ assert(all(withinTol([cZ.c,cZ.G],Z),'all') ...
         && all(withinTol(cZ.A,A),'all') ...
         && all(withinTol(cZ.b,b)));
 
+% constraints should be double for internal processing
+c = [ 1.000 ; 1.000 ];
+G = [ 3.000 0.000 0.000 ; 0.000 3.000 0.000 ];
+A = single([ 1.211 -0.118 0.684 ]);
+b = single(-0.112);
+cZ = conZonotope(c,G,A,b);
+assert(isa(cZ.A,'double') && isa(cZ.b,'double'))
+
 
 % combine results
 res = true;

@@ -117,7 +117,7 @@ if isa(sys,'contDynamics')
         [params,options] = aux_set_unsatIntervals(sys,params,options);
 
         % check if computation of inner-approximation can be skipped in favor
-	    % of a simpler method (only if F/G consists of only of halfspace)
+	    % of a simpler method (only if (un)safe set consists of only of halfspace)
         [params,options] = aux_set_safeUnsafeSetFastInner(sys,params,options);
     end
 
@@ -490,31 +490,40 @@ options.intermediateOrder = 100;
 end
 
 function [params,options] = aux_set_unsatIntervals(sys,params,options)
-% returns time intervals, where unsafe sets / safe sets need to be checked
-% for computational efficiency, these are stored as matrices and not as
-% object of the interval-class
+% sets time intervals, where unsafe sets / safe sets need to be checked
+% (recall that .time = [] refers to 'at all times'); for computational
+% efficiency, these are stored as objects of the helper class verifyTime
+% and not as object of the interval class
 
 options.savedata.unsafeSet_unsat = cell(length(params.unsafeSet),1);
-for i=1:length(params.unsafeSet)
+for i=1:numel(params.unsafeSet)
     if ~representsa_(params.unsafeSet{i}.time,'emptySet',eps)
         options.savedata.unsafeSet_unsat{i} = ...
             [infimum(params.unsafeSet{i}.time), ...
             supremum(params.unsafeSet{i}.time)];
+        params.unsafeSet{i}.time_ = verifyTime(...
+            [infimum(params.unsafeSet{i}.time),...
+            supremum(params.unsafeSet{i}.time)]);
     else
         % default: unsatisfied over whole time horizon
         options.savedata.unsafeSet_unsat{i} = [params.tStart, params.tFinal];
+        params.unsafeSet{i}.time_ = verifyTime([params.tStart,params.tFinal]);
     end
 end
 
 options.savedata.safeSet_unsat = cell(length(params.safeSet),1);
-for i=1:length(params.safeSet)
+for i=1:numel(params.safeSet)
     if ~representsa_(params.safeSet{i}.time,'emptySet',eps)
         options.savedata.safeSet_unsat{i} = ...
             [infimum(params.safeSet{i}.time), ...
             supremum(params.safeSet{i}.time)];
+        params.safeSet{i}.time_ = verifyTime(...
+            [infimum(params.safeSet{i}.time),...
+            supremum(params.safeSet{i}.time)]);
     else
         % default: unsatisfied over whole time horizon
         options.savedata.safeSet_unsat{i} = [params.tStart, params.tFinal];
+        params.safeSet{i}.time_ = verifyTime([params.tStart,params.tFinal]);
     end
 end
     
@@ -527,23 +536,17 @@ function [params,options] = aux_set_safeUnsafeSetFastInner(sys,params,options)
 % inner-approximation does not actually have to be computed
 
 % loop over unsafe sets
-for i=1:length(params.unsafeSet)
-    params.unsafeSet{i}.fastInner = false;
+for i=1:numel(params.unsafeSet)
     oneHalfspace = size(params.unsafeSet{i}.set.A,1) == 1;
     perpHalfspace = nnz(params.unsafeSet{i}.set.A) == 1;
-    if oneHalfspace && perpHalfspace
-        params.unsafeSet{i}.fastInner = true;
-    end
+    params.unsafeSet{i}.fastInner = oneHalfspace && perpHalfspace;
 end
 
 % loop over safe sets
-for i=1:length(params.safeSet)
-    params.safeSet{i}.fastInner = false;
+for i=1:numel(params.safeSet)
     oneHalfspace = size(params.safeSet{i}.set.A,1) == 1;
     perpHalfspace = nnz(params.safeSet{i}.set.A) == 1;
-    if oneHalfspace && perpHalfspace
-        params.safeSet{i}.fastInner = true;
-    end
+    params.safeSet{i}.fastInner = oneHalfspace && perpHalfspace;
 end
 
 end

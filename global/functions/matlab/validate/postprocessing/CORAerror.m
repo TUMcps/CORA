@@ -36,6 +36,7 @@ function ME = CORAerror(identifier,varargin)
 %                 'CORA:outOfMemory'
 %                 'CORA:noops'
 %                 'CORA:install'
+%                 'CORA:reportToDev'
 %    varargin - further information depending on specific error
 %
 % Outputs:
@@ -488,6 +489,13 @@ switch identifier
     case 'CORA:install'
         errmsg = varargin{1};
 
+
+    % report error to developers (likely an edge case that should not
+    % occur, but is hard to discern when it would happen)
+    case 'CORA:reportToDev'
+        infostr = 'Please report this error to the developers.';
+        errmsg = sprintf("%s\n  %s",varargin{1},infostr);
+        
 
     % handle non-defined identifiers
     otherwise

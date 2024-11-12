@@ -8,6 +8,7 @@ generated_*
 models/auxiliary/*
 **/+CustomLayers
 **/+DLT_CustomLayers
+**/website_*.html
 
 # explude files from installCORA 
 # (in case some installs tbxmanager into the CORA folder)

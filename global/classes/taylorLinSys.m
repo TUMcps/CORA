@@ -36,7 +36,7 @@ properties (SetAccess = private, GetAccess = public) %(Access = private)
     timeStep;           % array of time steps that have been used
 
     % fields depending on timeStep
-    eAdt;               % propagation matrix
+    eAdt;               % propagation matrix e^(A*dt)
     E;                  % remainder of exponential matrix
     F;                  % correction matrix for the state
     G;                  % correction matrix for the input
@@ -151,7 +151,7 @@ methods
         % check if time step has been used before
         timeStepIdx = getIndexForTimeStep(obj,timeStep);
         if timeStepIdx == -1
-            obj = makeNewTimeStep(obj,timeStep);
+            makeNewTimeStep(obj,timeStep);
             timeStepIdx = length(obj.timeStep);
             Apower_dt_fact_cell = [];
         else
@@ -183,7 +183,7 @@ methods
         % check if time step has been used before
         timeStepIdx = getIndexForTimeStep(obj,timeStep);
         if timeStepIdx == -1
-            obj = makeNewTimeStep(obj,timeStep);
+            makeNewTimeStep(obj,timeStep);
             timeStepIdx = length(obj.timeStep);
             Apower_abs_dt_fact_cell = [];
         else
@@ -245,7 +245,7 @@ methods
         % check if given time step has been used before
         idx = getIndexForTimeStep(obj,timeStep);
         if idx == -1
-            obj = makeNewTimeStep(obj,timeStep);
+            makeNewTimeStep(obj,timeStep);
             idx = length(obj.timeStep);
             dtoverfac_mm = [];
         else
@@ -276,7 +276,7 @@ methods
         eAdt = readFieldForTimeStep(obj,'eAdt',timeStep);
         if isempty(eAdt)
             eAdt = expm(obj.A*timeStep);
-            obj = insertFieldTimeStep(obj,'eAdt',eAdt,timeStep);
+            insertFieldTimeStep(obj,'eAdt',eAdt,timeStep);
         end
     end
     function val = compute_Ainv(obj)
@@ -348,7 +348,7 @@ methods
             idx = find(idxLogical);
         end
     end
-    function obj = makeNewTimeStep(obj,timeStep)
+    function makeNewTimeStep(obj,timeStep)
         % append time step to list of time steps
         obj.timeStep(end+1,1) = timeStep;
         % increase length of all fields
@@ -361,15 +361,15 @@ methods
         obj.dtoverfac{end+1,1} = [];
     end
 
-    function obj = insertFieldTimeStep(obj,field,val,timeStep)
+    function insertFieldTimeStep(obj,field,val,timeStep)
         idx = getIndexForTimeStep(obj,timeStep);
         if idx == -1
-            obj = makeNewTimeStep(obj,timeStep);
+            makeNewTimeStep(obj,timeStep);
             idx = length(obj.timeStep);
         end
-        obj = insertField(obj,field,val,idx);
+        insertField(obj,field,val,idx);
     end
-    function obj = insertField(obj,field,val,idx)
+    function insertField(obj,field,val,idx)
         % check if already there?
         switch field
             case 'E'

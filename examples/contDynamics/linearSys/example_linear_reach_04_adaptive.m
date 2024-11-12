@@ -34,18 +34,17 @@ sys = linearSys('sys',A,B);
 
 % Parameters --------------------------------------------------------------
 
-dim = length(A);
+n = length(A);
 
 params.tFinal = 5;
-params.R0 = zonotope([[10; 5],0.5*eye(dim)]);       % initial set
-params.U = zonotope([ones(dim,1),0.25*eye(dim)]);   % uncertain inputs
+params.R0 = zonotope([[10; 5],0.5*eye(n)]);
+params.U = zonotope([ones(n,1),0.25*eye(n)]);
 params.u = 0.1*[2 1 1 2 4 4 4 4 2 -2; -1 0 0 2 3 3 3 3 1 -2];
 
 
 % Reachability Settings ---------------------------------------------------
 
-options.linAlg = 'adaptive'; % use adaptive parameter tuning
-
+options.linAlg = 'adaptive';  % use adaptive parameter tuning
 
 % Simulation --------------------------------------------------------------
 
@@ -71,13 +70,13 @@ end
 % Visualization -----------------------------------------------------------
 
 figure; hold on; box on; legend();
-xlim([-6,12]); ylim([-4,10])
+xlim([-6,12]); ylim([-4,10]);
 
 projDims = [1,2];
 
 % plot unsafe set
 spec = specification(polytope([-1 2],-4.5),'unsafeSet');
-plot(spec,projDims,'DisplayName', 'Unsafe Set');
+plot(spec, projDims, 'DisplayName', 'Unsafe Set');
 
 % plot reachable set
 useCORAcolors("CORA:contDynamics", 2)

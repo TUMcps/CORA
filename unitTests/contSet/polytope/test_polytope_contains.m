@@ -168,6 +168,17 @@ P1 = polytope(A,b);
 S = [-2 -1; 0 0; 0 -4]';
 assert(all(contains(P1,S)));
 
+% 2D, V-polyhedron point cloud not included
+V = [1 0; -1 1; -1 -1]';
+P1 = polytope(V);
+S = [-2 -2; 0 2; 0 -0.6]';
+assert(all(~contains(P1,S)));
+
+% 2D, V-polyhedron point cloud not included
+V = [-2 -2; 2 2]';
+P1 = polytope(V);
+S = [0 1]';
+assert(all(~contains(P1,S)));
 
 % 3D, bounded >= degenerate?
 A = [1 0 0; 0 1 0; 0 0 1; -1 0 0; 0 -1 0; 0 0 -1]; b = ones(6,1);

@@ -31,7 +31,7 @@ failed = true;
 % default format: last run
 testSuite = setDefaultValues({'short'},varargin);
 % check if correct identifier provided
-inputArgsCheck({{testSuite,'str',{'short','long','flaky','intlab','mosek','mp','sdpt3','nn','examples','benchmarks','header'}}});
+inputArgsCheck({{testSuite,'str',{'short','long','flaky','intlab','mosek','mp','sdpt3','nn','examples','benchmarks','website','header'}}});
 
 % load data
 unitTestsFile = [CORAROOT filesep 'unitTests' filesep 'unitTestsStatus.mat'];

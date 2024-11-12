@@ -84,7 +84,23 @@ removeDims = setdiff(1:n,dims);
 switch method
     case 'fourier_jones'
         Ab = [A(:, [dims, removeDims]), b];
-        Ab_ = fourier(Ab, 1:length(dims), 1e-6, 0);
+        try
+            Ab_ = fourier(Ab, 1:length(dims), 1e-6, 0);
+        catch ME
+            % fourier uses mex files located at ./global/thirdparty/fourier
+            % which have to be included for the current OS.
+            % test if this is the reason for the error
+            if strcmp(ME.identifier,'MATLAB:TooManyInputs')
+                % give better error message
+                throw(CORAerror('CORA:specialError', [ ...
+                    'The function ''fourier'' is missing a compiled mex file for your operating system.\n' ...
+                    'To install it, please type ''tbxmanager install fourier'' in the command window and contact us about this issue.\n' ...
+                    'See also: ' strrep(CORAROOT,filesep,'/') '/global/thirdparty/fourier/readme.txt']))
+            else
+                % rethrow ME
+                rethrow(ME)
+            end
+        end
         P_out = polytope(Ab_(:,1:end-1), Ab_(:,end));
         return
 

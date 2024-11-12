@@ -1,9 +1,13 @@
 
-Note TL: 
+Note TL, 07 May 2024: 
+
+The fourier function is currently used for the new polytope class.
+However, it's implementation is given in c-files,
+which are compiled to mex files located in this folder.
 
 `fourier` would also be available through the tbxmanager.
 We provide it directly in cora for legacy reasons.
-Thus, the mex file for windows and linux are included.
+Thus, the mex files for linux, mac, and windows (all 64-bit) are included.
 
 If another distribution is needed, 
 one can just install it via the tbxmanager

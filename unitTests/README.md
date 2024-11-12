@@ -12,7 +12,8 @@ in the MATLAB console. Execute
     help runTestSuite
 
 for further information.
-All settings for the CI can be found in the ```./ci``` subfolder.
+All settings for the CI can be found in the [CORA wiki](https://gitlab.lrz.de/cps/cora/-/wikis/home/).
+Information about docker and repeatability packages can be found in the `./ci` folder.
 
 Check the respective subfolders and Section 1.7 in the <a target='_blank' href="https://tumcps.github.io/CORA/manual">CORA manual</a> for more information.
 

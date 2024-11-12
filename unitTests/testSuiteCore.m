@@ -37,8 +37,14 @@ function results = testSuiteCore(prefix,varargin)
 % add underscore to prefix
 prefix = [prefix '_'];
 
+% file extension
+fileext = 'm';
+if strcmp(prefix,'website_')
+    fileext = 'mlx';
+end
+
 % list all files
-files = findfiles(directory,true,prefix);
+files = findfiles(directory,true,prefix,fileext);
 
 % list of currently open figures
 prevFigures = get(groot, 'Children');
@@ -61,8 +67,9 @@ results = struct('fname',{},'ok',{},'seed',{},'time',{});
 fprintf("Running %g tests:\n", nrTests)
 for i=1:nrTests
 
-    % extract the function name
+    % extract the function name and path
     [~, fname] = fileparts(files(i).name);
+    fpath = [files(i).folder filesep files(i).name];    
 
     % save to struct
     results(i,1).fname = fname;
@@ -79,14 +86,18 @@ for i=1:nrTests
         results(i,1).seed = testseeds(i);
 
         testTime = tic;
-        % supress output of tests by usage of evalc 
+        % suppress output of tests by usage of evalc 
         % except for the header test, as it has its own output
         if startsWith(fname, 'testHeader')
             res = eval(fname);
         elseif startsWith(fname,'test')
             % evaluate unit test
             [~,res] = evalc(fname);
-
+        elseif startsWith(fname,'website')
+            % live scripts cannot be executed with evalc
+            % -> put them into a function handle to suppress outputs
+            evalc('run(fpath);');
+            res = true;
         else
             % no output required for examples/benchmarks/...
             try

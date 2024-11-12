@@ -29,6 +29,8 @@ Run the following command once in the current folder to build the docker image:
 This might take a while the first time you run it.
 Please make sure you specified the desired Matlab version within `Dockerfile`.
 
+To build the Dockerfile from scratch, see the `./build` folder.
+
 ## Run docker
 
 Additionally, the MATLAB licence server is passed, 

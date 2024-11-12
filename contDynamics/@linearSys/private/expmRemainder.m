@@ -60,6 +60,6 @@ W = abs(expm(A_abs*timeStep) - M);
 E = interval(-W,W);
 
 % save in taylorLinSys object
-linsys.taylor = insertFieldTimeStep(linsys.taylor,'E',E,timeStep);
+insertFieldTimeStep(linsys.taylor,'E',E,timeStep);
 
 % ------------------------------ END OF CODE ------------------------------

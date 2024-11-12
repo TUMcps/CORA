@@ -22,43 +22,7 @@ function printInterval(I)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-fprintf('%s\n','interval( ...');
-
-%print infimum
-inf = infimum(I);
-%first element
-fprintf('[');
-fprintf('%16.16f',inf(1));
-fprintf('; ');
-%other elements
-if length(I)>2
-    for i=2:(length(I)-1)
-        fprintf('%16.16f',inf(i));
-        fprintf('; ');
-    end
-else
-    i = 1;
-end
-%last element
-fprintf('%16.16f',inf(i+1));
-fprintf('%s\n', '], ...');
-
-%print supremum
-sup = supremum(I);
-%first element
-fprintf('[');
-fprintf('%16.16f',sup(1));
-fprintf('; ');
-if length(I)>2
-    for i=2:(length(I)-1)
-        fprintf('%16.16f',sup(i));
-        fprintf('; ');
-    end
-else
-    i = 1;
-end
-%close expression
-fprintf('%16.16f',sup(i+1));
-fprintf(']);\n');
+CORAwarning("CORA:deprecated","function","printInterval(I)","CORA v2025.0.2","Please use printSet(I) instead.","");
+printSet(I)
 
 % ------------------------------ END OF CODE ------------------------------

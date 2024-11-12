@@ -23,11 +23,8 @@ function showCORAtipoftheday()
 % init random number generator
 rs = aux_initRandStream();
 
-% get tips
-tips = getCORAtipsoftheday(rs);
-
 % select tip
-tip = aux_selectTipOfTheDay(rs, tips);
+tip = aux_selectTipOfTheDay(rs);
 
 % display tip
 aux_showTipMessage(tip);
@@ -46,12 +43,17 @@ function rs = aux_initRandStream()
     % Convert the date to a number to use as a seed
     seed = convertTo(today,'posixtime');
 
-    % to not interfer with the outside, generate your own random stream
+    % to not interfere with the outside, generate your own random stream
     rs = RandStream('mt19937ar', 'Seed', seed); 
 end
 
-function tip = aux_selectTipOfTheDay(rs, tips)
-    % select tip
+function tip = aux_selectTipOfTheDay(rs)
+    % select tips
+
+    % get tips
+    tips = getCORAtipsoftheday(rs);
+
+    % select randomly
     tip = tips{rs.randi(numel(tips))};
 end
 

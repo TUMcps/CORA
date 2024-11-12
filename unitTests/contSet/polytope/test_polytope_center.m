@@ -16,12 +16,15 @@ function res = test_polytope_center
 %
 % See also: none
 
-% Authors:       Viktor Kotsev, Mark Wetzlinger
+% Authors:       Viktor Kotsev, Mark Wetzlinger, Tobias Ladner
 % Written:       25-April-2022
 % Last update:   27-July-2023 (MW, more cases)
+%                31-October-2024 (TL, v-polytope)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+
+% H-polytope --------------------------------------------------------------
 
 % 1D, only inequalities, bounded
 A = [2;-1]; b = [6;1];
@@ -159,6 +162,43 @@ P = polytope([],[],Ae,be);
 c = center(P);
 c_true = [0.5;0.5;0.5];
 assert(all(withinTol(c,c_true)));
+
+% V-polytope --------------------------------------------------------------
+
+% line
+V = [1 3;2 4];
+P = polytope(V);
+c =center(P,'avg');
+c_true = [2;3];
+assert(all(withinTol(c,c_true),'all'));
+
+% 1d
+V = [1,3];
+P = polytope(V);
+c =center(P,'avg');
+c_true = [2];
+assert(isequal(c,c_true));
+
+% 2d
+V = [1 0 1; 0 1 1];
+P = polytope(V);
+c =center(P,'avg');
+c_true = [2/3;2/3];
+assert(all(withinTol(c,c_true),"all"));
+
+% 2d
+V = [1 0 1; 0 1 1];
+P = polytope(V);
+c =center(P,'chebyshev');
+c_true = [ 0.7071067811865472 ; 0.7071067811865475 ];
+assert(all(withinTol(c,c_true),"all"));
+
+% 3d 
+V = [1 0 1 1; 0 1 1 1; 0 0 0 1];
+P = polytope(V);
+c =center(P,'avg');
+c_true = [0.75;0.75;0.25];
+assert(all(withinTol(c,c_true),"all"));
 
 
 % combine results
