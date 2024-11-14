@@ -40,7 +40,7 @@ x	y\\
 };
 \addlegendentry{Samples}
 
-\addplot [color=mycolor1]
+\addplot [color=mycolor1, mark=|]
   table[row sep=crcr]{%
 -6.4971	0\\
 -4.8341	0\\
@@ -61,7 +61,7 @@ x	y\\
 -4.1756	1\\
 -4.0078	1\\
 };
-\addplot [color=mycolor1, forget plot]
+\addplot [color=mycolor1, mark=|, forget plot]
   table[row sep=crcr]{%
 -4.8696	1\\
 -3.6923	1\\
@@ -82,7 +82,7 @@ x	y\\
 -5.4594	2\\
 -5.2695	2\\
 };
-\addplot [color=mycolor1, forget plot]
+\addplot [color=mycolor1, mark=|, forget plot]
   table[row sep=crcr]{%
 -6.137	2\\
 -4.9107	2\\
@@ -101,7 +101,7 @@ x	y\\
 -8.7905	3\\
 -8.3282	3\\
 };
-\addplot [color=mycolor1, forget plot]
+\addplot [color=mycolor1, mark=|, forget plot]
   table[row sep=crcr]{%
 -10.217	3\\
 -7.617	3\\
@@ -119,7 +119,7 @@ x	y\\
 0.4122	4\\
 0.6241	4\\
 };
-\addplot [color=mycolor1, forget plot]
+\addplot [color=mycolor1, mark=|, forget plot]
   table[row sep=crcr]{%
 -0.0535	4\\
 0.8445	4\\
@@ -138,7 +138,7 @@ x	y\\
 -5.9128	5\\
 -5.6043	5\\
 };
-\addplot [color=mycolor1, forget plot]
+\addplot [color=mycolor1, mark=|, forget plot]
   table[row sep=crcr]{%
 -6.9975	5\\
 -5.1007	5\\
@@ -161,7 +161,7 @@ x	y\\
 -5.4094	6\\
 -5.3209	6\\
 };
-\addplot [color=mycolor1, forget plot]
+\addplot [color=mycolor1, mark=|, forget plot]
   table[row sep=crcr]{%
 -6.0185	6\\
 -4.9335	6\\
@@ -187,7 +187,7 @@ x	y\\
 -5.0747	7\\
 -5.0032	7\\
 };
-\addplot [color=mycolor1, forget plot]
+\addplot [color=mycolor1, mark=|, forget plot]
   table[row sep=crcr]{%
 -5.7321	7\\
 -4.5452	7\\
@@ -207,7 +207,7 @@ x	y\\
 -2.0796	8\\
 -1.6085	8\\
 };
-\addplot [color=mycolor1, forget plot]
+\addplot [color=mycolor1, mark=|, forget plot]
   table[row sep=crcr]{%
 -3.3741	8\\
 -1.0853	8\\
@@ -243,7 +243,7 @@ x	y\\
 -1.7026	9\\
 -1.6989	9\\
 };
-\addplot [color=mycolor1, forget plot]
+\addplot [color=mycolor1, mark=|, forget plot]
   table[row sep=crcr]{%
 -2.371	9\\
 -1.1991	9\\
