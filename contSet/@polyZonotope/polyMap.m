@@ -61,7 +61,7 @@ function res = polyMap(pZ,coeff,E)
     ind = find(tmp == 0);
 
     if ~isempty(ind)
-        c = sum(coeff(:,ind));
+        c = coeff(:,ind);
         E(:,ind) = [];
         coeff(:,ind) = [];
     end
