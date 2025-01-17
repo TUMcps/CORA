@@ -23,6 +23,26 @@ function res = test_zonotope_contains
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% point-in-zono ---
+
+% 2D zonotopes
+c = [0; 1]; G = [1 2 1; -1 0 1];
+Z = zonotope(c,G);
+assert(contains(Z, [1.5797;1.3568]))
+assert(~contains(Z, [3.5797;2.3568]))
+
+% degenerate
+Z = zonotope([-1;0], [1;1]);
+assert(contains(Z, [-0.5;0.5]))
+assert(~contains(Z, [-0.5;-0.5]))
+
+% almost degenerate
+Z = zonotope([-1;0], [1 1e-5;1 2e-5]);
+assert(contains(Z, [-0.5;0.5]))
+assert(~contains(Z, [-0.5;-0.5]))
+
+% zono-in-zono ---
+
 % empty zonotope
 % Z = zonotope.empty(2);
 % res(end+1,1) = contains(Z,Z);

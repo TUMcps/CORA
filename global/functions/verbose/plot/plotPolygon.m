@@ -7,8 +7,9 @@ function han = plotPolygon(V,varargin)
 % Inputs:
 %    V - matrix storing the polygon vertices
 %    varargin - plot settings specified as linespec and name-value pairs
-%    ('ConvHull', <true/false>) - whether convex hull of V should be
-%        computed
+%    ('ConvHull', <true/false>) - whether convex hull of V should be computed
+%    ('CloseRegions', <true/false>) - whether all given regions should closed
+%    ('PlotBackground', <true/false>) - whether all given regions should closed by properly this function
 %
 % Outputs:
 %    han - handle to the graphics object
@@ -32,6 +33,7 @@ function han = plotPolygon(V,varargin)
 %                29-February-2024 (TL, fix ColorOrderIndex in filled 3d)
 %                05-April-2024 (TL, added option to plot in background)
 %                16-October-2024 (TL, fixes during contSet/plot restructuring)
+%                17-December-2024 (TL, added 'CloseRegions')
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -46,6 +48,7 @@ end
 
 % read additional name-value pairs
 [NVpairs, doConvHull] = readNameValuePair(NVpairs, 'ConvHull', 'islogical', false);
+[NVpairs, closeRegions] = readNameValuePair(NVpairs, 'CloseRegions', 'islogical', false);
 [NVpairs, plotBackground] = readNameValuePair(NVpairs, 'PlotBackground', 'islogical', false);
 
 % read positions
@@ -73,7 +76,7 @@ elseif size(V, 2) == 1
 
 elseif size(V, 1) == 2
     % plot polygon in 2d
-    han = aux_plot2D(V,NVpairs,doConvHull,hasFaceColor,facecolor);
+    han = aux_plot2D(V,NVpairs,doConvHull,hasFaceColor,facecolor,closeRegions);
 
 elseif size(V, 1) == 3
     % plot polygon in 3d
@@ -230,10 +233,10 @@ function han = aux_plotSinglePoint(V,NVpairs,hasFaceColor,facecolor)
     
     if size(V, 1) == 2 
         % plot point in 2d
-        han = plot(V(1,:), V(2,:),NVpairs{:});
+        plot(V(1,:), V(2,:),NVpairs{:});
     elseif size(V, 1) == 3 
         % plot point in 3d
-        han = plot3(V(1,:),V(2,:),V(3,:),NVpairs{:});
+        plot3(V(1,:),V(2,:),V(3,:),NVpairs{:});
         aux_show3dAxis()
     end
 
@@ -245,7 +248,7 @@ function han = aux_plotSinglePoint(V,NVpairs,hasFaceColor,facecolor)
     end
 end
 
-function han = aux_plot2D(V,NVpairs,doConvHull,hasFaceColor,facecolor)
+function han = aux_plot2D(V,NVpairs,doConvHull,hasFaceColor,facecolor,closeRegions)
     % plot in 2D
     
     if doConvHull
@@ -264,6 +267,11 @@ function han = aux_plot2D(V,NVpairs,doConvHull,hasFaceColor,facecolor)
     end
     
     if ~hasFaceColor
+        if closeRegions
+            % close each region
+            V = aux_closeRegions(V);
+        end
+
         % make line plot
         han = plot(V(1,:), V(2,:), NVpairs{:});
     
@@ -306,6 +314,31 @@ function han = aux_plot2D(V,NVpairs,doConvHull,hasFaceColor,facecolor)
     if ymode == "manual"
         ylim(y);
     end
+end
+
+function V_closed = aux_closeRegions(V)
+
+    % find nan values
+    nanIdx = find(any(isnan(V),1));
+
+    % find nan values
+    regIdx = [0,nanIdx,size(V,2)+1];
+    
+    V_closed = [];
+    for i=1:(numel(regIdx)-1)
+        % read region
+        V_reg = V(:,(regIdx(i)+1):(regIdx(i+1)-1));
+
+        % check if closed
+        if size(V_reg,2) > 1 && ~all(withinTol(V_reg(:,1),V_reg(:,2)),"all")
+            % close region
+            V_reg = [V_reg,V_reg(:,1)];
+        end
+
+        % append to all regions
+        V_closed = [V_closed nan(2,1) V_reg];
+    end
+
 end
 
 function V = aux_sortMultipleRegionsAndHoles(V)

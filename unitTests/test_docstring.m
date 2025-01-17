@@ -54,6 +54,8 @@ files = excludefiles(files, ['converter' filesep 'powerSystem2cora' filesep 'cas
 files = excludefiles(files, ['global' filesep 'thirdparty']);
 % unitTests
 files = excludefiles(files, ['unitTests' filesep 'converter' filesep 'powerSystem2cora' filesep 'models']);
+% repeatability package
+files = excludefiles(files, ['unitTests' filesep 'ci' filesep 'repeatability-template']);
 
 % check in reverse order
 % files = flipud(files);

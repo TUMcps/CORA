@@ -32,6 +32,7 @@ CORA has a modular design, making it possible to use the capabilities of the var
 
 Please check Section 1.3 in the <a target='_blank' href="https://cora.in.tum.de/manual">CORA manual</a>.
 
+Furthermore, if you clone CORA using git, please also install git lfs (large file storage) and run the command `git lfs pull` to ensure all data files are downloaded correctly.
 
 ### Folder Structure
 

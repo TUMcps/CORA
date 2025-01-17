@@ -1,4 +1,4 @@
-function r = rank(Z)
+function r = rank(Z,varargin)
 % rank - computes the dimension of the affine hull of a zonotope
 %
 % Syntax:
@@ -6,6 +6,7 @@ function r = rank(Z)
 %
 % Inputs:
 %    Z - zonotope object
+%    tol - numeric, tolerance
 %
 % Outputs:
 %    r - dimension of the affine hull
@@ -23,10 +24,15 @@ function r = rank(Z)
 % Authors:       Matthias Althoff
 % Written:       06-May-2009
 % Last update:   15-September-2019 (rename dim -> rank)
+%                15-January-2024 (TL, added tol)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-r = rank(Z.G);
+% parse input
+tol = setDefaultValues({0},varargin);
+
+% compute rank
+r = rank(Z.G, tol);
 
 % ------------------------------ END OF CODE ------------------------------

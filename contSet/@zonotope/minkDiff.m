@@ -251,8 +251,7 @@ if strcmp(method, 'inner') || (strcmp(method, 'exact') && n == 2)
     problem.ub = [];
     [alpha, ~, exitflag] = CORAlinprog(problem);
     if isempty(alpha) || exitflag ~= 1
-        % return empty set with correct dimensions?
-        Z = zonotope(zeros(n, 0));
+        Z = zonotope.empty(n);
         return
     end
     

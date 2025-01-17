@@ -445,11 +445,9 @@ end
 
 function [linsys,params] = aux_canonicalForm(linsys,params)
 % convert system to canonical form to limit if-else branching
-
-% all good if system is already in canonical form
-if isCanonicalForm(linsys)
-    return
-end
+% if system is already in canonical form, nothing should be altered, but 
+% subfunctions are still called to define all necessary variables
+% (e.g. vTrans)
 
 % initialize input vector if sequence given
 if isfield(params,'uTransVec')

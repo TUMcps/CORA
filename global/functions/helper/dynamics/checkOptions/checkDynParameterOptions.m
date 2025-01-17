@@ -328,7 +328,7 @@ function checks = aux_getChecksOptions_timeStep(checks,sys,func,params,options)
     else
         checks(end+1) = add2checks(@isscalar, 'isscalar');
         checks(end+1) = add2checks(@(val)val>0, 'gezero');
-        checks(end+1) = add2checks(@(val)abs(params.tFinal/val - round(params.tFinal/val))<1e-9, 'intsteps');
+        checks(end+1) = add2checks(@(val)abs((params.tFinal-params.tStart)/val - round((params.tFinal-params.tStart)/val))<1e-9, 'intsteps');
         checks(end+1) = add2checks(@(val)c_inputTraj(val,sys,params,options), '');
     end
 end

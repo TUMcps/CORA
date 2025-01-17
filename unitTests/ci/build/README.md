@@ -22,7 +22,7 @@ and installs all dependencies for CORA automatically (see Sec. 1.3 in the [CORA 
 
        docker image push tobiasladnertum/cora:r<VERSION>
 
-6. Update `./cora/unitTests/ci/Dockerfile` <u>and</u> `./cora/unitTests/ci/.gitlab-ci.yml` to use new image
+6. Update `./cora/unitTests/ci/Dockerfile`, `./cora/unitTests/ci/.gitlab-ci.yml`, `./cora/unitTests/ci/repeatability-template/Dockerfile` and `./cora/unitTests/ci/repeatability-template/README.md` to use new image.
 
     
 

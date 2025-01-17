@@ -3,19 +3,19 @@ function P_out = mtimes(factor1,factor2)
 %    a polytope
 %
 % Syntax:
-%    P = mtimes(factor1,factor2)
+%    P_out = mtimes(factor1,factor2)
 %
 % Inputs:
 %    factor1 - numerical matrix/interval matrix/polytope object
 %    factor2 - numerical matrix/interval matrix/polytope object
 %
 % Outputs:
-%    P - polytope object
+%    P_out - polytope object
 %
 % Example: 
 %    P = polytope([1 0; -1 1; -1 -1],[1;1;1]);
 %    M = [2 1; -1 2];
-%    P_ = M*P;
+%    P_mtimes = M*P;
 % 
 % Reference: 
 %    [1] M. Wetzlinger, V. Kotsev, A. Kulmburg, M. Althoff. "Implementation
@@ -38,6 +38,7 @@ function P_out = mtimes(factor1,factor2)
 %                04-March-2024 (TL, allow right multiplication with scalar)
 %                14-July-2024 (MW, implement projective multiplication)
 %                28-August-2024 (MW, implement lifting multiplication)
+%                29-November-2024 (MW, multiplication with all-zero matrix)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -46,9 +47,9 @@ function P_out = mtimes(factor1,factor2)
 equalDimCheck(factor1,factor2);
 
 % order arguments correctly
-[P_temp,matrix] = findClassArg(factor1,factor2,'polytope');
+[P_copy,matrix] = findClassArg(factor1,factor2,'polytope');
 % copy polytope
-P_out = polytope(P_temp);
+P_out = polytope(P_copy);
 
 % read out dimension
 n = dim(P_out);
@@ -59,8 +60,14 @@ if representsa_(P_out,'fullspace',0)
     return;
 end
 
-%numeric matrix
+% numeric matrix
 if isnumeric(matrix)
+
+    % map with all-zero matrix
+    if all(withinTol(matrix,0,1e-12),'all')
+        P_out = polytope.origin(n);
+        return
+    end
 
     if isa(factor1,'polytope')
         if isscalar(matrix)
@@ -78,7 +85,7 @@ if isnumeric(matrix)
         return
     end
 
-    % simpler method if matrix is invertible
+    % simple method if matrix is invertible
     if diff(size(matrix)) == 0 && rank(matrix) == length(matrix)
         P_out = aux_mtimes_square_inv(P_out,matrix);
         return
@@ -148,7 +155,8 @@ function P = aux_mtimes_scaling(P,fac)
 
 if fac == 0
     % resulting polytope is only the origin
-    P = polytope(zeros(dim(P),1)); return
+    P = polytope.origin(dim(P));
+    return
 elseif fac > 0
     P.b_.val = P.b_.val * fac;
 else
@@ -167,12 +175,11 @@ end
 function P = aux_mtimes_square_inv(P,M)
 % matrix M is invertible
 
-% compute inverse
-Minv = inv(M);
-
-% apply well-known formula
-P.A_.val = P.A_.val * Minv;
-P.Ae_.val = P.Ae_.val * Minv;
+% apply well-known formula (constraints times inverse of matrix)
+if P.isHRep.val
+    P.A_.val = P.A_.val / M;
+    P.Ae_.val = P.Ae_.val / M;
+end
 
 % map vertices if given
 if P.isVRep.val
@@ -207,6 +214,7 @@ end
 
 function P = aux_mtimes_lifting(P,M)
 
+% read out dimensions
 n = dim(P);
 m = size(M,1);
 

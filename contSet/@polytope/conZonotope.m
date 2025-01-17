@@ -54,8 +54,7 @@ narginchk(1,3);
 n = dim(P);
 
 % set default method
-[method,B] = setDefaultValues({'exact:supportFunc',...
-    interval(zeros(n,0),zeros(n,0))},varargin);
+[method,B] = setDefaultValues({'exact:supportFunc',interval.empty(n)},varargin);
 
 % check input arguments
 inputArgsCheck({{P,'att','polytope'}, ...

@@ -63,7 +63,7 @@ for eta=2:truncationOrder+1
     Asum_add_neg = factor * Asum_add_neg;
     
     % compute ratio for floating-point precision
-    if truncationOrderInf ...
+    if truncationOrderInf
         if all(all(Asum_add_neg <= eps * Asum_pos_G)) ...
             && all(all(Asum_add_pos >= eps * Asum_neg_G)) 
             break

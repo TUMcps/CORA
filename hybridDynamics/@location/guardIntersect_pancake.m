@@ -65,7 +65,7 @@ function R = guardIntersect_pancake(loc,R0,guard,guardID,params,options)
     R = aux_reachTimeScaled(sys_,P,R0,params,optionsScaled);
     
     % jump accross the guard set in only one time ste
-    R = aux_jump(sys,P,R,options);
+    R = aux_jump(sys,P,R,params,options);
 
     % project the reachable set onto the hyperplane
     R = projectOnHyperplane(R,guard);
@@ -114,7 +114,7 @@ function [sys,params] = aux_scaledSystem(sys,P,R0,guardID,params)
     if ~isfolder(foldername)
         mkdir([CORAROOT filesep 'models'],'auxiliary');
     end
-    matlabFunction(func,'File',path,'Vars',{xSym,uSym,pSym});
+    funcHandle = matlabFunction(func,'File',path,'Vars',{xSym,uSym,pSym});
 
     % remove and add path so that file can be found in input argument check
     % of nonlinParamSys constructor called below
@@ -126,8 +126,7 @@ function [sys,params] = aux_scaledSystem(sys,P,R0,guardID,params)
     addpath(fullpath);
 
     % create time scaled system
-    str = ['sys = nonlinParamSys([@' name '],n,m,1);'];
-    eval(str);
+    sys = nonlinParamSys(funcHandle,n,m,1);
 end
 
 function Rfin = aux_reachTimeScaled(sys,P,R0,params,options)
@@ -139,8 +138,9 @@ function Rfin = aux_reachTimeScaled(sys,P,R0,params,options)
     spec = specification(P,'unsafeSet');
     params.R0 = R0;
     if isfield(options,'maxError')
-       options = rmfield(options,'maxError'); 
+       options.maxError = inf*ones(size(options.maxError));
     end
+
     % prevent validateOptions error
     if isa(sys,'nonlinParamSys') && ~isfield(options,'intermediateTerms')
         options.intermediateTerms = 4;
@@ -153,7 +153,7 @@ function Rfin = aux_reachTimeScaled(sys,P,R0,params,options)
     Rfin = R.timePoint.set{end};
 end
 
-function Rcont = aux_jump(sys,P,R0,options)
+function Rcont = aux_jump(sys,P,R0,params,options)
 % compute the reachable set in such a way that the reachable set jumps in 
 % only one time step accross the hyperplane    
 
@@ -164,6 +164,7 @@ function Rcont = aux_jump(sys,P,R0,options)
     % compute reachable set
     options.timeStep = timeStep;
     params.tFinal = timeStep;
+    params.tStart = 0;
 
     R = reach(sys,params,options);
 

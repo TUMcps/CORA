@@ -1,9 +1,9 @@
-function res = test_neuralNetwork_exportNetworkAsCellArray()
-% test_neuralNetwork_exportNetworkAsCellArray - tests the 
+function res = testnn_neuralNetwork_exportNetworkAsCellArray()
+% testnn_neuralNetwork_exportNetworkAsCellArray - tests the 
 %    exportNetworkAsCellArray function
 %
 % Syntax:
-%    res = test_neuralNetwork_exportNetworkAsCellArray()
+%    res = testnn_neuralNetwork_exportNetworkAsCellArray()
 %
 % Inputs:
 %    -

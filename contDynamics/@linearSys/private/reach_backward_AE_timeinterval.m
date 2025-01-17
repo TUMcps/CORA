@@ -28,23 +28,25 @@ function timeInt = reach_backward_AE_timeinterval(linsys,params,options)
 
 % Authors:       Mark Wetzlinger
 % Written:       12-July-2023
-% Last update:   ---
+% Last update:   28-November-2024 (MW, remove exponentialMatrix class)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% time period and number of steps
-tVec = params.tStart:options.timeStep:params.tFinal;
-steps = length(tVec) - 1;
-% time step size (shorter variable name)
+% shorter variable names...
+t0 = params.tStart;
 dt = options.timeStep;
+% time period and number of steps
+tVec = t0:dt:params.tFinal;
+steps = length(tVec) - 1;
 
-% initialize exponential matrix
-expmat = exponentialMatrix(-linsys.A);
-% time step size known, compute propagation matrix over one time step
-expmat = init_eADeltat(expmat,dt);
 % dimension
 n = linsys.nrOfStates;
+
+% init time-inverted dynamics (note: system is put in canonical form in
+% reachBackward, so B = E = identity)
+linsys_backward = linearSys(-linsys.A);
+linsys_backward.taylor = taylorLinSys(linsys_backward.A);
 
 % initialize struct for backward reachable set
 % array of time intervals
@@ -57,10 +59,10 @@ timeInt.time = timeIntArray;
 Rend_cZ = conZonotope(params.R0);
 [Rend_isInterval,Rend_I] = representsa_(params.R0,'interval',1e-10);
 
-% compute curvature error F for given time step size
-expmat = computeCurvatureErrors(expmat,dt);
+% compute correction matrix for that state for given time step size
+F = correctionMatrixState(linsys_backward,dt,Inf);
 if Rend_isInterval
-    curvatureError_0_dt = expmat.F * zonotope(Rend_I);
+    curvatureError_0_dt = F * zonotope(Rend_I);
     c_curvatureError_0_dt = center(curvatureError_0_dt);
     G_curvatureError_0_dt = generators(curvatureError_0_dt);
 end
@@ -74,78 +76,92 @@ numDir = size(Norig,2);
 % pre-compute particular solutions until start of considered time interval
 % ...use 'closest' time step size to the one provided that partitions the
 %    interval [0,params.tStart] into a whole number of steps
-if ~withinTol(params.tStart,0)
-    % integer number of steps from 0 to tStart
-    steps_start = ceil(params.tStart/options.timeStep);
-    dt_ = params.tStart/steps_start;
-
-    % init cell length for propagation matrices
-    expmat = init_eAtk(expmat,steps+steps_start,params.tStart);
-
-    % compute inner- and outer-approximations of particular solution [0,dt]
-    ZW_outer_0_dt = oneStepPartSol(-params.W,expmat,dt,'outer');
-    c_ZW_outer_0_dt = center(ZW_outer_0_dt);
-    G_ZW_outer_0_dt = generators(ZW_outer_0_dt);
-    ZU_inner_0_dt = oneStepPartSol(-params.U,expmat,dt,'inner');
-    c_ZU_inner_0_dt = center(ZU_inner_0_dt);
-    G_ZU_inner_0_dt = generators(ZU_inner_0_dt);
-
-    % init particular solutions
-    ZW_outer_0_t = zeros(n,1);
-    ZW_outer_0_t_sF = zeros(numDir,1+steps_start+steps);
-    ZU_inner_0_t_sF = zeros(n,numDir);
-
-    % propagate particular solutions until start time
-    for k=1:steps_start
-        % next propagation matrices
-        expmat = next_eAtk(expmat,k);
-
-        % propagate explicit particular solutions
-        ZW_outer_0_t = ZW_outer_0_t + expmat.eAtk{k} * ZW_outer_0_dt;
-
-        % propagate direction
-        Nminus = expmat.eAtk{k} * Norig;
-
-        % loop over all directions
-        ZW_outer_0_t_sF(:,k+1) = ZW_outer_0_t_sF(:,k) ...
-            + Nminus' * c_ZW_outer_0_dt + sum(abs(Nminus' * G_ZW_outer_0_dt),2);
-        ZU_inner_0_t_sF(:,k+1) = ZU_inner_0_t_sF(:,k) ...
-            - Nminus' * c_ZU_inner_0_dt + sum(abs(-Nminus' * G_ZU_inner_0_dt),2);
-    end
-
-else
+if withinTol(t0,0)
     steps_start = 0;
     ZW_outer_0_t = zeros(n,1);
     ZW_outer_0_t_sF = zeros(numDir,1+steps);
     c_ZW_outer_0_t_sF = zeros(numDir,1+steps);
     ZU_inner_0_t_sF = zeros(numDir,1+steps);
 
-    % init cell length for propagation matrices
-    expmat = init_eAtk(expmat,steps,params.tStart);
+else
+    % integer number of steps from 0 to tStart (search for a similar time
+    % step size to the given time step size)
+    steps_start = ceil(t0/dt);
+    dt_ = t0/steps_start;
+
+    % compute inner and outer approximations of particular solution [0,dt_]
+    ZW_outer_0_dt = particularSolution_timeVarying(linsys,-params.W,dt_,Inf);
+    c_ZW_outer_0_dt = center(ZW_outer_0_dt);
+    G_ZW_outer_0_dt = generators(ZW_outer_0_dt);
+    ZU_inner_0_dt = particularSolution_constant(linsys,-params.U,dt_,Inf);
+    c_ZU_inner_0_dt = center(ZU_inner_0_dt);
+    G_ZU_inner_0_dt = generators(ZU_inner_0_dt);
+
+    % init particular solutions
+    ZW_outer_0_t = zeros(n,1);
+    ZW_outer_0_t_sF = zeros(numDir,1+steps_start+steps);
+    c_ZW_outer_0_t_sF = zeros(numDir,1+steps_start+steps);
+    ZU_inner_0_t_sF = zeros(numDir,1+steps_start+steps);
+
+    eAdt = expm(linsys_backward.A*dt_);
+    eAtk = eAdt;
+
+    % propagate particular solutions until start time
+    for k=1:steps_start
+        % propagate explicit particular solutions
+        ZW_outer_0_t = ZW_outer_0_t + eAtk * ZW_outer_0_dt;
+
+        % propagate direction
+        Nminus = eAtk * Norig;
+
+        % loop over all directions
+        ZW_outer_0_t_sF(:,k+1) = ZW_outer_0_t_sF(:,k) ...
+            + Nminus' * c_ZW_outer_0_dt + sum(abs(Nminus' * G_ZW_outer_0_dt),2);
+        c_ZW_outer_0_t_sF(:,k+1) = c_ZW_outer_0_t_sF(:,k) ...
+            + Nminus' * c_ZW_outer_0_dt;
+        ZU_inner_0_t_sF(:,k+1) = ZU_inner_0_t_sF(:,k) ...
+            - Nminus' * c_ZU_inner_0_dt + sum(abs(-Nminus' * G_ZU_inner_0_dt),2);
+
+        % propagate propagation matrix
+        eAtk = eAtk * eAdt;
+    end
 end
 
 % compute inner- and outer-approximations of particular solution [0,dt]
 % (we may have a different time step size to before)
 if steps_start == 0 || ~withinTol(dt_,dt)
-    % (re-)compute propagation matrix over one time step
-    expmat = init_eADeltat(expmat,dt);
-
-    ZW_outer_0_dt = oneStepPartSol(-params.W,expmat,dt,'outer');
-    c_ZW_outer_0_dt = center(ZW_outer_0_dt);
-    G_ZW_outer_0_dt = generators(ZW_outer_0_dt);
-    ZU_inner_0_dt = oneStepPartSol(-params.U,expmat,dt,'inner');
-    c_ZU_inner_0_dt = center(ZU_inner_0_dt);
-    G_ZU_inner_0_dt = generators(ZU_inner_0_dt);
+    ZW_outer_0_dt = particularSolution_timeVarying(linsys,-params.W,dt,Inf);
+    if isa(ZW_outer_0_dt,'contSet')
+        c_ZW_outer_0_dt = center(ZW_outer_0_dt);
+        G_ZW_outer_0_dt = generators(ZW_outer_0_dt);
+    elseif isnumeric(ZW_outer_0_dt)
+        c_ZW_outer_0_dt = ZW_outer_0_dt;
+        G_ZW_outer_0_dt = zeros(n,1);
+    end
+    ZU_inner_0_dt = particularSolution_constant(linsys,-params.U,dt,Inf);
+    if isa(ZU_inner_0_dt,'contSet')
+        c_ZU_inner_0_dt = center(ZU_inner_0_dt);
+        G_ZU_inner_0_dt = generators(ZU_inner_0_dt);
+    elseif isnumeric(ZU_inner_0_dt)
+        c_ZU_inner_0_dt = ZU_inner_0_dt;
+        G_ZU_inner_0_dt = zeros(n,1);
+    end
 end
 
 
 % compute explicit outer-approximation of maximal backward reachable set
-% for the input trajectory forall t \in [0,max(tau)]: u(t) = 0
+% (no disturbances yet)
 BRSE = cell(steps,1);
+
+% pre-compute propagation matrices
+eAtk = computeField(linsys_backward.taylor,'eAdt',struct('timeStep',t0));
+if steps_start == 0 || ~withinTol(dt,dt_)
+    eAdt = expm(linsys_backward.A*dt);
+end
 
 % support function evaluation of target set at start time
 Xend_sF = zeros(numDir,1+steps);
-Nminus = expmat.eAtk_T{1+steps_start} * Norig;
+Nminus = readFieldForTimeStep(linsys_backward.taylor,'eAdt',t0)' * Norig;
 for j=1:numDir
     if Rend_isInterval
         Xend_sF(j,1) = supportFunc_(Rend_I,Nminus(:,j),'upper');
@@ -162,11 +178,12 @@ BRSE_sF_lb = zeros(numDir,steps);
 for k=1:steps
 
     % propagate propagation matrix
-    expmat = next_eAtk(expmat,steps_start+k+1);
+    eAtk = eAtk * eAdt;
+    insertFieldTimeStep(linsys_backward.taylor,'eAdt',eAtk,t0+dt*k);
 
     % propagate particular solutions
-    ZW_outer_0_t = ZW_outer_0_t ...
-        + expmat.eAtk{steps_start+k} * ZW_outer_0_dt;
+    ZW_outer_0_t = ZW_outer_0_t + ...
+        readFieldForTimeStep(linsys_backward.taylor,'eAdt',t0+(k-1)*dt) * ZW_outer_0_dt;
 
     % propagate support function of particular solutions
     ZW_outer_0_t_sF(:,k+1) = ZW_outer_0_t_sF(:,k) ...
@@ -177,8 +194,7 @@ for k=1:steps
         - Nminus' * c_ZU_inner_0_dt + sum(abs(-Nminus' * G_ZU_inner_0_dt),2);
 
     % back-propagate directions: e^(At_k), e^(-At_k)
-    expmat = next_eAtk(expmat,steps_start+k+1,'transpose');
-    Nminus = expmat.eAtk_T{steps_start+k+1} * Norig;
+    Nminus = readFieldForTimeStep(linsys_backward.taylor,'eAdt',t0+k*dt)' * Norig;
 
     % loop over all directions
     for j=1:numDir
@@ -195,12 +211,13 @@ for k=1:steps
     % explicit and implicit computation of curvature error
     if Rend_isInterval
         % faster version
-        curvatureError = expmat.eAtk{k}*curvatureError_0_dt;
+        curvatureError = readFieldForTimeStep(linsys_backward.taylor,'eAdt',t0+(k-1)*dt) * curvatureError_0_dt;
         curvatureError_sF = Nminus' * c_curvatureError_0_dt ...
             - sum(abs(Nminus' * G_curvatureError_0_dt),2);
 
     else
-        curvatureError = expmat.F*(expmat.eAtk{k}*Rend_cZ);
+        curvatureError = F * ...
+            (readFieldForTimeStep(linsys_backward.taylor,'eAdt',t0+(k-1)*dt)*Rend_cZ);
         curvatureError_sF = zeros(numDir,1);
         for j=1:numDir
             curvatureError_sF(j) = ...
@@ -213,8 +230,8 @@ for k=1:steps
         + ZW_outer_0_t_sF(:,k+1) - ZU_inner_0_t_sF(:,k);
 
     % explicit set for all-zero input trajectory
-    BRSE{k} = convHull(expmat.eAtk{k}*Rend_cZ,...
-        expmat.eAtk{k+1}*Rend_cZ) + curvatureError + ZW_outer_0_t;
+    BRSE{k} = convHull(readFieldForTimeStep(linsys_backward.taylor,'eAdt',t0+(k-1)*dt)*Rend_cZ,...
+        readFieldForTimeStep(linsys_backward.taylor,'eAdt',t0+k*dt)*Rend_cZ) + curvatureError + ZW_outer_0_t;
     
     % lower bound of support function in each direction
     BRSE_sF_lb(:,k) = ...

@@ -104,7 +104,7 @@ assert(aux_checkContainment(R_medium.timeInterval.set{end},...
                             R_small.timeInterval.set{end}));
 
 
-% example completed
+% test completed
 res = true;
 
 end

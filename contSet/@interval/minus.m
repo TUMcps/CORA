@@ -1,5 +1,9 @@
 function res = minus(minuend,subtrahend)
 % minus - Overloaded '-' operator for intervals
+%         evaluating the operation minuend + (-1)*subtrahend for two
+%         intervals, where '+' is the minkowski sum.
+%         Not to be confused with the minkowski difference operation.
+%         
 %
 % Syntax:
 %    res = minus(minuend,subtrahend)
@@ -20,7 +24,7 @@ function res = minus(minuend,subtrahend)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: mtimes
+% See also: mtimes, contSet/minkDiff
 
 % Authors:       Matthias Althoff
 % Written:       25-June-2015

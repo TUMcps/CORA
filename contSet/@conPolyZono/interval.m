@@ -71,7 +71,7 @@ elseif strcmp(method,'interval')
 elseif strcmp(method,'split') || strcmp(method,'quadProg')
     
     n = dim(cPZ);
-    I = interval(zeros(n,1));
+    I = interval.origin(n);
 
     % loop over all dimensions
     for i = 1:n

@@ -65,5 +65,14 @@ sys = linearSys('sys',A,B);
 spec = specification(polytope([-1,0],-15));
 R = reach(sys,params,options,spec);
 
+% 5. with disturbances
+sys = linearSys('sys',1,1,[],1,[],[],[],1);
+params.V = zonotope(interval(-1,1));
+params.R0 = zonotope(interval(-1,1));
+params.U = zonotope(interval(-1,1));
+% high error tolerance to account for disturbances
+options.error = 2;
+R = reach(sys,params,options);
+
 
 % ------------------------------ END OF CODE ------------------------------

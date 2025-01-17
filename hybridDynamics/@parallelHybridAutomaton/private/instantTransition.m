@@ -237,7 +237,7 @@ end
 
 % construct transition for full state (note that the synchronization label
 % is removed during the process)
-mergedTrans = mergeTransitionSets(pHA,transList,locID,allLabels);
+mergedTrans = mergeTransitionSets(pHA,locID,allLabels);
 
 end
 

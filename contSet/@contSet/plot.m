@@ -104,7 +104,7 @@ function [S,NVpairs] = aux_process(S,dims,NVpairs)
     I = interval(S);
     if ~isBounded(I)
         % intersect with current plot axis
-        S = aux_intersectWithAxisLimits(I,NVpairs);        
+        S = aux_intersectWithAxisLimits(S,NVpairs);        
 
         % fill unbounded sets (fullspace, halfspace, ...)
         purpose = 'fill';

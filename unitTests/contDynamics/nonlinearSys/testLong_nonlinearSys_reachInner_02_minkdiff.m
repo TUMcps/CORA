@@ -23,18 +23,17 @@ function res = testLong_nonlinearSys_reachInner_02_minkdiff
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
- 
-% assume true
-res = true;
 
 % System Dynamics ---------------------------------------------------------
 
 sys = nonlinearSys('jetEngine',@jetEngine); 
 
+
 % Parameters --------------------------------------------------------------
 
 params.tFinal = 4;
 R0 = interval([0.9;0.9],[1.1;1.1]);
+
 
 % Reachability Settings ---------------------------------------------------
 
@@ -43,6 +42,7 @@ options_inner.algInner = 'minkdiff';
 options_inner.timeStep = 0.01;
 options_inner.tensorOrder = 2;
 options_inner.compOutputSet = false;
+
 
 % Reachability Analysis ---------------------------------------------------
 
@@ -60,5 +60,8 @@ Rout_final = query(Rout,'finalSet');
 Rin_final = query(Rin,'finalSet');
 
 assert(contains(Rout_final, Rin_final));
+
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

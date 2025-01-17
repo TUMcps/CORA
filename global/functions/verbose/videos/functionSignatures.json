@@ -1,30 +1,58 @@
 {
   "_schemaVersion": "1.0.0",
 
-  "recordCORAvideo":
+  "setupCORAvideo":
   {
      "inputs":
      [
         {"name":"filename", "kind":"required", "type":["char"], "purpose":"filename of video"},
+        {"name":"XLabel", "kind":"namevalue", "type":["char"],"purpose":"xlabel"},
+        {"name":"XLim", "kind":"namevalue", "type":["numeric"],"purpose":"xlim"},
+        {"name":"YLabel", "kind":"namevalue", "type":["char"],"purpose":"ylabel"},
+        {"name":"YLim", "kind":"namevalue", "type":["numeric"],"purpose":"ylim"},
+        {"name":"ZLabel", "kind":"namevalue", "type":["char"],"purpose":"zlabel"},
+        {"name":"ZLim", "kind":"namevalue", "type":["numeric"],"purpose":"zlim"},
+        {"name":"Title", "kind":"namevalue", "type":["char"],"purpose":"title of video"},
+        {"name":"Description", "kind":"namevalue", "type":["char"],"purpose":"Description of the video"},
+        {"name":"LegendLocation", "kind":"namevalue", "type":["char"],"purpose":"location of legend"},
+        {"name":"FrameRate", "kind":"namevalue", "type":["numeric"],"purpose":"Frame rate of video"}
+     ]
+  },
+
+  "recordReachableSet":
+  {
+     "inputs":
+     [
+        {"name":"vidObj", "kind":"required", "type":["VideoWriter"], "purpose":"VideoWriter"},
+        {"name":"fig", "kind":"required", "type":["matlab.ui.Figure"], "purpose":"figure handle"},
         {"name":"ReachSet", "kind":"namevalue", "type":["reachSet"],"purpose":"Reachable set"},
         {"name":"SimResult", "kind":"namevalue", "type":["simResult"],"purpose":"Simulations"},
         {"name":"RefTrajectory", "kind":"namevalue", "type":["simResult"],"purpose":"Reference trajectory"},
         {"name":"Dimensions", "kind":"namevalue", "type":["numeric"],"purpose":"Dimensions to plot"},
         {"name":"RefDimensions", "kind":"namevalue", "type":["numeric"],"purpose":"Dimensions to plot reference trajectory"},
         {"name":"Specification", "kind":"namevalue", "type":["specification"],"purpose":"Specification"},
-        {"name":"XLabel", "kind":"namevalue", "type":["char"],"purpose":"xlabel"},
-        {"name":"XLim", "kind":"namevalue", "type":["numeric"],"purpose":"xlim"},
-        {"name":"YLabel", "kind":"namevalue", "type":["char"],"purpose":"ylabel"},
-        {"name":"YLim", "kind":"namevalue", "type":["numeric"],"purpose":"ylim"},
-        {"name":"Title", "kind":"namevalue", "type":["char"],"purpose":"title of video"},
-        {"name":"Description", "kind":"namevalue", "type":["char"],"purpose":"Description of the video"},
-        {"name":"LegendLocation", "kind":"namevalue", "type":["char"],"purpose":"location of legend"},
-        {"name":"UnifyTotalSets", "kind":"namevalue", "type":["char"],"purpose":"Total number of sets for unify"},
-        {"name":"FrameRate", "kind":"namevalue", "type":["numeric"],"purpose":"Frame rate of video"},
+        {"name":"Unify", "kind":"namevalue", "type":["logical"],"purpose":"Whether reachable sets should be unififed during plotting"},
+        {"name":"UnifyTotalSets", "kind":"namevalue", "type":["numeric"],"purpose":"Total number of sets for unify"},
         {"name":"TotalDuration", "kind":"namevalue", "type":["numeric"],"purpose":"Total duration of video"},
         {"name":"FreezeDuration", "kind":"namevalue", "type":["numeric"],"purpose":"duration of freezed animation"},
         {"name":"ReachSets", "kind":"namevalue", "type":["cell"],"purpose":"Multiple reachable set including name and color"},
         {"name":"PlotMethodSimResult", "kind":"namevalue", "type":["char", "choices={'time', 'percent', 'all'}"],"purpose":"Method to plot simulations"}
+     ]
+  },
+
+  "animateFromTo":
+  {
+     "inputs":
+     [
+        {"name":"vidObj", "kind":"required", "type":["VideoWriter"], "purpose":"VideoWriter object"},
+        {"name":"animationStruct", "kind":"required", "type":["struct"],"purpose":"Struct specifying the animation"},
+        {"name":"duration", "kind":"required", "type":["numeric"],"purpose":"Duration of animation"},
+        {"name":"FromView", "kind":"namevalue", "type":["numeric"],"purpose":"[az,el] as required by view(az,el)"},
+        {"name":"ToView", "kind":"namevalue", "type":["numeric"],"purpose":"[az,el] as required by view(az,el)"},
+        {"name":"FromEnlargeAxis", "kind":"namevalue", "type":["logical"],"purpose":"whether to enlarge axis"},
+        {"name":"ToEnlargeAxis", "kind":"namevalue", "type":["logical"],"purpose":"whether to enlarge axis"},
+        {"name":"FreezeDurationBefore", "kind":"namevalue", "type":["numeric"],"purpose":"duration to freeze animation beforehand"},
+        {"name":"FreezeDurationAfter", "kind":"namevalue", "type":["numeric"],"purpose":"duration to freeze animation afterward"}
      ]
   }
 }

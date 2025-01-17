@@ -41,7 +41,7 @@ end
 
 % case with constraints 
 n = dim(cZ);
-I = interval(zeros(n,1));
+I = interval.origin(n);
 
 % remove the trivial constraint 0*beta = 0
 cZ = compact_(cZ,'zeros',eps);

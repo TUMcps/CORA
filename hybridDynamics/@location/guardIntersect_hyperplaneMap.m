@@ -95,11 +95,10 @@ function [Rmin,tmin,tmax,I] = aux_refinedIntersectionTime(loc,guard,R0,params,op
         options.compTimePoint = true;
     end
     
+    % set new parameters for next reach call
     options.timeStep = 0.1*options.timeStep;
     params.R0 = R0;
-    if isfield(params,'tStart')
-        params = rmfield(params,'tStart');
-    end
+    params.tStart = 0;
     
     % compute reachable set until it fully crossed the hyperplane
     R = reach(loc.contDynamics,params,options,spec);

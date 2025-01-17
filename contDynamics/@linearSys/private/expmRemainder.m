@@ -31,6 +31,13 @@ if isa(E,'contSet')  % -> already computed
     return
 end
 
+% set a maximum order in case truncation order is given as Inf (adaptive),
+% because running a for loop until Inf triggers a warning
+truncationOrderInf = isinf(truncationOrder);
+if truncationOrderInf
+    truncationOrder = 75;
+end
+
 % initialization for loop
 A_abs = abs(linsys.A);
 n = linsys.nrOfStates;
@@ -47,7 +54,7 @@ for eta=1:truncationOrder
     M_add = Apower_abs_i * dtoverfac_i;
 
     % adaptive handling
-    if isinf(truncationOrder) && all(all(M_add <= eps * M))
+    if truncationOrderInf && all(all(M_add <= eps * M))
         break;
     end
 

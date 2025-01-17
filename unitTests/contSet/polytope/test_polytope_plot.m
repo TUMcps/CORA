@@ -79,6 +79,19 @@ try
     assert(compareMatrices(V_true, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
     assert(all(contains(P,V)))
     
+    % unbounded case
+    A = [-1 1];
+    b = 0;
+    P = polytope(A,b);
+    xlim([0,1]);
+    ylim([0,1]);
+    plot(P);
+
+    V_true = [0 0;1 1;1 0;0 0];
+    
+    % check points
+    assert(compareMatrices(V_true, [ax.Children(1).XData ax.Children(1).YData],1e-4,'equal',true));
+
     % close figure
     close;
 catch ME

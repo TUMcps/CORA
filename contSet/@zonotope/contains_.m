@@ -87,6 +87,7 @@ function res = contains_(Z,S,type,tol,maxEval,varargin)
 %                06-March-2024 (TL, check emptiness of zonotopes)
 %                27-September-2024 (MW, remove halfspace call)
 %                02-October-2024 (MW, point-in-zono, type decides LP/polytope)
+%                15-January-2024 (TL, point-in-zono, tol is used for degeneracy check)
 % Last revision: 27-March-2023 (MW, rename contains_)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -255,14 +256,13 @@ if ~useLP && ~isParallelotope
     % zonotope, or we solve it using linear programming. For the
     % halfspace method, the relevant quantity to look for is the
     % maximal number of facets of the zonotope.
-    % If the zonotope is non-degenerate (which we may assume if
-    % #generators >= dim), then this is given as follows:
-    if nrGenZ >= n
+    % If the zonotope is non-degenerate, then this is given as follows:
+    if isFullDim(Z, tol)
         numFacets = 2*nchoosek(nrGenZ,n-1);
     else
         % If the zonotope is degenerate, we need to replace the dim by
         % the rank
-        numFacets = 2*nchoosek(nrGenZ,rank(Z)-1);
+        numFacets = 2*nchoosek(nrGenZ,max(0,rank(Z,tol)-1));
     end
     % We can now estimate the approximate runtime of the halfspace
     % method:

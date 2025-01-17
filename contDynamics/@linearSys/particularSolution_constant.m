@@ -67,6 +67,13 @@ if isempty(linsys.taylor)
     linsys.taylor = taylorLinSys(linsys.A);
 end
 
+% set a maximum order in case truncation order is given as Inf (adaptive),
+% because running a for loop until Inf triggers a warning
+truncationOrderInf = isinf(truncationOrder);
+if truncationOrderInf
+    truncationOrder = 75;
+end
+
 % decompose input set (remains the same unless more than one block)
 U_decomp = decompose(U,blocks);
 
@@ -111,8 +118,8 @@ for eta=1:truncationOrder
     addTerm = Apower_mm * dtoverfac;
     
     % adaptive truncation order
-    if isinf(truncationOrder)
-        if any(any(isinf(addTerm)))
+    if truncationOrderInf
+        if any(any(isinf(addTerm))) || eta == truncationOrder
             % safety check (if time step size too large, then the sum
             % converges too late so we already have Inf values)
             throw(MException('reach_adaptive:notconverging',...
@@ -130,8 +137,11 @@ end
 
 % if floating-point precision has been not been reached, we require the
 % remainder term
-if isinf(truncationOrder)
+if truncationOrderInf
     Ptp = block_mtimes(Asum,U_decomp);
+    if numericU
+        Ptp = block_operation(@center,Ptp);
+    end
 else
     E = expmRemainder(linsys,timeStep,truncationOrder);
     Ptp = block_operation(@plus,block_mtimes(Asum,U_decomp),block_mtimes(E*timeStep,U_decomp));

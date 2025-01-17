@@ -29,20 +29,21 @@ function timeInt = reach_backward_EA_timeinterval(linsys,params,options)
 % Authors:       Mark Wetzlinger
 % Written:       12-July-2023
 % Last update:   11-August-2023 (MW, skip linear programs)
+%                28-November-2024 (MW, remove exponentialMatrix class)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% time period and number of steps
-tVec = params.tStart:options.timeStep:params.tFinal;
-steps = length(tVec) - 1;
-% time step size (shorter variable name)
+% shorter variable names...
+t0 = params.tStart;
 dt = options.timeStep;
+% time period and number of steps
+tVec = t0:dt:params.tFinal;
+steps = length(tVec) - 1;
 
-% initialize exponential matrix
-expmat = exponentialMatrix(linsys.A);
 % fast access/intuitive variable for state dimension
 n = linsys.nrOfStates;
+linsys.taylor = taylorLinSys(linsys.A);
 
 % initialize struct for backward reachable set
 % array of time intervals
@@ -64,39 +65,56 @@ end
 % pre-compute particular solutions until start of considered time interval
 % ...use 'closest' time step size to the one provided that partitions the
 %    interval [0,params.tStart] into a whole number of steps
-if ~withinTol(params.tStart,0)
-    % integer number of steps from 0 to tStart
-    steps_start = ceil(params.tStart/options.timeStep);
-    dt_ = params.tStart/steps_start;
 
-    % compute propagation matrix for one step
-    expmat = init_eADeltat(expmat,dt_);
-    % initialize cell arrays for propagation matrices
-    expmat = init_eAtk(expmat,steps_start+steps);    
+% integer number of steps from 0 to tStart
+steps_start = ceil(t0/dt);
+% init directions and support function value of particular solution due
+% to disturbances
+c_ZW_outer_0_t_sF_l1 = zeros(nrIneq,1+steps+steps_start);
+c_ZW_outer_0_t_sF_l2 = zeros(nrIneq,1+steps+steps_start);
+G_ZW_outer_0_t_sF_l1 = zeros(nrIneq,1+steps+steps_start);
+G_ZW_outer_0_t_sF_l2 = zeros(nrIneq,1+steps+steps_start);
+% init particular solution due to control inputs
+ZU_inner_0_t = cell(1+steps+steps_start,1);
+ZU_inner_0_t{1} = zonotope.origin(n);
+
+if ~withinTol(t0,0)
+    dt_ = t0/steps_start;
 
     % init directions for support function evaluation
+    eAdt_minus = computeField(linsys.taylor,'eAdt',struct('timeStep',-dt_));
     if Rend_is_interval
         l1_0 = [eye(n), -eye(n)];
-        l2_0 = (l1_0' * expmat.eADeltat_back)';
+        l2_0 = (l1_0' * eAdt_minus)';
     else
         l1_0 = params.R0.A';
-        l2_0 = (params.R0.A * expmat.eADeltat_back)';
+        l2_0 = (params.R0.A * eAdt_minus)';
     end
 
     % compute inner- and outer-approximations of particular solution [0,dt_]
-    [ZW_outer_0_dt,expmat] = oneStepPartSol(params.W,expmat,dt_,'outer');
-    c_ZW = center(ZW_outer_0_dt); G_ZW = generators(ZW_outer_0_dt);
-    [ZU_inner_0_dt,expmat] = oneStepPartSol(params.U,expmat,dt_,'inner');
+    ZW_outer_0_dt = particularSolution_timeVarying(linsys,params.W,dt_,Inf);
+    if isa(ZW_outer_0_dt,'contSet')
+        c_ZW = center(ZW_outer_0_dt);
+        G_ZW = generators(ZW_outer_0_dt);
+    elseif isnumeric(ZW_outer_0_dt)
+        c_ZW = ZW_outer_0_dt;
+        G_ZW = zeros(n,1);
+    end
+    ZU_inner_0_dt = particularSolution_constant(linsys,params.U,dt_,Inf);
 
     % propagate support function of particular solution due to disturbance
     % in 2*n axis-aligned directions
     ZW_outer_0_t_sF_l1 = zeros(nrIneq,1+steps_start+steps);
     ZW_outer_0_t_sF_l2 = zeros(nrIneq,1+steps_start+steps);
+
+    eAtk = eye(n);
+    eAdt = computeField(linsys.taylor,'eAdt',struct('timeStep',dt_));
+
     for k=1:steps_start
-        expmat = next_eAtk(expmat,k,'transpose');
         % propagation from start is numerically more robust
-        l1 = expmat.eAtk_T{k} * l1_0;
-        l2 = expmat.eAtk_T{k} * l2_0;
+        insertFieldTimeStep(linsys.taylor,'eAdt',eAtk,(k-1)*dt_);
+        l1 = eAtk' * l1_0;
+        l2 = eAtk' * l2_0;
         % propagate support function value for first set of directions
         % (corresponding to P1)
         ZW_outer_0_t_sF_l1(:,k+1) = ZW_outer_0_t_sF_l1(:,k) ...
@@ -105,56 +123,46 @@ if ~withinTol(params.tStart,0)
         % (corresponding to e^ADeltat * P1)
         ZW_outer_0_t_sF_l2(:,k+1) = ZW_outer_0_t_sF_l2(:,k) ...
             + l2'*c_ZW + sum(abs(l2' * G_ZW),2);
+        % propagate propagation matrix
+        eAtk = eAtk * eAdt;
     end
 
     % propagate explicit particular solution
-    ZU_inner_0_t = cell(1+steps_start+steps,1);
-    ZU_inner_0_t{1} = zonotope(zeros(n,1));
     for k=1:steps_start
-        expmat = next_eAtk(expmat,k);
-        ZU_inner_0_t{k+1} = ZU_inner_0_t{k} + expmat.eAtk{k} * ZU_inner_0_dt;
+        ZU_inner_0_t{k+1} = ZU_inner_0_t{k} + ...
+            readFieldForTimeStep(linsys.taylor,'eAdt',(k-1)*dt_) * ZU_inner_0_dt;
     end
-
-else
-    steps_start = 0;
-    % init directions and support function value of particular solution due
-    % to distubances
-    c_ZW_outer_0_t_sF_l1 = zeros(nrIneq,1+steps);
-    c_ZW_outer_0_t_sF_l2 = zeros(nrIneq,1+steps);
-    G_ZW_outer_0_t_sF_l1 = zeros(nrIneq,1+steps);
-    G_ZW_outer_0_t_sF_l2 = zeros(nrIneq,1+steps);
-
-    % init particular solution due to control inputs
-    ZU_inner_0_t = cell(1+steps,1);
-    ZU_inner_0_t{1} = zonotope(zeros(n,1));
-
-    % init cell length for propagation matrices
-    expmat = init_eAtk(expmat,steps);
 end
 
-
 if steps_start == 0 || ~withinTol(dt_,dt)
-    % (re-)compute propagation matrix over one time step
-    expmat = init_eADeltat(expmat,dt);
+    % init propagation matrix
+    eAdt_minus = computeField(linsys.taylor,'eAdt',struct('timeStep',-dt));
 
-    % init directions for support function evaluation
+    % init directions for support function evaluation (start/end of step)
     l1_0 = params.R0.A';
-    l2_0 = (params.R0.A * expmat.eADeltat_back)';
+    l2_0 = (params.R0.A * eAdt_minus)';
 
     % re-compute particular solutions over [0,dt]
-    [ZW_outer_0_dt,expmat] = oneStepPartSol(params.W,expmat,dt,'outer');
-    c_ZW = center(ZW_outer_0_dt); G_ZW = generators(ZW_outer_0_dt);
-    [ZU_inner_0_dt,expmat] = oneStepPartSol(params.U,expmat,dt,'inner');
+    ZW_outer_0_dt = particularSolution_timeVarying(linsys,params.W,dt,Inf);
+    if isa(ZW_outer_0_dt,'contSet')
+        c_ZW = center(ZW_outer_0_dt);
+        G_ZW = generators(ZW_outer_0_dt);
+    elseif isnumeric(ZW_outer_0_dt)
+        c_ZW = ZW_outer_0_dt;
+        G_ZW = zeros(n,1);
+    end
+    ZU_inner_0_dt = particularSolution_constant(linsys,params.U,dt,Inf);
 end
 
 % compute linear combination error
 Rend_box_zono = zonotope(interval(params.R0));
 % note: boxes always have n generators
-mu = sqrt(n) * norm((expmat.eADeltat - eye(n))*generators(Rend_box_zono),2);
+eAdt = computeField(linsys.taylor,'eAdt',struct('timeStep',dt));
+mu = sqrt(n) * norm((eAdt - eye(n))*generators(Rend_box_zono),2);
 
-% compute curvature error
-expmat = computeCurvatureErrors(expmat,dt);
-C = expmat.F * Rend_box_zono;
+% compute correction matrix for the state
+F = correctionMatrixState(linsys,dt,Inf);
+C = F * Rend_box_zono;
 
 % compute auxiliary polytopes
 %    P1 = Rend - C - B(mu)
@@ -162,17 +170,14 @@ C = expmat.F * Rend_box_zono;
 % where B(mu) is a ball of radius mu
 P1 = minkDiff(polytope(params.R0),C);
 P1 = polytope(P1.A,P1.b-mu);
-% if representsa(P1,'emptySet')
-%     keyboard
-% end
-P2 = minkDiff(expmat.eADeltat * polytope(params.R0),C);
+P2 = minkDiff(eAdt * polytope(params.R0),C);
 P2 = polytope(P2.A,P2.b-mu);
 
 % pre-compute parallelotopic outer-approximation of auxiliary polytopes
 c1_box = center(Rend_box_zono);
 G1_box = generators(Rend_box_zono);
-c2_box = expmat.eADeltat * c1_box;
-G2_box = expmat.eADeltat * G1_box;
+c2_box = eAdt * c1_box;
+G2_box = eAdt * G1_box;
 
 % pre-compute support function in negative normal vectors of polytopes
 P1_sF_minus = zeros(nrIneq,1);
@@ -192,8 +197,20 @@ end
 % init directions
 l1 = l1_0; l2 = l2_0;
 
+% init propagation matrices
+eAtk = computeField(linsys.taylor,'eAdt',struct('timeStep',t0));
+eAtk_back = computeField(linsys.taylor,'eAdt',struct('timeStep',-t0));
+eAdt = computeField(linsys.taylor,'eAdt',struct('timeStep',dt));
+eAdt_back = computeField(linsys.taylor,'eAdt',struct('timeStep',-dt));
+
 % loop over all steps
 for k=1:steps
+
+    % propagate propagation matrices
+    eAtk = eAtk * eAdt;
+    eAtk_back = eAtk_back * eAdt_back;
+    insertFieldTimeStep(linsys.taylor,'eAdt',eAtk,t0+k*dt);
+    insertFieldTimeStep(linsys.taylor,'eAdt',eAtk_back,-t0-k*dt);
     
     % propagate support function value of particular solution due to
     % disturbance in directions of P1 and P2
@@ -207,12 +224,8 @@ for k=1:steps
         G_ZW_outer_0_t_sF_l2(:,steps_start+k) + sum(abs(l2' * G_ZW),2);
 
     % back-propagate directions for next iteration
-    expmat = next_eAtk(expmat,steps_start+k+1,'transpose');
-    l1 = expmat.eAtk_T{steps_start+k+1} * l1_0;
-    l2 = expmat.eAtk_T{steps_start+k+1} * l2_0;
-
-    % propagate propagation matrix
-    expmat = next_eAtk(expmat,steps_start+k+1);
+    l1 = readFieldForTimeStep(linsys.taylor,'eAdt',t0+k*dt)' * l1_0;
+    l2 = readFieldForTimeStep(linsys.taylor,'eAdt',t0+k*dt)' * l2_0;
 
     % compute auxiliary constrained zonotope
     cZ_start = aux_minkDiffAndConZono(P1,c1_box,G1_box,P1_sF_minus,...
@@ -226,16 +239,14 @@ for k=1:steps
     if k < steps
         % skip last entry
         ZU_inner_0_t{steps_start+k+1,1} = ZU_inner_0_t{steps_start+k} ...
-            + expmat.eAtk{steps_start+k} * ZU_inner_0_dt;
+            + readFieldForTimeStep(linsys.taylor,'eAdt',t0+(k-1)*dt) * ZU_inner_0_dt;
     end
 
     % time-interval solution (only save non-empty sets)
     if ~isemptyobject(cZ_start) && ~isemptyobject(cZ_end)
-        % back-propagate propagation matrix
-        expmat = next_eAtk(expmat,steps_start+k+1,'back');
         % compute time-interval solution
         CH_U = convHull(cZ_start,cZ_end) + (-ZU_inner_0_t{steps_start+k});
-        timeInt.set{k,1} = expmat.eAtk_back{steps_start+k+1} * CH_U;
+        timeInt.set{k,1} = readFieldForTimeStep(linsys.taylor,'eAdt',-t0-k*dt) * CH_U;
     else
         % once sets become empty, they are always empty
         % better: empty sets in reachSet object to show that sets are empty?

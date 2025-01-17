@@ -77,7 +77,7 @@ function p = randPoint_(cZ,N,type,varargin)
         % p0 - start point, p - return matrix
         n = dim(cZ);
         c = cZ.c;
-        G = cZ.G;s
+        G = cZ.G;
         m = size(G,2);
         nc = size(cZ.A,1);
         

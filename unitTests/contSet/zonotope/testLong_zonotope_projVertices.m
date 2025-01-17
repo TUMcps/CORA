@@ -54,11 +54,8 @@ for i=1:nrTests
 %     scatter(V_proj(1,:),V_proj(2,:),16,'g');
 
     % instantiate polygon (as projection always in 2D) and compare
-    poly = polygon(V);
-    poly_proj = polygon(V_proj);
-    if ~isequal(poly,poly_proj,1e-6)
-        throw(CORAerror('CORA:failedTest'));
-    end
+    assertLoop(compareMatrices(V_proj,V,1e-6,'subset'),i);
+    
 
 end
 

@@ -1,11 +1,12 @@
-function res = recordCORAvideo(filename,varargin)
-% recordCORAvideo - records a video of the computed reachable set
+function res = recordReachableSet(vidObj,fig,varargin)
+% recordReachableSet - records a video of the computed reachable set
 %
 % Syntax:
-%    res = recordCORAvideo(filename,varargin)
+%    res = recordReachableSet(vidObj,varargin)
 %
 % Inputs:
-%    filename - char, video file name (with extension *.mp4)
+%    vidObj - VideoWriter
+%    fig - figure
 %    varargin - name-value-pairs
 %       'ReachSet' - reachSet object
 %       'SimResult' - simResult object
@@ -13,15 +14,7 @@ function res = recordCORAvideo(filename,varargin)
 %       'Dimensions' - dimensions to plot (1 for plotOverTime, 2 for plot)
 %       'RefDimensions' - dimensions to plot reference trajectory
 %       'Specification' - specification object
-%       'XLabel' - xlabel
-%       'XLim' - xlim
-%       'YLabel' - ylabel
-%       'YLim' - ylim
-%       'Title' - title of video
-%       'Description' - description (also controls layout)
-%       'LegendLocation' - location of legend
 %       'UnifyTotalSets' - total number of sets for unify
-%       'FrameRate' - frame rate of video
 %       'TotalDuration' - total duration of video
 %       'FreezeDuration' - duration of freezed animation at the end
 %       'ReachSets' - cell array of {<reachSet>,<display-name>,<color>}
@@ -30,26 +23,23 @@ function res = recordCORAvideo(filename,varargin)
 % Outputs:
 %    res - logical
 %
-% Example
-%    % gather R and simRes
-%    % ...
-%    recordCORAvideo('example.mp4','ReachSet',R,'SimResult',simRes,'Dimensions',[1]);
+% See also:
+%    CORAvideo_snippets
 
 % Authors:       Tobias Ladner
 % Written:       05-April-2024
 % Last update:   19-April-2024 (TL, added reference trajectory)
+%                11-December-2024 (TL, split setup and recording)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-disp('Recording CORA video:')
+disp('Recording reachable set:')
 
 % parse input ---
 
 [Rs,simRes,refTrajectory,dims,refDims,spec, ...
-    XLabel,XLim,YLabel,YLim,Title,Description,LegendLocation, ...
-    Unify,UnifyTotalSets, ...
-    FrameRate,MaxTimeRs,TotalDuration,FreezeDuration,PlotMethodSimResult] = aux_parseInput(varargin);
+    Unify,UnifyTotalSets,MaxTimeRs,TotalDuration,FreezeDuration,PlotMethodSimResult] = aux_parseInput(varargin);
 simName = 'Simulations';
 refName = 'Ref. trajectory';
 
@@ -57,21 +47,23 @@ refName = 'Ref. trajectory';
 
 disp("- Setup")
 
-% set up figure
-fig = aux_setUpFigure(XLabel,XLim,YLabel,YLim,Title,Description,LegendLocation);
-
-% set up video
-vidObj = VideoWriter(filename, 'MPEG-4');
-vidObj.Quality = 100;
-vidObj.FrameRate = FrameRate;
-open(vidObj);
+% labels
+if isscalar(dims)
+    XLabel = 'Time';
+else
+    XLabel = sprintf('x_{(%i)}',dims(1));
+end
+xlabel(XLabel);
+ylabel(sprintf('x_{(%i)}',dims(end)))
 
 % enlarge axis in case not set already, ensures reachable set is doesn't
 % change axis limits, which does not look nice on the video
-aux_plot(simRes,dims,'DisplayName',simName,'Color',CORAcolor('CORA:simulations'));
-aux_enlargeAxis(1.2,dims);
-if ~strcmp(PlotMethodSimResult,'all')
-    aux_deletegraphics(simName);
+if ~isempty([simRes.x])
+    aux_plot(simRes,dims,'DisplayName',simName,'Color',CORAcolor('CORA:simulations'));
+    aux_enlargeAxis(1.2,dims);
+    if ~strcmp(PlotMethodSimResult,'all')
+        aux_deletegraphics(simName);
+    end
 end
 
 % plot initial set and simulations for axis scaling
@@ -90,6 +82,7 @@ disp("- Start recording")
 writeVideo(vidObj, getframe(gcf));
 
 % get time per step
+FrameRate = vidObj.FrameRate;
 nrFrames = TotalDuration * FrameRate;
 nrFramesFreeze = FreezeDuration * FrameRate;
 nrFramesAnimation = nrFrames - nrFramesFreeze;
@@ -109,7 +102,8 @@ for frame=1:nrFramesAnimation
     t_i = deltat * (frame-1);
     t_i1 = deltat * frame;
     tau_0i1 = interval(tStart,t_i1);
-    fprintf('  [%.2f, %.2f] / %.2f \n', t_i, t_i1, MaxTimeRs);
+    fprintf('  [%.2f, %.2f] / %.2f ..\n', t_i, t_i1, MaxTimeRs);
+    title(sprintf('$t=%.2fs$',t_i1),'Interpreter','latex')
 
     % plot reachable set
     tic
@@ -150,22 +144,24 @@ for frame=1:nrFramesAnimation
     end
 
     % plot simulations (delete all previous simulations)
-    if strcmp(PlotMethodSimResult, 'time')
-        % plot simulations at the same time as reachable set
-        aux_deletegraphics(simName);
-        tau_0i1 = interval(0,min(t_i1,tFinalUpToFrame));
-        aux_plot(find(simRes,'time',tau_0i1),dims, ...
-            'DisplayName',simName,'Color',CORAcolor('CORA:simulations'));
-
-    elseif strcmp(PlotMethodSimResult, 'percent')
-        % iteratively plot new simulations based on the current progress
-        % (similar to website)
-        aux_deletegraphics(simName);
-        percent = ceil(frame/nrFrames * numel(simRes));
-        aux_plot(simRes(1:percent),dims, ...
-            'DisplayName',simName,'Color',CORAcolor('CORA:simulations'));
+    if ~isempty([simRes.x])
+        if strcmp(PlotMethodSimResult, 'time')
+            % plot simulations at the same time as reachable set
+            aux_deletegraphics(simName);
+            tau_0i1 = interval(0,min(t_i1,tFinalUpToFrame));
+            aux_plot(find(simRes,'time',tau_0i1),dims, ...
+                'DisplayName',simName,'Color',CORAcolor('CORA:simulations'));
+    
+        elseif strcmp(PlotMethodSimResult, 'percent')
+            % iteratively plot new simulations based on the current progress
+            % (similar to website)
+            aux_deletegraphics(simName);
+            percent = ceil(frame/nrFrames * numel(simRes));
+            aux_plot(simRes(1:percent),dims, ...
+                'DisplayName',simName,'Color',CORAcolor('CORA:simulations'));
+        end
     end
-
+    
     % plot reference trajectory
     if ~isempty(refTrajectory)
         if strcmp(PlotMethodSimResult, 'time')
@@ -193,14 +189,9 @@ end
 
 % write freezed frames
 disp('- Freezed frames')
-writeVideo(vidObj, repmat(getframe(gcf),nrFramesFreeze,1));
+writeFreezedFrames(vidObj,FreezeDuration);
 
-% close
-close(fig)
-close(vidObj);
-
-% res
-fprintf('Done recording. Video saved as ''%s''.\n\n', filename)
+% completed
 res = true;
 
 end
@@ -208,7 +199,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [Rs,simRes,refTrajectory,dims,refDims,spec,XLabel,XLim,YLabel,YLim,Title,Description,LegendLocation,Unify,UnifyTotalSets,FrameRate,MaxTimeRs,TotalDuration,FreezeDuration,PlotMethodSimResult] = aux_parseInput(NVpairs)
+function [Rs,simRes,refTrajectory,dims,refDims,spec,Unify,UnifyTotalSets,MaxTimeRs,TotalDuration,FreezeDuration,PlotMethodSimResult] = aux_parseInput(NVpairs)
     
     % read input args
     [NVpairs,R] = readNameValuePair(NVpairs,'ReachSet');
@@ -218,16 +209,8 @@ function [Rs,simRes,refTrajectory,dims,refDims,spec,XLabel,XLim,YLabel,YLim,Titl
     [NVpairs,dims] = readNameValuePair(NVpairs,'Dimensions');
     [NVpairs,refDims] = readNameValuePair(NVpairs,'RefDimensions');
     [NVpairs,spec] = readNameValuePair(NVpairs,'Specification');
-    [NVpairs,XLabel] = readNameValuePair(NVpairs,'XLabel');
-    [NVpairs,XLim] = readNameValuePair(NVpairs,'XLim');
-    [NVpairs,YLabel] = readNameValuePair(NVpairs,'YLabel');
-    [NVpairs,YLim] = readNameValuePair(NVpairs,'YLim');
-    [NVpairs,Title] = readNameValuePair(NVpairs,'Title');
-    [NVpairs,Description] = readNameValuePair(NVpairs,'Description');
-    [NVpairs,LegendLocation] = readNameValuePair(NVpairs,'LegendLocation');
     [NVpairs,Unify] = readNameValuePair(NVpairs,'Unify');
     [NVpairs,UnifyTotalSets] = readNameValuePair(NVpairs,'UnifyTotalSets');
-    [NVpairs,FrameRate] = readNameValuePair(NVpairs,'FrameRate');
     [NVpairs,FreezeDuration] = readNameValuePair(NVpairs,'FreezeDuration');
     [NVpairs,TotalDuration] = readNameValuePair(NVpairs,'TotalDuration');
     [NVpairs,PlotMethodSimResult] = readNameValuePair(NVpairs,'PlotMethodSimResult');
@@ -262,34 +245,12 @@ function [Rs,simRes,refTrajectory,dims,refDims,spec,XLabel,XLim,YLabel,YLim,Titl
         refDims = dims;
     end
 
-    % labels
-    if isempty(XLabel)
-        if isscalar(dims)
-            XLabel = 'Time';
-        else
-            XLabel = sprintf('x_{(%i)}',dims(1));
-        end
-    end
-    if isempty(YLabel)
-        YLabel = sprintf('x_{(%i)}',dims(end));
-    end
-
-    % legend
-    if isempty(LegendLocation)
-        LegendLocation = 'northeast';
-    end
-
     % unify
     if isempty(Unify)
         Unify = true;
     end
     if isempty(UnifyTotalSets)
         UnifyTotalSets = 1;
-    end
-
-    % frame rate
-    if isempty(FrameRate)
-        FrameRate = 30;
     end
 
     % maximum time of any reachable set
@@ -310,92 +271,6 @@ function [Rs,simRes,refTrajectory,dims,refDims,spec,XLabel,XLim,YLabel,YLim,Titl
     if isempty(PlotMethodSimResult)
         PlotMethodSimResult = 'time';
     end
-end
-
-function fig = aux_setUpFigure(XLabel,XLim,YLabel,YLim,Title,Description,LegendLocation)
-    
-    % set up figure
-    fig = figure; 
-    set(fig,'WindowStyle','normal');
-    width = 2160;
-    height = 2160;
-
-    % background color white
-    backgroundColor = [1 1 1];
-    set(gcf, "Color", backgroundColor);
-
-    % font size
-    fontSize = 36;
-    fontSizeTitle = ceil(fontSize * 1.33);
-    fontSizeSmall = ceil(fontSize / 1.33);
-
-    if isempty(Description)
-        % just show plot
-        aux_setFigureSize(fig, width, height)
-
-        % and write title above plot
-        hold on; box on;
-        titleHandle = title(Title);
-        titleHandle.FontSize = fontSizeTitle;
-    else
-        % make space for title and description
-        width = 3840;
-        aux_setFigureSize(fig, width, height)
-
-        % plot title
-        dim = [.025 .8 .45 .1]; 
-        annotation('textbox',dim,'String',Title,'EdgeColor','none','FontWeight','bold','FontSize',fontSizeTitle)
-        
-        % plot description
-        dim = [.025 .3 .45 .5]; 
-        annotation('textbox',dim,'String',compose(Description),'EdgeColor','none','FontSize',fontSize)
-
-        % show image
-        img = imread('coraLogo.png','BackgroundColor',[1 1 1]);
-        s = size(img);
-        imgwidth = 0.075;
-        axCORA = axes( ...
-            'Units','pixels', ...
-            'OuterPosition',[width*0.025 height*0.05 width*imgwidth s(1)/s(2)*imgwidth*width+fontSizeSmall/0.75] ...
-        );
-        image(axCORA,img)
-        axCORA.Toolbar.Visible = 'off';
-        disableDefaultInteractivity(axCORA)
-        set(axCORA,'xtick',[])
-        set(axCORA,'ytick',[])
-        set(axCORA,'XColor',backgroundColor,'YColor',backgroundColor,'TickDir','out')
-        website = xlabel(axCORA, 'https://cora.in.tum.de');
-        website.Color = 'k';
-        website.FontSize = fontSizeSmall;
-
-        % create subplot on the right
-        subplot(1,2,2); hold on; box on;
-    end
-
-    fprintf('- Quality: %ix%i\n', width, height)
-
-    % set up axis to plot reachable set
-    ax = gca();
-    disableDefaultInteractivity(ax)
-    ax.Toolbar.Visible = 'off';
-    set(ax, "FontSize", fontSize)
-    
-    xlabel(XLabel); 
-    if ~isempty(XLim)
-        xlim(XLim)
-    end
-    ylabel(YLabel); 
-    if ~isempty(YLim)
-        ylim(YLim)
-    end
-    legend('Location',LegendLocation)
-end
-
-function aux_setFigureSize(fig, width, height)
-    screenSize = get(0, 'ScreenSize');
-    left = (screenSize(3) - width) / 2;
-    bottom = 0;
-    set(fig, 'OuterPosition', [left, bottom, width, height]);
 end
 
 function han = aux_plot(obj, dims, varargin)

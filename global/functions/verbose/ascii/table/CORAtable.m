@@ -6,7 +6,7 @@ classdef CORAtable < ASCIItable
 %
 % Inputs:
 %    design - char, 'single', 'double', 'modern', 'minimalistic', 
-%       'ascii', 'latex', 'html'
+%       'ascii', 'latex', 'html', 'markdown'
 %    hvalues - cell array containing headings
 %    formats - cell array containing cell formats; for summary columns
 %       'sum{%.3e & %.3e}', where '&' indicates the position of '+-' 
@@ -117,7 +117,7 @@ function [design,hvalues,formats,tableoptions] = aux_parseInput(design,hvalues,f
 
     % check input args
     inputArgsCheck({ ...
-        {design,'str',{'single', 'double', 'modern', 'minimalistic','ascii','latex','html'}};    ...
+        {design,'str',{'single', 'double', 'modern', 'minimalistic','ascii','latex','html','markdown'}};    ...
         {hvalues,'att','cell'};    ...
         {formats,'att','cell'};    ...
     })
@@ -138,6 +138,8 @@ function [design,hvalues,formats,tableoptions] = aux_parseInput(design,hvalues,f
             tableoptions = aux_getLatexTableOptions(formats);
         case 'html'
             tableoptions = aux_getHTMLTableOptions();
+        case 'markdown'
+            tableoptions = aux_getMarkdownTableOptions();
         otherwise
             % should have been caught at inputArgsCheck
             throw(CORAerror('CORA:wrongValue','third','Unknown design.'))
@@ -214,10 +216,17 @@ function tableoptions = aux_getHTMLTableOptions(formats)
     };
 end
 
+function tableoptions = aux_getMarkdownTableOptions()
+    tableoptions = { ...
+        'tbhline','','tbhcorner','','hbvline','|', ...
+        'mbhline','-','mbhcorner','|','mbhsep','|'
+    };
+end
+
 function latexformat = aux_format2latex(format)
     if startsWith(format,'sum')
         % Insert \pm in between.
-        latexformat = 'R@{\\pm}L';
+        latexformat = 'R@{$\\pm$}L';
     elseif contains(format,'s')
         % align strings on the left
         latexformat = 'l'; 

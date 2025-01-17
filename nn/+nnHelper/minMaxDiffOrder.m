@@ -34,9 +34,9 @@ minPoints = 10000;
 
 if l == u
     % compute exact result directly
-    y = f(l);
+    diff = f(l);
     yp = polyval(coeffs, l);
-    diff = y-yp;
+    diff = diff-yp;
     diffl = diff;
     diffu = diff;
     return
@@ -45,7 +45,7 @@ end
 % calculate bounds for derivative of polynomial
 [der2l,der2u] = nnHelper.getDerInterval(coeffs, l, u);
 
-% der2 = -der2; % '-' as we calculate f(x) - p(x)
+% der = der1 - -der2; % '-' as we calculate f(x) - p(x)
 der = max(abs([ ...
     der1l - -der2l; ...
     der1l - -der2u; ...
@@ -65,11 +65,11 @@ tol = der * dx;
 % sample points
 x = linspace(l, u, numPoints);
 x = [l, x, u]; % add l, u in case x is empty (der = 0)
-y = f(x) - polyval(coeffs, x);
+diff = f(x) - polyval(coeffs, x);
 
 % find bounds
-diffl = min(y)-tol;
-diffu = max(y)+tol;
+diffl = min(diff)-tol;
+diffu = max(diff)+tol;
 end
 
 % ------------------------------ END OF CODE ------------------------------

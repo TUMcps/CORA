@@ -30,8 +30,7 @@ figure;
 
 % empty reachSet
 R = reachSet();
-assertThrowsAs(@plot,'MATLAB:structRefFromNonStruct',R);
-
+plot(R)
 
 % discrete-time system
 A = [0.9810    0.0143    0.0262   -0.0140;

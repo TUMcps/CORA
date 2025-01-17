@@ -115,6 +115,13 @@ P_true = polytope(M*Z);
 assert(P_true == P_mtimes);
 
 
+% 3D, map with all-zero matrix
+P = polytope([1 0 0; 0 1 0; 0 0 1; -1 -1 -1],ones(4,1));
+M = zeros(3);
+P_mtimes = M * P;
+P_true = polytope(zeros(3,1));
+assert(P_true == P_mtimes);
+
 % 3D, projection onto 2D
 Z = zonotope(zeros(3,1),[1 1 0; 1 2 1; 0 1 1]);
 P = polytope(Z);

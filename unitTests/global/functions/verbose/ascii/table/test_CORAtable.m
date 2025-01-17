@@ -24,7 +24,7 @@ function res = test_CORAtable
 % ------------------------------ BEGIN CODE -------------------------------
 
 % designs
-designs = {'single', 'double', 'modern', 'minimalistic', 'ascii', 'latex', 'html'};
+designs = {'single', 'double', 'modern', 'minimalistic', 'ascii', 'latex', 'html','markdown'};
 
 % test each design
 for i=1:numel(designs)

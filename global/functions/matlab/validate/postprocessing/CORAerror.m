@@ -547,6 +547,7 @@ filesepPos = strfind(st(errIdx).file,filesep);
 atPos = strfind(st(errIdx).file,'@');
 % position of . (from .m-file)
 dotPos = strfind(st(errIdx).file,'.');
+dotPos = dotPos(end); % in case multiple dots appear within the path
 
 if ~isempty(atPos)
     % file separator after @-sign

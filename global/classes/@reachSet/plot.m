@@ -34,6 +34,7 @@ function han = plot(R,varargin)
 %                29-October-2021 (MW, remove linespec, 'Filled')
 %                11-July-2023 (VG, bug fix unify last set not plotted)
 %                10-April-2024 (TL, bug fix UnifyTotalSets too large)
+%                17-December-2024 (TL, added option to plot empty objects)
 % Last revision: 12-July-2023 (TL, restructure)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -140,6 +141,11 @@ end
 
 function han = aux_plotReachSet(R,dims,NVpairs,order,splits,unify,totalsets,whichset)
     % plots the reachable set
+
+    if isemptyobject(R)
+        han = plotPolygon(nan(numel(dims),0),NVpairs{:});
+        return
+    end
     
     % check if the reachable sets should be unified to reduce the storage size
     % of the resulting figure

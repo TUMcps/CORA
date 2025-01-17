@@ -26,6 +26,7 @@ function han = plotPolytope3D(V,varargin)
 % Authors:       Niklas Kochdumper
 % Written:       02-December-2020
 % Last update:   18-April-2024 (TL, fix color order and legend entries)
+%                10-December-2024 (TL, output all graphic handles)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -103,6 +104,7 @@ else
     hold on;
     
     % loop over all facets
+    han = [];
     for i = 1:length(K)
         for j = 1:length(K{i})
             
@@ -114,10 +116,11 @@ else
         
             % plot the facet
             if isempty(facecolor) || strcmp(facecolor,'none')
-                han = plot3(vert(ind,1),vert(ind,2),vert(ind,3), NVpairs{:});
+                han_ij = plot3(vert(ind,1),vert(ind,2),vert(ind,3), NVpairs{:});
             else
-                han = fill3(vert(ind,1),vert(ind,2),vert(ind,3), facecolor, NVpairs{:});
+                han_ij = fill3(vert(ind,1),vert(ind,2),vert(ind,3), facecolor, NVpairs{:});
             end
+            han = [han;han_ij];
 
             if i == 1 && j == 1
                 NVpairs = [NVpairs, {'HandleVisibility', 'off'}];

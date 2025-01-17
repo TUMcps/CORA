@@ -225,13 +225,13 @@ Rhom_tp_delta = (eAt - eye(n))*Rinit + Rtrans;
 
 if isa(Rinit,'zonotope')
     %original computation
-    O = zonotope(zeros(n,1));
+    O = zonotope.origin(n);
     Rhom=enclose(O,Rhom_tp_delta)+F*Rinit+inputCorr;
 elseif isa(Rinit,'polyZonotope') || isa(Rinit,'conPolyZono')
     O = zeros(n)*Rhom_tp_delta;  % to retain dependencies!
     Rhom=enclose(O,Rhom_tp_delta)+F*zonotope(Rinit)+inputCorr;
 elseif isa(Rinit,'zonoBundle')
-    O = zonoBundle({zonotope(zeros(n,1))});
+    O = zonoBundle.origin(n);
     Rhom=enclose(O,Rhom_tp_delta)+F*Rinit.Z{1}+inputCorr;
 end
 

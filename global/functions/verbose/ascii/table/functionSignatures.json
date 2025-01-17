@@ -5,7 +5,7 @@
   {
      "inputs":
      [
-        {"name":"design", "kind":"required", "type":["char", "choices={'single', 'double', 'modern', 'minimalistic', 'ascii', 'latex'}"], "purpose":"Design of table"},
+        {"name":"design", "kind":"required", "type":["char", "choices={'single', 'double', 'modern', 'minimalistic', 'ascii', 'latex' 'html','markdown'}"], "purpose":"Design of table"},
         {"name":"hvalues", "kind":"required", "type":"cell", "purpose":"cell array containing headings {'Heading 1', ...}"},
         {"name":"formats", "kind":"required", "type":"cell", "purpose":"cell array containing cell formats {'s','.2f','.4e',...}"},
         {"name":"ColumnWidths", "kind":"namevalue", "type":["numeric"],"purpose":"Column widths"}
@@ -17,7 +17,7 @@
      "inputs":
      [
         {"name":"heading", "kind":"required", "type":"char", "purpose":"Column heading 'Parameter List'"},
-        {"name":"design", "kind":"required", "type":["char", "choices={'single', 'double', 'modern', 'minimalistic', 'ascii', 'latex'}"], "purpose":"Design of table"},
+        {"name":"design", "kind":"required", "type":["char", "choices={'single', 'double', 'modern', 'minimalistic', 'ascii', 'latex' 'html','markdown'}"], "purpose":"Design of table"},
         {"name":"ColumnWidths", "kind":"namevalue", "type":["numeric"],"purpose":"Column widths"}
      ]
   }

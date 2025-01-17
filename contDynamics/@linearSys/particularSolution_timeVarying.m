@@ -56,6 +56,13 @@ if isempty(linsys.taylor)
     linsys.taylor = taylorLinSys(linsys.A);
 end
 
+% set a maximum order in case truncation order is given as Inf (adaptive),
+% because running a for loop until Inf triggers a warning
+truncationOrderInf = isinf(truncationOrder);
+if truncationOrderInf
+    truncationOrder = 75;
+end
+
 % compute by sum until floating-point precision (if truncationOrder = Inf)
 % formula: \bigosum_{j=0}^\infty \frac{A^{j}}{j+1!} timeStep^{j+1} U
 options = struct('timeStep',timeStep,'ithpower',1);
@@ -79,8 +86,8 @@ for eta=1:truncationOrder
     addTerm = Apower_mm * dtoverfac;
     
     % adaptive truncation order
-    if isinf(truncationOrder)
-        if any(any(isinf(addTerm)))
+    if truncationOrderInf
+        if any(any(isinf(addTerm))) || eta == truncationOrder
             % safety check (if time step size too large, then the sum
             % converges too late so we already have Inf values)
             throw(MException('reach_adaptive:notconverging',...
@@ -99,7 +106,7 @@ end
 
 % if floating-point precision has been not been reached, we require the
 % remainder term
-if ~isinf(truncationOrder)
+if ~truncationOrderInf
     E = expmRemainder(linsys,timeStep,truncationOrder);
     try
         Ptp = block_operation(@plus, Ptp, block_mtimes(E*timeStep,U_decomp));

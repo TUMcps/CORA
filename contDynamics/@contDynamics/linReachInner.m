@@ -32,6 +32,7 @@ function [Rtp,Rti,options] = linReachInner(sys,Rstart,params,options)
 % Authors:       Mark Wetzlinger
 % Written:       17-December-2023
 % Last update:   22-December-2023 (MW, major speed up)
+%                28-November-2024 (MW, remove exponentialMatrix class)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -74,33 +75,31 @@ options.linearizationPoint = c_Rinit_interval ...
 % translate Rinit by linearization point
 Rinit__ = Rinit + (-sys.linError.p.x);
 
-% init object for exponential matrix
-expmat = exponentialMatrix(linsys.A);
-expmat = init_eADeltat(expmat,options.timeStep);
-
 % constant input on right-hand side of differential inclusion
 u = center(linOptions.uTrans);
 
 % compute interval matrices F and G
-expmat = computeCurvatureErrors(expmat,options.timeStep,u);
+[~,F,G] = taylorMatrices(linsys,options.timeStep,Inf);
 
 % compute constant input solution (just a vector!)
-[Rcon,expmat] = oneStepPartSol(u,expmat,options.timeStep,'inner');
+Rcon = particularSolution_constant(linsys,u,options.timeStep,Inf);
+% propagation matrix
+eADeltat = getTaylor(linsys,'eAdt',struct('timeStep',options.timeStep));
 
 % time-point solution (translated by linearization point)
-Rlintp__ = expmat.eADeltat*Rinit__ + Rcon;
+Rlintp__ = eADeltat*Rinit__ + Rcon;
 
 % box of translated initial set and curvature error
 Rstart_interval__ = Rinit_interval + (-sys.linError.p.x);
-C = expmat.F * zonotope(Rstart_interval__) + expmat.Ftilde * u;
+C = F * zonotope(Rstart_interval__) + G*u;
 
 % compute box enclosure of time-interval solution for abstraction error
 % computation (uses box enclosure anyway) with formula
 %    Rlinti = convHull_(Rstart,Rlintp) + C
 % instead of interval(Rlintp), we use
-%    expmat.eADeltat * Rstart_interval + Rcon
+%    eADeltat * Rstart_interval + Rcon
 % because it is faster and the increase in the Lagrange remainder is small
-Rlintp_outerapprox__ = expmat.eADeltat * Rstart_interval__ + Rcon;
+Rlintp_outerapprox__ = eADeltat * Rstart_interval__ + Rcon;
 Rlinti__ = convHull_(Rstart_interval__,Rlintp_outerapprox__ + interval(C),'exact');
 
 % reachable set due to abstraction error ----------------------------------
@@ -113,7 +112,7 @@ while perfIndCurr > 1
     % estimate the abstraction error
     appliedError = 1.1*abstrerr;
     Verror = zonotope(0*appliedError,diag(appliedError));
-    RallError = interval(oneStepPartSol(Verror,expmat,options.timeStep));
+    RallError = interval(particularSolution_timeVarying(linsys,Verror,options.timeStep,Inf));
 
     % compute the time-interval reachable set including abstraction error
     % (represented as an interval since absterr_lin below converts to
@@ -129,7 +128,7 @@ while perfIndCurr > 1
 end
 
 % compute the reachable set due to the linearization error
-Rerror = oneStepPartSol(VerrorDyn,expmat,options.timeStep);
+Rerror = particularSolution_timeVarying(linsys,VerrorDyn,options.timeStep,Inf);
 
 % time-point and time-interval reachable sets -----------------------------
 
