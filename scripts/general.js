@@ -6,6 +6,7 @@ function copyURL() {
     let path = window.location.pathname;
     path = path.replace("/index.html", "/");
     path = path.replace("/cora_website/", "/");
+    path = path.replace("/CORA/", "/");
 
     // Construct the final URL
     const finalURL = baseDomain + path;
