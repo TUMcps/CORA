@@ -1,5 +1,27 @@
 function laneChange()
-% updated: 10-August-2018
+% laneChange - ???
+%
+% Syntax:
+%    laneChange()
+%
+% Inputs:
+%    -
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       ???
+% Written:       ???
+% Last update:   10-August-2018
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set path
 global filePath
@@ -78,7 +100,6 @@ carB=simulation(simOptionsB,markovChainSpec);
 carB=simulateOptimized(carB);
 
 
-
 %change simOptions for third vehicle 
 simOptionsC=simOptionsB;
 simOptionsC.initialStateSet=initCarC;
@@ -88,7 +109,6 @@ simOptionsC.mode='freeDriving';
 %instantiate car C
 carC=simulation(simOptionsC,markovChainSpec);
 carC=simulateOptimized(carC);
-
 
 
 %change simOptions for forth vehicle 
@@ -128,7 +148,6 @@ inputD=get(carD,'inputProb');
 avgVelD=get(carD,'avgVel');
 
 
-
 %create road
 R=road(4,5,1);
 
@@ -139,14 +158,14 @@ Rright=createPath(R,[pi/2,2,0],[0],[40]);
 figure;
 
 subplot(1,5,1);
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rright,avgVelA,1);
 plotRoad;
 xlabel('car A');
 
 subplot(1,5,2);
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rright,avgVelB,1);
 plotRoad;
@@ -154,7 +173,7 @@ xlabel('car B');
 set(gca,'ytick',[]);
 
 subplot(1,5,3)
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rleft,avgVelC,1);
 plotRoad;
@@ -162,7 +181,7 @@ xlabel('car C');
 set(gca,'ytick',[]);
 
 subplot(1,5,4)
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rleft,avgVelD.left,1);
 plot(Rright,avgVelD.right,1);
@@ -171,7 +190,7 @@ xlabel('car D');
 set(gca,'ytick',[]);
 
 subplot(1,5,5)
-normalizePlot();
+aux_normalizePlot();
 
 
 %create road
@@ -242,8 +261,9 @@ end
 % end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-function normalizePlot()
+function aux_normalizePlot()
 
 %plot lowest and highest value for average probability
 %plot using own methods
@@ -252,7 +272,7 @@ V=vertices(IH);
 plot(V,'grayTones',0);
 plot(V,'grayTones',18);
 
-function plotRoad()
+function aux_plotRoad()
 
 %create road
 R=road(4,5,1);
@@ -264,3 +284,4 @@ Rright=createPath(R,[pi/2,2,0],[0],[40]);
 %plot crossing 
 plotCrossing(Rright,[40,41]) 
 
+% ------------------------------ END OF CODE ------------------------------

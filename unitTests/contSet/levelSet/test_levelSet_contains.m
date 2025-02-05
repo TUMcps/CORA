@@ -67,7 +67,6 @@ assert(~contains(nonlinear_ls,[sqrt(2);-1+1e-5],'exact',1e-6))
 % inclusion with non-linear level set with multiple constraints
 multiple_ls = levelSet([x - 1; x.^2 + y.^2 - 4],[x;y],'<=');
 assert(contains(multiple_ls,[0;0]))
-
 end
 
 % ------------------------------ END OF CODE ------------------------------

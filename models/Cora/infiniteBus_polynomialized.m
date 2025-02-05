@@ -1,9 +1,9 @@
 function f = infiniteBus_polynomialized(x,u)
-% infiniteBus - infinite-bus power system from [1] polynomialized according
-% to [2].
+% infiniteBus_polynomialized - infinite-bus power system from [1]
+% polynomialized according to [2].
 %
-% Syntax:  
-%    f = infiniteBus(x,u)
+% Syntax:
+%    f = infiniteBus_polynomialized(x,u)
 %
 % Inputs:
 %    x - state vector
@@ -21,12 +21,12 @@ function f = infiniteBus_polynomialized(x,u)
 %        Papers, vol. 60, no. 9, pp. 2533-2546, Sept. 2013, 
 %        doi: 10.1109/TCSI.2013.2246233.
 
-% Author:       Matthias Althoff
-% Written:      02-Jun-2022
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       02-June-2022
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % dynamics is eqiuivalent to "infiniteBus":
 % \dot{x}_1 = x_2;
@@ -49,4 +49,4 @@ function f = infiniteBus_polynomialized(x,u)
      
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

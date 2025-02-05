@@ -47,18 +47,18 @@ function powerSystem2cora(filename, varargin)
 scenario = load(filename);
 
 % reorder bus indices (generatorBuses, loadBuses, inputBuses)
-scenario = reorderBuses(scenario); 
+scenario = priv_reorderBuses(scenario); 
 
 % create power system variables
-[powVariables, NrOf] = symPowerVariables(scenario);
+[powVariables, NrOf] = priv_symPowerVariables(scenario);
 
 % constraint equations
 disp('create constraint equations');
-generateConstraintEquations(scenario,powVariables);
+priv_generateConstraintEquations(scenario,powVariables);
 
 % dynamic equations
 disp('create dynamic equations');
-generateDynamicEquations(scenario,powVariables);
+priv_generateDynamicEquations(scenario,powVariables);
     
     
 % create CORA DAE model

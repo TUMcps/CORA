@@ -1,7 +1,7 @@
 function f = brusselator(x,u)
 % brusselator - brusselator system from Example 3.4.1 in [1]
 %
-% Syntax:  
+% Syntax:
 %    f = brusselator(x,u)
 %
 % Inputs:
@@ -15,16 +15,16 @@ function f = brusselator(x,u)
 %   [1] X. Chen. "Reachability Analysis of Non-Linear Hybrid Systems Using
 %       Taylor Models"
 
-% Author:       Niklas Kochdumper
-% Written:      19-June-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       19-June-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     f = [1 + x(1)^2*x(2) - 2.5*x(1);...
          1.5*x(1) - x(1)^2*x(2)];
      
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

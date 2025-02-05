@@ -91,21 +91,21 @@ function r = aux_robustnessTemporalLogic(phi,r,time)
 
         r = r(phi.id,:);
 
-    elseif strcmp(phi.type,'&')
-
+    elseif strcmp(phi.type,'&') % ---
+        % compute robustness of each hs
         r1 = aux_robustnessTemporalLogic(phi.lhs,r,time);
         r2 = aux_robustnessTemporalLogic(phi.rhs,r,time);
 
         r = min([r1;r2],[],1);
 
-    elseif strcmp(phi.type,'|')
-
+    elseif strcmp(phi.type,'|') % ---
+        % compute robustness of each hs
         r1 = aux_robustnessTemporalLogic(phi.lhs,r,time);
         r2 = aux_robustnessTemporalLogic(phi.rhs,r,time);
 
         r = max([r1;r2],[],1);
 
-    elseif strcmp(phi.type,'next')
+    elseif strcmp(phi.type,'next') % ---
 
         r = aux_robustnessTemporalLogic(phi.lhs,r,time);
 
@@ -114,7 +114,7 @@ function r = aux_robustnessTemporalLogic(phi,r,time)
 
         r = [r(index), -inf*ones(1,length(r)-length(index))];
 
-    elseif strcmp(phi.type,'finally')
+    elseif strcmp(phi.type,'finally') % --- 
 
         r_ = aux_robustnessTemporalLogic(phi.lhs,r,time);
 
@@ -129,7 +129,7 @@ function r = aux_robustnessTemporalLogic(phi,r,time)
             cnt = cnt + 1; index = index + 1;
         end
 
-    elseif strcmp(phi.type,'globally')
+    elseif strcmp(phi.type,'globally') % ---
 
         r_ = aux_robustnessTemporalLogic(phi.lhs,r,time);
 
@@ -144,8 +144,8 @@ function r = aux_robustnessTemporalLogic(phi,r,time)
             cnt = cnt + 1; index = index + 1;
         end
 
-    elseif strcmp(phi.type,'until')
-
+    elseif strcmp(phi.type,'until') % ---
+        % compute robustness of each hs
         r1 = aux_robustnessTemporalLogic(phi.lhs,r,time);
         r2 = aux_robustnessTemporalLogic(phi.rhs,r,time);
         
@@ -165,28 +165,34 @@ function r = aux_robustnessTemporalLogic(phi,r,time)
             cnt = cnt + 1; index = index + 1;
         end
 
-    elseif strcmp(phi.type,'release')
+    elseif strcmp(phi.type,'release') % ---
 
+        % compute robustness of each hs
         r1 = aux_robustnessTemporalLogic(phi.lhs,r,time);
         r2 = aux_robustnessTemporalLogic(phi.rhs,r,time);
         
+        % find indices
         index = find(time >= phi.from & time <= phi.to);
 
+        % init 
         cnt = 1; 
         r = -inf * ones(size(r1));
         r1 = -r1; r2 = -r2;
     
+        % check each index
         while ~isempty(index) && index(1) <= length(r)
     
             index = index(index <= length(r));
     
             for i = 1:length(index)
+                % get max-min robustness
                 r(cnt) = max(r(cnt),min(r2(index(i)),min(r1(cnt:index(i)))));
             end
     
             cnt = cnt + 1; index = index + 1;
         end
 
+        % negate result?
         r(~isinf(r)) = -r(~isinf(r));
     end
 end
@@ -492,28 +498,27 @@ function list = aux_safe2unsafe(sets)
 % convert a safe set defined by the union of multiple sets to an
 % equivalent union of unsafe sets
 
+    % reverse first constraint
     list = aux_reverseInequalityConstraints(sets{1});
 
     for i = 2:length(sets)
 
-        tmp = aux_reverseInequalityConstraints(sets{i});
+        % reverse next constraint
+        nextConstReverse = aux_reverseInequalityConstraints(sets{i});
 
+        % go through all combinations
         list_ = {};
-
-        for j = 1:length(tmp)
+        for j = 1:length(nextConstReverse)
             for k = 1:length(list)
-                if isa(list{k},'levelSet') || isa(tmp{j},'levelSet') || ...
-                        isIntersecting_(list{k},tmp{j},'exact',1e-8)
-                    if isa(list{k},'polytope') && isa(tmp{j},'polytope')
-                        list_{end+1} = and_(polytope(list{k}),...
-                                                    polytope(tmp{j}),'exact');
-                    else
-                        list_{end+1} = and_(list{k},tmp{j},'exact');
-                    end
+                if isa(list{k},'levelSet') || isa(nextConstReverse{j},'levelSet') || ...
+                        isIntersecting_(list{k},nextConstReverse{j},'exact',1e-8)
+                    % compute intersection
+                    list_{end+1} = and_(list{k},nextConstReverse{j},'exact');
                 end
             end
         end
 
+        % update list
         list = list_;
     end
 end
@@ -524,7 +529,6 @@ function res = aux_reverseInequalityConstraints(S)
     res = {};
 
     if isa(S,'levelSet')
-
         compOp = S.compOp;
 
         if ~iscell(compOp)
@@ -536,7 +540,7 @@ function res = aux_reverseInequalityConstraints(S)
         end
 
     else
-
+        % convert to polytope
         poly = polytope(S);
         for i = 1:length(poly.b)
             res{end+1} = ~polytope(poly.A(i,:),poly.b(i));

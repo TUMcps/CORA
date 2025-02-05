@@ -93,7 +93,7 @@ function res = aux_s_plus(factor1, factor2)
         res = factor2;
         res.remainder = res.remainder + factor1;
         
-    else
+    else % throw error
         throw(CORAerror('CORA:wrongValue','first/second',...
             "('taylm',double), ('double','taylm'), ('taylm','interval') or ('interval','taylm')"));
         
@@ -102,7 +102,7 @@ function res = aux_s_plus(factor1, factor2)
 end
 
 function res = aux_addConst(obj,const)
-
+    % add constant
     res = obj;
         
     if isempty(obj.monomials) || obj.monomials(1,1) ~= 0

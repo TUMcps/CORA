@@ -2,7 +2,7 @@ function f = cstrDiscr(x,u,T)
 % cstrDiscr - discrete-time version of the stirred-tank reactor system in
 %             Sec. 6 in [1]
 %
-% Syntax:  
+% Syntax:
 %     f = cstrDiscr(x,u,T)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function f = cstrDiscr(x,u,T)
 %   [1] J. M. Bravo. "Robust MPC of constrained discrete-time nonlinear 
 %       systems based on approximated reachable sets", Automatica 2006
 
-% Author:       Niklas Kochdumper
-% Written:      19-June-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       19-June-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % Parameter
     rho = 1000;
@@ -61,4 +61,4 @@ function f = cstrDiscr(x,u,T)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

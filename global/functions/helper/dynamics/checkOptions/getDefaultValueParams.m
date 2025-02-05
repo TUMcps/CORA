@@ -46,7 +46,7 @@ switch field
         defValue = aux_def_V(sys,params,options);
     case 'inputCompMap'
         defValue = aux_def_inputCompMap(sys,params,options);
-    otherwise
+    otherwise % throw error
         throw(CORAerror('CORA:specialError',...
             "There is no default value for params." + field + "."))
 end 
@@ -69,10 +69,12 @@ end
 end
 
 function val = aux_def_U(sys,params,options)
+% get U
 
 if isa(sys,'contDynamics')
     val = zonotope(zeros(sys.nrOfInputs,1));
 elseif isa(sys,'hybridAutomaton')
+    % define for each location
     locations = sys.location;
     numLoc = length(locations);
     val = cell(numLoc,1);
@@ -81,9 +83,11 @@ elseif isa(sys,'hybridAutomaton')
         val{i} = zonotope(zeros(max(1,nrInputs),1));
     end
 elseif isa(sys,'parallelHybridAutomaton')
+    % define for each component
     numComps = length(sys.components);
     val = cell(numComps,1);
     for i=1:numComps
+        % define for each location
         numLoc = length(sys.components(i).location);
         val{i} = cell(numLoc,1);
         for j = 1:numLoc
@@ -96,11 +100,13 @@ end
 end
 
 function val = aux_def_u(sys,params,options)
+% get u
 
 val = [];
 if isa(sys,'contDynamics')
     val = zeros(sys.nrOfInputs,1);
 elseif isa(sys,'hybridAutomaton')
+    % define for each location
     locations = sys.location;
     numLoc = length(locations);
     val = cell(numLoc,1);
@@ -109,9 +115,11 @@ elseif isa(sys,'hybridAutomaton')
         val{i} = zeros(max(1,subsys.nrOfInputs),1);
     end
 elseif isa(sys,'parallelHybridAutomaton')
+    % define for each component
     numComps = length(sys.components);
     val = cell(numComps,1);
     for i=1:numComps
+        % define for each location
         numLoc = length(sys.components(i).location);
         val{i} = cell(numLoc,1);
         for j = 1:numLoc
@@ -123,6 +131,7 @@ end
 end
 
 function val = aux_def_tu(sys,params,options)
+% get tu
 
 val = [];
 if isa(sys,'contDynamics')
@@ -172,10 +181,12 @@ end
 end
 
 function val = aux_def_W(sys,params,options)
+% get W
 
 if isa(sys,'contDynamics')
     val = interval(zeros(sys.nrOfDisturbances,1));
 elseif isa(sys,'hybridAutomaton')
+    % set for all locations
     locations = sys.location;
     numLoc = length(locations);
     val = cell(numLoc,1);
@@ -184,9 +195,11 @@ elseif isa(sys,'hybridAutomaton')
         val{i} = interval(zeros(max(1,nrDists),1));
     end
 elseif isa(sys,'parallelHybridAutomaton')
+    % set for all components
     numComps = length(sys.components);
     val = cell(numComps,1);
     for i=1:numComps
+        % set for all locations
         numLoc = length(sys.components(i).location);
         val{i} = cell(numLoc,1);
         for j = 1:numLoc
@@ -199,10 +212,12 @@ end
 end
 
 function val = aux_def_V(sys,params,options)
+% get V
 
 if isa(sys,'contDynamics')
     val = interval(zeros(sys.nrOfNoises,1));
 elseif isa(sys,'hybridAutomaton')
+    % get for each location
     locations = sys.location;
     numLoc = length(locations);
     val = cell(numLoc,1);
@@ -211,9 +226,11 @@ elseif isa(sys,'hybridAutomaton')
         val{i} = interval(zeros(max(1,nrNoises),1));
     end
 elseif isa(sys,'parallelHybridAutomaton')
+    % get for each component
     numComps = length(sys.components);
     val = cell(numComps,1);
     for i=1:numComps
+        % get for each location
         numLoc = length(sys.components(i).location);
         val{i} = cell(numLoc,1);
         for j = 1:numLoc
@@ -226,6 +243,7 @@ end
 end
 
 function val = aux_def_inputCompMap(sys,params,options)
+% get inputCompMap
 
 val = [];
 if isa(sys,'parallelHybridAutomaton')

@@ -2,8 +2,8 @@ function [pos,angle]=segData(obj,segNumber,devNumber)
 % segData - returns the position and angle of a segment for a given 
 % segment number and deviation number.
 %
-% Syntax:  
-%    [P]=segPolytope(obj,segNumber,devNumber)
+% Syntax:
+%    [P]=segData(obj,segNumber,devNumber)
 %
 % Inputs:
 %    obj - road object
@@ -21,12 +21,12 @@ function [pos,angle]=segData(obj,segNumber,devNumber)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      13-March-2008 
-% Last update:  01-April-2008
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       13-March-2008 
+% Last update:   01-April-2008
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get number of deviation segments
 nrOfDev=obj.nrOfDevSegments;
@@ -66,4 +66,4 @@ transLat(2,1)=sin(angle1-0.5*pi)*obj.width/nrOfDev;
 pos=[xMid; yMid]+(devNumber-0.5-0.5*nrOfDev)*transLat;
 angle=angle1;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

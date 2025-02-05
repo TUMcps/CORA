@@ -2,7 +2,7 @@ function [carInput,k] = DOTcontrol(x,varargin)
 % DOTcontrol - provides the steering angle and acceleration of the vehicle
 %              (adapted from [1] and merged with vehicle model in CommonRoad)
 %
-% Syntax:  
+% Syntax:
 %    f = DOTcontrol(x,u,y)
 %
 % Inputs:
@@ -25,14 +25,14 @@ function [carInput,k] = DOTcontrol(x,varargin)
 %
 % See also: DOTBicycleDynamics_controlled_BMW
 
-% Author:       Matthias Althoff
-% Written:      23-August-2011
-% Last update:  15-June-2023
-%               22-June-2023
-%               21-September-2023 (TL, parse input)
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       23-August-2011
+% Last update:   15-June-2023
+%                22-June-2023
+%                21-September-2023 (TL, parse input)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 narginchk(2,3);
 % parse input
@@ -87,4 +87,4 @@ ax = k(4)*(cos(u(3))*(u(1) - (x(1) + v(1))) + sin(u(3))*(u(2) - (x(2) + v(2)))) 
 carInput(1,1) = delta_dot;
 carInput(2,1) = ax;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

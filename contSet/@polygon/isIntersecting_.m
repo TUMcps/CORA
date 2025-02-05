@@ -35,7 +35,7 @@ end
 
 % numeric case: check containment
 if isnumeric(S)
-    res = contains_(pgon,S,type,tol);
+    res = contains_(pgon,S,type,tol,0,false,false);
     return
 end
 

@@ -4,8 +4,8 @@ function p = intersection_database(obj,fArray,intDatabase,pos1,angle1,pos2,angle
 % uncertainty of the center of the rectangles; The database lookup results
 % in a small quantization error
 %
-% Syntax:  
-%    [p]=intersection(R1,R2,p1,p2)
+% Syntax:
+%    [p]=intersection_database(obj,fArray,intDatabase,pos1,angle1,pos2,angle2)
 %
 % Inputs:
 %    road - road object
@@ -26,12 +26,12 @@ function p = intersection_database(obj,fArray,intDatabase,pos1,angle1,pos2,angle
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      18-August-2016   
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       18-August-2016   
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %nr of segments
 nrOfAngleSegments=length(intDatabase);
@@ -78,6 +78,4 @@ end
 p = intDatabase{iAngleSeg}(iXseg,iYseg);
 
 
-  
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

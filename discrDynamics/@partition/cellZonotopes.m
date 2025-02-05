@@ -1,7 +1,7 @@
 function zonotopes = cellZonotopes(obj,varargin)
 % cellZonotopes - return zonotopes of selected cells.
 %
-% Syntax:  
+% Syntax:
 %   zonotopes = cellZonotopes(obj,varargin)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function zonotopes = cellZonotopes(obj,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Aaron Pereira
-% Written:      14-September-2006
-% Last update:  31-July-2017 (AP)
-% Last revision:---
+% Authors:       Matthias Althoff, Aaron Pereira
+% Written:       14-September-2006
+% Last update:   31-July-2017 (AP)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % obtain intervals of selected cells
@@ -40,4 +40,4 @@ for i = 1:length(intervals)
     zonotopes{i} = zonotope(IH);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

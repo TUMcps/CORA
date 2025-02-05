@@ -11,7 +11,8 @@ function p = randPoint_(Z,N,type,varargin)
 %    Z - zonotope object
 %    N - number of random points
 %    type - type of the random point ('standard', 'extreme', 'uniform' or
-%           'uniform:hitAndRun', 'uniform:billiardWalk')
+%           'uniform:hitAndRun', 'uniform:billiardWalk',
+%           'uniform:ballWalk')
 %
 % Outputs:
 %    p - random point (cloud) in R^n
@@ -62,7 +63,7 @@ switch type
         % sampling of extreme random points
         p = aux_randPoint_extreme(Z,N);
 
-    case 'uniform'
+    case {'uniform','uniform:billiardWalk'}
         if representsa_(Z,'parallelotope',eps)
             % for parallelotopes, there is a significantly easier solution
             p = aux_randPointParallelotopeUniform(Z,N);
@@ -72,21 +73,17 @@ switch type
             % a slightly longer computation time
             p = aux_randPointBilliard(Z,N);
         end
-
-    case 'uniform:billiardWalk'
-        p = aux_randPointBilliard(Z,N);
-
+    case 'uniform:ballWalk'
+        p = aux_randPointBallWalk(Z, N);
     case 'uniform:hitAndRun'
-        p = aux_randPointHitAndRun(Z,N);
-
+        p = aux_randPointHitAndRun(Z, N);
     case 'radius'
         p = aux_randPointRadius(Z,N);
-
     case 'boundary'
         p = aux_getRandomBoundaryPoints(Z,N);
-
     otherwise
         throw(CORAerror('CORA:noSpecificAlg',type,Z));
+    
 end
 
 end
@@ -259,25 +256,15 @@ function p = aux_randPointHitAndRun(Z,N)
     
     % We need to check whether the zonotope Z is degenerate; the algorithm
     % changes a wee little bit if that is the case.
-    % The idea is pretty simple: The matrix G can be decomposed using a
-    % SVD as G = USV'. U is just a pure rotation, so it doesn't impact the
-    % uniformity of the distribution.
-    % So we can 'act' as if G = SV; since we know, where S has zeros, we
-    % can then choose the direction vector d in such a way, that
-    % d \in Im(S) is always guaranteed.
-    % It then just suffices to multiply our results by U at the very end.
-    if ~isFullDim(Z)
-        r = rank(Z.G);
-        [U,S,V] = svd(Z.G);
-        G = S*V';
-        Z = zonotope(zeros([dim(Z) 1]), G);
-    else
-        r = dim(Z);
-        U = eye(dim(Z));
+    [res, X] = isFullDim(Z);
+
+    n = dim(Z);
+
+    if ~res
+        X = [X zeros([n n-size(X,2)])];
     end
     
     G = Z.G;
-    n = size(G,1);
     m = size(G,2);
     
     p0 = randPoint(Z);
@@ -285,16 +272,14 @@ function p = aux_randPointHitAndRun(Z,N)
 
     % sample N points
     for i = 1:N
-        % sample movement vector
-        d = zeros(n,1);
-        for j = 1:n
-            if j > r
-                % Cut out the parts of d that would be canceled by G (i.e., S*V')
-                d(j) = 0;
-            else
-                d(j) = normrnd(0,1);
-            end
-        end
+        d = randn([n 1]);
+        d = d./norm(d);
+
+        % in case the zonotope is degenerate, the direction can only be in
+        % the subspace spanned by the vectors of X (which are normalized
+        % and orthogonal, so all is well, we still have a uniformly sampled
+        % direction)
+        d = X * d;
             
         % define parameters for linear programs
         f = vertcat(1, zeros(m,1));
@@ -320,41 +305,101 @@ function p = aux_randPointHitAndRun(Z,N)
         p0 = samplePoint;
     end
     
-    p = U*p + c;
+    p = p + c;
+end
+
+function p = aux_randPointBallWalk(Z,N)
+    n = dim(Z);
+    
+    % First, make sure that the zonotope is zero-centered; save the center
+    % for the end, when we need to translate back our points
+    c = Z.center;
+    Z = Z - c;
+    
+    % Then, for the ball-walk, we need to make sure that the inscribed
+    % ellipsoid in Z is actually a sphere. For this, we need the SVD:
+    [U, S, V] = svd(Z.generators);
+    % U is a rotation, which is bijective; we can thus turn Z:
+    Z = U' * Z;
+    % We now have a zonotope that has its main axes aligned with the
+    % canonical basis. We compute the rank of S now, to check if the
+    % zonotope is degenerate.
+    % If not, we 'invert' the scaling introduced by S. If it is degenerate,
+    % we only do this for the relevant directions:
+    r = rank(S);
+    s = diag(S);
+    s = 1./s(1:r);
+    s = [s;ones([n-r 1])];
+    S_inv = diag(s);
+    
+    Z = S_inv * Z;
+    
+    % We have now turned and scaled Z in such a way, that it contains the
+    % unit ball, and is contained in the unit ball scaled by sqrt(n), where
+    % n is the dimension. We choose the length of the ball-walk to be
+    % 1/sqrt(n)
+    % this could be improved in the future, but at the moment it yields
+    % pretty good results overall
+    delta = 1/sqrt(n);
+    
+    % Start with some random point, not necessarily uniformly distributed
+    p0 = randPoint(Z);
+    p = zeros(n,N);
+
+    % sample N points
+    for i = 1:N
+        while true
+            % sample movement vector
+            d = zeros(n,1);
+            for j = 1:n
+                if j > r
+                    % Cut out the parts of d that would be canceled by G (i.e., S*V')
+                    d(j) = 0;
+                else
+                    d(j) = normrnd(0,1);
+                end
+            end
+
+            % Sample length
+            ell = rand(1)^(1/n);
+
+            % Build candidate point
+            candidate = p0 +  delta * ell * d;
+            
+            if Z.contains_(candidate,'exact',1e-5,0,false,false)
+                p0 = candidate;
+                p(:,i) = p0;
+                break
+            end
+            
+        end
+    end
+    
+    % Transform everything back now
+    p = U * diag(1./s) * p + c;
 end
 
 
 function p = aux_randPointBilliard(Z,N) 
-
     % m - number of generators, p0 - start point, tau - variable 
     %     influencing trajectory length, R0 - maximum reflection number, 
     %     p - return matrix
+
     c = Z.c;
     Z = Z - c;
+
+    n = dim(Z);
     
     % We need to check whether the zonotope Z is degenerate; the algorithm
     % changes a wee little bit if that is the case.
-    % The idea is pretty simple: The matrix G can be decomposed using a
-    % SVD as G = USV'. U is just a pure rotation, so it doesn't impact the
-    % uniformity of the distribution.
-    % So we can 'act' as if G = SV; since we know, where S has zeros, we
-    % can then choose the direction vector d in such a way, that
-    % d \in Im(S) is always guaranteed.
-    % It then just suffices to multiply our results by U at the very end.
-    if ~isFullDim(Z)
-        r = rank(Z.generators);
-        [U,S,V] = svd(Z.generators);
-        G = S*V';
-        Z = zonotope(zeros([dim(Z) 1]), G);
-    else
-        r = dim(Z);
-        U = eye(dim(Z));
-        G = Z.generators;
+    [Z_isFullDim, X] = isFullDim(Z);
+
+    if ~Z_isFullDim
+        X = [X zeros([n n-size(X,2)])];
     end
     
     
-    %G = Z.generators;
-    n = size(G,1);
+    G = Z.generators;
     m = size(G,2);
     p0 = randPoint(Z);
     tau = norm(Z,2,'ub');
@@ -370,15 +415,14 @@ function p = aux_randPointBilliard(Z,N)
         R = R0;
 
         % sample direction
-        d = zeros(n,1);
-        for j = 1:n
-            if j > r
-                % Cut out the parts of d that would be canceled by G (i.e., S*V')
-                d(j) = 0;
-            else
-                d(j) = normrnd(0,1);
-            end
-        end
+        d = randn([n 1]);
+        d = d./norm(d);
+
+        % in case the polytope is degenerate, the direction can only be in
+        % the subspace spanned by the vectors of X (which are normalized
+        % and orthogonal, so all is well, we still have a uniformly sampled
+        % direction)
+        d = X * d;
         
 
         while true
@@ -421,44 +465,58 @@ function p = aux_randPointBilliard(Z,N)
                 R = R0;
                 q0 = p0;
                 l = tau * -log(unifrnd(0,1));
-                for j = 1:n
-                    if j > r
-                        % Cut out the parts of d that would be canceled by G (i.e., S*V')
-                    d(j) = 0;
-                    else
-                        d(j) = normrnd(0,1);
-                    end
-                end
+
+                d = randn([n 1]);
+                d = d./norm(d);
+                d = X * d;
+
                 continue;
             else
                 R = R - 1;
             end
             
             % define parameters for linear program
-            problem_facet.f = horzcat(zeros(1,m), -transpose(q));
-            problem_facet.Aineq = horzcat(vertcat(ones(1,m), -eye(m), -eye(m)), ...
-                                  vertcat(zeros(1,n), transpose(G), -transpose(G)));
-            problem_facet.bineq = vertcat(1, zeros(2*m,1));
-            problem_facet.Aeq = [];
-            problem_facet.beq = [];
-            problem_facet.lb = [];
-            problem_facet.ub = [];
-        
-            % get unit normal vector of hit facet
-            linOut = CORAlinprog(problem_facet);
-            s = linOut(m+1:m+n);
+            if Z_isFullDim
+                problem_facet.f = [zeros([m 1]); -q];
+                problem_facet.Aineq = [ones([1 m]) zeros([1 n]);...
+                                        -eye(m) G';...
+                                        -eye(m) -G'];
+                problem_facet.bineq = [1; zeros(2*m,1)];
+                problem_facet.Aeq = [];
+                problem_facet.beq = [];
+                problem_facet.lb = [];
+                problem_facet.ub = [];
+
+                % get unit normal vector of hit facet
+                linOut = CORAlinprog(problem_facet);
+                s = linOut(m+1:m+n);
+            else
+                % Need to ensure that the normal vector is in the same
+                % subspace as Z
+                problem_facet.f = [zeros([n+m 1]); -q];
+                problem_facet.Aineq = [zeros([1 n]) ones([1 m]) zeros([1 n]);...
+                                       zeros([m n]) -eye(m) G';...
+                                       zeros([m n]) -eye(m) -G'];
+                problem_facet.bineq = [1; zeros(2*m,1)];
+                problem_facet.Aeq = [X zeros([n m]) -eye(n)];
+                problem_facet.beq = zeros([n 1]);
+                problem_facet.lb = [];
+                problem_facet.ub = [];
+            
+                % get unit normal vector of hit facet
+                linOut = CORAlinprog(problem_facet);
+                s = linOut(n+m+1:n+m+n);
+            end
+
             s = s / norm(s);
     
             % change start point, direction and remaining length
             q0 = q;
             d = d - 2 * dot(d,s) * s;
-            if r ~= dim(Z)
-                d(r+1:end) = zeros([dim(Z) - r 1]);
-            end
             l = l - segmentLength;
         end
     end
-    p = U * p + c;
+    p = p + c;
 end
 
 function p = aux_randPointRadius(Z,N)

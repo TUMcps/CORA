@@ -3,7 +3,7 @@ function f = vehicleDynamics_ST_controlled_BMW(x,u)
 % control for trajectory tracking; adapted from [1] and changed according
 % to vehicle model in CommonRoad
 %
-% Syntax:  
+% Syntax:
 %    f = vehicleDynamics_ST_controlled_BMW(x,u)
 %
 % Inputs:
@@ -27,13 +27,13 @@ function f = vehicleDynamics_ST_controlled_BMW(x,u)
 %
 % See also: DOTcontrol, vehicleDynamics_MB_BMW
 
-% Author:       Matthias Althoff
-% Written:      26-August-2011
-% Last update:  15-June-2023
-%               21-June-2023
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-August-2011
+% Last update:   15-June-2023
+%                21-June-2023
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % obtain control inputs
 carInput = DOTcontrol(x,u);
@@ -48,5 +48,4 @@ u = [carInput; w];
 f = vehicleDynamics_ST_BMW(x,u);
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

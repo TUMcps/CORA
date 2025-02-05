@@ -154,22 +154,24 @@ function [V,Ilist] = aux_polyVertices(pZ)
     V_ = zeros(size(V));
     Ilist = cell(size(V,2),1);
     
+    % check if redundant up to a given tolerance
+    tol = 1e-10;
     V_(:,1) = V(:,1);
-    Itemp = I(:,1);
+    Ilast = I(:,1);
     counter = 1;
-
     for i = 2:size(V,2)
-        if ~all(abs(V(:,i)-V_(:,counter)) < 1e-10)
+        if ~all(abs(V(:,i)-V_(:,counter)) < tol)
+           % unique point up to tolerance
            counter = counter + 1;
            V_(:,counter) = V(:,i);
-           Ilist{counter-1} = Itemp;
-           Itemp = I(:,i);
+           Ilist{counter-1} = Ilast;
+           Ilast = I(:,i);
         else
-           Itemp = [Itemp,I(:,i)];
+           Ilast = [Ilast,I(:,i)];
         end
     end
     
-    Ilist{counter} = Itemp;
+    Ilist{counter} = Ilast;
 
     V = V_(:,1:counter);
     Ilist = Ilist(1:counter);

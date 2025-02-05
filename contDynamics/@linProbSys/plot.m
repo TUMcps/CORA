@@ -44,7 +44,7 @@ end
 
 %set maximum order of zonotopes that are plotted (otherwise, plot can be 
 %extremly time consuming)
-switch obj.nrOfStates
+switch obj.nrOfDims
   case 2
     maxOrder=5;
   case 3

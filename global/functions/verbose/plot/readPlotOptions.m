@@ -42,6 +42,7 @@ function NVpairs = readPlotOptions(plotOptions,varargin)
 %                28-February-2023 (TL, use axis default colors)
 %                24-March-2023 (TL, defaultPlotColor)
 %                04-October-2023 (TL, aux_correctColorToNumeric)
+%                07-February-2025 (TL, deal with alpha values)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -376,6 +377,9 @@ NVpairs = aux_correctColorToNumeric(NVpairs, 'Color');
 % add remaining plotOptions
 NVpairs = [NVpairs, plotOptions];
 
+% convert alpha values
+NVpairs = aux_correctAlphaValue(NVpairs);
+
 end
 
 
@@ -428,37 +432,21 @@ function NVpairs = aux_correctColorToNumeric(NVpairs, label)
                 % this conversion is not necessary, but can cause weird
                 % behavior with the current color index
                 switch color
-                    case 'red'
+                    case {'red','r'}
                         color = [1 0 0];
-                    case 'r'
-                        color = [1 0 0];
-                    case 'green'
+                    case {'green', 'g'}
                         color = [0 1 0];
-                    case 'g'
-                        color = [0 1 0];
-                    case 'blue'
+                    case {'blue','b'}
                         color = [0 0 1];
-                    case 'b'
-                        color = [0 0 1];
-                    case 'cyan'
+                    case {'cyan','c'}
                         color = [0 1 1];
-                    case 'c'
-                        color = [0 1 1];
-                    case 'magenta'
+                    case {'magenta','m'}
                         color = [1 0 1];
-                    case 'm'
-                        color = [1 0 1];
-                    case 'yellow'
+                    case {'yellow','y'}
                         color = [1 1 0];
-                    case 'y'
-                        color = [1 1 0];
-                    case 'black'
+                    case {'black','k'}
                         color = [0 0 0];
-                    case 'k'
-                        color = [0 0 0];
-                    case 'white'
-                        color = [1 1 1];
-                    case 'w'
+                    case {'white','w'}
                         color = [1 1 1];
                     case 'next'
                         color = nextcolor;
@@ -470,6 +458,89 @@ function NVpairs = aux_correctColorToNumeric(NVpairs, label)
 
         % add back to NVpairs
         NVpairs = [NVpairs, label, color];
+    end
+end
+
+function NVpairs = aux_correctAlphaValue(NVpairs)
+    % w/ facecolor uses fill/patch, w/o facecolor uses plot
+    % On the one hand, plot does not have such a thing as 'EdgeAlpha'
+    % -> add alpha value to color triplet
+    % On the other hand, fill/patch don't allow alpha values added to the
+    % color triplets -> rewrite to 'EdgeAlpha' and 'FaceAlpha'
+
+    % read facecolor
+    [NVpairs,facecolor] = readNameValuePair(NVpairs,'FaceColor');
+    if isempty(facecolor)
+        % check if edge alpha is present
+        [NVpairs,edgealpha] = readNameValuePair(NVpairs,'EdgeAlpha');
+        if ~isempty(edgealpha)
+            % append to color/edgecolor to ensure correct plotting
+            [NVpairs,color] = readNameValuePair(NVpairs,'Color');
+            if isnumeric(color) &&  ~isempty(color)
+                NVpairs = [NVpairs,{'Color',[color, edgealpha]}];
+            end
+            [NVpairs,edgecolor] = readNameValuePair(NVpairs,'EdgeColor');
+            if  isnumeric(edgecolor) && ~isempty(edgecolor)
+                NVpairs = [NVpairs,{'EdgeColor',[edgecolor, edgealpha]}];
+            end
+        end
+    else % facecolor is present
+        % check if any color has an alpha value as fourth argument
+        [NVpairs,color] = readNameValuePair(NVpairs,'Color');
+        coloralpha = [];
+        if isnumeric(color) && numel(color) == 4
+            coloralpha = color(4);
+            color = color(1:3);
+        end
+        [NVpairs,edgecolor] = readNameValuePair(NVpairs,'EdgeColor');
+        edgecoloralpha = [];
+        if isnumeric(edgecolor) && numel(edgecolor) == 4
+            edgecoloralpha = edgecolor(4);
+            edgecolor = edgecolor(1:3);
+        end
+        [NVpairs,edgealpha] = readNameValuePair(NVpairs,'EdgeAlpha');
+        facecoloralpha = [];
+        if isnumeric(facecolor) && numel(facecolor) == 4
+            facecoloralpha = facecolor(4);
+            facecolor = facecolor(1:3);
+        end
+        % facecolor already read
+        [NVpairs,facealpha] = readNameValuePair(NVpairs,'FaceAlpha');
+
+        % 'EdgeAlpha': 'EdgeAlpha' > Alpha of 'EdgeColor' > 'Color'
+        if ~isempty(edgealpha)
+            % edgealpha already present
+        elseif ~isempty(edgecoloralpha)
+            edgealpha = edgecoloralpha;
+        elseif ~isempty(coloralpha)
+            edgealpha = coloralpha;
+        end
+
+        % 'FaceAlpha': 'FaceAlpha' > Alpha of 'FaceColor' > 'Color'
+        if ~isempty(facealpha)
+            % edgealpha already present
+        elseif ~isempty(facecoloralpha)
+            facealpha = facecoloralpha;
+        elseif ~isempty(coloralpha)
+            facealpha = coloralpha;
+        end
+
+        % add everything back to NVpairs
+        if ~isempty(color)
+            NVpairs = [NVpairs,{'Color',color}];
+        end
+        if ~isempty(edgecolor)
+            NVpairs = [NVpairs,{'EdgeColor',edgecolor}];
+        end
+        if ~isempty(edgealpha)
+            NVpairs = [NVpairs,{'EdgeAlpha',edgealpha}];
+        end
+        if ~isempty(facecolor)
+            NVpairs = [NVpairs,{'FaceColor',facecolor}];
+        end
+        if ~isempty(facealpha)
+            NVpairs = [NVpairs,{'FaceAlpha',facealpha}];
+        end
     end
 end
 

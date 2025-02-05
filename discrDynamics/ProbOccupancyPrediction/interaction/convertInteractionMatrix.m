@@ -2,7 +2,7 @@ function [ThetaC]=convertInteractionMatrix(Theta)
 % convertInteractionMatrix - converts the interaction matrix of a
 % Markov-chain such that it can be used for an optimized update
 %
-% Syntax:  
+% Syntax:
 %    [ThetaC]=convertInteractionMatrix(Theta)
 %
 % Inputs:
@@ -19,13 +19,13 @@ function [ThetaC]=convertInteractionMatrix(Theta)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      12-October-2009
-% Last update:  14-October-2009
-%               10-August-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-October-2009
+% Last update:   14-October-2009
+%                10-August-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain number of inputs and states
 nrOfInputs_F=length(Theta(:,1));
@@ -66,5 +66,4 @@ cd(path);
 save(file,'ThetaC');
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

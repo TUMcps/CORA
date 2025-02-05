@@ -1,7 +1,7 @@
 function HA = gearbox()
 % gearbox - gearbox benchmark from [1], which is part of ARCH competition
 %
-% Syntax:  
+% Syntax:
 %    HA = gearbox()
 %
 % Inputs:
@@ -25,7 +25,7 @@ function HA = gearbox()
 % See also: none
 
 % Authors:       Matthias Althoff, Niklas Kochdumper
-% Written:       19-Dec-2016 
+% Written:       19-December-2016 
 % Last update:   13-May-2020 (NK, moved to seperate file)
 % Last revision: ---
 
@@ -142,7 +142,6 @@ reset2 = linearReset([a_11, a_12, 0, 0, 0; ...
 
 % transition
 trans(2) = transition(guard2,reset2,1);
-
 
 
 % Transition 3 ------------------------------------------------------------

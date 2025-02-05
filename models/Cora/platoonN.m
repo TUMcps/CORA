@@ -2,7 +2,7 @@ function sys = platoonN(h,n_v,n_k)
 % platoonN - system dynamics for the discrete-time version of the platoon 
 %   benchmark with n_v vehicles (see Sec. VII in [1])
 %
-% Syntax:  
+% Syntax:
 %    sys = platoonN(x,u,h)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function sys = platoonN(h,n_v,n_k)
 %        of the 62nd IEEE Conference on Decision and Control, pp.
 %        4042-4048, 2008.
 
-% Author:        Laura Luetzow, Matthias Althoff
+% Authors:       Laura Luetzow, Matthias Althoff
 % Written:       31-January-2024
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 A = cell(n_k,1);
 B = cell(n_k,1);
@@ -57,4 +57,4 @@ end
 sys = linearSysDT(sprintf('platoon%d',n_v),A,B,[],C,D,h);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

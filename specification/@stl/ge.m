@@ -29,8 +29,8 @@ function res = ge(obj1,obj2)
 % ------------------------------ BEGIN CODE -------------------------------
 
     % different cases depending on the the type of inputs 
-    if isa(obj1,'stl') && ~obj1.logic
-        if isa(obj2,'stl') && ~obj2.logic
+    if isa(obj1,'stl') && ~obj1.logic % obj1 is stl
+        if isa(obj2,'stl') && ~obj2.logic % obj1 is stl
             
             res = obj1;
             
@@ -39,7 +39,7 @@ function res = ge(obj1,obj2)
             res.rhs = 0;
             res.variables = unique([obj1.variables;obj2.variables]);
             
-        elseif isnumeric(obj2) && isscalar(obj2)
+        elseif isnumeric(obj2) && isscalar(obj2) % obj1 is numeric
             
             res = obj1;
             
@@ -52,6 +52,7 @@ function res = ge(obj1,obj2)
                       'This operation is not supported for stl objects!'));
         end
         
+        % obj2 is stl and obj1 is numeric
     elseif isa(obj2,'stl') && ~obj2.logic && isnumeric(obj1) && isscalar(obj1)
         
         res = obj2;

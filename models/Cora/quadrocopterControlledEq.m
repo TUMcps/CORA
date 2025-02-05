@@ -2,7 +2,7 @@ function dx = quadrocopterControlledEq(x,u)
 % quadrocopterControlledEq - dynamic equations for the quadrocopter 
 %                            benchmark (see Eq (16) - (19) in [1])
 %
-% Syntax:  
+% Syntax:
 %    dx = quadrocopterControlledEq(x,u)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function dx = quadrocopterControlledEq(x,u)
 %   [1] R. Beard, "Quadrotor Dynamics and Control", Tech Report Bringham
 %       Young University
 
-% Author:        Ahmed El-Guindy, Matthias Althoff, Mark Wetzlinger
+% Authors:       Ahmed El-Guindy, Matthias Althoff, Mark Wetzlinger
 % Written:       22-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % x_1 = p_n
 % x_2 = p_e
@@ -84,4 +84,4 @@ dx(10,1) = (J_y - J_z)/J_x*x(11)*x(12) + 1/J_x*tau_phi;
 dx(11,1) = (J_z - J_x)/J_y*x(10)*x(12) + 1/J_y*tau_theta;
 dx(12,1) = (J_x - J_y)/J_z*x(10)*x(11) + 1/J_z*tau_psi;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

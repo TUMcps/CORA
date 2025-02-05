@@ -2,7 +2,7 @@ function f = vehicleDynamics_ST_BMW(x,uComb)
 % vehicleDynamics_ST_BMW - single-track vehicle dynamics
 % reference point: center of mass
 %
-% Syntax:  
+% Syntax:
 %    f = vehicleDynamics_ST_BMW(x,u)
 %
 % Inputs:
@@ -20,15 +20,15 @@ function f = vehicleDynamics_ST_BMW(x,uComb)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      12-January-2017
-% Last update:  15-December-2017
-%               03-September-2019
-%               16-June-2023
-%               21-June-2023
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       12-January-2017
+% Last update:   15-December-2017
+%                03-September-2019
+%                16-June-2023
+%                21-June-2023
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get model paramters
 p = BMWparameters();
@@ -86,4 +86,4 @@ f(7,1) = (mu/(x(4)^2*(lr+lf))*(C_Sr*(g*lf + u(2)*h)*lr - C_Sf*(g*lr - u(2)*h)*lf
     -mu/(x(4)*(lr+lf))*(C_Sr*(g*lf + u(2)*h) + C_Sf*(g*lr-u(2)*h))*x(7) ...
     +mu/(x(4)*(lr+lf))*(C_Sf*(g*lr-u(2)*h))*x(3) + w(7);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

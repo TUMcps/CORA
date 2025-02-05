@@ -277,46 +277,10 @@ end
 % Visualization -----------------------------------------------------------
 
 %plot dynamic variables
-for plotRun=1:19
-    if plotRun==1
-        projDim=[1 6];
-    elseif plotRun==2
-        projDim=[2 7];
-    elseif plotRun==3
-        projDim=[3 8];
-    elseif plotRun==4
-        projDim=[4 9];
-    elseif plotRun==5
-        projDim=[5 10];
-    elseif plotRun==6
-        projDim=[11 12];
-    elseif plotRun==7
-        projDim=[13 14];      
-    elseif plotRun==8
-        projDim=[6 11];
-    elseif plotRun==9
-        projDim=[7 12];
-    elseif plotRun==10
-        projDim=[8 13];
-    elseif plotRun==11
-        projDim=[9 14];      
-    elseif plotRun==12
-        projDim=[1 11];
-    elseif plotRun==13
-        projDim=[2 12];
-    elseif plotRun==14
-        projDim=[3 13];      
-    elseif plotRun==15
-        projDim=[4 14];   
-    elseif plotRun==16
-        projDim=[1 2];
-    elseif plotRun==17
-        projDim=[3 4];
-    elseif plotRun==18
-        projDim=[5 6];
-    elseif plotRun==19
-        projDim=[7 8];      
-    end 
+projDims = {[1 6],[2 7],[3 8],[4 9],[5 10],[11 12],[13 14],[6 11],[7 12], ...
+    [8 13],[9 14],[1 11],[2 12],[3 13],[4 14],[1 2],[3 4],[5 6],[7 8]};
+for plotRun=1:numel(projDims)
+    projDim = projDims{plotRun};
 
     figure; hold on; box on;
 
@@ -345,44 +309,10 @@ for plotRun=1:19
 end
 
 %plot constraint variables
-for plotRun=1:18
-    if plotRun==1
-        projDim=[1 15];
-    elseif plotRun==2
-        projDim=[2 16];
-    elseif plotRun==3
-        projDim=[3 17];
-    elseif plotRun==4
-        projDim=[4 18];
-    elseif plotRun==5
-        projDim=[5 19];
-    elseif plotRun==6
-        projDim=[6 20];
-    elseif plotRun==7
-        projDim=[7 21];      
-    elseif plotRun==8
-        projDim=[8 22];
-    elseif plotRun==9
-        projDim=[9 23];
-    elseif plotRun==10
-        projDim=[10 24];
-    elseif plotRun==11
-        projDim=[11 25];
-    elseif plotRun==12
-        projDim=[12 26];
-    elseif plotRun==13
-        projDim=[13 27];      
-    elseif plotRun==14
-        projDim=[14 27];   
-    elseif plotRun==15
-        projDim=[1 2];
-    elseif plotRun==16
-        projDim=[3 4];
-    elseif plotRun==17
-        projDim=[5 6];
-    elseif plotRun==18
-        projDim=[7 8];      
-    end 
+projDims = {[1 15],[2 16],[3 17],[4 18],[5 19],[6 20],[7 21],[8 22],[9 23], ...
+    [10 24],[11 25],[12 26],[13 27],[14 27],[1 2],[3 4],[5 6], [7 8]};
+for plotRun=1:numel(projDims)
+    projDim = projDims{plotRun};
     
     figure; hold on; box on;
     

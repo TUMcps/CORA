@@ -1,6 +1,27 @@
 function merging()
-% changed: 02-October-2009 
-% updated: 09-August-2018
+% merging - ???
+%
+% Syntax:
+%    merging()
+%
+% Inputs:
+%    -
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       ???
+% Written:       02-October-2009 
+% Last update:   09-August-2018
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set path
 global filePath
@@ -217,13 +238,17 @@ for iStep=1:length(posA)
     plotPath(RU);
     plotPath(RR);
     grid
-    changeAxis();
+    aux_changeAxis();
 %     aviobj = addframe(aviobj,getframe);
 end
 
-function changeAxis()
+
+% Auxiliary functions -----------------------------------------------------
+
+function aux_changeAxis()
 
 axis([-10 5 0 150]);
 xlabel('');
 ylabel('');
 
+% ------------------------------ END OF CODE ------------------------------

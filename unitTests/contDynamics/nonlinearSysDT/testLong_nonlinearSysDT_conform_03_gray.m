@@ -57,7 +57,7 @@ options.cs.constraints = constraints;
 c_R0 = zeros(size(params_true.R0.c));
 c_U = zeros(size(params_true.U.c));
 params_id_init = params_true;
-params_id_init.R0 = zonotope([c_R0 eye(sys.nrOfStates)]);
+params_id_init.R0 = zonotope([c_R0 eye(sys.nrOfDims)]);
 params_id_init.U = zonotope([c_U eye(sys.nrOfInputs)]);
 
 for val = 1:2

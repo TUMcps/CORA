@@ -86,7 +86,7 @@ for i=1:size(allLoc,2)
 
             % check containment
             ptsContained(ptsChecked_) = ptsContained(ptsChecked_) ... 
-                | contains_(sets{k},pts,type,tol)';
+                | contains_(sets{k},pts,type,tol,0,false,false)';
 
             % extend list of checked points
             ptsChecked = ptsChecked | ptsChecked_;

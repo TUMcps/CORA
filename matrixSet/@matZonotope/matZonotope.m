@@ -100,26 +100,26 @@ methods
 
     % legacy ---
 
+    % generator -> G
     function Gs = get.generator(matZ)
         CORAwarning("CORA:deprecated","property",'matZonotope.generator','CORA v2024.2,0','With appropriate changes, please use matZonotope.G instead.','This change was made to improve speed.');
         Gs = matZ.G;
     end
-
     function matZ = set.generator(matZ,generator)
         throw(CORAerror("CORA:noops",'matZ.generator'));
     end
     
+    % gens - > numgens()
     function h = get.gens(matZ)
         CORAwarning("CORA:deprecated","property",'matZonotope.gens','CORA v2024.2,0','Please use matZonotope/numgens() instead.','This change was made to reduce internal maintenance.');
         h = numgens(matZ);
     end
-
     function matZ = set.gens(matZ,gens)
         throw(CORAerror("CORA:noops",'matZ.gens'));
     end
-
 end
 
+% protected methods
 methods (Access = protected)
     [printOrder] = getPrintSystemInfo(S)
 end

@@ -33,7 +33,7 @@ function Rin = reachInner(linsys,params,options)
     V_ = linsys.B * (params.U + params.u) + linsys.c;
     
     % compute propagation matrices
-    n = linsys.nrOfStates;
+    n = linsys.nrOfDims;
     A_ = [linsys.A eye(n); zeros(n,2*n)];
     eAt_ = expm(A_*options.timeStep);
     

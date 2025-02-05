@@ -1,26 +1,44 @@
 function varargout = input_set(varargin)
-% INPUTSET MATLAB code for InputSet.fig
-%      INPUTSET, by itself, creates a new INPUTSET or raises the existing
-%      singleton*.
+% input_set -  MATLAB code for InputSet.fig
+% INPUTSET, by itself, creates a new INPUTSET or raises the existing
+% singleton*.
 %
-%      H = INPUTSET returns the handle to a new INPUTSET or the handle to
-%      the existing singleton*.
+% H = INPUTSET returns the handle to a new INPUTSET or the handle to
+% the existing singleton*.
 %
-%      INPUTSET('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in INPUTSET.M with the given input arguments.
+% INPUTSET('CALLBACK',hObject,eventData,handles,...) calls the local
+% function named CALLBACK in INPUTSET.M with the given input arguments.
 %
-%      INPUTSET('Property','Value',...) creates a new INPUTSET or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before input_set_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to input_set_OpeningFcn via varargin.
+% INPUTSET('Property','Value',...) creates a new INPUTSET or raises the
+% existing singleton*.  Starting from the left, property value pairs are
+% applied to the GUI before input_set_OpeningFcn gets called.  An
+% unrecognized property name or invalid value makes property application
+% stop.  All inputs are passed to input_set_OpeningFcn via varargin.
 %
-%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
+% *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
+% instance to run (singleton)".
+%
+% Syntax:
+%    varargout = input_set(varargin)
+%
+% Inputs:
+%    varargin - ???
+%
+% Outputs:
+%    varargout - ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help InputSet
+% Authors:       ???
+% Written:       ???
+% Last update:   20-December-2020
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 % Last Modified by GUIDE v2.5 20-Dec-2020 19:54:02
 
@@ -28,8 +46,8 @@ function varargout = input_set(varargin)
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
     'gui_Singleton',  gui_Singleton, ...
-    'gui_OpeningFcn', @input_set_OpeningFcn, ...
-    'gui_OutputFcn',  @input_set_OutputFcn, ...
+    'gui_OpeningFcn', @aux_input_set_OpeningFcn, ...
+    'gui_OutputFcn',  @aux_input_set_OutputFcn, ...
     'gui_LayoutFcn',  [] , ...
     'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -44,8 +62,10 @@ end
 % End initialization code - DO NOT EDIT
 
 
+% Auxiliary functions -----------------------------------------------------
+
 % --- Executes just before InputSet is made visible.
-function input_set_OpeningFcn(hObject, eventdata, handles, varargin)
+function aux_input_set_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -62,6 +82,7 @@ type = varargin{2};
 if ~isempty(type)
     % Update handles structure
     if type == 'zonotope'
+        % turn off interval, turn on zonotope
         handles.ZonotopeCenter = handles.previous_handles.ZonotopeCenter;
         set(handles.txtZonotopeCenter, 'String', handles.ZonotopeCenter)
         handles.ZonotopeGM = handles.previous_handles.ZonotopeGM;
@@ -77,6 +98,7 @@ if ~isempty(type)
         set(handles.popZonotopeCenter, 'Enable', 'on')
         set(handles.popZonotopeGM, 'Enable', 'on')
     elseif type == 'interval'
+        % turn off zonotope, turn on interval
         handles.IntervalCenter = handles.previous_handles.IntervalCenter;
         set(handles.txtIntervalCenter, 'String', handles.IntervalCenter)
         handles.IntervalWidth = handles.previous_handles.IntervalWidth;
@@ -94,14 +116,15 @@ if ~isempty(type)
     end
 end
 
+% set up workspace variables
 WS_vars = evalin('base', 'who');
 WS_vars = [{''}; WS_vars];
 
 if isempty(WS_vars)
-    set(handles.popIntervalCenter, 'String', 'No Worskpace Variables')
-    set(handles.popIntervalWidth, 'String', 'No Worskpace Variables')
-    set(handles.popZonotopeCenter, 'String', 'No Worskpace Variables')
-    set(handles.popZonotopeGM, 'String', 'No Worskpace Variables')
+    set(handles.popIntervalCenter, 'String', 'No Workspace Variables')
+    set(handles.popIntervalWidth, 'String', 'No Workspace Variables')
+    set(handles.popZonotopeCenter, 'String', 'No Workspace Variables')
+    set(handles.popZonotopeGM, 'String', 'No Workspace Variables')
 else
     set(handles.popIntervalCenter, 'String', WS_vars)
     set(handles.popIntervalCenter, 'Value', 1)
@@ -119,7 +142,7 @@ uiwait
 % uiwait(handles.InputSet);
 
 % --- Outputs from this function are returned to the command line.
-function varargout = input_set_OutputFcn(hObject, eventdata, handles)
+function varargout = aux_input_set_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -131,9 +154,8 @@ varargout{2} = handles.current_handles;
 
 delete(hObject);
 
-
 % --- Executes on button press in rbInterval.
-function rbInterval_Callback(hObject, eventdata, handles)
+function aux_rbInterval_Callback(hObject, eventdata, handles)
 % hObject    handle to rbInterval (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -153,7 +175,7 @@ set(handles.popZonotopeCenter, 'Enable', 'off')
 set(handles.popZonotopeGM, 'Enable', 'off')
 
 
-function txtIntervalCenter_Callback(hObject, eventdata, handles)
+function aux_txtIntervalCenter_Callback(hObject, eventdata, handles)
 % hObject    handle to txtIntervalCenter (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -170,7 +192,7 @@ set(handles.popIntervalCenter, 'Value', 1)
 
 
 % --- Executes during object creation, after setting all properties.
-function txtIntervalCenter_CreateFcn(hObject, eventdata, handles)
+function aux_txtIntervalCenter_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to txtIntervalCenter (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -182,7 +204,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-function txtIntervalWidth_Callback(hObject, eventdata, handles)
+function aux_txtIntervalWidth_Callback(hObject, eventdata, handles)
 % hObject    handle to txtIntervalWidth (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -198,7 +220,7 @@ set(handles.popIntervalWidth, 'Value', 1)
 
 
 % --- Executes during object creation, after setting all properties.
-function txtIntervalWidth_CreateFcn(hObject, eventdata, handles)
+function aux_txtIntervalWidth_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to txtIntervalWidth (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -211,7 +233,7 @@ end
 
 
 % --- Executes on button press in rbZonotope.
-function rbZonotope_Callback(hObject, eventdata, handles)
+function aux_rbZonotope_Callback(hObject, eventdata, handles)
 % hObject    handle to rbZonotope (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -232,7 +254,7 @@ set(handles.popZonotopeCenter, 'Enable', 'on')
 set(handles.popZonotopeGM, 'Enable', 'on')
 
 
-function txtZonotopeCenter_Callback(hObject, eventdata, handles)
+function aux_txtZonotopeCenter_Callback(hObject, eventdata, handles)
 % hObject    handle to txtZonotopeCenter (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -249,7 +271,7 @@ set(handles.popZonotopeCenter, 'Value', 1)
 
 
 % --- Executes during object creation, after setting all properties.
-function txtZonotopeCenter_CreateFcn(hObject, eventdata, handles)
+function aux_txtZonotopeCenter_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to txtZonotopeCenter (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -261,7 +283,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-function txtZonotopeGM_Callback(hObject, eventdata, handles)
+function aux_txtZonotopeGM_Callback(hObject, eventdata, handles)
 % hObject    handle to txtZonotopeGM (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -278,7 +300,7 @@ set(handles.popZonotopeGM, 'Value', 1)
 
 
 % --- Executes during object creation, after setting all properties.
-function txtZonotopeGM_CreateFcn(hObject, eventdata, handles)
+function aux_txtZonotopeGM_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to txtZonotopeGM (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -291,7 +313,7 @@ end
 
 
 % --- Executes on button press in pbCancel.
-function pbCancel_Callback(hObject, eventdata, handles)
+function aux_pbCancel_Callback(hObject, eventdata, handles)
 % hObject    handle to pbCancel (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -301,7 +323,7 @@ uiresume
 
 
 % --- Executes on button press in pbOk.
-function pbOk_Callback(hObject, eventdata, handles)
+function aux_pbOk_Callback(hObject, eventdata, handles)
 % hObject    handle to pbOk (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -359,7 +381,7 @@ end
 
 
 % --- Executes on selection change in popIntervalCenter.
-function popIntervalCenter_Callback(hObject, eventdata, handles)
+function aux_popIntervalCenter_Callback(hObject, eventdata, handles)
 % hObject    handle to popIntervalCenter (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -377,9 +399,8 @@ handles.current_handles.IntervalCenter = handles.IntervalCenter;
 guidata(hObject, handles);
 
 
-
 % --- Executes during object creation, after setting all properties.
-function popIntervalCenter_CreateFcn(hObject, eventdata, handles)
+function aux_popIntervalCenter_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to popIntervalCenter (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -392,7 +413,7 @@ end
 
 
 % --- Executes on selection change in popIntervalWidth.
-function popIntervalWidth_Callback(hObject, eventdata, handles)
+function aux_popIntervalWidth_Callback(hObject, eventdata, handles)
 % hObject    handle to popIntervalWidth (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -411,7 +432,7 @@ guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function popIntervalWidth_CreateFcn(hObject, eventdata, handles)
+function aux_popIntervalWidth_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to popIntervalWidth (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -424,7 +445,7 @@ end
 
 
 % --- Executes on selection change in popZonotopeCenter.
-function popZonotopeCenter_Callback(hObject, eventdata, handles)
+function aux_popZonotopeCenter_Callback(hObject, eventdata, handles)
 % hObject    handle to popZonotopeCenter (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -443,7 +464,7 @@ guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function popZonotopeCenter_CreateFcn(hObject, eventdata, handles)
+function aux_popZonotopeCenter_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to popZonotopeCenter (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -456,7 +477,7 @@ end
 
 
 % --- Executes on selection change in popZonotopeGM.
-function popZonotopeGM_Callback(hObject, eventdata, handles)
+function aux_popZonotopeGM_Callback(hObject, eventdata, handles)
 % hObject    handle to popZonotopeGM (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -474,7 +495,7 @@ guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
-function popZonotopeGM_CreateFcn(hObject, eventdata, handles)
+function aux_popZonotopeGM_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to popZonotopeGM (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -487,7 +508,7 @@ end
 
 
 % --- Executes on button press in pb_zonotope.
-function pb_zonotope_Callback(hObject, eventdata, handles)
+function aux_pb_zonotope_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_zonotope (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -497,7 +518,7 @@ infoBox({[path_im, im]});
 uiwait;
 
 % --- Executes on button press in pb_interval.
-function pb_interval_Callback(hObject, eventdata, handles)
+function aux_pb_interval_Callback(hObject, eventdata, handles)
 % hObject    handle to pb_interval (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -505,3 +526,5 @@ path_im= [CORAROOT, filesep, 'app', filesep, 'images', filesep];
 im = 'Info_Interval.png';
 infoBox({[path_im, im]});
 uiwait;
+
+% ------------------------------ END OF CODE ------------------------------

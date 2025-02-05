@@ -131,6 +131,7 @@ switch type
         end
 
     case 'probZonotope'
+        % cannot be true
         res = false;
 
     case 'zonoBundle'

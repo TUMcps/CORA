@@ -27,7 +27,7 @@ classdef verifyTime
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: linearSys/private/reach_adaptive
+% See also: linearSys/private/priv_reach_adaptive
 
 % Authors:       Mark Wetzlinger
 % Written:       10-November-2024
@@ -380,7 +380,6 @@ methods
                     end
                 end
         
-        
                 % simple cases: no overlap (maximum: point-wise)
                 if t(2) < bnds(1,1)
                     bnds = [t; bnds];
@@ -391,13 +390,16 @@ methods
                 elseif t(1) > bnds(end,2)
                     bnds = [bnds; t];
                 else
+                    % find 
                     idx = find(t(1) >= bnds(1:end-1,2) & t(2) <= bnds(2:end,1));
                     if ~isempty(idx)
+                        % merge bounds
                         bnds = [bnds(1:idx,:); t; bnds(idx+1:end,:)];
-                        idxMerge = 0;
+                        idxMerge = 0; % do-while
                         while ~isempty(idxMerge)
                             idxMerge = find(bnds(2:end,1) == bnds(1:end-1,2));
                             if ~isempty(idxMerge)
+                                % update bounds
                                 bnds = [bnds(1:idx-1,:);
                                              [bnds(idx,1), bnds(idx+1,2)];
                                              bnds(idx+2:end,:)];

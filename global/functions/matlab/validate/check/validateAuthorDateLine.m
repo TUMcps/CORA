@@ -15,7 +15,7 @@ function res = validateAuthorDateLine(line)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: test_docstring
+% See also: test_codingConventions
 
 % Authors:       Tobias Ladner
 % Written:       18-August-2023
@@ -29,7 +29,7 @@ if length(line) < 17 || line(17) ~= ' '
     return
 end
 
-regex = ' (([0-9][0-9]-|)(January|February|March|April|May|June|July|August|September|October|November|December)-20[0-9][0-9]( \([A-Z][A-Z](, .*|)\)| \([a-z].*\)|)|---) *$';
+regex = ' (([0-9][0-9]-|)(January|February|March|April|May|June|July|August|September|October|November|December)-20[0-9][0-9]( \([A-Z][A-Z](, .*|)\)| \([a-z].*\)|)|---|\?\?\?) *$';
 
 startIndex = regexp(line,regex,'once');
 res = ~isempty(startIndex);

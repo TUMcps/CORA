@@ -32,6 +32,7 @@ lines = strsplit(text,'\n');
 text = strtrim(lines{1}); actFun = []; cnt = 1; finished = false;
 
 while ~finished
+    % read next activation
     ind = strfind(text,[num2str(cnt),':']);
     cnt = cnt + 1;
     text = text(ind(1)+2:end);
@@ -43,6 +44,7 @@ while ~finished
         temp = strtrim(text(1:end-1));
         finished = true;
     end
+    % add to previous activations
     if strcmp(temp,'Sigmoid')
         actFun = [actFun; {'sigmoid'}]; 
     elseif strcmp(temp,'Tanh')
@@ -50,6 +52,7 @@ while ~finished
     elseif strcmp(temp,'ReLU')
         actFun = [actFun; {'ReLU'}];
     elseif strcmp(temp,'Linear')
+        % no activation -> add identity
         actFun = [actFun; {'identity'}];
     else
         throw(CORAerror('CORA:converterIssue'));

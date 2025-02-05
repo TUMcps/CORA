@@ -56,6 +56,7 @@ if ~isfield(params,'u')
 	params.u = zeros(obj.nrOfInputs,1); 
 end
 
+% time
 if ~isfield(params,'tStart')
 	params.tStart = 0;
 end

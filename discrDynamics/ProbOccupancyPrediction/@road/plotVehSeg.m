@@ -2,7 +2,7 @@ function plotVehSeg(obj,iSeg,iDevSeg,Zvehicle)
 % plotVehSeg - plots the region a vehicle possibly occupies when given the
 % segment index, the deviation index and the angle of the vehicle.
 %
-% Syntax:  
+% Syntax:
 %    plotVehSeg(obj,iSeg,iDevSeg,Zvehicle)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function plotVehSeg(obj,iSeg,iDevSeg,Zvehicle)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      28-January-2009
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       28-January-2009
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %get center and angle of the vehicle
@@ -45,4 +45,4 @@ Zmapped=Rot*Zvehicle+c;
 plot(Zmapped);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

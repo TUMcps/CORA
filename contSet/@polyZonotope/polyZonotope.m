@@ -194,26 +194,31 @@ function aux_checkInputArgs(c,G,GI,E,id,n_in)
             {id, 'att', 'numeric', 'integer'};
         })
 
-        % check dimensions
+        % check dimensions ---
+        % c
         if ~isempty(c) && size(c, 2) ~= 1
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 'Center should be a column vector.'));
         end
-        if ~isempty(id) && size(id, 2) ~= 1
-            throw(CORAerror('CORA:wrongInputInConstructor',...
-                'Identifier vector should be a column vector.'));
-        end
+        % G
         if ~isempty(G) && size(G,1) ~= size(c,1)
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 'Dimension mismatch between center and dependent generator matrix.'));
         end
+        % GI
         if ~isempty(GI) && size(GI,1) ~= size(c,1)
              throw(CORAerror('CORA:wrongInputInConstructor',...
                  'Dimension mismatch between center and independent generator matrix.'));
         end
+        % E
         if ~isempty(E) && size(E,2) ~= size(G,2)
              throw(CORAerror('CORA:wrongInputInConstructor',...
                  'Dimension mismatch between dependent generator matrix and exponent matrix.'));
+        end
+        % id
+        if ~isempty(id) && size(id, 2) ~= 1
+            throw(CORAerror('CORA:wrongInputInConstructor',...
+                'Identifier vector should be a column vector.'));
         end
         if ~isempty(E) && ~isempty(id) && size(id, 1) ~= size(E,1)
              throw(CORAerror('CORA:wrongInputInConstructor',...

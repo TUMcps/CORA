@@ -1,5 +1,28 @@
 function [P] = getPolytopeForSegment(segments, segNumber, devNumber, nrOfDevSegments, widthOfLane)
-%replaces segPolytope.m without using the CORA road class
+% getPolytopeForSegment - ???
+% replaces segPolytope.m without using the CORA road class
+%
+% Syntax:
+%    [P] = getPolytopeForSegment(segments, segNumber, devNumber, nrOfDevSegments, widthOfLane)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       ???
+% Written:       ???
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain angles and positions at the beginning and end of the path segment
 %beginning of path segment:
@@ -36,3 +59,5 @@ V = [Plb, Prb, Plt, Prt];
 %Generate polytope
 P = polytope(V.');
 end
+
+% ------------------------------ END OF CODE ------------------------------

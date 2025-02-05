@@ -28,27 +28,32 @@ tt = kleene.True;
 uu = kleene.Unknown;
 ff = kleene.False;
 
+% build cases
 interval = stlInterval(1,2);
 kleeneVals = [tt,uu,ff];
 test_cases = {};
+% iterate
 for i = 1:length(kleeneVals)
     for j = 1:length(kleeneVals)
         test_cases{end+1}.lhs = kleeneSignal.indicator(interval,kleeneVals(i),uu);
         test_cases{end}.rhs = kleeneSignal.indicator(interval,kleeneVals(j),uu);
         switch kleeneVals(i) | kleeneVals(j)
             case kleene.True
+                % case 1
                 test_cases{end}.expected = {
                     interval;
                     [interval.toLeft(),interval.toRight()];
                     repmat(stlInterval(),0);
                 };
             case kleene.Unknown
+                % case 2
                 test_cases{end}.expected = {
                     repmat(stlInterval(),0);
                     stlInterval(0,inf);
                     repmat(stlInterval(),0);
                 };
             case kleene.False
+                % case 3
                 test_cases{end}.expected = {
                     repmat(stlInterval(),0);
                     [interval.toLeft(),interval.toRight()];
@@ -58,6 +63,7 @@ for i = 1:length(kleeneVals)
     end
 end
 
+% case 4
 test_cases{end+1}.lhs = kleeneSignal.indicator(stlInterval(2,4),tt,ff);
 test_cases{end}.rhs = kleeneSignal.indicator(stlInterval(3,5,false,true),uu,ff);
 trueInt = stlInterval(2,4);
@@ -68,6 +74,7 @@ test_cases{end}.expected = {
     [trueInt.toLeft(),unkInt.toRight()];
 };
 
+% run cases
 for i = 1:length(test_cases)
     lhs = test_cases{i}.lhs;
     rhs = test_cases{i}.rhs;

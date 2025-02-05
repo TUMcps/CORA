@@ -1,4 +1,27 @@
 classdef Car < matlab.mixin.SetGet
+% Car - short description of the function
+%
+% Syntax:
+%    obj = Car(segments, posProb, devProb, widthOfLane, segmentLength)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       ???
+% Written:       ???
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
     
     properties
         segments
@@ -22,3 +45,4 @@ classdef Car < matlab.mixin.SetGet
     
 end
 
+% ------------------------------ END OF CODE ------------------------------

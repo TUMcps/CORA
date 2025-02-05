@@ -59,17 +59,7 @@ methods
         
     end
     
-    % parsing methods
-    function res = sin(obj)
-        fHan = @(x,y) aux_sin_(x,y);
-        res = syntaxTree(sin(obj.value),[],'sin',fHan,{obj});
-    end
-    
-    function res = cos(obj)
-        fHan = @(x,y) aux_cos_(x,y);
-        res = syntaxTree(cos(obj.value),[],'cos',fHan,{obj});
-    end
-    
+    % parsing methods    
     function res = power(obj,exp)
         if ~all(size(obj) == [1,1])
             res = obj;
@@ -94,11 +84,7 @@ methods
         res = syntaxTree(obj.value^exp,[],'power',fHan,{obj});
     end
     
-    function res = tan(obj)
-        fHan = @(x,y) aux_tan_(x,y);
-        res = syntaxTree(tan(obj.value),[],'tan',fHan,{obj});
-    end
-    
+    % exp/log/sqrt
     function res = exp(obj)
         fHan = @(x,y) aux_exp_(x,y);
         res = syntaxTree(exp(obj.value),[],'exp',fHan,{obj});
@@ -113,7 +99,24 @@ methods
         fHan = @(x,y) aux_sqrt_(x,y);
         res = syntaxTree(sqrt(obj.value),[],'sqrt',fHan,{obj});
     end
+
+    % geometric functions
+    function res = sin(obj)
+        fHan = @(x,y) aux_sin_(x,y);
+        res = syntaxTree(sin(obj.value),[],'sin',fHan,{obj});
+    end
     
+    function res = cos(obj)
+        fHan = @(x,y) aux_cos_(x,y);
+        res = syntaxTree(cos(obj.value),[],'cos',fHan,{obj});
+    end
+    
+    function res = tan(obj)
+        fHan = @(x,y) aux_tan_(x,y);
+        res = syntaxTree(tan(obj.value),[],'tan',fHan,{obj});
+    end
+    
+    % a---
     function res = asin(obj)
         fHan = @(x,y) aaux_sin_(x,y);
         res = syntaxTree(asin(obj.value),[],'asin',fHan,{obj});
@@ -129,6 +132,7 @@ methods
         res = syntaxTree(atan(obj.value),[],'atan',fHan,{obj});
     end
     
+    % ---h
     function res = sinh(obj)
         fHan = @(x,y) aux_sinh_(x,y);
         res = syntaxTree(sinh(obj.value),[],'sinh',fHan,{obj});
@@ -144,6 +148,7 @@ methods
         res = syntaxTree(tanh(obj.value),[],'tanh',fHan,{obj});
     end
     
+    % a---h
     function res = asinh(obj)
         fHan = @(x,y) aaux_sinh_(x,y);
         res = syntaxTree(asinh(obj.value),[],'asinh',fHan,{obj});
@@ -159,8 +164,11 @@ methods
         res = syntaxTree(atanh(obj.value),[],'atanh',fHan,{obj});
     end
     
+    % arithmetic ---
+
     function res = plus(obj1,obj2)
         if isscalar(obj1) && isscalar(obj2)
+            % both scalar
             fHan = @(x,y,z) aux_plus_(x,y,z);
             if isa(obj1,'syntaxTree')
                if isa(obj2,'syntaxTree')
@@ -173,7 +181,7 @@ methods
                    res = syntaxTree(obj1 + obj2.value,[],'+',fHan,{obj1,obj2}); 
                 end
             end
-        else
+        else % either is non-scalar
             if isscalar(obj1)
                 obj1 = repmat(obj1,size(obj2));
             elseif isscalar(obj2)
@@ -192,6 +200,7 @@ methods
     
     function res = minus(obj1,obj2)
         fHan = @(x,y,z) aux_minus_(x,y,z);
+        % build syntax tree
         if isa(obj1,'syntaxTree')
            if isa(obj2,'syntaxTree')
               res = syntaxTree(obj1.value - obj2.value,[],'-',fHan,{obj1,obj2});
@@ -205,13 +214,20 @@ methods
         end
     end
     
+    % unary
     function res = uminus(obj)
-        fHan = @(x,y,z) uaux_minus_(x,y);
+        fHan = @(x,y,z) aux_uminus_(x,y);
         res = syntaxTree(-obj.value,[],'uminus',fHan,{obj});
     end
+
+    function res = uplus(obj)
+        res = obj; % res = +obj;
+    end
     
+    % times/mtimes/prod
     function res = times(obj1,obj2)
         if isscalar(obj1) && isscalar(obj2)
+            % both are scalar
             fHan = @(x,y,z) aux_times_(x,y,z);
             if isa(obj1,'syntaxTree')
                if isa(obj2,'syntaxTree')
@@ -225,6 +241,7 @@ methods
                 end
             end
         elseif ~isscalar(obj1) && ~isscalar(obj2)
+            % neither is scalar
             if ~all(size(obj1) == size(obj2))
                 throw(CORAerror('CORA:dimensionMismatch',obj1,obj2));
             end
@@ -234,26 +251,28 @@ methods
                 end
             end
         else
+            % either is scalar
             res = obj1 * obj2;
         end
     end
     
     function res = mtimes(obj1,obj2)
-        if isscalar(obj1) && isscalar(obj2)
+        if isscalar(obj1) && isscalar(obj2) % both are scalar
             res = obj1 .* obj2;
-        elseif isscalar(obj1)
+        elseif isscalar(obj1) % obj1 is scalar
             for i = 1:size(obj2,1)
                for j = 1:size(obj2,2) 
                    res(i,j) = obj1 .* obj2(i,j);
                end
             end
-        elseif isscalar(obj2)
+        elseif isscalar(obj2) % obj2 is scalar
             for i = 1:size(obj1,1)
                for j = 1:size(obj1,2) 
                    res(i,j) = obj1(i,j) .* obj2;
                end
             end
         else
+             % neither are scalar
             if size(obj1,2) ~= size(obj2,1) 
                 throw(CORAerror('CORA:dimensionMismatch',obj1,obj2));
             end
@@ -266,6 +285,7 @@ methods
     end
     
     function res = prod(obj,varargin)
+        % parse input
         narginchk(1,2);
         n = 1;
         if nargin <= 1
@@ -275,6 +295,8 @@ methods
         else
             n = varargin{1};
         end
+
+        % compute
         S.type = '()';
         if n == 1
             S.subs = {1,':'};
@@ -288,6 +310,7 @@ methods
         end
     end
     
+    % sum
     function res = sum(obj,varargin)
         narginchk(1,2);
         n = 1;
@@ -536,6 +559,7 @@ function res = aux_power_(int,exp,intPrev)
 end
 
 function [res1,res2] = aux_plus_(int,intPrev1,intPrev2)
+    % plus
 
     if isa(intPrev1,'interval')
         if isa(intPrev2,'interval')
@@ -552,7 +576,7 @@ function [res1,res2] = aux_plus_(int,intPrev1,intPrev2)
 end
 
 function [res1,res2] = aux_minus_(int,intPrev1,intPrev2)
-
+    % minus
     if isa(intPrev1,'interval')
         if isa(intPrev2,'interval')
             res1 = intPrev1 & (int + intPrev2);
@@ -567,12 +591,13 @@ function [res1,res2] = aux_minus_(int,intPrev1,intPrev2)
     end
 end
 
-function res = uaux_minus_(int,intPrev)
+function res = aux_uminus_(int,intPrev)
+    % uminus
     res = -int & intPrev;
 end
 
 function [res1,res2] = aux_times_(int,intPrev1,intPrev2)
-
+    % times
     if isa(intPrev1,'interval')
         if isa(intPrev2,'interval')
             if ~contains(intPrev2,0)
@@ -585,11 +610,11 @@ function [res1,res2] = aux_times_(int,intPrev1,intPrev2)
             else
                 res2 = intPrev2; 
             end
-        else
+        else % neither is an interval
             res1 = intPrev1 & (int/intPrev2);
             res2 = [];
         end
-    else
+    else % intPrev1 is not an interval
         res1 = [];
         if intPrev1 == 0
             res2 = intPrev2;

@@ -121,6 +121,7 @@ methods
                         'Desired multiplication not supported.'));
                end
 
+               % IK2 is numeric
            elseif isnumeric(IK2)
                if IK2 < 0
                   IK_times = (-IK1)*(-IK2); 
@@ -133,7 +134,7 @@ methods
                 throw(CORAerror('CORA:notSupported',...
                     'Desired multiplication not supported.'));
            end
-        else
+        else % IK1 is not intKaucher
             if isnumeric(IK1)
                IK_times = IK2 * IK1; 
             else

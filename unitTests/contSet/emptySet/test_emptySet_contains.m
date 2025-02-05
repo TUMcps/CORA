@@ -16,9 +16,9 @@ function res = test_emptySet_contains
 %
 % See also: -
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Adrian Kulmburg
 % Written:       05-April-2023
-% Last update:   ---
+% Last update:   20-January-2025 (AK, added general containment checks)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -38,6 +38,22 @@ assert(~contains(O,p));
 % zonotope
 Z = zonotope(zeros(n,1),eye(n));
 assert(~contains(O,Z));
+
+S = emptySet(2);
+Sdeg = S;
+Sempty = S;
+
+implementedSets = {'capsule','conPolyZono','conZonotope','interval','polytope',...
+                    'zonoBundle','zonotope','ellipsoid','taylm',...
+                    'polyZonotope','conPolyZono','spectraShadow','levelSet'};
+
+setsNonExact = {};
+
+additionalAlgorithms = {};
+
+additionalAlgorithms_specificSets = {};
+
+checkAllContainments(S, Sdeg, Sempty, implementedSets, setsNonExact, additionalAlgorithms, additionalAlgorithms_specificSets);
 
 % combine results
 res = true;

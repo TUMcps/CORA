@@ -3,7 +3,7 @@ function dx = vmodel_A_bicycle_linear_controlled(x,u)
 %                                      with linear feadback control for 
 %                                      trajectory tracking
 %
-% Syntax:  
+% Syntax:
 %    dx = vmodel_A_bicycle_linear_controlled(x,u)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function dx = vmodel_A_bicycle_linear_controlled(x,u)
 %
 % See also: DOTcontrol_SRX_velEq, DOTBicycleDynamics_SRX_velEq
 
-% Author:       Matthias Althoff
-% Written:      01-March-2012
-% Last update:  15-August-2016
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-March-2012
+% Last update:   15-August-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %Bicycle Model with 
 % - normal force equilibrium for pitching-moments
@@ -113,4 +113,4 @@ domega = (l_F * Fyf - l_R * Fyr)/J;
     dx(7,1) = v(1);
     dx(8,1) = v(2);
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

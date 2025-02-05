@@ -1,7 +1,7 @@
 function probModel = carReach(fileName,pathName,modelInitialization)
 % carReach - generates Markov model based on simulation
 %
-% Syntax:  
+% Syntax:
 %    carReach(FileName,PathName)
 %
 % Inputs:
@@ -11,19 +11,16 @@ function probModel = carReach(fileName,pathName,modelInitialization)
 %
 % Outputs:
 %    probModel - probabilistic model of a vehicle following a road
-%
-% Example: 
-%
-% 
-% Author:       Matthias Althoff
-% Written:      31-July-2016
-% Last update:  31-July-2017
-% Last revision:---
 
+% Authors:       Matthias Althoff
+% Written:       31-July-2016
+% Last update:   31-July-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set path
+
 global filePath
 filePath = [CORAROOT filesep 'contDynamics' filesep 'stateSpaceModels'];
 
@@ -150,5 +147,4 @@ probModel.inputField = inputField;
 probModel.fArray = fArray;
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

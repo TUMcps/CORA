@@ -31,7 +31,7 @@ function res = isCanonicalForm(linsys)
 % for readability reasons, perform the checks in batches
 
 % check dimensions
-if linsys.nrOfInputs ~= linsys.nrOfStates || linsys.nrOfNoises ~= linsys.nrOfOutputs
+if linsys.nrOfInputs ~= linsys.nrOfDims || linsys.nrOfNoises ~= linsys.nrOfOutputs
     res = false;
     return
 end
@@ -43,7 +43,7 @@ if any(linsys.c) || any(linsys.k) || any(linsys.E,'all') || any(linsys.D,'all')
 end
 
 % ensure that input/noise matrix are identity
-if ~all(linsys.B == eye(linsys.nrOfStates),'all') || ...
+if ~all(linsys.B == eye(linsys.nrOfDims),'all') || ...
         ~all(linsys.C == eye(linsys.nrOfOutputs),'all')
     res = false;
     return

@@ -1,17 +1,34 @@
-function res = contains_(pZ,S,type,varargin)
+function [res,cert,scaling] = contains_(pZ,S,method,tol,maxEval,certToggle,scalingToggle,varargin)
 % contains_ - determines if a polynomial zonotope contains a set or a point
 %
 % Syntax:
-%    res = contains_(pZ,S)
-%    res = contains_(pZ,S,type)
+%    [res,cert,scaling] = contains_(pZ,S,method,tol,maxEval,certToggle,scalingToggle)
 %
 % Inputs:
 %    pZ - polyZonotope object
 %    S - contSet object or single point
-%    type - type of containment check ('exact' or 'approx')
+%    method - method used for the containment check.
+%       Currently, the only available options are 'exact' and 'approx'.
+%    tol - tolerance for the containment check; the higher the
+%       tolerance, the more likely it is that points near the boundary of
+%       pZ will be detected as lying in pZ, which can be useful to
+%       counteract errors originating from floating point errors.
+%    maxEval - Currently has no effect
+%    certToggle - if set to 'true', cert will be computed (see below),
+%       otherwise cert will be set to NaN.
+%    scalingToggle - if set to 'true', scaling will be computed (see
+%       below), otherwise scaling will be set to inf.
 %
 % Outputs:
 %    res - true/false
+%    cert - returns true iff the result of res could be
+%           verified. For example, if res=false and cert=true, S is
+%           guaranteed to not be contained in pZ, whereas if res=false and
+%           cert=false, nothing can be deduced (S could still be
+%           contained in pZ).
+%           If res=true, then cert=true.
+%    scaling - returns the smallest number 'scaling', such that
+%           scaling*(pZ - pZ.center) + pZ.center contains S.
 %
 % Example: 
 %    pZ = polyZonotope([0;0],[2 0 1;0 2 1],[0.5;0],[1 0 3;0 1 1]);
@@ -45,19 +62,43 @@ function res = contains_(pZ,S,type,varargin)
 %
 % See also: contSet/contains, interval/contains, conZonotope/contains
 
-% Authors:       Niklas Kochdumper
+% Authors:       Niklas Kochdumper, Mark Wetzlinger, Adrian Kulmburg
 % Written:       13-January-2020 
 % Last update:   25-November-2022 (MW, rename 'contains')
+%                16-January-2025 (AK, added scaling and cert)
 % Last revision: 27-March-2023 (MW, rename contains_)
 
 % ------------------------------ BEGIN CODE -------------------------------
+
+    if representsa(S, 'emptySet', tol)
+        % Empty set is always contained
+        res = true;
+        cert = true;
+        scaling = 0;
+        return
+    elseif representsa(S, 'fullspace', tol)
+        % Fullspace is never contained, since a cPZ is compact
+        res = false;
+        cert = true;
+        scaling = inf;
+        return
+    end
+    
+    % The code is not yet ready to deal with scaling or cert
+    cert = false;
+    scaling = Inf;
+    if scalingToggle
+        throw(CORAerror('CORA:notSupported',...
+            "The computation of the scaling factor or cert " + ...
+            "for constrained polynomial zonotopes is not yet implemented."));
+    end
 
     % init result
     res = false;
 
     % check user inputs 
-    if strcmp(type,'exact')
-        res = aux_exactContainment(pZ,S,type);
+    if strcmp(method,'exact')
+        [res, cert, scaling] = aux_exactContainment(pZ,S,method,tol);
         return
     end
     
@@ -103,12 +144,18 @@ function res = contains_(pZ,S,type,varargin)
         % try to prove that set containment does not hold using 
         % Proposition 3.1.34 in [2]
         if aux_disproveContainment(pZ,S)
+            cert = true;
             return; 
         end
         
-        % try to prove that set containment holds using 
-        % Proposition 3.1.36 in [2]
-        res = aux_proveContainment(S,fHan,jacHan,X);
+        % The next method works well only if S is non-degenerate
+        if isFullDim(S)
+            % try to prove that set containment holds using 
+            % Proposition 3.1.36 in [2]
+            res = aux_proveContainment(S,fHan,jacHan,X);
+            cert = res;
+            return
+        end
 
     else
         throw(CORAerror('CORA:noops',pZ,S));
@@ -118,19 +165,25 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function res = aux_exactContainment(pZ,S,type)
+function [res, cert, scaling] = aux_exactContainment(pZ,S,method,tol)
 % exact containment is supported in special cases
 
 % only center
 if ~any(any(pZ.G)) && ~any(any(pZ.GI))
-    res = all(withinTol(pZ.c,S));
+    res = all(withinTol(pZ.c,S,tol));
+    cert = true;
+    if res
+        scaling = 0;
+    else
+        scaling = inf;
+    end
     return
 end
 
 % polyZonotope is a zonotope
 [isZonotope, Z] = representsa_(pZ,'zonotope',1e-12);
 if isZonotope
-    res = contains_(Z,S,type,100*eps,0);
+    [res, cert, scaling] = contains_(Z,S,method,tol,0,false,false);
     return
 end
 
@@ -158,7 +211,13 @@ function res = aux_disproveContainment(pZ1,pZ2)
 
     % pZ2 is proven to be not contained in pZ1 -> res = true
     ind = size(pZ1.E,1) + [(1:size(pZ2.E,1))'; ...
-                     size(pZ2.E,1) + size(pZ1.GI,2) + (1:size(pZ2.GI,2))']; 
+                     size(pZ2.E,1) + size(pZ1.GI,2) + (1:size(pZ2.GI,2))'];
+
+    if representsa_(I, 'emptySet', eps)
+        res = true;
+        return
+    end
+
     temp = I(ind);
     res = false;
     
@@ -317,7 +376,7 @@ function res = aux_containsInterval(f,df,X,X_,Y_,varargin)
     b = C*Y_ - C*f(x_); b = b(1:n);
     d = [inf,inf];
     
-    while d(2) <= mu*d(1) && contains_(U1,U1_,'exact',0)
+    while d(2) <= mu*d(1) && contains_(U1,U1_,'exact',0,0,false,false)
        
         try
             t = aux_InvDiag(J1) * (b - aux_OffDiag(J1)*(U1_-u1_)) - J2*(U2_ - u2_);
@@ -325,7 +384,7 @@ function res = aux_containsInterval(f,df,X,X_,Y_,varargin)
             break;
         end
         
-        if contains_(U1_,u1_ + t,'exact',0)
+        if contains_(U1_,u1_ + t,'exact',0,0,false,false)
             res = true;
             return; 
         end

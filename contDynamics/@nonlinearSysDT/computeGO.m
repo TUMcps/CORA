@@ -49,7 +49,7 @@ function p_GO = computeGO(nlnsysDT,x0,u_ref,n_k)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-x_ref = zeros(nlnsysDT.nrOfStates, n_k+1);
+x_ref = zeros(nlnsysDT.nrOfDims, n_k+1);
 y_ref = zeros(nlnsysDT.nrOfOutputs, n_k);
 if isa(x0, 'contSet')
     x0 = center(x0);
@@ -85,19 +85,19 @@ for k = 1 : n_k
         end
         AA_prod = A_lin{k} * A_prod_j;
         p_GO.B{k,j} = AA_prod * B_lin{j};
-        p_GO.F{k,j} = AA_prod * [eye(nlnsysDT.nrOfStates) zeros(nlnsysDT.nrOfStates, nlnsysDT.nrOfOutputs)];
+        p_GO.F{k,j} = AA_prod * [eye(nlnsysDT.nrOfDims) zeros(nlnsysDT.nrOfDims, nlnsysDT.nrOfOutputs)];
 
         CA_prod = C_lin * A_prod_j;
         p_GO.D{k,j} = CA_prod * B_lin{j};
-        p_GO.E{k,j} = CA_prod * [eye(nlnsysDT.nrOfStates) zeros(nlnsysDT.nrOfStates, nlnsysDT.nrOfOutputs)];
+        p_GO.E{k,j} = CA_prod * [eye(nlnsysDT.nrOfDims) zeros(nlnsysDT.nrOfDims, nlnsysDT.nrOfOutputs)];
     end
     p_GO.A{k} = A_lin{k} * A_prod;
     p_GO.B{k,k} = B_lin{k}; 
-    p_GO.F{k,k} = [eye(nlnsysDT.nrOfStates) zeros(nlnsysDT.nrOfStates, nlnsysDT.nrOfOutputs)]; % L = [L_x; L_y]
+    p_GO.F{k,k} = [eye(nlnsysDT.nrOfDims) zeros(nlnsysDT.nrOfDims, nlnsysDT.nrOfOutputs)]; % L = [L_x; L_y]
     
     p_GO.C{k} = C_lin * A_prod;
     p_GO.D{k,k} = D_lin;
-    p_GO.E{k,k} = [zeros(nlnsysDT.nrOfOutputs, nlnsysDT.nrOfStates) eye(nlnsysDT.nrOfOutputs)]; % L = [L_x; L_y]
+    p_GO.E{k,k} = [zeros(nlnsysDT.nrOfOutputs, nlnsysDT.nrOfDims) eye(nlnsysDT.nrOfOutputs)]; % L = [L_x; L_y]
 
 end
 p_GO.x = x_ref;

@@ -1,7 +1,30 @@
 function plot(Obj)
+% plot - short description of the function
 % Purpose:  Play movie of space probabilities 
 % Pre:      Simulation object
 % Post:     ---
+%
+% Syntax:
+%    plot(Obj)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       ???
+% Written:       ???
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get field
 field=get(Obj.markovchain,'field');
@@ -28,3 +51,5 @@ end
 
 movie(M,1,5);
 movie(M,1,5);
+
+% ------------------------------ END OF CODE ------------------------------

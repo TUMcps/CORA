@@ -227,7 +227,7 @@ function [eq,vars,compOp,solved,funHan,der,dim,solvable] = aux_computeProperties
                             
                             solvable = 1;
 
-                        else
+                        else % not solvable
                             solved{i}.solvable = 0;
                             solved{i}.eq = [];
                             solved{i}.funHan = [];
@@ -237,7 +237,7 @@ function [eq,vars,compOp,solved,funHan,der,dim,solvable] = aux_computeProperties
                         solved{i}.eq = [];
                     end
 
-                else
+                else % var i not contained
                     solved{i}.contained = 0;
                     solved{i}.solvable = 0;
                     solved{i}.eq = [];

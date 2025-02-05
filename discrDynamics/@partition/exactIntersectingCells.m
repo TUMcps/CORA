@@ -1,9 +1,9 @@
-function [iS, iProp] = exactIntersectingSegments(Obj,contSet)
-% exactIntersectingSegments - finds the exact segments of the partition 
+function [iS, iProp] = exactIntersectingCells(Obj,contSet)
+% exactIntersectingCells - finds the exact segments of the partition 
 % that intersect a set P, and the proportion of P that is in each segment.
 %
-% Syntax:  
-%    [iS, iProp] = exactIntersectingSegments(Obj,contSet)
+% Syntax:
+%    [iS, iProp] = exactIntersectingCells(Obj,contSet)
 %
 % Inputs:
 %    Obj - partition object
@@ -25,14 +25,14 @@ function [iS, iProp] = exactIntersectingSegments(Obj,contSet)
 %
 % See also: -
 
-% Author:       Matthias Althoff, Aaron Pereira, Niklas Kochdumper
-% Written:      09-October-2006 (MA)
-% Last update:  02-August-2017 (AP)
-%               13-November-2017 (MA)
-%               26-March-2018 (NK)
-% Last revision:---
+% Authors:       Matthias Althoff, Aaron Pereira, Niklas Kochdumper
+% Written:       09-October-2006 (MA)
+% Last update:   02-August-2017 (AP)
+%                13-November-2017 (MA)
+%                26-March-2018 (NK)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %% change the contSet to a polytope
 
@@ -87,4 +87,4 @@ end
 iS = [0; iS];
 iProp = [proportionOutside; iProp];
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

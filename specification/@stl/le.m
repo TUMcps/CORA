@@ -29,6 +29,8 @@ function res = le(obj1,obj2)
 % ------------------------------ BEGIN CODE -------------------------------
 
     % different cases depending on the the type of inputs 
+
+    % obj1 is stl?
     if isa(obj1,'stl') && ~obj1.logic
         if isa(obj2,'stl') && ~obj2.logic
             
@@ -52,6 +54,7 @@ function res = le(obj1,obj2)
                       'This operation is not supported for stl objects!'));
         end
         
+        % obj2 is stl?
     elseif isa(obj2,'stl') && ~obj2.logic && isnumeric(obj1) && isscalar(obj1)
         
         res = obj2;

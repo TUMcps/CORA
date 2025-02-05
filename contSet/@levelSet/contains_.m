@@ -1,19 +1,34 @@
-function res = contains_(ls,S,type,tol,varargin)
+function [res,cert,scaling] = contains_(ls,S,method,tol,maxEval,certToggle,scalingToggle,varargin)
 % contains_ - determines if a level set contains a set or a point
 %
 % Syntax:
-%    res = contains_(ls,S)
-%    res = contains_(ls,S,type)
-%    res = contains_(ls,S,type,tol)
+%    [res,cert,scaling] = contains_(ls,S,method,tol,maxEval,certToggle,scalingToggle)
 %
 % Inputs:
 %    ls - levelSet object
 %    S - contSet object or single point
-%    type - 'exact' or 'approx'
-%    tol - numerical tolerance (only for point in set containment)
+%    method - method used for the containment check.
+%       Currently, the only available options are 'exact' and 'approx'.
+%    tol - tolerance for the containment check; the higher the
+%       tolerance, the more likely it is that points near the boundary of
+%       ls will be detected as lying in ls, which can be useful to
+%       counteract errors originating from floating point errors.
+%    maxEval - Currently has no effect
+%    certToggle - if set to 'true', cert will be computed (see below),
+%       otherwise cert will be set to NaN.
+%    scalingToggle - if set to 'true', scaling will be computed (see
+%       below), otherwise scaling will be set to inf.
 %
 % Outputs:
 %    res - true/false
+%    cert - returns true iff the result of res could be
+%           verified. For example, if res=false and cert=true, S is
+%           guaranteed to not be contained in ls, whereas if res=false and
+%           cert=false, nothing can be deduced (S could still be
+%           contained in ls).
+%           If res=true, then cert=true.
+%    scaling - returns the smallest number 'scaling', such that
+%           scaling*(ls - ls.center) + ls.center contains S.
 %
 % Example: 
 %    syms x y
@@ -48,6 +63,29 @@ function res = contains_(ls,S,type,tol,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+if representsa(S, 'emptySet', tol)
+    % Empty set is always contained
+    res = true;
+    cert = true;
+    scaling = 0;
+    return
+elseif representsa(S, 'fullspace', tol)
+    % Fullspace is never contained, since a cPZ is compact
+    res = false;
+    cert = true;
+    scaling = inf;
+    return
+end
+
+% The code is not yet ready to deal with scaling
+cert = false;
+scaling = Inf;
+if scalingToggle
+    throw(CORAerror('CORA:notSupported',...
+        "The computation of the scaling factor or cert " + ...
+        "for constrained polynomial zonotopes is not yet implemented."));
+end
+
 % set or single point 
 if ~isnumeric(S)                                     % set
 
@@ -69,9 +107,11 @@ if ~isnumeric(S)                                     % set
 
         % switch case for the different types of level sets
         if strcmp(ls.compOp,'<=')
-            res = ub < 0 | withinTol(ub,0);
+            res = ub < 0 | withinTol(ub,0,tol);
+            cert = res;
         else
             res = ub < 0;
+            cert = res;
         end
 
     else
@@ -89,10 +129,11 @@ if ~isnumeric(S)                                     % set
         end
 
         res = all(resVec);
+        cert = res;
     end
 
 else                                                    % array of points
-
+    cert = true;
     % init resulting logical array
     res = false(1,size(S,2));
 

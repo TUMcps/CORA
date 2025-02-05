@@ -136,6 +136,7 @@ res = true;
 % Auxiliary functions -----------------------------------------------------
 
 function tests = aux_genTests(lower,upper,oracle)
+    % ???
     tests = cell(length(sigs)*4,1);
     for j = 1:length(sigs)
         s = sigs{j};
@@ -148,6 +149,7 @@ function tests = aux_genTests(lower,upper,oracle)
 end
 
 function inner = aux_makeInner(sig,lc,rc)
+    % ???
     tp = sig.timePoints;
     val = sig.values;
     newTp = [lb+1,ub-1];
@@ -156,6 +158,7 @@ function inner = aux_makeInner(sig,lc,rc)
 end
 
 function inner = aux_makeInnerPoint(sig,lc,rc)
+    % ???
     tp = sig.timePoints;
     val = sig.values;
     if lc && rc
@@ -168,6 +171,7 @@ function inner = aux_makeInnerPoint(sig,lc,rc)
 end
 
 function inner = aux_makeOverLeft(sig,~,rc)
+    % ???
     tp = sig.timePoints;
     val = sig.values;
     newTp = lb + 1;
@@ -176,6 +180,7 @@ function inner = aux_makeOverLeft(sig,~,rc)
 end
 
 function inner = aux_makeOverRight(sig,lc,~)
+    % ???
     tp = sig.timePoints;
     val = sig.values;
     newTp = ub - 1;

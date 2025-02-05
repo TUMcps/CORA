@@ -58,7 +58,7 @@ for i_id = 1:num_id
     c_R0 = zeros(size(center(params_true.R0)));
     c_U = zeros(size(center(params_true.U)));
     params_id_init = params_true;
-    params_id_init.R0 = zonotope([c_R0 eye(sys.nrOfStates) ones(sys.nrOfStates,1)]);
+    params_id_init.R0 = zonotope([c_R0 eye(sys.nrOfDims) ones(sys.nrOfDims,1)]);
     params_id_init.U = zonotope([c_U eye(sys.nrOfInputs) ...
         ones(sys.nrOfInputs,1)]);
 

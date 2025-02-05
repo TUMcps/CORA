@@ -60,14 +60,14 @@ if length(nlnsys1.out_isLinear) ~= length(sys2.out_isLinear) || ...
 end
 
 % compare differential equations
-if ~aux_compareEquations(nlnsys1.mFile,nlnsys1.nrOfStates,nlnsys1.nrOfInputs,nlnsys1.nrOfStates,...
-        sys2.mFile,sys2.nrOfStates,sys2.nrOfInputs,sys2.nrOfStates)
+if ~aux_compareEquations(nlnsys1.mFile,nlnsys1.nrOfDims,nlnsys1.nrOfInputs,nlnsys1.nrOfDims,...
+        sys2.mFile,sys2.nrOfDims,sys2.nrOfInputs,sys2.nrOfDims)
     res = false; return
 end
 
 % compare output equations
-if ~aux_compareEquations(nlnsys1.out_mFile,nlnsys1.nrOfStates,nlnsys1.nrOfInputs,nlnsys1.nrOfOutputs,...
-        sys2.out_mFile,sys2.nrOfStates,sys2.nrOfInputs,sys2.nrOfOutputs)
+if ~aux_compareEquations(nlnsys1.out_mFile,nlnsys1.nrOfDims,nlnsys1.nrOfInputs,nlnsys1.nrOfOutputs,...
+        sys2.out_mFile,sys2.nrOfDims,sys2.nrOfInputs,sys2.nrOfOutputs)
     res = false; return
 end
 

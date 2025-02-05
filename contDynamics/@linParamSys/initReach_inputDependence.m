@@ -35,17 +35,17 @@ sys.stepSize = options.timeStep;
 sys.taylorTerms = options.taylorTerms;
 
 % compute mapping matrix
-sys = mappingMatrix(sys,params,options);
+sys = priv_mappingMatrix(sys,params,options);
 % compute high order mapping matrix
-sys = highOrderMappingMatrix(sys,options.intermediateTerms);
+sys = priv_highOrderMappingMatrix(sys,options.intermediateTerms);
 % compute time interval error (tie)
-sys = tie(sys);
+sys = priv_tie(sys);
 % compute reachable set due to input
-sys = inputSolution(sys,params,options);
+sys = priv_inputSolution(sys,params,options);
 
 %compute reachable set of first time interval
 %first time step homogeneous solution
-Rhom_tp = dependentHomSol(sys, Rinit, params.Uconst);
+Rhom_tp = priv_dependentHomSol(sys, Rinit, params.Uconst);
 
 %time interval solution
 inputCorr = sys.inputF*sys.B*zonotope(params.uTrans + center(params.Uconst));

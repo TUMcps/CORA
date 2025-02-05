@@ -1,9 +1,9 @@
 function f = DOTBicycleDynamics_SRX_velEq(x,u)
-% DOTBicycleDynamics_SRX_vel - generates bicycle model for the Cadillac SRX
-%                              for a given velocity (see Eq. (1) in [1])
+% DOTBicycleDynamics_SRX_velEq - generates bicycle model for the Cadillac 
+%    SRX for a given velocity (see Eq. (1) in [1])
 %
-% Syntax:  
-%    f = DOTBicycleDynamics_SRX_vel(x,u)
+% Syntax:
+%    f = DOTBicycleDynamics_SRX_velEq(x,u)
 %
 % Inputs:
 %    x - state vector
@@ -23,12 +23,12 @@ function f = DOTBicycleDynamics_SRX_velEq(x,u)
 %
 % See also: example_nonlinear_reach05_autonomousCar
 
-% Author:       Matthias Althoff
-% Written:      01-March-2012
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-March-2012
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %load parameters
 g = 9.81; %[m/s^2]
@@ -77,5 +77,4 @@ f(6,1) = u(1);
 % f(6,1) = x(7) + k_D/I_wheel*(u(1) - x(7));
 % f(7,1) = k_P/I_wheel*(u(1) - x(7));
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

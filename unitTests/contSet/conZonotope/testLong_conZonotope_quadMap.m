@@ -81,7 +81,7 @@ for k = 1:3
 %     plot(cZquad,[1,2],'r');
 
     % check if all points are located inside the resulting conZonotope
-    assert(all(contains_(P,points_,'exact',tol)));
+    assert(all(contains_(P,points_,'exact',tol,0,false,false)));
 end
 
 
@@ -182,7 +182,7 @@ for k = 1:3
 %     plot(cZquad,[1,2],'r');
 
     % check if all points are located inside the resulting conZonotope
-    assert(all(contains_(P,points_,'exact',tol)));
+    assert(all(contains_(P,points_,'exact',tol,0,false,false)));
 end
 
 % ------------------------------ END OF CODE ------------------------------

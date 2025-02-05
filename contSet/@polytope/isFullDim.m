@@ -237,23 +237,19 @@ n = dim(P);
 % Let's first check whether the polytope is empty, by searching for one
 % point that is contained in P; we don't call center(P) since the function
 % below also supports unbounded sets in a more useful way (i.e., not
-% returning NaN), but it fails if the polytope is only the origin, which is
-% why we check whether the origin is contained beforehand
-if contains_(P,zeros(n,1),'exact',1e-5)
-    P_iter = polytope(P);
-else
-    x0 = aux_maxNormPerpendicularPolytope(P,zeros([n,0]));
-    if isempty(x0)
-        res = false;
-        P.emptySet.val = true;
-        subspace = [];
-        return
-    end
-    
-    % Now, assuming x0 exists, we translate P by -x0 so that we can
-    % guarantee that the resulting polytope contains the origin:
-    P_iter = P - x0;
+% returning NaN).
+
+x0 = priv_feasiblePoint(P);
+if isempty(x0)
+    res = false;
+    P.emptySet.val = true;
+    subspace = [];
+    return
 end
+
+% Shift the polytope, so that it contains the origin
+P_iter = P - x0;
+  
 
 % Setup the list of vectors we seek
 subspace = zeros([n,0]); % Need to have this form to avoid bugs
@@ -375,6 +371,7 @@ if exitflag == -3
 end
 
 x = x(1:dim(P));
+
 
 end
 

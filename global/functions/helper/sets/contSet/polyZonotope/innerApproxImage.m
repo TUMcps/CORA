@@ -32,7 +32,7 @@ function L = innerApproxImage(f,X,varargin)
 %
 %   % visualization
 %   figure; hold on;
-%   plot(pZ,[1,2],'r','Filled',true,'EdgeColor','none');
+%   plot(pZ,[1,2],'FaceColor','r','EdgeColor','none');
 %   for i = 1:length(L)
 %       plot(L{i}); 
 %   end
@@ -137,6 +137,7 @@ function res = aux_InnerSpecial(f,df,X,X_,Y_)
         end
         
         if contains(X_,x_ + u)
+            % containment!
             res = 1;
             return; 
         end
@@ -147,6 +148,7 @@ function res = aux_InnerSpecial(f,df,X,X_,Y_)
         
     end
 
+    % no containment
     res = 0;
 end
 

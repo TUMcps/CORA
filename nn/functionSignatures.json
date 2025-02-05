@@ -82,21 +82,6 @@
      "outputs": [
          {"name":"nn_normal", "type":"neuralNetwork"}
      ]
-  },
-
-  "neuralNetwork.computeReducedNetwork":
-  {
-     "inputs":
-     [
-         {"name":"pZ", "kind":"required", "type":["polyZonotope"],"purpose":"input set"},
-         {"name":"verbose", "kind":"ordered", "type":["logical"],"purpose":"input set"},
-         {"name":"method", "kind":"ordered", "type":["char", "choices={'manual', 'dynamic'}"],"purpose":"merge bucket creation method"},
-         {"name":"tol", "kind":"ordered", "type":["numeric"],"purpose":"merge bucket tolerance"}
-     ],
-     "outputs": [
-         {"name":"nn_red", "type":"neuralNetwork"},
-         {"name":"pZ", "type":"polyZonotope"}
-     ]
   }
 
 }

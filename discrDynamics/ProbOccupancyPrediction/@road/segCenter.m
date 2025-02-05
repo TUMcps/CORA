@@ -3,7 +3,7 @@ function [c]=segCenter(varargin)
 % segment number vector(along the path) and the deviation number vector
 % (deviation from the path) is given
 %
-% Syntax:  
+% Syntax:
 %    [c]=segCenter(obj,segVector,devVector)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function [c]=segCenter(varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      28-January-2009
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       28-January-2009
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get inputs
 if nargin==2
@@ -84,4 +84,4 @@ else
 end
     
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

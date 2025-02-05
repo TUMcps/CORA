@@ -65,7 +65,7 @@ R = reach(powerDyn, params, options);
 
 IH = interval(R.timeInterval.set{end});
 
-% saved result (computed using linError_mixed_noInt.m
+% saved result (computed using nonLinDASys/priv_linError_mixed_noInt.m
 % for linearization error computation)
 IH_saved = interval( ...
     [379.8580735602910181; 0.7554235647684937], ...

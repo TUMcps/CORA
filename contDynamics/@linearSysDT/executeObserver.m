@@ -41,46 +41,46 @@ function [R,tcomp] = executeObserver(linsysDT,params,options)
 %% decide which observer to execute by options.alg
 switch options.alg
     case 'VolMin-A' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_volMinA(linsysDT, params, options);
+        [R,tcomp] = priv_observe_volMinA(linsysDT, params, options);
     case 'VolMin-B' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_volMinB(linsysDT, params, options);
+        [R,tcomp] = priv_observe_volMinB(linsysDT, params, options);
     case 'FRad-A' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_FRadA(linsysDT, params, options);
+        [R,tcomp] = priv_observe_FRadA(linsysDT, params, options);
     case 'FRad-B' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_FRadB(linsysDT, params, options);
+        [R,tcomp] = priv_observe_FRadB(linsysDT, params, options);
     case 'PRad-A' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_PRadA(linsysDT, params, options);
+        [R,tcomp] = priv_observe_PRadA(linsysDT, params, options);
     case 'PRad-B' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_PRadB(linsysDT, params, options);
+        [R,tcomp] = priv_observe_PRadB(linsysDT, params, options);
     case 'PRad-C' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_PRadC(linsysDT, params, options);
+        [R,tcomp] = priv_observe_PRadC(linsysDT, params, options);
     case 'FRad-C' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_FRadC(linsysDT, params, options);
+        [R,tcomp] = priv_observe_FRadC(linsysDT, params, options);
     case 'PRad-D' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_PRadD(linsysDT, params, options);
+        [R,tcomp] = priv_observe_PRadD(linsysDT, params, options);
     case 'PRad-E' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_PRadE(linsysDT, params, options);
+        [R,tcomp] = priv_observe_PRadE(linsysDT, params, options);
     case 'Nom-G' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_NomG(linsysDT, params, options);
+        [R,tcomp] = priv_observe_NomG(linsysDT, params, options);
     case 'Hinf-G' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_HinfG(linsysDT, params, options);
+        [R,tcomp] = priv_observe_HinfG(linsysDT, params, options);
     case 'ESO-A' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_ESO_A(linsysDT, params, options);
+        [R,tcomp] = priv_observe_ESO_A(linsysDT, params, options);
     case 'ESO-B' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_ESO_B(linsysDT, params, options);
+        [R,tcomp] = priv_observe_ESO_B(linsysDT, params, options);
     case 'ESO-C' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_ESO_C(linsysDT, params, options);    
+        [R,tcomp] = priv_observe_ESO_C(linsysDT, params, options);    
     case 'ESO-D' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_ESO_D(linsysDT, params, options);
+        [R,tcomp] = priv_observe_ESO_D(linsysDT, params, options);
     case 'CZN-A' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_CZN_A(linsysDT, params, options);  
+        [R,tcomp] = priv_observe_CZN_A(linsysDT, params, options);  
     case 'CZN-B' % set-based observer, see [1], [2]
-        [R,tcomp] = observe_CZN_B(linsysDT, params, options);  
+        [R,tcomp] = priv_observe_CZN_B(linsysDT, params, options);  
     case 'ROPO' % set-based observer, see [3]
-        [R,tcomp] = observe_ROPO(linsysDT, params, options);
+        [R,tcomp] = priv_observe_ROPO(linsysDT, params, options);
     case 'Rauch-Tung-Striebel' % smoother (not set-based), see [4]
         % here, the reachable set only consists of fixed values
-        [R,tcomp] = observe_RauchTungStriebel(linsysDT, params, options);
+        [R,tcomp] = priv_observe_RauchTungStriebel(linsysDT, params, options);
 end
 
 % ------------------------------ END OF CODE ------------------------------

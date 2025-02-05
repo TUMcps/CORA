@@ -47,8 +47,8 @@ end
 
 function pgon = aux_douglasPeucker(pgon,tol)
     % simplify polygon boundary using the Douglas-Peucker algorithm
-    V = vertices_(Vertices);
-    V_ = douglasPeucker(V', tol);
+    V = vertices_(pgon);
+    V_ = douglasPeucker(V, tol);
     pgon = polygon(V_(1, :), V_(2, :));
 end
 

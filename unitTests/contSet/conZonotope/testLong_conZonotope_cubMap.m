@@ -80,7 +80,7 @@ for i = 1:3
 %     plot(pointsRes(1,:),pointsRes(2,:),'.k');
     
     % check if all points are located inside the calculated zonotope
-    assertLoop(all(contains_(cZres,pointsRes,'exact',1e-6)),i)
+    assertLoop(all(contains_(cZres,pointsRes,'exact',1e-6,0,false,false)),i)
 end
 
 
@@ -121,7 +121,7 @@ for i = 1:3
 %     plot(pointsRes(1,:),pointsRes(2,:),'.k');
     
     % check if all points are located inside the calculated zonotope
-    assertLoop(all(contains_(cZres,pointsRes,'exact',1e-5)),i)
+    assertLoop(all(contains_(cZres,pointsRes,'exact',1e-5,0,false,false)),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

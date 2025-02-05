@@ -1,7 +1,7 @@
 function dx = biologicalModel(x,u)
 % biologicalModel - Biological Model 1 from Example 5.2.4 in [1]
 %
-% Syntax:  
+% Syntax:
 %    dx = biologicalModel(x,u)
 %
 % Inputs:
@@ -15,12 +15,12 @@ function dx = biologicalModel(x,u)
 %   [1] X. Chen. "Reachability Analysis of Non-Linear Hybrid Systems Using
 %       Taylor Models"
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       04-February-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 dx(1,1) = -0.4*x(1) - x(1)*x(6);
 dx(2,1) = 0.4*x(1) - x(2);
@@ -31,3 +31,5 @@ dx(6,1) = 0.5*x(7) - 5*x(5)*x(6);
 dx(7,1) = -0.5*x(7) + 5*x(5)*x(6);
 
 end
+
+% ------------------------------ END OF CODE ------------------------------

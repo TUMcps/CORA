@@ -53,7 +53,7 @@ t = linspace(params.tStart, params.tFinal, nrOfTimeSteps);
 x(:,1) = params.x0;
 
 %obtain dimension
-n = obj.nrOfStates;
+n = obj.nrOfDims;
 
 for i=1:nrOfTimeSteps-1
     % compute random value from the noise signal

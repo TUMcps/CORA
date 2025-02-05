@@ -29,8 +29,8 @@ a = taylm(a, 7); %-> x + [0,0]
 t = atan(a); %->  0 + x - x^3/3 + x^5/5 - x^7/7 + [-0.125,0.125]
 eps = 10^-3;
 
-assert(appeq( getCoef(t), [0; 1; -1/3; 1/5; -1/7], eps ))
-assert(appeq( getRem(t), interval(-0.125,0.125), eps))
+assert(priv_appeq( getCoef(t), [0; 1; -1/3; 1/5; -1/7], eps ))
+assert(priv_appeq( getRem(t), interval(-0.125,0.125), eps))
 
 
 %% Test 2
@@ -39,8 +39,8 @@ a = taylm(x, interval(-1,1), 7); %-> x + [0,0]
 t = atan(a); %->  0 + x - x^3/3 + x^5/5 - x^7/7 + [-0.125,0.125]
 eps = 10^-3;
 
-assert(appeq( getCoef(t), [0; 1; -1/3; 1/5; -1/7], eps ))
-assert(appeq( getRem(t), interval(-0.125,0.125), eps))
+assert(priv_appeq( getCoef(t), [0; 1; -1/3; 1/5; -1/7], eps ))
+assert(priv_appeq( getRem(t), interval(-0.125,0.125), eps))
 
 end
 

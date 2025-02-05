@@ -17,9 +17,9 @@ function res = testLong_polyZonotope_contains
 %
 % See also: none
 
-% Authors:       Niklas Kochdumper
+% Authors:       Niklas Kochdumper, Adrian Kulmburg
 % Written:       13-January-2020
-% Last update:   ---
+% Last update:   21-January-2025 (AK, added general containment checks)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -43,6 +43,27 @@ for i = 1:size(p,2)
         assert(~contains(pZ,p(:,i),'approx'))
     end
 end
+
+% Check all containment combinations
+I = interval([-1;-1],[1;1]);
+Ideg = interval([-1;0], [1;0]);
+
+p = polyZonotope([2;0]); % To make sure the resulting polyZonos are not zonotopes
+S = convHull(polyZonotope(I), p);
+Sdeg = convHull(polyZonotope(Ideg), p);
+Sempty = polyZonotope.empty(2);
+
+implementedSets = {'conPolyZono','conZonotope','interval','polytope',...
+                    'zonoBundle','zonotope','taylm',...
+                    'polyZonotope','conPolyZono'};
+
+setsNonExact = [implementedSets {'point'}];
+
+additionalAlgorithms = {};
+
+additionalAlgorithms_specificSets = {};
+
+checkAllContainments(S, Sdeg, Sempty, implementedSets, setsNonExact, additionalAlgorithms, additionalAlgorithms_specificSets);
 
 % test completed
 res = true;

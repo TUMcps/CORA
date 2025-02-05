@@ -14,25 +14,15 @@ function res = isEmptyLine(line)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: test_docstring
+% See also: test_codingConventions
 
 % Authors:       Tobias Ladner
 % Written:       17-August-2023
-% Last update:   ---
+% Last update:   06-February-2025 (speed up)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% get unique chars
-chars = unique(line);
-
-% check each unique character
-res = true;
-for c = 1:length(chars)
-    if ~strcmp(chars(c),' ')
-        res = false;
-        break
-    end
-end
+res = all(line == ' ');
 
 % ------------------------------ END OF CODE ------------------------------

@@ -90,6 +90,7 @@ for i = 1:length(simRes)
     for j = 1:length(x_i)
         x_ij = x_i{j};
         for k = size(x_ij,1)
+            % check each point
             isVio = isVio || ~isSafe(x_ij(k, :)');
             
             if isVio

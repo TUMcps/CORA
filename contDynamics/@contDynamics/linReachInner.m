@@ -120,7 +120,7 @@ while perfIndCurr > 1
     Rmax__ = Rlinti__ + RallError;
     % compute the abstraction error using the conservative
     % linearization approach described in [1]
-    [trueError,VerrorDyn] = abstrerr_lin(sys,zonotope(Rmax__),params,options);
+    [trueError,VerrorDyn] = priv_abstrerr_lin(sys,zonotope(Rmax__),params,options);
     
     % compare linearization error with the maximum allowed error
     perfIndCurr = max(trueError./appliedError);

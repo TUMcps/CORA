@@ -32,6 +32,7 @@ function res = combineNext(obj)
         res = obj;
     elseif strcmp(obj.type,'next')
         
+        % temporal boolean
         if strcmp(obj.lhs.type,'&') && obj.lhs.temporal
             res = combineNext(next(obj.lhs.lhs,obj.from)) & ...
                             combineNext(next(obj.lhs.rhs,obj.from));
@@ -46,6 +47,7 @@ function res = combineNext(obj)
             res = obj;
         end
 
+        % standard  boolean
     elseif strcmp(obj.type,'&')
         res = combineNext(obj.lhs) & combineNext(obj.rhs);
     elseif strcmp(obj.type,'|')

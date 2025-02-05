@@ -73,6 +73,12 @@ inputArgsCheck({{E,'att','ellipsoid'};
 % nrGen not used if outer:box or inner:box since there the number of
 % generators is fixed!
 
+% handle empty case
+if representsa(E, 'emptySet')
+    Z = zonotope.empty(dim(E));
+    return
+end
+
 % compute rank and dimension of ellipsoid
 rankE = rank(E);
 c = center(E);

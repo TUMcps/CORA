@@ -61,7 +61,7 @@ for ii=1:length(imagInts)
         ev = eigs(linsys.A);
         
         % check if all properties satisfy prescribed values/ranges
-        assertLoop(linsys.nrOfStates == nrStates,n,m,ell,rr,ii)
+        assertLoop(linsys.nrOfDims == nrStates,n,m,ell,rr,ii)
         assertLoop(linsys.nrOfInputs == nrInputs,n,m,ell,rr,ii)
         assertLoop(linsys.nrOfOutputs == nrOutputs,n,m,ell,rr,ii)
         assertLoop(all(contains(realInt,real(ev)')),n,m,ell,rr,ii)

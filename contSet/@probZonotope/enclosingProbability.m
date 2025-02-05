@@ -70,7 +70,7 @@ prob=0*xVector;
 c=center(probZ);
 G=probZ.Z(:,2:end);
 if isempty(G)
-    prob=gaussian([xVector-c(1);yVector-c(2)],Sigma); 
+    prob=priv_gaussian([xVector-c(1);yVector-c(2)],Sigma); 
 else
     %get uncertain mean
     Z=zonotope(probZ.Z);
@@ -119,7 +119,7 @@ else
     for j=1:size(points,2)
         %get gaussian distribution from the current mean
         c=points(:,j);
-        tempP=gaussian([xVector-c(1);yVector-c(2)],Sigma);
+        tempP=priv_gaussian([xVector-c(1);yVector-c(2)],Sigma);
         %save maximum values
         prob=max(prob,tempP);
     end

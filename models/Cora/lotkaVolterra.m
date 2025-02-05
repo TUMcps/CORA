@@ -2,7 +2,7 @@ function HA = lotkaVolterra()
 % lotkaVolterra - hybrid Lotka-Volterra model with tangential guard
 %    crossing (see Sec. 3.5 in [1])
 %
-% Syntax:  
+% Syntax:
 %    HA = lotkaVolterra()
 %
 % Inputs:
@@ -31,7 +31,7 @@ function HA = lotkaVolterra()
 % Location Outside --------------------------------------------------------
 
 % dynamics
-sys = nonlinearSys(@lotkaVolterraDyn);
+sys = nonlinearSys(@aux_lotkaVolterraDyn);
 
 % invariant set
 syms x y t
@@ -53,7 +53,7 @@ loc(1) = location('outside', inv, trans, sys);
 % Location Inside ---------------------------------------------------------
 
 % dynamics
-sys = nonlinearSys(@lotkaVolterraDyn);
+sys = nonlinearSys(@aux_lotkaVolterraDyn);
 
 % invariant set
 syms x y t
@@ -81,9 +81,9 @@ HA = hybridAutomaton('lotkaVolterra',loc);
 end
 
 
-% Auxiliary Functions -----------------------------------------------------
+% Auxiliary functions -----------------------------------------------------
 
-function f = lotkaVolterraDyn(x,u)
+function f = aux_lotkaVolterraDyn(x,u)
 
     f = [3*x(1) - 3*x(1)*x(2);
          x(1)*x(2) - x(2);

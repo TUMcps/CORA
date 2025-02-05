@@ -139,7 +139,6 @@ methods
     
 
     % methods in seperate files 
-    n = dim(tay)
     res = plus(summand1,summand2)
     res = minus(minuend,subtrahend)
     res = times(factor1, factor2)
@@ -148,12 +147,13 @@ methods
     res = mpower(base,exponent)
     res = power(base,exponent)
     obj = uplus(obj)   % overloaded '+' operator for single operand
-    obj = uminus(obj)  % overloaded '-' operator for single operand    
+    obj = uminus(obj)  % overloaded '-' operator for single operand
     
     newObj = subsref(obj, S) % retrieves values from arrays
     obj = subsasgn(obj, S, value) % assigns values to arrays
 %     res = length(obj) % returns the length of the array
 %     varargout = size(obj) % returns size of object
+    n = dim(obj)            % returns the dimension of a Taylor model
     tm = setName( tm, name )   % changes the name of a variable in a Taylor model
     coef = getCoef( obj )   % returns coefficients
     rem = getRem( obj )     % returns remainder
@@ -183,6 +183,7 @@ methods
 end
 
 methods (Static = true)
+    obj = empty(n) % generate empty taylor model
     obj = generateRandom(varargin) % generate random taylor model
 end
 
@@ -294,6 +295,7 @@ function obj = aux_computeObject(obj,func,int,max_order,names,opt_method,eps,tol
     if isempty(func) && representsa_(int,'emptySet',eps)
         % immediate exit
         obj.coefficients = 0;
+        obj.remainder = int;
         obj.max_order = max_order;
         obj.opt_method = opt_method;
         obj.eps = eps;

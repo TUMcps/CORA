@@ -245,6 +245,7 @@ function aux_checkInputArgs(c,G,E,A,b,EC,GI,id,n_in)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'Invalid constraint exponent matrix.'));
             end
+            % check A, b
             if isempty(A) || size(A,2) ~= size(EC,2)
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'Input arguments "A" and "EC" are not compatible.'));
@@ -263,6 +264,7 @@ function aux_checkInputArgs(c,G,E,A,b,EC,GI,id,n_in)
 end
 
 function [c,G,E,A,b,EC,GI,id] = aux_computeProperties(c,G,E,A,b,EC,GI,id)
+% compute properties
 
     if ~isempty(c)
         % make center a column vector

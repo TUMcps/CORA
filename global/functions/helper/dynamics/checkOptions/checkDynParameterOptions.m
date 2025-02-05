@@ -28,8 +28,8 @@ function checks = checkDynParameterOptions(field,sys,func,params,options,checks)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% search for checks in options
-switch field
+% search for checks in options 
+switch field % TODO sort and categorize
     case 'verbose'
         checks = aux_getChecksOptions_verbose(checks,sys,func,params,options);
     case 'reductionTechnique'
@@ -54,16 +54,19 @@ switch field
         checks = aux_getChecksOptions_compOutputSet(checks,sys,func,params,options);
     case 'partition'
         checks = aux_getChecksOptions_partition(checks,sys,func,params,options);
+        % krylov
     case 'krylovError'
         checks = aux_getChecksOptions_krylovError(checks,sys,func,params,options);
     case 'krylovStep'
         checks = aux_getChecksOptions_krylovStep(checks,sys,func,params,options);
+        % reduction and order
     case 'reductionTechniqueUnderApprox'
         checks = aux_getChecksOptions_reductionTechniqueUnderApprox(checks,sys,func,params,options);
     case 'tensorOrder'
         checks = aux_getChecksOptions_tensorOrder(checks,sys,func,params,options);
     case 'errorOrder'
         checks = aux_getChecksOptions_errorOrder(checks,sys,func,params,options);
+        % ---
     case 'points'
         checks = aux_getChecksOptions_points(checks,sys,func,params,options);
     case 'p_conf'
@@ -72,18 +75,19 @@ switch field
         checks = aux_getChecksOptions_solver(checks,sys,func,params,options);
     case 'vertSamp'
         checks = aux_getChecksOptions_vertSamp(checks,sys,func,params,options);
-    case 'stretchFac'
-        checks = aux_getChecksOptions_stretchFac(checks,sys,func,params,options);
     case 'R'
         checks = aux_getChecksOptions_R(checks,sys,func,params,options);
     case 'type'
         checks = aux_getChecksOptions_type(checks,sys,func,params,options);
     case 'nrConstInp'
         checks = aux_getChecksOptions_nrConstInp(checks,sys,func,params,options);
+    case 'stretchFac'
+        checks = aux_getChecksOptions_stretchFac(checks,sys,func,params,options);
     case 'fracInpVert'
         checks = aux_getChecksOptions_fracInpVert(checks,sys,func,params,options);
     case 'fracVert'
         checks = aux_getChecksOptions_fracVert(checks,sys,func,params,options);
+        % guard
     case 'guardIntersect'
         checks = aux_getChecksOptions_guardIntersect(checks,sys,func,params,options);
     case 'enclose'
@@ -100,6 +104,7 @@ switch field
         checks = aux_getChecksOptions_gamma(checks,sys,func,params,options);
     case 'reductionInterval'
         checks = aux_getChecksOptions_reductionInterval(checks,sys,func,params,options);
+        % max error
     case 'maxError'
         checks = aux_getChecksOptions_maxError(checks,sys,func,params,options);
     case 'maxError_x'
@@ -108,6 +113,7 @@ switch field
         checks = aux_getChecksOptions_maxError_y(checks,sys,func,params,options);
     case 'tensorOrderOutput'
         checks = aux_getChecksOptions_tensorOrderOutput(checks,sys,func,params,options);
+        % lagrangeRem
     case 'lagrangeRem.zooMethods'
         checks = aux_getChecksOptions_lagrangeRem_zooMethods(checks,sys,func,params,options);
     case 'lagrangeRem.simplify'
@@ -126,24 +132,33 @@ switch field
         checks = aux_getChecksOptions_lagrangeRem_tolerance(checks,sys,func,params,options);
     case 'lagrangeRem.eps'
         checks = aux_getChecksOptions_lagrangeRem_eps(checks,sys,func,params,options);
+        % ---
     case 'approxDepOnly'
         checks = aux_getChecksOptions_approxDepOnly(checks,sys,func,params,options);
     case 'linearizationPoint'
         checks = aux_getChecksOptions_linearizationPoint(checks,sys,func,params,options);
     case 'intermediateOrder'
         checks = aux_getChecksOptions_intermediateOrder(checks,sys,func,params,options);
+        % polyZono
     case 'polyZono.maxDepGenOrder'
         checks = aux_getChecksOptions_polyZono_maxDepGenOrder(checks,sys,func,params,options);
     case 'polyZono.maxPolyZonoRatio'
         checks = aux_getChecksOptions_polyZono_maxPolyZonoRatio(checks,sys,func,params,options);
     case 'polyZono.restructureTechnique'
         checks = aux_getChecksOptions_polyZono_restructureTechnique(checks,sys,func,params,options);
+        % alg
     case 'algInner'
         checks = aux_getChecksOptions_algInner(checks,sys,func,params,options);
+    case 'reachAlg'
+        checks = aux_getChecksOptions_reachAlg(checks,sys,func,params,options);
+    case 'armaxAlg'
+        checks = aux_getChecksOptions_armaxAlg(checks,sys,func,params,options);
+        % taylor
     case 'taylorOrder'
         checks = aux_getChecksOptions_taylorOrder(checks,sys,func,params,options);
     case 'taylmOrder'
         checks = aux_getChecksOptions_taylmOrder(checks,sys,func,params,options);
+        % ---
     case 'timeStepInner'
         checks = aux_getChecksOptions_timeStepInner(checks,sys,func,params,options);
     case 'contractor'
@@ -159,6 +174,7 @@ switch field
     case 'inpChanges'
         checks = aux_getChecksOptions_inpChanges(checks,sys,func,params,options);
     case 'approxErr'
+        % ---
         checks = aux_getChecksOptions_approxErr(checks,sys,func,params,options);
     case 'prevErrScale'
         checks = aux_getChecksOptions_prevErrScale(checks,sys,func,params,options);
@@ -168,31 +184,30 @@ switch field
         checks = aux_getChecksOptions_updateInitFnc(checks,sys,func,params,options);
     case 'norm'
         checks = aux_getChecksOptions_norm(checks,sys,func,params,options);
-    case 'reachAlg'
-        checks = aux_getChecksOptions_reachAlg(checks,sys,func,params,options);
     case 'timeStepDivider'
         checks = aux_getChecksOptions_timeStepDivider(checks,sys,func,params,options);
     case 'postProcessingOrder'
         checks = aux_getChecksOptions_postProcessingOrder(checks,sys,func,params,options);
-    case 'armaxAlg'
-        checks = aux_getChecksOptions_armaxAlg(checks,sys,func,params,options);
     %for conform_white:
     case 'cs.cost'
         checks = aux_getChecksOptions_cs_cost(checks,sys,func,params,options);
     case 'cs.constraints'
         checks = aux_getChecksOptions_cs_constraints(checks,sys,func,params,options);
+        % p
     case 'cs.set_p'
         checks = aux_getChecksOptions_cs_set_p(checks,sys,func,params,options);
     case 'cs.p0'
         checks = aux_getChecksOptions_cs_p0(checks,sys,func,params,options);
-    case 'cs.cp_lim'
-        checks = aux_getChecksOptions_cs_cp_lim(checks,sys,func,params,options);
+    case 'cs.P'
+        checks = aux_getChecksOptions_cs_P(checks,sys,func,params,options);
+        % a
     case 'cs.a_min'
         checks = aux_getChecksOptions_cs_a_min(checks,sys,func,params,options);
     case 'cs.a_max'
         checks = aux_getChecksOptions_cs_a_max(checks,sys,func,params,options);
-    case 'cs.P'
-        checks = aux_getChecksOptions_cs_P(checks,sys,func,params,options);
+        % ---
+    case 'cs.cp_lim'
+        checks = aux_getChecksOptions_cs_cp_lim(checks,sys,func,params,options);
     case 'cs.verbose'
         checks = aux_getChecksOptions_cs_verbose(checks,sys,func,params,options);
     case 'cs.w'
@@ -203,6 +218,7 @@ switch field
         checks = aux_getChecksOptions_cs_derivRecomputation(checks,sys,func,params,options);
     case 'cs.timeout'
         checks = aux_getChecksOptions_cs_timeout(checks,sys,func,params,options);
+        % approx
     case 'approx.p'
         checks = aux_getChecksOptions_approx_p(checks,sys,func,params,options);
     case 'approx.verbose'
@@ -211,6 +227,7 @@ switch field
         checks = aux_getChecksOptions_approx_filename(checks,sys,func,params,options);
     case 'approx.save_res'
         checks = aux_getChecksOptions_approx_save_res(checks,sys,func,params,options);
+        % approx.nn
     case 'approx.nn_lr'
         checks = aux_getChecksOptions_approx_nn_lr(checks,sys,func,params,options);
     case 'approx.nn_lrSchedule'
@@ -227,6 +244,7 @@ switch field
         checks = aux_getChecksOptions_approx_nn_neurons(checks,sys,func,params,options);
     case 'approx.nn_epochs'
         checks = aux_getChecksOptions_approx_nn_epochs(checks,sys,func,params,options);
+        % approx.gp
     case 'approx.gp_parallel'
         checks = aux_getChecksOptions_approx_gp_parallel(checks,sys,func,params,options);
     case 'approx.gp_runs'
@@ -239,10 +257,11 @@ switch field
         checks = aux_getChecksOptions_approx_gp_max_depth(checks,sys,func,params,options);
     case 'approx.gp_func_names'
         checks = aux_getChecksOptions_approx_gp_func_names(checks,sys,func,params,options);
-    case 'approx.cgp_num_gen'
-        checks = aux_getChecksOptions_approx_cgp_num_gen(checks,sys,func,params,options);
     case 'approx.gp_pop_size'
         checks = aux_getChecksOptions_approx_gp_pop_size(checks,sys,func,params,options);
+        % approx.cgp
+    case 'approx.cgp_num_gen'
+        checks = aux_getChecksOptions_approx_cgp_num_gen(checks,sys,func,params,options);
     case 'approx.cgp_n_m_conf'
         checks = aux_getChecksOptions_approx_cgp_n_m_conf(checks,sys,func,params,options);
     case 'approx.cgp_pop_size_base'
@@ -522,14 +541,14 @@ end
 function checks = aux_getChecksOptions_maxError(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isvector, 'isvector');
     checks(end+1) = add2checks(@(val)all(ge(val,0)), 'vectorgezero');
-    checks(end+1) = add2checks(@(val)length(val)==sys.nrOfStates, 'eqsysdim');
+    checks(end+1) = add2checks(@(val)length(val)==sys.nrOfDims, 'eqsysdim');
 end
 
 % maxError_x
 function checks = aux_getChecksOptions_maxError_x(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isvector, 'isvector');
     checks(end+1) = add2checks(@(val)all(ge(val,0)), 'vectorgezero');
-    checks(end+1) = add2checks(@(val)length(val)==sys.nrOfStates, 'eqsysdim');
+    checks(end+1) = add2checks(@(val)length(val)==sys.nrOfDims, 'eqsysdim');
 end
 
 % maxError_y

@@ -42,7 +42,7 @@ function Ptp = particularSolution_timeVarying(linsys,U,timeStep,truncationOrder,
 
 narginchk(4,5);
 % by default no block decomposition, i.e., a single block
-blocks = setDefaultValues({[1,linsys.nrOfStates]},varargin);
+blocks = setDefaultValues({[1,linsys.nrOfDims]},varargin);
 
 % quick exit if U is all-zero vector or set containing only the origin
 if representsa_(U,'origin',eps)
@@ -107,7 +107,7 @@ end
 % if floating-point precision has been not been reached, we require the
 % remainder term
 if ~truncationOrderInf
-    E = expmRemainder(linsys,timeStep,truncationOrder);
+    E = priv_expmRemainder(linsys,timeStep,truncationOrder);
     try
         Ptp = block_operation(@plus, Ptp, block_mtimes(E*timeStep,U_decomp));
     catch

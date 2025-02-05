@@ -56,7 +56,7 @@ function [Htp,Pu,Hti,C_state,C_input] = affineSolution(linsys,X,u,timeStep,trunc
 % ------------------------------ BEGIN CODE -------------------------------
 
 narginchk(5,6);
-blocks = setDefaultValues({[1,linsys.nrOfStates]},varargin);
+blocks = setDefaultValues({[1,linsys.nrOfDims]},varargin);
 
 % particular solution due to constant input
 Pu = particularSolution_constant(linsys,u,timeStep,truncationOrder,blocks);
@@ -72,9 +72,9 @@ Htp = block_operation(@plus,block_mtimes(eAdt,X),Pu);
 
 if nargout >= 3
     % curvature error (state)
-    C_state = curvatureState(linsys,X,timeStep,truncationOrder);
+    C_state = priv_curvatureState(linsys,X,timeStep,truncationOrder);
     % curvature error (input)
-    C_input = curvatureInput(linsys,u,timeStep,truncationOrder);
+    C_input = priv_curvatureInput(linsys,u,timeStep,truncationOrder);
     % add up the curvature errors
     C = block_operation(@plus,C_state,decompose(C_input,blocks));
     % affine time-interval solution

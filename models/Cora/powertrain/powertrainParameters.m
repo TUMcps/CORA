@@ -2,7 +2,7 @@ function [p,omega_ref_center,omega_ref_delta,x1_0,delta_x1_0,xy_0,delta_xy_0,del
 % powertrainParameters - parameter for the powertrain benchmak described in 
 %                        Sec. 6 in [1]
 %
-% Syntax:  
+% Syntax:
 %    [p, ... ] = powertrainParameters()
 %
 % Inputs:
@@ -15,12 +15,12 @@ function [p,omega_ref_center,omega_ref_delta,x1_0,delta_x1_0,xy_0,delta_xy_0,del
 %   [1] M. Althoff et al. "Avoiding Geometic Intersection Operations in 
 %       Reachability Analysis of Hybrid Systems"
 
-% Author:       Matthias Althoff
-% Written:      21-September-2011
-% Last update:  23-December-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-September-2011
+% Last update:   23-December-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set parameters of the powertrain
 p.alpha = 0.03;     %backlash size (half gap) [rad]
@@ -62,3 +62,5 @@ p.T_m0 = p.k/p.i*(x1_0 + p.alpha) + p.b_m*omega_ref_center; %needs to be integra
 delta_T_m0 = p.k/p.i*delta_x1_0 + p.b_m*omega_ref_delta;    %needs to be integrated in U
 
 end
+
+% ------------------------------ END OF CODE ------------------------------

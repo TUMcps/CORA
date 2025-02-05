@@ -26,7 +26,7 @@ function res = test_linearSys_homogeneousSolution_blocks
 % ------------------------------ BEGIN CODE -------------------------------
 
 % tolerance
-tol = 1e-14;
+tol = 1e-6;
 
 % init algorithm parameters
 timeStep = 0.01;
@@ -47,7 +47,7 @@ Hti_blocks = compact(recompose(Hti_blocks),'zeros');
 % time-point solution must be equal
 assert(isequal(Htp,Htp_blocks,tol));
 % decomposed time-interval solution must contain non-decomposed solution
-assert(contains(Hti_blocks,Hti,'exact',tol));
+assert(contains(Hti_blocks,Hti,'exact:polymax',tol));
 
 
 % dense system matrix

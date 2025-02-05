@@ -52,7 +52,7 @@ inputArgsCheck({ ...
 if isnumeric(spec)
     spec = [];
 else
-    spec = aux_adaptSpecification(spec, obj.nrOfStates, obj.nn.neurons_out);
+    spec = aux_adaptSpecification(spec, obj.nrOfDims, obj.nn.neurons_out);
 end
 
 % init
@@ -82,7 +82,7 @@ for i = 1:length(tVec) - 1
     [R_i, res] = aux_reachability(obj.sys, params, options, spec);
 
     % store reachable set
-    R_i = project(R_i, 1:obj.nrOfStates);
+    R_i = project(R_i, 1:obj.nrOfDims);
     R = add(R, R_i);
     X = R_i.timePoint.set{end};
 

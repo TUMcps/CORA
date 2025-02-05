@@ -38,6 +38,7 @@ for i = 1:length(fourValuedVals)
         test_cases{end}.rhs = fourValuedSignal.indicator(interval,fourValuedVals(j),ii);
         switch fourValuedVals(i) & fourValuedVals(j)
             case fourValued.True
+                % case 1
                 test_cases{end}.expected = {
                     interval;
                     repmat(stlInterval(),0);
@@ -45,6 +46,7 @@ for i = 1:length(fourValuedVals)
                     [interval.toLeft(),interval.toRight()];
                 };
             case fourValued.Unknown
+                % case 2
                 test_cases{end}.expected = {
                     repmat(stlInterval(),0);
                     interval;
@@ -52,6 +54,7 @@ for i = 1:length(fourValuedVals)
                     [interval.toLeft(),interval.toRight()];
                 };
             case fourValued.False
+                % case 3
                 test_cases{end}.expected = {
                     repmat(stlInterval(),0);
                     repmat(stlInterval(),0);
@@ -59,6 +62,7 @@ for i = 1:length(fourValuedVals)
                     [interval.toLeft(),interval.toRight()];
                 };
             case fourValued.Inconclusive
+                % case 4
                 test_cases{end}.expected = {
                     repmat(stlInterval(),0);
                     repmat(stlInterval(),0);
@@ -69,6 +73,7 @@ for i = 1:length(fourValuedVals)
     end
 end
 
+% case 5
 test_cases{end+1}.lhs = fourValuedSignal.indicator(stlInterval(2,4),ff,tt);
 test_cases{end}.rhs = fourValuedSignal.indicator(stlInterval(3,5,false,true),ii,uu);
 falseInt = stlInterval(2,4);
@@ -80,6 +85,7 @@ test_cases{end}.expected = {
     incInt;
 };
 
+% test cases
 for i = 1:length(test_cases)
     lhs = test_cases{i}.lhs;
     rhs = test_cases{i}.rhs;

@@ -1,7 +1,7 @@
 function [HA,options,stateField,inputField,changeSpeed] = initCar(segLength)
 % initCar - initializes a car model for the abstraction to a Markov chain
 %
-% Syntax:  
+% Syntax:
 %    [HA,options,stateField,inputField,changeSpeed] = initCar(varargin)
 %
 % Inputs:
@@ -18,6 +18,7 @@ function [HA,options,stateField,inputField,changeSpeed] = initCar(segLength)
 % Example: 
 %    -
 % 
+
 % Authors:       Matthias Althoff
 % Written:       12-October-2009
 % Last update:   31-July-2016

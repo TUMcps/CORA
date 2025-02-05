@@ -103,6 +103,7 @@ function V = aux_verticesTemplate(cZ,numDir)
 
     % select directions for template polyhedron
     if dim(cZ) == 2
+        % 2d
         angles = linspace(0,360,numDir+1);
         angles = angles(1:end-1);
         angles = deg2rad(angles);
@@ -113,6 +114,7 @@ function V = aux_verticesTemplate(cZ,numDir)
             C(:,i) = [cos(angles(i));sin(angles(i))];
         end
     else
+        % 3d
         N = ceil(sqrt(numDir));
         theta = 2 * pi * linspace(0,1,N);
         phi = acos(1 - 2 * linspace(0,1,N));

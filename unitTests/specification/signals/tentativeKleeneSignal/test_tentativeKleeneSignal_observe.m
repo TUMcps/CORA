@@ -28,6 +28,7 @@ sig = tentativeKleeneSignal.emptySignal();
 expectedT = pointSegmentSignal.indicator(stlInterval(),false,false);
 expectedF = pointSegmentSignal.indicator(stlInterval(),false,false);
 
+% observations
 tt = kleene.True;
 uu = kleene.Unknown;
 ff = kleene.False;
@@ -42,6 +43,7 @@ observations = {
     {stlInterval(2.5,3.5,false,true), uu};
 };
 
+% apply observations to tentative signal
 for i = 1:length(observations)
     interval = observations{i}{1};
     value = observations{i}{2};

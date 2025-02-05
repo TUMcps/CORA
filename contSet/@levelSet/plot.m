@@ -291,6 +291,7 @@ function han = aux_plot3Dsolvable(obj,dims,ind,type)
     x = lim(ind_(1),1)+dx_:dx:lim(ind_(1),2)-dx_;
     y = lim(ind_(2),1)+dy_:dy:lim(ind_(2),2)-dy_;
     
+    % setup meshgrid
     [X,Y] = meshgrid(x,y);
     Z = zeros(size(X));
     
@@ -302,6 +303,7 @@ function han = aux_plot3Dsolvable(obj,dims,ind,type)
         end
     end
     
+    % plot
     if ind == 1
         han = surf(Z,X,Y,type{:});
     elseif ind == 2

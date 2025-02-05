@@ -1,7 +1,7 @@
 function f = SUTRACovid_fixed(x,u)
 % SUTRACovid_fixed - SUTRA Covid disease spread benchmark [1] without parameters
 %
-% Syntax:  
+% Syntax:
 %    f = SUTRACovid_fixed(x,u,p)
 %
 % Inputs:
@@ -15,12 +15,12 @@ function f = SUTRACovid_fixed(x,u)
 %   [1] National Supermodel Committee. Indian supermodel for covid-19 pandemic.
 %       https://www.iith.ac.in/~m_vidyasagar/arXiv/Super-Model.pdf, May 2021.
 
-% Author:       Mark Wetzlinger
-% Written:      18-May-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       18-May-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % states:     S_A, S_I, A, I, R_I, R_A
 % parameters: beta = 0.25, gamma = 0.02
@@ -34,4 +34,4 @@ f(6,1) = 0.02*x(4);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

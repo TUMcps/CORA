@@ -30,8 +30,8 @@ a = taylm(a, 3); %-> 1 + x + [0,0]
 t = exp(a); %-> exp(1)*(1 + x + x^2/2 + x^3/3!) + [0, 0.30788]
 eps = 10^-3;
 
-assert(appeq( getCoef(t), exp(1)*[1; 1; 1/2; 1/6], eps ))
-assert(appeq( getRem(t), interval(0,0.30788), eps))
+assert(priv_appeq( getCoef(t), exp(1)*[1; 1; 1/2; 1/6], eps ))
+assert(priv_appeq( getRem(t), interval(0,0.30788), eps))
 
 
 %% test 2
@@ -40,8 +40,8 @@ a = taylm(1 + x,interval(-1,1), 3); %-> 1 + x + [0,0]
 t = exp(a); %-> exp(1)*(1 + x + x^2/2 + x^3/3!) + [0, 0.30788]
 eps = 10^-3;
 
-assert(appeq( getCoef(t), exp(1)*[1; 1; 1/2; 1/6], eps ))
-assert(appeq( getRem(t), interval(0,0.30788), eps))
+assert(priv_appeq( getCoef(t), exp(1)*[1; 1; 1/2; 1/6], eps ))
+assert(priv_appeq( getRem(t), interval(0,0.30788), eps))
 
 end 
 

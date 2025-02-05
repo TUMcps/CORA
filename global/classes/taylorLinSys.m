@@ -273,6 +273,7 @@ methods
         end
     end
     function eAdt = compute_eAdt(obj,timeStep)
+        % compute eAdt
         eAdt = readFieldForTimeStep(obj,'eAdt',timeStep);
         if isempty(eAdt)
             eAdt = expm(obj.A*timeStep);
@@ -280,6 +281,7 @@ methods
         end
     end
     function val = compute_Ainv(obj)
+        % compute Ainv
         if ~isempty(obj.Ainv)
             val = obj.Ainv;
             return;
@@ -312,6 +314,7 @@ methods
                         val = obj.G{idx1};
                     case 'eAdt'
                         val = obj.eAdt{idx1};
+                        % A
                     case 'Apower'
                         val = obj.Apower{idx1};
                     case 'Apower_abs'
@@ -326,7 +329,7 @@ methods
                         val = obj.Aneg{idx1};
                     case 'dtoverfac'
                         val = obj.dtoverfac{idx1};
-                    otherwise
+                    otherwise % throw error
                         throw(CORAerror('CORA:wrongValue','third',...
                             ['has to be "E", "F", "G", "Apower", "Apower_abs", ' ...
                             '"Apos", "Aneg", or "dtoverfac"']));

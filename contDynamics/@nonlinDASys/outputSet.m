@@ -72,7 +72,7 @@ function Y = aux_outputSet(nlnsysDA,tensorOrderOutput,R,R_y,U)
 % output set computation for a given reachable set
 
 % dimension of state and inputs
-n = nlnsysDA.nrOfStates;
+n = nlnsysDA.nrOfDims;
 m = nlnsysDA.nrOfInputs;
 r = nlnsysDA.nrOfOutputs;
 

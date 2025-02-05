@@ -34,7 +34,7 @@ function [transSet,mergedLabels] = mergeTransitionSets(pHA,locID,varargin)
 narginchk(2,3);
 allLabels = setDefaultValues({[]},varargin);
 if isnumeric(allLabels) && isempty(allLabels)
-    allLabels = labelOccurrences(pHA);
+    allLabels = priv_labelOccurrences(pHA);
 end
 
 % number of components
@@ -84,12 +84,12 @@ for i = 1:numComps
 
             % lift to higher dimension, synchronize to resolve input
             % dependencies, and write to list of transitions
-            trans_lift = lift(trans,pHA.nrOfStates,M,pHA.bindsStates{i},...
+            trans_lift = lift(trans,pHA.nrOfDims,M,pHA.bindsStates{i},...
                 idxCompInput{i},false);
             % list all states with identity mapping (all but the states
             % of the ith component since it's the only participating
             % component in the resulting transition)
-            idStates = setdiff(1:pHA.nrOfStates,pHA.bindsStates{i});
+            idStates = setdiff(1:pHA.nrOfDims,pHA.bindsStates{i});
             % read out active flow equation for each component given the
             % currently active location ID vector... required for resolving
             % input binds via the output equations
@@ -125,7 +125,7 @@ for i = 1:numComps
             % for all non-participating components, we keep their states
             % as they are, and therefore set the respective entry in the
             % vector of all states to 1 (via the state binds)
-            idStates = setdiff(1:pHA.nrOfStates,cell2mat(pHA.bindsStates(labelCompIdx)));
+            idStates = setdiff(1:pHA.nrOfDims,cell2mat(pHA.bindsStates(labelCompIdx)));
             
             % create a new transition from the transitions that are to
             % be synchronized, which models the relevant transitions being
@@ -134,7 +134,7 @@ for i = 1:numComps
             % lift all transitions to higher dimension, synchronize, and
             % resolve input dependencies
             for j=1:length(labelTransSet)
-                labelTransSet(j) = lift(labelTransSet(j),pHA.nrOfStates,M,...
+                labelTransSet(j) = lift(labelTransSet(j),pHA.nrOfDims,M,...
                     pHA.bindsStates{j},idxCompInput{labelCompIdx(j)},false);
             end
             transSet(cnt) = synchronize(labelTransSet,idStates,locID,...

@@ -22,15 +22,16 @@
         {"name":"dims", "kind":"required", "type":["numeric"],"purpose":"dimensions to plot"},
         {"name":"lineSpec", "kind":"ordered", "type":["char"],"purpose":"Line Specifications"},
         {"name":"Color", "kind":"namevalue", "type":["numeric"],"purpose":"Color"},
-        {"name":"FaceColor", "kind":"namevalue", "type":["numeric"],"purpose":"EdgeColor"},
-        {"name":"EdgeColor", "kind":"namevalue", "type":["numeric"],"purpose":"FaceColor"},
+        {"name":"FaceColor", "kind":"namevalue", "type":["numeric"],"purpose":"FaceColor"},
+        {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric"],"purpose":"FaceAlpha"},
+        {"name":"EdgeColor", "kind":"namevalue", "type":["numeric"],"purpose":"EdgeColor"},
+        {"name":"EdgeAlpha", "kind":"namevalue", "type":["numeric"],"purpose":"EdgeAlpha"},
         {"name":"DisplayName", "kind":"namevalue", "type":["char"],"purpose":"DisplayName"},
         {"name":"HandleVisibility", "kind":"namevalue", "type":["char","choices={'on','off','callback'}"],"purpose":"HandleVisibility"},
         {"name":"LineWidth", "kind":"namevalue", "type":["numeric"],"purpose":"LineWidth"},
         {"name":"LineStyle", "kind":"namevalue", "type":["char","choices={'-','--',':','-.'}"],"purpose":"LineStyle"},
         {"name":"Marker", "kind":"namevalue", "type":["char","choices={'o','+','*','.','x','_','|','square','diamond','^','v','>','<','pentagram','hexagram'}"],"purpose":"Marker"},
         {"name":"MarkerSize", "kind":"namevalue", "type":["numeric"],"purpose":"MarkerSize"},
-        {"name":"FaceAlpha", "kind":"namevalue", "type":["numeric"],"purpose":"FaceAlpha"},
         {"name":"XPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on x-axis"},
         {"name":"YPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on y-axis"},
         {"name":"ZPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on z-axis"},
@@ -81,22 +82,6 @@
      ],
      "outputs": [
          {"name":"C", "type":"capsule"}
-     ]
-  },
-
-  "_comment": "conHyperplane --------------------------------------------", 
-  "conHyperplane.generateRandom":
-  {
-     "inputs":
-     [
-        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
-        {"name":"NormalVector", "kind":"namevalue", "type":["numeric"],"purpose":"normal vector of halfspace"},
-        {"name":"Offset", "kind":"namevalue", "type":["numeric"],"purpose":"offset of halfspace"},
-        {"name":"ConstraintMatrix", "kind":"namevalue", "type":["numeric"],"purpose":"constraint matrix"},
-        {"name":"ConstraintVector", "kind":"namevalue", "type":["numeric"],"purpose":"constraint vector"}
-     ],
-     "outputs": [
-         {"name":"hyp", "type":"conHyperplane"}
      ]
   },
 
@@ -169,20 +154,6 @@
      ]
   },
 
-  "_comment": "halfspace ------------------------------------------------", 
-  "halfspace.generateRandom":
-  {
-     "inputs":
-     [
-        {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
-        {"name":"NormalVector", "kind":"namevalue", "type":["numeric"],"purpose":"normal vector of halfspace"},
-        {"name":"Offset", "kind":"namevalue", "type":["numeric"],"purpose":"offset of halfspace"}
-     ],
-     "outputs": [
-         {"name":"hs", "type":"halfspace"}
-     ]
-  },
-
   "_comment": "interval -------------------------------------------------", 
   "interval.generateRandom":
   {
@@ -210,16 +181,18 @@
      ]
   },
 
-  "_comment": "mptPolytope ----------------------------------------------", 
-  "mptPolytope.generateRandom":
+  "_comment": "polytope -------------------------------------------------", 
+  "polytope.generateRandom":
   {
      "inputs":
      [
         {"name":"Dimension", "kind":"namevalue", "type":["numeric"],"purpose":"dimension"},
-        {"name":"Center", "kind":"namevalue", "type":["numeric"],"purpose":"center"}
+        {"name":"NrConstraints", "kind":"namevalue", "type":["numeric"],"purpose":"number of constraints"},
+        {"name":"IsDegenerate", "kind":"namevalue", "type":["logical"],"purpose":"is degenerate?"},
+        {"name":"IsBounded", "kind":"namevalue", "type":["logical"],"purpose":"is bounded?"}
      ],
      "outputs": [
-         {"name":"P", "type":"mptPolytope"}
+         {"name":"P", "type":"polytope"}
      ]
   },
 

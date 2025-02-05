@@ -76,7 +76,7 @@ constraints(P);
 % plot(cZ_,[1,2],'r');
 
 % check if all points are located inside the resulting conZonotope
-assert(all(contains_(P,points,'exact',tol)));
+assert(all(contains_(P,points,'exact',tol,0,false,false)));
 
 
 % TEST 2: Random Test (interval 2D) ---------------------------------------
@@ -127,7 +127,7 @@ constraints(P);
 % plot(cZ_,[1,2],'r');
 
 % check if all points are located inside the resulting conZonotope
-assert(all(contains_(P,points,'exact',tol)));
+assert(all(contains_(P,points,'exact',tol,0,false,false)));
 
 
 % TEST 3: Random Test (conZonotope 2D) ------------------------------------
@@ -179,7 +179,7 @@ constraints(P);
 % plot(cZ_,[1,2],'r');
 
 % check if all points are located inside the resulting conZonotope
-assert(all(contains_(P,points,'exact',tol)));
+assert(all(contains_(P,points,'exact',tol,0,false,false)));
 
 
 % TEST 4: Random Test (vector 2D) -----------------------------------------
@@ -217,7 +217,7 @@ constraints(P);
 % plot(cZ_,[1,2],'r');
 
 % check if all points are located inside the resulting conZonotope
-assert(all(contains_(P,points,'exact',tol)));
+assert(all(contains_(P,points,'exact',tol,0,false,false)));
 
 res = true;
 

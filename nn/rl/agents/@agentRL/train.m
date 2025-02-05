@@ -62,8 +62,8 @@ if numel(obj.options.rl.noise) == 1
 else
     % if custom pertubation generators are given check
     % dimensions
-    if size(obj.options.rl.noise,1) ~= obj.environment.ctrlDynamics.nrOfStates
-        throw(CORAerror("CORA:dimensionMismatch",obj.options.rl.noise,obj.environment.ctrlDynamics.nrOfStates));
+    if size(obj.options.rl.noise,1) ~= obj.environment.ctrlDynamics.nrOfDims
+        throw(CORAerror("CORA:dimensionMismatch",obj.options.rl.noise,obj.environment.ctrlDynamics.nrOfDims));
     end
     noiseBatchG = cast(repmat(obj.options.rl.noise,1,1,obj.options.rl.batchsize),'like',inputDataClass);
     obj.options.rl.noise = mean(sum(abs(obj.options.rl.noise),2));

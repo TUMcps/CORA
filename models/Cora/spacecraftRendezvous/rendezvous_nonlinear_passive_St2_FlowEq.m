@@ -2,7 +2,7 @@ function dx = rendezvous_nonlinear_passive_St2_FlowEq(x,u)
 % rendezvous_nonlinear_passive_St2_FlowEq - system dynamics for mode 2 for
 %    the spacecraft rendezvous benchmark described in [1] 
 %
-% Syntax:  
+% Syntax:
 %    dx = rendezvous_nonlinear_passive_St2_FlowEq(x,u)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function dx = rendezvous_nonlinear_passive_St2_FlowEq(x,u)
 %   [1] N. Chan et al. "Verifying safety of an autonomous spacecraft 
 %       rendezvous mission (Benchmark proposal)"  
 
-% Author:       Niklas Kochdumper
-% Written:      23-December-2019
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       23-December-2019
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 dx(1,1) = x(3);
 
@@ -33,4 +33,4 @@ dx(4,1) = - 0.0002624*x(1) - 0.575980856806855922248709263104*x(2) - 0.008750586
 
 dx(5,1) = 1;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

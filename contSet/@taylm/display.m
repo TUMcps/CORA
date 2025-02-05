@@ -40,7 +40,7 @@ fprintf(newline)
 for i = 1:mi
     rowStr = [];
     for j = 1:mj
-        % get a polynomial part; show ratinal numbers as decimals with 5
+        % get a polynomial part; show rational numbers as decimals with 5
         % digits
         poly = aux_displayPoly(tay(i,j));
         

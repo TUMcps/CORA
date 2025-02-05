@@ -6,7 +6,7 @@ All common functionalities are implemented here, as well as fallback functions i
 Note that some functions have a variant with an underscore appended to the function name.
 The underscore variants are used internally for efficiency, bypassing e.g. parameter checks.
 
-More information in Section 2.2 in the <a target='_blank' href="https://tumcps.github.io/CORA/manual">CORA manual</a>.
+More information in Section 2.2 in the <a target='_blank' href="https://cora.in.tum.de/manual">CORA manual</a>.
 
 <hr style="height: 1px;">
 

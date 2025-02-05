@@ -36,6 +36,7 @@ Z3 = zonotope(c,G(:,1:3));
 
 figure; 
 
+% construct w/ first generator
 subplot(1, 3, 1); hold on
 plot(Z1);
 V = [c vertices(Z1)];
@@ -48,6 +49,7 @@ title('$c\oplus l^{(1)}$','Interpreter','latex');
 xlabel('$x_{(1)}$','Interpreter','latex')
 ylabel('$x_{(2)}$','Interpreter','latex')
 
+% construct w/ first and second generator
 subplot(1, 3, 2); hold on
 plot(Z2);
 V = [c vertices(Z2)];
@@ -61,6 +63,7 @@ title('$c\oplus l^{(1)}\oplus l^{(2)}$','Interpreter','latex');
 xlabel('$x_{(1)}$','Interpreter','latex')
 % ylabel('$x_{(2)}$','Interpreter','latex')
 
+% construct w/ all generator
 subplot(1, 3, 3); hold on
 plot(Z3);
 V = [c vertices(Z3)];

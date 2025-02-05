@@ -2,7 +2,7 @@ function f = powertrain13Eq(x,u,p)
 % powertrain13Eq - dynamic for the 13-dimensional power train system 
 %                 (see Sec. 6 in [1])
 %
-% Syntax:  
+% Syntax:
 %    f = powertrain13Eq(x,u,p)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function f = powertrain13Eq(x,u,p)
 %   [1] M. Althoff et al. "Avoiding Geometic Intersection Operations in 
 %       Reachability Analysis of Hybrid Systems"
 
-% Author:       Matthias Althoff
-% Written:      21-September-2011
-% Last update:  23-December-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-September-2011
+% Last update:   23-December-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %control
@@ -46,4 +46,4 @@ f(11,1) = p.J_i*(p.k_i*(x(8) - x(10)) - p.k_i*(x(10) - x(12)) - p.b_i*x(11)); %\
 f(12,1) = x(13); %Theta_3
 f(13,1) = p.J_i*(p.k_i*(x(10) - x(12)) - p.k_i*(x(12) - x(5)) - p.b_i*x(13)); %\dot{Theta}_3
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -70,32 +70,39 @@ end
 refinable_layers = obj.getRefinableLayers();
 
 % prepare refinement heuristic
-if (heuristic == "sensitivity" || heuristic == "both")
-    % calculate sensitivity
-    obj.calcSensitivity(x);
-    for i = 1:length(refinable_layers)
-        layer_i = refinable_layers{i};
-        if heuristic == "sensitivity"
-            layer_i.refine_heu = vecnorm(layer_i.sensitivity, 2, 1)';
-        elseif heuristic == "both"
-            layer_i.refine_heu = layer_i.refine_heu .* vecnorm(layer_i.sensitivity, 2, 1)';
+switch heuristic
+    case {"sensitivity", "both"}
+        % calculate sensitivity
+        obj.calcSensitivity(x);
+        % iterate through all layers
+        for i = 1:length(refinable_layers)
+            layer_i = refinable_layers{i};
+            if heuristic == "sensitivity"
+                % set sensitivity as heuristic
+                layer_i.refine_heu = vecnorm(layer_i.sensitivity, 2, 1)';
+            elseif heuristic == "both"
+                % combine with approx error (already stored in refine_heu)
+                layer_i.refine_heu = layer_i.refine_heu .* vecnorm(layer_i.sensitivity, 2, 1)';
+            end
         end
-    end
-elseif strcmp(heuristic, "random")
-    for i = 1:length(refinable_layers)
-        layer_i = refinable_layers{i};
-        layer_i.refine_heu = rand(size(layer_i.refine_heu));
-    end
-elseif strcmp(heuristic, "layer_bias")
-    for i = 1:length(refinable_layers)
-        layer_i = refinable_layers{i};
-        layer_i.refine_heu = layer_i.refine_heu ./ i;
-    end
-elseif strcmp(heuristic, "all")
-    if verbose
-        fprintf("Setting type='all', as heuristic was set to 'all'!\n")
-    end
-    type = "all";
+    case "random"
+        % randomly set refine_heu
+        for i = 1:length(refinable_layers)
+            layer_i = refinable_layers{i};
+            layer_i.refine_heu = rand(size(layer_i.refine_heu));
+        end
+    case "layer_bias"
+        % stronger bias to earlier layers
+        for i = 1:length(refinable_layers)
+            layer_i = refinable_layers{i};
+            layer_i.refine_heu = layer_i.refine_heu ./ i;
+        end
+    case "all"
+        % refine all layers
+        if verbose
+            fprintf("Setting type='all', as heuristic was set to 'all'!\n")
+        end
+        type = "all";
 end
 
 % --- ALL REFINEMENT ---

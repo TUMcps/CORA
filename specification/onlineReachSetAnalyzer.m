@@ -74,6 +74,7 @@ methods
             end
             cache(k) = myPos;
             switch phi.type
+                % atom
                 case {'true','false'}
                     obj.nodes(myPos) = onlineAnalyzerNode(phi.type,myPos,parent,dropPropagated);
                 case 'variable'
@@ -82,9 +83,11 @@ methods
                     else
                         throw(CORAerror('CORA:wrongInputInConstructor','STL type variable, but lhs is not an AP'));
                     end    
+                    % comparator
                 case {'<','<=','>','>='}
                     ap = atomicProposition(convert2set(phi));
                     obj.nodes(myPos) = onlineAnalyzerNode('AP',myPos,parent,dropPropagated,ap);
+                    % boolean
                 case '~'
                     obj.nodes(myPos) = onlineAnalyzerNode(phi.type,myPos,parent,dropPropagated);
                     parse(phi.lhs,myPos);
@@ -92,6 +95,7 @@ methods
                     obj.nodes(myPos) = onlineAnalyzerNode(phi.type,myPos,parent,dropPropagated);
                     parse(phi.lhs,myPos);
                     parse(phi.rhs,myPos);
+                    % temporal
                 case 'finally'
                     obj.nodes(myPos) = onlineAnalyzerNode(phi.type,myPos,parent,dropPropagated,phi.interval);
                     parse(phi.lhs,myPos);

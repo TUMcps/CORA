@@ -2,7 +2,7 @@ function f = SMIBcon(x,y,u,P)
 % SMIBcon - constraint function for a single machine infinite bus system
 %           (see [1])
 %
-% Syntax:  
+% Syntax:
 %    f = SMIBcon(x,y,u,P)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function f = SMIBcon(x,y,u,P)
 %    [1] Ahmed El-Guindy, Control and Stability of Power Systems
 %        using Reachability Analysis, PhD Thesis, TUM 2017
 
-% Author:       Ahmed El-Guindy, Mark Wetzlinger
-% Written:      22-May-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Ahmed El-Guindy, Mark Wetzlinger
+% Written:       22-May-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if strcmp(P.mode,'normal')
     xs = P.xs;
@@ -65,4 +65,4 @@ f = dy.';
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

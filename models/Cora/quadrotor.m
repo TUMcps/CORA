@@ -1,9 +1,9 @@
-function [A,B,E] = quadrotor
+function [A,B,E] = quadrotor()
 % quadrotor - quadrotor system from [1], linearized about the hover
 %    condition
 %
-% Syntax:  
-%    [A,B,E] = platoon(n)
+% Syntax:
+%    [A,B,E] = quadrotor()
 %
 % Inputs:
 %    -
@@ -19,12 +19,12 @@ function [A,B,E] = quadrotor
 %    [2] F. Gruber and M. Althoff. "Scalable Robust Safety Filter with
 %        Unknown Disturbance Bounds", TAC.
 
-% Author:       Mark Wetzlinger
-% Written:      07-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       07-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % system represented as x' = Ax + Bu
 % however, CORA currently does not support E matrices
@@ -63,5 +63,4 @@ E(4,1) = 1;
 E(5,2) = 1;
 E(6,3) = 1;
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

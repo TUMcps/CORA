@@ -49,15 +49,15 @@ switch verifyAlg
     % reach-avoid
     case 'reachavoid:zonotope'
         varargout = cell(1,1);
-        [res,varargout{:}] = verifyRA_zonotope(linsys,params,options,spec);
+        [res,varargout{:}] = priv_verifyRA_zonotope(linsys,params,options,spec);
     case 'reachavoid:supportFunc'
         varargout = cell(1,2);
-        [res,varargout{:}] = verifyRA_supportFunc(linsys,params,options,spec);
+        [res,varargout{:}] = priv_verifyRA_supportFunc(linsys,params,options,spec);
 
     % stl
     case 'stl:kochdumper'
         varargout = cell(1,2);
-        [res,varargout{:}] = verifySTL_kochdumper(linsys,params,options,spec);
+        [res,varargout{:}] = priv_verifySTL_kochdumper(linsys,params,options,spec);
     case 'stl:seidl'
         varargout = cell(1,0);
         res = verifySTL_seidl(linsys,params,options,spec);
@@ -106,6 +106,7 @@ if CHECKS_ENABLED
             'Given stl specifications need an algorithm designed for stl.'))
     end
 
+    % check specification
     if isa(spec,'specification')
         for i=1:length(spec)
             if strcmp(spec(i).type,'logic')

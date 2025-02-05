@@ -31,8 +31,8 @@ eps = 10^-3;
 s = sin(1);
 c = cos(1);
 
-assert(appeq( getCoef(t),[s; c; -s/2; -c/6], eps ))
-assert(appeq( getRem(t), interval(0, 0.04167), eps))
+assert(priv_appeq( getCoef(t),[s; c; -s/2; -c/6], eps ))
+assert(priv_appeq( getRem(t), interval(0, 0.04167), eps))
 
 
 %% Test 2
@@ -43,8 +43,8 @@ eps = 10^-3;
 s = sin(1);
 c = cos(1);
 
-assert(appeq( getCoef(t),[s; c; -s/2; -c/6], eps ))
-assert(appeq( getRem(t), interval(0, 0.04167), eps))
+assert(priv_appeq( getCoef(t),[s; c; -s/2; -c/6], eps ))
+assert(priv_appeq( getRem(t), interval(0, 0.04167), eps))
 
 
 %% Test 3

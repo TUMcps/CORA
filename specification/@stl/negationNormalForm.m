@@ -42,12 +42,14 @@ function res = aux_recursive(obj,neg)
     % negate formula (neg = true) or not (neg = false)
     if neg
 
+        % boolean
         if strcmp(obj.type,'&')
             res = aux_recursive(obj.lhs,true) | aux_recursive(obj.rhs,true);
         elseif strcmp(obj.type,'|')
             res = aux_recursive(obj.lhs,true) & aux_recursive(obj.rhs,true);
         elseif strcmp(obj.type,'~')
             res = aux_recursive(obj.lhs,false);
+            % temporal
         elseif strcmp(obj.type,'finally')
             res = globally(aux_recursive(obj.lhs,true), ...
                                             obj.interval);
@@ -62,6 +64,7 @@ function res = aux_recursive(obj,neg)
                         aux_recursive(obj.rhs,true),obj.interval);
         elseif strcmp(obj.type,'next')
             res = next(aux_recursive(obj.lhs,true),obj.from);
+            % comparison
         elseif strcmp(obj.type,'<')
             res = obj.lhs > obj.rhs;
         elseif strcmp(obj.type,'>')
@@ -70,6 +73,7 @@ function res = aux_recursive(obj,neg)
             res = obj.lhs >= obj.rhs;
         elseif strcmp(obj.type,'>=')
             res = obj.lhs <= obj.rhs;
+            % atom
         elseif strcmp(obj.type,'true')
             res = stl(false);
         elseif strcmp(obj.type,'false')
@@ -80,12 +84,14 @@ function res = aux_recursive(obj,neg)
 
     else
 
+        % boolean
         if strcmp(obj.type,'&')
             res = aux_recursive(obj.lhs,false) & aux_recursive(obj.rhs,false);
         elseif strcmp(obj.type,'|')
             res = aux_recursive(obj.lhs,false) | aux_recursive(obj.rhs,false);
         elseif strcmp(obj.type,'~')
             res = aux_recursive(obj.lhs,true);
+            % temporal
         elseif strcmp(obj.type,'finally')
             res = finally(aux_recursive(obj.lhs,false), ...
                                             obj.interval);

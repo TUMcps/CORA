@@ -1,5 +1,29 @@
 function [segments] = getSegmentsForPath(initials, deltaAngles, timeSteps, segmentLength)
-%replaces createPath.m without using the CORA road class
+% getSegmentsForPath - ???
+% replaces createPath.m without using the CORA road class
+%
+% Syntax:
+%    [segments] = getSegmentsForPath(initials, deltaAngles, timeSteps, segmentLength)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       ???
+% Written:       ???
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
+
     plotPath = 0;
 
     %Preallocation of space
@@ -40,3 +64,5 @@ function [segments] = getSegmentsForPath(initials, deltaAngles, timeSteps, segme
 
     save('path.mat', 'x', 'y', 'angle');
 end
+
+% ------------------------------ END OF CODE ------------------------------

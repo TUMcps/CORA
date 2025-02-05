@@ -52,7 +52,7 @@ if isempty(tips)
         aux_getTipsUnitTests()
         % other
         aux_getTipsSolver()
-        aux_getTipsPlot()
+        aux_getTipsPlotting()
         % ___ of the day
         aux_getClassOfTheDayCandidates(rs, 10)
         aux_getContSetFunctionOfTheDayCandidates(rs, 10)
@@ -65,7 +65,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function tips = aux_getTipsApp()
+function tips = aux_getTipsApp() % ./app
     tips = {
         ['CORA provides a graphical user interface to verify dynamic systems.\n' ...
         'To start the app, type <a href="matlab:coraApp">coraApp</a> in the command window.\n' ...
@@ -73,7 +73,7 @@ function tips = aux_getTipsApp()
     };
 end
 
-function tips = aux_getTipsContDynamics()
+function tips = aux_getTipsContDynamics() % ./contDynamics
     tips = {
         ['CORA computes reachable sets for linear systems, nonlinear systems as well as for systems with constraints. Continuous as well as discrete time models are supported.\n' ...
         'Uncertainty in the system inputs as well as uncertainty in the model parameters can be explicitly considered.\n' ...
@@ -88,7 +88,7 @@ function tips = aux_getTipsContDynamics()
     };
 end
 
-function tips = aux_getTipsContSet()
+function tips = aux_getTipsContSet() % ./contSet
     tips = {
         ['CORA has a modular design, making it possible to use the capabilities of the various set representations for other purposes besides reachability analysis.\n' ...
         'The toolbox implements vector set representation, e.g., intervals, zonotopes, Taylor models, and polytopes, \n' ...
@@ -99,7 +99,7 @@ function tips = aux_getTipsContSet()
     };
 end
 
-function tips = aux_getTipsConverter()
+function tips = aux_getTipsConverter() % ./converter
     tips = {
         ['CORA provides capabilities to convert from and to various file formats.\n' ...
         'This includes SpaceEx, CommonRoad, CommonOcean, and ONNX Neural Networks.\n' ...
@@ -107,21 +107,21 @@ function tips = aux_getTipsConverter()
     };
 end
 
-function tips = aux_getTipsDiscDynamics()
+function tips = aux_getTipsDiscDynamics() % ./discDynamics
     tips = {
         ['In addition to continuous-time systems, CORA also supports discrete-time systems.\n' ...
         aux_addVisitManualText('Sec. 4.2')]
     };
 end
 
-function tips = aux_getTipsExamples()
+function tips = aux_getTipsExamples() % ./examples
     tips = {
         ['CORA provides a variety of examples to give you hands-on experience in CORA.\n' ...
         'Visit the ./examples folder for more information.']
     };
 end
 
-function tips = aux_getTipsGlobal()
+function tips = aux_getTipsGlobal() % ./global
     tips = {
         ['Do you need to update Matlab? Use our installation script to quickly get you back to speed.\n' ...
             aux_addHelpCWText('installCORA')]
@@ -163,7 +163,7 @@ function tips = aux_getTipsGlobal()
     };
 end
 
-function tips = aux_getTipsHybridDynamics()
+function tips = aux_getTipsHybridDynamics() % ./hybridDynamics
     tips = {
         ['CORA is capable to calculate the reachable sets for hybrid systems.\n' ...
         'All implemented dynamic system classes can be used to describe the different continuous flows for the discrete system states.\n' ...
@@ -172,27 +172,27 @@ function tips = aux_getTipsHybridDynamics()
     };
 end
 
-function tips = aux_getTipsManual()
+function tips = aux_getTipsManual() % ./manual
     tips = {
         ['We document the capabilities of CORA in the <a href="cora.in.tum.de/manual">CORA manual</a>.\n' ...
         'Please check the manual for definitions, details, examples, and more.']
     };
 end
 
-function tips = aux_getTipsMatrixSets()
+function tips = aux_getTipsMatrixSets() % ./matrixSets
     tips = {
         ['CORA also has some matrix set representations implemented.\n' ...
         aux_addVisitManualText('Sec. 3.2')]
     };
 end
 
-function tips = aux_getTipsModels()
+function tips = aux_getTipsModels() % ./models
     tips = {
         'All models used in CORA can be found in the respective folder in ./models.'
     };
 end
 
-function tips = aux_getTipsNN()
+function tips = aux_getTipsNN() % ./nn
     tips = {
         ['CORA enables the formal verification of neural networks, both in open-loop as well as in closed loop scenarios.\n' ...
         'Open-loop verification refers to the task where properties of the output set of a neural network are verified, e.g. correctly classified images given noisy input.\n' ...
@@ -204,14 +204,14 @@ function tips = aux_getTipsNN()
     };
 end
 
-function tips = aux_getTipsSpecification()
+function tips = aux_getTipsSpecification() % ./specification
     tips = {
         ['To define the specifications of your system, please check the ./specification folder.\n' ...
         'CORA enables users the specifications of an unsafe and safe sets using the @specification class, as well as STL and RTL.']
     };
 end
 
-function tips = aux_getTipsUnitTests()
+function tips = aux_getTipsUnitTests() % ./unitTests
     tips = {
         ['CORA is actively developed and continuously adds new functionalities as well as bug fixes.\n' ...
         'Make sure to regularily check if there is a new version.\n' ...
@@ -219,7 +219,7 @@ function tips = aux_getTipsUnitTests()
     };
 end
 
-function tips = aux_getTipsSolver()
+function tips = aux_getTipsSolver() % solver
     tips = {
         ['CORA is using third-party solvers for the computation of some functionalities.\n' ...
         'We primarily use YALMIP for solving optimization problems but you might want to install MOSEK to speed up certain computations.\n' ...
@@ -227,7 +227,7 @@ function tips = aux_getTipsSolver()
     };
 end
 
-function tips = aux_getTipsPlot()
+function tips = aux_getTipsPlotting() % plotting
     tips = {
         ['CORA comes with various plotting capabilities of continuous sets.\n' ...
         aux_addHelpCWText('contSet/plot')]
@@ -246,7 +246,7 @@ function tips = aux_getTipsPlot()
     };
 end
 
-function tips = aux_addNewRelease()
+function tips = aux_addNewRelease() % new release
     tips = {};
     try
         % get latest release
@@ -275,6 +275,7 @@ end
 % helper texts ---
 
 function visitmanualtext = aux_addVisitManualText(sec)
+    % visit manual text
     if nargin == 0
         visitmanualtext = 'Please visit the <a href="https://cora.in.tum.de/manual">CORA manual</a> for more information.';
     else
@@ -298,14 +299,17 @@ function helpcwtext = aux_addHelpCWText(name)
 end
 
 function helpcwtext = aux_addDocText(name)
+    % adds link to open the documentation for the given func
     helpcwtext = sprintf('For more information, type <a href="matlab:doc %s">doc %s</a> in the command window.', name, name);
 end
 
 function openfiletext = aux_addOpenFileText(file)
+    % adds link to open the given func
     openfiletext = sprintf('<a href="matlab:open %s">%s</a>', file, file);
 end
 
 function linktext = aux_addLinkText(link, linktext)
+    
     if nargin < 2
         linktext = link;
     end

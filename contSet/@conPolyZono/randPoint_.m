@@ -54,6 +54,7 @@ function p = randPoint_(cPZ,N,type,varargin)
     p = zeros(dim(cPZ),N);
     
     if strcmp(type,'standard')
+        % sample uniformly in beta space
         i = 1;
         while i <= N
             temp = aux_randPointStandard(cPZ);
@@ -63,6 +64,7 @@ function p = randPoint_(cPZ,N,type,varargin)
             end
         end
     elseif strcmp(type,'extreme')
+        % sample extreme points in beta space
         i = 1;
         while i <= N
             temp = aux_randPointExtreme(cPZ);
@@ -140,7 +142,7 @@ function p = aux_randPointExtreme(cPZ)
         n = dim(cPZ);
         d = -1 + 2*rand(n,1);
 
-        % find minium of dependent part along this direction
+        % find minimum of dependent part along this direction
         cPZ_ = d'*cPZ;
 
         objFun = @(x) cPZ_.c + sum(cPZ_.G.*prod(x.^cPZ_.E,1),2);
@@ -155,11 +157,13 @@ function p = aux_randPointExtreme(cPZ)
         p = length(cPZ.id);
         lb = -ones(p,1); ub = ones(p,1);
         
+        % sample in interval
         x0 = randPoint_(interval(lb,ub),1,'standard');
 
         options = optimoptions('fmincon','Display','off');
         w = warning(); warning('off');
         
+        % ensure that constraints hold for sampled point (or shift)
         [x,~,res] = fmincon(objFun,x0,[],[],[],[],lb,ub,conFun,options);
         
         if ~res

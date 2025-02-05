@@ -41,32 +41,28 @@ function [H_handle,H_str] = hessianHandle(pZ,varargin)
 % Last update:   29-November-2021
 %                25-February-2022
 %                04-July-2022 (VG, moved id-check to common function)
-% Last revision: ---
+% Last revision: 10-February-2024 (simplified input parsing)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% parse input
 narginchk(0,4);
-
-if nargin == 1
-    tol = 0;
-    [id_diff,id_param] = priv_checkDiffParamIds(pZ);
-elseif nargin == 2
-    tol = varargin{1};
-    [id_diff,id_param] = priv_checkDiffParamIds(pZ);
-elseif nargin == 3
-    [id_diff,id_param] = priv_checkDiffParamIds(pZ,varargin{:});
-    tol = 0;
-elseif nargin == 4
-    [id_diff,id_param] = priv_checkDiffParamIds(pZ,varargin{1:2});
-    tol = varargin{3};
-end
-
-inputArgsCheck({{tol,'att',{'double'},{'scalar','nonnegative','nonnan'}}});
-
 if dim(pZ) ~= 1
+    % only for scalar pZ
     throw(CORAerror('CORA:wrongValue','first','be one-dimensional'));
 end
+% read tolerance
+tol = 0;
+if nargin == 2 || nargin == 4
+    % tol is always at the end
+    tol = varargin{end};
+    varargin = varargin(1:(end-1));
+end
+inputArgsCheck({{tol,'att',{'double'},{'scalar','nonnegative','nonnan'}}});
+% parse remaining parameters
+[id_diff,id_param] = priv_checkDiffParamIds(pZ,varargin{:});
 
+% init
 d = length(id_diff);
 ind_d = ismember(pZ.id,id_diff);
 

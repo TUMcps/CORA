@@ -66,16 +66,18 @@ classdef ctrlEnvironment
                 {options, 'att','struct'}, ...
                 })
 
+            % validate options
             obj.options = aux_validateEnvOptions(options,sysDynamics);
 
+            % compute properties
             sysCL = aux_computeProperties(sysDynamics);
-            obj.ctrlDynamics = sysCL; 
 
+            % set properties
+            obj.ctrlDynamics = sysCL; 
             obj.rewardFun = rewardFun;
             obj.collisionCheck = collisionCheck;
-
             obj.stepNum = 1;
-
+            
             [params,ops] = obj.setDefaultReach(zonotope(obj.options.rl.env.x0),obj.options);
             [obj,~,obj.options.rl.env.reach] = obj.parseSettings(params,ops);
         end
@@ -142,10 +144,11 @@ end
 % set default values for the DDPGagent
 function options = aux_validateEnvOptions(options,sysDynamics)
 
+% environment fields
 persistent defaultEnvFields
 if isempty(defaultEnvFields)
     defaultEnvFields = {
-        'x0', interval(-ones(sysDynamics.nrOfStates,1),ones(sysDynamics.nrOfStates,1));
+        'x0', interval(-ones(sysDynamics.nrOfDims,1),ones(sysDynamics.nrOfDims,1));
         'initialOps', 'uniform';
         'evalMode', 'point';
         'collisionCheckBool', true;
@@ -157,6 +160,7 @@ if isempty(defaultEnvFields)
         };
 end
 
+% fields for reach
 persistent defaultEnvReachFields
 if isempty(defaultEnvReachFields)
     defaultEnvReachFields = {
@@ -219,6 +223,7 @@ end
 end
 
 function aux_checkFieldStr(optionsenv, field, admissibleValues, structName)
+% check field str
 fieldValue = optionsenv.(field);
 if ~(isa(fieldValue, 'string') || isa(fieldValue, 'char')) || ...
         ~ismember(fieldValue, admissibleValues)
@@ -228,6 +233,7 @@ end
 end
 
 function aux_checkFieldClass(optionsenv, field, admissibleClasses, structName)
+% check field for admissible classes
 if ~ismember(class(optionsenv.(field)), admissibleClasses)
     throw(CORAerror('CORA:wrongFieldValue', ...
         aux_getName(structName, field), admissibleClasses))
@@ -235,7 +241,7 @@ end
 end
 
 function aux_checkFieldNumericDefInterval(optionsenv, field, I, structName)
-    if ~contains_(I,optionsenv.(field),'exact',eps)
+    if ~contains_(I,optionsenv.(field),'exact',eps,0,false,false)
         throw(CORAerror('CORA:outOfDomain', ...
             aux_getName(structName, field),"ValidDomain",I))
     end
@@ -248,7 +254,7 @@ end
 function sys = aux_computeProperties(sys)
 % compute properties of neurNetContrSys object
 
-    n = sys.nrOfStates; m = sys.nrOfInputs;
+    n = sys.nrOfDims; m = sys.nrOfInputs;
     % instantiate closed-loop system
     f = @(x, u) [sys.mFile(x(1:n), [x(n+1:n+m); u]); zeros(m, 1)];
     name = [sys.name, 'Controlled'];

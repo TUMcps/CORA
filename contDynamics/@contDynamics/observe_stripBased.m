@@ -47,9 +47,9 @@ options.sigma = supremum(abs(interval(params.V)));
 y = params.y(:,1);
 % choose intersection procedure
 if options.intersectionType == 1
-    Rnext.tp = observe_intersectionMethod_I(sys,params.R0,y,options);
+    Rnext.tp = priv_observe_intersectionMethod_I(sys,params.R0,y,options);
 elseif options.intersectionType == 2
-    Rnext.tp = observe_intersectionMethod_II(sys,params.R0,y,options);
+    Rnext.tp = priv_observe_intersectionMethod_II(sys,params.R0,y,options);
 end
 % store first reachable set
 R{1} = Rnext.tp;
@@ -66,9 +66,9 @@ for k = 1:length(tVec)-1
     y = params.y(:,k+1);
     % choose intersection procedure
     if options.intersectionType == 1
-        Rnext.tp = observe_intersectionMethod_I(sys,Rnext.tp,y,options);
+        Rnext.tp = priv_observe_intersectionMethod_I(sys,Rnext.tp,y,options);
     elseif options.intersectionType == 2
-        Rnext.tp = observe_intersectionMethod_II(sys,Rnext.tp,y,options);
+        Rnext.tp = priv_observe_intersectionMethod_II(sys,Rnext.tp,y,options);
     end
     
     % Order reduction

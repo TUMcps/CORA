@@ -13,7 +13,7 @@ function dx = genetic(x,u)
 %   x(9):   C       0               1.3
 %                   (bio.paper)     -> all -+ W0 = 0.01|0.02|0.04
 %
-% Syntax:  
+% Syntax:
 %    dx = genetic(x,u)
 %
 % Inputs:
@@ -29,12 +29,12 @@ function dx = genetic(x,u)
 %   [2] X. Chen, S. Sankaranarayanan. "Decomposed Reachability Analysis
 %           for Nonlinear Systems".
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       10-July-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
  
 % constants     unit                [1]     [2]
 thetaA = 50;    % h^-1              50      50
@@ -66,4 +66,4 @@ dx(9,1) = gammaC*x(6)*x(8) - deltaA*x(9);
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

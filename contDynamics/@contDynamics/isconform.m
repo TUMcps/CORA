@@ -51,9 +51,9 @@ unifiedOutputs = [];
 % select conformance algorithm
 switch type
     case "RRT" % check conformance using RRTs, see [1]
-        [res, R, simRes] = isconform_RRT(sys, params, options);
+        [res, R, simRes] = priv_isconform_RRT(sys, params, options);
     case "BF" % brute force conformance check (mainly for unit tests)
-        [res, R] = isconform_BF(sys, params, options);
+        [res, R] = priv_isconform_BF(sys, params, options);
     case "dyn" % conformance for dedicated system dynamics
         [res, unifiedOutputs] = isconform_dyn(sys, params, options);
     otherwise

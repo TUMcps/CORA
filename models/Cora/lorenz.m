@@ -3,7 +3,7 @@ function dx = lorenz(x,u)
 %    note: this system is known as the Lorenz attractor,
 %          it is a well-known strange attractor 
 %
-% Syntax:  
+% Syntax:
 %    dx = lorenz(x,u)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function dx = lorenz(x,u)
 %   [1] X. Chen. "Reachability Analysis of Non-Linear Hybrid Systems Using
 %       Taylor Models"
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       04-February-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 s = 10;
 p = 8/3;
@@ -34,4 +34,4 @@ dx(3,1) = x(1) * x(2) - b * x(3);
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

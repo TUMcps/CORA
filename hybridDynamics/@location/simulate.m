@@ -18,7 +18,7 @@ function [t,x,nextloc,xJump] = simulate(loc,params)
 % Example:
 %    ---
 %
-% Other m-files required: eventFcn, indexList, reset
+% Other m-files required: eventFcn, priv_indexList, reset
 % Subfunctions: none
 % MAT-files required: none
 %
@@ -44,7 +44,7 @@ if size(params.x0,2) > size(params.x0,1)
 end
 
 % check if initial state is inside the invariant of the current location
-if ~contains_(loc.invariant,params.x0,'exact',1e-6)
+if ~contains_(loc.invariant,params.x0,'exact',1e-6,0,false,false)
     throw(CORAerror('CORA:specialError',...
             'Trajectory is located outside the invariant set after transition!')); 
 end
@@ -77,7 +77,7 @@ indexNew = find(abs(fun(t(end),x(end,:)')) < 1e-6);
 index = unique([index;indexNew]);
 
 % determine active guard
-list = indexList(loc);
+list = priv_indexList(loc);
 
 nActivatedGuards = length(index);
 activatedGuards = [];
@@ -99,7 +99,7 @@ for iActivatedGuard = 1:nActivatedGuards
         
         % check whether only one halfspace has beed crossed or if 
         % the point is indeed inside the guard set
-        if contains_(guardSet,x(end,:)','exact',1e-6)
+        if contains_(guardSet,x(end,:)','exact',1e-6,0,false,false)
             
             % next location and reset function
             nextloc = loc.transition(guard).target;

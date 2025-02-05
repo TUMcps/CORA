@@ -1,11 +1,28 @@
 function plot(varargin)
-% Purpose:  plot road object
-% Pre:      road object
-% Post:     ---
-% Built:    04.12.06,MA
-% Modified: 21.11.07,MA
-% Modified: 13.08.18,MA
+% plot - plot road object
+%
+% Syntax:
+%    plot(varargin)
+%
+% Inputs:
+%    road object
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
 
+% Authors:       Matthias Althoff
+% Written:       04-December-2006
+% Last update:   21-November-2007
+%                13-August-2018
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %no color specified
 if nargin==2
@@ -122,3 +139,5 @@ for iInd=1:length(ind)
         end
     end
 end
+
+% ------------------------------ END OF CODE ------------------------------

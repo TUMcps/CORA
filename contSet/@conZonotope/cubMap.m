@@ -218,6 +218,7 @@ function res = aux_cubMapMixed(cZ1,cZ2,cZ3,T,ind)
             
             Atemp = zeros(size(cZ.A,1),size(pZ.G,2));
 
+            % build constraints
             for i = listInd{j}
                 ind_ = find(pZ.id == i);
                 if ~isempty(ind_)

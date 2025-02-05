@@ -1,15 +1,21 @@
-function res = isFullDim(cZ)
+function [res,subspace] = isFullDim(cZ)
 % isFullDim - checks if the dimension of the affine hull of a constrained
 %    zonotope is equal to the dimension of its ambient space
 %
 % Syntax:
 %    res = isFullDim(cZ)
+%    [res,subspace] = isFullDim(cZ)
 %
 % Inputs:
 %    cZ - conZonotope object
 %
 % Outputs:
 %    res - true/false
+%    subspace - (optional) Returns a set of orthogonal unit vectors
+%               x_1,...,x_k such that cZ is strictly contained in
+%               center(cZ)+span(x_1,...,x_k)
+%               (here, 'strictly' means that k is minimal).
+%               Note that if cZ is just a point, subspace=[].
 %
 % Example:
 %    Z = [0 1.5 -1.5 0.5;0 1 0.5 -1];
@@ -28,32 +34,87 @@ function res = isFullDim(cZ)
 %
 % See also: zonotope/isFullDim
 
-% Authors:       Niklas Kochdumper
+% Authors:       Niklas Kochdumper, Adrian Kulmburg
 % Written:       02-January-2020 
-% Last update:   ---
+% Last update:   04-February-2024 (AK, implemented subspace computation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if isempty(cZ.A)
+% If the user just wants to know whether the cZ is non-degenerate, this can
+% be done quickly
+
+if nargout < 2
+    if isempty(cZ.A)
+        
+        % call zonotope isFullDim method
+        res = isFullDim(zonotope(cZ.c,cZ.G));
+        
+    else
     
-    % call zonotope isFullDim method
-    res = isFullDim(zonotope(cZ.c,cZ.G));
+        % compute null-space of the constraints
+        T = null(cZ.A);
     
+        % transform generator matrix into the null-space
+        G_ = cZ.G * T;
+    
+        % check if rank of generator matrix is equal to the dimension
+        dimG = size(G_,1);
+        rankG = rank(G_);
+    
+        res = dimG == rankG;
+        
+    end
 else
-
-    % compute null-space of the constraints
-    T = null(cZ.A);
-
-    % transform generator matrix into the null-space
-    G_ = cZ.G * T;
-
-    % check if rank of generator matrix is equal to the dimension
-    dimG = size(G_,1);
-    rankG = rank(G_);
-
-    res = dimG == rankG;
+    % So, the user wants to know the subspace in which the cZ lives.
+    % The procedure is very similar to that for zonotopes:
+    if isempty(cZ.A)
+        
+        % call zonotope isFullDim method
+        [res, subspace] = isFullDim(zonotope(cZ.c,cZ.G));
+        
+    else
     
+        % compute null-space of the constraints
+        T = null(cZ.A);
+    
+        % transform generator matrix into the null-space
+        G_ = cZ.G * T;
+    
+        % check if rank of generator matrix is equal to the dimension
+        dimG = size(G_,1);
+
+        if isempty(G_)
+            U = G_;
+            Sigma = [];
+            r = 0;
+        else
+
+            % Since the computation of the rank involves the SVD, and we might
+            % need the SVD later on anyhow, we compute it ourselves here:
+            [U,Sigma,~] = svd(G_);
+
+            % Very rarely, Sigma can be a vector, then we need to adapt the
+            % next line
+            if isvector(Sigma)
+                s = Sigma(1,1);
+            else
+                s = diag(Sigma);
+            end
+            tol = max(size(G_)) * eps(norm(s,inf)); % This is taken from the default Matlab 'rank' function
+            r = sum(s>tol);
+
+        end
+    
+        res = dimG == r;
+
+        if ~res
+            subspace = U(:,1:r);
+        else
+            subspace = eye(dimG);
+        end
+        
+    end
 end
 
 % ------------------------------ END OF CODE ------------------------------

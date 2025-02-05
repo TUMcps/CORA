@@ -1,9 +1,9 @@
 function f = tank30EqDT_inflow15(x,u,h)
-% tank6EqDT - system dynamics for the uncontrolled, discrete-time version 
+% tank30EqDT_inflow15 - system dynamics for the uncontrolled, discrete-time version 
 % of the tank benchmark with four inputs (see [1])
 %
-% Syntax:  
-%    f = tank6EqDT(x,u,h)
+% Syntax:
+%    f = tank30EqDT_inflow15(x,u,h)
 %
 % Inputs:
 %    x - state vector
@@ -16,12 +16,12 @@ function f = tank30EqDT_inflow15(x,u,h)
 % References:
 %    [1] M. Althoff "Guaranteed State Estimation in CORA 2021", ARCH 2021
 
-% Author:        Matthias Althoff
-% Written:       25-Mar-2021
+% Authors:       Matthias Althoff
+% Written:       25-March-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parameter
 k = 0.015;
@@ -59,4 +59,4 @@ f(28,1) = x(28) + h*(k*sqrt(2*g)*(sqrt(x(27))-sqrt(x(28)) + u(15))); % tank 28
 f(29,1) = x(29) + h*(k*sqrt(2*g)*(sqrt(x(28))-sqrt(x(29))));         % tank 29
 f(30,1) = x(30) + h*(k*sqrt(2*g)*(sqrt(x(29))-sqrt(x(30))));         % tank 30
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

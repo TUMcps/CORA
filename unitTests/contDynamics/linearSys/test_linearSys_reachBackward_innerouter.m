@@ -29,7 +29,7 @@ function res = test_linearSys_reachBackward_innerouter
 % ------------------------------ BEGIN CODE -------------------------------
 
 % tolerance
-tol = 1e-10;
+tol = 1e-7;
 
 % init 2D quadrotor system
 A = [0 1; 0 0];

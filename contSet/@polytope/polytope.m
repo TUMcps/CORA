@@ -182,6 +182,8 @@ methods
 
     % prohibit access to the constraints and halfspaces, as they are
     % setproperty objects and thus not directly accessible as per usual
+
+    % vertices
     function val = get.V(obj)
         if ~obj.isVRep.val
             throw(CORAerror('CORA:specialError',...
@@ -190,6 +192,8 @@ methods
         end
         val = obj.V_.val;
     end
+
+    % inequality constraints
     function val = get.A(obj)
         if ~obj.isHRep.val
             throw(CORAerror('CORA:specialError',...
@@ -206,6 +210,7 @@ methods
         end
         val = obj.b_.val;
     end
+    % equality constraints
     function val = get.Ae(obj)
         if ~obj.isHRep.val
             throw(CORAerror('CORA:specialError',...

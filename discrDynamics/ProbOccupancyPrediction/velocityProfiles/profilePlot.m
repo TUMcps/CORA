@@ -1,15 +1,17 @@
 function [velocity,input]=profilePlot(pos,acc)
-% profile1..n - returns the velocity for a given position and maximum 
-% accelerationof the velocity profile of the corresponding path.
+% profilePlot - returns the velocity for a given position and maximum 
+% acceleration of the velocity profile of the corresponding path.
 %
-% Syntax:  
-%    [velocity]=profile1(pos)
+% Syntax:
+%    [velocity,input]=profilePlot(pos,acc)
 %
 % Inputs:
 %    pos - position on the path
+%    acc - ???
 %
 % Outputs:
 %    velocity - velocity of the velocity profile
+%    input - ???
 %
 % Example: 
 %    ---
@@ -20,12 +22,12 @@ function [velocity,input]=profilePlot(pos,acc)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      02-July-2008 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       02-July-2008 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set speed limit
 speedLimit=16.6; %[m/s]
@@ -67,4 +69,4 @@ switch ind
     disp('Velocity profile error');
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

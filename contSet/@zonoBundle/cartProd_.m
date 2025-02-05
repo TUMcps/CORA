@@ -44,31 +44,28 @@ if isa(zB,'zonoBundle')
         list = cell(zB.parallelSets*S.parallelSets,1);
         counter = 1;
 
+        % iterate over all sets
         for i = 1:zB.parallelSets
             for j = 1:S.parallelSets
                 list{counter,1} = cartProd_(zB.Z{i},S.Z{j},'exact');
                 counter = counter + 1;
             end
         end
-
         zB = zonoBundle(list);
 
     elseif isnumeric(S) || isa(S,'zonotope') || isa(S,'interval')
-        
+        % iterate over all sets
         for i = 1:zB.parallelSets
             zB.Z{i} = cartProd_(zB.Z{i},S,'exact'); 
         end
 
     elseif isa(S,'conZonotope') || isa(S,'polytope')
-        
         zB = cartProd_(zB,zonoBundle(S),'exact');
         
     elseif isa(S,'polyZonotope')
-        
         zB = cartProd_(polyZonotope(zB),S,'exact');
         
     elseif isa(S,'conPolyZono')
-        
         zB = cartProd_(conPolyZono(zB),S,'exact');
         
     else

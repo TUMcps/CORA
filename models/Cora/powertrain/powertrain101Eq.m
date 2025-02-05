@@ -2,7 +2,7 @@ function f = powertrain101Eq(x,u,p)
 % powertrain101Eq - dynamic for the 101-dimensional power train system 
 %                   (see Sec. 6 in [1])
 %
-% Syntax:  
+% Syntax:
 %    f = powertrain101Eq(x,u,p)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function f = powertrain101Eq(x,u,p)
 %   [1] M. Althoff et al. "Avoiding Geometic Intersection Operations in 
 %       Reachability Analysis of Hybrid Systems"
 
-% Author:       Matthias Althoff
-% Written:      21-September-2011
-% Last update:  23-December-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-September-2011
+% Last update:   23-December-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %control
 v = p.k_K*(p.i*x(4) - x(7)) ...
@@ -133,4 +133,4 @@ f(99,1) = p.J_i*(p.k_i*(x(96) - x(98)) - p.k_i*(x(98) - x(100)) - p.b_i*x(99)); 
 f(100,1) = x(101); %Theta_47
 f(101,1) = p.J_i*(p.k_i*(x(98) - x(100)) - p.k_i*(x(100) - x(5)) - p.b_i*x(101)); %\dot{Theta}_47
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

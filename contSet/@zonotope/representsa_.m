@@ -102,7 +102,7 @@ switch type
 
     case 'levelSet'
         res = true;
-        if nargout == 2
+        if nargout == 2 % no conversion
             throw(CORAerror('CORA:notSupported',...
                 'Conversion from zonotope to levelSet not supported.'));
         end
@@ -120,6 +120,7 @@ switch type
         end
 
     case 'probZonotope'
+        % is never true
         res = false;
 
     case 'zonoBundle'

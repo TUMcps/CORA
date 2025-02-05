@@ -87,8 +87,10 @@ methods
     end
 end
 
+% static functions
 methods (Static)
     function val = fromBool(b)
+        % generate fourValued from logical
         if b
             val = fourValued.True;
         else
@@ -97,6 +99,7 @@ methods (Static)
     end
 
     function val = fromKleene(k)
+        % generate fourValued from Kleene
         if k == kleene.True
             val = fourValued.True;
         elseif k == kleene.False

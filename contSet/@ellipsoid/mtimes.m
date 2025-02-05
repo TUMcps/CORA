@@ -38,11 +38,14 @@ function E = mtimes(factor1,factor2)
 % ------------------------------ BEGIN CODE -------------------------------
 
 try
-
     % matrix/scalar * ellipsoid
     if isnumeric(factor1)
         % -> factor2 must be an ellipsoid object
         E = factor2;
+        % empty set: result is empty set
+        if representsa_(E,'emptySet',eps)
+            return
+        end
         % compute auxiliary value for new shape matrix
         M = factor1*E.Q*factor1';
         % make sure it is symmetric
@@ -57,6 +60,10 @@ try
     if isnumeric(factor2)
         % -> factor1 must be an ellipsoid object
         E = factor1;
+        % empty set: result is empty set
+        if representsa_(E,'emptySet',eps)
+            return
+        end
         % compute auxiliary value for new shape matrix
         M = factor2^2*E.Q;
         % make sure it is symmetric

@@ -32,7 +32,7 @@ Example:
     % plot polynomial zonotope
     plot(cPZ);
 
-More information in Section 2.2.1.6 in the <a target='_blank' href="https://tumcps.github.io/CORA/manual">CORA manual</a> or type
+More information in Section 2.2.1.6 in the <a target='_blank' href="https://cora.in.tum.de/manual">CORA manual</a> or type
 
     help conPolyZono
 

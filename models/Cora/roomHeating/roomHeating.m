@@ -2,7 +2,7 @@ function HA = roomHeating()
 % roomHeating - room heating benchmark described in Sec. 2.3 in [1] with 
 %    two rooms 
 %
-% Syntax:  
+% Syntax:
 %    HA = roomHeating()
 %
 % Inputs:

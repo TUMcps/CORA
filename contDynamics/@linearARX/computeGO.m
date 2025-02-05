@@ -49,6 +49,7 @@ function p_GO = computeGO(linARX, x0, u_ref, n_k)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% init
 n_p = linARX.n_p;
 n_y = linARX.nrOfOutputs;
 n_u = linARX.nrOfInputs;
@@ -56,9 +57,11 @@ n_u = linARX.nrOfInputs;
 if isa(x0, 'contSet')
     x0 = center(x0);
 end
+
 y_ref = zeros(n_y, n_k, size(x0,3));
 y_ref(:,1:n_p,:) = reshape(x0,n_y,[], size(x0,3));
 
+% A
 A_tilde_firstRows = [zeros(n_y*(n_p-1), n_y) eye(n_y * (n_p-1))];
 A_ext = zeros(n_y, n_p*n_y);
 for i=0:n_p-1
@@ -66,18 +69,19 @@ for i=0:n_p-1
 end
 A_ext = [A_tilde_firstRows; A_ext];
 
+% B
 B_ext = cell(n_p+1);
 B_tilde_firstRows = zeros(n_y*(n_p-1), n_u);
 for i = 1:n_p+1
     B_ext{i} = [B_tilde_firstRows; linARX.B_bar{i}];
 end
 
-E = [zeros(n_y,(n_p-1)*n_y) eye(n_y)];
-
+% init matrices
 A = cell(n_k,1);
 B = cell(n_k,n_k);
 C = cell(n_k,1);
 D = cell(n_k,n_k);
+E = [zeros(n_y,(n_p-1)*n_y) eye(n_y)];
 
 for k = n_p:n_k-1
 

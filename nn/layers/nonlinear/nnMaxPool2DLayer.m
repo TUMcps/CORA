@@ -163,18 +163,22 @@ methods (Access = private)
     function Wmp = aux_computePermutationMatrixForChannel(obj)
         % see [1]
         % Only compute the permutation-matrix for a single channel.
+
+        % read out properties
         img_h = obj.inputSize(1);
         img_w = obj.inputSize(2);
 
         pool_h = obj.poolSize(1);
         pool_w = obj.poolSize(2);
 
+        % compute number of pooling operations
         num_pools_h = floor(img_h/pool_h);
         num_pools_w = floor(img_w/pool_w);
 
         pools_h = eye(num_pools_h);
         unitvector = @(i, n) (1:n == i) * 1;
         pools_hw = cell(1, pool_w);
+        % go along width and construct pooling
         for j = 1:pool_w
             pools_hj = kron(pools_h, unitvector(j, pool_w)');
             entries_hj = kron(pools_hj, eye(pool_h));
@@ -185,14 +189,16 @@ methods (Access = private)
 
             pools_hw{j} = entries_hj;
         end
-
+        % gather 
         pools_hw = [pools_hw{:}];
+
+        % compute pooling
         Wmp = kron(eye(num_pools_w), pools_hw);
         Wmp = [Wmp, zeros(size(Wmp, 1), img_h*(img_w - (pool_w * num_pools_w)))];
 
     end
 
-    % Compute permutation-matrix for entinre input vector. see [2]
+    % Compute permutation-matrix for entire input vector. see [2]
     function id_mpp = aux_computePermutationMatrix(obj)
         % compute permutation matrix for single channel
         Wmp = aux_computePermutationMatrixForChannel(obj);

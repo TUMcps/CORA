@@ -2,7 +2,7 @@ function pHA = roomHeatingParallel()
 % roomHeatingParallel - room heating benchmark described in Sec. 2.3 in [1]
 %    with two rooms represented as a parallel hybrid automaton
 %
-% Syntax:  
+% Syntax:
 %    pHA = roomHeatingParallel()
 %
 % Inputs:

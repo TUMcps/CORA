@@ -92,7 +92,7 @@ properties (SetAccess = protected, GetAccess = public)
 
     % --- properties computed from user inputs ---
     bindsStates = {};                   % mapping local -> global state
-    nrOfStates;                         % number of states of composed automaton
+    nrOfDims;                           % number of states of composed automaton
     nrOfInputs;                         % number of global inputs
     nrOfOutputs;                        % number of global outputs of composed automaton
     nrOfDisturbances;                   % number of global disturbances of composed automaton
@@ -104,6 +104,7 @@ properties (SetAccess = protected, GetAccess = public)
 
     % legacy
     dim;                % (also) state dimension
+    nrOfStates;         % (also) state dimension
     
 end
 
@@ -138,7 +139,7 @@ methods
         pHA.components = comps;
         pHA.bindsInputs = inputBinds;
         pHA.bindsStates = stateBinds;
-        pHA.nrOfStates = states;
+        pHA.nrOfDims = states;
         pHA.nrOfInputs = inputs;
         pHA.nrOfOutputs = outputs;
         pHA.nrOfDisturbances = dists;
@@ -155,17 +156,31 @@ end
 % getter & setter ---------------------------------------------------------
 
 methods 
+    % legacy property: dim
     function dim = get.dim(sys)
         CORAwarning('CORA:deprecated', 'property', 'contDynamics.dim', 'CORA v2025', ...
-            'Please use contDynamics.nrOfStates instead.', ...
+            'Please use contDynamics.nrOfDims instead.', ...
             'This change was made to be consistent with the other properties.')
-        dim = sys.nrOfStates;
+        dim = sys.nrOfDims;
     end
     function sys = set.dim(sys,dim)
         CORAwarning('CORA:deprecated', 'property', 'contDynamics.dim', 'CORA v2025', ...
-            'Please use contDynamics.nrOfStates instead.', ...
+            'Please use contDynamics.nrOfDims instead.', ...
             'This change was made to be consistent with the other properties.')
-        sys.nrOfStates = dim;
+        sys.nrOfDims = dim;
+    end
+    % legacy property: nrOfStates
+    function nrOfStates = get.nrOfStates(sys)
+        CORAwarning('CORA:deprecated', 'property', 'contDynamics.nrOfStates', 'CORA v2025.1.0', ...
+            'Please use contDynamics.nrOfDims instead.', ...
+            'This change was made to be consistent with the other properties.')
+        nrOfStates = sys.nrOfDims;
+    end
+    function set.nrOfStates(sys,nrOfStates)
+        CORAwarning('CORA:deprecated', 'property', 'contDynamics.nrOfStates', 'CORA v2025.1.0', ...
+            'Please use contDynamics.nrOfDims instead.', ...
+            'This change was made to be consistent with the other properties.')
+        sys.nrOfDims = nrOfStates;
     end
 end
 
@@ -210,7 +225,7 @@ function aux_checkInputArgs(name,comps,inputBinds,n_in)
         % check locations of each component
         for i=1:numComps
             % each location has to have same number of states
-            states = arrayfun(@(x) length(x.contDynamics.nrOfStates),...
+            states = arrayfun(@(x) length(x.contDynamics.nrOfDims),...
                 comps(i).location,'UniformOutput',true);
             if ~all(states == states(1))
                 throw(CORAerror('CORA:wrongInputInConstructor',...
@@ -301,7 +316,7 @@ function [name,comps,inputBinds,stateBinds,states,inputs,outputs,dists,noises] =
     inputBinds = reshape(inputBinds,[],1);
 
     % determine number of states of composed automaton
-    n_comp = arrayfun(@(x) x.location(1).contDynamics.nrOfStates,comps,'UniformOutput',true)';
+    n_comp = arrayfun(@(x) x.location(1).contDynamics.nrOfDims,comps,'UniformOutput',true)';
     states = sum(n_comp);
 
     % compute state binds

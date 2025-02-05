@@ -1,7 +1,27 @@
 function straightVScurved()
-% built: 09-October-2009
-% updated: 09-August-2016
+% straightVScurved - ???
+%
+% Syntax:
+%    straightVScurved()
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
 
+% Authors:       ???
+% Written:       09-October-2009
+% Last update:   09-August-2016
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set path
 global filePath
@@ -198,3 +218,4 @@ for iStep=16
     axis([-60, 10, 0, 90]);
 end
 
+% ------------------------------ END OF CODE ------------------------------

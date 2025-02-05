@@ -48,7 +48,7 @@ A_dt = expm(linsys.A*dt);
 % convert input matrix
 %    B_dt = A^-1 * (e^A*dt - I) * B
 %    B_dt = T * B
-term_j = eye(linsys.nrOfStates) * dt;
+term_j = eye(linsys.nrOfDims) * dt;
 T = term_j;
 
 % maximum a thousand terms

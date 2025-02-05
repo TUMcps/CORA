@@ -12,14 +12,14 @@ function runTestSuite(varargin)
 %    testSuite - (optional) name for test suite (case insensitive)
 %                   'short' (default): prefix = 'test'
 %                   'long': prefix = 'testLong'
-%                   'mp': prefix = 'testMP'
-%                   'mosek': prefix = 'testMOSEK'
-%                   'sdpt3': prefix = 'testSDPT3'
 %                   'nn': prefixes 'test_nn', 'test_neurNetContrSys', 'testnn'
 %                   'examples': prefix 'example'
 %                   'benchmark': prefix 'benchmark'
 %                   'website': prefix 'website'
 %                   'testHeader': examples in docstring headers
+%                   'mp': prefix = 'testMP'
+%                   'mosek': prefix = 'testMOSEK'
+%                   'sdpt3': prefix = 'testSDPT3'
 %                 adding ':failed', only tests that failed in the last run
 %                 are executed
 %    verbose - (optional) true/false for logging results on command window

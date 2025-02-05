@@ -1,11 +1,11 @@
 function [p]=intersectionAlexander(R1,R2,p1,p2,devProb1,devProb2,fArray,deltaV)
-% intersection - computes the probability that two reachable sets 
+% intersectionAlexander - computes the probability that two reachable sets 
 % of traffic participants intersect; for simplicity it is firstly assumed
 % that the deviation probability distribution is the same for both traffic
 % participants
 %
-% Syntax:  
-%    [p]=intersection(R1,R2,p1,p2)
+% Syntax:
+%    [p]=intersectionAlexander(R1,R2,p1,p2)
 %
 % Inputs:
 %    R1 - road object of traffic participant 1
@@ -26,12 +26,12 @@ function [p]=intersectionAlexander(R1,R2,p1,p2,devProb1,devProb2,fArray,deltaV)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      03-November-2009
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-November-2009
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %distinguish between p and pPos!
 p1Pos=p1.pos;
@@ -146,6 +146,4 @@ for segCounter1=1:length(c1)
 end
 
 
-
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

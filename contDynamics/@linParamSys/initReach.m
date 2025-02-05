@@ -35,11 +35,11 @@ sys.stepSize = options.timeStep;
 sys.taylorTerms = options.taylorTerms;
 
 % compute mapping matrix
-mappingMatrix(sys,params,options);
+priv_mappingMatrix(sys,params,options);
 % compute time interval error (tie)
-tie(sys);
+priv_tie(sys);
 % compute reachable set due to input
-inputSolution(sys,params,options);
+priv_inputSolution(sys,params,options);
 %change the time step size
 sys.stepSize=options.timeStep;
 

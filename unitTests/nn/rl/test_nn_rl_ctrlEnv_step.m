@@ -73,6 +73,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function reward = aux_rewardFun_Quadrocopter1D(x)
+% reward function
 if isnumeric(x)
     reward = -(abs(x(end,1))+0.01*abs(x(end,2)));
 else
@@ -82,6 +83,7 @@ end
 end
 
 function collisionBool = aux_collisionCheck_Quadrocopter1D(x)
+% collision check
 if isa(x,'numeric')
     if all(abs(x(:,1:2))<0.05,"all")
         collisionBool = true;

@@ -92,7 +92,7 @@ end
 % intersection with numeric: if the point is contained, the intersection is
 % that point, otherwise empty
 if isnumeric(S) && size(S,2) == 1
-    if contains_(P,S,'exact',eps)
+    if contains_(P,S,'exact',eps,0,false,false)
         P_out = polytope(S);
     else
         P_out = polytope.empty(dim(P));
@@ -214,7 +214,7 @@ zB_out = and_(zB,Z,'exact');
 C = P.A; d = P.b; nrCon = length(d);
 for i = 1:nrCon
     P = polytope(C(i,:)',d(i));
-    if ~contains_(P,zB_out,'exact',1e-8)
+    if ~contains_(P,zB_out,'exact',1e-8,0,false,false)
         zB_out = aux_and_zonoBundle_halfspace(P,zB_out);
     end
 end
@@ -236,7 +236,7 @@ cZ_out = conZonotope([c,G],A,b);
 nrCon = numel(P_b);
 for i = 1:nrCon
     hs = polytope(P_A(i,:),P_b(i));
-    if ~contains_(hs,cZ_out,'exact',1e-6)
+    if ~contains_(hs,cZ_out,'exact',1e-6,0,false,false)
         cZ_out = aux_and_conZonotope(hs,cZ_out); 
     end
 end

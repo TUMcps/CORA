@@ -1,7 +1,7 @@
 function f = SUTRACovid(x,u,p)
 % SUTRACovid - SUTRA Covid disease spread benchmark [1]
 %
-% Syntax:  
+% Syntax:
 %    f = SUTRACovid(x,u,p)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function f = SUTRACovid(x,u,p)
 %   [1] National Supermodel Committee. Indian supermodel for covid-19 pandemic.
 %       https://www.iith.ac.in/~m_vidyasagar/arXiv/Super-Model.pdf, May 2021.
 
-% Author:       Mark Wetzlinger
-% Written:      17-May-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-May-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % states:     S_A, S_I, A, I, R_I, R_A
 % parameters: beta, gamma
@@ -35,4 +35,4 @@ f(6,1) = p(2)*x(4);
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

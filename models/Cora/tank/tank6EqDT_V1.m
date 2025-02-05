@@ -1,9 +1,9 @@
 function f = tank6EqDT_V1(x,u)
-% tank6EqDT - system dynamics for the discrete-time version of the tank 
+% tank6EqDT_V1 - system dynamics for the discrete-time version of the tank 
 % benchmark (see Sec. VII in [1])
 %
-% Syntax:  
-%    f = tank6EqDT(x,u,h)
+% Syntax:
+%    f = tank6EqDT_V1(x,u,h)
 %
 % Inputs:
 %    x - state vector
@@ -16,12 +16,12 @@ function f = tank6EqDT_V1(x,u)
 %    [1] M. Althoff et al. "Reachability analysis of nonlinear systems with 
 %        uncertain parameters using conservative linearization", CDC 2008
 
-% Author:        Matthias Althoff
-% Written:       25-Mar-2021
+% Authors:       Matthias Althoff
+% Written:       25-March-2021
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parameter
     k = 0.015;
@@ -39,4 +39,4 @@ function f = tank6EqDT_V1(x,u)
     f(5,1) = x(5) + h*(k*sqrt(2*g)*(sqrt(x(4))-sqrt(x(5))));         % tank 5
     f(6,1) = x(6) + h*(k*sqrt(2*g)*(sqrt(x(5))-sqrt(x(6))));         % tank 6
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

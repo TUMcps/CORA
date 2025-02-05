@@ -31,11 +31,11 @@ function [Rfirst,options] = initReach(obj,Rinit,params,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % compute exponential matrix
-obj = pexpm(obj,options);
+obj = priv_pexpm(obj,options);
 % compute time interval error (tie)
-obj = tie(obj,options);
+obj = priv_tie(obj,options);
 % compute reachable set due to input
-obj = inputSolution(obj,params,options);
+obj = priv_inputSolution(obj,params,options);
 %change the time step
 obj.taylor.timeStep=options.timeStep;
 

@@ -46,6 +46,7 @@ test_cases = {
     {stlInterval(10,20,false,false), stlInterval(3,4,true,false), stlInterval(6,17,false,false)};
     {stlInterval(10,20,false,false), stlInterval(3,4,false,false), stlInterval(6,17,false,false)};
 
+    % without expected
     {stlInterval(10,20), stlInterval(25,30), stlInterval()};
     {stlInterval(10,20), stlInterval(20,30), stlInterval(0)};
     {stlInterval(10,20), stlInterval(15,30), stlInterval(0,5)};

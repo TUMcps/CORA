@@ -81,6 +81,7 @@ for j = 1:numberofAgents
     elseif strcmp(agents{1,j}.options.rl.actor.nn.train.method,'rand') && strcmp(agents{1,j}.options.rl.critic.nn.train.method,'point')
         cmap(j,:) = [14,255,0]./255;
         labels{j} = 'Random';
+        % gradient-based
     elseif strcmp(agents{1,j}.options.rl.actor.nn.train.method,'extreme') && strcmp(agents{1,j}.options.rl.critic.nn.train.method,'point')
         cmap(j,:) = [31,198,0]./255;
         labels{j} = 'Extreme';
@@ -90,6 +91,7 @@ for j = 1:numberofAgents
     elseif strcmp(agents{1,j}.options.rl.actor.nn.train.method,'grad') && strcmp(agents{1,j}.options.rl.critic.nn.train.method,'point')
         cmap(j,:) = [10,93,0]./255;
         labels{j} = 'Grad';
+        % set-based 
     elseif strcmp(agents{1,j}.options.rl.actor.nn.train.method,'set') && strcmp(agents{1,j}.options.rl.critic.nn.train.method,'point')
         cmap(j,:) = [0.69020,0.82350,1.00000];
         labels{j} = 'SA-PC';
@@ -104,6 +106,7 @@ for j = 1:numberofAgents
     end
 end
 
+% prepare rewards
 meanLHReward = squeeze(mean(LHReward,1));
 confLHReward = tinv(.95,numberOfSeeds-1)*squeeze(std(LHReward,0,1))/sqrt(numberOfSeeds);
 
@@ -118,6 +121,9 @@ confRewardAdvNaive = tinv(.95,numberOfSeeds-1)*squeeze(std(RewardAdvNaive,0,1))/
 meanRewardAdvGrad = squeeze(mean(RewardAdvGrad,1));
 confRewardAdvGrad = tinv(.95,numberOfSeeds-1)*squeeze(std(RewardAdvGrad,0,1))/sqrt(numberOfSeeds);
 
+% visualization ---
+
+% plot LH reward
 fig1 = figure();
 hold on
 for i = 1:numberofAgents
@@ -130,7 +136,9 @@ ylabel('Reward during Training')
 legend
 savefig(fig1,'statisticLearnHistory.fig');
 
+% plot rewards
 fig2 = figure();
+% plot mean reward
 subplot(1,3,1)
 hold on
 for i = 1:numberofAgents
@@ -141,6 +149,7 @@ xlabel('$\epsilon$')
 ylabel('$\underline{V}_\mu(s(t_0))$')
 title('LB')
 legend
+% plot adv naive reward
 subplot(1,3,2)
 hold on
 for i = 1:numberofAgents
@@ -150,6 +159,7 @@ end
 xlabel('$\epsilon$')
 ylabel('$\underline{V}_\mu(s(t_0))$')
 title('Naive')
+% plot adv grad reward
 subplot(1,3,3)
 hold on
 for i = 1:numberofAgents
@@ -161,6 +171,7 @@ ylabel('$\underline{V}_\mu(s(t_0))$')
 title('Grad')
 savefig(fig2,'statisticEvaluation.fig');
 
+% plot lower bound
 fig3 = figure();
 hold on
 for i = 1:numberofAgents

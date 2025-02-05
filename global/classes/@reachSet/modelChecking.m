@@ -65,13 +65,13 @@ inputArgsCheck({{R,'att','reachSet'}; ...
 % call the selected model checking algorithm
 switch alg
     case 'sampledTime'
-        res = modelCheckingSampledTime(R,eq);
+        res = priv_modelCheckingSampledTime(R,eq);
     case 'rtl'
-        res = modelCheckingRTL(R,eq);
+        res = priv_modelCheckingRTL(R,eq);
     case 'signals'
-        res = modelCheckingSignals(R,eq,varargin{2:end});
+        res = priv_modelCheckingSignals(R,eq,varargin{2:end});
     case 'incremental'
-        res = modelCheckingIncremental(R,eq,varargin{2:end});
+        res = priv_modelCheckingIncremental(R,eq,varargin{2:end});
 end
     
 % ------------------------------ END OF CODE ------------------------------

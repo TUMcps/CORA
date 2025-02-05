@@ -37,21 +37,21 @@ function val = query(R,prop)
                     'finalSet','tVec','tFinal','allLoc'}}});
 
     switch prop
-        case 'reachSet'
+        case 'reachSet' % --
     
             val = R(1,1).timeInterval.set;
             for i = 2:size(R,1)
                val = [val;R(i).timeInterval.set]; 
             end
         
-        case 'reachSetTimePoint'
+        case 'reachSetTimePoint' % --
 
             val = R(1,1).timePoint.set;
             for i = 2:size(R,1)
                val = [val;R(i).timePoint.set]; 
             end
         
-        case 'finalSet'
+        case 'finalSet' % --
 
             if size(R,1) == 1
                val = R(1,1).timePoint.set{end}; 
@@ -65,7 +65,7 @@ function val = query(R,prop)
                end
             end
         
-        case 'tVec'
+        case 'tVec' % --
     
             if size(R,1) == 1
                 val = diff(cell2mat(R.timePoint.time));
@@ -74,7 +74,7 @@ function val = query(R,prop)
                     'Multiple branches not supported.'));
             end
 
-        case 'tFinal'
+        case 'tFinal' % --
 
             val = -Inf;
             for i = 1:size(R,1)
@@ -96,7 +96,7 @@ function val = query(R,prop)
                 val = supremum(val);
             end
 
-        case 'allLoc'
+        case 'allLoc' % --
 
             % at least one branch in reachSet object
             val = R(1).loc;

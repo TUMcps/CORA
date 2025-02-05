@@ -50,17 +50,17 @@ timeInt = [];
 % select correct algorithm
 switch options.linAlg
     case {'inner:AE:timepoint','outer:AE:timepoint'}
-        timePoint_ = reach_backward_AE_timepoint(linsys,params,options);
+        timePoint_ = priv_reach_backward_AE_timepoint(linsys,params,options);
         timePoint.set = [timePoint.set; timePoint_.set];
         timePoint.time = [timePoint.time; timePoint_.time];
     case 'outer:AE:timeinterval'
-        timeInt = reach_backward_AE_timeinterval(linsys,params,options);
+        timeInt = priv_reach_backward_AE_timeinterval(linsys,params,options);
     case {'inner:EA:timepoint','outer:EA:timepoint'}
-        timePoint_ = reach_backward_EA_timepoint(linsys,params,options);
+        timePoint_ = priv_reach_backward_EA_timepoint(linsys,params,options);
         timePoint.set = [timePoint.set; timePoint_.set];
         timePoint.time = [timePoint.time; timePoint_.time];
     case 'inner:EA:timeinterval'
-        timeInt = reach_backward_EA_timeinterval(linsys,params,options);
+        timeInt = priv_reach_backward_EA_timeinterval(linsys,params,options);
 end
 
 % instantiate reachSet object

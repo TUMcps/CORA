@@ -108,6 +108,7 @@ for k = n_p+1:n_k
     A{k} = A_k{k-n_p};
     C{k} = C_tilde * A{k};
 
+    % compute B and D
     for i=0:k-1
         if i <= n_p
             B{k,k-i} = B_tilde{k,n_p+1-i};
@@ -124,6 +125,7 @@ for k = n_p+1:n_k
     end
 end
 
+% compute C and D
 for k = 1:n_p
     C{k} = [zeros(n_y,(k-1)*n_y) eye(n_y) zeros(n_y,(n_p-k)*n_y)];
     [D{k,1:k}] = deal(zeros(n_y, n_u));

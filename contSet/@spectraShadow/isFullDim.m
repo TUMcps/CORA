@@ -105,7 +105,7 @@ for i = 1:dim(SpS)
         break;
     end
 
-    % test if optimizer result is within tolerance for 0
+    % test if optimize result is within tolerance for 0
     % to avoid numerical issues
     for j = 1:length(x_iter)
         if withinTol(x_iter(j),0,1e-8)
@@ -189,7 +189,11 @@ function x = aux_maxNormPerpendicularSpectrahedron(SpS,X)
     
     persistent options
     if isempty(options)
-        options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0);
+        if isSolverInstalled('mosek')
+            options = sdpsettings('solver','mosek','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        else
+            options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        end
     end
 
     % loop over all dimensions (for y)

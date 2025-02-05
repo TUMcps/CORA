@@ -88,20 +88,20 @@ methods
     end
     
     % class methods
-    function res = acos(obj); res = zooComputation(@acos,obj); end
-    function res = asin(obj); res = zooComputation(@asin,obj); end
-    function res = atan(obj); res = zooComputation(@atan,obj); end
-    function res = cos(obj);  res = zooComputation(@cos,obj);  end
-    function res = cosh(obj); res = zooComputation(@cosh,obj); end
-    function res = exp(obj);  res = zooComputation(@exp,obj);  end
-    function res = log(obj);  res = zooComputation(@log,obj);  end
-    function res = sin(obj);  res = zooComputation(@sin,obj);  end
-    function res = sinh(obj); res = zooComputation(@sinh,obj); end
-    function res = sqrt(obj); res = zooComputation(@sqrt,obj); end
-    function res = tan(obj);  res = zooComputation(@tan,obj);  end
-    function res = tanh(obj); res = zooComputation(@tanh,obj); end
-    function res = mpower(obj1,obj2); res = zooComputation(@mpower,obj1,obj2); end
-    function res = power(obj1,obj2);  res = zooComputation(@power,obj1,obj2);  end
+    function res = acos(obj); res = priv_zooComputation(@acos,obj); end
+    function res = asin(obj); res = priv_zooComputation(@asin,obj); end
+    function res = atan(obj); res = priv_zooComputation(@atan,obj); end
+    function res = cos(obj);  res = priv_zooComputation(@cos,obj);  end
+    function res = cosh(obj); res = priv_zooComputation(@cosh,obj); end
+    function res = exp(obj);  res = priv_zooComputation(@exp,obj);  end
+    function res = log(obj);  res = priv_zooComputation(@log,obj);  end
+    function res = sin(obj);  res = priv_zooComputation(@sin,obj);  end
+    function res = sinh(obj); res = priv_zooComputation(@sinh,obj); end
+    function res = sqrt(obj); res = priv_zooComputation(@sqrt,obj); end
+    function res = tan(obj);  res = priv_zooComputation(@tan,obj);  end
+    function res = tanh(obj); res = priv_zooComputation(@tanh,obj); end
+    function res = mpower(obj1,obj2); res = priv_zooComputation(@mpower,obj1,obj2); end
+    function res = power(obj1,obj2);  res = priv_zooComputation(@power,obj1,obj2);  end
 
     function res = isemptyobject(obj); res = false; end
              
@@ -185,8 +185,8 @@ function [method,objects] = aux_computeObject(int,methods,names,max_order,eps,to
        
         m = method{i};
         
-        switch m
-            
+        switch m 
+            % taylm
             case 'taylm(int)'
                 objects{i} = taylm(int,max_order,names,'int',eps,tolerance);
             
@@ -198,7 +198,8 @@ function [method,objects] = aux_computeObject(int,methods,names,max_order,eps,to
             
             case 'taylm(linQuad)'
                 objects{i} = taylm(int,max_order,names,'linQuad',eps,tolerance);
-                
+
+                % affine
             case 'affine(int)'
                 objects{i} = affine(int,names,'int',eps,tolerance);
                 
@@ -208,6 +209,7 @@ function [method,objects] = aux_computeObject(int,methods,names,max_order,eps,to
             case 'affine(bnbAdv)'
                 objects{i} = affine(int,names,'bnbAdv',eps,tolerance);
                 
+                % interval
             case 'interval'
                 objects{i} = int;
             

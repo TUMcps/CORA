@@ -80,7 +80,7 @@ for thisCompIdx=1:numComp
         
         % convert the output matrix to a matrix for consistency below
         if isscalar(C) && C == 1
-            C = eye(flowList{otherCompIdx}.nrOfStates);
+            C = eye(flowList{otherCompIdx}.nrOfDims);
         end
     
         % insert output l-th output of other component k, i.e., y_k(l), for

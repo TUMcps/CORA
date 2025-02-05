@@ -4,7 +4,7 @@ function [probVec]=vehicleBodyDistribution(oldPartition,newPartition,stretch,pro
 % lateral or longitudinal direction; this can also be done for a new
 % partition of the obtained distribution
 %
-% Syntax:  
+% Syntax:
 %    [probVec]=vehicleBodyDistribution(oldPartition,newPartition,stretch,pr
 %    obVec)
 %
@@ -25,13 +25,13 @@ function [probVec]=vehicleBodyDistribution(oldPartition,newPartition,stretch,pro
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      27-January-2009
-% Last update:  25-July-2016
-%               13-November-2017
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       27-January-2009
+% Last update:   25-July-2016
+%                13-November-2017
+% Last revision: ---
 
-%------------- BEGIN CODE ---------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %determine non-zero cells
 cellInd=find(probVec);
@@ -63,4 +63,4 @@ end
 %overwrite probability vector
 probVec=tpTotal(2:end); %outside probability "thrown away"
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

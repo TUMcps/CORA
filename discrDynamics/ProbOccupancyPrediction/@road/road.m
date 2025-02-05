@@ -1,13 +1,33 @@
 function Obj = road(varargin)
+% road - short description of the function
 % Purpose:  1. Object constructor
 %           2. Copy constructor
 % Pre:      1st Parameter - road width
 %           2nd Parameter - segment length
 %           3rd Parameter - discretization (angle, x-offset, y-offset)
 % Post:     Return a created object
-% Built:    16.11.06,MA
-% Modified: 21.11.07,MA
+%
+% Syntax:
+%    Obj = road(varargin)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
 
+% Authors:       Matthias Althoff
+% Written:       16-November-2006
+% Last update:   21-November-2007
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 % If no argument is passed (default constructor)
 if nargin == 0
@@ -37,3 +57,5 @@ else
     disp('Road needs more/less input values');
     Obj=[];
 end
+
+% ------------------------------ END OF CODE ------------------------------

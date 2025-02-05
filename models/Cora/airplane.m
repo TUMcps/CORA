@@ -1,7 +1,7 @@
 function f = airplane(x,u)
 % airplane - airplane from Section 3.7 in [1]
 %
-% Syntax:  
+% Syntax:
 %    f = airplane(x,u)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function f = airplane(x,u)
 %       Intelligence and Neural Network Control Systems (AINNCS) for 
 %       Continuous and Hybrid Systems Plants", 2021
 
-% Author:       Niklas Kochdumper
-% Written:      08-December-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       08-December-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parameter
     m = 1; 
@@ -61,4 +61,4 @@ function f = airplane(x,u)
      
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

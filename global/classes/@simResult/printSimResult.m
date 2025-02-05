@@ -28,6 +28,7 @@ function printSimResult(simRes,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% parse input
 narginchk(0,4);
 [accuracy,doCompact,clearLine] = setDefaultValues({'%4.3f%s',false,true},varargin);
 if ischar(accuracy) && strcmp(accuracy,'high')
@@ -40,20 +41,24 @@ inputArgsCheck({ ...
     {clearLine,'att','logical'}
 })
 
+% call constructor
 fprintf('simResult(')
 if ~doCompact
     fprintf(' ...\n')
 end
+% x
 printCell(simRes.x,accuracy,true,false)
 fprintf(', ')
 if ~doCompact
     fprintf('...\n')
 end
+% t
 printCell(simRes.t,accuracy,true,false)
 fprintf(', ')
 if ~doCompact
     fprintf('...\n')
 end
+% loc
 loc = simRes.loc;
 if iscell(loc)
     loc = cell2mat(loc);
@@ -63,11 +68,13 @@ fprintf(', ')
 if ~doCompact
     fprintf('...\n')
 end
+% y
 printCell(simRes.y,accuracy,true,false)
 fprintf(', ')
 if ~doCompact
     fprintf('...\n')
 end
+% a
 printCell(simRes.a,accuracy,true,false)
 if ~doCompact
     fprintf(' ...\n')

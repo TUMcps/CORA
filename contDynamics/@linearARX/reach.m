@@ -318,6 +318,7 @@ end
 end
 
 function B_tilde_k = aux_compute_Btilde_Eq16(linARX, B_tilde_k, i_vec, k)
+% see [1, Eq. 16]
 
 p = linARX.n_p;
 if isempty(linARX.A_tilde{k+1})

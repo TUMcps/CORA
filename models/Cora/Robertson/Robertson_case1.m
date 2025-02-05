@@ -1,7 +1,7 @@
 function f = Robertson_case1(x,u)
 % Robertson_case1 - Robertson chemical reaction benchmark system from [1]
 %
-% Syntax:  
+% Syntax:
 %    f = Robertson_case1(x,u)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function f = Robertson_case1(x,u)
 %       In "Numerical analysis: an introduction", page 178-182.
 %       Academic Press, 1966.
 
-% Author:       Mark Wetzlinger
-% Written:      17-May-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-May-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 alpha = 0.4;
 beta = 1e2;
@@ -33,4 +33,4 @@ f = [-alpha*x(1) + beta*x(2)*x(3);...
      
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -30,8 +30,8 @@ t = taylm(a, 3); %-> 2 + x + [0,0]
 inv_t = 1/t; %-> 1/2 - x/4 + x^2/8 - x^3/16 + [0,1]
 eps = 10^-3;
 
-assert(appeq(getCoef(inv_t), [0.5; -0.25; 0.125; -0.0625], eps))
-assert(appeq(getRem(inv_t), interval(0,1), eps))
+assert(priv_appeq(getCoef(inv_t), [0.5; -0.25; 0.125; -0.0625], eps))
+assert(priv_appeq(getRem(inv_t), interval(0,1), eps))
 
 %% Test 2
 a = interval(1,3);
@@ -39,8 +39,8 @@ t = taylm(a, 3) + a; %-> 2 + x + [1,3]
 t = t/3; %-> 2/3 + x/3 + [1/3,1]
 eps = 10^-3;
 
-assert(appeq(getCoef(t), [2/3; 1/3], eps))
-assert(appeq(getRem(t), interval(1/3,1), eps))
+assert(priv_appeq(getCoef(t), [2/3; 1/3], eps))
+assert(priv_appeq(getRem(t), interval(1/3,1), eps))
 
 %% Test 3
 syms x
@@ -48,8 +48,8 @@ t = taylm(2 + x,interval(-1,1), 3); %-> 2 + x + [0,0]
 inv_t = 1/t; %-> 1/2 - x/4 + x^2/8 - x^3/16 + [0,1]
 eps = 10^-3;
 
-assert(appeq(getCoef(inv_t), [0.5; -0.25; 0.125; -0.0625], eps))
-assert(appeq(getRem(inv_t), interval(0,1), eps))
+assert(priv_appeq(getCoef(inv_t), [0.5; -0.25; 0.125; -0.0625], eps))
+assert(priv_appeq(getRem(inv_t), interval(0,1), eps))
 
 
 %% Test 4
@@ -58,8 +58,8 @@ t = taylm(2 + x, interval(1, 3), 3); %-> 4 + x + [0,0]
 t = t/3; %-> 4/3 + x/3 + [0,0]
 eps = 10^-3;
 
-assert(appeq(getCoef(t), [4/3; 1/3], eps))
-assert(appeq(getRem(t), interval(0,0), eps))
+assert(priv_appeq(getCoef(t), [4/3; 1/3], eps))
+assert(priv_appeq(getRem(t), interval(0,0), eps))
 
 end
 

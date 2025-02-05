@@ -2,7 +2,7 @@ function f = vehicleDynamics_MB_BMW(x,u)
 % vehicleDynamics_MB_BMW - multi-body vehicle dynamics of a BMW
 % reference point: center of mass
 %
-% Syntax:  
+% Syntax:
 %    f = vehicleDynamics_MB_BMW(t,x,u,p)
 %
 % Inputs:
@@ -21,13 +21,13 @@ function f = vehicleDynamics_MB_BMW(x,u)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      05-January-2017
-% Last update:  15-December-2017
-%               21-June-2023
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-January-2017
+% Last update:   15-December-2017
+%                21-June-2023
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % set gravity constant
 g = 9.81; %[m/s^2]
@@ -144,28 +144,28 @@ gamma_LR = x(7) + p.D_r*z_SLR + p.E_r*(z_SLR)^2;
 gamma_RR = x(7) - p.D_r*z_SRR - p.E_r*(z_SRR)^2;
 
 %compute longitudinal tire forces using the magic formula for pure slip
-F0_x_LF = mFormulaLongitudinal(s_lf, gamma_LF, F_z_LF, p.tire);
-F0_x_RF = mFormulaLongitudinal(s_rf, gamma_RF, F_z_RF, p.tire);
-F0_x_LR = mFormulaLongitudinal(s_lr, gamma_LR, F_z_LR, p.tire);
-F0_x_RR = mFormulaLongitudinal(s_rr, gamma_RR, F_z_RR, p.tire);
+F0_x_LF = aux_mFormulaLongitudinal(s_lf, gamma_LF, F_z_LF, p.tire);
+F0_x_RF = aux_mFormulaLongitudinal(s_rf, gamma_RF, F_z_RF, p.tire);
+F0_x_LR = aux_mFormulaLongitudinal(s_lr, gamma_LR, F_z_LR, p.tire);
+F0_x_RR = aux_mFormulaLongitudinal(s_rr, gamma_RR, F_z_RR, p.tire);
 
 %compute lateral tire forces using the magic formula for pure slip
-[F0_y_LF, mu_y_LF] = mFormulaLateral(alpha_LF, gamma_LF, F_z_LF, p.tire);
-[F0_y_RF, mu_y_RF] = mFormulaLateral(alpha_RF, gamma_RF, F_z_RF, p.tire);
-[F0_y_LR, mu_y_LR] = mFormulaLateral(alpha_LR, gamma_LR, F_z_LR, p.tire);
-[F0_y_RR, mu_y_RR] = mFormulaLateral(alpha_RR, gamma_RR, F_z_RR, p.tire);
+[F0_y_LF, mu_y_LF] = aux_mFormulaLateral(alpha_LF, gamma_LF, F_z_LF, p.tire);
+[F0_y_RF, mu_y_RF] = aux_mFormulaLateral(alpha_RF, gamma_RF, F_z_RF, p.tire);
+[F0_y_LR, mu_y_LR] = aux_mFormulaLateral(alpha_LR, gamma_LR, F_z_LR, p.tire);
+[F0_y_RR, mu_y_RR] = aux_mFormulaLateral(alpha_RR, gamma_RR, F_z_RR, p.tire);
 
 %compute longitudinal tire forces using the magic formula for combined slip
-F_x_LF = mFormulaLongitudinalComb(s_lf, alpha_LF, F0_x_LF, p.tire);
-F_x_RF = mFormulaLongitudinalComb(s_rf, alpha_RF, F0_x_RF, p.tire);
-F_x_LR = mFormulaLongitudinalComb(s_lr, alpha_LR, F0_x_LR, p.tire);
-F_x_RR = mFormulaLongitudinalComb(s_rr, alpha_RR, F0_x_RR, p.tire);
+F_x_LF = aux_mFormulaLongitudinalComb(s_lf, alpha_LF, F0_x_LF, p.tire);
+F_x_RF = aux_mFormulaLongitudinalComb(s_rf, alpha_RF, F0_x_RF, p.tire);
+F_x_LR = aux_mFormulaLongitudinalComb(s_lr, alpha_LR, F0_x_LR, p.tire);
+F_x_RR = aux_mFormulaLongitudinalComb(s_rr, alpha_RR, F0_x_RR, p.tire);
 
 %compute lateral tire forces using the magic formula for combined slip
-F_y_LF = mFormulaLateralComb(s_lf, alpha_LF, gamma_LF, mu_y_LF, F_z_LF, F0_y_LF, p.tire);
-F_y_RF = mFormulaLateralComb(s_rf, alpha_RF, gamma_RF, mu_y_RF, F_z_RF, F0_y_RF, p.tire);
-F_y_LR = mFormulaLateralComb(s_lr, alpha_LR, gamma_LR, mu_y_LR, F_z_LR, F0_y_LR, p.tire);
-F_y_RR = mFormulaLateralComb(s_rr, alpha_RR, gamma_RR, mu_y_RR, F_z_RR, F0_y_RR, p.tire);
+F_y_LF = aux_mFormulaLateralComb(s_lf, alpha_LF, gamma_LF, mu_y_LF, F_z_LF, F0_y_LF, p.tire);
+F_y_RF = aux_mFormulaLateralComb(s_rf, alpha_RF, gamma_RF, mu_y_RF, F_z_RF, F0_y_RF, p.tire);
+F_y_LR = aux_mFormulaLateralComb(s_lr, alpha_LR, gamma_LR, mu_y_LR, F_z_LR, F0_y_LR, p.tire);
+F_y_RR = aux_mFormulaLateralComb(s_rr, alpha_RR, gamma_RR, mu_y_RR, F_z_RR, F0_y_RR, p.tire);
 
 %auxiliary movements for compliant joint equations
 delta_z_f = p.h_s - p.R_w + x(17) - x(12);
@@ -317,7 +317,10 @@ f(29,1) = dot_delta_y_r;
 
 end
 
-function [F_y, mu_y] = mFormulaLateral(alpha, gamma, F_z, p)
+
+% Auxiliary functions -----------------------------------------------------
+
+function [F_y, mu_y] = aux_mFormulaLateral(alpha, gamma, F_z, p)
 %Pacejka lateral tire forces (pure slip)
 
 %turn slip is neglected, so xi_i=1;
@@ -343,7 +346,7 @@ F_y = D_y*sin(C_y*atan(B_y*alpha_y - E_y*(B_y*alpha_y - atan(B_y*alpha_y)))) + S
 
 end
 
-function F_y = mFormulaLateralComb(kappa, alpha, gamma, mu_y, F_z, F0_y, p)
+function F_y = aux_mFormulaLateralComb(kappa, alpha, gamma, mu_y, F_z, F0_y, p)
 %lateral tire forces (combined slip)
 
 %turn slip is neglected, so xi_i=1;
@@ -365,7 +368,7 @@ S_vykappa = D_vykappa*sin(p.r_vy5*atan(p.r_vy6*kappa));
 F_y = D_ykappa*cos(C_ykappa*atan(B_ykappa*kappa_s - E_ykappa*(B_ykappa*kappa_s - atan(B_ykappa*kappa_s)))) + S_vykappa;
 end
 
-function F_x = mFormulaLongitudinal(kappa, gamma, F_z, p)
+function F_x = aux_mFormulaLongitudinal(kappa, gamma, F_z, p)
 %Pacejka longitudinal tire forces (pure slip)
 
 %turn slip is neglected, so xi_i=1;
@@ -390,7 +393,7 @@ B_x = K_x/(C_x*D_x);
 F_x = D_x*sin(C_x*atan(B_x*kappa_x - E_x*(B_x*kappa_x - atan(B_x*kappa_x))) + S_vx);
 end
 
-function F_x = mFormulaLongitudinalComb(kappa, alpha, F0_x, p)
+function F_x = aux_mFormulaLongitudinalComb(kappa, alpha, F0_x, p)
 %Pacejka longitudinal tire forces (combined slip)
 
 %turn slip is neglected, so xi_i=1;
@@ -410,5 +413,4 @@ F_x = D_xalpha*cos(C_xalpha*atan(B_xalpha*alpha_s - E_xalpha*(B_xalpha*alpha_s -
 end
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

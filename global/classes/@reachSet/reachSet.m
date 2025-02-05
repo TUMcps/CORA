@@ -111,31 +111,23 @@ end
 function [timePoint,timeInterval,parent,loc] = aux_parseInputArgs(varargin)
 
     % default values
-    timePoint = []; timeInterval = []; parent = 0; loc = 0;
+    timePoint = []; timeInterval = [];
 
-    if nargin == 1
+    % timePoint given?
+    if numel(varargin) >= 1
         timePoint = varargin{1};
-    elseif nargin == 2
-        timePoint = varargin{1};
-        if isstruct(varargin{2}) || ...
-                (isnumeric(varargin{2}) && isempty(varargin{2}))
-            timeInterval = varargin{2};
-        else
-            parent = varargin{2};
-        end
-    elseif nargin == 3
-        timePoint = varargin{1};
-        if isstruct(varargin{2}) || ...
-                (isnumeric(varargin{2}) && isempty(varargin{2}))
-            timeInterval = varargin{2};
-            parent = varargin{3};
-        else
-            parent = varargin{2};
-            loc = varargin{3};
-        end
-    elseif nargin == 4
-        [timePoint,timeInterval,parent,loc] = varargin{:};
     end
+
+    % timeInterval given?
+    if numel(varargin) >= 2 && ... % check condition for timeInterval
+        (isstruct(varargin{2}) || (isnumeric(varargin{2}) && isempty(varargin{2})))
+        % read timeInterval and remove from varargin
+        timeInterval = varargin{2};
+        varargin = varargin([1,3:end]);
+    end
+
+    % read parent and loc
+    [parent,loc] = setDefaultValues({0,0},varargin(2:end));
 
 end
 

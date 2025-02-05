@@ -1,7 +1,7 @@
 function f = bus3Dyn(x,y,u)
-% bus2Dyn - dynamic function for a 3-bus power system
+% bus3Dyn - dynamic function for a 3-bus power system
 %
-% Syntax:  
+% Syntax:
 %    f = bus3Dyn(x,y,u)
 %
 % Inputs:
@@ -12,12 +12,12 @@ function f = bus3Dyn(x,y,u)
 % Outputs:
 %    f - vector storing the time-derivatives of the states
 
-% Author:       Niklas Kochdumper
-% Written:      19-June-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       19-June-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %x(1) = omega
 %x(2) = T_m
@@ -48,4 +48,4 @@ R_d = 0.05; %guessed value!
 f(1,1) = -D/M*x(1) + 1/M*x(2) - (y(1)*V_1)/(M*X_m)*sin(-y(4)) + D/M*omega_s; %omega
 f(2,1) = -1/(T_sv*R_d*omega_s)*x(1) - 1/T_sv*x(2) + 1/(T_sv*R_d) + 1/T_sv*u(1); %T_m
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

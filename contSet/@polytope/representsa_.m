@@ -46,7 +46,7 @@ switch type
     case 'origin'
         % quick check: is origin contained?
         res = false;
-        if contains_(P,zeros(n,1),'exact',tol)
+        if contains_(P,zeros(n,1),'exact',tol,0,false,false)
             % definitely not empty if the origin is contained
             P.emptySet.val = false;
             % check if only origin contained
@@ -74,7 +74,12 @@ switch type
         end
         if nargout == 2 && res
             % only one point
-            S = center(P);
+            % If P has a V-rep, use that one to compute the 'center'
+            if P.isVRep.val
+                S = center(P, 'avg');
+            else
+                S = center(P);
+            end
         end
 
     case 'capsule'

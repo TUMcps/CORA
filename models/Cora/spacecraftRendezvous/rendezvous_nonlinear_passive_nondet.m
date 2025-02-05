@@ -2,7 +2,7 @@ function HA = rendezvous_nonlinear_passive_nondet()
 % rendezvous_nonlinear_passive_nondet - nonlinear spacecraft-rendezvous
 %    system with nondeterministic switching (see Sec. 3.6 in [1])
 %
-% Syntax:  
+% Syntax:
 %    HA = rendezvous_nonlinear_passive_nondet()
 %
 % Inputs:
@@ -21,10 +21,10 @@ function HA = rendezvous_nonlinear_passive_nondet()
 %
 % See also: none
 
-% Authors:        Niklas Kochdumper
-% Written:        22-May-2020
-% Last update:    ---
-% Last revision:  ---
+% Authors:       Niklas Kochdumper
+% Written:       22-May-2020
+% Last update:   ---
+% Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
@@ -161,4 +161,4 @@ loc(3) = location('S3', inv, trans, dynamics);
 % compose hybrid automaton
 HA = hybridAutomaton('spacecraft_passive',loc);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

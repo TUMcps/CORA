@@ -1,8 +1,29 @@
 function a = set(a,varargin)
-% Purpose:  Set asset properties from the specified object
+% set - Set asset properties from the specified object
 % Pre:      markovchain object
 % Post:     property value
-% Tested:   14.09.06,MA
+%
+% Syntax:
+%    a = set(a,varargin)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       Matthias Althoff
+% Written:       14-September-2006
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 propertyArgIn = varargin;
 while length(propertyArgIn) >= 2,
@@ -13,6 +34,8 @@ while length(propertyArgIn) >= 2,
     case 'field'
         a.field = val;      
     otherwise
-        error('Asset properties: postion, speed')
+        throw(CORAerror('CORA:specialError','Asset properties: postion, speed'))
     end
 end
+
+% ------------------------------ END OF CODE ------------------------------

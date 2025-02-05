@@ -7,7 +7,7 @@ function dx = springpendulum(x,u)
 %   x(3):   v_r     | 0             | radial velocity
 %   x(4):   v_theta | 0             | angular velocity
 %
-% Syntax:  
+% Syntax:
 %    dx = springpendulum(x,u)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function dx = springpendulum(x,u)
 %   [1] X. Chen. "Reachability Analysis of Non-Linear Hybrid Systems Using
 %       Taylor Models"
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       12-October-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 g = 9.81;   % gravity
 k = 2;      % spring constant
@@ -39,4 +39,4 @@ dx(4,1) = -( 2*x(3)*x(4) + g*sin(x(2)) ) / x(1);
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

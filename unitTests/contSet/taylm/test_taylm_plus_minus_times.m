@@ -33,8 +33,8 @@ t = x - x*y; %-> 1/4 + 1/4*x - 1/4*y - 1/4*x*y  + [0, 0]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], tol ))
-assert(appeq( getRem(t), interval(0,0), tol))
+assert(priv_appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], tol ))
+assert(priv_appeq( getRem(t), interval(0,0), tol))
 
 %% Test 2
 x = interval(0,1);
@@ -45,8 +45,8 @@ t = x + x*y; %-> 2/4 + 3/4*x + 1/4*y + 1/4*x*y  + [0, 0]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], tol ))
-assert(appeq( getRem(t), interval(0,0), tol))
+assert(priv_appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], tol ))
+assert(priv_appeq( getRem(t), interval(0,0), tol))
 
 %% Test 3
 x = interval(0,1);
@@ -57,8 +57,8 @@ t = x + x*y; %-> 3/4 + 3/4*x + 1/4*y + 1/4*x*y  + [-13, 4]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], tol ))
-assert(appeq( getRem(t), interval(-12,4), tol))
+assert(priv_appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-12,4), tol))
 
 %% Test 4
 x = interval(0,1);
@@ -69,8 +69,8 @@ t = x - x*y; %-> 3/4 + 3/4*x + 1/4*y + 1/4*x*y  + [-13, 4]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], tol ))
-assert(appeq( getRem(t), interval(-2,14), tol))
+assert(priv_appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-2,14), tol))
 
 %% Test 5
 x = interval(0,1);
@@ -81,8 +81,8 @@ t = 2*x*y; %-> 2/4 + 2/4*x + 2/4*y + 2/4*x*y  + [-24, 4]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [2/4; 2/4; 2/4; 2/4], tol ))
-assert(appeq( getRem(t), interval(-24,4), tol))
+assert(priv_appeq( getCoef(t), [2/4; 2/4; 2/4; 2/4], tol ))
+assert(priv_appeq( getRem(t), interval(-24,4), tol))
 
 %% Test 6
 x = interval(0,1);
@@ -93,8 +93,8 @@ t = x*y - 2; %-> -7/4 + 2/4*x + 2/4*y + 2/4*x*y  + [-12, 2]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [-7/4; 1/4; 1/4; 1/4], tol ))
-assert(appeq( getRem(t), interval(-12,2), tol))
+assert(priv_appeq( getCoef(t), [-7/4; 1/4; 1/4; 1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-12,2), tol))
 
 %% Test 7
 x = interval(0,1);
@@ -105,8 +105,8 @@ t = 2 - x*y; %-> 7/4 - 1/4*x - 1/4*y - 1/4*x*y  + [-2, 12]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [7/4; -1/4; -1/4; -1/4], tol ))
-assert(appeq( getRem(t), interval(-2,12), tol))
+assert(priv_appeq( getCoef(t), [7/4; -1/4; -1/4; -1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-2,12), tol))
 
 %% Test 8
 x = interval(0,1);
@@ -117,8 +117,8 @@ t = 2*y*x - x*y; %-> 1/4 + 1/4*x + 1/4*y + 1/4*x*y  + [-26, 16]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [1/4; 1/4; 1/4; 1/4], tol ))
-assert(appeq( getRem(t), interval(-26, 16), tol))
+assert(priv_appeq( getCoef(t), [1/4; 1/4; 1/4; 1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-26, 16), tol))
 
 %% Test 9
 x = interval(0,1);
@@ -131,8 +131,8 @@ t = 2*y*x*z - x*y; %-> 0 + 1/4*z + 1/4*y*z + 1/4*x*z + 1/4*x*y*z + [-26, 16]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [0; 1/4; 1/4; 1/4; 1/4], tol ))
-assert(appeq( getRem(t), interval(-26, 16), tol))
+assert(priv_appeq( getCoef(t), [0; 1/4; 1/4; 1/4; 1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-26, 16), tol))
 
 %% Test 10
 x = interval(0,1);
@@ -148,8 +148,8 @@ t = x*y - a*b;   %-> 0 + 1/4*x + 1/4*y + 1/4*x*y
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [0; -1/4; -1/4; 1/4; 1/4; -1/4; 1/4], tol ))
-assert(appeq( getRem(t), interval(-12, 2), tol))
+assert(priv_appeq( getCoef(t), [0; -1/4; -1/4; 1/4; 1/4; -1/4; 1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-12, 2), tol))
 
 %% Test 11
 x = interval(-2,0);
@@ -158,8 +158,8 @@ t = x*x*x; %-> 1 - 3x + 3x^2  + [-1, 1]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [1; -3; 3], tol ))
-assert(appeq( getRem(t), interval(-1,1), tol))
+assert(priv_appeq( getCoef(t), [1; -3; 3], tol ))
+assert(priv_appeq( getRem(t), interval(-1,1), tol))
 
  %% Test 12
 syms x y
@@ -171,8 +171,8 @@ t = x - x*y; %-> 1/4 + 1/4*x - 1/4*y - 1/4*x*y  + [0, 0]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], tol ))
-assert(appeq( getRem(t), interval(0,0), tol))
+assert(priv_appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], tol ))
+assert(priv_appeq( getRem(t), interval(0,0), tol))
 
 %% Test 13
 syms x y
@@ -184,8 +184,8 @@ t = x + x*y; %-> 2/4 + 3/4*x + 1/4*y + 1/4*x*y  + [0, 0]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], tol ))
-assert(appeq( getRem(t), interval(0,0), tol))
+assert(priv_appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], tol ))
+assert(priv_appeq( getRem(t), interval(0,0), tol))
 
 %% Test 14
 syms x y
@@ -197,8 +197,8 @@ t = x + x*y; %-> 3/4 + 3/4*x + 1/4*y + 1/4*x*y  + [-13, 4]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], tol ))
-assert(appeq( getRem(t), interval(-12,4), tol))
+assert(priv_appeq( getCoef(t), [3/4; 1/4; 3/4; 1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-12,4), tol))
 
 %% Test 15
 syms x y
@@ -210,8 +210,8 @@ t = x - x*y; %-> 3/4 + 3/4*x + 1/4*y + 1/4*x*y  + [-13, 4]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], tol ))
-assert(appeq( getRem(t), interval(-2,14), tol))
+assert(priv_appeq( getCoef(t), [1/4; -1/4; 1/4; -1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-2,14), tol))
 
 %% Test 16
 syms x y
@@ -223,8 +223,8 @@ t = 2*x*y; %-> 2/4 + 2/4*x + 2/4*y + 2/4*x*y  + [-24, 4]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [2/4; 2/4; 2/4; 2/4], tol ))
-assert(appeq( getRem(t), interval(-24,4), tol))
+assert(priv_appeq( getCoef(t), [2/4; 2/4; 2/4; 2/4], tol ))
+assert(priv_appeq( getRem(t), interval(-24,4), tol))
 
 %% Test 17
 syms x y
@@ -236,8 +236,8 @@ t = x*y - 2; %-> -7/4 + 2/4*x + 2/4*y + 2/4*x*y  + [-12, 2]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [-7/4; 1/4; 1/4; 1/4], tol ))
-assert(appeq( getRem(t), interval(-12,2), tol))
+assert(priv_appeq( getCoef(t), [-7/4; 1/4; 1/4; 1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-12,2), tol))
 
 %% Test 18
 syms x y
@@ -249,8 +249,8 @@ t = 2 - x*y; %-> 7/4 - 1/4*x - 1/4*y - 1/4*x*y  + [-2, 12]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [7/4; -1/4; -1/4; -1/4], tol ))
-assert(appeq( getRem(t), interval(-2,12), tol))
+assert(priv_appeq( getCoef(t), [7/4; -1/4; -1/4; -1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-2,12), tol))
 
 %% Test 19
 syms x y
@@ -262,8 +262,8 @@ t = 2*y*x - x*y; %-> 1/4 + 1/4*x + 1/4*y + 1/4*x*y  + [-26, 16]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [1/4; 1/4; 1/4; 1/4], tol ))
-assert(appeq( getRem(t), interval(-26, 16), tol))
+assert(priv_appeq( getCoef(t), [1/4; 1/4; 1/4; 1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-26, 16), tol))
 
 %% Test 20
 syms x y z
@@ -277,8 +277,8 @@ t = 2*y*x*z - x*y; %-> 0 + 1/4*z + 1/4*y*z + 1/4*x*z + 1/4*x*y*z + [-26, 16]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [0; 1/4; 1/4; 1/4; 1/4], tol ))
-assert(appeq( getRem(t), interval(-26, 16), tol))
+assert(priv_appeq( getCoef(t), [0; 1/4; 1/4; 1/4; 1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-26, 16), tol))
 
 %% Test 21
 syms x y a b
@@ -291,8 +291,8 @@ t = x*y - a*b;   %-> 0 + 1/4*x + 1/4*y + 1/4*x*y
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [0; -1/4; -1/4; 1/4; 1/4; -1/4; 1/4], tol ))
-assert(appeq( getRem(t), interval(-12, 2), tol))
+assert(priv_appeq( getCoef(t), [0; -1/4; -1/4; 1/4; 1/4; -1/4; 1/4], tol ))
+assert(priv_appeq( getRem(t), interval(-12, 2), tol))
 
 %% Test 22
 syms x
@@ -301,7 +301,7 @@ t = x*x*x; %-> 1 - 3x + 3x^2  + [-1, 1]
 
 tol = 10^-3;
 
-assert(appeq( getCoef(t), [1; -3; 3], tol ))
-assert(appeq( getRem(t), interval(-1,1), tol))
+assert(priv_appeq( getCoef(t), [1; -3; 3], tol ))
+assert(priv_appeq( getRem(t), interval(-1,1), tol))
 
 % ------------------------------ END OF CODE ------------------------------

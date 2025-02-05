@@ -3,7 +3,7 @@ function [cells,error] = intersectingCells(obj,contSet,varargin)
 % continuous set, overapproximatively, by overapproximating the convex set 
 % as a multidimensional interval.
 %
-% Syntax:  
+% Syntax:
 %   [cells,error] = intersectingCells(obj,contSet,varargin)
 %
 % Inputs:
@@ -25,17 +25,16 @@ function [cells,error] = intersectingCells(obj,contSet,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Aaron Pereira
-% Written:      14-September-2006
-% Last update:  16-August-2007 
-%               29-October-2007
-%               17-September-2015
-%               02-August-2017 (AP)
-%               08-August-2018 (MA)
-% Last revision:---
+% Authors:       Matthias Althoff, Aaron Pereira
+% Written:       14-September-2006
+% Last update:   16-August-2007 
+%                29-October-2007
+%                17-September-2015
+%                02-August-2017 (AP)
+%                08-August-2018 (MA)
+% Last revision: ---
 
-
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-12;
 
@@ -68,8 +67,7 @@ error=0; % set error to 0
 if isa(I, 'interval')
     leftLimit = infimum(I);
     rightLimit = supremum(I);
-
-else
+else % numeric
     leftLimit = I;
     rightLimit = I;
 end
@@ -79,11 +77,13 @@ if (size(I,2) ~= 1)
         disp('either define an interval or a point')
         return
     else
+        % make column vector
         leftLimit = leftLimit';
         rightLimit = rightLimit';
     end
 end
 
+% init bounds
 bounds = [leftLimit,rightLimit];
 
 if size(bounds,1) ~= length(obj.nrOfSegments)
@@ -107,6 +107,7 @@ for iDim= 1:length(obj.dividers)
     end
 end
 
+% TODO: what is done here?
 MX = zeros(1,0);
 for iDim=1:length(currentIndex)
     MX=[repmat(MX,length(currentIndex{iDim}),1),reshape(repmat(currentIndex{iDim},size(MX,1),1),[],1)];
@@ -115,9 +116,9 @@ Multiples=ones(length(currentIndex),1);
 for i = 1:(length(currentIndex)-1)
     Multiples(i,1)=prod(obj.nrOfSegments((i+1):end));
 end
-cells=(MX-1)*Multiples;
+cells=(MX-1)*Multiples; % unused?
 
-
+% ?
 if isempty(currentIndex)||error
     cells = 0;
 elseif giveAnswerAsIndices
@@ -135,4 +136,4 @@ end
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

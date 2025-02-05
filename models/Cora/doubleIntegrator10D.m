@@ -2,7 +2,7 @@ function [A,B,E] = doubleIntegrator10D
 % doubleIntegrator10D - double integrator system with uncontrollable
 %    subspace from [1, (18)]
 %
-% Syntax:  
+% Syntax:
 %    [A,B,E] = doubleIntegrator10D
 %
 % Inputs:
@@ -18,12 +18,12 @@ function [A,B,E] = doubleIntegrator10D
 %        Backward Reachable Sets for Uncertain Linear Systems", IEEE
 %        Control Systems Letters (6), 2022.
 
-% Author:       Mark Wetzlinger
-% Written:      08-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       08-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % system represented as x' = Ax + Bu
 % however, CORA currently does not support E matrices
@@ -49,5 +49,4 @@ B(6,3) = 1;
 % disturbance matrix
 E = eye(10);
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

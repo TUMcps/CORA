@@ -50,7 +50,7 @@ function [Htp,Hti,C_state] = homogeneousSolution(linsys,X,timeStep,truncationOrd
 % ------------------------------ BEGIN CODE -------------------------------
 
 narginchk(4,5);
-blocks = setDefaultValues({[1,linsys.nrOfStates]},varargin);
+blocks = setDefaultValues({[1,linsys.nrOfDims]},varargin);
 
 % since this function is public, we cannot assume that taylorLinSys has
 % already been instantiated
@@ -70,7 +70,7 @@ Htp = block_mtimes(eAdt,X);
 % check if time-interval solution should also be computed
 if nargout >= 2
     % curvature error
-    C_state = curvatureState(linsys,X,timeStep,truncationOrder);
+    C_state = priv_curvatureState(linsys,X,timeStep,truncationOrder);
     
     % homogeneous time-interval solution
     Hti_approx = block_operation(@enclose,X,Htp);

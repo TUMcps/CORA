@@ -137,7 +137,7 @@ for i = 1: length(configs)
         end
     end
     if isa(configs{1}.sys, 'nonlinearSysDT') && isa(configs{i}.sys, 'nonlinearARX')
-        p = configs{1}.sys.nrOfStates;
+        p = configs{1}.sys.nrOfDims;
         R{i} = R{i}(p+1:end);
         y = obj.y(p+1:end,:,:);
     end
@@ -204,11 +204,13 @@ for i_dim = 1 : size(plot_settings.dims,1)
 
         % plot the reachable set for each system in configs
         for i=1:length(configs)
+            % get name
             if isfield(configs{i},'name') && ~isempty(configs{i}.name)
                 name = configs{i}.name;
             else
                 name = sprintf('config%d',i);
             end
+            % get color and alpha
             if contains(name, "true")
                 col = [0.9 0.9 0.9];
                 alpha = 0.8;
@@ -216,6 +218,7 @@ for i_dim = 1 : size(plot_settings.dims,1)
                 col = c(i,:);
                 alpha = 0;
             end
+            % get display name
             if size(obj.u,3) > 1
                 name_Y = "$\mathcal{Y}_{a,\displaystyle \mathrm{" ...
                     + name + "}}$";
@@ -223,11 +226,12 @@ for i_dim = 1 : size(plot_settings.dims,1)
                 name_Y = "$\mathcal{Y}_{\displaystyle \mathrm{" ...
                     + name + "}}$";
             end
-            if ~isa(R{i}{k}, 'contSet')
-                R_ik = zonotope(R{i}{k});
-            else 
-                R_ik = R{i}{k};
+            % build as set
+            R_ik = R{i}{k};
+            if ~isa(R_ik, 'contSet')
+                R_ik = zonotope(R_ik);
             end
+            % plot
             if isempty(R_ik.generators) || ...
                     sum(abs((R_ik.generators)),'all') == 0
                 if isempty(R_ik)

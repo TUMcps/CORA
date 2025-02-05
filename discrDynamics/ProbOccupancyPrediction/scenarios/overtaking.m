@@ -1,6 +1,27 @@
 function overtaking()
-% changed: 02-October-2009 
-% updated: 18-August-2016
+% overtaking - ???
+%
+% Syntax:
+%    overtaking()
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       ???
+% Written:       02-October-2009 
+% Last update:   18-August-2016
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set path
 global filePath
@@ -236,3 +257,4 @@ for iStep=1:5
 %    aviobj = addframe(aviobj,getframe);
 end
 
+% ------------------------------ END OF CODE ------------------------------

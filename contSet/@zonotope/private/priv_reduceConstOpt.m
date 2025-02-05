@@ -72,6 +72,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function Gred = aux_qr(C0,G,options)
+% qr
 
 n = size(G,1);
 [Q0, R0] = qr(C0);
@@ -85,6 +86,7 @@ Gred = Q*triu(R);
 end
 
 function Gred = aux_svd(C0,G,options)
+% svd
 
 n = size(G,1);
 [U0, S0, V0] = svd(C0);
@@ -99,6 +101,7 @@ Gred = U * diag(diag(S)) * V';
 end
 
 function vol = aux_svdLogVol(X, G)
+% svd log vol
     n = size(G,1);
     Y = reshape(X, n, 3*n);
     S = Y(:,(n+1):2*n);
@@ -107,6 +110,7 @@ function vol = aux_svdLogVol(X, G)
 end
 
 function [c, ceq] = aux_zonoSVDConst(X, G)
+% zono svd const
     n = size(G,1);
     Y = reshape(X, n, 3*n);
     U = Y(:,1:n);

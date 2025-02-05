@@ -3,7 +3,7 @@ function [P]=segPolytope(obj,segNumber,devNumber)
 % segment number (along the path) and the deviation number (deviation from 
 % the path) is given
 %
-% Syntax:  
+% Syntax:
 %    [P]=segPolytope(obj,segNumber,devNumber)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function [P]=segPolytope(obj,segNumber,devNumber)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      13-March-2008 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       13-March-2008 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %get number of deviation segments
@@ -70,4 +70,4 @@ V=[Plb,Prb,Plt,Prt];
 P=polytope(V);
     
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

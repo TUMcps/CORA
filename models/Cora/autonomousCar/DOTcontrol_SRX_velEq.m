@@ -1,8 +1,8 @@
 function [carInput,k] = DOTcontrol_SRX_velEq(x,uComb)
-% DOTcontrol_SRX_vel - provides the steering angle speed of the Cadillac 
+% DOTcontrol_SRX_velEq - provides the steering angle speed of the Cadillac 
 %                      SRX (see [1])
 %
-% Syntax:  
+% Syntax:
 %    [carInput,k] = DOTcontrol_SRX_velEq(x,uComb)
 %
 % Inputs:
@@ -24,12 +24,12 @@ function [carInput,k] = DOTcontrol_SRX_velEq(x,uComb)
 %
 % See also: DOTBicycleDynamics_controlled_SRX_velEq
 
-% Author:       Matthias Althoff
-% Written:      01-March-2012
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-March-2012
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % %control parameters
 % k(1) = 0.2;
@@ -59,4 +59,4 @@ delta_dot = k(6)*(delta - x(6));
 carInput(1) = delta_dot;
 carInput(2) = u(5);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -192,15 +192,17 @@ function [G, E] = aux_sortPost(obj, G, E, maxOrder, G_start, G_end, G_ext_start,
             G_i = G(:, G_start(i):G_end(i));
             E_i = E(:, G_start(i):G_end(i));
 
-
+            % get indices
             i1 = floor(i/2);
             i2 = ceil(i/2);
             i1len = G_ext_end(i1)-G_ext_start(i1)+1;
             i2len = G_ext_end(i2)-G_ext_start(i2)+1;
 
+            % init results
             Gs_i = cell(1, i1);
             Es_i = cell(1, i1);
             if i1 == i2
+                % gather triangle
                 cnt = 1;
                 for j = i1len:-1:1
                     Gs_i{j} = G_i(:, cnt:cnt+j-1);
@@ -208,6 +210,7 @@ function [G, E] = aux_sortPost(obj, G, E, maxOrder, G_start, G_end, G_ext_start,
                     cnt = cnt + j;
                 end
             else
+                % gather all
                 idx = num2cell(1:i1len);
                 Gs_i = cellfun(@(i) G_i(:, (i-1)*i2len+(1:i2len)), ...
                     idx, 'UniformOutput', false);
@@ -215,7 +218,10 @@ function [G, E] = aux_sortPost(obj, G, E, maxOrder, G_start, G_end, G_ext_start,
                     idx, 'UniformOutput', false);
             end
 
+            % call sort plus
             [G_i, E_i] = aux_sortPlus(obj, Gs_i, Es_i, size(G_i, 2));
+
+            % read out results
             h_i = size(G_i, 2); % new number of generators
             G(:, G_start(i)-1+(1:h_i)) = G_i;
             G(:, G_start(i)+h_i:G_end(i)) = 0; % set unused to 0
@@ -249,6 +255,7 @@ function [G, E] = aux_sortPlus(obj, Gs, Es, h)
         heapInit{i} = minObj;
     end
 
+    % init
     G = zeros(size(Gs{1}, 1), h);
     E = zeros(size(Es{1}, 1), h);
     idx = 1;

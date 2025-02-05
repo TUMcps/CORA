@@ -2,7 +2,7 @@ function c = cellCenter(varargin)
 % cellCenter - returns a cell array of cell center positions of the
 % partition segments whose indices are given as input
 %
-% Syntax:  
+% Syntax:
 %   c = cellCenter(varargin)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function c = cellCenter(varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Aaron Pereira
-% Written:      29-September-2006
-% Last update:  27-June-2008
-%               01-August-2017 (AP)
-% Last revision:---
+% Authors:       Matthias Althoff, Aaron Pereira
+% Written:       29-September-2006
+% Last update:   27-June-2008
+%                01-August-2017 (AP)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %cases for one or two input arguments------------------
 if nargin==1
@@ -58,4 +58,4 @@ for i = 1:size(subscripts,1)
     c{i} = center;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

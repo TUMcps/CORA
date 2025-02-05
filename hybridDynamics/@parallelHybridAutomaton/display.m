@@ -173,7 +173,7 @@ for i=1:numComp
 
     % state dimension, input dimension (including input binds), output
     % dimension (has to be equal over all locations of a component)
-    disp("   State dimension: " + pHA.components(i).location(1).contDynamics.nrOfStates);
+    disp("   State dimension: " + pHA.components(i).location(1).contDynamics.nrOfDims);
 
     % input binds
     if isempty(pHA.bindsInputs{i})

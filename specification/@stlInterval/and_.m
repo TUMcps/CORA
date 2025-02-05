@@ -38,6 +38,8 @@ if isa(S,'stlInterval')
 
     lb = max(I.lower,S.lower);
     ub = min(I.upper,S.upper);
+
+    % determine whether the intersection is left closed
     if I.lower > S.lower
         lc = I.leftClosed;
     elseif I.lower < S.lower
@@ -45,6 +47,8 @@ if isa(S,'stlInterval')
     else
         lc = I.leftClosed && S.leftClosed;
     end
+
+    % determine whether the intersection is right closed
     if I.upper < S.upper
         rc = I.rightClosed;
     elseif I.upper > S.upper

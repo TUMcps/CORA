@@ -25,7 +25,7 @@ classdef linErrorBound < handle
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: linearSys/private/reach_adaptive
+% See also: linearSys/private/priv_reach_adaptive
 
 % Authors:       Mark Wetzlinger
 % Written:       06-November-2024

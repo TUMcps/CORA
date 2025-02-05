@@ -30,6 +30,7 @@ function checks = checkDynParameterParams(field,sys,func,params,options,checks)
 
 % search for checks in params
 switch field
+    % time
     case 'tStart'
         checks = aux_getChecksParams_tStart(checks,sys,func,params,options);
     case 'tFinal'
@@ -38,26 +39,37 @@ switch field
         checks = aux_getChecksParams_R0(checks,sys,func,params,options);
     case 'Rend'
         checks = aux_getChecksParams_Rend(checks,sys,func,params,options);
+        % input
     case 'U'
         checks = aux_getChecksParams_U(checks,sys,func,params,options);
     case 'u'
         checks = aux_getChecksParams_u(checks,sys,func,params,options);
     case 'tu'
         checks = aux_getChecksParams_tu(checks,sys,func,params,options);
+        % disturbances
     case 'W'
         checks = aux_getChecksParams_W(checks,sys,func,params,options);
+    case 'w'
+        checks = aux_getChecksParams_w(checks,sys,func,params,options);
     case 'V'
         checks = aux_getChecksParams_V(checks,sys,func,params,options);
+        % output
     case 'y'
         checks = aux_getChecksParams_y(checks,sys,func,params,options);
+    case 'y0'
+        checks = aux_getChecksParams_y0(checks,sys,func,params,options);
+    case 'y0guess'
+        checks = aux_getChecksParams_y0guess(checks,sys,func,params,options);
+    case 'Y0'
+        checks = aux_getChecksParams_Y0(checks,sys,func,params,options);
+        % sets
     case 'safeSet'
         checks = aux_getChecksParams_safeSet(checks,sys,func,params,options);
     case 'unsafeSet'
         checks = aux_getChecksParams_unsafeSet(checks,sys,func,params,options);
     case 'paramInt'
         checks = aux_getChecksParams_paramInt(checks,sys,func,params,options);
-    case 'y0guess'
-        checks = aux_getChecksParams_y0guess(checks,sys,func,params,options);
+        % location
     case 'startLoc'
         checks = aux_getChecksParams_startLoc(checks,sys,func,params,options);
     case 'finalLoc'
@@ -70,18 +82,13 @@ switch field
         checks = aux_getChecksParams_paramInts(checks,sys,func,params,options);
     case 'inputCompMap'
         checks = aux_getChecksParams_inputCompMap(checks,sys,func,params,options);
+        % test suite
     case 'testSuite'
         checks = aux_getChecksParams_testSuite(checks,sys,func,params,options);
     case 'testSuite_train'
         checks = aux_getChecksParams_testSuite_train(checks,sys,func,params,options);
     case 'testSuite_val'
         checks = aux_getChecksParams_testSuite_val(checks,sys,func,params,options);
-    case 'w'
-        checks = aux_getChecksParams_w(checks,sys,func,params,options);
-    case 'y0'
-        checks = aux_getChecksParams_y0(checks,sys,func,params,options);
-    case 'Y0'
-        checks = aux_getChecksParams_Y0(checks,sys,func,params,options);
 
     otherwise
         CORAwarning('CORA:contDynamics','Unknown params.%s', field); return;
@@ -114,11 +121,11 @@ function checks = aux_getChecksParams_R0(checks,sys,func,params,options)
         checks(end+1) = add2checks(@(val)any(ismember(getMembers('R0'),class(val))), 'memberR0');
     end
     if isa(sys,'hybridAutomaton')
-        checks(end+1) = add2checks(@(val)dim(val)==sys.location(params.startLoc).contDynamics.nrOfStates, 'eqsysdim');
+        checks(end+1) = add2checks(@(val)dim(val)==sys.location(params.startLoc).contDynamics.nrOfDims, 'eqsysdim');
     elseif isa(sys,'nonlinearARX') || isa(sys,'linearARX')
         checks(end+1) = add2checks(@(val)dim(val)==sys.n_p*sys.nrOfOutputs, 'eqsysdim');
-    elseif sys.nrOfStates ~= 0 %not an empty sys object
-        checks(end+1) = add2checks(@(val)eq(dim(val),sys.nrOfStates), 'eqsysdim');
+    elseif sys.nrOfDims ~= 0 %not an empty sys object
+        checks(end+1) = add2checks(@(val)eq(dim(val),sys.nrOfDims), 'eqsysdim');
     end
 end
 
@@ -138,7 +145,7 @@ function checks = aux_getChecksParams_U(checks,sys,func,params,options)
         checks(end+1) = add2checks(@(val)c_pHA_U(val,sys,params),'');
     else
         checks(end+1) = add2checks(@(val)any(ismember(getMembers('U'),class(val))), 'memberU');
-        if sys.nrOfStates ~= 0 %not an empty sys object
+        if sys.nrOfDims ~= 0 %not an empty sys object
             checks(end+1) = add2checks(@(val)eq(dim(val),sys.nrOfInputs), 'eqinput');
         end
     end
@@ -186,7 +193,7 @@ function checks = aux_getChecksParams_W(checks,sys,func,params,options)
         checks(end+1) = add2checks(@(val)c_pHA_W(val,sys,params),'');
     else
         checks(end+1) = add2checks(@(val)any(ismember(getMembers('W'),class(val))), 'memberW');
-        if sys.nrOfStates ~= 0 %not an empty sys object
+        if sys.nrOfDims ~= 0 %not an empty sys object
             checks(end+1) = add2checks(@(val)eq(dim(val),sys.nrOfDisturbances), 'eqdists');
         end
     end
@@ -200,7 +207,7 @@ function checks = aux_getChecksParams_V(checks,sys,func,params,options)
         checks(end+1) = add2checks(@(val)c_pHA_V(val,sys,params),'');
     else
         checks(end+1) = add2checks(@(val)any(ismember(getMembers('V'),class(val))), 'memberV');
-        if sys.nrOfStates ~= 0 %not an empty sys object
+        if sys.nrOfDims ~= 0 %not an empty sys object
             checks(end+1) = add2checks(@(val)eq(dim(val),sys.nrOfNoises), 'eqnoises');
         end
     end
@@ -263,22 +270,22 @@ end
 function checks = aux_getChecksParams_x0(checks,sys,func,params,options)
     if isa(sys,'hybridAutomaton')
         checks(end+1) = add2checks(@isvector, 'isvector');
-        checks(end+1) = add2checks(@(val)length(val)==sys.location(params.startLoc).contDynamics.nrOfStates, 'isnumeric');
+        checks(end+1) = add2checks(@(val)length(val)==sys.location(params.startLoc).contDynamics.nrOfDims, 'isnumeric');
     elseif isa(sys,'parallelHybridAutomaton')
-        checks(end+1) = add2checks(@(val)all(size(val)==[sys.nrOfStates,1]), 'eqsysdim');
+        checks(end+1) = add2checks(@(val)all(size(val)==[sys.nrOfDims,1]), 'eqsysdim');
     end
 end
 
 % refPoints
 function checks = aux_getChecksParams_refPoints(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
-    checks(end+1) = add2checks(@(val)size(val,1)==sys.nrOfStates, 'eqsysdim');
+    checks(end+1) = add2checks(@(val)size(val,1)==sys.nrOfDims, 'eqsysdim');
     checks(end+1) = add2checks(@(val)size(val,2)==reachSteps(params,options)+1, 'eqreachSteps');
 end
 
 % paramInts
 function checks = aux_getChecksParams_paramInts(checks,sys,func,params,options)
-    checks(end+1) = add2checks(@(val)size(val,1)==sys.nrOfStates, 'eqsysdim');
+    checks(end+1) = add2checks(@(val)size(val,1)==sys.nrOfDims, 'eqsysdim');
     checks(end+1) = add2checks(@(val)size(val,2)==reachSteps(params,options)+1, 'eqreachSteps');
 end
 

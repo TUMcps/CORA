@@ -2,7 +2,7 @@ function f=powertrain21Eq(x,u,p)
 % powertrain21Eq - dynamic for the 21-dimensional power train system 
 %                 (see Sec. 6 in [1])
 %
-% Syntax:  
+% Syntax:
 %    f = powertrain21Eq(x,u,p)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function f=powertrain21Eq(x,u,p)
 %   [1] M. Althoff et al. "Avoiding Geometic Intersection Operations in 
 %       Reachability Analysis of Hybrid Systems"
 
-% Author:       Matthias Althoff
-% Written:      21-September-2011
-% Last update:  23-December-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-September-2011
+% Last update:   23-December-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %control
@@ -54,4 +54,4 @@ f(19,1) = p.J_i*(p.k_i*(x(16) - x(18)) - p.k_i*(x(18) - x(20)) - p.b_i*x(19)); %
 f(20,1) = x(21); %Theta_7
 f(21,1) = p.J_i*(p.k_i*(x(18) - x(20)) - p.k_i*(x(20) - x(5)) - p.b_i*x(21)); %\dot{Theta}_7
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

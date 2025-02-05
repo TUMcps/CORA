@@ -2,7 +2,7 @@ function [p]=intersection(R1,R2,p1,p2,devProb1,devProb2,fArray,type)
 % intersection - computes the probability that two reachable sets 
 % of traffic participants intersect.
 %
-% Syntax:  
+% Syntax:
 %    [p]=intersection(R1,R2,p1,p2)
 %
 % Inputs:
@@ -24,16 +24,16 @@ function [p]=intersection(R1,R2,p1,p2,devProb1,devProb2,fArray,type)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      13-March-2008 
-% Last update:  01-April-2008
-%               22-April-2008
-%               17-June-2009
-%               18-August-2016
-%               14-August-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       13-March-2008 
+% Last update:   01-April-2008
+%                22-April-2008
+%                17-June-2009
+%                18-August-2016
+%                14-August-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % figure;
 % hold on
@@ -95,7 +95,7 @@ p=0;
 if ~isempty(potPairs)
     for iPair=1:length(potPairs(:,1))
         %compute deviation numbers whose polytopes might intersect
-        [potDevPairs]=devNumbers(R1,R2,potPairs(iPair,:),r,devProb1,devProb2);
+        [potDevPairs]=aux_devNumbers(R1,R2,potPairs(iPair,:),r,devProb1,devProb2);
         
         %potPairs(iPair,:)
         %potDevPairs
@@ -122,7 +122,7 @@ if ~isempty(potPairs)
                     end
 
                     %plot both rectangles for a test
-                    %testIntersectionProbability(R1,R2,potPairs(iPair,1),potPairs(iPair,2),...
+                    %aux_testIntersectionProbability(R1,R2,potPairs(iPair,1),potPairs(iPair,2),...
                     %    potDevPairs(k,1),potDevPairs(k,2),zonotope(fArray.IH.car),Zvehicle,intersected)
                 end
             end
@@ -131,9 +131,9 @@ if ~isempty(potPairs)
 end
 
 
-%-----------------------------------------------------------------
-%auxiliary functions
-function [potPairs]=devNumbers(R1,R2,potPair,r,devProb1,devProb2)
+% Auxiliary functions -----------------------------------------------------
+
+function [potPairs]=aux_devNumbers(R1,R2,potPair,r,devProb1,devProb2)
 
 %get deviation segments with nonzero probability
 ind1=find(devProb1);
@@ -160,14 +160,14 @@ end
 %-----------------------------------------------------------------
 %test functions
 
-function testTransformation(Zvehicle,angle1,angle2,relAngle,pos1,pos2,relPos)
+function aux_testTransformation(Zvehicle,angle1,angle2,relAngle,pos1,pos2,relPos)
 
 %generate zonotopes from original coordinates/angles
-Z1orig=rotMatrix(angle1)*Zvehicle+pos1;
-Z2orig=rotMatrix(angle2)*Zvehicle+pos2;
+Z1orig=aux_rotMatrix(angle1)*Zvehicle+pos1;
+Z2orig=aux_rotMatrix(angle2)*Zvehicle+pos2;
 
 Z1trans=Zvehicle;
-Z2trans=rotMatrix(relAngle)*Zvehicle+relPos;
+Z2trans=aux_rotMatrix(relAngle)*Zvehicle+relPos;
 
 %plot original constellation
 h1=figure;
@@ -185,11 +185,11 @@ axis equal
 close(h1);
 
 
-function mat=rotMatrix(angle)
+function mat=aux_rotMatrix(angle)
 mat=[cos(angle) -sin(angle);...
      sin(angle) cos(angle)];
 
-function testIntersectionProbability(R1,R2,iSeg1,iSeg2,iDev1,iDev2,Z1,Z2,prob)
+function aux_testIntersectionProbability(R1,R2,iSeg1,iSeg2,iDev1,iDev2,Z1,Z2,prob)
 
 h=figure;
 plotVehSeg(R1,iSeg1,iDev1,Z1);
@@ -200,4 +200,4 @@ figure(h);
 close(h);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

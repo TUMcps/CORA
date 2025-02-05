@@ -80,6 +80,7 @@ end
 end
 
 function res = aux_orEllipsoid()
+% run test for ellipsoid/or
 
 res = true;
 nRuns = 2;

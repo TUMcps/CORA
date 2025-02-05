@@ -1,15 +1,34 @@
-function res = contains_(C,S,varargin)
+function [res,cert,scaling] = contains_(C,S,method,tol,maxEval,certToggle,scalingToggle,varargin)
 % contains_ - determines if a capsule contains a set or a point
 %
 % Syntax:
-%    res = contains_(C,S)
+%    [res,cert,scaling] = contains_(C,S,method,tol,maxEval,certToggle,scalingToggle)
 %
 % Inputs:
 %    C - capsule object
 %    S - contSet object or single point
+%    method - method used for the containment check.
+%       Currently, the only available options are 'exact' and 'approx'.
+%    tol - tolerance for the containment check; the higher the
+%       tolerance, the more likely it is that points near the boundary of C
+%       will be detected as lying in C, which can be useful to counteract
+%       errors originating from floating point errors.
+%    maxEval - Currently has no effect
+%    certToggle - if set to 'true', cert will be computed (see below),
+%       otherwise cert will be set to NaN.
+%    scalingToggle - if set to 'true', scaling will be computed (see
+%       below), otherwise scaling will be set to inf.
 %
 % Outputs:
 %    res - true/false
+%    cert - returns true iff the result of res could be
+%           verified. For example, if res=false and cert=true, S is
+%           guaranteed to not be contained in C, whereas if res=false and
+%           cert=false, nothing can be deduced (S could still be
+%           contained in C).
+%           If res=true, then cert=true.
+%    scaling - returns the smallest number 'scaling', such that
+%           scaling*(C - C.center) + C.center contains S.
 %
 % Example: 
 %    C1 = capsule([0;0],[-2;2],2);
@@ -43,38 +62,102 @@ function res = contains_(C,S,varargin)
     
     % init result
     res = true;
+    cert = NaN;
+    scaling = Inf;
+    
+    if scalingToggle
+        throw(CORAerror('CORA:notSupported',...
+                    "The computation of the scaling factor for " + ...
+                    "capsules is not yet implemented."));
+    end
 
     % point in capsule containment
     if isnumeric(S)
         
         res = false(1,size(S,2));
+        cert = true(1,size(S,2)); % Whatever the result, it is guaranteed
+                                  % to be correct here
+        
         for i = 1:size(S,2)
             res(i) = aux_containsPoint(C,S(:,i));
         end
+
+        return
+
+    % capsule is empty
+
+    elseif representsa(C, 'emptySet')
+        res = representsa(S, 'emptySet');
+        cert = true;
+        if res
+            scaling = 0;
+        else
+            scaling = inf;
+        end
+
+    % empty set is trivially contained
+    elseif isa(S,'emptySet') || representsa(S,'emptySet')
+        res = true;
+        cert = true;
+        scaling = 0;
+        return
+
+    % fullspace is trivially not contained
+    elseif isa(S,'fullspace')
+        res = false;
+        cert = true;
+        scaling = inf;
+        return
         
     % capsule in capsule containment    
     elseif isa(S,'capsule')
         
         res = aux_containsCapsule(C,S);
-        
-    % non polytopic set in capsule containment
-    elseif isa(S,'ellipsoid') || isa(S,'taylm') || isa(S,'polyZonotope')
-       
-        res = contains_(C,zonotope(S));
-        
+        cert = true;
+        return
+
     % polytopic set in capsule containment    
-    else
+    elseif isa(S,'conZonotope') || isa(S,'interval') || isa(S,'polytope') ...
+            || isa(S,'zonoBundle') || isa(S,'zonotope') || isa(S,'polygon')
         
         % compute vertices
         V = vertices(S);
         
         % check containment for each vertex
+        % this evaluation is always exact
         for i = 1:size(V,2)
             if ~aux_containsPoint(C,V(:,i))
                 res = false;
+                cert = true;
                 return;
             end
-        end     
+        end
+        cert = true;
+
+        return
+
+        % non polytopic set in capsule containment
+    elseif isa(S,'ellipsoid') || isa(S,'taylm') || isa(S,'polyZonotope') ...
+            || isa(S,'conPolyZono') || isa(S,'spectraShadow')
+
+        % if the user wants the exact result, throw an error
+        if ~strcmp(method, 'approx')
+            throw(CORAerror('CORA:noExactAlg',C,S));
+        end
+       
+        % check containment with over-approximating zonotope
+        res = contains_(C,zonotope(S),'exact',tol,maxEval,certToggle,scalingToggle);
+        % this evaluation is not necessarily exact
+        if res
+            cert = true;
+        else
+            cert = false;
+        end
+
+        return
+
+    else
+        throw(CORAerror('CORA:noops',C,S));
     end
     
 end

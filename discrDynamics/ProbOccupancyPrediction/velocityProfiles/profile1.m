@@ -2,7 +2,7 @@ function [velocity,input]=profile1(pos,acc)
 % profile1..n - returns the velocity for a given position and maximum 
 % accelerationof the velocity profile of the corresponding path.
 %
-% Syntax:  
+% Syntax:
 %    [velocity]=profile1(pos)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function [velocity,input]=profile1(pos,acc)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      02-July-2008 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       02-July-2008 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %path 1 has a speed limit of 15
 velocity=16;
@@ -33,4 +33,4 @@ velocity=16;
 
 input=0;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

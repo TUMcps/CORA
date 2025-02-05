@@ -78,7 +78,11 @@ function p = aux_BilliardWalk(SpS, N)
     
     persistent options
     if isempty(options)
-        options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0);
+        if isSolverInstalled('mosek')
+            options = sdpsettings('solver','mosek','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        else
+            options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        end
     end
 
     G = SpS.G;
@@ -132,11 +136,9 @@ function p = aux_BilliardWalk(SpS, N)
 
             constraints = [constraints, lmi>=0];
 
-            yalmipOptimizer = optimizer(constraints, -lambda, options,[],{lambda, x});
+            diagnostics = optimize(constraints, -lambda, options);
 
-            [sol, ~] = yalmipOptimizer();
-
-            lambda = sol{1};
+            lambda = value(lambda);
 
             y = q0 + lambda * direction;
 
@@ -161,13 +163,11 @@ function p = aux_BilliardWalk(SpS, N)
     
                 objective = x' * y;
                 
-                yalmipOptimizer = optimizer(constraints, objective,options,[],{x, Z});
-        
-                [sol, ~] = yalmipOptimizer();
+                diagnostics = optimize(constraints, objective,options);
                 
                 % sol{1} is optimal x
                 % sol{2} is optimal Z
-                maxX = sol{1};
+                maxX = value(x);
                 
                 s = maxX / norm(maxX);
                 % change start point, direction and remaining length
@@ -202,11 +202,6 @@ end
 function p = aux_randPointBallWalk(SpS, N)
     % Allocate Memory
     p = zeros(dim(SpS), N);
-
-    persistent options
-    if isempty(options)
-        options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0);
-    end
 
     % Need to check whether the spectrahedral shadow is degenerate
     [res, X] = isFullDim(SpS);
@@ -270,7 +265,11 @@ function p = aux_randPointHitAndRun(SpS, N)
     
     persistent options
     if isempty(options)
-        options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0);
+        if isSolverInstalled('mosek')
+            options = sdpsettings('solver','mosek','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        else
+            options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        end
     end
     
     G = SpS.G;
@@ -325,11 +324,9 @@ function p = aux_randPointHitAndRun(SpS, N)
         constraints = [constraints constraints_residual];
         
         cost = lambda;
-        yalmipOptimizer = optimizer(constraints,cost,options,[],{lambda,beta,s});
 
-        [sol, exitflag] = yalmipOptimizer();
-        
-
+        diagnostics = optimize(constraints,cost,options);
+        exitflag = diagnostics.problem;
         if exitflag == 1
             % If the problem is infeasible, this means that the solver,
             % despite our best efforts, wasn't smart enough to see that the
@@ -337,13 +334,13 @@ function p = aux_randPointHitAndRun(SpS, N)
             % ourselves
             lambda_lower = 0;
         else
-            lambda_lower = sol{1};
+            lambda_lower = value(lambda);
         end
 
         cost = -lambda;
-        yalmipOptimizer = optimizer(constraints,cost,options,[],{lambda,beta,s});
 
-        [sol, exitflag] = yalmipOptimizer();
+        diagnostics = optimize(constraints,cost,options);
+        exitflag = diagnostics.problem;
         
         if exitflag == 1
             % If the problem is infeasible, this means that the solver,
@@ -352,7 +349,7 @@ function p = aux_randPointHitAndRun(SpS, N)
             % ourselves
             lambda_upper = 0;
         else
-            lambda_upper = sol{1};
+            lambda_upper = value(lambda);
         end
 
 
@@ -374,7 +371,11 @@ function p = aux_randPointExtreme(SpS, N)
     
     persistent options
     if isempty(options)
-        options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0);
+        if isSolverInstalled('mosek')
+            options = sdpsettings('solver','mosek','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        else
+            options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        end
     end
     
     G = SpS.G;
@@ -417,11 +418,9 @@ function p = aux_randPointExtreme(SpS, N)
         constraints = [constraints LMI>=0];
         
         cost = -lambda;
-        yalmipOptimizer = optimizer(constraints,cost,options,[],{lambda,beta});
-
-        [sol, exitflag] = yalmipOptimizer();
+        diagnostics = optimize(constraints,cost,options);
         
-        lambda = sol{1};
+        lambda = value(lambda);
      
         % Compute next point:
         p(:,i) = p(:,i) + lambda * direction;

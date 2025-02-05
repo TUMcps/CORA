@@ -841,15 +841,19 @@ clear(batchVars{:});
 end
 
 function aux_printParameters(options,optim,maxEpoch,miniBatchSize,maxNoise)
+    % print parameters
     table = CORAtableParameters('Neural Network Training Parameters');
     table.printHeader();
+    % print main parameters
     table.printContentRow('Training method',options.nn.train.method)
     table.printContentRow('Optimizer',optim.print())
     table.printContentRow('Training epochs',maxEpoch,'i')
     table.printContentRow('Mini-batch size',miniBatchSize,'i')
     table.printContentRow('Shuffle data',options.nn.train.shuffle_data)
     if strcmp(options.nn.train.method,'point')
+        % no additional parameters
     else
+        % set-based parameters
         table.printContentRow('(max) Training noise',maxNoise,'.2e')
         if strcmp(options.nn.train.method,'madry')
             table.printContentRow('Number of PGD iterations',options.nn.train.pgd_iterations,'i')
@@ -862,6 +866,7 @@ function aux_printParameters(options,optim,maxEpoch,miniBatchSize,maxNoise)
             table.printContentRow('Number of generators',options.nn.train.num_init_gens,'d')
         end
     end
+    % finish table
     table.printContentRow('Early stopping after non-decr. validation steps',options.nn.train.early_stop,'i')
     table.printFooter();
 end

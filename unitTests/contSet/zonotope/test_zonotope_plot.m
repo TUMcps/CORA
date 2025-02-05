@@ -73,6 +73,16 @@ try
     assert(isequal([1 0 0], ax.Children(1).EdgeColor))
     assert(isequal(0.1, ax.Children(1).FaceAlpha))
     assert(isequal(1, ax.Children(1).EdgeAlpha))
+    plot(Z, 1:2, 'r', 'FaceColor', [0 1 0 0.1])
+
+    % check EdgeAlpha
+    plot(Z, 1:2, 'r', 'EdgeAlpha', 0.1)
+    plot(Z, 1:2, 'EdgeColor','r', 'EdgeAlpha', 0.1,'FaceColor','b')
+    plot(Z, 1:2, 'EdgeColor','r', 'EdgeAlpha', 0.1,'FaceColor','b','FaceAlpha',0.2)
+    plot(Z, 1:3, 'r', 'EdgeAlpha', 0.1)
+    plot(Z, 1:3, 'EdgeColor','r', 'EdgeAlpha', 0.1,'FaceColor','b')
+    plot(Z, 1:3, 'EdgeColor','r', 'EdgeAlpha', 0.1,'FaceColor','b','FaceAlpha',0.2)
+    plot(Z, 1:2, 'EdgeColor', [0 1 0 0.1])
     
     % close figure
     close;

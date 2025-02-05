@@ -142,24 +142,28 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
 
     % backprop ------------------------------------------------------------
 
+    % numeric
     function grad_in = backpropNumeric(obj, input, grad_out, options)
         grad_in = obj.scale .* grad_out;
     end
 
+    % interval batch
     function [gl, gu] = backpropIntervalBatch(obj, l, u, gl, gu, options)
         gl = obj.scale.*gl;
         gu = obj.scale.*gu;
     end
 
+    % zonotope batch
     function [gc, gG] = backpropZonotopeBatch(obj, c, G, gc, gG, options)
         gc = obj.scale.*gc;
         gG = obj.scale.*gG;
     end
 end
 
+% protected methods
 methods (Access = protected)
-
     function [scale,offset] = aux_getScaleAndOffset(obj)
+        % read out scale and offsets as vectors
         scale = obj.scale(:);
         offset = obj.offset(:);
     end

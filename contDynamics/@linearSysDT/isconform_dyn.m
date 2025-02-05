@@ -49,7 +49,7 @@ nrOfTestCases = length(testSuite); % number of tests
 maxNrOfTimeSteps = ceil(params.tFinal/linsysDT.dt); % maximum number of timeSteps
 
 %% Unify all differences to the nominal solution; see y_a(k) in eq. 14 of [1]
-[union_y_a,union_x_a] = conform_unifyTestCases(linsysDT,params);
+[union_y_a,union_x_a] = priv_conform_unifyTestCases(linsysDT,params);
 
 %% Corollary 1 in [2]: change time horizon to ensure conformance of an 
 % infinite time horizon; requires that the entire state can be measured
@@ -77,7 +77,7 @@ if isinf(params.tFinal)
     res = (res_W && res_V);
 else
     % Compute reachable halfspaces, see (eq. (15), (17), Thm. 1 in [1])
-    [N, d] = conform_reachableHalfspaces(linsysDT,params,options);
+    [N, d] = priv_conform_reachableHalfspaces(linsysDT,params,options);
 
     %% initialize failed test cases
     ind = 1:nrOfTestCases;

@@ -1,7 +1,7 @@
 function dx = drum(x,u)
 % drum - drum-boiler model (see Eq. (5) in [1])
 %
-% Syntax:  
+% Syntax:
 %    dx = drum(x,u)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function dx = drum(x,u)
 %       the load-following capabilities of power plants."
 %       IEEE Transactions on Power Systems 31.6 (2016): 4691-4702.
 
-% Author:        Ahmed El-Guindy, Matthias Althoff, Mark Wetzlinger
+% Authors:       Ahmed El-Guindy, Matthias Althoff, Mark Wetzlinger
 % Written:       22-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     P      = x(1);
     Vwt    = x(2);
@@ -107,4 +107,4 @@ function dx = drum(x,u)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

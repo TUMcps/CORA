@@ -51,7 +51,7 @@ function [vars,vars_der] = symVariables(sys,varargin)
 narginchk(1,2);
 withBrackets = setDefaultValues({false},varargin);
 
-%%% TODO: fix possibly wrong usage of sys.nrOfStates for nonlinearARX and
+%%% TODO: fix possibly wrong usage of sys.nrOfDims for nonlinearARX and
 %%%       harmonize calls below
 
 % symbolic variables
@@ -66,8 +66,8 @@ if isa(sys,'nonlinearARX')
     vars.u = aux_symVector('u',(sys.n_p+1)*sys.nrOfInputs,withBrackets);
     vars_der.u = aux_symVector('du',(sys.n_p+1)*sys.nrOfInputs,withBrackets);
 else
-    vars.x = aux_symVector('x',sys.nrOfStates,withBrackets);
-    vars_der.x = aux_symVector('dx',sys.nrOfStates,withBrackets);
+    vars.x = aux_symVector('x',sys.nrOfDims,withBrackets);
+    vars_der.x = aux_symVector('dx',sys.nrOfDims,withBrackets);
     vars.u = aux_symVector('u',sys.nrOfInputs,withBrackets);
     vars_der.u = aux_symVector('du',sys.nrOfInputs,withBrackets);
 end

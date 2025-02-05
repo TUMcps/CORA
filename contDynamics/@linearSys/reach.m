@@ -66,19 +66,19 @@ else
 
     % decide which reach function to execute by options.linAlg
     if strcmp(options.linAlg,'adaptive')
-        [timeInt,timePoint,res] = reach_adaptive(linsys,params,options);
+        [timeInt,timePoint,res] = priv_reach_adaptive(linsys,params,options);
     else
         % all below, const. time step sizes
         if strcmp(options.linAlg,'standard')
-            [timeInt,timePoint,res] = reach_standard(linsys,params,options);
+            [timeInt,timePoint,res] = priv_reach_standard(linsys,params,options);
         elseif strcmp(options.linAlg,'wrapping-free')
-            [timeInt,timePoint,res] = reach_wrappingfree(linsys,params,options);
+            [timeInt,timePoint,res] = priv_reach_wrappingfree(linsys,params,options);
         elseif strcmp(options.linAlg,'fromStart')
-            [timeInt,timePoint,res] = reach_fromStart(linsys,params,options);
+            [timeInt,timePoint,res] = priv_reach_fromStart(linsys,params,options);
         elseif strcmp(options.linAlg,'decomp')
-            [timeInt,timePoint,res] = reach_decomp(linsys,params,options);
+            [timeInt,timePoint,res] = priv_reach_decomp(linsys,params,options);
         elseif strcmp(options.linAlg,'krylov')
-            [timeInt,timePoint,res] = reach_krylov(linsys,params,options);
+            [timeInt,timePoint,res] = priv_reach_krylov(linsys,params,options);
         end
         % error vector (initial set: no error; error not computed -> NaN)
         timePoint.error = [0; NaN(length(timePoint.set)-1,1)];

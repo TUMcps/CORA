@@ -31,18 +31,22 @@ ii = fourValued.Inconclusive;
 
 test_cases = {};
 
+% test case 1
 test_cases{end+1}.lhs = fourValuedSignal.indicator(stlInterval(0,2),tt,ii);
 test_cases{end}.rhs = fourValuedSignal.indicator(stlInterval(3,5,false,true),uu,ii);
 test_cases{end}.expected = test_cases{end}.lhs.set(stlInterval(3,5,false,true),uu);
 
+% test case 2
 test_cases{end+1}.lhs = fourValuedSignal.indicator(stlInterval(0,2),tt,ii);
 test_cases{end}.rhs = fourValuedSignal.indicator(stlInterval(3,5,false,true),ii,uu);
 test_cases{end}.expected = test_cases{end}.lhs.set(stlInterval(0,3),uu).set(stlInterval(5,inf,false),uu);
 
+% test case 3
 test_cases{end+1}.lhs = fourValuedSignal.indicator(stlInterval(0,2),tt,ii);
 test_cases{end}.rhs = fourValuedSignal.indicator(stlInterval(3,5,false,true),tt,ff);
 test_cases{end}.expected = test_cases{end}.rhs;
 
+% run test cases
 for i = 1:length(test_cases)
     lhs = test_cases{i}.lhs;
     rhs = test_cases{i}.rhs;

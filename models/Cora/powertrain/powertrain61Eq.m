@@ -2,7 +2,7 @@ function f = powertrain61Eq(x,u,p)
 % powertrain61Eq - dynamic for the 61-dimensional power train system 
 %                 (see Sec. 6 in [1])
 %
-% Syntax:  
+% Syntax:
 %    f = powertrain61Eq(x,u,p)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function f = powertrain61Eq(x,u,p)
 %   [1] M. Althoff et al. "Avoiding Geometic Intersection Operations in 
 %       Reachability Analysis of Hybrid Systems"
 
-% Author:       Matthias Althoff
-% Written:      21-September-2011
-% Last update:  23-December-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-September-2011
+% Last update:   23-December-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %control
 v = p.k_K*(p.i*x(4) - x(7)) ...
@@ -93,4 +93,4 @@ f(59,1) = p.J_i*(p.k_i*(x(56) - x(58)) - p.k_i*(x(58) - x(60)) - p.b_i*x(59)); %
 f(60,1) = x(61); %Theta_27
 f(61,1) = p.J_i*(p.k_i*(x(58) - x(60)) - p.k_i*(x(60) - x(5)) - p.b_i*x(61)); %\dot{Theta}_27
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

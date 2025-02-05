@@ -53,7 +53,7 @@ sysInv = linearSys(-A,-B);
 
 R_i = Rin.timePoint.set{end};
 N = 20;
-points = zeros(sys.nrOfStates,N);
+points = zeros(sys.nrOfDims,N);
 
 R0 = polytope(params.R0);
 

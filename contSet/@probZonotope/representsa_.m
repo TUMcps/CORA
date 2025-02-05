@@ -45,54 +45,6 @@ S = [];
 % TODO: check if isPoint possible?
 
 switch type
-    case 'origin'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-
-    case 'point'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-
-    case 'capsule'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-
-    case 'conHyperplane'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-        
-    case 'conPolyZono'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-
-    case 'conZonotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-
-    case 'ellipsoid'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-
-    case 'halfspace'
-        % probabilistic zonotope cannot be unbounded
-        res = false;
-
-    case 'interval'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-
-    case 'levelSet'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-
-    case 'polytope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-
-    case 'polyZonotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-
     case 'probZonotope'
         % obviously true
         res = true;
@@ -100,25 +52,9 @@ switch type
             S = probZ;
         end
 
-    case 'zonoBundle'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-
-    case 'zonotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-
     case 'hyperplane'
         % probabilistic zonotope cannot be unbounded
         res = false;
-
-    case 'parallelotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
-
-    case 'convexSet'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of probZonotope to ' type ' not supported.']));
 
     case 'emptySet'
         res = isempty(probZ.Z) && isempty(probZ.g);
@@ -127,6 +63,9 @@ switch type
         % probabilistic zonotope cannot be unbounded
         res = false;
 
+    otherwise
+        throw(CORAerror('CORA:notSupported',...
+            ['Comparison of probZonotope to ' type ' not supported.']));
 end
 
 % ------------------------------ END OF CODE ------------------------------

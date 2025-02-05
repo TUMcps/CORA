@@ -55,7 +55,7 @@ end
 
 % numeric case: check containment
 if isnumeric(S)
-    res = contains_(P,S,type,tol);
+    res = contains_(P,S,type,tol,0,false,false);
     return
 end
 
@@ -92,7 +92,7 @@ end
 % TODO: find out what issues arise with zonoBundles...
 if length(P.be_.val) == 1 && ~isa(S,'zonoBundle')
     I = supportFunc_(S,P.Ae_.val','range','interval',8,1e-3);
-    if ~contains_(I,P.be_.val,'exact',1e-12)
+    if ~contains_(I,P.be_.val,'exact',1e-12,0,false,false)
         res = false; return
     end
 end
@@ -460,7 +460,7 @@ if isa(S,'zonoBundle')
         if isHyp
             % check intersection with hyperplane
             I = supportFunc_(Z,P.Ae_.val(1,:)','range');
-            if ~contains_(I,P.be_.val(1),'exact',tol)
+            if ~contains_(I,P.be_.val(1),'exact',tol,0,false,false)
                 res = false;
                 return
             end
@@ -481,7 +481,7 @@ else
     if isHyp
         % check intersection with hyperplane
         I = supportFunc_(S,P.Ae_.val(1,:)','range');
-        if ~contains_(I,P.be_.val(1),'exact',tol)
+        if ~contains_(I,P.be_.val(1),'exact',tol,0,false,false)
             res = false;
             return
         end

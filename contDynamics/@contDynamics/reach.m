@@ -117,7 +117,7 @@ try
     [Rnext, options] = initReach(sys,params.R0,params,options);
 catch ME
     % if error from set explosion, return corresponding information
-    reportReachError(ME,params.tStart,1);
+    priv_reportReachError(ME,params.tStart,1);
     R = reachSet.initReachSet(timePoint,timeInt);
     res = false;
     return
@@ -172,7 +172,7 @@ for i = 2:steps
     catch ME
         % if error from set explosion, return corresponding information
         R = reachSet.initReachSet(timePoint,timeInt);
-        reportReachError(ME,options.t,i);
+        priv_reportReachError(ME,options.t,i);
         return
     end
 end

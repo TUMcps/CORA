@@ -1,7 +1,7 @@
 function [count,out] = inputArgsLength_app(f,varargin)
 % inputArgsLength_app - computes the number of inputs of a function handle
 %
-% Syntax:  
+% Syntax:
 %    [count,out] = inputArgsLength_app(f)
 %    [count,out] = inputArgsLength_app(f,inpArgs)
 %
@@ -23,12 +23,12 @@ function [count,out] = inputArgsLength_app(f,varargin)
 %
 % See also: nonlinearSys
 
-% Author:       Victor Gassmann
-% Written:      11-September-2020
-% Last update:  ---
-% Last revision:---
+% Authors:       Victor Gassmann
+% Written:       11-September-2020
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parse input arguments: number of input arguments to function handle
 narginf = setDefaultValues({nargin(f)},varargin);
@@ -154,4 +154,4 @@ while true
     maxVal = maxVal + 3;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

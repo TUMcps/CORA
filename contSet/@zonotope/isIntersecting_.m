@@ -53,7 +53,7 @@ end
 
 % numeric case: check containment
 if isnumeric(S)
-    res = contains_(Z,S,type,tol);
+    res = contains_(Z,S,type,tol,false,false);
     return
 end
 

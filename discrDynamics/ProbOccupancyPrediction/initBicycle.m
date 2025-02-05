@@ -1,6 +1,27 @@
 function [HA,options,stateField,inputField]=initBicycle(varargin)
-% changed: 02-November-2009
+% initBicycle - ???
+%
+% Syntax:
+%    [HA,options,stateField,inputField]=initBicycle(varargin)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
 
+% Authors:       ???
+% Written:       ???
+% Last update:   02-November-2009
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 directory=cd;
 
@@ -78,3 +99,5 @@ inputField=partition([-1,1],...  %acceleartion in m/s^2
 if nargin==1
     cd(directory);
 end
+
+% ------------------------------ END OF CODE ------------------------------

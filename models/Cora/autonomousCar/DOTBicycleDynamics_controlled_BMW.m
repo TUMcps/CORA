@@ -1,9 +1,9 @@
 function f = DOTBicycleDynamics_controlled_BMW(x,u)
-% DOTBicycleDynamics_BMW - enhances bicycle model with control for
-% trajectory tracking
+% DOTBicycleDynamics_controlled_BMW - enhances bicycle model with control 
+% for trajectory tracking
 %
-% Syntax:  
-%    f = DOTBicycleDynamics_controlled(t,x,u)
+% Syntax:
+%    f = DOTBicycleDynamics_controlled_BMW(x,u)
 %
 % Inputs:
 %    x - state vector
@@ -26,12 +26,12 @@ function f = DOTBicycleDynamics_controlled_BMW(x,u)
 %
 % See also: DOTcontrol, DOTBicycleDynamics_BMW
 
-% Author:       Matthias Althoff
-% Written:      26-August-2011
-% Last update:  15-June-2023
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-August-2011
+% Last update:   15-June-2023
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain control inputs
 carInput = DOTcontrol(x,u);
@@ -40,5 +40,4 @@ carInput = DOTcontrol(x,u);
 f = DOTBicycleDynamics_BMW(x,carInput);
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

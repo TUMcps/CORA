@@ -27,15 +27,16 @@ function coeffs = calcAlternatingDerCoeffs(l, u, order, layer)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-
 if layer.df(l) > layer.df(u)
     coeffs = nnHelper.calcAlternatingDerCoeffs(u, l, order, layer);
     return
 end
 
+% init
 X = [];
 Y = [];
 
+% get function value
 exponents = fliplr(0:order);
 coeffs_full = ones(size(exponents));
 coeffs = ones(size(exponents));
@@ -46,6 +47,7 @@ yi = [layer.f(l)];
 X = [X; xi];
 Y = [Y; yi];
 
+% get first derivative
 exponents = max(0, exponents-1);
 coeffs = polyder(coeffs);
 coeffs_full = [coeffs, zeros(1, 1+order-length(coeffs))];
@@ -57,6 +59,7 @@ X = [X; xi];
 Y = [Y; yi];
 
 for i = 2:ceil((order + 1)/2)
+    % add each higher derivative
     xi = coeffs_full .* (u.^exponents);
     df_i = layer.getDf(i);
     yi = [df_i(u)];

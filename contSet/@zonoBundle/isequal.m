@@ -64,7 +64,7 @@ end
 
 % general idea: check using mutual containment
 if isa(S,'contSet')
-    res = zB.contains_(S,'exact',tol) && S.contains_(zB,'exact',tol);
+    res = zB.contains_(S,'exact',tol,0,false,false) && S.contains_(zB,'exact',tol,0,false,false);
     return
 end
 

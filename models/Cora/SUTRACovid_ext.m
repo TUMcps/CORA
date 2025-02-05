@@ -2,8 +2,8 @@ function f = SUTRACovid_ext(x,u)
 % SUTRACovid_ext - SUTRA Covid disease spread benchmark [1] with
 %    extended state vector (parameters uncertain but constant)
 %
-% Syntax:  
-%    f = SUTRACovid(x,u,p)
+% Syntax:
+%    f = SUTRACovid_ext(x,u,p)
 %
 % Inputs:
 %    x - state vector
@@ -16,12 +16,12 @@ function f = SUTRACovid_ext(x,u)
 %   [1] National Supermodel Committee. Indian supermodel for covid-19 pandemic.
 %       https://www.iith.ac.in/~m_vidyasagar/arXiv/Super-Model.pdf, May 2021.
 
-% Author:       Mark Wetzlinger
-% Written:      17-May-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-May-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % states:     S_A, S_I, A, I, R_I, R_A
 % parameters: beta, gamma -> extended states
@@ -37,4 +37,4 @@ f(8,1) = 0;
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,11 +1,31 @@
 function val = get(a, propName)
+% get - short description of the function
 % Purpose:  Get asset properties from the specified object
 % Pre:      simulation object
 % Post:     property value
-% Built:    17.06.08, MA
-% Modified: 12.10.09, MA
-%           03.11.09, MA
-%           04.11.09, MA
+%
+% Syntax:
+%    val = get(a, propName)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       Matthias Althoff
+% Written:       17-June-2008
+% Last update:   12-October-2009
+%                03-November-2009
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 switch propName
     case 'prob'
@@ -27,5 +47,7 @@ switch propName
     case 'lcEvolProb'
         val = a.result.lcEvolProb;        
 otherwise
-    error([propName,' Is not a valid asset property'])
+    throw(CORAerror('CORA:specialError',[propName,' Is not a valid asset property']))
 end
+
+% ------------------------------ END OF CODE ------------------------------

@@ -29,6 +29,7 @@ function res = times(obj1,obj2)
 % ------------------------------ BEGIN CODE -------------------------------
 
     % different cases depending on the the type of inputs 
+    % stl * scalar numeric
     if isa(obj1,'stl') && ~obj1.logic && isnumeric(obj2) && isscalar(obj2)
             
         res = obj1;
@@ -36,7 +37,8 @@ function res = times(obj1,obj2)
         res.type = '*';
         res.lhs = obj2;
         res.rhs = obj1;
-        
+    
+    % scalar numeric * stl
     elseif isa(obj2,'stl') && ~obj2.logic && isnumeric(obj1) && isscalar(obj1)
         
         res = obj2;
@@ -45,6 +47,7 @@ function res = times(obj1,obj2)
         res.lhs = obj1;
         res.rhs = obj2;
 
+    % non-logic
     elseif ~obj1.logic && ~obj2.logic
 
         res = obj1;
@@ -53,7 +56,7 @@ function res = times(obj1,obj2)
         res.lhs = obj2;
         res.rhs = obj1;
         
-    else
+    else % throw error
         throw(CORAerror('CORA:notSupported',...
                       'This operation is not supported for stl objects!'));
     end

@@ -30,27 +30,28 @@ sysname = 'sys';
 % one-dimensional, no inputs, no parameters
 f_1D = @(x,u,p) x(1)^2;
 sys = nonlinParamSys(f_1D);
-assert(sys.nrOfStates == 1)
-assert(sys.nrOfInputs == 1)
-assert(sys.nrOfParam == 1)
-assert(sys.nrOfOutputs == 1)
-
-sys = nonlinParamSys(sysname,f_1D);
-assert(strcmp(sys.name,sysname))
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 1)
 assert(sys.nrOfOutputs == 1)
 
 sys = nonlinParamSys(f_1D,1,1,1);
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
+assert(sys.nrOfInputs == 1)
+assert(sys.nrOfParam == 1)
+assert(sys.nrOfOutputs == 1)
+
+% with system name
+sys = nonlinParamSys(sysname,f_1D);
+assert(strcmp(sys.name,sysname))
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 1)
 assert(sys.nrOfOutputs == 1)
 
 sys = nonlinParamSys(sysname,f_1D,1,1,1);
 assert(strcmp(sys.name,sysname))
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 1)
 assert(sys.nrOfOutputs == 1)
@@ -58,27 +59,28 @@ assert(sys.nrOfOutputs == 1)
 
 % one-dimensional, with inputs, with parameters
 f_1D = @(x,u,p) x(1)^2 + u(1)*p(1);
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 1)
 assert(sys.nrOfOutputs == 1)
 
 sys = nonlinParamSys(sysname,f_1D);
 assert(strcmp(sys.name,sysname))
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 1)
 assert(sys.nrOfOutputs == 1)
 
+% specify nrOf*
 sys = nonlinParamSys(f_1D,1,1,1);
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 1)
 assert(sys.nrOfOutputs == 1)
 
 sys = nonlinParamSys(sysname,f_1D,1,1,1);
 assert(strcmp(sys.name,sysname))
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 1)
 assert(sys.nrOfOutputs == 1)
@@ -86,27 +88,28 @@ assert(sys.nrOfOutputs == 1)
 % three-dimensional, no inputs, no parameters
 f_3D = @(x,u,p) [sqrt(x(1)) - x(2)*u(1); x(2)-p(1); x(3)*p(2)];
 sys = nonlinParamSys(f_3D);
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 2)
 assert(sys.nrOfOutputs == 3)
 
 sys = nonlinParamSys(f_3D,3,1,2);
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 2)
 assert(sys.nrOfOutputs == 3)
 
+% specify system name
 sys = nonlinParamSys(sysname,f_3D);
 assert(strcmp(sys.name,sysname))
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 2)
 assert(sys.nrOfOutputs == 3)
 
 sys = nonlinParamSys(sysname,f_3D,3,1,2);
 assert(strcmp(sys.name,sysname))
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 2)
 assert(sys.nrOfOutputs == 3)
@@ -114,27 +117,28 @@ assert(sys.nrOfOutputs == 3)
 % with output equation
 g_2D = @(x,u,p) [x(1)*p(1); x(2) - u(1)];
 sys = nonlinParamSys(f_3D,g_2D);
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 2)
 assert(sys.nrOfOutputs == 2)
 
 sys = nonlinParamSys(sysname,f_3D,g_2D);
 assert(strcmp(sys.name,sysname))
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 2)
 assert(sys.nrOfOutputs == 2)
 
+% specify nrOf*
 sys = nonlinParamSys(f_3D,3,1,2,g_2D,2);
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 2)
 assert(sys.nrOfOutputs == 2)
 
 sys = nonlinParamSys(sysname,f_3D,3,1,2,g_2D,2);
 assert(strcmp(sys.name,sysname))
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfParam == 2)
 assert(sys.nrOfOutputs == 2)

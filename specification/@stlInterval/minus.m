@@ -35,19 +35,24 @@ if representsa(minuend,'emptySet') || representsa(subtrahend,'emptySet')
 end
 
 if isa(subtrahend,'stlInterval')
+    % subtract another stlInterval
     lb = minuend.lower - subtrahend.upper;
     ub = minuend.upper - subtrahend.lower;
     lc = minuend.leftClosed && subtrahend.rightClosed;
     rc = minuend.rightClosed && subtrahend.leftClosed;
 elseif isa(subtrahend,'interval')
+    % subtract a regular CORA interval
     if dim(subtrahend) ~= 1
+        % stlIntervals are always 1D
         throw(CORAerror('CORA:dimensionMismatch',minuend,subtrahend));
     end
     lb = minuend.lower - supremum(subtrahend);
     ub = minuend.upper - infimum(subtrahend);
+    % CORA intervals are always closed
     lc = minuend.leftClosed;
     rc = minuend.rightClosed;
 elseif isnumeric(subtrahend)
+    % subtract scalar
     lb = minuend.lower - subtrahend;
     ub = minuend.upper - subtrahend;
     lc = minuend.leftClosed;

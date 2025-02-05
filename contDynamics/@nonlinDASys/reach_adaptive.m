@@ -54,8 +54,8 @@ y0 = params.y0guess;
 y0 = consistentInitialState(nlnsysDA, center(options.R), y0, params.uTrans);
 Rstart_y = zonotope(y0);
 % set linearization errors (separate values for Delta and optimal Delta t)
-options.error_adm_x_horizon = eps*ones(nlnsysDA.nrOfStates,1);
-options.error_adm_x_Deltatopt = eps*ones(nlnsysDA.nrOfStates,1);
+options.error_adm_x_horizon = eps*ones(nlnsysDA.nrOfDims,1);
+options.error_adm_x_Deltatopt = eps*ones(nlnsysDA.nrOfDims,1);
 options.error_adm_y_horizon = eps*ones(nlnsysDA.nrOfConstraints,1);
 options.error_adm_y_Deltatopt = eps*ones(nlnsysDA.nrOfConstraints,1);
 % init abortion flag

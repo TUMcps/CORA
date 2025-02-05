@@ -1,7 +1,7 @@
 function HA = rendezvous_SRU01()
 % rendezvous_SRU01 - linear spacecraft-rendezvous benchmark, see [1, Sec. 3.2]
 %
-% Syntax:  
+% Syntax:
 %    HA = rendezvous_SRU01()
 %
 % Inputs:

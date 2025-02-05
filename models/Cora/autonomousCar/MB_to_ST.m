@@ -2,7 +2,7 @@ function x0 = MB_to_ST(initState)
 % MB_to_ST - converts the initial state vector of the multi-body model
 % to the single-track model
 %
-% Syntax:  
+% Syntax:
 %     x0 = MB_to_ST(initState)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function x0 = MB_to_ST(initState)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      16-June-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       16-June-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %states of multi-body model
 %x1 = s_x x-position in a global coordinate system
@@ -80,4 +80,4 @@ x0(5,1) = initState(5); % yaw angle
 x0(6,1) = initState(6); % yaw rate
 x0(7,1) = atan(initState(11)./initState(4)); % slip angle
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

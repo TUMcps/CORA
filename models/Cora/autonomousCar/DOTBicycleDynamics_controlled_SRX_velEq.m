@@ -1,10 +1,10 @@
 function f = DOTBicycleDynamics_controlled_SRX_velEq(x,u)
-% DOTBicycleDynamics_controlled_SRX_vel - enhances bicycle model (see [1])
+% DOTBicycleDynamics_controlled_SRX_velEq - enhances bicycle model (see [1])
 %                                         with control for trajectory 
 %                                         tracking
 %
-% Syntax:  
-%    f = DOTBicycleDynamics_controlled_SRX_vel(x,u)
+% Syntax:
+%    f = DOTBicycleDynamics_controlled_SRX_velEq(x,u)
 %
 % Inputs:
 %    x - state vector
@@ -24,12 +24,12 @@ function f = DOTBicycleDynamics_controlled_SRX_velEq(x,u)
 %
 % See also: DOTcontrol_SRX_velEq, DOTBicycleDynamics_SRX_velEq
 
-% Author:       Matthias Althoff
-% Written:      01-March-2012
-% Last update:  15-August-2016
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       01-March-2012
+% Last update:   15-August-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % obtain control inputs
     carInput = DOTcontrol_SRX_velEq(x,u);
@@ -37,4 +37,4 @@ function f = DOTBicycleDynamics_controlled_SRX_velEq(x,u)
     % simulate vehicle dynamics
     f = DOTBicycleDynamics_SRX_velEq(x,carInput);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

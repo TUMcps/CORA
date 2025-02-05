@@ -1,7 +1,8 @@
 function segmentMatrix = cellSegments(obj,indexVector)
 % cellSegments - returns cell coordinates given a set of cell indices.
-% Syntax:  
-%   cellIndices = cellIndices(obj,segmentIndices)
+%
+% Syntax:
+%   segmentMatrix = cellSegments(obj,segmentIndices)
 %
 % Inputs:
 %    obj - partition object
@@ -18,13 +19,13 @@ function segmentMatrix = cellSegments(obj,indexVector)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      27-March-2008
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       27-March-2008
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 segmentMatrix = i2s(obj.nrOfSegments',indexVector);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

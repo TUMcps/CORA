@@ -107,6 +107,7 @@ function obj = generateRandom(varargin)
                 op = unaryOps{randi(1)};
             end
 
+            % switch given operation
             switch op
                 case '~'
                     list{ind} = ~list{ind};
@@ -140,12 +141,14 @@ function obj = generateRandom(varargin)
             end
 
             switch op
+                % boolean
                 case '&'
                     list{ind1} = list{ind1} & list{ind2};
                     list{ind2} = [];
                 case '|'
                     list{ind1} = list{ind1} | list{ind2};
                     list{ind2} = [];
+                    % temporal
                 case 'until'
                     time = aux_randomTimeInterval(tFinal,dt);
                     timeNext = max(0,timeNext - supremum(time));
@@ -158,6 +161,7 @@ function obj = generateRandom(varargin)
                     list{ind2} = [];
             end
 
+            % filter empty entries
             list = list(~cellfun('isempty',list));
         end       
     end
@@ -195,26 +199,23 @@ function res = aux_nestedOps(obj)
 % determine the number of nested temporal operators
     
     if ~obj.temporal
-
         res = 0;
+        return
+    end
 
-    elseif strcmp(obj.type,'finally') || ...
-            strcmp(obj.type,'globally') || strcmp(obj.type,'next')
+    % switch type and call respective subfunction
+    switch obj.type
+        case {'finally', 'globally','next'}
+            res = aux_nestedOps(obj.lhs) + 1;
 
-        res = aux_nestedOps(obj.lhs) + 1;
+        case {'until','release'}
+            res = aux_nestedOps(obj.lhs) + aux_nestedOps(obj.rhs) + 1;
 
-    elseif strcmp(obj.type,'until') || strcmp(obj.type,'release')
+        case '~'
+            res = aux_nestedOps(obj.lhs);
 
-        res = aux_nestedOps(obj.lhs) + aux_nestedOps(obj.rhs) + 1;
-
-    elseif strcmp(obj.type,'~')
-
-        res = aux_nestedOps(obj.lhs);
-
-    elseif strcmp(obj.type,'&') || strcmp(obj.type,'|')
-
-        res = aux_nestedOps(obj.lhs) + aux_nestedOps(obj.rhs);
-
+        case {'&','|'}
+            res = aux_nestedOps(obj.lhs) + aux_nestedOps(obj.rhs);
     end
 end
 

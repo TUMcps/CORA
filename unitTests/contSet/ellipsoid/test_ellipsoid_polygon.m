@@ -43,7 +43,7 @@ E = ellipsoid(Q, q, 0.000001);
 pgon = polygon(E);
 
 % conversion is inner-approximative
-assert(E.contains(pgon));
+assert(E.contains(polytope(pgon)));
 
 % test completed
 res = true;

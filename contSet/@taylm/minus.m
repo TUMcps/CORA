@@ -91,7 +91,7 @@ function res = aux_s_minus(factor1, factor2)
         res = -factor2;
         res.remainder = factor1 + res.remainder;
         
-    else
+    else % throw error
         throw(CORAerror('CORA:wrongValue','first/second',...
             "be 'taylm ' or 'interval'"));
         
@@ -99,6 +99,7 @@ function res = aux_s_minus(factor1, factor2)
 end
     
 function res = aux_substractConst(obj,const)
+    % substract constant
 
     res = obj;
         
@@ -112,7 +113,8 @@ function res = aux_substractConst(obj,const)
 end
 
 function res = aux_substractFromConst(obj,const)
-
+    % substract from constant
+    
     res = obj;
         
     if isempty(obj.monomials) || obj.monomials(1,1) ~= 0

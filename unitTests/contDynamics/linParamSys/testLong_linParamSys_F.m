@@ -21,10 +21,10 @@ function res = testLong_linParamSys_F
 
 % enable access to private function "tie" and "mappingMatrix"
 path = CORAROOT;
-source1 = fullfile(path,'contDynamics','@linParamSys','private','tie.m');
+source1 = fullfile(path,'contDynamics','@linParamSys','private','priv_tie.m');
 target1 = fullfile(path,'contDynamics','@linParamSys','tie.m');
 copyfile(source1,target1);
-source2 = fullfile(path,'contDynamics','@linParamSys','private','mappingMatrix.m');
+source2 = fullfile(path,'contDynamics','@linParamSys','private','priv_mappingMatrix.m');
 target2 = fullfile(path,'contDynamics','@linParamSys','mappingMatrix.m');
 copyfile(source2,target2);
 rmpath(genpath(path));

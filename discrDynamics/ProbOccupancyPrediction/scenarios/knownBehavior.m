@@ -1,7 +1,27 @@
 function knownBehavior()
-% built: 22-October-2009
-% update: 09-August-2018
+% knownBehavior - ???
+%
+% Syntax:
+%    knownBehavior()
+%
+% Inputs:
+%    -
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
 
+% Authors:       ???
+% Written:       22-October-2009
+% Last update:   09-August-2018
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %Markov-Chain specific settings
 markovChainSpec.timeStep=0.5;
@@ -19,7 +39,6 @@ for i=1:length(autonomousCarTrajectory.velocity)
         +autonomousCarTrajectory.velocity(i)*markovChainSpec.timeStep;
 end
 autonomousCarTrajectory.mode=ones(1,40)*3;
-
 
 
 %get field
@@ -87,3 +106,4 @@ ylabel('v [m/s]');
 %set axis limits
 axis([0, 100, 2, 16]);
 
+% ------------------------------ END OF CODE ------------------------------

@@ -53,6 +53,7 @@ switch type
         throw(CORAerror('CORA:notSupported',...
             ['Comparison of zonoBundle to ' type ' not supported.']));
 
+        % check contSet
     case 'capsule'
         throw(CORAerror('CORA:notSupported',...
             ['Comparison of zonoBundle to ' type ' not supported.']));
@@ -89,7 +90,8 @@ switch type
 
     case 'levelSet'
         res = true;
-        if nargout == 2 && res
+        if nargout == 2
+            % not yet supported
             throw(CORAerror('CORA:notSupported',...
                 ['Conversion from zonoBundle to ' type ' not supported.']));
         end
@@ -107,6 +109,7 @@ switch type
         end
 
     case 'probZonotope'
+        % cannot be true
         res = false;
 
     case 'zonoBundle'

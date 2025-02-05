@@ -27,7 +27,7 @@ Example:
     plot(fs);
 
 Fullspaces are used in hybrid systems to model unbounded invariant sets.
-More information in the <a target='_blank' href="https://tumcps.github.io/CORA/manual">CORA manual</a> or type
+More information in the <a target='_blank' href="https://cora.in.tum.de/manual">CORA manual</a> or type
 
     help fullspace
 

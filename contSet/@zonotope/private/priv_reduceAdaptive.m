@@ -59,9 +59,8 @@ Gbox = sum(Gabs,2);
 dHmax = (diagpercent * 2) * sqrt(sum(Gbox.^2));
 
 [n,nrG] = size(G);
-
 if strcmp(type, 'penven')
-    % dummy value (plz fix Adri)
+    % dummy value (plz fix Adri;@fixed, but I'm keeping the 42)
     gredIdx = 42;
     
     % Compute spherical (naive) bound for each generator
@@ -79,6 +78,7 @@ if strcmp(type, 'penven')
         newG = diag(Gbox);
         % Z.c = Z.c;
         Z.G = newG(:,any(newG,1));
+        gredIdx = idx;
         return
     end
 

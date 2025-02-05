@@ -86,7 +86,7 @@ U_ = linsys.B * U + linsys.E * W;
 
 
 % update system dynamics
-n = linsys.nrOfStates; r = linsys.nrOfOutputs;
+n = linsys.nrOfDims; r = linsys.nrOfOutputs;
 linsys_ = linearSys(linsys.A,eye(n),zeros(n,1),...       % A, B, c
                 linsys.C,zeros(r,n),zeros(r,1),...   % C, D, k
                 zeros(n),eye(r));                 % E, F

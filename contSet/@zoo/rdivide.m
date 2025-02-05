@@ -47,7 +47,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function res = aux_s_rdivide_zz(numerator, denominator)       
-        
+    % zoo and zoo
     [numerator,denominator] = combineZooObjects(numerator,denominator);
     res = numerator;
     for i = 1:length(res.method)
@@ -56,7 +56,7 @@ function res = aux_s_rdivide_zz(numerator, denominator)
 end
 
 function res = aux_s_rdivide_zd(numerator, denominator)
-        
+    % zoo and double
     res = numerator;
     for i = 1:length(res.method)
        res.objects{i} = numerator.objects{i} ./ denominator; 
@@ -64,7 +64,7 @@ function res = aux_s_rdivide_zd(numerator, denominator)
 end
 
 function res = aux_s_rdivide_dz(numerator, denominator)
-
+    % double and zoo
     res = denominator;
     for i = 1:length(res.method)
        res.objects{i} = numerator ./ denominator.objects{i}; 

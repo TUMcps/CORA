@@ -110,7 +110,7 @@ abscount = 0;
 while true
 
     % linearize nonlinDA system
-    [nlnsysDA,linsys,linParams,linOptions] = linearize(nlnsysDA,Rstart,Rstart_y,params,options); 
+    [nlnsysDA,linsys,linParams,linOptions] = priv_linearize(nlnsysDA,Rstart,Rstart_y,params,options); 
 
     if options.run == 1
         % scaling over delta t, required for optimization function
@@ -163,7 +163,7 @@ while true
 %              "|" + options.run + "|" + size(generators(RallError),2));
 %         else
 %             % only used in options.run == 1, but important for adaptive
-%             RallError = zonotope(zeros(nlnsysDA.nrOfStates,1));
+%             RallError = zonotope(zeros(nlnsysDA.nrOfDims,1));
 %         end
         
         try
@@ -172,7 +172,7 @@ while true
             
             % compute abstraction error
             [Verror, errorInt, errorInt_x, errorInt_y, Rti_y, options] = ...
-            	abstractionError_adaptive(nlnsysDA, Rmax, Verror_y, params, options);
+            	priv_abstractionError_adaptive(nlnsysDA, Rmax, Verror_y, params, options);
             
         catch ME
             if strcmp(ME.identifier,'reach:setoutofdomain')
@@ -437,9 +437,9 @@ Verror_y = zonotope(zeros(nlnsysDA.nrOfConstraints,1));
 
 % compute L for both kappas
 options.tensorOrder = 2;
-[~, L_2, L2_x, L2_y] = abstractionError_adaptive(nlnsysDA, Rdelta, Verror_y, params, options);
+[~, L_2, L2_x, L2_y] = priv_abstractionError_adaptive(nlnsysDA, Rdelta, Verror_y, params, options);
 options.tensorOrder = 3;
-[~, L_3, L3_x, L3_y] = abstractionError_adaptive(nlnsysDA, Rdelta, Verror_y, params, options);
+[~, L_3, L3_x, L3_y] = priv_abstractionError_adaptive(nlnsysDA, Rdelta, Verror_y, params, options);
 
 % remove linear dimensions for comparison
 L_2lin = L_2(L_2 ~= 0);
@@ -488,7 +488,7 @@ if options.tensorOrder == 2
     end
     
     % compute set of abstraction errors
-    Verror = abstractionError_adaptive(nlnsysDA, Rmax, Verror_y, params, options);
+    Verror = priv_abstractionError_adaptive(nlnsysDA, Rmax, Verror_y, params, options);
     Rerror = errorSolution_adaptive(linsys,options,Verror);
     % simplify to scalar value
     err_3 = sum(abs(generators(Rerror)),2);
@@ -499,7 +499,7 @@ if options.tensorOrder == 2
         options.kappa_deltat = options.timeStep;
         options.kappa_abstrerr = abstrerr_3;
         options.error_adm_Deltatopt = err_3;
-        options.error_adm_horizon = zeros(nlnsysDA.nrOfStates,1);
+        options.error_adm_horizon = zeros(nlnsysDA.nrOfDims,1);
     else
         options.tensorOrder = 2;
     end
@@ -515,7 +515,7 @@ elseif options.tensorOrder == 3
     end
     
     % compute set of abstraction errors
-    Verror = abstractionError_adaptive(nlnsysDA,Rmax,Verror_y,params,options);
+    Verror = priv_abstractionError_adaptive(nlnsysDA,Rmax,Verror_y,params,options);
     Rerror = errorSolution_adaptive(linsys,options,Verror);
     % simplify to scalar value
     err_2 = sum(abs(generators(Rerror)),2);
@@ -526,7 +526,7 @@ elseif options.tensorOrder == 3
         options.kappa_deltat = options.timeStep;
         options.kappa_abstrerr = abstrerr_2;
         options.error_adm_Deltatopt = err_2;
-        options.error_adm_horizon = zeros(nlnsysDA.nrOfStates,1);
+        options.error_adm_horizon = zeros(nlnsysDA.nrOfDims,1);
     else
         options.tensorOrder = 3;
     end
@@ -563,7 +563,7 @@ if options.tensorOrder == 2
     end
     
     % compute set of abstraction errors
-    Verror = abstractionError_adaptive(nlnsysDA, Rmax, Verror_y, params, options);
+    Verror = priv_abstractionError_adaptive(nlnsysDA, Rmax, Verror_y, params, options);
     Rerror = errorSolution_adaptive(linsys,options,Verror);
     % compute diameter
     abstrerr_3 = sum(abs(generators(Rerror)),2);
@@ -578,7 +578,7 @@ if options.tensorOrder == 2
         options.kappa_deltat = options.timeStep;
         options.kappa_abstrerr = vecnorm(abstrerr_3);
         options.error_adm_Deltatopt = abstrerr_3;
-        options.error_adm_horizon = zeros(nlnsysDA.nrOfStates,1);
+        options.error_adm_horizon = zeros(nlnsysDA.nrOfDims,1);
     else
         options.tensorOrder = 2;
     end
@@ -594,7 +594,7 @@ elseif options.tensorOrder == 3
     end
     
     % compute set of abstraction errors
-    Verror = abstractionError_adaptive(nlnsysDA,Rmax,Verror_y,params,options);
+    Verror = priv_abstractionError_adaptive(nlnsysDA,Rmax,Verror_y,params,options);
     Rerror = errorSolution_adaptive(linsys,options,Verror);
     % simplify to scalar value
     abstrerr_2 = sum(abs(generators(Rerror)),2);
@@ -609,7 +609,7 @@ elseif options.tensorOrder == 3
         options.kappa_deltat = options.timeStep;
         options.kappa_abstrerr = vecnorm(abstrerr_2);
         options.error_adm_Deltatopt = abstrerr_2;
-        options.error_adm_horizon = zeros(nlnsysDA.nrOfStates,1);
+        options.error_adm_horizon = zeros(nlnsysDA.nrOfDims,1);
     else
         options.tensorOrder = 3;
     end
@@ -808,7 +808,7 @@ end
 
 % propagation matrix
 A = linsys.A;
-n = nlnsysDA.nrOfStates;
+n = nlnsysDA.nrOfDims;
     
 % start set is just a point
 if all(zeroWidthDim)

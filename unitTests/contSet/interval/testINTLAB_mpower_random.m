@@ -36,6 +36,7 @@ end
 format shortEng
 format compact
 
+% start test
 a = -1000;
 b = 1000;
 min1 = (b-a).*rand(20,20) + a;

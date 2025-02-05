@@ -1,7 +1,7 @@
 function n = nrOfCells(obj)
 % nrOfCells - returns the number of cells of the partition.
 %
-% Syntax:  
+% Syntax:
 %    n = nrOfCells(obj)
 %
 % Inputs:
@@ -18,15 +18,13 @@ function n = nrOfCells(obj)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      17-October-2007 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       17-October-2007 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 n = prod(obj.nrOfSegments);
 
-%------------- END OF CODE --------------
-
-
+% ------------------------------ END OF CODE ------------------------------

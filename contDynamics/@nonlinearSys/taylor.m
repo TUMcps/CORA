@@ -31,7 +31,7 @@ function taylor(nlnsys,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % obtain optional arguments
-[order,expPoint] = setDefaultValues({6,zeros(sys.nrOfStates+sys.nrOfInputs,1)},varargin);
+[order,expPoint] = setDefaultValues({6,zeros(sys.nrOfDims+sys.nrOfInputs,1)},varargin);
 
 % create symbolic variables
 [x,u] = symVariables(nlnsys,true);

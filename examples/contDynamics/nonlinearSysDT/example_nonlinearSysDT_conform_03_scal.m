@@ -97,7 +97,7 @@ for N_m = N_m_vec
                 % Initial Estimates of the Disturbance Sets
                 params_id_init = params_true;
                 params_id_init.R0 = zonotope([center(params_true.R0) ...
-                    eye(sys.nrOfStates) ones(sys.nrOfStates,1)]);
+                    eye(sys.nrOfDims) ones(sys.nrOfDims,1)]);
                 params_id_init.U = zonotope([center(params_true.U) ...
                     eye(sys.nrOfInputs) ones(sys.nrOfInputs,1)]);
 

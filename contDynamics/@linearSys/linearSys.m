@@ -163,36 +163,22 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,E,F,n_in)
     if CHECKS_ENABLED && n_in > 0
 
         % ensure that values have correct data type
-        if strcmp(name,'linearSys')
-            % default name (unless explicitly chosen by user, we have A as
-            % first input argument)
-
-            inputArgsCheck({ ...
-                {A, 'att', 'numeric', 'square'}
-                {B, 'att', 'numeric', 'matrix'}
-                {c, 'att', 'numeric'}
-                {C, 'att', 'numeric', 'matrix'}
-                {D, 'att', 'numeric', 'matrix'}
-                {k, 'att', 'numeric'}
-                {E, 'att', 'numeric', 'matrix'}
-                {F, 'att', 'numeric', 'matrix'}
-            });
-            
-        else
-
-            inputArgsCheck({ ...
-                {name, 'att', {'char','string'}}
-                {A, 'att', 'numeric', 'square'}
-                {B, 'att', 'numeric', 'matrix'}
-                {c, 'att', 'numeric'}
-                {C, 'att', 'numeric', 'matrix'}
-                {D, 'att', 'numeric', 'matrix'}
-                {k, 'att', 'numeric'}
-                {E, 'att', 'numeric', 'matrix'}
-                {F, 'att', 'numeric', 'matrix'}
-            });
-
+        nameCheck = {};
+        if ~strcmp(name,'linearSys')
+            nameCheck = {{name, 'att', {'char','string'}}};
         end
+
+        inputArgsCheck({ ...
+            nameCheck{:}
+            {A, 'att', 'numeric', 'square'}
+            {B, 'att', 'numeric', 'matrix'}
+            {c, 'att', 'numeric'}
+            {C, 'att', 'numeric', 'matrix'}
+            {D, 'att', 'numeric', 'matrix'}
+            {k, 'att', 'numeric'}
+            {E, 'att', 'numeric', 'matrix'}
+            {F, 'att', 'numeric', 'matrix'}
+        });
 
         % offsets must be vectors
         if ~isempty(c) && ~isvector(c)

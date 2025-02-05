@@ -4,7 +4,7 @@ function plot(varargin)
 % 2. Plot the reachable cells for the time point
 % 3. Plot the reachable cells for the time interval
 %
-% Syntax:  
+% Syntax:
 %    plot(Obj,HA,options,(actualSegmentNr))
 %
 % Inputs:
@@ -26,13 +26,13 @@ function plot(varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      15-September-2006 
-% Last update:  26-March-2008
-%               16-June-2009
+% Authors:       Matthias Althoff
+% Written:       15-September-2006 
+% Last update:   26-March-2008
+%                16-June-2009
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %read objects
 Obj=varargin{1};
@@ -49,7 +49,7 @@ hold on
 % plot sample trajectories
 subplot(1,3,1);
 plot(Obj.field);
-traj_plot(trajectories,options);
+aux_traj_plot(trajectories,options);
 
 %choose input that has been devoloped in the end
 iInput=length(Obj.T.T);
@@ -70,9 +70,11 @@ plot(Obj.field);
 xlabel('x_1');
 ylabel('x_2');
 
-%-------------------------------------------------------
-%traj_plot: generates sample trajectories
-function traj_plot(trajectories,options)
+
+% Auxiliary functions -----------------------------------------------------
+
+function aux_traj_plot(trajectories,options)
+%aux_traj_plot: generates sample trajectories
 
 %plot initial set
 plot(options.R0,[1 2],'w','EdgeColor','k','Filled',true); 
@@ -91,4 +93,5 @@ end
 
 xlabel('x_1');
 ylabel('x_2');
-%-------------------------------------------------------
+
+% ------------------------------ END OF CODE ------------------------------

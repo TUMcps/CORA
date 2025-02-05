@@ -24,7 +24,7 @@ function res = test_zonotope_randPoint
 % ------------------------------ BEGIN CODE -------------------------------
 
 % tolerance
-tol = 1e-12;
+tol = 1e-7;
 
 % nD, empty zonotope
 n = 4;

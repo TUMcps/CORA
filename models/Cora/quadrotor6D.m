@@ -1,7 +1,7 @@
 function [A,B,E] = quadrotor6D(xlin,ulin)
-% quadrotor - linearized quadrotor system from [1, (42)]
+% quadrotor6D - linearized quadrotor system from [1, (42)]
 %
-% Syntax:  
+% Syntax:
 %    [A,B,E] = quadrotor6D(xlin,ulin)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function [A,B,E] = quadrotor6D(xlin,ulin)
 %    [2] A. Sasfi, M. Zeilinger, J. Koehler. "Robust adaptive MPC using
 %        control contraction metrics", Automatica, 2023.
 
-% Author:       Mark Wetzlinger
-% Written:      17-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       17-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % system represented as x' = Ax + Bu + Ew
 % however, CORA currently does not support E matrices
@@ -102,5 +102,4 @@ E(4,2) = 1;
 % w(3,1) = -K * ulin(1) * sin(xlin(5));
 % w(4,1) = K * ulin(1) * cos(xlin(5)) - g;
 
-%------------- END OF CODE --------------
-
+% ------------------------------ END OF CODE ------------------------------

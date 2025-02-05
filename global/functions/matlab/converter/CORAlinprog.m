@@ -82,18 +82,48 @@ if isMosek
         fval = f'*x;
 
     else
-        % either infeasible, unbounded, or unknown error
-        x = [];
-        fval = [];
-        
-        if strcmp(res.sol.itr.prosta,'PRIMAL_INFEASIBLE')
-            % infeasible
-            exitflag = -2;
-        elseif strcmp(res.sol.itr.prosta,'DUAL_INFEASIBLE')
-            % unbounded
-            exitflag = -3;
+        % Sometimes, the interior-point solver does a great job, but
+        % doesn't know about it, and outputs an 'UNKNOWN', then calling
+        % upon the might of the simplex solver to get to an optimal
+        % solution. Let us check whether this is possible:
+        try % We are not certain that the simplex algorithm has indeed been
+            % used.
+            prosta = res.sol.bas.prosta;
+        catch ME
+            prosta = '';
+        end
+
+        % Let us check what the simplex solver yields:
+        if strcmp(res.sol.bas.prosta,'PRIMAL_AND_DUAL_FEASIBLE')
+            % feasible
+            exitflag = 1;
+
+            x = [];
+            if isfield(res,'sol')
+                if isfield(res.sol,'itr')
+                    x = res.sol.itr.xx;
+                else
+                    x = res.sol.bas.xx;
+                end
+            end
+            % objective value: evaluate cost function
+            fval = f'*x;
+
         else
-            throw(CORAerror('CORA:solverIssue'));
+
+            % either infeasible, unbounded, or unknown error
+            x = [];
+            fval = [];
+
+            if strcmp(res.sol.itr.prosta,'PRIMAL_INFEASIBLE')
+                % infeasible
+                exitflag = -2;
+            elseif strcmp(res.sol.itr.prosta,'DUAL_INFEASIBLE')
+                % unbounded
+                exitflag = -3;
+            else
+                throw(CORAerror('CORA:solverIssue'));
+            end
         end
     end
 

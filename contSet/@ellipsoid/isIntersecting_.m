@@ -62,7 +62,7 @@ end
 
 % numeric case: check containment
 if isnumeric(S)
-    res = contains_(E,S,type,tol);
+    res = contains_(E,S,type,tol,0,false,false);
     return
 end
 
@@ -74,7 +74,7 @@ end
 
 % ellipsoid is just a point, check containment
 if representsa_(E,'point',tol)
-    res = contains_(S,E.q,type,tol);
+    res = contains_(S,E.q,type,tol,0,false,false);
     return;
 end
 

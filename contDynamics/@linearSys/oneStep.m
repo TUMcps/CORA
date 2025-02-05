@@ -65,7 +65,7 @@ function [Rtp,Rti,Htp,Hti,PU,Pu,C_state,C_input] = ...
 
 narginchk(6,7);
 % by default no block decomposition, i.e., a single block
-blocks = setDefaultValues({[1,linsys.nrOfStates]},varargin);
+blocks = setDefaultValues({[1,linsys.nrOfDims]},varargin);
 
 % compute time-varying input solution and constant input solution
 PU = particularSolution_timeVarying(linsys,U,timeStep,truncationOrder,blocks);
@@ -80,7 +80,7 @@ Htp = block_operation(@plus,Htp,Pu);
 X = decompose(X,blocks);
 
 % compute curvature error for the state and affine time-interval solution
-C_state = curvatureState(linsys,X,timeStep,truncationOrder);
+C_state = priv_curvatureState(linsys,X,timeStep,truncationOrder);
 Hti = block_operation(@plus,block_operation(@enclose,X,Htp),C_state);
 
 % reachable set as addition of affine and particular solution

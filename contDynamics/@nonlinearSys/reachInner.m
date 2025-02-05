@@ -54,22 +54,22 @@ switch options.algInner
     % compute inner-approximation with the algorithm in [1]
     case 'scale'
         if nargout > 1
-            [Rin,Rout] = reachInnerScaling(nlnsys,params,options);
+            [Rin,Rout] = priv_reachInnerScaling(nlnsys,params,options);
         else
-            Rin = reachInnerScaling(nlnsys,params,options);
+            Rin = priv_reachInnerScaling(nlnsys,params,options);
         end
 
     % compute inner-approximation with the algorithm in [2]
     case 'proj'
-        [Rin,Rout] = reachInnerProjection(nlnsys,params,options);
+        [Rin,Rout] = priv_reachInnerProjection(nlnsys,params,options);
         
     % compute inner-approximation with the algorithm in [3]    
     case 'parallelo'
-        [Rin,Rout] = reachInnerParallelotope(nlnsys,params,options);
+        [Rin,Rout] = priv_reachInnerParallelotope(nlnsys,params,options);
 
     % compute inner-approximation with the algorithm in [4]
     case 'minkdiff'
-        Rin = reachInnerMinkdiff(nlnsys,params,options);
+        Rin = priv_reachInnerMinkdiff(nlnsys,params,options);
         Rout = [];
 
     otherwise

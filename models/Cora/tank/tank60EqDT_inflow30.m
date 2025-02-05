@@ -2,7 +2,7 @@ function f = tank60EqDT_inflow30(x,u,h)
 % tank60EqDT_inflow30 - system dynamics for the uncontrolled, discrete-time 
 %   version of the tank benchmark with 60 states and 30 inputs (see [1])
 %
-% Syntax:  
+% Syntax:
 %    f = tank60EqDT_inflow30(x,u,h)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function f = tank60EqDT_inflow30(x,u,h)
 % References:
 %    [1] M. Althoff "Guaranteed State Estimation in CORA 2021", ARCH 2021
 
-% Author:        Laura Luetzow, Matthias Althoff
-% Written:       29-Aug-2023
+% Authors:       Laura Luetzow, Matthias Althoff
+% Written:       29-August-2023
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % parameter
 k = 0.015;
@@ -59,6 +59,7 @@ f(28,1) = x(28) + h*(k*sqrt(2*g)*(sqrt(x(27))-sqrt(x(28)) + u(15))); % tank 28
 f(29,1) = x(29) + h*(k*sqrt(2*g)*(sqrt(x(28))-sqrt(x(29))));         % tank 29
 f(30,1) = x(30) + h*(k*sqrt(2*g)*(sqrt(x(29))-sqrt(x(30))));         % tank 30
 
+% tanks 31-40
 f(31,1) = x(31) + h*(k*sqrt(2*g)*(sqrt(x(30))-sqrt(x(31)) + u(16))); 
 f(32,1) = x(32) + h*(k*sqrt(2*g)*(sqrt(x(31))-sqrt(x(32)) + u(17))); 
 f(33,1) = x(33) + h*(k*sqrt(2*g)*(sqrt(x(32))-sqrt(x(33))));        
@@ -70,6 +71,7 @@ f(38,1) = x(38) + h*(k*sqrt(2*g)*(sqrt(x(37))-sqrt(x(38)) + u(20)));
 f(39,1) = x(39) + h*(k*sqrt(2*g)*(sqrt(x(38))-sqrt(x(39))));        
 f(40,1) = x(40) + h*(k*sqrt(2*g)*(sqrt(x(39))-sqrt(x(40))));     
 
+% tanks 41-50
 f(41,1) = x(41) + h*(k*sqrt(2*g)*(sqrt(x(40))-sqrt(x(41)) + u(21))); 
 f(42,1) = x(42) + h*(k*sqrt(2*g)*(sqrt(x(41))-sqrt(x(42)) + u(22))); 
 f(43,1) = x(43) + h*(k*sqrt(2*g)*(sqrt(x(42))-sqrt(x(43))));        
@@ -81,6 +83,7 @@ f(48,1) = x(48) + h*(k*sqrt(2*g)*(sqrt(x(47))-sqrt(x(48)) + u(25)));
 f(49,1) = x(49) + h*(k*sqrt(2*g)*(sqrt(x(48))-sqrt(x(49))));        
 f(50,1) = x(50) + h*(k*sqrt(2*g)*(sqrt(x(49))-sqrt(x(50))));       
 
+% tanks 51-60
 f(51,1) = x(51) + h*(k*sqrt(2*g)*(sqrt(x(50))-sqrt(x(51)) + u(26))); 
 f(52,1) = x(52) + h*(k*sqrt(2*g)*(sqrt(x(51))-sqrt(x(52)) + u(27))); 
 f(53,1) = x(53) + h*(k*sqrt(2*g)*(sqrt(x(52))-sqrt(x(53))));        
@@ -92,4 +95,4 @@ f(58,1) = x(58) + h*(k*sqrt(2*g)*(sqrt(x(57))-sqrt(x(58)) + u(30)));
 f(59,1) = x(59) + h*(k*sqrt(2*g)*(sqrt(x(58))-sqrt(x(59))));        
 f(60,1) = x(60) + h*(k*sqrt(2*g)*(sqrt(x(59))-sqrt(x(60))));       
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

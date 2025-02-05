@@ -183,6 +183,7 @@ plot(interval(S),1,'color',colorblind('r'));
 % zonoBundle
 i = i + 1;
 
+% 2d plot
 subplot(nrows, ncols, i)
 hold on;
 xlim([0,3]);
@@ -196,6 +197,7 @@ plot(Z2, [1, 2], '--',  'Color', colorblind('b'));
 plot(zonoBundle({Z1, Z2}), [1, 2], 'Color', colorblind('b'));
 title("zonoBundle")
 
+% 1d plot
 subplot(nrows, ncols, ncols+i)
 hold on;
 xlim([0,3]);

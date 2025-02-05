@@ -33,95 +33,25 @@ b = a + 1;
 c = b + 2;
 c = [a; b; c];
 
-if abs( infimum(c(1, 1)) + 5.0 ) > tol || abs( supremum(c(1, 1)) + 2.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(1, 2)) + 4.0 ) > tol || abs( supremum(c(1, 2)) - 0.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(1, 3)) + 3.0 ) > tol || abs( supremum(c(1, 3)) - 2.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(1, 4)) - 0.0 ) > tol || abs( supremum(c(1, 4)) + 0.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(1, 5)) + 0.0 ) > tol || abs( supremum(c(1, 5)) - 5.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(1, 6)) - 5.0 ) > tol || abs( supremum(c(1, 6)) - 8.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(2, 1)) + 4.0 ) > tol || abs( supremum(c(2, 1)) + 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(2, 2)) + 3.0 ) > tol || abs( supremum(c(2, 2)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(2, 3)) + 2.0 ) > tol || abs( supremum(c(2, 3)) - 3.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(2, 4)) - 1.0 ) > tol || abs( supremum(c(2, 4)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(2, 5)) - 1.0 ) > tol || abs( supremum(c(2, 5)) - 6.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(2, 6)) - 6.0 ) > tol || abs( supremum(c(2, 6)) - 9.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(3, 1)) + 2.0 ) > tol || abs( supremum(c(3, 1)) - 1.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(3, 2)) + 1.0 ) > tol || abs( supremum(c(3, 2)) - 3.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(3, 3)) + 0.0 ) > tol || abs( supremum(c(3, 3)) - 5.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(3, 4)) - 3.0 ) > tol || abs( supremum(c(3, 4)) - 3.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(3, 5)) - 3.0 ) > tol || abs( supremum(c(3, 5)) - 8.0 ) > tol
-	res = false;
-	return;
-end
-
-if abs( infimum(c(3, 6)) - 8.0 ) > tol || abs( supremum(c(3, 6)) - 11.0 ) > tol
-	res = false;
-	return;
-end
+% case 1
+assert(abs( infimum(c(1, 1)) + 5.0 ) <= tol && abs( supremum(c(1, 1)) + 2.0 ) <= tol )
+assert( abs( infimum(c(1, 2)) + 4.0 ) <= tol && abs( supremum(c(1, 2)) - 0.0 ) <= tol )
+assert( abs( infimum(c(1, 3)) + 3.0 ) <= tol && abs( supremum(c(1, 3)) - 2.0 ) <= tol )
+assert( abs( infimum(c(1, 4)) - 0.0 ) <= tol && abs( supremum(c(1, 4)) + 0.0 ) <= tol )
+assert( abs( infimum(c(1, 5)) + 0.0 ) <= tol && abs( supremum(c(1, 5)) - 5.0 ) <= tol )
+assert( abs( infimum(c(1, 6)) - 5.0 ) <= tol && abs( supremum(c(1, 6)) - 8.0 ) <= tol )
+assert( abs( infimum(c(2, 1)) + 4.0 ) <= tol && abs( supremum(c(2, 1)) + 1.0 ) <= tol )
+assert( abs( infimum(c(2, 2)) + 3.0 ) <= tol && abs( supremum(c(2, 2)) - 1.0 ) <= tol )
+assert( abs( infimum(c(2, 3)) + 2.0 ) <= tol && abs( supremum(c(2, 3)) - 3.0 ) <= tol )
+assert( abs( infimum(c(2, 4)) - 1.0 ) <= tol && abs( supremum(c(2, 4)) - 1.0 ) <= tol )
+assert( abs( infimum(c(2, 5)) - 1.0 ) <= tol && abs( supremum(c(2, 5)) - 6.0 ) <= tol )
+assert( abs( infimum(c(2, 6)) - 6.0 ) <= tol && abs( supremum(c(2, 6)) - 9.0 ) <= tol )
+assert( abs( infimum(c(3, 1)) + 2.0 ) <= tol && abs( supremum(c(3, 1)) - 1.0 ) <= tol )
+assert( abs( infimum(c(3, 2)) + 1.0 ) <= tol && abs( supremum(c(3, 2)) - 3.0 ) <= tol )
+assert( abs( infimum(c(3, 3)) + 0.0 ) <= tol && abs( supremum(c(3, 3)) - 5.0 ) <= tol )
+assert( abs( infimum(c(3, 4)) - 3.0 ) <= tol && abs( supremum(c(3, 4)) - 3.0 ) <= tol )
+assert( abs( infimum(c(3, 5)) - 3.0 ) <= tol && abs( supremum(c(3, 5)) - 8.0 ) <= tol )
+assert( abs( infimum(c(3, 6)) - 8.0 ) <= tol && abs( supremum(c(3, 6)) - 11.0 ) <= tol )
 
 % n-d arrays
 lb = reshape([ 1.000 3.000 2.000 5.000 -3.000 0.000 2.000 1.000 0.000 -2.000 -1.000 3.000 0.000 0.000 0.000 0.000 1.000 -1.000 1.000 0.000 0.000 0.000 0.000 0.000 ], [2,2,2,3]);

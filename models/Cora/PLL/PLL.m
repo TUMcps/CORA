@@ -2,7 +2,7 @@ function [HAsim, A, U, U_delay, Uloc, c] = PLL()
 % PLL - returns a hybrid model of the phase-locked loop (PLL) described in 
 %    Sec. 3 of [1]; parameters are from Tab. 1
 %
-% Syntax:  
+% Syntax:
 %    HAsim = PLL()
 %
 % Inputs:

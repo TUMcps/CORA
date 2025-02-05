@@ -34,27 +34,28 @@ sysname = 'sys';
 f_1D = @(x,y,u) x(1)^2;
 g_1D = @(x,y,u) y(1) + x(1);
 sys = nonlinDASys(f_1D,g_1D);
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 1)
 assert(sys.nrOfOutputs == 1)
 
 sys = nonlinDASys(sysname,f_1D,g_1D);
 assert(strcmp(sys.name,sysname))
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 1)
 assert(sys.nrOfOutputs == 1)
 
+% with given nrOf*
 sys = nonlinDASys(f_1D,g_1D,1,1,1);
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 1)
 assert(sys.nrOfOutputs == 1)
 
 sys = nonlinDASys(sysname,f_1D,g_1D,1,1,1);
 assert(strcmp(sys.name,sysname))
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 1)
 assert(sys.nrOfOutputs == 1)
@@ -64,27 +65,28 @@ assert(sys.nrOfOutputs == 1)
 f_1D = @(x,y,u) x(1)^2 + u(1);
 g_1D = @(x,y,u) x(1) - y(1);
 sys = nonlinDASys(f_1D,g_1D);
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 1)
 assert(sys.nrOfOutputs == 1)
 
 sys = nonlinDASys(sysname,f_1D,g_1D);
 assert(strcmp(sysname,sys.name))
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 1)
 assert(sys.nrOfOutputs == 1)
 
+% with nrOf*
 sys = nonlinDASys(f_1D,g_1D,1,1,1);
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 1)
 assert(sys.nrOfOutputs == 1)
 
 sys = nonlinDASys(sysname,f_1D,g_1D,1,1,1);
 assert(strcmp(sysname,sys.name))
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 1)
 assert(sys.nrOfOutputs == 1)
@@ -93,27 +95,28 @@ assert(sys.nrOfOutputs == 1)
 f_3D = @(x,y,u) [sqrt(x(1)) - x(2)*u(1); x(2)-y(1); x(3)*x(2)];
 g_2D = @(x,y,u) [x(1) - y(1); y(2) + x(2)];
 sys = nonlinDASys(f_3D,g_2D);
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 2)
 assert(sys.nrOfOutputs == 3)
 
 sys = nonlinDASys(f_3D,g_2D,3,1,2);
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 2)
 assert(sys.nrOfOutputs == 3)
 
+% with system name
 sys = nonlinDASys(sysname,f_3D,g_2D);
 assert(strcmp(sysname,sys.name))
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 2)
 assert(sys.nrOfOutputs == 3)
 
 sys = nonlinDASys(sysname,f_3D,g_2D,3,1,2);
 assert(strcmp(sysname,sys.name))
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 2)
 assert(sys.nrOfOutputs == 3)
@@ -121,27 +124,28 @@ assert(sys.nrOfOutputs == 3)
 % with output equation
 h_2D = @(x,y,u) [x(1)*y(1); x(2) - u(1)];
 sys = nonlinDASys(f_3D,g_2D,h_2D);
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 2)
 assert(sys.nrOfOutputs == 2)
 
 sys = nonlinDASys(sysname,f_3D,g_2D,h_2D);
 assert(strcmp(sysname,sys.name))
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 2)
 assert(sys.nrOfOutputs == 2)
 
+% with nrOf*
 sys = nonlinDASys(f_3D,g_2D,3,1,2,h_2D,2);
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 2)
 assert(sys.nrOfOutputs == 2)
 
 sys = nonlinDASys(sysname,f_3D,g_2D,3,1,2,h_2D,2);
 assert(strcmp(sysname,sys.name))
-assert(sys.nrOfStates == 3)
+assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfConstraints == 2)
 assert(sys.nrOfOutputs == 2)

@@ -14,27 +14,15 @@ function res = isEmptyCommentLine(line)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: test_docstring
+% See also: test_codingConventions
 
 % Authors:       Tobias Ladner
 % Written:       17-August-2023
-% Last update:   ---
+% Last update:   06-February-2025 (speed up)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% get unique chars
-chars = unique(line);
-
-% contains '%'
-res = length(chars) >= 1; 
-
-% check each unique character
-for c = 1:length(chars)
-    if ~strcmp(chars(c),'%') && ~strcmp(chars(c),' ')
-        res = false;
-        break
-    end
-end
+res = all(line == '%' | line == ' ') && contains(line,'%');
 
 % ------------------------------ END OF CODE ------------------------------

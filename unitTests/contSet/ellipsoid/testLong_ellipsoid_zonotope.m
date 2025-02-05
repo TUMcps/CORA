@@ -21,6 +21,7 @@ function res = testLong_ellipsoid_zonotope
 % Written:       14-October-2019
 % Last update:   07-June-2021 (MA, degenerate case added)
 %                22-April-2024 (TL, added tolerance)
+%                25-February-2025 (TL, inner norm checks)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -103,6 +104,24 @@ for i=dims
             assertLoop(supportFunc(E_deg,d_deg)+TOL >= supportFunc(Zu_box_deg,d_deg),i,j,k)
         end
     end
+end
+
+% inner norm - check number of obtained generators
+% 2d ---
+Q = [ 0.957 -0.637 ; -0.637 1.264 ];
+q = [ 1.470 ; -0.327 ];
+E = ellipsoid(Q,q);
+for nrGen=dim(E):10
+    Z = zonotope(E,'inner:norm',nrGen);
+    Z = compact(Z,'all'); % compact aligned generators
+    assertLoop(size(Z.G,2) == nrGen,'',[],nrGen)
+end
+% 3d ---
+E = ellipsoid(eye(3));
+for nrGen=dim(E):10
+    Z = zonotope(E,'inner:norm',nrGen);
+    Z = compact(Z,'all'); % compact aligned generators
+    assertLoop(size(Z.G,2) == nrGen,'',[],nrGen)
 end
 
 % ------------------------------ END OF CODE ------------------------------

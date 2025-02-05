@@ -131,14 +131,14 @@ methods
     % update system dynamics for the new augmented input [u; w] where w is
     % the process noise acting on all states 
     function syslinDT = augment_u_with_w(syslinDT)
-        syslinDT = linearSysDT(syslinDT.name,syslinDT.A, [syslinDT.B eye(syslinDT.nrOfStates)], [], ...
-            syslinDT.C, [syslinDT.D, zeros(syslinDT.nrOfOutputs, syslinDT.nrOfStates)], syslinDT.dt);
+        syslinDT = linearSysDT(syslinDT.name,syslinDT.A, [syslinDT.B eye(syslinDT.nrOfDims)], [], ...
+            syslinDT.C, [syslinDT.D, zeros(syslinDT.nrOfOutputs, syslinDT.nrOfDims)], syslinDT.dt);
     end
 
     % update system dynamics for the new augmented input [u; v] where v is
     % the measurement noise acting on all outputs 
     function syslinDT = augment_u_with_v(syslinDT)
-        syslinDT = linearSysDT(syslinDT.A, [syslinDT.B zeros(syslinDT.nrOfStates, syslinDT.nrOfOutputs)], [], ...
+        syslinDT = linearSysDT(syslinDT.A, [syslinDT.B zeros(syslinDT.nrOfDims, syslinDT.nrOfOutputs)], [], ...
             syslinDT.C, [syslinDT.D, eye(syslinDT.nrOfOutputs)], syslinDT.dt);
     end
 end
@@ -190,38 +190,23 @@ function aux_checkInputArgs(name,A,B,c,C,D,k,E,F,dt,n_in)
     if CHECKS_ENABLED && n_in > 0
 
         % ensure that values have correct data type
-        if strcmp(name,'linearSysDT')
-            % default name (unless explicitly chosen by user, we have A as
-            % first input argument)
-
-            inputArgsCheck({ ...
-                {A, 'att', 'numeric', 'square'}
-                {B, 'att', 'numeric', 'matrix'}
-                {c, 'att', 'numeric'}
-                {C, 'att', 'numeric', 'matrix'}
-                {D, 'att', 'numeric', 'matrix'}
-                {k, 'att', 'numeric'}
-                {E, 'att', 'numeric', 'matrix'}
-                {F, 'att', 'numeric', 'matrix'}
-                {dt, 'att', 'numeric', {'scalar','positive'}}
-            });
-            
-        else
-
-            inputArgsCheck({ ...
-                {name, 'att', {'char','string'}}
-                {A, 'att', 'numeric', 'square'}
-                {B, 'att', 'numeric', 'matrix'}
-                {c, 'att', 'numeric'}
-                {C, 'att', 'numeric', 'matrix'}
-                {D, 'att', 'numeric', 'matrix'}
-                {k, 'att', 'numeric'}
-                {E, 'att', 'numeric', 'matrix'}
-                {F, 'att', 'numeric', 'matrix'}
-                {dt, 'att', 'numeric', {'scalar','positive'}}
-            });
-
+        nameCheck = {};
+        if ~strcmp(name,'linearSysDT')
+            nameCheck = {{name, 'att', {'char','string'}}};
         end
+
+        inputArgsCheck({ ...
+            nameCheck{:}
+            {A, 'att', 'numeric', 'square'}
+            {B, 'att', 'numeric', 'matrix'}
+            {c, 'att', 'numeric'}
+            {C, 'att', 'numeric', 'matrix'}
+            {D, 'att', 'numeric', 'matrix'}
+            {k, 'att', 'numeric'}
+            {E, 'att', 'numeric', 'matrix'}
+            {F, 'att', 'numeric', 'matrix'}
+            {dt, 'att', 'numeric', {'scalar','positive'}}
+        });
 
         % offsets must be vectors
         if ~isempty(c) && ~isvector(c)

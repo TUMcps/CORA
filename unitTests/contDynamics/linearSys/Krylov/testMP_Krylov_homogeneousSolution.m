@@ -22,9 +22,9 @@ function res = testMP_Krylov_homogeneousSolution(~)
 % assume true
 res = true;
 
-% enable access to private function "initReach_Krylov"
+% enable access to private function "priv_initReach_Krylov"
 path = CORAROOT;
-source = fullfile(path,'contDynamics','@linearSys','private','initReach_Krylov.m');
+source = fullfile(path,'contDynamics','@linearSys','private','priv_initReach_Krylov.m');
 target = fullfile(path,'contDynamics','@linearSys','initReach_Krylov.m');
 copyfile(source,target);
 rmpath(genpath(path));

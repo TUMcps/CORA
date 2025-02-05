@@ -10,7 +10,8 @@ function x = randPoint(S,varargin)
 %    S - contSet object
 %    N - number of random points
 %    type - type of the random point ('standard', 'extreme', 'gaussian',
-%           'uniform' or 'uniform:hitAndRun', 'uniform:billiardWalk')
+%           'uniform' or 'uniform:hitAndRun', 'uniform:billiardWalk',
+%           'unfirom:ballWalk')
 %    pr - probability that a value is within the set (only type = 'gaussian') 
 %
 % Outputs:

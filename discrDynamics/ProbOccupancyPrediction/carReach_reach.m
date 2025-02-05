@@ -1,7 +1,7 @@
 function probModel = carReach_reach(fileName,pathName,modelInitialization)
 % carReach_reach - generates Markov model based on reachability analysis
 %
-% Syntax:  
+% Syntax:
 %    probModel = carReach_reach(fileName,pathName,modelInitialization)
 %
 % Inputs:
@@ -11,19 +11,16 @@ function probModel = carReach_reach(fileName,pathName,modelInitialization)
 %
 % Outputs:
 %    probModel - probabilistic model of a vehicle following a road
-%
-% Example: 
-%
-% 
-% Author:       Matthias Althoff
-% Written:      31-July-2016
-% Last update:  31-July-2017
-% Last revision:---
 
+% Authors:       Matthias Althoff
+% Written:       31-July-2016
+% Last update:   31-July-2017
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %load fArray to determine segment length of road 
+
 cd(CORAROOT);
 file=load(fileName);
 fArray=file.fArray;
@@ -109,4 +106,4 @@ probModel.stateField = stateField;
 probModel.inputField = inputField;
 probModel.fArray = fArray;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

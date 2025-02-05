@@ -29,7 +29,9 @@ function res = plus(obj1,obj2)
 % ------------------------------ BEGIN CODE -------------------------------
 
     % different cases depending on the the type of inputs 
-    if isa(obj1,'stl') && ~obj1.logic
+
+    % check if obj1 is stl
+    if isa(obj1,'stl') && ~obj1.logic 
         if isa(obj2,'stl') && ~obj2.logic
             
             res = obj1;
@@ -52,6 +54,7 @@ function res = plus(obj1,obj2)
                       'This operation is not supported for stl objects!'));
         end
         
+        % check if obj2 is stl
     elseif isa(obj2,'stl') && ~obj2.logic && isnumeric(obj1) && isscalar(obj1)
         
         res = obj2;

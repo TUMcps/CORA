@@ -46,7 +46,7 @@ simOpt.fracVert = 0.8;             % fraction of vertices initial set
 simRes = simulateRandom(sys,params,simOpt);
 
 % computation of gamma_min
-endpoints = zeros(sys.nrOfStates,simOpt.points);
+endpoints = zeros(sys.nrOfDims,simOpt.points);
 for i=1:simOpt.points
     endpoints(:,i) = simRes(i).x{1}(end,:)';
 end

@@ -63,7 +63,7 @@ if representsa_(Z,'emptySet',0)
 end
 
 % start point must be contained in the set
-if ~contains_(Z,startPoint,'exact',1e-8)
+if ~contains_(Z,startPoint,'exact',1e-8,0,false,false)
     throw(CORAerror('CORA:wrongValue','third',...
         'Start point must be contained in the set.'));
 end

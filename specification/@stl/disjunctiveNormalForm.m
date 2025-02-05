@@ -60,7 +60,7 @@ function [res,cnt] = aux_rewrite(obj)
 % recursive function to convert into conjunctive normal form by
 % distributing & over |
 
-    if strcmp(obj.type,'&')
+    if strcmp(obj.type,'&') % ---
         
         [lhs,cnt1] = aux_rewrite(obj.lhs);
         [rhs,cnt2] = aux_rewrite(obj.rhs);
@@ -80,7 +80,7 @@ function [res,cnt] = aux_rewrite(obj)
         else
             res = lhs & rhs;
         end
-    elseif strcmp(obj.type,'|')
+    elseif strcmp(obj.type,'|') % ---
 
         [lhs,cnt1] = aux_rewrite(obj.lhs);
         [rhs,cnt2] = aux_rewrite(obj.rhs);

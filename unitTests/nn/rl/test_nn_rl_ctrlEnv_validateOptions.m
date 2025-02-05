@@ -32,6 +32,7 @@ g = 9.81;
 f = @(x,u) [x(2);(u(1)+1)/(2*m)-g];
 sys = contDynamics('Name',1,2);
 
+% test wrong values
 assertThrowsAs(@ctrlEnvironment,'CORA:wrongValue',...
     sys,@aux_rewardFun_Quadrocopter1D,@aux_collisionCheck_Quadrocopter1D);
 
@@ -41,6 +42,7 @@ options.rl.env.x0 = [[-4;0],[4;0]];
 assertThrowsAs(@ctrlEnvironment,'CORA:wrongFieldValue',...
     sys,@aux_rewardFun_Quadrocopter1D,@aux_collisionCheck_Quadrocopter1D,options);
 
+% test ctrlEnvironment.reset
 options.rl.env.x0 = interval([-4;0],[4;0]);
 options.rl.env.initialOps = 'None';
 
@@ -63,6 +65,7 @@ env = ctrlEnvironment(sys,@aux_rewardFun_Quadrocopter1D,@aux_collisionCheck_Quad
 
 assert(all(observation == options.rl.env.x0.sup))
 
+% test outOfDomain
 options.rl.env.dt = .1;
 options.rl.env.timeStep = .2;
 
@@ -75,6 +78,7 @@ options.rl.env.maxSteps = 0;
 assertThrowsAs(@ctrlEnvironment,'CORA:outOfDomain',...
     sys,@aux_rewardFun_Quadrocopter1D,@aux_collisionCheck_Quadrocopter1D,options);
 
+% test reward function
 options.rl.env.maxSteps = 30;
 options.rl.env.evalMode = 'point';
 
@@ -99,6 +103,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function reward = aux_rewardFun_Quadrocopter1D(x)
+% reward function of quadrocopter
 
 if isnumeric(x)
     reward = -(abs(x(end,1))+0.01*abs(x(end,2)));
@@ -111,7 +116,7 @@ end
 end
 
 function collisionBool = aux_collisionCheck_Quadrocopter1D(x)
-
+% collision check
 if isa(x,'numeric')
     collisionBool = all(abs(x(:,1:2)) < 0.05,"all");
 elseif isa(x,'reachSet')

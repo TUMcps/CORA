@@ -65,7 +65,8 @@ projDims = {[1,2],[2,3]};
 sysaxis = {[-0.5,10.5,-0.5,6.5],[-0.5,6.5,-0.5,10.5]};
 sysxticks = {[0,5,10],[0,3,6]};
 sysyticks = {[0,3,6],[0,5,10]};
-for p=1:ceil(sys.nrOfStates/2)
+for p=1:ceil(sys.nrOfDims/2)
+    % plot each dimension
     subplot(rows,cols,p); hold on; box on;
     useCORAcolors("CORA:contDynamics")
     plot(R,projDims{p});

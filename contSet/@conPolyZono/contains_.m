@@ -1,18 +1,35 @@
-function res = contains_(cPZ,S,type,varargin)
+function [res,cert,scaling] = contains_(cPZ,S,method,tol,maxEval,certToggle,scalingToggle,varargin)
 % contains_ - determines if a constrained polynomial zonotope contains a set
 %    or a point
 %
 % Syntax:
-%    res = contains_(cPZ,S)
-%    res = contains_(cPZ,S,type)
+%    [res,cert,scaling] = contains_(cPZ,S,method,tol,maxEval,certToggle,scalingToggle)
 %
 % Inputs:
 %    cPZ - conPolyZono object
 %    S - contSet object or single point
-%    type - type of containment check ('exact' or 'approx')
+%    method - method used for the containment check.
+%       Currently, the only available options are 'exact' and 'approx'.
+%    tol - tolerance for the containment check; the higher the
+%       tolerance, the more likely it is that points near the boundary of
+%       cPZ will be detected as lying in cPZ, which can be useful to
+%       counteract errors originating from floating point errors.
+%    maxEval - Currently has no effect
+%    certToggle - if set to 'true', cert will be computed (see below),
+%       otherwise cert will be set to NaN.
+%    scalingToggle - if set to 'true', scaling will be computed (see
+%       below), otherwise scaling will be set to inf.
 %
 % Outputs:
 %    res - true/false
+%    cert - returns true iff the result of res could be
+%           verified. For example, if res=false and cert=true, S is
+%           guaranteed to not be contained in cPZ, whereas if res=false and
+%           cert=false, nothing can be deduced (S could still be
+%           contained in cPZ).
+%           If res=true, then cert=true.
+%    scaling - returns the smallest number 'scaling', such that
+%           scaling*(cPZ - cPZ.center) + cPZ.center contains S.
 %
 % Example: 
 %    c = [0;0];
@@ -54,15 +71,40 @@ function res = contains_(cPZ,S,type,varargin)
 %
 % See also: contSet/contains, interval/contains_, conZonotope/contains_
 
-% Authors:       Niklas Kochdumper
+% Authors:       Niklas Kochdumper, Mark Wetzlinger, Adrian Kulmburg
 % Written:       05-February-2020 
 % Last update:   25-November-2022 (MW, rename 'contains')
+%                16-January-2025 (AK, added scaling and cert)
 % Last revision: 27-March-2023 (MW, rename contains_)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+if representsa(S, 'emptySet', tol)
+    % Empty set is always contained
+    res = true;
+    cert = true;
+    scaling = 0;
+    return
+elseif representsa(S, 'fullspace', tol)
+    % Fullspace is never contained, since a cPZ is compact
+    res = false;
+    cert = true;
+    scaling = inf;
+    return
+end
+
+% The code is not yet ready to deal with scaling or cert
+cert = false;
+scaling = Inf;
+if scalingToggle
+    throw(CORAerror('CORA:notSupported',...
+        "The computation of the scaling factor or cert " + ...
+        "for constrained polynomial zonotopes is not yet implemented."));
+end
+
+
 % check user inputs 
-if strcmp(type,'exact')
+if strcmp(method,'exact')
     throw(CORAerror('CORA:noExactAlg',cPZ,S));
 end
 
@@ -90,6 +132,6 @@ if ~isempty(cPZ.A)
 end
 
 % check containment using the function for higher-dimensional zonotopes
-res = contains_(pZ,S,'approx',1e-6);
+res = contains_(pZ,S,'approx',tol,maxEval,certToggle,scalingToggle);
 
 % ------------------------------ END OF CODE ------------------------------

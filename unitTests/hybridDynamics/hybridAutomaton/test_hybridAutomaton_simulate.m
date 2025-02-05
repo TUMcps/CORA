@@ -60,8 +60,8 @@ assert(iscell(t) && iscell(x) && isnumeric(loc));
 % must be of same length
 assert(length(t) == length(x) && length(t) == length(loc));
 % check whether points are contained in respective invariant
-assert(all(contains_(inv1,vertcat(x{loc==1})','exact',1e-10)));
-assert(all(contains_(inv2,vertcat(x{loc==2})','exact',1e-10)));
+assert(all(contains_(inv1,vertcat(x{loc==1})','exact',1e-10,0,false,false)));
+assert(all(contains_(inv2,vertcat(x{loc==2})','exact',1e-10,0,false,false)));
 % time before and after jumps must be the same, but state not
 for i=1:length(t)-1
     assert(withinTol(t{i}(end),t{i+1}(1)));
@@ -104,8 +104,8 @@ assert(iscell(t) && iscell(x) && isnumeric(loc));
 % must be of same length
 assert(length(t) == length(x) && length(t) == length(loc));
 % check whether points are contained in respective invariant
-assert(all(contains_(inv1,vertcat(x{loc==1})','exact',1e-10)));
-assert(all(contains_(inv2,vertcat(x{loc==2})','exact',1e-10)));
+assert(all(contains_(inv1,vertcat(x{loc==1})','exact',1e-10,0,false,false)));
+assert(all(contains_(inv2,vertcat(x{loc==2})','exact',1e-10,0,false,false)));
 % time before and after jumps must be the same, but state not
 for i=1:length(t)-1
     assert(withinTol(t{i}(end),t{i+1}(1)));

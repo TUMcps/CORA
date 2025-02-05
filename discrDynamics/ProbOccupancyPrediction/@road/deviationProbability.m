@@ -2,7 +2,7 @@ function [devProbLeft,dispDevProbLeft,devProbRight,dispDevProbRight]=deviationPr
 % deviationProbability - computes the lateral deviation probability based
 % on the lane change probability
 %
-% Syntax:  
+% Syntax:
 %    [p]=deviationProbability(R,changeRatio)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function [devProbLeft,dispDevProbLeft,devProbRight,dispDevProbRight]=deviationPr
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      26-March-2009
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-March-2009
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get number of deviation segments
 nrOfDevSegments=obj.nrOfDevSegments;
@@ -130,4 +130,4 @@ else
     end    
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

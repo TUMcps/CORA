@@ -1,7 +1,7 @@
 function plotHisto(varargin)
 % plotHisto - plots the histogram of the position probability function
 %
-% Syntax:  
+% Syntax:
 %    plotHisto(obj,posProb)
 %
 % Inputs:
@@ -20,12 +20,12 @@ function plotHisto(varargin)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      22-August-2008
-% Last update:  19-October-2009
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-August-2008
+% Last update:   19-October-2009
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin==2
     obj=varargin{1};
@@ -69,4 +69,4 @@ end
 %plot
 plot(x,y,plotStyle);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

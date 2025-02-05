@@ -65,6 +65,7 @@ assert(isequal(2, length(int5)));
 assert(isequal(interval(0, 0.9), int5(1)));
 assert(isequal(interval(1.3, 6.3), int5(2)));
 
+% more tests
 int6 = findIntervals(sig2, @(v) v == tt);
 assert(isequal(2, length(int6)));
 assert(isequal(interval(1.3, 3.0), int6(1)));

@@ -2,7 +2,7 @@ function f = prodDesParam(x,u)
 % prodDesParam - system dynamics for the production-destruction benchmark
 %                (see Sec. 3.1 in [1])
 %
-% Syntax:  
+% Syntax:
 %    f = prodDesParam(x,u)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function f = prodDesParam(x,u)
 %    [1] L. Geretti, “ARCH-COMP20 Category Report: Continuous and Hybrid 
 %        Systems with Nonlinear Dynamics", 2020
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       22-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     f(1,1) = (-x(1)*x(2))/(1+x(1));
     f(2,1) = (x(1)*x(2))/(1+x(1)) - x(4) * x(2);
@@ -31,4 +31,4 @@ function f = prodDesParam(x,u)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

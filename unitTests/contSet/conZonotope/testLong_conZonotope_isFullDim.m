@@ -16,9 +16,9 @@ function res = testLong_conZonotope_isFullDim
 %
 % See also: -
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Adrian Kulmburg
 % Written:       14-March-2021
-% Last update:   ---
+% Last update:   04-February-2024 (AK, added degenerate cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -44,15 +44,67 @@ for i=1:nrOfTests
     assertLoop(isFullDim(cZ),i)
     
     % random constraints so that conZonotope represents just a point
-    % as A being diagional forces each independent factor to one value
-    A = diag(1+rand(nrGens,1));
+    % as A being diagonal forces each independent factor to one value
+    A = diag(1+abs(rand(nrGens,1)));
     b = sign(randn(nrGens,1));
     % instantiate conZonotope with constraints
     cZ = conZonotope(c,G,A,b);
     
     % assert correctness
-    assertLoop(~isFullDim(cZ),i)
+    [res_subspace, subspace] = isFullDim(cZ);
+    assert(~isFullDim(cZ));
+    assert(~res_subspace);
+    assert(isempty(subspace));
     
+end
+
+for i=1:(nrOfTests/10)
+    % random dimension
+    n = randi([2,5]);
+
+    % random center
+    c = randn(n,1);
+
+    % random number of generators
+    gamma = randi([n,10]);
+
+    % random full-rank generator matrix
+    G = randn(n,gamma);
+    while rank(G) < n
+        G = randn(n,gamma);
+    end
+
+    % random number of 'degeneracy'
+    degeneracy = randi([1,n]);
+    [U, Sigma, V] = svd(G);
+    for j=1:degeneracy
+        Sigma(n-j+1,n-j+1) = 0;
+    end
+    Gdeg = U * Sigma * V';
+
+    % Now dealing with the constraints:
+    % random number of constraints
+    n_constraints = randi([1,n+1]);
+
+    b = randn([n_constraints 1]);
+    A = randn([n_constraints gamma]);
+    
+    % instantiate zonotope
+    cZ = conZonotope(c,Gdeg, A, b);
+    
+    % check if full-dimensional
+    res_single = isFullDim(cZ);
+    [res_subspace, subspace] = isFullDim(cZ);
+
+    % transform into polytope, to check if both methods yield the same
+    P = polytope(cZ);
+    [res_poly,P_subspace] = isFullDim(P);
+
+    same_subspace = rank([subspace P_subspace], 1e-5) == rank(subspace);
+
+    assert(res_single == res_poly);
+    assert(res_subspace == res_poly);
+    assert(same_subspace);
 end
 
 % ------------------------------ END OF CODE ------------------------------

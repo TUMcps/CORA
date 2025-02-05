@@ -129,7 +129,7 @@ function [linsys,options] = aux_expmtie_adaptive(linsys,options)
 % load data from object/options structure
 A = linsys.A;
 A_abs = abs(A);
-n = linsys.nrOfStates;
+n = linsys.nrOfDims;
 deltat = options.timeStep;
 % deltatbyfac = options.factor;
 taylorTermsGiven = isfield(options,'taylorTerms');
@@ -238,7 +238,7 @@ options.isRV = ~representsa_(V,'origin',eps);
 Apower = linsys.taylor.powers;
 E = linsys.taylor.error;
 r = options.timeStep;
-n = linsys.nrOfStates;
+n = linsys.nrOfDims;
 factors = options.factor;
 
 if options.isRV
@@ -306,7 +306,7 @@ Apower=linsys.taylor.powers;
 E = linsys.taylor.error;
 taylorTerms=options.taylorTerms;
 r=options.timeStep;
-n=linsys.nrOfStates;
+n=linsys.nrOfDims;
 
 % initialize Asum
 Asum_pos=zeros(n);

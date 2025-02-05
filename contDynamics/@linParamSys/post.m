@@ -47,7 +47,7 @@ end
 if isfield(params,'uTransVec')
    
     % update input sets
-    inputSolution(obj,params,options);
+    priv_inputSolution(obj,params,options);
     
     % compute time point solution
     Rinit = R.tp;

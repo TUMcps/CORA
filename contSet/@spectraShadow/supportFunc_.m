@@ -39,7 +39,11 @@ function [val,x] = supportFunc_(SpS,dir,type,varargin)
 % linear program options
 persistent options
 if isempty(options)
-    options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0);
+    if isSolverInstalled('mosek')
+        options = sdpsettings('solver','mosek','verbose',0,'allownonconvex',0,'cachesolvers',1);
+    else
+        options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0,'cachesolvers',1);
+    end
 end
 
 % upper or lower bound
@@ -100,17 +104,31 @@ end
 
 constraints = A>=0;
 cost = s * dir' * SpS.G * beta;
-yalmipOptimizer = optimizer(constraints,cost,options,[],beta);
 
 try
-    [sol, exitflag] = yalmipOptimizer();
+    diagnostics = optimize(constraints,cost,options);
+    sol = value(beta);
+    exitflag = diagnostics.problem;
+    if exitflag == 9
+        % Weird bug with SEDUMI (see also below). The problem is extremely likely to be
+        % either unbounded or infeasible. Let's check feasibility:
+        cost = [];
+        diagnostics = optimize(constraints,cost,options);
+        sol = value(beta);
+        exitflag = diagnostics.problem;
+        if exitflag ~= 1
+            % If it's feasible, the original problem is probably unbounded.
+            exitflag = 2;
+        end
+    end
 catch ME
     if strcmp(ME.identifier,'MATLAB:nonExistentField')
         % Weird bug with SEDUMI. The problem is extremely likely to be
         % either unbounded or infeasible. Let's check feasibility:
         cost = [];
-        yalmipOptimizer = optimizer(constraints,cost,options,[],beta);
-        [sol, exitflag] = yalmipOptimizer();
+        diagnostics = optimize(constraints,cost,options);
+        sol = value(beta);
+        exitflag = diagnostics.problem;
         if exitflag ~= 1
             % If it's feasible, the original problem is probably unbounded.
             exitflag = 2;

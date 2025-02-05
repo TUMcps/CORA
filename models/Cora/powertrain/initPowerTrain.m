@@ -1,7 +1,7 @@
 function [HA,Zcenter,Zdelta,B1,B2,B3,c1,c2,c3] = initPowerTrain(dim)
 % initPowerTrain - power train example described in Sec. 6 in [1]
 %
-% Syntax:  
+% Syntax:
 %    [HA,Zcenter,Zdelta,B1,B2,B3,c1,c2,c3] = initPowerTrain(dim)
 %
 % Inputs:
@@ -72,7 +72,7 @@ x = [x1; x2; x3; x4; x5; x6; x7; x8; x9; x10; x11; x12; x13; x14; x15; x16; x17;
 u = [u1; u2];
 
 %compute jacobians for loc 1:
-[f, c1] = fetchDynamics(dim,x,u,p);
+[f, c1] = aux_fetchDynamics(dim,x,u,p);
 A1 = double(jacobian(f, x(1:dim)));
 B1 = double(jacobian(f, u));
 
@@ -81,7 +81,7 @@ B1 = double(jacobian(f, u));
 p.kTmp = p.k;
 p.k = 0;
 
-[f, c2] = fetchDynamics(dim,x,u,p);
+[f, c2] = aux_fetchDynamics(dim,x,u,p);
     
 A2 = double(jacobian(f, x(1:dim)));
 B2 = double(jacobian(f, u));
@@ -91,7 +91,7 @@ p.k = p.kTmp;
 p.alphaTmp = p.alpha;
 p.alpha = -p.alpha;
 
-[f, c3] = fetchDynamics(dim,x,u,p);
+[f, c3] = aux_fetchDynamics(dim,x,u,p);
 
 A3 = double(jacobian(f, x(1:dim)));
 B3 = double(jacobian(f, u));
@@ -165,45 +165,58 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [f, c1] = fetchDynamics(dim,x,u,p)
+function [f, c1] = aux_fetchDynamics(dim,x,u,p)
+    % get dynamics based on dimension
 
-    if dim==7
+    if dim==7 % ---
         f = powertrain7Eq(x,u,p);
         c1 = powertrain7Eq(zeros(length(x),1),zeros(length(u),1),p);
-    elseif dim==9
+
+    elseif dim==9 % ---
         f = powertrain9Eq(x,u,p);
         c1 = powertrain9Eq(zeros(length(x),1),zeros(length(u),1),p);
-    elseif dim==11
+
+    elseif dim==11 % ---
         f = powertrain11Eq(x,u,p);
         c1 = powertrain11Eq(zeros(length(x),1),zeros(length(u),1),p); 
-    elseif dim==13
+
+    elseif dim==13 % ---
         f = powertrain13Eq(x,u,p);
         c1 = powertrain13Eq(zeros(length(x),1),zeros(length(u),1),p);  
-    elseif dim==15
+
+    elseif dim==15 % ---
         f = powertrain15Eq(x,u,p);
         c1 = powertrain15Eq(zeros(length(x),1),zeros(length(u),1),p); 
-    elseif dim==17
+
+    elseif dim==17 % ---
         f = powertrain17Eq(x,u,p);
         c1 = powertrain17Eq(zeros(length(x),1),zeros(length(u),1),p);
-    elseif dim==21
+
+    elseif dim==21 % ---
         f = powertrain21Eq(x,u,p);
         c1 = powertrain21Eq(zeros(length(x),1),zeros(length(u),1),p);  
-    elseif dim==31
+
+    elseif dim==31 % ---
         f = powertrain31Eq(x,u,p);
         c1 = powertrain31Eq(zeros(length(x),1),zeros(length(u),1),p);  
-    elseif dim==41
+
+    elseif dim==41 % ---
         f = powertrain41Eq(x,u,p);
         c1 = powertrain41Eq(zeros(length(x),1),zeros(length(u),1),p); 
-    elseif dim==51
+
+    elseif dim==51 % ---
         f = powertrain51Eq(x,u,p);
         c1 = powertrain51Eq(zeros(length(x),1),zeros(length(u),1),p);  
-    elseif dim==61
+
+    elseif dim==61 % ---
         f = powertrain61Eq(x,u,p);
         c1 = powertrain61Eq(zeros(length(x),1),zeros(length(u),1),p); 
-    elseif dim==101
+
+    elseif dim==101 % ---
         f = powertrain101Eq(x,u,p);
-        c1 = powertrain101Eq(zeros(length(x),1),zeros(length(u),1),p);     
-    else
+        c1 = powertrain101Eq(zeros(length(x),1),zeros(length(u),1),p); 
+        
+    else % throw error
         throw(CORAerror('CORA:wrongValue','first',...
             'must be 7, 9, 11, 13, 15, 17, 21, 31, 41, 51, 61, 101'));
     end

@@ -59,7 +59,6 @@ if strcmp(obj.options.rl.actor.nn.train.method,'naive')
     Q_adv = obj.targetCritic.nn.evaluate(cat(1,xs_adv,a_adv),obj.options.rl.critic,obj.targetCritic.idxLayer);
 
     [minQ,ind] = min(Q_adv);
-
     if minQ < Q_star
         x_adv = xs_adv(:,ind);
     else
@@ -69,6 +68,7 @@ end
 
 % Gradient based attack:
 if strcmp(obj.options.rl.actor.nn.train.method,'grad')
+    % read options
     obj.options.rl.critic.nn.train.updateGrad = false;
 
     i = obj.options.rl.actor.nn.train.advOps.numSamples;
@@ -77,23 +77,23 @@ if strcmp(obj.options.rl.actor.nn.train.method,'grad')
 
     epsilon = obj.options.rl.noise;
 
+    % evaluate
     a_star = obj.actor.nn.evaluate_(x,obj.options.rl.actor,obj.actor.idxLayer);
     Q_star = obj.targetCritic.nn.evaluate_(cat(1,x,a_star),obj.options.rl.critic,obj.targetCritic.idxLayer);
-
+    % backprop
     grad = obj.targetCritic.nn.backprop(Q_star,obj.options.rl.critic,obj.targetCritic.idxLayer);
-
     grad = grad(1:size(x,1));
     grad_dir = grad/norm(grad);
 
+    % compute adversary attack (TODO: FGSM?)
     n = betarnd(alpha,beta,[size(x,1),i]);
-
     xs_adv = x-n.*grad_dir*epsilon;
 
+    % evaluate adversary example
     a_adv = obj.actor.nn.evaluate_(xs_adv,obj.options.rl.actor,obj.actor.idxLayer);
     Q_adv = obj.targetCritic.nn.evaluate(cat(1,xs_adv,a_adv),obj.options.rl.critic,obj.targetCritic.idxLayer);
 
     [minQ,ind] = min(Q_adv);
-
     if minQ < Q_star
         x_adv = xs_adv(:,ind);
     else

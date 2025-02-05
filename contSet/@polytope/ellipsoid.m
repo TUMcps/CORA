@@ -257,7 +257,7 @@ prob.buc = prob.blc;
 [~,res] = mosekopt('minimize echo(0)',prob);
 
 % check if everything worked out
-if res.rcode~=0 ||  ~strcmp(res.sol.itr.solsta,'OPTIMAL')
+if ~strcmp(res.sol.itr.solsta,'OPTIMAL') && ~strcmp(res.sol.itr.solsta,'UNKNOWN')
     throw(CORAerror('CORA:solverIssue','mosek'));
 end
 
@@ -386,9 +386,7 @@ if exist('sdpt3','file')
 end
 %solve optimization problem
 diagnostics = optimize(F, -logdet(B), options);
-if diagnostics.problem ~= 0
-     throw(CORAerror('CORA:solverIssue'));
-end
+
 Q = value(B)^2;
 q = value(c);
 

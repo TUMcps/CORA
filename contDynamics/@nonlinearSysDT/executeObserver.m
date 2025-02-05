@@ -29,15 +29,15 @@ function [R,tcomp] = executeObserver(nlnsysDT,params,options)
 % decide which observer to execute by options.alg
 switch options.alg
     case 'VolMin-A'
-        [R,tcomp] = observe_volMinA(nlnsysDT,params,options);
+        [R,tcomp] = priv_observe_volMinA(nlnsysDT,params,options);
     case 'VolMin-B'
-        [R,tcomp] = observe_volMinB(nlnsysDT,params,options);
+        [R,tcomp] = priv_observe_volMinB(nlnsysDT,params,options);
     case 'FRad-A'
-        [R,tcomp] = observe_FRadA(nlnsysDT,params,options);
+        [R,tcomp] = priv_observe_FRadA(nlnsysDT,params,options);
     case 'FRad-B'
-        [R,tcomp] = observe_FRadB(nlnsysDT,params,options);
+        [R,tcomp] = priv_observe_FRadB(nlnsysDT,params,options);
     case 'FRad-C'
-        [R,tcomp] = observe_FRadC(nlnsysDT,params,options);
+        [R,tcomp] = priv_observe_FRadC(nlnsysDT,params,options);
 end
 
 % ------------------------------ END OF CODE ------------------------------

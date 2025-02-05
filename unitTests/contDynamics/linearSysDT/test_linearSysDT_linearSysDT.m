@@ -101,7 +101,7 @@ for j = 1:length(list)
     sys = list{j};
     
     % check value of system dimension
-    assertLoop(sys.nrOfStates == sys_n(j),errmsg_n,[],j);
+    assertLoop(sys.nrOfDims == sys_n(j),errmsg_n,[],j);
     % check value of number of inputs
     assertLoop(sys.nrOfInputs == sys_m(j),errmsg_m,[],j);
     % check value of number of outputs

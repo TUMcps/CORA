@@ -18,7 +18,7 @@ function S_out = recompose(S)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: global/.../recompose, decompose, reach_decomp
+% See also: global/.../recompose, decompose, priv_reach_decomp
 
 % Authors:       Mark Wetzlinger
 % Written:       16-October-2024

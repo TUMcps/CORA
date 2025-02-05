@@ -71,6 +71,7 @@ elseif strcmp(prop,'time')
 
        timeInt = []; timePoint = [];
 
+       % time interval ---
        if ~isempty(R(i).timeInterval)
        
            ind = [];
@@ -90,6 +91,7 @@ elseif strcmp(prop,'time')
            end
        end
 
+       % time point ---
        ind = [];
            
        for j = 1:length(R(i).timePoint.time) 

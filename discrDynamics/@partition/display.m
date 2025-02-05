@@ -1,7 +1,7 @@
 function display(obj)
 % display - display values of partition object
 %
-% Syntax:  
+% Syntax:
 %   display(obj)
 %
 % Inputs:
@@ -18,12 +18,12 @@ function display(obj)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      14-September-2006
-% Last update:  02-August-2018
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       14-September-2006
+% Last update:   02-August-2018
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 disp('state space intervals: ');
 disp(obj.intervals);
@@ -32,4 +32,4 @@ disp(obj.nrOfSegments);
 disp('Partition dividers: ');
 disp(obj.dividers); 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

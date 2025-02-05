@@ -443,7 +443,7 @@ function c = aux_Initializer2(A,b,c,TOL)
     % number of constraints
     nrCon = size(A,1);
     
-    % compute psuedo-inverse and augmented constraint matrix
+    % compute pseudo-inverse and augmented constraint matrix
     Ap = pinv(A);        
     Aaug = speye(nrCon) - A*Ap;
     % transpose augmented constraint matrix
@@ -453,23 +453,19 @@ function c = aux_Initializer2(A,b,c,TOL)
     C = sum(abs(M),2);
     C(C<=0) = min(C(C>0));
     
+    % compute slack
     slack = b - A*c;
     slack(slack<0) = 0;
-     
-    IterThresh = maxIter; 
-    s = slack; 
-    ii = 0;
     
-    while ii <= 2*maxIter 
+    % init
+    i = 0;
+    while i <= 2*maxIter 
+        % increase counter
+        i = i + 1;     
         
-        ii = ii + 1; 
-        if ii > IterThresh
-            IterThresh = IterThresh + maxIter;
-        end          
-        
-        s = s - Aaugt*(Aaug*(s-b))./C;   
-        s(s<0) = 0;
-        c = Ap*(b-s);
+        slack = slack - Aaugt*(Aaug*(slack-b))./C;   
+        slack(slack<0) = 0;
+        c = Ap*(b-slack);
     end
    
 end
@@ -768,14 +764,16 @@ function [A,b] = aux_vert2con(V,tol)
 %        (4) ver 1.1: enhanced redundancy checks, July 2005
 %        (5) Written by Michael Kleder,
 %            Modified by Matt Jacobson - March 29, 2011
-
+    
+    % try to compute convex hull
     try
         k = convhulln(V);
     catch
         k = convhulln(V,{'Qs'});
     end
+
+    % compute center of vertices
     c = mean(V(unique(k),:));
-    
     
     V = bsxfun(@minus,V,c);
     A = NaN(size(k,1),size(V,2));
@@ -784,6 +782,7 @@ function [A,b] = aux_vert2con(V,tol)
     ee = ones(size(k,2),1);
     rc = 0;
     
+    % set up constraints
     for ix = 1:size(k,1)
         F = V(k(ix,:),:);
         if aux_lindep(F,tol) == n

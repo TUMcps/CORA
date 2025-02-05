@@ -147,7 +147,7 @@ function minVal = aux_globalMinimizer(tay,dom)
 
                 % add the subdomain that contains the minimum of the linear
                 % part at position 1 in the priority queue
-                if contains_(dom1,xMin,'exact',eps)
+                if contains_(dom1,xMin,'exact',eps,0,false,false)
                    domMin{1} = dom1;
                    tayMin{1} = t1;
                    domMin{end+1} = dom2;
@@ -340,12 +340,11 @@ end
 % Functions for debugging -------------------------------------------------
 
 function aux_displayRedDom2D(slopes,intHo,xMin,xMax)
-
+    % setup data
     [X1,X2] = meshgrid(-1:0.1:1,-1:0.1:1);
     Z = zeros(size(X1));
     Zo = zeros(size(X1));
     Zl = zeros(size(X1));
-    
     
     bound = slopes' * xMin + supremum(intHo);
     Zb = ones(size(X2)) * bound;
@@ -359,33 +358,19 @@ function aux_displayRedDom2D(slopes,intHo,xMin,xMax)
         end
     end
     
+    % plot ---
     hold on
-    s1 = surf(X1,X2,Z);
-    set(s1,'EdgeColor','none');
-    set(s1,'FaceColor','r');
-    set(s1,'FaceAlpha',0.5);
-    
-    s2 = surf(X1,X2,Zo);
-    set(s2,'EdgeColor','none');
-    set(s2,'FaceColor','b');
-    set(s2,'FaceAlpha',0.5);
-    
-    s3 = surf(X1,X2,Zl);
-    set(s3,'EdgeColor','none');
-    set(s3,'FaceColor','b');
-    set(s3,'FaceAlpha',0.5);
-    
-    s4 = surf(X1,X2,Zb);
-    set(s4,'EdgeColor','none');
-    set(s4,'FaceColor','g');
-    set(s4,'FaceAlpha',0.5);
-    
+
+    s1 = surf(X1,X2,Z,'EdgeColor','none','FaceColor','r','FaceAlpha',0.5);
+    s2 = surf(X1,X2,Zo,'EdgeColor','none','FaceColor','b','FaceAlpha',0.5);
+    s3 = surf(X1,X2,Zl,'EdgeColor','none','FaceColor','b','FaceAlpha',0.5);
+    s4 = surf(X1,X2,Zb,'EdgeColor','none','FaceColor','g','FaceAlpha',0.5);    
     plot(interval(min(xMax,xMin),max(xMax,xMin)));
 
 end
 
 function aux_displayGradientDescend2D(mon,coeff,xMin)
-
+    %^setup data
     [X1,X2] = meshgrid(-1:0.1:1,-1:0.1:1);
     Z = zeros(size(X1));
     
@@ -398,6 +383,7 @@ function aux_displayGradientDescend2D(mon,coeff,xMin)
     
     fopt = sum(prod(repmat(xMin,1,length(coeff)).^(mon'),1) * coeff);
     
+    % plot
     surf(X1,X2,Z);
     hold on
     plot3(xMin(1),xMin(2),fopt,'.r','MarkerSize',20);

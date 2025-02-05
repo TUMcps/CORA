@@ -39,6 +39,7 @@ function str = aux_displayRecursive(obj)
 
     switch obj.type
         
+        % atom
         case 'variable'
 
             if isempty(obj.var)
@@ -53,6 +54,7 @@ function str = aux_displayRecursive(obj)
         case 'false'
             str = 'false';
             
+            % temporal
         case 'until'
             str1 = aux_displayRecursive(obj.lhs);
             str2 = aux_displayRecursive(obj.rhs);
@@ -75,7 +77,8 @@ function str = aux_displayRecursive(obj)
             str1 = aux_displayRecursive(obj.lhs);
             str = ['X',obj.interval.toStr(),'(',str1,')'];
 
-        case '&'
+            % boolean
+        case '&' % ---
             str1 = aux_displayRecursive(obj.lhs);
             if ~ismember(obj.lhs.type,{'until','globally','finally', ...
                                                 'next','true','false'})
@@ -88,7 +91,7 @@ function str = aux_displayRecursive(obj)
             end
             str = ['(',str1,' & ', str2,')'];
 
-        case '|'
+        case '|' % ---
             str1 = aux_displayRecursive(obj.lhs);
             if ~ismember(obj.lhs.type,{'until','globally','finally', ...
                                                 'next','true','false'})
@@ -101,7 +104,7 @@ function str = aux_displayRecursive(obj)
             end
             str = ['(',str1,' | ', str2,')'];
 
-        case '~'
+        case '~' % ---
             str1 = aux_displayRecursive(obj.lhs);
             if ismember(obj.lhs.type,{'until','globally','finally', ...
                                                 'next','true','false'})
@@ -110,7 +113,8 @@ function str = aux_displayRecursive(obj)
                 str = ['~(',str1,')'];
             end
 
-        case '+'
+            % binary
+        case '+' % ---
             if isnumeric(obj.lhs)
                 str1 = num2str(obj.lhs);
             else    
@@ -123,7 +127,7 @@ function str = aux_displayRecursive(obj)
             end
             str = [str1, ' + ', str2];
 
-        case '-'
+        case '-' % ---
             if isnumeric(obj.lhs)
                 str1 = num2str(obj.lhs);
             else    
@@ -136,7 +140,7 @@ function str = aux_displayRecursive(obj)
             end
             str = [str1, ' - ', str2];
 
-        case '*'
+        case '*' % ---
             if isnumeric(obj.lhs)
                 str1 = num2str(obj.lhs);
             else    
@@ -148,8 +152,9 @@ function str = aux_displayRecursive(obj)
                 str2 = aux_displayRecursive(obj.rhs);
             end
             str = [str1, '*', str2];
-                                            
-        case '<'
+                
+            % comparator
+        case '<' % ---
             str1 = aux_displayRecursive(obj.lhs);
             if isnumeric(obj.rhs)
                 str2 = num2str(obj.rhs);
@@ -158,7 +163,7 @@ function str = aux_displayRecursive(obj)
             end
             str = [str1, ' < ',str2]; 
 
-        case '<='
+        case '<=' % ---
             str1 = aux_displayRecursive(obj.lhs);
             if isnumeric(obj.rhs)
                 str2 = num2str(obj.rhs);
@@ -167,7 +172,7 @@ function str = aux_displayRecursive(obj)
             end
             str = [str1, ' <= ',str2]; 
 
-        case '>'
+        case '>' % ---
             str1 = aux_displayRecursive(obj.lhs);
             if isnumeric(obj.rhs)
                 str2 = num2str(obj.rhs);
@@ -176,7 +181,7 @@ function str = aux_displayRecursive(obj)
             end
             str = [str1, ' > ',str2]; 
 
-        case '>='
+        case '>=' % ---
             str1 = aux_displayRecursive(obj.lhs);
             if isnumeric(obj.rhs)
                 str2 = num2str(obj.rhs);
@@ -185,7 +190,7 @@ function str = aux_displayRecursive(obj)
             end
             str = [str1, ' >= ',str2]; 
 
-        case '^'
+        case '^' % ---
             str1 = aux_displayRecursive(obj.lhs);
             if ismember(obj.lhs.type,{'+','-','*'})
                 str1 = ['(',str1,')'];

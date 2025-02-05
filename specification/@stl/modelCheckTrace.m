@@ -54,80 +54,80 @@ end
 function res = aux_recursive(obj,x,t,vars)
 % recursive function for checking traces
 
-    if strcmp(obj.type,'&')
+    if strcmp(obj.type,'&') % ---
 
         lhs = aux_recursive(obj.lhs,x,t,vars);
         rhs = aux_recursive(obj.rhs,x,t,vars);
 
         res = lhs & rhs;
 
-    elseif strcmp(obj.type,'|')
+    elseif strcmp(obj.type,'|') % ---
 
         lhs = aux_recursive(obj.lhs,x,t,vars);
         rhs = aux_recursive(obj.rhs,x,t,vars);
 
         res = lhs | rhs;
 
-    elseif strcmp(obj.type,'~')
+    elseif strcmp(obj.type,'~') % ---
 
         inner = aux_recursive(obj.lhs,x,t,vars);
         res = ~inner;
 
-    elseif strcmp(obj.type,'<')
+    elseif strcmp(obj.type,'<') % ---
 
         lhs = aux_recursive(obj.lhs,x,t,vars);
         res = lhs < obj.rhs; 
 
-    elseif strcmp(obj.type,'>')
+    elseif strcmp(obj.type,'>') % ---
 
         lhs = aux_recursive(obj.lhs,x,t,vars);
         res = lhs > obj.rhs; 
 
-    elseif strcmp(obj.type,'<=')
+    elseif strcmp(obj.type,'<=') % ---
 
         lhs = aux_recursive(obj.lhs,x,t,vars);
         res = lhs <= obj.rhs; 
 
-    elseif strcmp(obj.type,'>=')
+    elseif strcmp(obj.type,'>=') % ---
 
         lhs = aux_recursive(obj.lhs,x,t,vars);
         res = lhs >= obj.rhs; 
 
-    elseif strcmp(obj.type,'+')
+    elseif strcmp(obj.type,'+') % ---
 
         lhs = aux_recursive(obj.lhs,x,t,vars);
         rhs = aux_recursive(obj.rhs,x,t,vars);
 
         res = lhs + rhs;
 
-    elseif strcmp(obj.type,'-')
+    elseif strcmp(obj.type,'-') % ---
 
         lhs = aux_recursive(obj.lhs,x,t,vars);
         rhs = aux_recursive(obj.rhs,x,t,vars);
 
         res = lhs - rhs;
 
-    elseif strcmp(obj.type,'*')
+    elseif strcmp(obj.type,'*') % ---
 
         lhs = obj.lhs;
         rhs = aux_recursive(obj.rhs,x,t,vars);
 
         res = lhs * rhs;
 
-    elseif strcmp(obj.type,'true')
+    elseif strcmp(obj.type,'true') % ---
 
         res = true*ones(size(t));
 
-    elseif strcmp(obj.type,'false')
+    elseif strcmp(obj.type,'false') % ---
 
         res = false*zeros(size(t));
 
-    elseif strcmp(obj.type,'variable')
+    elseif strcmp(obj.type,'variable') % ---
 
         ind = find(contains(vars,obj.var));
         res = x(:,ind);
 
-    elseif strcmp(obj.type,'next')
+    elseif strcmp(obj.type,'next') % ---
 
         inner = aux_recursive(obj.lhs,x,t,vars);
         ind = find(t >= obj.from | withinTol(t,obj.from));
@@ -139,14 +139,14 @@ function res = aux_recursive(obj,x,t,vars)
             res = false*zeros(size(t));
         end
 
-    elseif strcmp(obj.type,'finally')
+    elseif strcmp(obj.type,'finally') % ---
 
         rhs = aux_recursive(obj.lhs,x,t,vars);
         lhs = true*ones(size(rhs));
 
         res = aux_until(lhs,rhs,t,obj.from,obj.to);
 
-    elseif strcmp(obj.type,'globally')
+    elseif strcmp(obj.type,'globally') % ---
 
         rhs = aux_recursive(obj.lhs,x,t,vars);
         lhs = true*ones(size(rhs));
@@ -162,7 +162,7 @@ function res = aux_recursive(obj,x,t,vars)
         %     res(length(res)-ind+1:end) = false;
         % end
 
-    elseif strcmp(obj.type,'release')
+    elseif strcmp(obj.type,'release') % ---
 
         lhs = aux_recursive(obj.lhs,x,t,vars);
         rhs = aux_recursive(obj.rhs,x,t,vars);
@@ -177,7 +177,7 @@ function res = aux_recursive(obj,x,t,vars)
             res(length(res)-ind+1:end) = false;
         end
 
-    elseif strcmp(obj.type,'until')
+    elseif strcmp(obj.type,'until') % ---
 
         lhs = aux_recursive(obj.lhs,x,t,vars);
         rhs = aux_recursive(obj.rhs,x,t,vars);

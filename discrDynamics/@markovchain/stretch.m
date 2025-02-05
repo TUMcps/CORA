@@ -1,9 +1,29 @@
 function [Obj]=stretch(Obj,factor)
-% Purpose:  stretches the time constant T of the Markov chains 
+% stretch - stretches the time constant T of the Markov chains 
 % Pre:      Markov Chain object, factor
 % Post:     Markov Chain object
-% Tested:   15.09.06,MA
+%
+% Syntax:
+%    [Obj]=stretch(Obj,factor)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
 
+% Authors:       Matthias Althoff
+% Written:       15-September-2006
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 h = waitbar(0,'stretch T');
 
@@ -27,3 +47,5 @@ Obj.T.OT=T_temp/factor;
 
 %close waitbar
 close(h);
+
+% ------------------------------ END OF CODE ------------------------------

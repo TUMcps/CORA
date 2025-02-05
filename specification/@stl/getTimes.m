@@ -78,6 +78,7 @@ function ind = aux_recursive(obj,time)
             ind = [];
         end
 
+        % temporal
     elseif strcmp(obj.type,'next')
         
         ind = aux_recursive(obj.lhs,obj.from+time);
@@ -104,6 +105,7 @@ function ind = aux_mergeIndices(ind1,ind2)
         ind = ind1; return;
     end
 
+    % time point
     if ~isfield(ind1,'timePoint') && isfield(ind2,'timePoint')
         ind.timePoint = ind2.timePoint;
     elseif ~isfield(ind2,'timePoint') && isfield(ind1,'timePoint')
@@ -119,6 +121,7 @@ function ind = aux_mergeIndices(ind1,ind2)
         end
     end
 
+    % time interval
     if ~isfield(ind1,'timeInt') && isfield(ind2,'timeInt')
         ind.timeInt = ind2.timeInt;
     elseif ~isfield(ind2,'timeInt') && isfield(ind1,'timeInt')

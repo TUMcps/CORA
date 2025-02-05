@@ -43,42 +43,6 @@ n = dim(ls);
 S = [];
 
 switch type
-    case 'origin'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
-    case 'point'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
-    case 'capsule'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
-    case 'conHyperplane'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-        
-    case 'conPolyZono'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
-    case 'conZonotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
-    case 'ellipsoid'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
-    case 'halfspace'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
-    case 'interval'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
     case 'levelSet'
         % obviously true
         res = true;
@@ -86,42 +50,18 @@ switch type
             S = ls;
         end
 
-    case 'polytope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
-    case 'polyZonotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
     case 'probZonotope'
         res = false;
-
-    case 'zonoBundle'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
-    case 'zonotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
-    case 'hyperplane'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
-    case 'parallelotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
-
-    case 'convexSet'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of levelSet to ' type ' not supported.']));
 
     case 'emptySet'
         res = aux_representsa_emptySet(ls);
 
     case 'fullspace'
         res = aux_representsa_fullspace(ls);
+
+    otherwise % not supported
+        throw(CORAerror('CORA:notSupported',...
+            ['Comparison of levelSet to ' type ' not supported.']));
 
 end
 

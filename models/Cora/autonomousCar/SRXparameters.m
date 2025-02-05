@@ -1,7 +1,7 @@
 function p = SRXparameters()
 % SRXparameters - parameter for the automomous vehicle (see [1])
 %
-% Syntax:  
+% Syntax:
 %    p = SRXparameters()
 %
 % Inputs:
@@ -21,12 +21,12 @@ function p = SRXparameters()
 %
 % See also: DOTBicycleDynamics_controlled_SRX_velEq
 
-% Author:       Matthias Althoff
-% Written:      23-August-2011
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       23-August-2011
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %masses
@@ -46,10 +46,9 @@ p.tire.p_dy1 = 1; %Lateral friction Muy
 p.tire.p_ky1 = -107555.5915/(p.m*9.81/4); % old value: 21.92; %Maximum value of stiffness Kfy/Fznom
 
 
+% Auxiliary functions -----------------------------------------------------
 
-
-
-function post_val = lb_sec2_ft_IN_kg(prev_val)
+function post_val = aux_lb_sec2_ft_IN_kg(prev_val)
 
 % 1lb is 4.4482216152605 N
 % 1ft is 0.3048 m
@@ -57,7 +56,7 @@ function post_val = lb_sec2_ft_IN_kg(prev_val)
 post_val = 4.4482216152605/0.3048*prev_val;
 
 
-function post_val = ft_IN_m(prev_val)
+function post_val = aux_ft_IN_m(prev_val)
 %original: [ft]
 %new: [m]
 
@@ -66,7 +65,7 @@ function post_val = ft_IN_m(prev_val)
 post_val = 0.3048*prev_val;
 
 
-function post_val = lb_ft_sec2_IN_kg_m2(prev_val)
+function post_val = aux_lb_ft_sec2_IN_kg_m2(prev_val)
 
 %[kg m^2] = [N m sec^2]
 
@@ -75,7 +74,7 @@ function post_val = lb_ft_sec2_IN_kg_m2(prev_val)
 
 post_val = 4.4482216152605*0.3048*prev_val;
 
-function post_val = rad_ft_lb_IN_rad_sec2_kg_m2(prev_val)
+function post_val = aux_rad_ft_lb_IN_rad_sec2_kg_m2(prev_val)
 
 %original: [rad/(ft lb)]
 %new: [rad/(N m)] = [rad s^2/(kg m^2)]
@@ -85,7 +84,7 @@ function post_val = rad_ft_lb_IN_rad_sec2_kg_m2(prev_val)
 
 post_val = 1/(4.4482216152605*0.3048)*prev_val;
 
-function post_val = ft2_IN_m2(prev_val)
+function post_val = aux_ft2_IN_m2(prev_val)
 %original: [ft^2]
 %new: [m^2]
 
@@ -93,7 +92,7 @@ function post_val = ft2_IN_m2(prev_val)
 
 post_val = 0.3048^2*prev_val;
 
-function post_val = lbs_ft_IN_N_m(prev_val)
+function post_val = aux_lbs_ft_IN_N_m(prev_val)
 %original: [lbs/ft]
 %new: [N/m]
 
@@ -103,7 +102,7 @@ function post_val = lbs_ft_IN_N_m(prev_val)
 
 post_val = 0.45359237*9.81/0.3048*prev_val;
 
-function post_val = lb_sec_ft_IN_N_s_m(prev_val)
+function post_val = aux_lb_sec_ft_IN_N_s_m(prev_val)
 %original: [lb sec/ft]
 %new: [N sec/m]
 
@@ -112,7 +111,7 @@ function post_val = lb_sec_ft_IN_N_s_m(prev_val)
 
 post_val = 4.4482216152605/0.3048*prev_val;
 
-function post_val = ft_lb_rad_IN_N_m_rad(prev_val)
+function post_val = aux_ft_lb_rad_IN_N_m_rad(prev_val)
 %original: [lb ft/rad]
 %new: [N m/rad]
 
@@ -121,7 +120,7 @@ function post_val = ft_lb_rad_IN_N_m_rad(prev_val)
 
 post_val = 4.4482216152605*0.3048*prev_val;
 
-function post_val = ft_lb_IN_m_N(prev_val)
+function post_val = aux_ft_lb_IN_m_N(prev_val)
 %original: [ft/lb]
 %new: [m/N]
 
@@ -130,7 +129,7 @@ function post_val = ft_lb_IN_m_N(prev_val)
 
 post_val = 0.3048/4.4482216152605*prev_val;
 
-function post_val = rad_ft_IN_rad_m(prev_val)
+function post_val = aux_rad_ft_IN_rad_m(prev_val)
 %original: [rad/ft]
 %new: [rad/m]
 
@@ -138,4 +137,4 @@ function post_val = rad_ft_IN_rad_m(prev_val)
 
 post_val = 1/0.3048*prev_val;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -181,16 +181,19 @@ methods
     % helper ---
 
     function printTopBoundaryRow(table)
+        % print top boundary row "\toprule"
         disp(buildBoundaryRow(table,table.tbhline,table.tbhcorner, ...
             table.tbhsep,table.tlpre,table.tlpost));
     end
 
     function printMidBoundaryRow(table)
+        % print top boundary row "\midrule"
         disp(buildBoundaryRow(table,table.mbhline,table.mbhcorner, ...
             table.mbhsep,table.mlpre,table.mlpost));
     end
 
     function printBottomBoundaryRow(table)
+        % print top boundary row "\bottomrule"
         disp(buildBoundaryRow(table,table.bbhline,table.bbhcorner, ...
             table.bbhsep,table.blpre,table.blpost));
     end
@@ -306,7 +309,7 @@ function [hvalues,formats,colWidths, ...
     [NVpairs,bbhline] = readNameValuePair(NVpairs,'bbhline','ischar',tbhline);
     [NVpairs,bbhcorner] = readNameValuePair(NVpairs,'bbhcorner','ischar',tbhcorner);
     [NVpairs,bbhsep] = readNameValuePair(NVpairs,'bbhsep','ischar',bbhline);
-    % harding chars
+    % heading chars
     [NVpairs,hbvline] = readNameValuePair(NVpairs,'hbvline','ischar','|');
     [NVpairs,hsep] = readNameValuePair(NVpairs,'hsep','ischar','|');
     % content chars

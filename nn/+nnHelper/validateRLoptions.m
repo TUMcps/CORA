@@ -43,6 +43,7 @@ if isempty(defaultRLfields)
     };
 end
 
+% default fields for training the actor
 persistent defaultActorTrainFields
 if isempty(defaultActorTrainFields)
     defaultActorTrainFields = {
@@ -54,6 +55,7 @@ if isempty(defaultActorTrainFields)
     };
 end
 
+% default fields for training the critic
 persistent defaultCriticTrainFields
 if isempty(defaultCriticTrainFields)
     defaultCriticTrainFields = {
@@ -64,6 +66,7 @@ if isempty(defaultCriticTrainFields)
     };
 end
 
+% default fields for adv ops
 persistent defaultAdvOps
 if isempty(defaultAdvOps)
     defaultAdvOps = {
@@ -156,7 +159,7 @@ function aux_checkFieldStr(optionsnn, field, admissibleValues, structName)
 end
 
 function aux_checkFieldNumericDefInterval(optionsrl, field, I, structName)
-    if ~contains_(I,optionsrl.(field),'exact',eps)
+    if ~contains_(I,optionsrl.(field),'exact',eps,0,false,false)
         throw(CORAerror('CORA:outOfDomain', ...
             aux_getName(structName, field), "ValidDomain", I))
     end

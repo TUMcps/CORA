@@ -35,13 +35,13 @@ for iSet = 1:10
     Z_l = enlarge(zonotope.generateRandom('Dimension',3,'NrGenerators',5), 1.2);
     
     % compute result
-    res_original = contains(Z_l, Z_s, 'st');
+    res_original = contains(Z_l, Z_s, 'approx:st');
     
     % compute alternative result
     % Currently, the next function produces an error with the current
     % Yalmip version (as of 09-February-2024), in combination with
-    % Matlab>2023b. Thus, instead we compare the results of 'st' with the
-    % exact method
+    % Matlab>2023b. Thus, instead we compare the results of 'approxst' with
+    % the exact method
     %res_alternative = aux_SadraddiniTedrake_alternative(Z_s, Z_l, 0); % order of Z_l and Z_s is different for this function
     res_alternative = Z_l.contains(Z_s, 'exact');
 
@@ -60,13 +60,13 @@ for iSet = 1:10
     Z_l = enlarge(zonotope.generateRandom('Center',zeros(3,1),'Dimension',3,'NrGenerators',5), 1.2);
     
     % compute result
-    res_original = contains(Z_l, Z_s, 'st');
+    res_original = contains(Z_l, Z_s, 'approx:st');
     
     % compute alternative result
     % Currently, the next function produces an error with the current
     % Yalmip version (as of 09-February-2024), in combination with
-    % Matlab>2023b. Thus, instead we compare the results of 'st' with the
-    % exact method
+    % Matlab>2023b. Thus, instead we compare the results of 'approx:st'
+    % with the exact method
     %res_alternative = aux_SadraddiniTedrake_alternative(Z_s, Z_l, 0); % order of Z_l and Z_s is different for this function
     res_alternative = Z_l.contains(Z_s, 'exact');
 

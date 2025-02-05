@@ -83,7 +83,7 @@ function [Rmin,tmin,tmax,I] = aux_refinedIntersectionTime(loc,guard,R0,params,op
     % init halfspace representing the region inside the invariant
     P = polytope(guard.Ae,guard.be);
     
-    if ~contains_(P,center(R0),'exact',1e-12)
+    if ~contains_(P,center(R0),'exact',1e-12,0,false,false)
         P = polytope(-guard.Ae,-guard.be);
     end
     
@@ -112,7 +112,7 @@ function [Rmin,tmin,tmax,I] = aux_refinedIntersectionTime(loc,guard,R0,params,op
     for k = 1:length(R.timeInterval.set)
         
         % check if start set of step intersects
-        if ~found && contains_(P,R.timePoint.set{k},'exact',1e-12)
+        if ~found && contains_(P,R.timePoint.set{k},'exact',1e-12,0,false,false)
             % update minimum time
             Rmin = R.timePoint.set{k};
             tmin = R.timePoint.time{k};

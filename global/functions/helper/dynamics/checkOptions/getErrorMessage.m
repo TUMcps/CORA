@@ -40,7 +40,9 @@ switch id
         % error message in c_* function
         msg = 'see c_* function';
 
-    % type checks
+    % type checks ---
+
+    % builtin
     case 'isscalar'
         msg = 'has to be a scalar value';
     case 'isnumeric'
@@ -57,6 +59,7 @@ switch id
         msg = 'has to be a struct';
     case 'isafunction_handle'
         msg = 'has to be a function handle';
+        % contSet
     case 'isacontSet'
         msg = 'has to be an object of class contSet';
     case 'isazonotope'
@@ -81,6 +84,10 @@ switch id
         msg = 'has to be a value greater than or equal to 1';
     case 'vectorgeone'
         msg = 'has to have a value greater than or equal to 1 in all entries';
+    case '2or3'
+        % just tensorOrder
+        msg = 'has to be either 2 or 3';
+
     case 'normalized'
         msg = 'has to be a value in [0,1]';
     case 'integer'
@@ -89,11 +96,9 @@ switch id
         msg = 'has to be an integer value or Inf';
     case 'vectororinterval'
         msg ='has to be a vector or an object of class interval';
+
     case 'startatzero'
         msg = 'has to start at 0';
-    case '2or3'
-        % just tensorOrder
-        msg = 'has to be either 2 or 3';
 
     % not in list of admissible values specified in getMembers
     % (second input arg to appendErrMsg just dummy)

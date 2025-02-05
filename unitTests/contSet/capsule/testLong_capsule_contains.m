@@ -16,9 +16,9 @@ function res = testLong_capsule_contains
 %
 % See also: -
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Adrian Kulmburg
 % Written:       11-March-2021
-% Last update:   ---
+% Last update:   12-July-2024 (AK, added general containment checks)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -96,5 +96,23 @@ for i=1:nrTests
     assert(~contains(C1,C2));
     assert(~contains(C2,C1));
 end
+
+% Check all containment combinations
+S = capsule([0;0],[1;0],1);
+Sdeg = capsule.empty(2);
+Sempty = capsule.empty(2);
+
+implementedSets = {'capsule','conZonotope','interval','polytope',...
+                    'zonoBundle','zonotope','ellipsoid','taylm',...
+                    'polyZonotope','conPolyZono','spectraShadow'};
+
+setsNonExact = {'ellipsoid','taylm','polyZonotope','conPolyZono',...
+                'spectraShadow'};
+
+additionalAlgorithms = {};
+
+additionalAlgorithms_specificSets = {};
+
+checkAllContainments(S, Sdeg, Sempty, implementedSets, setsNonExact, additionalAlgorithms, additionalAlgorithms_specificSets);
 
 % ------------------------------ END OF CODE ------------------------------

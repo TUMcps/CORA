@@ -49,7 +49,7 @@ equalDimCheck(intMat,M);
 n = dim(intMat);
 res = true;
 for j=1:n(2)
-    if ~contains_(intMat.int(:,j),M(:,j),type,tol)
+    if ~contains_(intMat.int(:,j),M(:,j),type,tol,0,false,false)
         res = false; break
     end
 end

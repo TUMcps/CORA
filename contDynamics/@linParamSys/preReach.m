@@ -27,9 +27,9 @@ function obj = preReach(obj,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % compute mapping matrix
-[obj] = mappingMatrix(obj,options);
+[obj] = priv_mappingMatrix(obj,options);
 % compute time interval error (tie)
-obj = tie(obj);
+obj = priv_tie(obj);
 %compute reachable set due to uncertain input
 U = compact_(options.U,'zeros',eps);
 obj.RV = errorSolution(obj,options,U);

@@ -106,6 +106,7 @@ function [res,signals] = aux_reachAndVerify()
 end
 
 function aux_updateMasks(signals)
+    % updates the mask of the given signals
 
     k = keys(msk);
 
@@ -120,7 +121,6 @@ function aux_updateMasks(signals)
 end
 
 function out = aux_comb(m,s)
-
     % only check previously unknown areas
     out = m & isequal(s,kleene.Unknown);
 

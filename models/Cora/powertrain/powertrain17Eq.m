@@ -2,7 +2,7 @@ function f = powertrain17Eq(x,u,p)
 % powertrain17Eq - dynamic for the 17-dimensional power train system 
 %                 (see Sec. 6 in [1])
 %
-% Syntax:  
+% Syntax:
 %    f = powertrain17Eq(x,u,p)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function f = powertrain17Eq(x,u,p)
 %   [1] M. Althoff et al. "Avoiding Geometic Intersection Operations in 
 %       Reachability Analysis of Hybrid Systems"
 
-% Author:       Matthias Althoff
-% Written:      21-September-2011
-% Last update:  23-December-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-September-2011
+% Last update:   23-December-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %control
 v = p.k_K*(p.i*x(4) - x(7)) ...
@@ -49,4 +49,4 @@ f(15,1) = p.J_i*(p.k_i*(x(12) - x(14)) - p.k_i*(x(14) - x(16)) - p.b_i*x(15)); %
 f(16,1) = x(17); %Theta_5
 f(17,1) = p.J_i*(p.k_i*(x(14) - x(16)) - p.k_i*(x(16) - x(5)) - p.b_i*x(17)); %\dot{Theta}_5
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

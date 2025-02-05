@@ -18,7 +18,8 @@ function res = testLong_conZonotope_randPoint
 
 % Authors:       Mark Wetzlinger, Adrian Kulmburg
 % Written:       14-March-2021
-% Last update:   22-May-2023 (AK, Added all new methods)
+% Last update:   22-May-2023 (AK, added all new methods)
+%                04-February-2024 (AK, added non-degenerate cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -40,10 +41,10 @@ end
 % number of tests
 nrOfTests = 100;
 
-methods = {'standard', 'extreme', 'uniform', 'uniform:hitAndRun', 'uniform:billiardWalk'};
-
+methods = {'standard', 'extreme', 'uniform', 'uniform:hitAndRun', 'uniform:ballWalk', 'uniform:billiardWalk'};
 
 for i = 1:size(methods, 2)
+    disp(methods{i})
 
 for j=1:nrOfTests
     % random dimension
@@ -51,15 +52,63 @@ for j=1:nrOfTests
     
     % random center
     c = randn(n,1);
+    % random number of generators
+    m = n+randi(5);
     % random generator matrix
-    G = randn(n,n+randi(5));
-    nrGens = size(G,2);
+    G = randn(n,m);
+    % make sure it's full rank
+    while rank(G) < n
+        G = randn(n,m);
+    end
+
+    % Make it a 4-cases analysis
+    if mod(j,4) == 0
+        % Case 1: cZ is a non-degenerate zonotope
+        A = [];
+        b = [];
+    elseif mod(j,4) == 1
+        % Case 2: cZ is a non-degenerate constrained zonotope
+        P = polytope.generateRandom('Dimension', n);
+        conZono = conZonotope(P);
+        G = conZono.G;
+        c = conZono.c;
+        A = conZono.A;
+        b = conZono.b;
+    elseif mod(j,4) == 2
+        % Case 3: random constraints so that conZonotope represents just a
+        % point as A being diagional forces each independent factor to one
+        % value
+        A = diag(1+rand(m,1));
+        b = sign(randn(m,1));
+    elseif mod(j,4) == 3
+        % Case 4: cZ is a degenerate zonotope
+        % Create a constraint matrix that is surjective, to make sure it
+        % has a solution
+        k_constraints = randi([1,m-1]);
+        A = randn([k_constraints m]);
+        while rank(A) < k_constraints
+            A = randn([k_constraints m]);
+        end
+        b = randn([k_constraints 1]);
+
+        % random number of 'degeneracy'
+        degeneracy = randi([1,n]);
+        [U, Sigma, V] = svd(G);
+        for j=1:degeneracy
+            Sigma(n-j+1,n-j+1) = 0;
+        end
+        G = U * Sigma * V';
+    end
     
-    % instantiate conZonotope without constraints
-    conZono = conZonotope(c,G);
+    % instantiate conZonotope
+    conZono = conZonotope(c,G, A, b);
+
+    nrGens = size(G,2);
     
     % compute random points
     nrPts = 10;
+    r = rng().Seed;
+    rng(r * j); % Makes it easier to debug, keep this!
     p = randPoint(conZono,nrPts,methods{i});
     
     % check for containment in zonotope

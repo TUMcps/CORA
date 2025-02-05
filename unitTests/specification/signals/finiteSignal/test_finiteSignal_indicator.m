@@ -69,6 +69,7 @@ assert(isequal(tt, sig6.value));
 assert(isequal([2.7 3.0], sig7.time));
 assert(isequal([ff tt], sig7.value));
 
+% more tests
 assert(isequal(3.0, sig8.time));
 assert(isequal(tt, sig8.value));
 

@@ -301,7 +301,7 @@ function p = aux_randPointHitAndRun(P, N)
     currentPoint = randPoint(P);
     for i=1:N
         % Select a random direction
-        direction = randn([dim(P) 1]);
+        direction = randn([n 1]);
         direction = direction./norm(direction);
         
         % in case the polytope is degenerate, the direction can only be in

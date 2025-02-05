@@ -28,17 +28,18 @@ function [val,x] = priv_norm_exact(Z,type)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% parse input
 if ~isYalmipInstalled()
      throw(CORAerror('CORA:YALMIP',...
          'YALMIP must be on the MATLAB search path to use this function'));
 elseif str2double(yalmip('version'))<20190425 % version: 25.04.2019
     throw(CORAerror('CORA:YALMIP','YALMIP version >=20190425 required'));
 end
-
 if type~=2
     throw(CORAerror('CORA:notSupported','Only Euclidean norm supported.'));
 end
 
+% init variables
 G = Z.G;
 if isempty(G)
     x = Z.c;
@@ -52,6 +53,7 @@ GG = G'*G;
 lmax = max(eig(GG));
 M = lmax*eye(m) - GG;
 
+% check if mosek is installed
 persistent isMosek
 if isempty(isMosek)
     isMosek = isSolverInstalled('mosek');
@@ -134,6 +136,7 @@ else
     throw(CORAerror('CORA:noSuitableSolver','integer programming'));
 end
 
+% compute norm
 val = norm(x);
 
 % ------------------------------ END OF CODE ------------------------------

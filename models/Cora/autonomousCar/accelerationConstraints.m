@@ -2,7 +2,7 @@ function acceleration = accelerationConstraints(velocity,acceleration,p)
 % accelerationConstraints - adjusts the acceleration based on acceleration
 % constraints
 %
-% Syntax:  
+% Syntax:
 %    acceleration = accelerationConstraints(velocity,acceleration,p)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function acceleration = accelerationConstraints(velocity,acceleration,p)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      15-December-2017
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       15-December-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %positive acceleration limit
 if velocity>p.v_switch
@@ -44,4 +44,4 @@ elseif acceleration>=posLimit
     acceleration = posLimit; 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

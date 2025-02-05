@@ -62,27 +62,18 @@ end
 
 %%% below, multiplications of intervalMatrix * contSet
 
-if isa(factor2,'zonotope')
-    S_out = aux_mtimes_zonotope(factor1,factor2);
-    return
+switch class(factor2)
+    case 'zonotope'
+        S_out = aux_mtimes_zonotope(factor1,factor2);
+    case 'polyZonotope'
+        S_out = aux_mtimes_polyZonotope(factor1,factor2);
+    case 'zonoBundle'
+        S_out = aux_mtimes_zonoBundle(factor1,factor2);
+    case 'emptySet'
+        S_out = emptySet(dim(factor1,1));
+    otherwise 
+        throw(CORAerror('CORA:noops',factor1,factor2));
 end
-
-if isa(factor2,'polyZonotope')
-    S_out = aux_mtimes_polyZonotope(factor1,factor2);
-    return
-end
-
-if isa(factor2,'zonoBundle')
-    S_out = aux_mtimes_zonoBundle(factor1,factor2);
-    return
-end
-
-if isa(factor2,'emptySet')
-    S_out = emptySet(dim(factor1,1));
-    return
-end
-
-throw(CORAerror('CORA:noops',factor1,factor2));
 
 end
 

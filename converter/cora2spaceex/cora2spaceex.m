@@ -35,22 +35,22 @@ end
 
 % Headline of the xml-file
 % Create the document node(docNode) and the first child element(component)
-[docNode, component] = headline_cora2spaceex;
+[docNode, component] = priv_headline_cora2spaceex;
 
 if isa(Obj,'hybridAutomaton')
     
-    docNode = hybrid_cora2spaceex(Obj, component, docNode);
+    docNode = priv_hybrid_cora2spaceex(Obj, component, docNode);
     
 elseif isa(Obj,'linearSys') || isa(Obj,'nonlinearSys')
     
     % First child element (parameter) of the element node (component)
-    parameter_cora2spaceex(Obj, component, docNode);
+    priv_parameter_cora2spaceex(Obj, component, docNode);
     % Second child element (location) of the element node (component)
-    location = location_cora2spaceex(Obj,component, docNode);
+    location = priv_location_cora2spaceex(Obj,component, docNode);
     % First child element (invariant) of the element node (location)
-    invariant_cora2spaceex(Obj,location, docNode);
+    priv_invariant_cora2spaceex(Obj,location, docNode);
     % Second child element (flow) of the element node (location)
-    flow_cora2spaceex(Obj, location, docNode);
+    priv_flow_cora2spaceex(Obj, location, docNode);
     
 else
     throw(CORAerror('CORA:notSupported','Given contDynamics class not supported.'));

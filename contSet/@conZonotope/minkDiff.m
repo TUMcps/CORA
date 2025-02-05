@@ -100,6 +100,7 @@ switch method
         S0 = S - c_S;
         Gamma = pinv([cZ1.G; cZ1.A]) * [eye(n); zeros(M_C,n)];
 
+        % compute support function for each basis vector
         S0_sF = zeros(N_C,1);
         for i=1:N_C
             basisvector = zeros(N_C,1);

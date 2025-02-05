@@ -46,16 +46,20 @@ for o = 2:order
     o1 = floor(o/2);
     o2 = ceil(o/2);
 
+    % init lengths
     o1_ext_len = G_ext_end(o1) - G_ext_start(o1) + 1;
     o2_ext_len = G_ext_end(o2) - G_ext_start(o2) + 1;
 
     if o1 == o2
+        % only requires computation of triangle
         n = o1_ext_len;
         o_len = 0.5 * n * (n + 1);
     else
+        % get full set of indices
         o_len = o1_ext_len * o2_ext_len;
     end
 
+    % save results
     G_start(o) = G_end(o-1) + 1;
     G_end(o) = G_start(o) + o_len - 1;
 

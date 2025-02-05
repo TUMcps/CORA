@@ -184,6 +184,7 @@ function u = aux_get_u(sys,states,inputs,u_n,u_m,u_n_noD,u_m_noD,dt_steps)
 end
 
 function w_sys = aux_get_w(sys,W,dt_steps)
+% return corresponding w based on system
 
     if sys.nrOfDisturbances == 1
         w_sys = randn(1,dt_steps);
@@ -194,6 +195,7 @@ function w_sys = aux_get_w(sys,W,dt_steps)
 end
 
 function v_sys = aux_get_v(sys,V,dt_steps)
+% return corresponding v based on system
 
     if sys.nrOfDisturbances == 1
         v_sys = randn(1,dt_steps+1);

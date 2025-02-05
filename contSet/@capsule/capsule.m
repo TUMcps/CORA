@@ -135,6 +135,7 @@ function aux_checkInputArgs(c,g,r)
 end
 
 function [c,g,r] = aux_computeProperties(c,g,r)
+% compute properties
 
     if isempty(g)
         if ~isempty(c)

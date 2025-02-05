@@ -3,7 +3,7 @@ function fArray =intersectionDatabase(parameters)
 % intersects with another polytope of same size, but different position and
 % and orientation
 %
-% Syntax:  
+% Syntax:
 %    P = intersectionDatabase(parameters)
 %
 % Inputs:
@@ -20,18 +20,18 @@ function fArray =intersectionDatabase(parameters)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      01-April-2008 
-% Last update:  28-January-2009
-%               17-June-2009
-%               22-October-2009
-%               01-August-2016
-%               03-August-2016
-%               18-August-2016
-%               01-August-2017
+% Authors:       Matthias Althoff
+% Written:       01-April-2008 
+% Last update:   28-January-2009
+%                17-June-2009
+%                22-October-2009
+%                01-August-2016
+%                03-August-2016
+%                18-August-2016
+%                01-August-2017
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %obtain uncertain center interval
@@ -105,11 +105,11 @@ for iAngleSeg = 1:nrOfAngleSeg
             %compute grid of relative positions within the uncertain center
             %regions
             %other vehicle
-            relativePos = relativeGridPoints(IHcenter,0,[0;0],4);
+            relativePos = aux_relativeGridPoints(IHcenter,0,[0;0],4);
             nrOfRelativePos = length(relativePos(1,:));
             
             %ego vehicle
-            relativePosEgo = relativeGridPoints(IHcenterEgo,angleTrans,[0;0],4);
+            relativePosEgo = aux_relativeGridPoints(IHcenterEgo,angleTrans,[0;0],4);
             nrOfRelativePosEgo = length(relativePos(1,:));
             
 %             figure
@@ -168,16 +168,16 @@ fArray.radius.r.ego = rEgo;
 fArray.R.car = Rcar;
 fArray.R.bicycle = Rbicycle;
 
-%------------- END OF CODE --------------
 
+% Auxiliary functions -----------------------------------------------------
 
-function [movedPoints]=relativeGridPoints(obj,angleTrans,trans,intervals)
+function [movedPoints]=aux_relativeGridPoints(obj,angleTrans,trans,intervals)
 % relativeGridPoints - Computes grid points of two identical interval 
 % hulls using gridPoints(); the second hull is translated and rotated and
 % all combinations of relative positions of grid points are returned
 %
 % Syntax:  
-%    [coordinateMat]=relativeGridPoints(obj,angleTrans,trans,intervals)
+%    [coordinateMat]=aux_relativeGridPoints(obj,angleTrans,trans,intervals)
 %
 % Inputs:
 %    obj - interval hull object
@@ -203,8 +203,6 @@ function [movedPoints]=relativeGridPoints(obj,angleTrans,trans,intervals)
 % Last update:  03-August-2016
 % Last revision:---
 
-%------------- BEGIN CODE --------------
-
 %compute grid points
 % originalPoints=gridPoints(obj,intervals);
 originalPoints=aux_gridPoints(obj,intervals);
@@ -216,7 +214,6 @@ rot=[cos(angleTrans) -sin(angleTrans);...
 %compute translated and rotated points
 nrOfPoints=length(originalPoints(1,:));
 movedPoints=rot*originalPoints+trans*ones(1,nrOfPoints);
-
 
 function coordinateMat = aux_gridPoints(obj,segments)
 
@@ -241,4 +238,4 @@ for i = 2:length(comb(:,1))
     coordinateMat(:,i) = startingPoint+(comb(i,:)'-1).*segLengthVec;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

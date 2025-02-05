@@ -43,26 +43,28 @@ end
 function res = aux_recursive(obj)
 % recursive function to check object is a linear predicate
 
+    % numeric
     if isnumeric(obj) || strcmp(obj.type,'variable')
-
         res = true;
 
+        % binary
     elseif ismember(obj.type,{'&','<=','<','>','>=','+','-'})
-
         res = aux_recursive(obj.lhs) & aux_recursive(obj.rhs);
 
+        % times
     elseif strcmp(obj.type,'*')
-
+        % compute recursively if either is numeric
         if isnumeric(obj.lhs)
             res = aux_recursive(obj.rhs);
         elseif isnumeric(obj.rhs)
             res = aux_recursive(obj.lhs);
         else
+            % false otherwise
             res = false;
         end
 
     else
-
+        % false for all other types
         res = false;
 
     end

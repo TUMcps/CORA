@@ -73,7 +73,7 @@ end
 
 
 % initial state
-x = zeros(steps+1,linsysDT.nrOfStates);
+x = zeros(steps+1,linsysDT.nrOfDims);
 x(1,:) = params.x0';
 
 % computation of output set desired / possible

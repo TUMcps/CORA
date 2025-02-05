@@ -83,7 +83,10 @@ if isscalar(full(unique(M)))
     if issparse(M)
         fprintf("sparse(%s)\n",mat_string);
     else
-        fprintf(strcat(mat_string,"\n"));
+        fprintf(mat_string);
+    end
+    if clearLine
+        fprintf('\n');
     end
     return
 end

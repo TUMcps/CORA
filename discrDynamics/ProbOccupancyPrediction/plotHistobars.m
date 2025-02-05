@@ -2,7 +2,7 @@ function plotHistobars(obj,posProb)
 % plotHistobars - plots the a probability distribution, similar to
 % plotHisto
 %
-% Syntax:  
+% Syntax:
 %    plotHistobars(obj,posProb)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function plotHistobars(obj,posProb)
 %
 % See also: 
 
-% Author:       Matthias Althoff
-% Written:      05-March-2009
-% Last update:  25-July-2016
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       05-March-2009
+% Last update:   25-July-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get position interval length
 posInt=obj.nrOfSegments(1);
@@ -52,4 +52,4 @@ for i=1:obj.nrOfSegments(1)
 end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

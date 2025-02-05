@@ -2,8 +2,7 @@ function ThetaC = interaction(fileName,pathName,modelInitialization)
 % interaction - computes interaction matrix Theta for two road vehicles
 % specified by the same dynamic model
 %
-% Syntax:  
-%    
+% Syntax:
 %    ThetaC = interaction(fileName,pathName,modelInitialization)
 %
 % Inputs:
@@ -23,15 +22,15 @@ function ThetaC = interaction(fileName,pathName,modelInitialization)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      28-March-2008 
-% Last update:  27-June-2008
-%               10-August-2018
-%               12-October-2009
-%               10-August-2018
+% Authors:       Matthias Althoff
+% Written:       28-March-2008 
+% Last update:   27-June-2008
+%                10-August-2018
+%                12-October-2009
+%                10-August-2018
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set path
 global filePath
@@ -172,4 +171,4 @@ end
 [ThetaC]=convertInteractionMatrix(Theta);
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

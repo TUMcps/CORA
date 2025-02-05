@@ -119,7 +119,7 @@ if any(strcmp(ls.compOp,{'<=','<'}))
     % if the entire range is contained in the complement, the
     % intersection is empty
     % (TODO: slightly different for '<' / '<=')
-    if contains_(interval(-Inf,0),boundedVals,'exact',1e-12)
+    if contains_(interval(-Inf,0),boundedVals,'exact',1e-12,0,false,false)
         res = emptySet(dim(S));
         return
     end
@@ -424,7 +424,7 @@ function [var,eq] = aux_selectVariable(ls,I)
     % check if there is one equation with a unique solution
     for i = 1:length(ls.solved)
         if ls.solved{i}.contained && ls.solved{i}.solvable ...
-                && length(ls.solved{i}.eq) == 1
+                && isscalar(ls.solved{i}.eq)
            var = i;
            eq = {ls.solved{i}.funHan{1}};
            return;
@@ -440,6 +440,7 @@ function [var,eq] = aux_selectVariable(ls,I)
 
     for i = 1:length(ls.solved)
         
+       % check if contained and solvable
        if ls.solved{i}.contained && ls.solved{i}.solvable
            
           eqTemp = {};
@@ -458,11 +459,12 @@ function [var,eq] = aux_selectVariable(ls,I)
               end
           end
           
+          % check if funHan was found
           if ~isempty(eqTemp)
               if isempty(eq) || length(eq) > length(eqTemp)
                  var = i;
                  eq = eqTemp;
-                 if length(eqTemp) == 1
+                 if isscalar(eqTemp)
                     break; 
                  end
               end

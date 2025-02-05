@@ -1,8 +1,8 @@
 function dx = pendulum(x,u,P)
-% laubLoomis - dynamic equation for the a swinging pendulum
+% pendulum - dynamic equation for the a swinging pendulum
 %
-% Syntax:  
-%    dx = pendulum(x,u)
+% Syntax:
+%    dx = pendulum(x,u,P)
 %
 % Inputs:
 %    x - state vector
@@ -15,12 +15,12 @@ function dx = pendulum(x,u,P)
 % References:
 %    -
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       03-August-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % constants
 g = 9.81;       % earth acceleration (m/s^2)
@@ -29,4 +29,4 @@ g = 9.81;       % earth acceleration (m/s^2)
 dx(1,1) = x(2);
 dx(2,1) = -P.mu*x(2) - g/P.L * sin(x(1));
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

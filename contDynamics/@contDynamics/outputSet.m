@@ -81,7 +81,7 @@ function [Y, Verror] = aux_outputSet(sys,tensorOrderOutput,R,params)
 % output set computation for a given reachable set
 
 % dimension of state and inputs
-n = sys.nrOfStates;
+n = sys.nrOfDims;
 m = sys.nrOfInputs;
 r = sys.nrOfOutputs;
 

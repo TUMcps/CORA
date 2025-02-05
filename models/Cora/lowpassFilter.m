@@ -2,7 +2,7 @@ function pHA = lowpassFilter()
 % lowpassFilter - creates an instance of a parallel hybrid automaton from
 %    the model of a lowpass filter with 2 components and 3 locations each
 %
-% Syntax:  
+% Syntax:
 %    PHA = lowpassFilter()
 %
 % Inputs:

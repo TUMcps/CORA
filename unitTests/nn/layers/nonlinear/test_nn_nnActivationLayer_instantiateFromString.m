@@ -24,30 +24,37 @@ function res = test_nn_nnActivationLayer_instantiateFromString()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% relu
 activation = 'ReLU';
 layer = nnActivationLayer.instantiateFromString(activation);
 assert(isa(layer, 'nnActivationLayer'));
 
+% tanh
 activation = 'tanh';
 layer = nnActivationLayer.instantiateFromString(activation);
 assert(isa(layer, 'nnTanhLayer'));
 
+% sigmoid
 activation = 'sigmoid';
 layer = nnActivationLayer.instantiateFromString(activation);
 assert(isa(layer, 'nnSigmoidLayer'));
 
+% softmax
 activation = 'softmax';
 layer = nnActivationLayer.instantiateFromString(activation);
 assert(isa(layer, 'nnSoftmaxLayer'));
 
+% identity
 activation = 'identity';
 layer = nnActivationLayer.instantiateFromString(activation);
 assert(isa(layer, 'nnIdentityLayer'));
 
+% none
 activation = 'none';
 layer = nnActivationLayer.instantiateFromString(activation);
 assert(isa(layer, 'nnIdentityLayer'));
 
+% no activation given
 assertThrowsAs(@nnActivationLayer.instantiateFromString,'CORA:wrongValue','unknown');
 
 % test completed

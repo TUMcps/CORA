@@ -25,6 +25,8 @@ function res = testLong_ellipsoid_enclose
 
 %We need at least one non-degenerate ellipsoid to ensure
 %the union of E1,E2 is not the empty set.
+tol = 1e-6;
+
 nRuns = 20;
 res = true;
 bools = [false,true];
@@ -37,8 +39,8 @@ for i=10:5:15
             E2 = ellipsoid.generateRandom('Dimension',i,'IsDegenerate',bools(k));
             %%%
             E = enclose(E1,E2);
-            assertLoop(contains(E,E1),i,j,k)
-            assertLoop(contains(E,E2),i,j,k)
+            assertLoop(contains(E,E1,'exact',tol),i,j,k)
+            assertLoop(contains(E,E2,'exact',tol),i,j,k)
 
             catch ME
                 if strcmp(ME.identifier,'CORA:solverIssue')

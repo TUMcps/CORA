@@ -43,6 +43,10 @@ test_cases{4}.lhs = pointSegmentSignal([0,5],[tt,tt,ff,tt]);
 test_cases{4}.rhs = pointSegmentSignal([0,2],[ff,ff,tt,ff]);
 test_cases{4}.exp = pointSegmentSignal([0,2,5],[ff,ff,tt,ff,tt,ff]);
 
+test_cases{5}.lhs = pointSegmentSignal([0,5],[tt,tt,ff,ff]);
+test_cases{5}.rhs = pointSegmentSignal([0,2],[tt,tt,ff,ff]);
+test_cases{5}.exp = pointSegmentSignal([0,2,5],[tt,tt,ff,ff,tt,tt]);
+
 % run tests
 for i = 1:length(test_cases)
     c = test_cases{i};

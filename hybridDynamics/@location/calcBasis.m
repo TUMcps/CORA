@@ -44,7 +44,7 @@ function B = calcBasis(loc,R,guard,options,params)
            
             % Box method as described in Section V.A.a) in [1]
             case 'box'
-                B{i} = eye(sys.nrOfStates);
+                B{i} = eye(sys.nrOfDims);
                 
                 
             % PCA mehtod as described in Section V.A.b) in [1]
@@ -55,7 +55,7 @@ function B = calcBasis(loc,R,guard,options,params)
                 
                 % project the generators onto the hyperplane
                 if isa(guard,'polytope') && representsa_(guard,'conHyperplane',1e-12)
-                    Z = zonotope([zeros(sys.nrOfStates,1),G]); 
+                    Z = zonotope([zeros(sys.nrOfDims,1),G]); 
                     Z_ = projectOnHyperplane(Z,guard);
                     G = generators(Z_);
                 end

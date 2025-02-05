@@ -132,7 +132,7 @@ for i = 1:length(sys)
 
     for iRun = 1:10
         % create random values for deviations of states, inputs, and constraints
-        x = x0 + (0.2*rand(sys{i}.nrOfStates,1) - 0.1*ones(sys{i}.nrOfStates,1)).*x0; %+-10% of steady state
+        x = x0 + (0.2*rand(sys{i}.nrOfDims,1) - 0.1*ones(sys{i}.nrOfDims,1)).*x0; %+-10% of steady state
         y = y0 + (0.2*rand(sys{i}.nrOfConstraints,1) - 0.1*ones(sys{i}.nrOfConstraints,1)).*y0; %+-10% of steady state
         u = u0 + (0.2*rand(sys{i}.nrOfInputs,1) - 0.1*ones(sys{i}.nrOfInputs,1)).*u0; %+-10% of steady state
         

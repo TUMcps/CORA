@@ -42,8 +42,9 @@ if (strcmp(obj.type,'variable') && dim(S) ~= length(obj.variables)) || ...
                   'dimensions of set and stl object have to match"!'));
 end
 
-% conversions for different types of sets
-if isa(S,'polygon')
+% conversions for different types of sets ---
+
+if isa(S,'polygon') % ---
 
     list = splitIntoConvexSets(S);
 
@@ -52,13 +53,13 @@ if isa(S,'polygon')
         res = res | polytope2stl(obj,polytope(list{i}));
     end
 
-elseif isa(S,'interval') || isa(S,'zonotope') || ...
+elseif isa(S,'interval') || isa(S,'zonotope') || ... % ---
        isa(S,'polytope') || isa(S,'conZonotope') || ...
        isa(S,'zonoBundle') || isa(S,'halfspace')
 
     res = polytope2stl(obj,polytope(S));    
 
-elseif isa(S,'levelSet') || isa(S,'ellipsoid')
+elseif isa(S,'levelSet') || isa(S,'ellipsoid') % ---
 
     S = levelSet(S);
 
@@ -75,7 +76,7 @@ elseif isa(S,'levelSet') || isa(S,'ellipsoid')
         end
     end
 
-elseif isa(S,'capsule')
+elseif isa(S,'capsule') % ---
 
     n = dim(S);
     x = sym('x',[n,1]);

@@ -33,47 +33,48 @@ phi = aux_inner(phi);
 
 function phi = aux_inner(phi)
 
-    if strcmp(phi.type, 'variable') && isa(phi.lhs, 'atomicProposition')
+    if strcmp(phi.type, 'variable') && isa(phi.lhs, 'atomicProposition') % ---
         aps(formattedDisplayText(phi)) = phi.lhs;
-    elseif ismember(phi.type,{'<=','<','>','>='})
+
+    elseif ismember(phi.type,{'<=','<','>','>='}) % ---
         % combine complete subformula to geometric set
         ap = atomicProposition(convert2set(phi));
-    
         aps(formattedDisplayText(phi)) = ap;
         phi = stl(char(formattedDisplayText(phi)), ap);
-    elseif strcmp(phi.type, 'until')
+
+    elseif strcmp(phi.type, 'until') % ---
         lhs = aux_inner(phi.lhs);
         rhs = aux_inner(phi.rhs);
-    
         phi = until(lhs, rhs, phi.interval);
-    elseif strcmp(phi.type, 'release')
+
+    elseif strcmp(phi.type, 'release') % ---
         lhs = aux_inner(phi.lhs);
         rhs = aux_inner(phi.rhs);
-    
         phi = release(lhs, rhs, phi.interval);
-    elseif strcmp(phi.type, 'finally')
+
+    elseif strcmp(phi.type, 'finally') % ---
         lhs = aux_inner(phi.lhs);
-    
         phi = finally(lhs, phi.interval);
-    elseif strcmp(phi.type, 'globally')
+
+    elseif strcmp(phi.type, 'globally') % ---
         lhs = aux_inner(phi.lhs);
-    
         phi = globally(lhs, phi.interval);
-    elseif strcmp(phi.type, 'next')
+
+    elseif strcmp(phi.type, 'next') % ---
         lhs = aux_inner(phi.lhs);
-    
         phi = next(lhs, phi.from);
-    elseif strcmp(phi.type, '&')
+        
+    elseif strcmp(phi.type, '&') % ---
         lhs = aux_inner(phi.lhs);
         rhs = aux_inner(phi.rhs);
-    
         phi = lhs & rhs;
-    elseif strcmp(phi.type, '|')
+
+    elseif strcmp(phi.type, '|') % ---
         lhs = aux_inner(phi.lhs);
         rhs = aux_inner(phi.rhs);
-    
         phi = lhs | rhs;
-    elseif strcmp(phi.type, '~')
+
+    elseif strcmp(phi.type, '~') % ---
         phi = ~ aux_inner(phi.lhs);
     end
 

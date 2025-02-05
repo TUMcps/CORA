@@ -76,12 +76,13 @@ if nargin >= 3 && ~isempty(varargin{1})
     isOpt = true;
 end
 
-if ~isfield(params, 'tStart')
-    params.tStart = 0;
-end
-
 if ~isfield(params, 'u')
     params.u = obj.nn.evaluate(params.x0);
+end
+
+% time
+if ~isfield(params, 'tStart')
+    params.tStart = 0;
 end
 
 time = (params.tStart:obj.dt:params.tFinal)';
@@ -148,9 +149,9 @@ for i = 1:length(time) - 1
         end
 
         % store the results
-        x = [x; x_(:, 1:obj.nrOfStates)];
+        x = [x; x_(:, 1:obj.nrOfDims)];
         t = [t; t_];
-        x0 = x(end, 1:obj.nrOfStates)';
+        x0 = x(end, 1:obj.nrOfDims)';
         cnt = cnt + index(end);
 
         if ~isempty(ind)

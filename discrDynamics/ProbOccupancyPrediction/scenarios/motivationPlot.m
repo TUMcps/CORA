@@ -1,5 +1,27 @@
 function motivationPlot(plotInfo)
-%plots the motivation values for a lane change
+% motivationPlot - plots the motivation values for a lane change
+%
+% Syntax:
+%    motivationPlot(plotInfo)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       ???
+% Written:       ???
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 for i=1:length(plotInfo)
     %get vector for left lane motivation
@@ -25,3 +47,5 @@ plot(t,motRight);
 plot(t,motBehind);
 %plot lane change probability
 plot(t,prob);
+
+% ------------------------------ END OF CODE ------------------------------

@@ -56,7 +56,7 @@ n = size(linsysDT.A,1); % system dimension
 w = options.w; % weight vector
 
 %% Unify all differences to the nominal solution; see y_a(k) in eq. 14 of [2]
-[union_y_a,union_x_a] = conform_unifyTestCases(linsysDT,params);
+[union_y_a,union_x_a] = priv_conform_unifyTestCases(linsysDT,params);
 
 %% Corollary 1 in [2]: change time horizon to ensure conformance of an 
 % infinite time horizon; requires that the entire state can be measured

@@ -44,7 +44,7 @@ else
     % check if partition does not overlap, covers all indices
     rows = size(options.partition,1);
     if options.partition(1,1) ~= 1 || ...
-            options.partition(rows,2) ~= sys.nrOfStates
+            options.partition(rows,2) ~= sys.nrOfDims
         res = false;
         msg = '''s indices must not overlap';
         return;

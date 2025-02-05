@@ -39,7 +39,7 @@ function [t,x,loc] = simulate(pHA,params)
 
     % create list of label occurences to check whether all labeled
     % transitions are enabled at the same time
-    allLabels = labelOccurrences(pHA);
+    allLabels = priv_labelOccurrences(pHA);
 
     % loop over the different locations 
     while tInter < params.tFinal && ~isempty(locCurr) && ...

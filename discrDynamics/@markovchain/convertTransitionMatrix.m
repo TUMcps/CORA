@@ -5,7 +5,7 @@ function [T, projMat, GammaFull] = convertTransitionMatrix(obj, gamma)
 % probabilistic collision detection in autonomous driving. 
 % IEEE Transactions on Intelligent Transportation Systems, 10:299 - 310, 2009.
 %
-% Syntax:  
+% Syntax:
 %    [T, projMat, GammaFull] = convertTransitionMatrix(obj)
 %
 % Inputs:
@@ -25,33 +25,35 @@ function [T, projMat, GammaFull] = convertTransitionMatrix(obj, gamma)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      15-June-2009
-% Last update:  14-October-2009
-%               01-August-2016
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       15-June-2009
+% Last update:   14-October-2009
+%                01-August-2016
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %retrieve transition matrix from Markov Chain
 T=get(obj,'T');
 
 %compute projection matrix
 disp('compute projMaT');
-projMat=projectionMatrix(T.T);
+projMat=aux_projectionMatrix(T.T);
 
 %compute full Gamma-matrix
 disp('compute Gamma');
-GammaFull=computeGammaFull(T.T, gamma);
+GammaFull=aux_computeGammaFull(T.T, gamma);
 
 %convert
 disp('convert T');
-T.T=convert(T.T);
+T.T=aux_convert(T.T);
 disp('convert OT');
-T.OT=convert(T.OT);
+T.OT=aux_convert(T.OT);
 
 
-function T=convert(Phi)
+% Auxiliary functions -----------------------------------------------------
+
+function T=aux_convert(Phi)
 
 %obtain number of inputs and states
 nrOfStates=length(Phi{1});
@@ -80,7 +82,7 @@ T=spalloc(nrOfInputs*nrOfStates,nrOfInputs*nrOfStates,nnz([Phi{:}]));
  end
 
 
-function GammaFull=computeGammaFull(Phi, gamma)
+function GammaFull=aux_computeGammaFull(Phi, gamma)
 
 %obtain number of inputs and states
 nrOfStates=length(Phi{1});
@@ -103,7 +105,7 @@ for index=1:nrOfStates
 end
 
 
-function projMat=projectionMatrix(Phi)
+function projMat=aux_projectionMatrix(Phi)
 
 %obtain number of inputs and states
 nrOfStates=length(Phi{1});
@@ -114,5 +116,4 @@ projMat=matrixbuilder(nrOfInputs,nrOfStates,1);
 projMat(:,1)=[];
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

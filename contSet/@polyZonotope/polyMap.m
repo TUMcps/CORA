@@ -37,12 +37,12 @@ function res = polyMap(pZ,coeff,E)
 
 % Authors:       Niklas Kochdumper
 % Written:       23-March-2021
-% Last update:   ---
+% Last update:   20-January-2025 (TL, bug fix for E w/ all-zero columns)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    % check inpus
+    % check inputs
     inputArgsCheck({ ...
             {coeff, 'att', 'double', {'finite', 'matrix'}};
             {E, 'att', 'double', {'finite', 'matrix'}};
@@ -57,11 +57,13 @@ function res = polyMap(pZ,coeff,E)
     n = dim(pZ);
     summands = {};
     c = zeros(size(coeff,1),1);
-    tmp = sum(E,1);
-    ind = find(tmp == 0);
 
-    if ~isempty(ind)
-        c = sum(coeff(:,ind));
+    % filter columns with all-zero columns
+    ind = sum(E,1) == 0;
+    if any(ind)
+        % add coeffs to center as coeffs(:,i)*x^0 = coeffs(:,i)
+        c = sum(coeff(:,ind),2);
+        % delete respective columns
         E(:,ind) = [];
         coeff(:,ind) = [];
     end

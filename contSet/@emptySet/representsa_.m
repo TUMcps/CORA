@@ -51,39 +51,35 @@ switch type
         % empty set can never be a point
         res = false;
 
+        % all contSet can be empty
     case 'capsule'
         res = true;
-        if nargout == 2
-            throw(CORAerror('CORA:notSupported',...
-                ['Conversion from emptySet to ' type ' not supported.']));
+        if nargout == 2 % call static function
+            S = capsule.empty(dim(O));
         end
 
     case 'conHyperplane'
         res = true;
-        if nargout == 2
-            throw(CORAerror('CORA:notSupported',...
-                ['Conversion from emptySet to ' type ' not supported.']));
+        if nargout == 2 % call static function
+            S = polytope.empty(dim(O));
         end
 
     case 'conPolyZono'
         res = true;
-        if nargout == 2
-            throw(CORAerror('CORA:notSupported',...
-                ['Conversion from emptySet to ' type ' not supported.']));
+        if nargout == 2 % call static function
+            S = conPolyZono.empty(dim(O));
         end
 
     case 'conZonotope'
         res = true;
-        if nargout == 2
-            throw(CORAerror('CORA:notSupported',...
-                ['Conversion from emptySet to ' type ' not supported.']));
+        if nargout == 2 % call static function
+            S = conZonotope.empty(dim(O));
         end
 
     case 'ellipsoid'
         res = true;
-        if nargout == 2
-            throw(CORAerror('CORA:notSupported',...
-                ['Conversion from emptySet to ' type ' not supported.']));
+        if nargout == 2 % call static function
+            S = ellipsoid.empty(dim(O));
         end
 
     case 'halfspace'
@@ -92,44 +88,40 @@ switch type
 
     case 'interval'
         res = true;
-        if nargout == 2
-            throw(CORAerror('CORA:notSupported',...
-                ['Conversion from emptySet to ' type ' not supported.']));
+        if nargout == 2 % call static function
+            S = interval.empty(dim(O));
         end
 
-    case 'levelSet'
+    case 'levelSet' % not supported
         throw(CORAerror('CORA:notSupported',...
             ['Comparison of capsule to ' type ' not supported.']));
 
     case 'polytope'
         res = true;
-        if nargout == 2
-            throw(CORAerror('CORA:notSupported',...
-                ['Conversion from emptySet to ' type ' not supported.']));
+        if nargout == 2 % call static function
+            S = polytope.empty(dim(O));
         end
 
     case 'polyZonotope'
         res = true;
-        if nargout == 2
-            throw(CORAerror('CORA:notSupported',...
-                ['Conversion from emptySet to ' type ' not supported.']));
+        if nargout == 2 % call static function
+            S = polyZonotope.empty(dim(O));
         end
 
     case 'probZonotope'
+        % cannot be true
         res = false;
 
     case 'zonoBundle'
         res = true;
-        if nargout == 2
-            throw(CORAerror('CORA:notSupported',...
-                ['Conversion from emptySet to ' type ' not supported.']));
+        if nargout == 2 % call static function
+            S = zonoBundle.empty(dim(O));
         end
 
     case 'zonotope'
         res = true;
         if nargout == 2
-            throw(CORAerror('CORA:notSupported',...
-                ['Conversion from emptySet to ' type ' not supported.']));
+            S = zonotope.empty(dim(O));
         end
 
     case 'hyperplane'

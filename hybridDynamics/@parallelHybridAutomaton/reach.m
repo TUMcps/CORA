@@ -73,7 +73,7 @@ function [R,res] = reach(pHA,params,options,varargin)
 
     % create list of label occurences to check whether all labeled
     % transitions are enabled at the same time
-    allLabels = labelOccurrences(pHA);
+    allLabels = priv_labelOccurrences(pHA);
 
     % number of iterations in the main loop
     k = 0;
@@ -110,9 +110,9 @@ function [R,res] = reach(pHA,params,options,varargin)
         [params.W,params.V] = aux_mergeDistNoiseSet(locID,params.Wloc,params.Vloc);
         
         % check for instant transitions
-        [mergedTrans,tracker] = instantTransition(pHA,locID,allLabels,tracker);
+        [mergedTrans,tracker] = priv_instantTransition(pHA,locID,allLabels,tracker);
         
-        if false %%checkLivelock(tracker)
+        if false %% priv_checkLivelock(tracker)
             % check for livelock (currently deactivated)
             break
         elseif ~isempty(mergedTrans)

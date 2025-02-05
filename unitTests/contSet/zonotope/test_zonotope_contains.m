@@ -60,7 +60,7 @@ Z2 = zonotope(c);
 assert(contains(Z1,Z2));
 
 % choose LP method for containment
-assert(contains(Z1,Z2,'st'));
+assert(contains(Z1,Z2,'approx:st'));
 
 % both zonotope are just points
 Z1 = zonotope(zeros(4,1));

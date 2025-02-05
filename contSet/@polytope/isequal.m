@@ -102,7 +102,7 @@ if isa(S,'polytope')
         res = aux_isequal_nondeg(P,S,tol);
     else
         % for degenerate polytopes, we check mutual containment
-        res = contains_(P,S,'exact',tol) && contains_(S,P,'exact',tol);
+        res = contains_(P,S,'exact',tol,0,false,false) && contains_(S,P,'exact',tol,0,false,false);
     end
     return
 end
@@ -122,7 +122,7 @@ end
 
 % check mutual containment for all other set representations
 if isa(S,'contSet')
-    res = contains_(P,S,'exact',tol) && contains_(S,P,'exact',tol);
+    res = contains_(P,S,'exact',tol,0,false,false) && contains_(S,P,'exact',tol,0,false,false);
     return
 end
 

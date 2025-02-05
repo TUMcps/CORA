@@ -58,6 +58,7 @@ B8 = interval(2.43,2.66);
 B9 = interval(2.45,2.66);
 B10 = interval(2.66,3);
 
+% compute Cartesian products
 R0{1} = cartProd(cartProd(I1,I1),B1);
 R0{2} = cartProd(cartProd(I1,I1),B2);
 R0{3} = cartProd(cartProd(I1,I1),B3);

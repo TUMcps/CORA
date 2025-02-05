@@ -1,7 +1,7 @@
 function start_carReach(~)
 % start_carReach - starts the function carReach
 %
-% Syntax:  
+% Syntax:
 %    start_carReach()
 %
 % Inputs:
@@ -9,17 +9,13 @@ function start_carReach(~)
 %
 % Outputs:
 %    no (result is saved as file)
-%
-% Example: 
-%
-% 
-% Author:       Matthias Althoff
-% Written:      31-July-2017
-% Last update:  ---
-% Last revision:---
 
+% Authors:       Matthias Althoff
+% Written:       31-July-2017
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %load fArray to determine segment length of road 
@@ -40,4 +36,4 @@ cd(path);
 save(file,'probModel','ThetaC');
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

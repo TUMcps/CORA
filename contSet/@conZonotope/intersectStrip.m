@@ -330,6 +330,7 @@ function cZ = aux_conZonotopeFromLambda(cZ,phi,C,y,Lambda)
 end
 
 function aux_checkAuxStruct(aux)
+    % parse aux struct
     if CHECKS_ENABLED
         if ~isfield(aux, 'method')
             throw(CORAerror('CORA:wrongFieldValue', 'aux.method', {'wang-FRad'}))

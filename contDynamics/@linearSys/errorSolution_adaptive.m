@@ -46,13 +46,13 @@ A = linsys.A;
 A_abs = abs(A);
 Apower{1} = A;  
 Apower_abs{1} = A_abs; 
-M = eye(linsys.nrOfStates);
+M = eye(linsys.nrOfDims);
 eAabst = expm(A_abs*deltat);
 %initialize Asum
 AVsum = deltat * Vdyn;
 RerrorInt_etanoF = sum(abs(generators(AVsum)),2);
 if isVstat
-    Asum = deltat * eye(linsys.nrOfStates);
+    Asum = deltat * eye(linsys.nrOfDims);
 end
 
 eta = 1; breakcond = false;

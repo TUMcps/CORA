@@ -3,7 +3,7 @@ function [obj,stateField]=build4road(obj,finalStateMat,inputNr,stateField)
 % fact that relative transition probabilities for road vehicles are 
 % independent of their position
 %
-% Syntax:  
+% Syntax:
 %    [obj,stateField]=build4road(obj,HA,inputNr,stateField)
 %
 % Inputs:
@@ -25,20 +25,20 @@ function [obj,stateField]=build4road(obj,finalStateMat,inputNr,stateField)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      27-March-2007 
-% Last update:  21-April-2009
-%               16-June-2009
+% Authors:       Matthias Althoff
+% Written:       27-March-2007 
+% Last update:   21-April-2009
+%                16-June-2009
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 %build Markov chain for the current initial cell
 [obj,tp]=build(obj,finalStateMat,inputNr,stateField);
 
 %speed up Markov chain generation by copying transition probabilities
-[obj.T.T{inputNr}] = roadTransitionCopying(tp.T,obj.T.T{inputNr},obj.field);
-[obj.T.OT{inputNr}] = roadTransitionCopying(tp.OT,obj.T.OT{inputNr},obj.field);
+[obj.T.T{inputNr}] = priv_roadTransitionCopying(tp.T,obj.T.T{inputNr},obj.field);
+[obj.T.OT{inputNr}] = priv_roadTransitionCopying(tp.OT,obj.T.OT{inputNr},obj.field);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

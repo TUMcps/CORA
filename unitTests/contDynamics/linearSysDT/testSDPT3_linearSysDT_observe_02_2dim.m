@@ -93,15 +93,20 @@ for iEst = 7:length(Estimator)
     % enclose last estimated set by interval
     IH = interval(estSet.timePoint.set{end});
     
-    % obtain enclosing intervals
+    % obtain enclosing intervals ---
+    % VolMin
     if strcmp(options.alg,'VolMin-A') 
         IH_saved = [];
     elseif strcmp(options.alg,'VolMin-B') 
         IH_saved = [];
+        % FRad
     elseif strcmp(options.alg,'FRad-A') 
         IH_saved = [];
     elseif strcmp(options.alg,'FRad-B') 
         IH_saved = [];
+    elseif strcmp(options.alg,'FRad-C') 
+        IH_saved = [];
+        % PRad
     elseif strcmp(options.alg,'PRad-A') 
         IH_saved = interval( ...
             [-0.1641491575720032; -0.4022035529669543], ...
@@ -114,8 +119,6 @@ for iEst = 7:length(Estimator)
         IH_saved = interval( ...
             [-0.1145617857673594; -0.3101234942629514], ...
             [0.1604095301851725; 0.2512275601704513]);
-    elseif strcmp(options.alg,'FRad-C') 
-        IH_saved = [];
     elseif strcmp(options.alg,'PRad-D') 
         IH_saved = interval( ...
             [-0.1150749893102779; -0.3731416616256365], ...
@@ -124,6 +127,7 @@ for iEst = 7:length(Estimator)
         IH_saved = interval( ...
             [-0.3179286260499298; -0.4757940345698530], ...
             [0.2925684431937721; 0.4814143751781071]);
+        % Other
     elseif strcmp(options.alg,'Nom-G') 
         IH_saved = interval( ...
             [-0.3006414281693829; -0.3971585808753912], ...
@@ -132,6 +136,7 @@ for iEst = 7:length(Estimator)
         IH_saved = interval( ...
             [-0.2426101873789709; -0.4082011824647768], ...
             [0.3058912729587950; 0.3575579923788003]);
+        % ESO
     elseif strcmp(options.alg,'ESO-A')
         IH_saved = [];
     elseif strcmp(options.alg,'ESO-B')
@@ -142,6 +147,7 @@ for iEst = 7:length(Estimator)
         IH_saved = interval( ...
             [-1.6532157758372144; -2.4633737374923004], ...
             [1.6117166192534249; 2.4912774745301847]);
+        % CZN
     elseif strcmp(options.alg,'CZN-A')
         IH_saved = [];
     elseif strcmp(options.alg,'CZN-B')

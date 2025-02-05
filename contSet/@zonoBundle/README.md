@@ -28,7 +28,7 @@ Example:
     % plot zonotope bundle
     plot(zB);
 
-More information in Section 2.2.1.8 in the <a target='_blank' href="https://tumcps.github.io/CORA/manual">CORA manual</a> or type
+More information in Section 2.2.1.8 in the <a target='_blank' href="https://cora.in.tum.de/manual">CORA manual</a> or type
 
     help zonoBundle
 

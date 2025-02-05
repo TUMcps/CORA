@@ -192,7 +192,7 @@ end
 if isempty(Neq)  % null space empty -> constraints admit a single point
     % check if the single point for beta satisfies the unit cube
     nrGen = size(cZ.G,2);
-    res = ~contains_(interval(-ones(nrGen,1),ones(nrGen,1)),x0,'exact',tol);
+    res = ~contains_(interval(-ones(nrGen,1),ones(nrGen,1)),x0,'exact',tol,0,false,false);
     return
 end
 

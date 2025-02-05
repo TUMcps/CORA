@@ -48,14 +48,14 @@ f = aux_funHan(linsys.A,linsys.B,linsys.c);
 
 % check if an output equation is given
 if ( (isscalar(linsys.C) && linsys.C == 1) || ...
-        ( all(size(linsys.C) == [linsys.nrOfStates,linsys.nrOfStates]) ...
-        && all(all(linsys.C == eye(linsys.nrOfStates))) ) ) ...
+        ( all(size(linsys.C) == [linsys.nrOfDims,linsys.nrOfDims]) ...
+        && all(all(linsys.C == eye(linsys.nrOfDims))) ) ) ...
         || ~any(any(linsys.D)) || ~any(linsys.k)
 
     % convert output matrix to full matrix
     C = linsys.C;
     if isscalar(linsys.C) && linsys.C == 1
-        C = eye(linsys.nrOfStates);
+        C = eye(linsys.nrOfDims);
     end
 
     g = aux_funHan(C,linsys.D,linsys.k);

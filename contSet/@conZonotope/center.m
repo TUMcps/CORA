@@ -29,9 +29,9 @@ function c = center(cZ)
 %
 % See also: ---
 
-% Authors:       Niklas Kochdumper
+% Authors:       Niklas Kochdumper, Adrian Kulmburg
 % Written:       16-July-2018
-% Last update:   ---
+% Last update:   04-February-2024 (AK, dealt with degenerate cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -42,6 +42,27 @@ if isempty(cZ.A)
     
 else
     % constraints -> compute chebychev center
+
+    % Deal with degenerate cases
+    if representsa(cZ, 'emptySet')
+        c = [];
+        return
+    elseif ~isFullDim(cZ)
+        % Here, we do a slightly different algorithm: We first compute the
+        % center of the 'cut' hypercube:
+        m = size(cZ.G,2);
+        Aineq = [-eye(m);eye(m)];
+        bineq = ones([2*m 1]);
+        Aeq = cZ.A;
+        beq = cZ.b;
+
+        P = polytope(Aineq, bineq, Aeq, beq);
+        c = center(P);
+
+        % Now, we apply G and c onto it
+        c = cZ.G * c + cZ.c;
+        return
+    end
         
     % construct inequality constraints for the unit cube
     n = size(cZ.G,2);

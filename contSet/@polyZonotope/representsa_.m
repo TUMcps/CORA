@@ -69,10 +69,6 @@ switch type
             throw(CORAerror('CORA:notSupported',...
                 ['Conversion from polyZonotope to ' type ' not supported.']));
         end
-
-    case 'conHyperplane'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of polyZonotope to ' type ' not supported.']));
         
     case 'conPolyZono'
         res = true;
@@ -81,6 +77,7 @@ switch type
         end
 
     case 'conZonotope'
+        % only in special cases
         res = n == 1 || aux_isZonotope(pZ,tol) || aux_isPolytope(pZ,tol);
         if nargout == 2 && res
             throw(CORAerror('CORA:notSupported',...
@@ -103,10 +100,6 @@ switch type
             S = interval(pZ);
         end
 
-    case 'levelSet'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of polyZonotope to ' type ' not supported.']));
-
     case 'polytope'
         res = n == 1 || aux_isZonotope(pZ,tol) || aux_isPolytope(pZ,tol);
         if nargout == 2 && res
@@ -124,6 +117,7 @@ switch type
         res = false;
 
     case 'zonoBundle'
+        % only in special cases
         res = n == 1 || aux_isZonotope(pZ,tol) || aux_isPolytope(pZ,tol);
         if nargout == 2 && res
             throw(CORAerror('CORA:notSupported',...
@@ -146,16 +140,16 @@ switch type
             S = zonotope(pZ);
         end
 
-    case 'convexSet'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of polyZonotope to ' type ' not supported.']));
-
     case 'emptySet'
         % already handled in isemptyobject
         res = false;
 
     case 'fullspace'
         res = false;
+
+    otherwise
+        throw(CORAerror('CORA:notSupported',...
+            ['Comparison of polyZonotope to ' type ' not supported.']));
 
 end
 
@@ -310,13 +304,17 @@ function [V,Ilist] = aux_polyVertices(pZ)
     Itemp = I(:,1);
     counter = 1;
 
+    % redundant points up to tolerance
+    tol = 1e-10;
     for i = 2:size(V,2)
-        if ~all(abs(V(:,i)-V_(:,counter)) < 1e-10)
+        if ~all(abs(V(:,i)-V_(:,counter)) < tol)
+           % unique point
            counter = counter + 1;
            V_(:,counter) = V(:,i);
            Ilist{counter-1} = Itemp;
            Itemp = I(:,i);
         else
+           % redundant point
            Itemp = [Itemp,I(:,i)];
         end
     end

@@ -270,13 +270,13 @@ function res = aux_checkSafeSet(set,S)
     if iscell(S)
         res = true;
         for i = 1:length(S)
-           res = contains(set,S{i}); 
+           res = contains(set,S{i},'approx'); 
            if ~res
               return; 
            end
         end   
     else
-        res = contains(set,S);
+        res = contains(set,S,'approx');
     end
 end
 

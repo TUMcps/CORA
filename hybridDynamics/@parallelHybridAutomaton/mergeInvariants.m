@@ -30,7 +30,7 @@ function invSet = mergeInvariants(pHA,locID,mergedLabels)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % initialize resulting invariant set
-invSet = fullspace(pHA.nrOfStates);
+invSet = fullspace(pHA.nrOfDims);
 
 % loop over the invariants of the remaining subcomponents
 for i=1:length(pHA.components)
@@ -56,7 +56,7 @@ for i=1:length(pHA.components)
     end
 
     % lift set to high-dimensional space of the overall automaton
-    inv_lifted = lift_(inv,pHA.nrOfStates,pHA.bindsStates{i});
+    inv_lifted = lift_(inv,pHA.nrOfDims,pHA.bindsStates{i});
 
     % compute intersection with the invariants of the remaining
     % subcomponents

@@ -29,8 +29,8 @@ a = taylm(a, 3); %-> 2 + x + [0,0]
 t = log(a); %-> log(2) + x/2 - x^2/8 + x^3/24 + [-0.25, 0]
 eps = 10^-3;
 
-assert(appeq( getCoef(t), [log(2); 1/2; -1/8; 1/24], eps ))
-assert(appeq( getRem(t), interval(-0.25,0), eps))
+assert(priv_appeq( getCoef(t), [log(2); 1/2; -1/8; 1/24], eps ))
+assert(priv_appeq( getRem(t), interval(-0.25,0), eps))
 
 
 %% test 2
@@ -39,8 +39,8 @@ a = taylm(2 + x,interval(-1,1), 3); %-> 2 + x + [0,0]
 t = log(a); %-> log(2) + x/2 - x^2/8 + x^3/24 + [-0.25, 0]
 eps = 10^-3;
 
-assert(appeq( getCoef(t), [log(2); 1/2; -1/8; 1/24], eps ))
-assert(appeq( getRem(t), interval(-0.25,0), eps))
+assert(priv_appeq( getCoef(t), [log(2); 1/2; -1/8; 1/24], eps ))
+assert(priv_appeq( getRem(t), interval(-0.25,0), eps))
 
 end
 

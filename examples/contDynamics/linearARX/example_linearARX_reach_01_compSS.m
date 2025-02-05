@@ -405,7 +405,7 @@ for k=1:length(R)
             end
         end
         
-    else
+    else % real reachable set
         if name == "ARX-DP"
             lw = 2;
             xl = xlim;
@@ -427,6 +427,7 @@ for k=1:length(R)
         end
     end
 
+    % immediately show plots
     drawnow;
 end
 end

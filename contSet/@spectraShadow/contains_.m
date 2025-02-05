@@ -1,15 +1,35 @@
-function res = contains_(SpS,obj,type,tol,maxEval,varargin)
+function [res,cert,scaling] = contains_(SpS,S,method,tol,maxEval,certToggle,scalingToggle,varargin)
 % contains_ - determines if a spectrahedral shadow contains a set or a
 %    point
 %
 % Syntax:
-%    res = contains_(SpS,obj)
+%    [res,cert,scaling] = contains_(SpS,S,method,tol,maxEval,certToggle,scalingToggle)
 %
 % Inputs:
 %    SpS - spectraShadow object
 %    obj - contSet object or vector
-%    type - not implemented yet
-%    tol - tolerance
+%    method - method used for the containment check.
+%       Currently, the only available options are 'exact' and 'approx'.
+%    tol - tolerance for the containment check; the higher the
+%       tolerance, the more likely it is that points near the boundary of
+%       SpS will be detected as lying in SpS, which can be useful to
+%       counteract errors originating from floating point errors.
+%    maxEval - Currently has no effect
+%    certToggle - if set to 'true', cert will be computed (see below),
+%       otherwise cert will be set to NaN.
+%    scalingToggle - if set to 'true', scaling will be computed (see
+%       below), otherwise scaling will be set to inf.
+%
+% Outputs:
+%    res - true/false
+%    cert - returns true iff the result of res could be
+%           verified. For example, if res=false and cert=true, S is
+%           guaranteed to not be contained in SpS, whereas if res=false and
+%           cert=false, nothing can be deduced (S could still be
+%           contained in SpS).
+%           If res=true, then cert=true.
+%    scaling - returns the smallest number 'scaling', such that
+%           scaling*(SpS - SpS.center) + SpS.center contains S.
 %
 % Outputs:
 %    res - true/false
@@ -37,17 +57,110 @@ function res = contains_(SpS,obj,type,tol,maxEval,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+    % Deal with trivial cases first
+    if representsa(S, 'emptySet', tol)
+        % Empty set is always contained
+        res = true;
+        cert = true;
+        scaling = 0;
+        return
+    end
 
-    if isnumeric(obj)
-        res = aux_containsPoint(SpS, obj, tol);
-    else
-        try
-            obj = spectraShadow(obj);
-        catch ME
-            throw(CORAerror("CORA:noops",SpS,obj));
+    % empty set
+    if representsa(SpS, 'emptySet')
+        if isnumeric(S)
+            if isempty(S)
+                res = true;
+                scaling = 0;
+                cert = true;
+            else
+                res = false;
+                scaling = Inf;
+                cert = true;
+            end
+        else
+            if representsa(S, 'emptySet')
+                res = true;
+                scaling = 0;
+                cert = true;
+            else
+                res = false;
+                scaling = Inf;
+                cert = true;
+            end
         end
-        res = aux_containsSpS_OuterSampling(obj, SpS, tol, maxEval);
-        return;
+        return
+
+        % fullspace
+    elseif representsa(S, 'fullspace')
+        if representsa(SpS, 'fullspace')
+            res = true;
+            cert = true;
+            scaling = 0;
+        else
+            res = false;
+            cert = true;
+            scaling = inf;
+        end
+        return
+    end
+
+    % The code is not yet ready to deal with scaling
+    cert = false;
+    scaling = Inf;
+    if scalingToggle
+        throw(CORAerror('CORA:notSupported',...
+                    "The computation of the scaling factor or cert " + ...
+                    "for polynomial zonotopes is not yet implemented."));
+    end
+
+    if isnumeric(S)
+        res = aux_containsPoint(SpS, S, tol);
+        cert = true([1 size(S,2)]);
+        return
+    end
+
+    switch method
+        case 'exact'
+            % Only works for polyhedral sets
+            if isa(S, 'conZonotope') || isa(S, 'interval') || ...
+               isa(S, 'polytope') || isa(S, 'zonoBundle') || ...
+               isa(S, 'zonotope')
+
+                V = vertices(S);
+                [res, cert, scaling] = contains_(SpS, V, 'exact', tol, 0, certToggle, scalingToggle);
+                res = all(res);
+                cert = true;
+                scaling = max(scaling);
+            else
+                throw(CORAerror("CORA:noExactAlg",SpS,S));
+            end
+        case 'approx'
+            % Attempt to over-approximate S by an interval, and then use
+            % the preceding method
+            try
+                S = interval(S);
+            catch ME
+                throw(CORAerror('CORA:noSpecificAlg',method,SpS,S));
+            end
+            V = vertices(S);
+            [res, cert, scaling] = contains_(SpS, V, 'exact', tol, 0, certToggle, scalingToggle);
+            res = all(res);
+            cert = res;
+            scaling = max(scaling);
+        case 'sampling'
+            % Try the sampling method, assuming we can somehow cast the set
+            % as a spectrahedral shadow
+            try
+                S = spectraShadow(S);
+            catch ME
+                throw(CORAerror("CORA:noops",SpS,S));
+            end
+            res = aux_containsSpS_OuterSampling(S, SpS, tol, maxEval);
+            cert = ~res;
+
+        otherwise
+            throw(CORAerror('CORA:noSpecificAlg',method,SpS,S));
     end
 
 end
@@ -56,12 +169,18 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function res = aux_containsPoint(SpS, p, tol)
+    % checks if point is contained
     N = size(p,2);
     res = false([1 N]);
     
+    % get options
     persistent options
     if isempty(options)
-        options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0);
+        if isSolverInstalled('mosek')
+            options = sdpsettings('solver','mosek','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        else
+            options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        end
     end
     
     for i_N = 1:N
@@ -94,33 +213,37 @@ function res = aux_containsPoint(SpS, p, tol)
         
         cost = t;
         
+        diagnostics = optimize(constraints,cost,options);
+
+        t = value(t);
         
-        yalmipOptimizer = optimizer(constraints,cost,options,[],{beta,s,t});
-        
-        [sol,exitflag] = yalmipOptimizer();
-        
-        if exitflag == 1
+        if diagnostics.problem == 1
             % The problem cannot be infeasible inherently, therefore
             % receiving exitflag = 1 means Sedumi encountered an internal
             % error and the point is within the set.
-            sol{3} = 0;
+            t = 0;
         end
 
-        res(i_N) = (sol{3}<=tol);
+        res(i_N) = (t<=tol);
     end
 
 end
 
 function res = aux_containsSpS_InnerSampling(SpS1, SpS2, tol, N)
-    
+        
     if ~(dim(SpS1) == dim(SpS2))
         res = false;
         return;
     end
 
+    % get options
     persistent options
     if isempty(options)
-        options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0);
+        if isSolverInstalled('mosek')
+            options = sdpsettings('solver','mosek','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        else
+            options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        end
     end
     
     G = SpS1.G;
@@ -149,12 +272,10 @@ function res = aux_containsSpS_InnerSampling(SpS1, SpS2, tol, N)
 
         constraints = [constraints, lmi>=0];
         
-        yalmipOptimizer = optimizer(constraints, -lambda, options, [], {lambda, x});
-
-        [sol, ~] = yalmipOptimizer();
+        diagnostics = optimize(constraints, -lambda, options);
 
         % identify a boundary point from p0
-        lambda = sol{1};
+        lambda = value(lambda);
         y = p0 + lambda * d;
     
         % if the boundary point is not in the outer SpS, the inner SpS
@@ -173,9 +294,14 @@ function res = aux_containsSpS_OuterSampling(SpS1, SpS2, tol, N)
         return;
     end
 
+    % get options
     persistent options
     if isempty(options)
-        options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0);
+        if isSolverInstalled('mosek')
+            options = sdpsettings('solver','mosek','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        else
+            options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        end
     end
     
     G = SpS2.G;
@@ -209,11 +335,9 @@ function res = aux_containsSpS_OuterSampling(SpS1, SpS2, tol, N)
         end
         constraints = [constraints, lmi>=0];
 
-        yalmipOptimizer = optimizer(constraints, -lambda, options, [], {lambda, x});
+        diagnostics = optimize(constraints, -lambda, options);
 
-        [sol, ~] = yalmipOptimizer();
-
-        lambda = sol{1};
+        lambda = value(lambda);
 
         y = p0 + lambda*d;
 
@@ -231,11 +355,9 @@ function res = aux_containsSpS_OuterSampling(SpS1, SpS2, tol, N)
         constraints = [constraints, Z>=0];
         objective = x' * y;
 
-        yalmipOptimizer = optimizer(constraints,objective,options,[],{x, Z});
+        diagnostics = optimize(constraints,objective,options);
 
-        [sol, ~] = yalmipOptimizer();
-
-        eta = sol{1};
+        eta = value(x);
         
         % check the normal vector cutoff
         a = SpS1.supportFunc(eta./norm(eta));

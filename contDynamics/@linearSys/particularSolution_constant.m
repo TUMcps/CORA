@@ -46,7 +46,7 @@ function [Ptp,C_input,Pti] = particularSolution_constant(linsys,U,timeStep,trunc
 
 narginchk(4,5);
 % by default no block decomposition, i.e., a single block
-blocks = setDefaultValues({[1,linsys.nrOfStates]},varargin);
+blocks = setDefaultValues({[1,linsys.nrOfDims]},varargin);
 % for ease of computation, convert a vector to a zonotope
 numericU = isnumeric(U);
 if isnumeric(U)
@@ -82,10 +82,10 @@ Ainv = getTaylor(linsys,'Ainv');
 if ~isempty(Ainv)
     % Ainv would be empty if there was no inverse
     eAdt = getTaylor(linsys,'eAdt',struct('timeStep',timeStep));
-    Ptp = block_mtimes(Ainv * (eAdt - eye(linsys.nrOfStates)), U_decomp);
+    Ptp = block_mtimes(Ainv * (eAdt - eye(linsys.nrOfDims)), U_decomp);
     % compute time-interval solution if desired
     if nargout >= 2
-        C_input = curvatureInput(linsys,U_decomp,timeStep,truncationOrder);
+        C_input = priv_curvatureInput(linsys,U_decomp,timeStep,truncationOrder);
     end
     if nargout >= 3
         Pti_approx = block_operation(@convHull,block_zeros(blocks),Ptp);
@@ -104,7 +104,7 @@ end
 options = struct('timeStep',timeStep,'ithpower',1);
 
 % first term (eta = 0)
-Asum = timeStep * eye(linsys.nrOfStates);
+Asum = timeStep * eye(linsys.nrOfDims);
 
 % loop until Asum no longer changes (additional values too small) or
 % truncation order is reached
@@ -143,13 +143,13 @@ if truncationOrderInf
         Ptp = block_operation(@center,Ptp);
     end
 else
-    E = expmRemainder(linsys,timeStep,truncationOrder);
+    E = priv_expmRemainder(linsys,timeStep,truncationOrder);
     Ptp = block_operation(@plus,block_mtimes(Asum,U_decomp),block_mtimes(E*timeStep,U_decomp));
 end
 
 % compute time-interval solution if desired
 if nargout >= 2
-    C_input = curvatureInput(linsys,U_decomp,timeStep,truncationOrder);
+    C_input = priv_curvatureInput(linsys,U_decomp,timeStep,truncationOrder);
 end
 if nargout >= 3
     Pti_approx = block_operation(@convHull,block_zeros(blocks),Ptp);

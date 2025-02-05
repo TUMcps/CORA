@@ -50,12 +50,14 @@ switch field
         defValue = aux_def_maxError_y(sys,params,options);
     case 'compTimePoint'
         defValue = true;
+        % polyZono
     case 'polyZono.maxDepGenOrder'
         defValue = 20;
     case 'polyZono.maxPolyZonoRatio'
         defValue = Inf;
     case 'polyZono.restructureTechnique'
         defValue = 'reduceGirard';
+        % lagrangeRem
     case 'lagrangeRem.simplify'
         defValue = 'none';
     case 'lagrangeRem.method'
@@ -64,6 +66,7 @@ switch field
         defValue = false;
     case 'lagrangeRem.optMethod'
         defValue = 'int';
+        % ---
     case 'contractor'
         defValue = 'linearize';
     case 'iter'
@@ -78,6 +81,7 @@ switch field
         defValue = 'standard';
     case 'points'
         defValue = 10;
+        % frac
     case 'fracVert'
         defValue = 0.5;
     case 'fracInpVert'
@@ -89,6 +93,7 @@ switch field
     case 'inpChanges'
         defValue = 1;
     case 'alg'
+        % default algorithm depends on system and other parameters
         defValue = aux_def_alg(sys,params,options);
     case 'tensorOrder'
         defValue = 2;
@@ -136,26 +141,28 @@ switch field
         defValue = sprintf('%s_approx', string(t));
     case 'approx.save_res'
         defValue = true;    
+        % gp
     case 'approx.gp_parallel'
         defValue = canUseParallelPool;   
     case 'approx.gp_runs'
         defValue = 1;    
     case 'approx.gp_num_gen'
-        defValue = 100;     
-    case 'approx.cgp_num_gen'
-        defValue = 5;     
+        defValue = 100;   
     case 'approx.gp_pop_size'
         defValue = 300;     
-    case 'approx.cgp_n_m_conf'
-        defValue = 5;      
-    case 'approx.cgp_pop_size_base'
-        defValue = 10;      
     case 'approx.gp_func_names'
         defValue = {'times','minus','plus','tanh','square','sin','rdivide'};
     case 'approx.gp_max_genes' 
         defValue = 5;
     case 'approx.gp_max_depth' 
-        defValue = 6;    
+        defValue = 6;      
+        % cgp
+    case 'approx.cgp_num_gen'
+        defValue = 5;       
+    case 'approx.cgp_n_m_conf'
+        defValue = 5;      
+    case 'approx.cgp_pop_size_base'
+        defValue = 10;    
     otherwise
         throw(CORAerror('CORA:specialError',...
             "There is no default value for options." + field + "."))
@@ -170,9 +177,9 @@ function val = aux_def_maxError(sys,params,options)
 
 val = [];
 if isa(sys,'contDynamics') || isa(sys,'parallelHybridAutomaton')
-    val = Inf(sys.nrOfStates,1);
+    val = Inf(sys.nrOfDims,1);
 elseif isa(sys,'hybridAutomaton')
-    n = sys.nrOfStates;
+    n = sys.nrOfDims;
     if all(n(1) == n)
         val = Inf(n(1),1);
     else
@@ -228,7 +235,7 @@ function val = aux_def_maxError_x(sys,params,options)
 
 val = [];
 if isa(sys,'nonlinDASys')
-    val = Inf(sys.nrOfStates,1);
+    val = Inf(sys.nrOfDims,1);
 end
 
 end

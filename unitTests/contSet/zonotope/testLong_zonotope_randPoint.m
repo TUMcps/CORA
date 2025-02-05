@@ -47,6 +47,7 @@ for i=1:nrOfTests
     pUniform = randPoint(Z,nrPtsUniform,'uniform');
     pUniformHitAndRun = randPoint(Z,nrPtsUniform,'uniform:hitAndRun');
     pUniformBilliard = randPoint(Z,nrPtsUniform,'uniform:billiardWalk');
+    pUniformBallWalk = randPoint(Z,nrPtsUniform,'uniform:ballWalk');
     
     
     % check 'extreme' method:
@@ -74,6 +75,7 @@ for i=1:nrOfTests
     assertLoop(all(contains(Z,pUniform)),i)
     assertLoop(all(contains(Z,pUniformHitAndRun)),i)
     assertLoop(all(contains(Z,pUniformBilliard)),i)
+    assertLoop(all(contains(Z,pUniformBallWalk)),i)
     assertLoop(all(contains(Z,pExtreme,'exact',tol)),i)
 
 end

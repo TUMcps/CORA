@@ -2,7 +2,7 @@ function HA = integrateAndFireNeuron()
 % integrateAndFireNeuron - integrate and fire neuron modelled as a hybrid
 %    automaton with the three locations "charging", "firing", and "reset"
 %
-% Syntax:  
+% Syntax:
 %    HA = integrateAndFireNeuron()
 %
 % Inputs:

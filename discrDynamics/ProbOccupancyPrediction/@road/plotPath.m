@@ -1,10 +1,28 @@
-function plotPath(varargin);
-% Purpose:  plot road object
+function plotPath(varargin)
+% plotPath plot road object
 % Pre:      road object
-% Post:     ---
-% Built:    04.12.06,MA
-% Modified: 21.11.07,MA
+%
+% Syntax:
+%    plotPath(varargin)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
 
+% Authors:       Matthias Althoff
+% Written:       04-December-2006
+% Last update:   21-November-2007
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %no color specified
 if nargin==1
@@ -34,3 +52,5 @@ else
     y=obj.segments.y(segments);    
 end
 plot(x,y,plotStyle);
+
+% ------------------------------ END OF CODE ------------------------------

@@ -183,12 +183,12 @@ function guard = aux_adaptGuard(loc,guard,R)
     end
     
     % check if center is on the correct side of the hyperplane
-    if contains_(inv,c,'exact',100*eps)
-        if ~contains_(P,c,'exact',100*eps)
+    if contains_(inv,c,'exact',100*eps,0,false,false)
+        if ~contains_(P,c,'exact',100*eps,0,false,false)
             guard = polytope([],[],-guard.Ae,-guard.be);
         end
     else
-        if contains_(P,c,'exact',100*eps)
+        if contains_(P,c,'exact',100*eps,0,false,false)
             guard = polytope([],[],-guard.Ae,-guard.be);
         end
     end
@@ -210,7 +210,7 @@ function outside = aux_getOutside(loc,guard,R)
     end
     
     % check if center is on the correct side of the hyperplane
-    if contains_(inv,c,'exact',100*eps)
+    if contains_(inv,c,'exact',100*eps,0,false,false)
         if guard.funHan(c) > 0
             outside = -1;
         end

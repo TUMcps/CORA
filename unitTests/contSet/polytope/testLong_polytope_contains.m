@@ -19,15 +19,17 @@ function res = testLong_polytope_contains
 %
 % See also: -
 
-% Authors:       Viktor Kotsev
+% Authors:       Viktor Kotsev, Adrian Kulmburg
 % Written:       ---
-% Last update:   ---
+% Last update:   21-January-2025 (AK, added general containment checks)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % assume true
 res = true;
+
+tol = 1e-6;
 
 % number of tests
 nrTests = 25;
@@ -43,7 +45,7 @@ for i=1:nrTests
     
     % check if randomly generated points are inside
     Y = randPoint(P,n);
-    assertLoop(contains(P,Y,'exact',1e-12),i);
+    assertLoop(contains(P,Y,'exact',tol),i);
 
 
     % instantiate polytope
@@ -59,7 +61,27 @@ for i=1:nrTests
     E = ellipsoid(Z,'inner:norm');
     P = polytope(Z);
     % check if Ei is in P
-    assertLoop(contains(P,E,'exact',E.TOL),i);
+    assertLoop(contains(P,E,'exact',tol),i);
 end
+
+% Check all containment combinations
+I = interval([-1;-1],[1;1]);
+Ideg = interval([-1;0], [1;0]);
+
+S = polytope(I);
+Sdeg = polytope(Ideg);
+Sempty = polytope.empty(2);
+
+implementedSets = {'capsule','conPolyZono','conZonotope','interval','polytope',...
+                    'zonoBundle','zonotope','ellipsoid','taylm',...
+                    'polyZonotope','conPolyZono','spectraShadow'};
+
+setsNonExact = {'taylm','conPolyZono','polyZonotope'};
+
+additionalAlgorithms = {};
+
+additionalAlgorithms_specificSets = {};
+
+checkAllContainments(S, Sdeg, Sempty, implementedSets, setsNonExact, additionalAlgorithms, additionalAlgorithms_specificSets);
 
 % ------------------------------ END OF CODE ------------------------------

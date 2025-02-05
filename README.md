@@ -1,6 +1,6 @@
 <img src="./app/images/coraLogo_readme.svg" alt="CORA"/>
 
-A Tool for COntinuous Reachability Analysis. 
+A Tool for COntinuous Reachability Analysis.
 
 <a href='https://cora.in.tum.de' target='_blank'>cora.in.tum.de</a> - <a href='https://cora.in.tum.de/manual' target='_blank'>Manual</a>
 

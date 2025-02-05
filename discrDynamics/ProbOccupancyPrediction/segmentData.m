@@ -1,6 +1,10 @@
 function [pos, angle] = segmentData(segments, segNumber, devNumber, nrOfDevSegments, widthOfLane)
 % segmentData - returns the position and angle of a segment for a given 
 % segment number and deviation number.
+% replaces segData.m without using the CORA road class
+%
+% Syntax:
+%    [pos, angle] = segmentData(segments, segNumber, devNumber, nrOfDevSegments, widthOfLane)
 %
 % Inputs:
 %    segments - segments struct of vehicle path
@@ -11,8 +15,18 @@ function [pos, angle] = segmentData(segments, segNumber, devNumber, nrOfDevSegme
 % Outputs:
 %    P - segment polytope
 %
-% replaces segData.m without using the CORA road class
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
 
+% Authors:       ???
+% Written:       ???
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %load data
 angle = segments.angle;
@@ -47,4 +61,4 @@ transLat(2,1) = sin(angle1 - (0.5 * pi)) * widthOfLane / nrOfDevSegments;
 pos = [xMid; yMid] + (devNumber - 0.5 - (0.5 * nrOfDevSegments)) * transLat;
 angle = angle1;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

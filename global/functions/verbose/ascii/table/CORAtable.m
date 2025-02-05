@@ -147,18 +147,21 @@ function [design,hvalues,formats,tableoptions] = aux_parseInput(design,hvalues,f
 end
 
 function tableoptions = aux_getSingleTableOptions()
+    % design: 'single' 
     tableoptions = {
         'tbhline','-','tbhcorner','|','hbvline','|','hsep','|','csep','|'
     };
 end
 
 function tableoptions = aux_getDoubleTableOptions()
+    % design: 'double' 
     tableoptions = {
         'tbhline','=','tbhcorner','‖','hbvline','‖','hsep','|'
     };
 end
 
 function tableoptions = aux_getModernTableOptions()
+    % design: 'modern' 
     tableoptions = {
         'tbhline','_','tbhcorner','','mbhline','-','mbhcorner','','bbhline','_','bbhcorner','', ...
         'hbvline','','hsep','|'
@@ -166,18 +169,23 @@ function tableoptions = aux_getModernTableOptions()
 end
 
 function tableoptions = aux_getMinimalisticTableOptions()
+    % design: 'minimalistic' 
     tableoptions = {
         'tbhline','-','tbhcorner','','hbvline','','hsep',' '
     };
 end
 
 function tableoptions = aux_getAsciiTableOptions()
+    % design: 'ascii' 
     tableoptions = {
         'tbhline','-','tbhcorner','+','tbhsep','+','mbhsep','+','bbhsep','+','hbvline','|','hsep','|'
     };
 end
 
 function tableoptions = aux_getLatexTableOptions(formats)
+    % design: 'latex' 
+
+    % pre and post table text
     tpre = sprintf([ ...
         '%%%% Move to preamble.\n' ...
         '%%%% \\\\usepackage{booktabs} %%%% requires ''booktabs'' package\n' ...
@@ -196,6 +204,7 @@ function tableoptions = aux_getLatexTableOptions(formats)
         '\\end{table}\n' ...
     ];
 
+    % build table options
     tableoptions = { ...
         'tbhline',' ','tbhcorner','','hbvline','','hsep','&', ...
         'tlpre','    \toprule','mlpre','    \midrule','blpre','    \bottomrule','hlpost','\\' ...
@@ -204,6 +213,7 @@ function tableoptions = aux_getLatexTableOptions(formats)
 end
 
 function tableoptions = aux_getHTMLTableOptions(formats)
+    % design: 'html' 
     tpre = '<table>\n';
     tpost = '</table>\n';
 
@@ -217,6 +227,7 @@ function tableoptions = aux_getHTMLTableOptions(formats)
 end
 
 function tableoptions = aux_getMarkdownTableOptions()
+    % design: 'markdown' 
     tableoptions = { ...
         'tbhline','','tbhcorner','','hbvline','|', ...
         'mbhline','-','mbhcorner','|','mbhsep','|'

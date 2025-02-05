@@ -32,55 +32,55 @@ sysname = 'sys';
 % one-dimensional, without inputs
 f_1D = @(x,u) x(1)^2;
 sys = nonlinearSys(f_1D);
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfOutputs == 1)
 
 sys = nonlinearSys(sysname,f_1D);
 assert(strcmp(sys.name,sysname))
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfOutputs == 1)
 
 sys = nonlinearSys(sysname,f_1D,1,1);
 assert(strcmp(sys.name,sysname))
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfOutputs == 1)
 
 sys = nonlinearSys(f_1D,1,1);
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfOutputs == 1)
 
 % one-dimensional, with inputs
 f_1D = @(x,u) x(1)^2 - u(1);
 sys = nonlinearSys(f_1D);
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfOutputs == 1)
 
 sys = nonlinearSys(f_1D,1,1);
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfOutputs == 1)
 
 sys = nonlinearSys(sysname,f_1D,1,1);
 assert(strcmp(sys.name,sysname))
-assert(sys.nrOfStates == 1)
+assert(sys.nrOfDims == 1)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfOutputs == 1)
 
 % three-dimensional
 f_3D = @(x,u) [sqrt(x(1)) - x(2)*u(1); x(2)-x(1); x(3)*x(2)];
 sys = nonlinearSys(f_3D);
-assert(sys.nrOfStates == 3);
+assert(sys.nrOfDims == 3);
 assert(sys.nrOfInputs == 1);
 assert(sys.nrOfOutputs == 3);
 
 sys = nonlinearSys(sysname,f_3D,3,1);
 assert(strcmp(sysname,sys.name))
-assert(sys.nrOfStates == 3);
+assert(sys.nrOfDims == 3);
 assert(sys.nrOfInputs == 1);
 assert(sys.nrOfOutputs == 3);
 
@@ -88,7 +88,7 @@ assert(sys.nrOfOutputs == 3);
 % input internally...
 sys = nonlinearSys(sysname,f_3D,3,0);
 assert(strcmp(sysname,sys.name))
-assert(sys.nrOfStates == 3);
+assert(sys.nrOfDims == 3);
 assert(sys.nrOfInputs == 1);
 assert(sys.nrOfOutputs == 3);
 
@@ -96,19 +96,19 @@ assert(sys.nrOfOutputs == 3);
 f_3D = @(x,u) [sqrt(x(1)) - x(2)*u(1); x(2)-exp(x(1)); x(3)*x(2)];
 g_1D = @(x,u) x(1)*x(2);
 sys = nonlinearSys(f_3D,g_1D);
-assert(sys.nrOfStates == 3);
+assert(sys.nrOfDims == 3);
 assert(sys.nrOfInputs == 1);
 assert(sys.nrOfOutputs == 1);
 
 sys = nonlinearSys(sysname,f_3D,g_1D);
 assert(strcmp(sysname,sys.name))
-assert(sys.nrOfStates == 3);
+assert(sys.nrOfDims == 3);
 assert(sys.nrOfInputs == 1);
 assert(sys.nrOfOutputs == 1);
 
 sys = nonlinearSys(sysname,f_3D,3,1,g_1D,1);
 assert(strcmp(sysname,sys.name))
-assert(sys.nrOfStates == 3);
+assert(sys.nrOfDims == 3);
 assert(sys.nrOfInputs == 1);
 assert(sys.nrOfOutputs == 1);
 

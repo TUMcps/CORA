@@ -1,25 +1,35 @@
 classdef partition
-%% class definition of a partition
-% a partition divides the state-space, which is an axis-aligned bounding 
+% partition - a partition divides the state-space, which is an axis-aligned bounding 
 % box, into segments which are axis-aligned bounding boxes.
 % The partition can be defined by one argument: a cell array of the values
 % of the dividers in each dimension, or by two arguments: the state-space
 % and the number of segments in each direction. For the latter definition,
 % the dividers are evenly spaced along each dimension.
-% 
-% Usage:
-% C = partition(dividers) -- where dividers is a cell array of arrays which
-% specify the boundaries of the segments in each dimension
-% C = partition(intervals, nrOfSegments) -- intervals is an n x 2 matrix of
-% the state space, or an interval vector. nrOfSegments is an n x 1 vector
-% of the number of partition segments along each dimension.
 %
-% See unit tests for examples.
+% Syntax:
+%    C = partition(dividers)
+%    C = partition(intervals, nrOfSegments)
 %
-% Last modified: AP 2.8.17
+% Inputs:
+%    dividers - cell array of arrays which specify the boundaries of the segments in each dimension
+%    intervals - n x 2 matrix of the state space, or an interval vector
+%    nrOfSegments - n x 1 vector of the number of partition segments along each dimension.
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
 
+% Authors:       ???
+% Written:       ???
+% Last update:   02-August-2017 (AP)
+% Last revision: ---
 
-
+% ------------------------------ BEGIN CODE -------------------------------
 
     properties
         intervals           % state space
@@ -91,6 +101,7 @@ classdef partition
             end
         end
         
+        % functions
         segmentMatrix = cellSegments(obj,indexVector)
         [segments,error]=intersectingCells(Obj,contSet,varargin)
         [cellIndices]=cellIndices(Obj,subscriptVectors)
@@ -107,3 +118,5 @@ classdef partition
     end
 
 end
+
+% ------------------------------ END OF CODE ------------------------------

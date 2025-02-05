@@ -6,7 +6,7 @@ Execute
     coraApp
 
 in the MATLAB console to start defining your dynamic graphically.
-Check Section 8 in the <a target='_blank' href="https://tumcps.github.io/CORA/manual">CORA manual</a> for more information.
+Check Section 8 in the <a target='_blank' href="https://cora.in.tum.de/manual">CORA manual</a> for more information.
 
 
 <hr style="height: 1px;">

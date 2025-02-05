@@ -1,16 +1,20 @@
-function res = contains_(O,S,type,tol,varargin)
+function [res,cert,scaling] = contains_(O,S,method,tol,maxEval,certToggle,scalingToggle,varargin)
 % contains_ - determines if an empty set contains a set or a point
 %
 % Syntax:
-%    res = contains_(O,S)
-%    res = contains_(O,S,type)
-%    res = contains_(O,S,type,tol)
+%    [res,cert,scaling] = contains_(O,S,method,tol,maxEval,certToggle,scalingToggle)
 %
 % Inputs:
 %    O - emptySet object
 %    S - contSet object or numerical vector
-%    type - 'exact' or 'approx'
-%    tol - tolerance
+%    method - method used for the containment check.
+%       Currently, the only available options are 'exact' and 'approx'.
+%    tol - tolerance for the containment check; not used here.
+%    maxEval - Currently has no effect
+%    certToggle - if set to 'true', cert will be computed (see below),
+%       otherwise cert will be set to NaN.
+%    scalingToggle - if set to 'true', scaling will be computed (see
+%       below), otherwise scaling will be set to inf.
 %
 % Outputs:
 %    res - true/false
@@ -18,7 +22,7 @@ function res = contains_(O,S,type,tol,varargin)
 % Example: 
 %    O = emptySet(2);
 %    p = [1;1];
-%    res = contains(O,p);
+%    [res,cert,scaling] = contains(O,p);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -35,19 +39,23 @@ function res = contains_(O,S,type,tol,varargin)
 
 % dimensions are already checked...
 res = false;
+cert = true;
+scaling = inf;
 if isa(S,'emptySet')
     % empty set contains the empty set
     res = true;
+    scaling = 0;
 
-elseif isa(S,'contSet') && representsa_(S,'emptySet',eps)
+elseif isa(S,'contSet') && representsa(S,'emptySet',eps)
     % empty set contains contSet objects if they also represent the empty
     % set
     res = true;
+    scaling = 0;
 
 elseif isnumeric(S) && isempty(S)
     % empty set contains empty vectors
     res = true;
-
+    scaling = 0;
 end
 
 % ------------------------------ END OF CODE ------------------------------

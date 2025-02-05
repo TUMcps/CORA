@@ -1,7 +1,7 @@
 function f = doublePendulum(x,u)
 % doublePendulum - double pendulum system from Section 3.6 in [1]
 %
-% Syntax:  
+% Syntax:
 %    f = doublePendulum(x,u)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function f = doublePendulum(x,u)
 %       Intelligence and Neural Network Control Systems (AINNCS) for 
 %       Continuous and Hybrid Systems Plants", 2021
 
-% Author:       Niklas Kochdumper
-% Written:      08-December-2021
-% Last update:  ---
-% Last revision:---
+% Authors:       Niklas Kochdumper
+% Written:       08-December-2021
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parameter
     m = 0.5; 
@@ -47,4 +47,4 @@ function f = doublePendulum(x,u)
      
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

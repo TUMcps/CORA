@@ -2,7 +2,7 @@ function dx = laubLoomis(x,u)
 % laubLoomis - dynamic equation for the Laub-Loomis benchmark 
 %              (see Sec. 3.2 in [1])
 %
-% Syntax:  
+% Syntax:
 %    dx = laubLoomis(x,u)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function dx = laubLoomis(x,u)
 %    [1] F. Immler, “ARCH-COMP19 Category Report: Continuous and Hybrid 
 %        Systems with Nonlinear Dynamics", 2019
 
-% Author:        Niklas Kochdumper
+% Authors:       Niklas Kochdumper
 % Written:       19-June-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     dx(1,1) = 1.4*x(3)-0.9*x(1);
     dx(2,1) = 2.5*x(5)-1.5*x(2);
@@ -31,4 +31,4 @@ function dx = laubLoomis(x,u)
     dx(6,1) = 0.3*x(1)-3.1*x(6);
     dx(7,1) = 1.8*x(6)-1.5*x(7)*x(2);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

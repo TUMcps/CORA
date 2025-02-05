@@ -39,29 +39,26 @@ function res = aux_recursive(obj,time)
 % recursive function for computing the maximum time
 
     if ~obj.temporal
-
         res = time;
 
     elseif strcmp(obj.type,'next')
-
         res = aux_recursive(obj.lhs,obj.from + time);
 
     elseif strcmp(obj.type,'~') 
-
         res = aux_recursive(obj.lhs,time);
 
     elseif ismember(obj.type,{'&','|'})
-
         res = max(aux_recursive(obj.lhs,time),aux_recursive(obj.rhs,time));
 
     elseif ismember(obj.type,{'finally','globally'})
-
         res = obj.to + aux_recursive(obj.lhs,time);
 
     elseif ismember(obj.type,{'until','release'})
-
         res = obj.to + max(aux_recursive(obj.lhs,time),aux_recursive(obj.rhs,time));
-
+        
+    else
+        % throw error
+        throw(CORAerror('CORA:specialError',sprintf('Unspecified type: ''%s''.', obj.type)))
     end
 end
 

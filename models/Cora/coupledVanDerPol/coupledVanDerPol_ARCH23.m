@@ -1,9 +1,9 @@
-function dx = coupledVanDerPol_ARCH22(x,u)
-% coupledVanDerPol_ARCH22 - system dynamics for the Van-der-Pol oscillator,
-%    taken from the ARCH22 competition
+function dx = coupledVanDerPol_ARCH23(x,u)
+% coupledVanDerPol_ARCH23 - system dynamics for the Van-der-Pol oscillator,
+%    taken from the ARCH23 competition
 %
-% Syntax:  
-%    dx = coupledVanDerPol_ARCH22(x,u)
+% Syntax:
+%    dx = coupledVanDerPol_ARCH23(x,u)
 %
 % Inputs:
 %    x - state vector
@@ -13,12 +13,12 @@ function dx = coupledVanDerPol_ARCH22(x,u)
 %    dx - time-derivate of the system state
 % 
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       06-July-2022
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % x1' == y1 &amp;
 % y1' == mu*(1-x1^2)*y1 + b*(x2-x1) - x1 &amp;
@@ -36,4 +36,4 @@ dx(3,1) = x(4);
 dx(4,1) = (1-x(3)^2)*x(4) - x(5)*(x(3)-x(1)) - x(3);
 dx(5,1) = 0;
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

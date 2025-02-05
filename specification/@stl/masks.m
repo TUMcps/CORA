@@ -64,12 +64,14 @@ function out = aux_collectIntervals(phi, dom, dir)
     % Collect all intervals for every atomic proposition where the value of
     % that proposition matters for the evaluation of the formula.
 
+    % atom
     if strcmp(phi.type, 'true')
         out = containers.Map;
     elseif strcmp(phi.type, 'false')
         out = containers.Map;
     elseif strcmp(phi.type, 'variable')
         out = containers.Map(formattedDisplayText(phi), {dom dir});
+        % boolean
     elseif strcmp(phi.type, '&')
         lhs = aux_collectIntervals(phi.lhs, dom, dir);
         rhs = aux_collectIntervals(phi.rhs, dom, dir);
@@ -82,6 +84,7 @@ function out = aux_collectIntervals(phi, dom, dir)
         out = aux_combineMaps(lhs, rhs);
     elseif strcmp(phi.type, '~')
         out = aux_collectIntervals(phi.lhs, dom, ~dir);
+        % temporal
     elseif strcmp(phi.type, 'until')
         m1 = aux_collectIntervals(phi.lhs, dom + interval(0, phi.to), dir);
         m2 = aux_collectIntervals(phi.rhs, dom + phi.interval, dir);

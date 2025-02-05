@@ -80,7 +80,7 @@ qZsplit{end} = polytope(temp);
 % init container for point-in-splitZonotope
 resTemp = false(nrSplits+1,size(points,2));
 for j=1:nrSplits+1
-    resTemp(j,:) = contains_(qZsplit{j},points,'approx',1e-10);
+    resTemp(j,:) = contains_(qZsplit{j},points,'approx',1e-10,0,false,false);
 end
 % unify results: a point has to be in at least one of the split zonotopes
 res = all(any(resTemp,1));
@@ -88,7 +88,7 @@ res = all(any(resTemp,1));
 % for i = 1:size(points,2)
 %    resTemp = false;
 %    for j = 1:length(qZsplit)
-%       if contains_(qZsplit{j},points(:,i),'approx',1e-10)
+%       if contains_(qZsplit{j},points(:,i),'approx',1e-10,0,false,false)
 %          resTemp = true;
 %          break;
 %       end

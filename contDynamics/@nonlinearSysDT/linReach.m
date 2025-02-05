@@ -35,7 +35,7 @@ function [Rtp,options,Verror] = linReach(nlnsysDT,Rinit,params,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
     % linearize nonlinear system
-    [nlnsysDT,A_lin,U] = linearize(nlnsysDT,Rinit,params); 
+    [nlnsysDT,A_lin,U] = priv_linearize(nlnsysDT,Rinit,params); 
 
     % translate Rinit by linearization point
     Rdelta = Rinit + (-nlnsysDT.linError.p.x);
@@ -56,9 +56,9 @@ function [Rtp,options,Verror] = linReach(nlnsysDT,Rinit,params,options)
     else
         % obtain abstraction error
         if options.tensorOrder == 2
-            Verror = linError_mixed_noInt(nlnsysDT, Rdelta, params, options);
+            Verror = priv_linError_mixed_noInt(nlnsysDT, Rdelta, params, options);
         elseif options.tensorOrder == 3
-            Verror = linError_thirdOrder(nlnsysDT, Rdelta, params, options);
+            Verror = priv_linError_thirdOrder(nlnsysDT, Rdelta, params, options);
         end
     end
 
@@ -111,17 +111,18 @@ end
 function [options,Verror] = aux_tuneTensorOrder(nlnsysDT,Rdelta,params,options,radVerror_2,radVerror_3)
 
     % 1. compute other order (Verror_2 or Verror_3) if necessary
-    % 2. compare to current Verror
-    % 3. adapt tensorOrder and Verrorprev if change significant enough
-
+    
     if isempty(radVerror_2)
-        Verror_2 = linError_mixed_noInt(nlnsysDT, Rdelta, params, options);
+        Verror_2 = priv_linError_mixed_noInt(nlnsysDT, Rdelta, params, options);
         radVerror_2 = rad(interval(Verror_2));
     end
     if isempty(radVerror_3)
-        Verror_3 = linError_thirdOrder(nlnsysDT, Rdelta, params, options);
+        Verror_3 = priv_linError_thirdOrder(nlnsysDT, Rdelta, params, options);
         radVerror_3 = rad(interval(Verror_3));
     end
+
+    % 2. compare to current Verror
+    % 3. adapt tensorOrder and Verrorprev if change significant enough
 
     if all( radVerror_3 ./ radVerror_2 > options.zetaK )
         options.tensorOrder = 2;

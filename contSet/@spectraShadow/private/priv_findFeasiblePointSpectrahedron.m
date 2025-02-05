@@ -57,10 +57,14 @@ function p = priv_findFeasiblePointSpectrahedron(SpS)
     cost = [];
     persistent options
     if isempty(options)
-        options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0);
+        if isSolverInstalled('mosek')
+            options = sdpsettings('solver','mosek','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        else
+            options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        end
     end
-    yalmipOptimizer = optimizer(constraints,cost,options,[],beta);
-    [p, exitflag] = yalmipOptimizer();
+    diagnostics = optimize(constraints,cost,options);
+    p = value(beta);
 
     % We also need to check for NaNs; these indicate that an arbitrary
     % coordinate can be chosen

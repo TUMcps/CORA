@@ -72,11 +72,12 @@ function [res,mod] = aux_recursive(obj,time,pred)
             end
         end
 
-    elseif strcmp(obj.type,'next')
+    % temporal
+    elseif strcmp(obj.type,'next') % ---
         
         [res.lhs,mod] = aux_recursive(obj.lhs,obj.from+time,pred);
 
-    elseif strcmp(obj.type,'globally') 
+    elseif strcmp(obj.type,'globally') % ---
 
         if ~obj.lhs.temporal && ~isempty(obj.lhs.id) && ...
            obj.lhs.id <= size(pred.timePoint,1) && ...
@@ -92,7 +93,7 @@ function [res,mod] = aux_recursive(obj,time,pred)
             end
         end
 
-    elseif strcmp(obj.type,'finally') 
+    elseif strcmp(obj.type,'finally') % ---
 
         if ~obj.lhs.temporal && ~isempty(obj.lhs.id) && ...
            obj.lhs.id <= size(pred.timePoint,1) && ...
@@ -108,7 +109,8 @@ function [res,mod] = aux_recursive(obj,time,pred)
             end
         end
 
-    elseif strcmp(obj.type,'&')
+        % boolean
+    elseif strcmp(obj.type,'&') % ---
 
         [res.lhs,mod1] = aux_recursive(obj.lhs,time,pred);
 
@@ -122,7 +124,7 @@ function [res,mod] = aux_recursive(obj,time,pred)
             mod = mod1 | mod2;
         end
 
-    elseif strcmp(obj.type,'|')
+    elseif strcmp(obj.type,'|') % ---
 
         [res.lhs,mod1] = aux_recursive(obj.lhs,time,pred);
 

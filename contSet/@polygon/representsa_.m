@@ -32,6 +32,7 @@ S = [];
 
 % check type
 switch type
+    % contSet ---
     case 'emptySet'
         res = isempty(vertices_(pgon));
         S = emptySet(2);
@@ -40,9 +41,11 @@ switch type
         res = false;
 
     case 'polygon'
+        % obviously true
         res = true;
         S = pgon;
 
+    % other ---
     case 'point'
         V = vertices_(pgon);
         V = unique(V',"rows")';
@@ -60,7 +63,7 @@ switch type
         res = all(withinTol(vertices_(pgon),0,tol),"all");
         S = [0;0];
 
-    otherwise
+    otherwise % throw error
         throw(CORAerror('CORA:notSupported', sprintf('Type ''%s'' is not supported.',type)));
 
 end

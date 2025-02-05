@@ -20,7 +20,7 @@ function S_out = block_mtimes(M,S)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: reach_decomp
+% See also: linearSys/priv_reach_decomp
 
 % Authors:       Mark Wetzlinger
 % Written:       16-October-2024

@@ -41,14 +41,14 @@ if isempty(linsys.taylor)
 end
 
 % compute remainder of exponential matrix
-E = expmRemainder(linsys,timeStep,truncationOrder);
+E = priv_expmRemainder(linsys,timeStep,truncationOrder);
 
 % compute correction matrices
 if nargout >= 2
-    F = correctionMatrixState(linsys,timeStep,truncationOrder);
+    F = priv_correctionMatrixState(linsys,timeStep,truncationOrder);
 end
 if nargout >= 3
-    G = correctionMatrixInput(linsys,timeStep,truncationOrder);
+    G = priv_correctionMatrixInput(linsys,timeStep,truncationOrder);
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -50,6 +50,7 @@ c4 = cutoff(sig1, 2.3);
 assert(isequal([1.2 2.3], c4.time));
 assert(isequal([true false], c4.value));
 
+% more tests
 c5 = cutoff(sig1, 0.1);
 
 assert(isequal(0.1, c5.time));

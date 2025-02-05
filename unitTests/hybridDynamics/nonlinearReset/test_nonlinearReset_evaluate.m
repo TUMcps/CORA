@@ -75,7 +75,7 @@ x_sampled = zeros(2,numPoints);
 for i=1:numPoints
     x_sampled(:,i) = f(x_rand(:,i),u_rand(:,i));
 end
-assert(all(contains_(x_,x_sampled,'exact',tol)));
+assert(all(contains_(x_,x_sampled,'exact',tol,0,false,false)));
 
 % clean up
 delete(fullname_jacobian);

@@ -82,15 +82,20 @@ for iEst = 1:length(Estimator)
     % enclose last estimated set by interval
     IH = interval(estSet.timePoint.set{end});
     
-    % obtain enclosing intervals
+    % obtain enclosing intervals ---
+    % VolMin
     if strcmp(options.alg,'VolMin-A') 
         IH_saved = [];
     elseif strcmp(options.alg,'VolMin-B') 
         IH_saved = [];
+        % FRad
     elseif strcmp(options.alg,'FRad-A') 
         IH_saved = [];
     elseif strcmp(options.alg,'FRad-B') 
         IH_saved = [];
+    elseif strcmp(options.alg,'FRad-C') 
+        IH_saved = [];
+        % PRad
     elseif strcmp(options.alg,'PRad-A') 
         IH_saved = interval( ...
             [1.0461829110338228; 2.1207241035823090; -1.0779763745894593; -0.4350782009753995], ...
@@ -103,8 +108,6 @@ for iEst = 1:length(Estimator)
         IH_saved = interval( ...
             [1.0910512588820420; 2.1518210973083365; -1.1676141896315524; -0.6868646749564523], ...
             [1.3100607563815541; 2.3701215503011417; 1.4650347848631451; 2.0384371021192083]);
-    elseif strcmp(options.alg,'FRad-C') 
-        IH_saved = [];
     elseif strcmp(options.alg,'PRad-D') 
         IH_saved = interval( ...
             [1.0993367738244246; 2.1661925142490950; -3.2126562053335554; -3.3849656968165145], ...
@@ -113,6 +116,7 @@ for iEst = 1:length(Estimator)
         IH_saved = interval( ...
             [1.0268347535869327; 2.1017257415132553; -1.0688025669859988; -0.4219264102185143], ...
             [1.3429774309843896; 2.4193540091223893; 1.2406407049675199; 1.9043020477561812]);
+        % Other
     elseif strcmp(options.alg,'Nom-G') 
         IH_saved = interval( ...
             [1.0825077416789488; 2.1024381408045127; -2.9502360499337312; -3.0131798798802896], ...
@@ -121,6 +125,7 @@ for iEst = 1:length(Estimator)
         IH_saved = interval( ...
             [1.0468928642114645; 2.1321546573653563; -1.1738056318548948; -0.6691467301715885], ...
             [1.3069453761039502; 2.3944366253560241; 1.4503975578092114; 2.0521259320762888]);
+        % ESO
     elseif strcmp(options.alg,'ESO-A')
         IH_saved = [];
     elseif strcmp(options.alg,'ESO-B')
@@ -131,6 +136,7 @@ for iEst = 1:length(Estimator)
         IH_saved = interval( ...
             [-2.5125811063316421; -1.4547751412865555; -3.9944018412771549; -3.5340821447758728], ...
             [4.9059719923565881; 5.9637779572046163; 4.3177002187745597; 4.7780199151939708]);
+        % CZN
     elseif strcmp(options.alg,'CZN-A')
         IH_saved = [];
     elseif strcmp(options.alg,'CZN-B')

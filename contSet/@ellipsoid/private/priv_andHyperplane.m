@@ -46,7 +46,7 @@ if isDeg
     % check if E.Q is all zero
     if n_subspace==0
         % if E is 0-d, the result is either E.q if E.q\in H, or empty set
-        if contains_(P,E.q,'exact',0)
+        if contains_(P,E.q,'exact',0,0,false,false)
             E = ellipsoid(zeros(n),E.q);
         else
             E = ellipsoid.empty(n);
@@ -81,7 +81,7 @@ if n_nd==1
 
     r_xH = max(abs(xH)) * E.TOL;
     IntE_TOL = IntE + interval(-r_xH,r_xH);
-    if ~contains_(IntE_TOL,xH,'exact',0)
+    if ~contains_(IntE_TOL,xH,'exact',0,0,false,false)
         E = ellipsoid.empty(n);
         return;
     end

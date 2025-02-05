@@ -1,7 +1,7 @@
 function f = DOTBicycleDynamics_BMW(x,u)
 % DOTBicycleDynamics_BMW - generates bicycle model for a BMW 
 %
-% Syntax:  
+% Syntax:
 %    f = DOTBicycleDynamics_BMW(t,x,u)
 %
 % Inputs:
@@ -25,13 +25,13 @@ function f = DOTBicycleDynamics_BMW(x,u)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      26-August-2011
-% Last update:  30-August-2011
-%               14-June-2023
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-August-2011
+% Last update:   30-August-2011
+%                14-June-2023
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %load parameters
 g = 9.81; %[m/s^2]
@@ -74,4 +74,4 @@ f(5,1) = x(4)*cos(x(1) + x(2));
 f(6,1) = x(4)*sin(x(1) + x(2));
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

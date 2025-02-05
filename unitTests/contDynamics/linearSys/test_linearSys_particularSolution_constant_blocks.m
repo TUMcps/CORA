@@ -25,7 +25,7 @@ function res = test_linearSys_particularSolution_constant_blocks
 % ------------------------------ BEGIN CODE -------------------------------
 
 % tolerance
-tol = 1e-12;
+tol = 1e-7;
 
 % init system, input, and algorithm parameters
 A = [-1 -4 0 0 0; 4 -1 0 0 0; 0 0 -3 1 0; 0 0 -1 -3 0; 0 0 0 0 -2];

@@ -36,9 +36,14 @@ switch fieldname
     case 'Rend'
         memberlist = {'polytope','interval'};
     
+        % disturbances
     case 'U'
         memberlist = {'zonotope','interval','ellipsoid','polyZonotope',...
             'conZonotope','capsule','polytope','conPolyZono','zonoBundle'};
+
+    case 'Usim'
+        memberlist = {'capsule','conPolyZono','conZonotope','ellipsoid','interval',...
+            'polytope','polyZonotope','probZonotope','zonoBundle','zonotope'};
 
     case 'V'
         memberlist = {'zonotope','ellipsoid','interval'};
@@ -46,20 +51,18 @@ switch fieldname
     case 'W'
         memberlist = {'zonotope','ellipsoid','interval'};
 
+        % specification
     case 'safeSet'
         memberlist = {'polytope'};
 
     case 'unsafeSet'
         memberlist = {'polytope'};
-    
-    case 'Usim'
-        memberlist = {'capsule','conPolyZono','conZonotope','ellipsoid','interval',...
-            'polytope','polyZonotope','probZonotope','zonoBundle','zonotope'};
-    
+
+        % alg
     case 'alg'
         memberlist = {'lin','poly','linRem','lin-adaptive','poly-adaptive'};
 
-    case 'alg4DT'
+    case 'alg4DT' % discrete time
         memberlist = {'lin','lin-adaptive','poly-adaptive'};
     
     case 'alg4DA'
@@ -77,9 +80,22 @@ switch fieldname
             'ESO-A','ESO-B','ESO-C','ESO-D',...
             'backward','ROPO'};
         
-    case 'algInner'
+    case 'algInner' % inner
         memberlist = {'proj','parallelo','scale','minkdiff'};
         
+    case {'linAlg','reachAlg'} % allow same algorithms
+        memberlist = {'standard','wrapping-free','fromStart',...
+            'decomp','krylov','adaptive','supportFunc'};
+   
+    case 'linAlg4backward'
+        memberlist = {'inner:EA:timepoint','outer:EA:timepoint','inner:EA:timeinterval',...
+                      'inner:AE:timepoint','outer:AE:timepoint','outer:AE:timeinterval'};
+        %%% memberlist = {'minimal','maximal','minimal:naive'};
+    
+    case 'linAlg4HA'
+        memberlist = {'standard','wrapping-free','fromStart','adaptive'};
+
+        % reduction
     case 'reductionTechnique'
         memberlist = {'girard','combastel','pca','methA','methB','methC',...
             'methD','methE','methF','redistribute','cluster','scott','constOpt'};
@@ -91,21 +107,7 @@ switch fieldname
     case 'reductionTechniqueUnderApprox'
         memberlist = {'sum','scale','linProg'};
         
-    case 'linAlg'
-        memberlist = {'standard','wrapping-free','fromStart',...
-            'decomp','krylov','adaptive','supportFunc'};
-        
-    case 'reachAlg'
-        memberlist = getMembers('linAlg');
-
-    case 'linAlg4backward'
-        memberlist = {'inner:EA:timepoint','outer:EA:timepoint','inner:EA:timeinterval',...
-                      'inner:AE:timepoint','outer:AE:timepoint','outer:AE:timeinterval'};
-        %%% memberlist = {'minimal','maximal','minimal:naive'};
-    
-    case 'linAlg4HA'
-        memberlist = {'standard','wrapping-free','fromStart','adaptive'};
-        
+        % guard
     case 'guardIntersect'
         memberlist = {'polytope','conZonotope','levelSet',...
             'zonoGirard','pancake','hyperplaneMap','nondetGuard'};
@@ -134,6 +136,7 @@ switch fieldname
             end
         end
         
+        % lagrangeRem
     case 'lagrangeRem.simplify'
         memberlist = {'none','simplify','collect','optimize'};
         
@@ -146,7 +149,8 @@ switch fieldname
         
     case 'lagrangeRem.optMethod'
         memberlist = {'int','bnb','bnbAdv','linQuad'};
-        
+
+        % ---
     case 'contractor'
         memberlist = {'linearize','forwardBackward','polyBox'};
         
@@ -163,6 +167,7 @@ switch fieldname
         memberlist = {'zonotope','interval','ellipsoid','polyZonotope',...
             'conZonotope','capsule','polytope','conPolyZono','zonoBundle'}; 
         
+        % cs
     case 'cs.cost'
         memberlist = {'interval','frob'};
     

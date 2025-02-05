@@ -1,12 +1,37 @@
 classdef Rectangle < handle
+% Rectangle - 
+% width along Oy
+% height along Ox
+% 4----1
+% |    |
+% 3----2
+%
+% Syntax:
+%    obj = Rectangle(width, height, orientation, position)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       Matthias Althoff
+% Written:       ???
+% Last update:   19-August-2016
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
+
     %RECTANGLE Summary of this class goes here
     %   Detailed explanation goes here
-    %width along Oy
-    %height along Ox
-    %4----1
-    %|    |
-    %3----2
-    %update: 19-August-2016, Matthias Althoff
+    
+    %update:  
     
     properties (SetAccess = private)
         width
@@ -25,6 +50,7 @@ classdef Rectangle < handle
     
     methods
         function obj = Rectangle(width, height, orientation, position)
+            % constructor
             obj.width = width;
             obj.height = height;
             obj.orientation = orientation;
@@ -40,10 +66,12 @@ classdef Rectangle < handle
         end
         
         function v = getver(obj)
+            % get vertices
             v = obj.vertices;
         end
         
         function r = getradius(obj)
+            % get radius
             r = obj.radius;
         end
         
@@ -84,6 +112,7 @@ classdef Rectangle < handle
         end
                
         function draw(obj, type)
+            % draw the rectangle
             v = obj.vertices;
             v = [v v(:,1)];
             plot(v(1,:), v(2,:), type);
@@ -92,3 +121,5 @@ classdef Rectangle < handle
     end
     
 end
+
+% ------------------------------ END OF CODE ------------------------------

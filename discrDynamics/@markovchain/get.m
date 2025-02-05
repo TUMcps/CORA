@@ -1,9 +1,29 @@
 function val = get(a, propName)
-% Purpose:  Get asset properties from the specified object
+% get - get asset properties from the specified object
 % Pre:      markovchain object
 % Post:     property value
-% Tested:   14.09.06,MA
-% Modified: 17.08.07,MA
+%
+% Syntax:
+%    val = get(a, propName)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       Matthias Althoff
+% Written:       14-September-2006
+% Last update:   17-August-2007
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 switch propName
     case 'field'
@@ -17,5 +37,7 @@ switch propName
         field = a.field;
         val = get(field,'actualSegmentNr');            
 otherwise
-    error([propName,' Is not a valid asset property'])
+    throw(CORAerror('CORA:specialError',[propName,' Is not a valid asset property']))
 end
+
+% ------------------------------ END OF CODE ------------------------------

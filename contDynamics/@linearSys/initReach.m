@@ -119,7 +119,7 @@ function obj = aux_exponential(obj,options)
 A=obj.A;
 A_abs=abs(A);
 taylorTerms=options.taylorTerms;
-n=obj.nrOfStates;
+n=obj.nrOfDims;
 factors = options.factor;
 
 %initialize
@@ -155,7 +155,7 @@ function obj = aux_tie(obj,options)
 Apower=obj.taylor.powers;
 taylorTerms=options.taylorTerms;
 rbyfac=options.factor;
-n=obj.nrOfStates;
+n=obj.nrOfDims;
 
 %initialize Asum
 Asum_pos=zeros(n);
@@ -214,7 +214,7 @@ options.isRV = ~representsa_(V,'origin',eps);
 Apower = obj.taylor.powers;
 E = obj.taylor.error;
 r = options.timeStep;
-n = obj.nrOfStates;
+n = obj.nrOfDims;
 factors = options.factor;
 
 if options.isRV
@@ -282,7 +282,7 @@ Apower=obj.taylor.powers;
 E = obj.taylor.error;
 taylorTerms=options.taylorTerms;
 r=options.timeStep;
-n=obj.nrOfStates;
+n=obj.nrOfDims;
 
 % initialize Asum
 Asum_pos=zeros(n);

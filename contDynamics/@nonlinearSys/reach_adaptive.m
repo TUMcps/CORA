@@ -49,8 +49,8 @@ options.i = 1;
 options.t = params.tStart;
 options.R = params.R0;
 % set linearization errors (separate values for Delta and optimal Delta t)
-options.error_adm_horizon = zeros(nlnsys.nrOfStates,1);
-options.error_adm_Deltatopt = zeros(nlnsys.nrOfStates,1);
+options.error_adm_horizon = zeros(nlnsys.nrOfDims,1);
+options.error_adm_Deltatopt = zeros(nlnsys.nrOfDims,1);
 % init abortion flag
 abortAnalysis = false;
 

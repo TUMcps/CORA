@@ -1,10 +1,27 @@
 function plot3Lanes(obj,except)
-% Purpose:  plot road markings of AT08 evading maneuvers
-% Pre:      road object
-% Post:     ---
-% Built:    24.04.08,MA
-% Updated:  12.08.09,MA
+% plot3Lanes - plot road markings of AT08 evading maneuvers
+%
+% Syntax:
+%    plot3Lanes(obj,except)
+%
+% Inputs:
+%    road object
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
 
+% Authors:       Matthias Althoff
+% Written:       24-April-2008
+% Last update:   12-August-2009
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 hold on
 
@@ -41,6 +58,4 @@ plot(xMid1,yMid1,'k--');
 plot(xMid2,yMid2,'k--');
 plot(xRight,yRight,'k-');
 
-
-
-    
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function p = BMWparameters()
 % BMWparameters - parameter for a BMW vehicle (see [1])
 %
-% Syntax:  
+% Syntax:
 %    p = BMWparameters()
 %
 % Inputs:
@@ -22,12 +22,12 @@ function p = BMWparameters()
 %
 % See also: DOTBicycleDynamics_controlled_BMW
 
-% Author:       Matthias Althoff
-% Written:      16-August-2011
-% Last update:  16-June-2023
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       16-August-2011
+% Last update:   16-June-2023
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %friction
 p.mu = 1;
@@ -49,48 +49,48 @@ p.longitudinal.v_switch = 7.319; %switching velocity [m/s]
 p.longitudinal.a_max = 11.5; %maximum absolute acceleration [m/s^2]
 
 %masses
-p.m = lb_sec2_ft_IN_kg(74.91452); %vehicle mass [kg]; MASS
-p.m_s = lb_sec2_ft_IN_kg(66.17221); %sprung mass [kg]; SMASS
-p.m_uf = lb_sec2_ft_IN_kg(4.371153); %unsprung mass front [kg]; UMASSF
-p.m_ur = lb_sec2_ft_IN_kg(4.371153); %unsprung mass rear [kg]; UMASSR
+p.m = aux_lb_sec2_ft_IN_kg(74.91452); %vehicle mass [kg]; MASS
+p.m_s = aux_lb_sec2_ft_IN_kg(66.17221); %sprung mass [kg]; SMASS
+p.m_uf = aux_lb_sec2_ft_IN_kg(4.371153); %unsprung mass front [kg]; UMASSF
+p.m_ur = aux_lb_sec2_ft_IN_kg(4.371153); %unsprung mass rear [kg]; UMASSR
 
 %axes distances
-p.a = ft_IN_m(3.793293); %distance from spring mass center of gravity to front axle [m]; LENA
-p.b = ft_IN_m(4.667707); %distance from spring mass center of gravity to rear axle [m]; LENB
+p.a = aux_ft_IN_m(3.793293); %distance from spring mass center of gravity to front axle [m]; LENA
+p.b = aux_ft_IN_m(4.667707); %distance from spring mass center of gravity to rear axle [m]; LENB
 
 %moments of inertia of sprung mass
-p.I_Phi_s = lb_ft_sec2_IN_kg_m2(152.871); %moment of inertia for sprung mass in roll [kg m^2]; IXS
-p.I_y_s = lb_ft_sec2_IN_kg_m2(1154.888); %moment of inertia for sprung mass in pitch [kg m^2]; IYS
-p.I_z = lb_ft_sec2_IN_kg_m2(1321.416); %moment of inertia for sprung mass in yaw [kg m^2]; IZZ
-p.I_xz_s = lb_ft_sec2_IN_kg_m2(0); %moment of inertia cross product [kg m^2]; IXZ
+p.I_Phi_s = aux_lb_ft_sec2_IN_kg_m2(152.871); %moment of inertia for sprung mass in roll [kg m^2]; IXS
+p.I_y_s = aux_lb_ft_sec2_IN_kg_m2(1154.888); %moment of inertia for sprung mass in pitch [kg m^2]; IYS
+p.I_z = aux_lb_ft_sec2_IN_kg_m2(1321.416); %moment of inertia for sprung mass in yaw [kg m^2]; IZZ
+p.I_xz_s = aux_lb_ft_sec2_IN_kg_m2(0); %moment of inertia cross product [kg m^2]; IXZ
 
 %suspension parameters
-p.K_sf = lbs_ft_IN_N_m(1675); %suspension spring rate (front) [N/m]; KSF
-p.K_sdf = lb_sec_ft_IN_N_s_m(122.3966); %suspension damping rate (front) [N s/m]; KSDF
-p.K_sr = lbs_ft_IN_N_m(1345); %suspension spring rate (rear) [N/m]; KSR
-p.K_sdr = lb_sec_ft_IN_N_s_m(112.9981); %suspension damping rate (rear) [N s/m]; KSDR 
+p.K_sf = aux_lbs_ft_IN_N_m(1675); %suspension spring rate (front) [N/m]; KSF
+p.K_sdf = aux_lb_sec_ft_IN_N_s_m(122.3966); %suspension damping rate (front) [N s/m]; KSDF
+p.K_sr = aux_lbs_ft_IN_N_m(1345); %suspension spring rate (rear) [N/m]; KSR
+p.K_sdr = aux_lb_sec_ft_IN_N_s_m(112.9981); %suspension damping rate (rear) [N s/m]; KSDR 
 
 %geometric parameters
-p.T_f = ft_IN_m(4.55); %track width front [m]; TRWF
-p.T_r = ft_IN_m(4.475); %track width rear [m]; TRWB
-p.K_ras = lbs_ft_IN_N_m(12000); %lateral spring rate at compliant compliant pin joint between M_s and M_u [N/m]; KRAS
+p.T_f = aux_ft_IN_m(4.55); %track width front [m]; TRWF
+p.T_r = aux_ft_IN_m(4.475); %track width rear [m]; TRWB
+p.K_ras = aux_lbs_ft_IN_N_m(12000); %lateral spring rate at compliant compliant pin joint between M_s and M_u [N/m]; KRAS
 
-p.K_tsf = ft_lb_rad_IN_N_m_rad(-5100.155); %auxiliary torsion roll stiffness per axle (normally negative) (front) [N m/rad]; KTSF
-p.K_tsr = ft_lb_rad_IN_N_m_rad(-1949.82); %auxiliary torsion roll stiffness per axle (normally negative) (rear) [N m/rad]; KTSR
-p.K_rad = lb_sec_ft_IN_N_s_m(700); % damping rate at compliant compliant pin joint between M_s and M_u [N s/m]; KRADP
-p.K_zt = lbs_ft_IN_N_m(10842.89); % vertical spring rate of tire [N/m]; TSPRINGR
+p.K_tsf = aux_ft_lb_rad_IN_N_m_rad(-5100.155); %auxiliary torsion roll stiffness per axle (normally negative) (front) [N m/rad]; KTSF
+p.K_tsr = aux_ft_lb_rad_IN_N_m_rad(-1949.82); %auxiliary torsion roll stiffness per axle (normally negative) (rear) [N m/rad]; KTSR
+p.K_rad = aux_lb_sec_ft_IN_N_s_m(700); % damping rate at compliant compliant pin joint between M_s and M_u [N s/m]; KRADP
+p.K_zt = aux_lbs_ft_IN_N_m(10842.89); % vertical spring rate of tire [N/m]; TSPRINGR
 
-p.h_cg = ft_IN_m(1.886053); %center of gravity height of total mass [m]; HCG (mainly required for conversion to other vehicle models)
-p.h_raf = ft_IN_m(0); %height of roll axis above ground (front) [m]; HRAF
-p.h_rar = ft_IN_m(0); %height of roll axis above ground (rear) [m]; HRAR
+p.h_cg = aux_ft_IN_m(1.886053); %center of gravity height of total mass [m]; HCG (mainly required for conversion to other vehicle models)
+p.h_raf = aux_ft_IN_m(0); %height of roll axis above ground (front) [m]; HRAF
+p.h_rar = aux_ft_IN_m(0); %height of roll axis above ground (rear) [m]; HRAR
 
-p.h_s = ft_IN_m(2.01355); %M_s center of gravity above ground [m]; HS
+p.h_s = aux_ft_IN_m(2.01355); %M_s center of gravity above ground [m]; HS
 
-p.I_uf = lb_ft_sec2_IN_kg_m2(22.62345); %moment of inertia for unsprung mass about x-axis (front) [kg m^2]; IXUF
-p.I_ur = lb_ft_sec2_IN_kg_m2(21.88377); %moment of inertia for unsprung mass about x-axis (rear) [kg m^2]; IXUR
+p.I_uf = aux_lb_ft_sec2_IN_kg_m2(22.62345); %moment of inertia for unsprung mass about x-axis (front) [kg m^2]; IXUF
+p.I_ur = aux_lb_ft_sec2_IN_kg_m2(21.88377); %moment of inertia for unsprung mass about x-axis (rear) [kg m^2]; IXUR
 p.I_y_w = 1.7; %wheel inertia, from internet forum for 235/65 R 17 [kg m^2]
 
-p.K_lt = ft_lb_IN_m_N(2.397884e-4); %lateral compliance rate of tire, wheel, and suspension, per tire [m/N]; KLT
+p.K_lt = aux_ft_lb_IN_m_N(2.397884e-4); %lateral compliance rate of tire, wheel, and suspension, per tire [m/N]; KLT
 p.R_w = 0.344; %effective wheel/tire radius; chosen as tire rolling radius RR; taken from ADAMS documentation [m]
 
 %split of brake and engine torque
@@ -98,8 +98,8 @@ p.T_sb = 0.66;
 p.T_se = 0;
 
 %suspension parameters
-p.D_f = rad_ft_IN_rad_m(-0.12); %[rad/m]; DF
-p.D_r = rad_ft_IN_rad_m(-0.276); %[rad/m]; DR
+p.D_f = aux_rad_ft_IN_rad_m(-0.12); %[rad/m]; DF
+p.D_r = aux_rad_ft_IN_rad_m(-0.276); %[rad/m]; DR
 p.E_f = 0; %[needs conversion if nonzero]; EF
 p.E_r = 0; %[needs conversion if nonzero]; ER
 
@@ -142,8 +142,9 @@ p.tire.r_vy5 = 1.9; %Variation of Svyk/Muy*Fz with kappa
 p.tire.r_vy6 = -10.704; %Variation of Svyk/Muy*Fz with atan(kappa)
 
 
+% Auxiliary functions -----------------------------------------------------
 
-function post_val = lb_sec2_ft_IN_kg(prev_val)
+function post_val = aux_lb_sec2_ft_IN_kg(prev_val)
 
 % 1lb is 4.4482216152605 N
 % 1ft is 0.3048 m
@@ -151,7 +152,7 @@ function post_val = lb_sec2_ft_IN_kg(prev_val)
 post_val = 4.4482216152605/0.3048*prev_val;
 
 
-function post_val = ft_IN_m(prev_val)
+function post_val = aux_ft_IN_m(prev_val)
 %original: [ft]
 %new: [m]
 
@@ -160,7 +161,7 @@ function post_val = ft_IN_m(prev_val)
 post_val = 0.3048*prev_val;
 
 
-function post_val = lb_ft_sec2_IN_kg_m2(prev_val)
+function post_val = aux_lb_ft_sec2_IN_kg_m2(prev_val)
 
 %[kg m^2] = [N m sec^2]
 
@@ -169,7 +170,7 @@ function post_val = lb_ft_sec2_IN_kg_m2(prev_val)
 
 post_val = 4.4482216152605*0.3048*prev_val;
 
-function post_val = rad_ft_lb_IN_rad_sec2_kg_m2(prev_val)
+function post_val = aux_rad_ft_lb_IN_rad_sec2_kg_m2(prev_val)
 
 %original: [rad/(ft lb)]
 %new: [rad/(N m)] = [rad s^2/(kg m^2)]
@@ -179,7 +180,7 @@ function post_val = rad_ft_lb_IN_rad_sec2_kg_m2(prev_val)
 
 post_val = 1/(4.4482216152605*0.3048)*prev_val;
 
-function post_val = ft2_IN_m2(prev_val)
+function post_val = aux_ft2_IN_m2(prev_val)
 %original: [ft^2]
 %new: [m^2]
 
@@ -187,7 +188,7 @@ function post_val = ft2_IN_m2(prev_val)
 
 post_val = 0.3048^2*prev_val;
 
-function post_val = lbs_ft_IN_N_m(prev_val)
+function post_val = aux_lbs_ft_IN_N_m(prev_val)
 %original: [lbs/ft]
 %new: [N/m]
 
@@ -197,7 +198,7 @@ function post_val = lbs_ft_IN_N_m(prev_val)
 
 post_val = 0.45359237*9.81/0.3048*prev_val;
 
-function post_val = lb_sec_ft_IN_N_s_m(prev_val)
+function post_val = aux_lb_sec_ft_IN_N_s_m(prev_val)
 %original: [lb sec/ft]
 %new: [N sec/m]
 
@@ -206,7 +207,7 @@ function post_val = lb_sec_ft_IN_N_s_m(prev_val)
 
 post_val = 4.4482216152605/0.3048*prev_val;
 
-function post_val = ft_lb_rad_IN_N_m_rad(prev_val)
+function post_val = aux_ft_lb_rad_IN_N_m_rad(prev_val)
 %original: [lb ft/rad]
 %new: [N m/rad]
 
@@ -215,7 +216,7 @@ function post_val = ft_lb_rad_IN_N_m_rad(prev_val)
 
 post_val = 4.4482216152605*0.3048*prev_val;
 
-function post_val = ft_lb_IN_m_N(prev_val)
+function post_val = aux_ft_lb_IN_m_N(prev_val)
 %original: [ft/lb]
 %new: [m/N]
 
@@ -224,10 +225,12 @@ function post_val = ft_lb_IN_m_N(prev_val)
 
 post_val = 0.3048/4.4482216152605*prev_val;
 
-function post_val = rad_ft_IN_rad_m(prev_val)
+function post_val = aux_rad_ft_IN_rad_m(prev_val)
 %original: [rad/ft]
 %new: [rad/m]
 
 % 1ft is 0.3048 m
 
 post_val = 1/0.3048*prev_val;
+
+% ------------------------------ END OF CODE ------------------------------

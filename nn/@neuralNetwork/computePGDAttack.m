@@ -45,7 +45,7 @@ function [z] = computePGDAttack(obj,x,t,options,epsilon,Q,varargin)
 % parse input
 narginchk(6,12)
 [l,u,stepsize,stepsizeDecay,stepsizeDecayIter,lossDer] = setDefaultValues(...
-    {0,1,epsilon/Q,1,[],@(t,y) softmax(y) - t},varargin);
+    {-inf,+inf,epsilon/Q,1,[],@(t,y) softmax(y) - t},varargin);
 
 % validate input
 inputArgsCheck({ ...

@@ -84,6 +84,7 @@ if isa(S,'polytope')
     return
 end
 
+% convert to conPolyZono for other set representations
 if isa(S,'conPolyZono') || ...
    isa(S,'ellipsoid') || isa(S,'capsule') || ...
    isa(S,'polyZonotope') || ...
@@ -201,7 +202,7 @@ for i = 1:size(S.A,1)
     P = polytope(S.A(i,:),S.b(i));
     
     % intersect set with each constrained that is violated
-    if ~contains_(P,Z,'exact',1e-12)
+    if ~contains_(P,Z,'exact',1e-12,0,false,false)
         res = and_(res,P,'exact');
     end
 end

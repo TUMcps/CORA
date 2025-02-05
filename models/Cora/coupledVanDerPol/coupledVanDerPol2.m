@@ -3,7 +3,7 @@ function f = coupledVanDerPol2(x,u)
 %                     oscillator with stiffness 2 
 %                     (see Example 5.2.2 in [1])
 %
-% Syntax:  
+% Syntax:
 %    f = coupledVanDerPol2(x,u)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function f = coupledVanDerPol2(x,u)
 %   [1] X. Chen. "Reachability Analysis of Non-Linear Hybrid Systems Using
 %       Taylor Models"
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       22-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     mu = 2;
     
@@ -32,4 +32,4 @@ function f = coupledVanDerPol2(x,u)
     f(4,1) = mu*(1-x(3)^2)*x(4) - 2*x(3) + x(1);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

@@ -1,7 +1,7 @@
 function plotP(obj,varargin)
 % plotP - plots the 2D probability distribution of a Markov chain
 %
-% Syntax:  
+% Syntax:
 %    plotP(varargin)
 %
 % Inputs:
@@ -13,18 +13,14 @@ function plotP(obj,varargin)
 %
 % Outputs:
 %    -
-%
-% Example: 
-%
-% 
-% Author:       Matthias Althoff
-% Written:      17-August-2007
-% Last update:  14-November-2007 (implemented different colors)
-%               26-March-2008 (implemented polytope plot)
-% Last revision:---
 
+% Authors:       Matthias Althoff
+% Written:       17-August-2007
+% Last update:   14-November-2007 (implemented different colors)
+%                26-March-2008 (implemented polytope plot)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 partition = obj.field;
 
@@ -99,4 +95,4 @@ for i=1:length(ind)
     end
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

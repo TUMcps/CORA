@@ -2,7 +2,7 @@ function dx = roessler(x,u)
 % roessler - Roessler attractor from Example 3.4.3 in [1]
 %    note: a similar model is the Lorenz attractor (lorenz.m)
 %
-% Syntax:  
+% Syntax:
 %    dx = roessler(x,u)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function dx = roessler(x,u)
 %   [1] X. Chen. "Reachability Analysis of Non-Linear Hybrid Systems Using
 %       Taylor Models"
 
-% Author:        Mark Wetzlinger
+% Authors:       Mark Wetzlinger
 % Written:       04-February-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 a = 0.2;
 b = 0.2;
@@ -33,4 +33,4 @@ dx(3,1) = b + x(3)*(x(1) - c);
     
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

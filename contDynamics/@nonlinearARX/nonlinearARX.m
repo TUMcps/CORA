@@ -41,7 +41,7 @@ classdef nonlinearARX < contDynamics
 % Authors:       Laura Luetzow
 % Written:       24-April-2023
 % Last update:   ---
-% Last revision: 14-October-2024 (MW, use .n_p instead of .nrOfStates)
+% Last revision: 14-October-2024 (MW, use .n_p instead of .nrOfDims)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
@@ -121,11 +121,12 @@ methods
         if isa(Y, 'double')
             yVec = Y;
             Y = cell(size(Y,2),1);
-            for j=k-nlnARX.nrOfStates+1:k
+            for j=k-nlnARX.nrOfDims+1:k
                 Y{j} = generate_indPolyZonotope(nlnARX, yVec(:,j));
             end
         end
-
+        
+        % generate for each Y
         for j=1:nlnARX.n_p
             if type == "poly" && ~isa(Y{j}, 'polyZonotope')
                 Y{j} = generate_indPolyZonotope(nlnARX, Y{j});
@@ -159,7 +160,7 @@ methods
             return
         end
 
-        % compute stacked U-sets 
+        % deal with U
         if ~iscell(U)
             % U is constant set
             % --> create an indepenent set U for each time step
@@ -175,6 +176,7 @@ methods
             end
         end
         
+        % compute stacked U-sets 
         U_stacked = cell(size(u,2), 1);
         for j = nlnARX.n_p+1:size(u,2)
             U_stacked_j = U{j} + u(:,j);

@@ -40,6 +40,7 @@ end
 
 methods
     function ap = atomicProposition(set, dims, locs)
+        % constructor 
         ap.set = set;
 
         if nargin < 3
@@ -56,6 +57,7 @@ methods
     end
 
     function out = containsLoc(ap, loc)
+        % check if loc is contained
         if ~isempty(ap.locs)
             out = in(ap.locs, loc);
         else
@@ -69,6 +71,7 @@ methods
     end
 
     function out = canBeTrue(ap, set, loc)
+        % check if loc is contained at all
         if ~containsLoc(ap, loc)
             out = false; return
         end

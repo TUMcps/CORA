@@ -48,7 +48,7 @@ abstrerr_y = Rinit.error_y;
 Rinit = Rinit.set;
 
 % linearize nonlinear system
-[nlnsysDA,linsys,linParams,linOptions] = linearize(nlnsysDA,Rinit,Rinit_y,params,options); 
+[nlnsysDA,linsys,linParams,linOptions] = priv_linearize(nlnsysDA,Rinit,Rinit_y,params,options); 
 
 %translate Rinit by linearization point
 Rdelta = Rinit + (-nlnsysDA.linError.p.x);
@@ -87,19 +87,19 @@ while ((perfIndCurr_x > 1) || (perfIndCurr_y > 1)) && (perfInd <= 1)
     % obtain linearization error
     if options.tensorOrder == 2
 %         [Verror, error, error_x, error_y, Rti_y] = ...
-%            linError(nlnsysDA, options, Rmax, Verror_y);
+%            priv_linError(nlnsysDA, options, Rmax, Verror_y);
         if ~isfield(options,'index')
             % conventional computation
             [Verror, error, error_x, error_y, Rti_y] = ...
-                linError_mixed_noInt(nlnsysDA, Rmax, Verror_y, params, options);
+                priv_linError_mixed_noInt(nlnsysDA, Rmax, Verror_y, params, options);
         else
             % compositional computation
             [Verror, error, error_x, error_y, Rti_y] = ...
-                linError_mixed_noInt_comp(nlnsysDA, Rmax, Verror_y, params, options);
+                priv_linError_mixed_noInt_comp(nlnsysDA, Rmax, Verror_y, params, options);
         end
     elseif options.tensorOrder == 3
         [Verror, error, error_x, error_y, Rti_y] = ...
-            linError_thirdOrder(nlnsysDA, Rmax, Verror_y, params, options);
+            priv_linError_thirdOrder(nlnsysDA, Rmax, Verror_y, params, options);
     end
     
     
@@ -137,7 +137,7 @@ end
 dimForSplit = [];
 if perfInd > 1 && iter == 1
     % find best split
-    dimForSplit = select(nlnsysDA,Rinit,Rinit_y,params,options,iter);
+    dimForSplit = priv_select(nlnsysDA,Rinit,Rinit_y,params,options,iter);
 end
 
 %add interval of actual error

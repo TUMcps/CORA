@@ -36,6 +36,7 @@ I_mpower = I ^ 2;
 I_true = interval(0,4);
 assert(isequal(I_mpower,I_true,tol));
 
+% negative
 I = interval(-2, 0);
 I_mpower = I ^ 2;
 I_true = interval(0,4);
@@ -56,6 +57,7 @@ I_mpower = I ^ 3;
 I_true = interval(-27,8);
 assert(isequal(I_mpower,I_true,tol));
 
+% both negative
 I = interval(-3, -2);
 I_mpower = I ^ 2;
 I_true = interval(4,9);
@@ -66,6 +68,7 @@ I_mpower = I ^ 3;
 I_true = interval(-27,-8);
 assert(isequal(I_mpower,I_true,tol));
 
+% both positive
 I = interval(2, 3);
 I_mpower = I ^ 2;
 I_true = interval(4,9);
@@ -77,6 +80,7 @@ I_true = interval(8,27);
 assert(isequal(I_mpower,I_true,tol));
 
 % unbounded
+% negative
 I = interval(-Inf,2);
 I_mpower = I ^ 1;
 assert(isequal(I_mpower,I,tol));
@@ -91,6 +95,7 @@ I_mpower = I ^ 3;
 I_true = interval(-Inf,8);
 assert(isequal(I_mpower,I_true,tol));
 
+% positive
 I = interval(2,Inf);
 I_mpower = I ^ 1;
 assert(isequal(I_mpower,I,tol));

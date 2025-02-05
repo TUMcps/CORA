@@ -1,5 +1,27 @@
 function plotPositionDistribution(segments, segmentProb, devProb, widthOfLane)
-%replaces plot.m in @road without using the CORA road class
+% plotPositionDistribution - replaces plot.m in @road without using the CORA road class
+%
+% Syntax:
+%    plotPositionDistribution(segments, segmentProb, devProb, widthOfLane)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       ???
+% Written:       ???
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get number of deviation segments
 nrOfDev = length(devProb);
@@ -25,3 +47,5 @@ for iInd = 1:length(ind)
         end
     end
 end
+
+% ------------------------------ END OF CODE ------------------------------

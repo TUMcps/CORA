@@ -667,6 +667,7 @@ for l = 0:(rectangleList.getLength()-1)
         y_center = y_state;
     end
     
+    % consider orientation
     orientationXList = aux_getXList(rectangleList, {'orientation'}, l);
     if ~isempty(orientationXList.item(0))
         if isempty(orientationXList.item(0).getElementsByTagName('exact').item(0))

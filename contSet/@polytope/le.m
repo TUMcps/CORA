@@ -36,6 +36,6 @@ function res = le(P,S,varargin)
 tol = setDefaultValues({eps},varargin);
 
 % call contains and handle everything there
-res = contains_(S,P,'exact',tol);
+res = contains_(S,P,'exact',tol,0,false,false);
 
 % ------------------------------ END OF CODE ------------------------------

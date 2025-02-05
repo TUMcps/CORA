@@ -2,7 +2,7 @@ function f = powertrain7Eq(x,u,p)
 % powertrain7Eq - dynamic for the 7-dimensional power train system 
 %                 (see Sec. 6 in [1])
 %
-% Syntax:  
+% Syntax:
 %    f = powertrain7Eq(x,u,p)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function f = powertrain7Eq(x,u,p)
 %   [1] M. Althoff et al. "Avoiding Geometic Intersection Operations in 
 %       Reachability Analysis of Hybrid Systems"
 
-% Author:       Matthias Althoff
-% Written:      21-September-2011
-% Last update:  23-December-2019
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       21-September-2011
+% Last update:   23-December-2019
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %control
 v = p.k_K*(p.i*x(4) - x(7)) ...
@@ -39,4 +39,4 @@ f(5,1) = x(6); %Theta_l
 f(6,1) = 1/p.J_l*(p.k*(x(1) - p.alpha) - u(2) - p.b_l*x(6)); %\dot{Theta}_l
 f(7,1) = 1/p.J_m*(x(2) - 1/p.i*p.k*(x(1) - p.alpha) - p.b_m*x(7)); %\dot{Theta}_m
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

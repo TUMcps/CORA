@@ -75,11 +75,11 @@ function sys_merged = aux_mergeFlowsLinearSys(pHA,flowList)
     
     % allocate merged dynamics
     name = cell(numComps,1);
-    Amerged = zeros(pHA.nrOfStates,pHA.nrOfStates);
-    Bmerged = zeros(pHA.nrOfStates,pHA.nrOfInputs);
-    cMerged = zeros(pHA.nrOfStates,1);
-    Emerged = zeros(pHA.nrOfStates,pHA.nrOfDisturbances);
-    Fmerged = zeros(pHA.nrOfStates,pHA.nrOfNoises);
+    Amerged = zeros(pHA.nrOfDims,pHA.nrOfDims);
+    Bmerged = zeros(pHA.nrOfDims,pHA.nrOfInputs);
+    cMerged = zeros(pHA.nrOfDims,1);
+    Emerged = zeros(pHA.nrOfDims,pHA.nrOfDisturbances);
+    Fmerged = zeros(pHA.nrOfDims,pHA.nrOfNoises);
 
     % save index for disturbances
     idxDist = 1;
@@ -163,7 +163,7 @@ function sys_merged = aux_mergeFlowsLinearSys(pHA,flowList)
                 if isscalar(feedFlow.C) && feedFlow.C == 1 ...
                         && ~any(any(feedFlow.D)) && ~any(feedFlow.k) ...
                         && ~any(any(feedFlow.F))
-                    C = eye(feedFlow.nrOfStates);
+                    C = eye(feedFlow.nrOfDims);
                 else 
                     C = feedFlow.C;
                 end
@@ -230,11 +230,11 @@ function sys_merged = aux_mergeFlowsNonlinearSys(pHA,flowList,locID)
     numComps = length(flowList);
     
     % construct symbolic state vector and input vector for merged flow
-    x = sym('x',[pHA.nrOfStates,1]);
+    x = sym('x',[pHA.nrOfDims,1]);
     u = sym('u',[pHA.nrOfInputs,1]);
     
     % initialize dynamic function
-    f = sym(zeros(pHA.nrOfStates,1));
+    f = sym(zeros(pHA.nrOfDims,1));
     
     % loop over all subcomponents
     for i = 1:numComps
@@ -329,7 +329,7 @@ function sys_merged = aux_mergeFlowsNonlinearSys(pHA,flowList,locID)
     funHan = matlabFunction(f,'Vars',{x,u});
     
     % instantiate nonlinear system
-    sys_merged = nonlinearSys(name,funHan,pHA.nrOfStates,pHA.nrOfInputs);
+    sys_merged = nonlinearSys(name,funHan,pHA.nrOfDims,pHA.nrOfInputs);
 end
 
 % ------------------------------ END OF CODE ------------------------------

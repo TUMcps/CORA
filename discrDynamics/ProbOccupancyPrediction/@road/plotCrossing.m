@@ -1,9 +1,27 @@
 function plotCrossing(obj,except)
-% Purpose:  plot road markings of the IV08 crossing
-% Pre:      road object
-% Post:     ---
-% Built:    22.11.07,MA
+% plotCrossing - plot road markings of the IV08 crossing
+%
+% Syntax:
+%    plotCrossing(obj,except)
+%
+% Inputs:
+%    road object
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
 
+% Authors:       Matthias Althoff
+% Written:       22-November-2007
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 hold on
 
@@ -32,6 +50,7 @@ for i=1:except(1)
         yRight(i)=y1+0.5*transLat(2);     
 end
 
+% plot
 plot(xLeft,yLeft,'k-');
 plot(xMid,yMid,'k--');
 plot(xRight,yRight,'k-');
@@ -61,7 +80,9 @@ for i=1:length(x)-except(2)
         yRight(i)=y1+0.5*transLat(2);     
 end
 
+% plot
 plot(xLeft,yLeft,'k-');
 plot(xMid,yMid,'k--');
 plot(xRight,yRight,'k-');
-    
+
+% ------------------------------ END OF CODE ------------------------------

@@ -90,9 +90,11 @@ methods (Access = {?nnLayer, ?neuralNetwork})
             end
 
             if u <= 0
+                % l <= u <= 0 -> linear
                 c = M * c;
                 G = M * G;
             else
+                % compute relaxation
                 C1 = [zeros(1, m), -1];
                 d1 = 0;
                 C2 = [G(j, :), -1];

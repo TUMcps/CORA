@@ -129,7 +129,7 @@ end
 
 % extract the states at the intersection with the guard set (before jump)
 [~,xHit] = extractHits(simRes2,3);
-points = reshape(cell2mat(xHit),HA.nrOfStates(1),[]);
+points = reshape(cell2mat(xHit),HA.nrOfDims(1),[]);
 % project for verification
 points = points(2:end,:);
 

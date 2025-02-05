@@ -139,16 +139,17 @@ tVec = 0;
 
 for j = 1:size(R,1)
     for k = 1:length(R(j,1).timeInterval.set)
-        
         Rcont = R(j,1).timeInterval.set{k};
         Ry = R(j,1).timeInterval.algebraic{k};
         
+        % convert everything to intervals
         Xhull      = interval(Rcont);
         delta_para = interval(infimum(Xhull(1)),supremum(Xhull(1)));
         Yhull      = interval(Ry);
         id         = interval(infimum(Yhull(3)),supremum(Yhull(3)));
         iq         = interval(infimum(Yhull(4)),supremum(Yhull(4)));
 
+        % apply interval arithmetic to obtain thetas
         theta{end+1,1} = (P.Tm-(P.xq-P.x_d)*id*iq) / (2*P.H*delta_para);
         theta{end,2} = iq;
         theta{end,3} = id/delta_para;

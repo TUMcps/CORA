@@ -55,7 +55,7 @@ if isempty(defaultFields)
 end
 % default training parameter values
 persistent defaultTrainFields
-if isempty(defaultTrainFields)
+if isempty(defaultTrainFields) % TODO sort and add comments
     defaultTrainFields = {
        'use_gpu', aux_isGPUavailable();
        'optim', nnAdamOptimizer;
@@ -72,6 +72,7 @@ if isempty(defaultTrainFields)
        'ramp_up', 0;
        'gradual_noise', 0;
        'method', 'point';
+       % attack
        'pgd_iterations', 0;
        'pgd_stepsize', 0.01;
        'pgd_stepsize_decay', 1;

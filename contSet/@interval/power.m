@@ -137,7 +137,7 @@ if isnumeric(exponent)
 
             % mixed real and integer exponent matrix    
             else 
-                
+                % negative exponents
                 ind1 = exponent < 0;
                 if any(any(ind1))
                     oneover = 1 ./ base;
@@ -147,12 +147,14 @@ if isnumeric(exponent)
                     res.sup(ind1) = max(temp1, temp2);
                 end
 
+                % positive exponents
                 ind1 = exponent >= 0;
                 temp1 = base.inf .^ exponent(ind1);
                 temp2 = base.sup .^ exponent(ind1);
                 res.inf(ind1) = min(temp1, temp2);
                 res.sup(ind1) = max(temp1, temp2);
                 
+                % overlapping with 0
                 if base.inf < 0 && base.sup > 0
                     ind1 = ~(mod(exponent,2)) & exponent ~= 0;
                     res.inf(ind1) = 0; 
@@ -174,6 +176,7 @@ if isnumeric(exponent)
                 % all integer exponent matrix
                 if all(all((abs(round(exponent) - exponent)) <= eps))
                 
+                    % negative exponents
                     ind1 = exponent < 0;
                     if any(any(ind1))
                         oneover = 1 ./ base;
@@ -183,18 +186,20 @@ if isnumeric(exponent)
                         res.sup(ind1) = max(temp1, temp2);
                     end
 
+                    % positive exponents
                     ind1 = exponent >= 0;
                     temp1 = base.inf(ind1) .^ exponent(ind1);
                     temp2 = base.sup(ind1) .^ exponent(ind1);
                     res.inf(ind1) = min(temp1, temp2);
                     res.sup(ind1) = max(temp1, temp2);
 
+                    % overlapping with 0
                     ind1 = base.inf < 0 & base.sup > 0 & ~(mod(exponent,2)) & exponent ~= 0;
                     res.inf(ind1) = 0; 
                     
-                % mixed real and integer exponent matrix    
-                else
+                else % mixed real and integer exponent matrix    
                     
+                    % negative exponents
                     ind1 = exponent < 0;
                     if any(any(ind1))
                         oneover = 1 ./ base;
@@ -204,12 +209,14 @@ if isnumeric(exponent)
                         res.sup(ind1) = max(temp1, temp2);
                     end
 
+                    % positive exponents
                     ind1 = exponent >= 0;
                     temp1 = base.inf(ind1) .^ exponent(ind1);
                     temp2 = base.sup(ind1) .^ exponent(ind1);
                     res.inf(ind1) = min(temp1, temp2);
                     res.sup(ind1) = max(temp1, temp2);
 
+                    % overlapping with 0
                     ind1 = base.inf < 0 & abs(round(exponent)-exponent) > eps;
                     res.inf(ind1) = NaN;
                     res.sup(ind1) = NaN;
@@ -219,7 +226,7 @@ if isnumeric(exponent)
                     res.inf(ind1) = 0;                    
                 end
                 
-            else
+            else % throw error
                 throw(CORAerror('CORA:dimensionMismatch',base,exponent));
             end            
         end    

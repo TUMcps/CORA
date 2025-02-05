@@ -49,7 +49,7 @@ if nargout == 4
 end
 
 % specify mass matrix
-M = diag([ones(1,nlnsysDA.nrOfStates),zeros(1,nlnsysDA.nrOfConstraints)]);
+M = diag([ones(1,nlnsysDA.nrOfDims),zeros(1,nlnsysDA.nrOfConstraints)]);
 
 % add mass matrix to the options struct
 if nargin > 2
@@ -61,7 +61,7 @@ end
 options = odeset(options,'RelTol',1e-7,'AbsTol',1e-10,'NormControl','on');
 
 % initial state is combination of dynamic and algebraic state variables
-if length(params.x0) == (nlnsysDA.nrOfStates + nlnsysDA.nrOfConstraints)
+if length(params.x0) == (nlnsysDA.nrOfDims + nlnsysDA.nrOfConstraints)
     z0 = params.x0;
 else
     %extract dynamic and algebraic initial state, as well as the input

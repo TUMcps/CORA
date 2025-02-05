@@ -39,14 +39,17 @@ switch field
         condfun = @aux_getCondfunOptions_l;
     case 'partition'
         condfun = @aux_getCondfunOptions_partition;
+        % krylov
     case 'krylovError'
         condfun = @aux_getCondfunOptions_krylovError;
     case 'krylovStep'
         condfun = @aux_getCondfunOptions_krylovStep;
+        % error order
     case 'errorOrder'
         condfun = @aux_getCondfunOptions_errorOrder;
     case 'errorOrder3'
         condfun = @aux_getCondfunOptions_errorOrder3;
+        % ---
     case 'vertSamp'
         condfun = @aux_getCondfunOptions_vertSamp;
     case 'stretchFac'
@@ -65,6 +68,7 @@ switch field
         condfun = @aux_getCondfunOptions_enclose;
     case 'guardOrder'
         condfun = @aux_getCondfunOptions_guardOrder;
+        % lagrangeRem
     case 'lagrangeRem.zooMethods'
         condfun = @aux_getCondfunOptions_lagrangeRem_zooMethods;
     case 'lagrangeRem.optMethod'
@@ -75,14 +79,16 @@ switch field
         condfun = @aux_getCondfunOptions_lagrangeRem_tolerance;
     case 'lagrangeRem.eps'
         condfun = @aux_getCondfunOptions_lagrangeRem_eps;
-    case 'intermediateOrder'
-        condfun = @aux_getCondfunOptions_intermediateOrder;
+        % polyZono
     case 'polyZono.maxDepGenOrder'
         condfun = @aux_getCondfunOptions_polyZono_maxDepGenOrder;
     case 'polyZono.maxPolyZonoRatio'
         condfun = @aux_getCondfunOptions_polyZono_maxPolyZonoRatio;
     case 'polyZono.restructureTechnique'
         condfun = @aux_getCondfunOptions_polyZono_restructureTechnique;
+        % ---
+    case 'intermediateOrder'
+        condfun = @aux_getCondfunOptions_intermediateOrder;    
     case 'inpChanges'
         condfun = @aux_getCondfunOptions_inpChanges;
 
@@ -178,9 +184,9 @@ end
 
 % errorOrder
 function res = aux_getCondfunOptions_errorOrder(sys,func,params,options)
-    if strcmp(func,'reachInnerScaling')
+    if strcmp(func,'priv_reachInnerScaling')
         res = true;
-    elseif strcmp(func,'reachInnerParallelotope')
+    elseif strcmp(func,'priv_reachInnerParallelotope')
         res = options.tensorOrder > 2;
     else
         res = ~startsWith(class(sys),'lin') && ~contains(options.alg,'adaptive') && options.tensorOrder>2;
@@ -264,9 +270,9 @@ end
 
 % intermediateOrder
 function res = aux_getCondfunOptions_intermediateOrder(sys,func,params,options)
-    if isa(sys,'nonlinParamSys') || strcmp(func,'reachInnerParallelotope')
+    if isa(sys,'nonlinParamSys') || strcmp(func,'priv_reachInnerParallelotope')
         res = options.tensorOrder > 2;
-    elseif strcmp(func,'reachInnerScaling')
+    elseif strcmp(func,'priv_reachInnerScaling')
         res = true;
     else
         res = ~contains(options.alg,'adaptive') && ~(strcmp(options.alg,'lin') && options.tensorOrder >= 2);
@@ -275,7 +281,7 @@ end
 
 % polyZono.maxDepGenOrder
 function res = aux_getCondfunOptions_polyZono_maxDepGenOrder(sys,func,params,options)
-    if startsWith(func,'reachInner')
+    if contains(func,'reachInner')
         res = true;
     else
         res = contains(options.alg,'poly');
@@ -284,7 +290,7 @@ end
 
 % polyZono.maxPolyZonoRatio
 function res = aux_getCondfunOptions_polyZono_maxPolyZonoRatio(sys,func,params,options)
-    if startsWith(func,'reachInner') || isa(sys, 'nonlinearARX')
+    if contains(func,'reachInner') || isa(sys, 'nonlinearARX')
         res = true;
     else
         res = contains(options.alg,'poly');
@@ -293,7 +299,7 @@ end
 
 % polyZono.restructureTechnique
 function res = aux_getCondfunOptions_polyZono_restructureTechnique(sys,func,params,options)
-    if startsWith(func,'reachInner')
+    if contains(func,'reachInner')
         res = true;
     else
         res = contains(options.alg,'poly');

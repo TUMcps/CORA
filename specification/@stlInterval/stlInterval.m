@@ -153,6 +153,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function [lb,ub,lc,rc] = aux_parseInputArgs(varargin)
+% parse inputs
     
     lb = []; ub = []; lc = true; rc = true;
 
@@ -167,6 +168,7 @@ function [lb,ub,lc,rc] = aux_parseInputArgs(varargin)
 end
 
 function aux_checkInputArgs(lb,ub,lc,rc,n_in)
+% check inputs
 
 if CHECKS_ENABLED && n_in > 0
     if ~isempty(lb) && lb < 0
@@ -178,6 +180,7 @@ end
 end
 
 function [lb,ub,lc,rc] = aux_computeProperties(lb,ub,lc,rc)
+% compute properties
 
     if ~isempty(lb) && ~isempty(ub)
         if abs(lb) == inf

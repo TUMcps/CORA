@@ -1,7 +1,7 @@
 function plot(obj,varargin)
 % plot - plots the partition.
 %
-% Syntax:  
+% Syntax:
 %    plot(obj,varargin)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function plot(obj,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Aaron Pereira
-% Written:      14-September-2006 
-% Last update:  01-August-2017 (AP)
-% Last revision:---
+% Authors:       Matthias Althoff, Aaron Pereira
+% Written:       14-September-2006 
+% Last update:   01-August-2017 (AP)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 if nargin ==1
     Ints = cellIntervals(obj);
@@ -43,4 +43,4 @@ for iCell=1:length(Ints)
     hold on
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

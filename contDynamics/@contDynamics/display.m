@@ -35,7 +35,7 @@ dispInput(inputname(1))
 % display name and id
 disp("Continuous dynamics: '" + sys.name + "'");
 % display dynamic properties
-disp("  number of states: " + sys.nrOfStates);
+disp("  number of dimensions: " + sys.nrOfDims);
 disp("  number of inputs: " + sys.nrOfInputs);
 disp("  number of outputs: " + sys.nrOfOutputs);
 disp("  number of disturbances: " + sys.nrOfDisturbances);

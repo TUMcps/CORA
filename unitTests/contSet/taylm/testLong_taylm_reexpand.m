@@ -123,32 +123,38 @@ T = f(tx,ty,tz);
 % caclulate the taylor model for the new domain
 T_ = reexpand(T,interval([-0.5;-1.5;-1.5],[1.5;0.5;0.5]));
 
-% compare the two talyor models
+% compare the two taylor models
+% meshgrid 1
 x1 = -1:0.1:1;
 y1 = -1:0.1:1;
 z1 = -1:0.1:1;
 [X1,Y1,Z1] = meshgrid(x1,y1,z1);
-
+% meshgrid 1
 x2 = -1.5:0.1:0.5;
 y2 = -0.5:0.1:1.5;
 z2 = -0.5:0.1:1.5;
 [X2,Y2,Z2] = meshgrid(x2,y2,z2);
 
+% check diff in each
 diffMax = 0;
-
 for i = 1:size(X1,1)
     for j = 1:size(X1,2)
         for k = 1:size(X1,3)
+            % get respective point
             x1 = [X1(i,j,k);Y1(i,j,k);Z1(i,j,k)];
             x2 = [X2(i,j,k);Y2(i,j,k);Z2(i,j,k)];
+
+            % evaluate taylor models
             t1 = aux_evalTaylm(T,x1);
             t2 = aux_evalTaylm(T_,x2);
 
+            % evaluate max difference
             diffMax = max(abs(t1-t2),diffMax);
         end
     end
 end
 
+% should be small
 assert(diffMax <= 1e-8)
 
 end

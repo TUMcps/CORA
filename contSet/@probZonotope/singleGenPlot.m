@@ -52,11 +52,11 @@ nrOfPoints=1e3;
 %get center
 c = center(probZ);
 
-if n==1
+if n==1 % one-dimensional
     %compute Sigma
     Sigma=sigma(probZ);    
     
-    if length(probZ.Z)==1
+    if isscalar(probZ.Z)
         x=linspace(-m*norm(probZ.g),m*norm(probZ.g),nrOfPoints);
         for i=1:nrOfPoints    
             f(i)=gaussian(x(i),Sigma);
@@ -77,13 +77,14 @@ if n==1
     end
     plot(c+x,f);
     (x(2)-x(1))*sum(f)
-else
+    
+else % higher-dimensional
     Sigma=norm(probZ.g)^2;  
     l=linspace(-m,m,nrOfPoints);
     for i=1:nrOfPoints
         x(i)=c(1)+probZ.g(1,1)*l(i);
         y(i)=c(2)+probZ.g(2,1)*l(i);
-        f(i)=gaussian(norm(probZ.g)*l(i),Sigma);
+        f(i)=priv_gaussian(norm(probZ.g)*l(i),Sigma);
     end
 
     xMin=min(x);

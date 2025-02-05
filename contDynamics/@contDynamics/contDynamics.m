@@ -46,7 +46,7 @@ classdef contDynamics < matlab.mixin.Copyable
 
 properties (SetAccess = private, GetAccess = public)
     name;               % name of the system
-    nrOfStates;         % state dimension
+    nrOfDims;           % state dimension
     nrOfInputs;         % input dimension
     nrOfOutputs;        % output dimension
     nrOfDisturbances;   % disturbance dimension
@@ -54,6 +54,7 @@ properties (SetAccess = private, GetAccess = public)
 
     % legacy
     dim;                % (also) state dimension
+    nrOfStates;         % (also) state dimension
 end
     
 methods
@@ -92,7 +93,7 @@ methods
 
         % 4. assign properties
         sys.name = name;
-        sys.nrOfStates = states;
+        sys.nrOfDims = states;
         sys.nrOfInputs = inputs;
         sys.nrOfOutputs = outputs;
         sys.nrOfDisturbances = dists;
@@ -107,17 +108,31 @@ end
 % getter & setter ---------------------------------------------------------
 
 methods 
+    % dim -> nrOfDims
     function dim = get.dim(sys)
         CORAwarning('CORA:deprecated', 'property', 'contDynamics.dim', 'CORA v2025', ...
-            'Please use contDynamics.nrOfStates instead.', ...
+            'Please use contDynamics.nrOfDims instead.', ...
             'This change was made to be consistent with the other properties.')
         dim = sys.nrOfStates;
     end
     function set.dim(sys,dim)
         CORAwarning('CORA:deprecated', 'property', 'contDynamics.dim', 'CORA v2025', ...
-            'Please use contDynamics.nrOfStates instead.', ...
+            'Please use contDynamics.nrOfDims instead.', ...
             'This change was made to be consistent with the other properties.')
-        sys.nrOfStates = dim;
+        sys.nrOfDims = dim;
+    end
+    % nrOfStates -> nrOfDims
+    function nrOfStates = get.nrOfStates(sys)
+        CORAwarning('CORA:deprecated', 'property', 'contDynamics.nrOfStates', 'CORA v2025.1.0', ...
+            'Please use contDynamics.nrOfDims instead.', ...
+            'This change was made to be consistent with the other properties.')
+        nrOfStates = sys.nrOfDims;
+    end
+    function set.nrOfStates(sys,nrOfStates)
+        CORAwarning('CORA:deprecated', 'property', 'contDynamics.nrOfStates', 'CORA v2025.1.0', ...
+            'Please use contDynamics.nrOfDims instead.', ...
+            'This change was made to be consistent with the other properties.')
+        sys.nrOfDims = nrOfStates;
     end
 end
 

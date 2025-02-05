@@ -248,7 +248,7 @@ if strcmp(type, 'input')
         data.polyInput(i).d(data.currIn) = d;
     end
 
-else
+else % output
     if isempty(data.polyOutput)
         data.polyOutput = aux_createPolytopeStruct(0);
     end
@@ -261,6 +261,7 @@ end
 end
 
 function [C, d, len] = aux_parseArgument(text, C, d)
+% parse next argument
 
 if startsWith(text, 'X') || startsWith(text, 'Y')
 
@@ -321,19 +322,20 @@ function type = aux_getTypeOfConstraint(text)
 indX = regexp(text, 'X', 'once');
 indY = regexp(text, 'Y', 'once');
 
+% either X or Y must be given
 if isempty(indX)
     if isempty(indY)
+        % none given
         throw(CORAerror('CORA:notSupported', 'File format not supported'));
     else
+        % Y is not empty
         type = 'output';
     end
 elseif isempty(indY)
-    if isempty(indX)
-        throw(CORAerror('CORA:notSupported', 'File format not supported'));
-    else
-        type = 'input';
-    end
+    % X is not empty
+    type = 'input';
 else
+    % return smaller
     if indX(1) < indY(1)
         type = 'input';
     else

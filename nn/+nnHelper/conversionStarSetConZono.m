@@ -47,6 +47,7 @@ for i = 1:m
     end
 end
 
+% select constraints
 C = C(ind_, :);
 d = d(ind_);
 

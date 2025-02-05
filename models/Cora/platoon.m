@@ -6,7 +6,7 @@ function [A,B,E] = platoon(n)
 %    and ith vehicle and a_i is the acceleration of the ith vehicle;
 %    the control input vector is composed of the individual accelerations
 %
-% Syntax:  
+% Syntax:
 %    [A,B,E] = platoon(n)
 %
 % Inputs:
@@ -22,12 +22,12 @@ function [A,B,E] = platoon(n)
 %        Networked Platoon of Trucks Using Reachability", ARCH14-15,
 %        pp. 169-179.
 
-% Author:       Mark Wetzlinger
-% Written:      07-August-2023
-% Last update:  ---
-% Last revision:---
+% Authors:       Mark Wetzlinger
+% Written:       07-August-2023
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 % system represented as x' = Ax + Bu
 % however, CORA currently does not support E matrices
@@ -47,4 +47,4 @@ B = kron(eye(n),[0;0;gamma]);
 E = zeros(3*n,1);
 E(2) = 1;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

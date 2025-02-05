@@ -1,18 +1,17 @@
 function [velocity,input]=profile3(pos,acc)
-% profile1..n - returns the velocity for a given position and maximum 
+% profile3 - returns the velocity for a given position and maximum 
 % accelerationof the velocity profile of the corresponding path.
 %
-% Syntax:  
-%    [velocity]=profile1(pos)
+% Syntax:
+%    [velocity,input]=profile3(pos,acc)
 %
 % Inputs:
 %    pos - position on the path
+%    acc - ???
 %
 % Outputs:
 %    velocity - velocity of the velocity profile
-%
-% Example: 
-%    ---
+%    input - ???
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -20,12 +19,12 @@ function [velocity,input]=profile3(pos,acc)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      02-July-2008 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       02-July-2008 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get absolute value of acceleration
 acc=abs(acc);
@@ -70,4 +69,4 @@ switch ind
     disp('Velocity profile error');
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

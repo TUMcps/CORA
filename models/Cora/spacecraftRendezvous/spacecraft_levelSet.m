@@ -2,7 +2,7 @@ function HA = spacecraft_levelSet()
 % spacecraft_levelSet- spacecraft rendevous benchmark described in [1] with
 %                      nonlinear guard sets
 %
-% Syntax:  
+% Syntax:
 %    HA = spacecraft_levelSet()
 %
 % Inputs:

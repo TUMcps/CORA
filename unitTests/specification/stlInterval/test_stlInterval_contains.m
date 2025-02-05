@@ -28,17 +28,20 @@ tol = 1e-8;
 % test case definition
 test_cases_exact = {
     % {a, b, expected}
+    % combinations of open/closed intervals
     {stlInterval(0,1,true,true), stlInterval(0,1,true,true), true};
     {stlInterval(0,1,true,true), stlInterval(0,1,true,false), true};
     {stlInterval(0,1,true,true), stlInterval(0,1,false,true), true};
     {stlInterval(0,1,true,true), stlInterval(0,1,false,false), true};
-    {stlInterval(0,1,true,true), stlInterval(0,0.5,true,true), true};
     {stlInterval(0,1,true,false), stlInterval(0,1,true,true), false};
     {stlInterval(0,1,false,true), stlInterval(0,1,true,true), false};
+    {stlInterval(0,1,true,true), stlInterval(0,0.5,true,true), true};
     
+    % containment of CORA intervals
     {stlInterval(0,1,true,true), interval(0,1), true};
     {stlInterval(0,1,true,true), interval(0.5,0.75), true};
 
+    % containment of points
     {stlInterval(0,1,true,true), 0.5, true};
     {stlInterval(0,1,true,true), 1.5, false};
     {stlInterval(0,1,true,true), 0, true};
@@ -49,12 +52,13 @@ test_cases_exact = {
     {stlInterval(0,1,false,false), 1, false};
 };
 
+% define test cases for approximate containment
 test_cases_approx = {
     {stlInterval(0,1,false,false), interval(0,1), false};
     {stlInterval(0,1,false,false), interval(0.5,0.75), true};
 };
 
-% run tests
+% run exact test cases
 for i = 1:length(test_cases_exact)
     a = test_cases_exact{i}{1};
     b = test_cases_exact{i}{2};
@@ -63,6 +67,7 @@ for i = 1:length(test_cases_exact)
     assertLoop(actual == expected,i);
 end
 
+% run approximate test cases
 for i = 1:length(test_cases_approx)
     a = test_cases_approx{i}{1};
     b = test_cases_approx{i}{2};

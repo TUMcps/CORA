@@ -21,14 +21,9 @@ function res = testLong_linearSysDT_observe_08_pedestrian()
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
- 
-% assume true
-res = true;
-
 
 % Load pedestrian model ---------------------------------------------------
 load pedestrianModel pedestrian params options simRes
-
 
 % Set of evaluated estimators
 Estimator = {
@@ -50,9 +45,6 @@ Estimator = {
     %'ESO-D' % tested in testSDPT3_linearSysDT_observe_08_pedestrian()
     %'Hinf-G' % tested in testSDPT3_linearSysDT_observe_08_pedestrian() 
     };
-
-% init
-resPartial = [];
 
 % set tolerance
 tol = 1e-6;
@@ -83,10 +75,12 @@ for iEst = 4:length(Estimator)
     
     % obtain enclosing intervals
     switch options.alg
+        % VolMin
         case 'VolMin-A'
             IH_saved = [];
         case 'VolMin-B' 
             IH_saved = []; 
+            % FRad
         case 'FRad-A'
             IH_saved = interval( ...
                 [0.9689629614880655; 2.0431176164148965; -0.9053334051832218; -0.2439026226497167], ...
@@ -95,25 +89,28 @@ for iEst = 4:length(Estimator)
             IH_saved = interval( ...
                 [0.9706379673448939; 2.0484523710670945; -0.9448902873388959; -0.2574323446416942], ...
                 [1.3986790926035191; 2.4698120103720980; 1.1112964875172127; 1.7190120616864819]);
+        case 'FRad-C' 
+            % TL: numerically unstable...
+            IH_saved = interval( ...
+                [ 0.9592223696721490; 2.0268025113919803; -0.9290244580855602; -0.3052542874485443 ], ...
+                [ 1.4089942984695809; 2.4885219977302739; 1.0908607144881430; 1.7537703992533271 ]);
+            % PRad
         case 'PRad-A' 
             IH_saved = [];
         case 'PRad-B' 
             IH_saved = [];
         case 'PRad-C' 
             IH_saved = [];
-        case 'FRad-C' 
-            % TL: numerically unstable...
-            IH_saved = interval( ...
-                [ 0.9592223696721490; 2.0268025113919803; -0.9290244580855602; -0.3052542874485443 ], ...
-                [ 1.4089942984695809; 2.4885219977302739; 1.0908607144881430; 1.7537703992533271 ]);
         case 'PRad-D' 
             IH_saved = [];
         case 'PRad-E' 
             IH_saved = [];
+            % Other
         case 'Nom-G' 
             IH_saved = []; 
         case 'Hinf-G' 
-            IH_saved = [];        
+            IH_saved = [];    
+            % ESO
         case 'ESO-A'
             IH_saved = interval( ...
                 [-6.2161992351739261; -6.1042993440301068; -4.3916499693186024; -4.2479105199518692], ...
@@ -126,6 +123,7 @@ for iEst = 4:length(Estimator)
             IH_saved = [];   
         case 'ESO-D'
             IH_saved = [];
+            % CZN
         case 'CZN-A'
             IH_saved = [];
         case 'CZN-B'
@@ -133,10 +131,10 @@ for iEst = 4:length(Estimator)
     end
 
     % check equality with tolerance
-    assert(isequal(IH,IH_saved,tol));
+    assertLoop(isequal(IH,IH_saved,tol),iEst);
 end
 
-% final result
-res = all(resPartial);
+% test completed
+res = true;
 
 % ------------------------------ END OF CODE ------------------------------

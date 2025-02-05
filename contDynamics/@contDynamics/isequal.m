@@ -49,7 +49,7 @@ if ~strcmp(sys1.name,sys2.name)
 end
 
 % number of states, inputs, outputs
-if sys1.nrOfStates ~= sys2.nrOfStates || sys1.nrOfInputs ~= sys2.nrOfInputs ...
+if sys1.nrOfDims ~= sys2.nrOfDims || sys1.nrOfInputs ~= sys2.nrOfInputs ...
         || sys1.nrOfOutputs ~= sys2.nrOfOutputs
     res = false; return
 end

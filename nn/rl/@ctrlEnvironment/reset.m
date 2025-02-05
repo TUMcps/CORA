@@ -31,6 +31,7 @@ if size(obj.options.rl.env.x0,1) ~= (obj.ctrlDynamics.nrOfOutputs-obj.ctrlDynami
     throw(CORAerror("CORA:dimensionMismatch",obj.options.rl.env.initialOps.x0,(obj.ctrlDynamics.nrOfOutputs-obj.ctrlDynamics.nrOfInputs)));
 end
 
+% reset state based on given initial ops
 if strcmp(obj.options.rl.env.initialOps,'symmetric')
     r = binornd(1,0.5,size(obj.options.rl.env.x0));
     obj.state = obj.options.rl.env.x0.inf.*r + obj.options.rl.env.x0.sup.*~r;
@@ -44,10 +45,11 @@ elseif strcmp(obj.options.rl.env.initialOps,'sup')
     obj.state = obj.options.rl.env.x0.sup;
 elseif strcmp(obj.options.rl.env.initialOps,'set') && strcmp(obj.options.rl.env.evalMode,'set')
     obj.state = obj.options.rl.env.x0;
-else
+else % throw error
     throw(CORAerror("CORA:notSupported",'This type of initial state seed is not supported'))
 end
 
+% reset eval mode
 if strcmp(obj.options.rl.env.evalMode,'set')
     obj.state = zonotope(obj.state);
 end

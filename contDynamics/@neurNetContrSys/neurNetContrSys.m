@@ -81,7 +81,7 @@ methods
         [sysCL,nn,dt] = aux_computeProperties(sysOL,nn,dt);
         
         % 5. instantiate parent class, assign properties
-        obj@contDynamics(sysCL.name,sysOL.nrOfStates,max(1,sysOL.nrOfInputs-nn.neurons_out),0);
+        obj@contDynamics(sysCL.name,sysOL.nrOfDims,max(1,sysOL.nrOfInputs-nn.neurons_out),0);
         obj.sys = sysCL; obj.nn = nn; obj.dt = dt;
 
     end
@@ -121,7 +121,7 @@ function aux_checkInputArgs(sys,nn,dt,n_in)
         })
 
         % check if dimensions fit
-        if sys.nrOfStates ~= nn.neurons_in
+        if sys.nrOfDims ~= nn.neurons_in
             throw(CORAerror('CORA:wrongInputInConstructor', ...
                'Dimension of sys and input of nn should match.'));
         end
@@ -138,7 +138,7 @@ end
 function [sys,nn,dt] = aux_computeProperties(sys,nn,dt)
 % compute properties of neurNetContrSys object
 
-    n = sys.nrOfStates; m = nn.neurons_out;
+    n = sys.nrOfDims; m = nn.neurons_out;
     % instantiate closed-loop system
     if isa(sys, 'nonlinearSys')
 

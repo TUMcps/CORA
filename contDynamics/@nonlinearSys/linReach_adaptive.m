@@ -164,7 +164,7 @@ while true
     % compute static error out of loop below
     if strcmp(options.alg,'poly') && options.run == 1
         [H,Zdelta,errorStat,T,ind3,Zdelta3] = ...
-        	precompStatError_adaptive(nlnsys,Rdelta,params.U,options);
+        	priv_precompStatError_adaptive(nlnsys,Rdelta,params.U,options);
     end
     
     % compute reachable set of the abstracted system including the
@@ -187,7 +187,7 @@ while true
             [RallError,options] = errorSolution_adaptive(linsys,options,Verror);
         else
             % only used in options.run == 1, but important for adaptive
-            RallError = zonotope(zeros(nlnsys.nrOfStates,1));
+            RallError = zonotope(zeros(nlnsys.nrOfDims,1));
         end
         
         try
@@ -200,7 +200,7 @@ while true
                 % compute abstraction error
                 % (dependency on settings resolved inside)
                 [VerrorDyn, VerrorStat, trueError, options] = ...
-                    abstractionError_adaptive(nlnsys,Rmax,Rtemp,params.U,options);
+                    priv_abstractionError_adaptive(nlnsys,Rmax,Rtemp,params.U,options);
                 
                 
             elseif strcmp(options.alg,'poly')
@@ -213,7 +213,7 @@ while true
                 % compute abstraction error
                 % (dependency on settings resolved inside)
                 [VerrorDyn, VerrorStat, trueError, options] = ...
-                    abstractionError_adaptive(nlnsys,Rmax,Rdiff+RallError,params.U,options,...
+                    priv_abstractionError_adaptive(nlnsys,Rmax,Rdiff+RallError,params.U,options,...
                     H,Zdelta,errorStat,T,ind3,Zdelta3);
 
             end
@@ -330,7 +330,7 @@ while true
                 finitehorizon,varphi,zetaP_h,options);
             % save abstraction error, reset to zero for optimal time step size
             options.error_adm_horizon = trueError;
-            error_adm = zeros(nlnsys.nrOfStates,1);
+            error_adm = zeros(nlnsys.nrOfDims,1);
             
         % non-start/end step
         elseif options.i > 1
@@ -445,9 +445,9 @@ Rdelta = Rstartset + (-nlnsys.linError.p.x);
 
 % compute L for both kappas
 options.tensorOrder = 2;
-[~,~,L0_2,options] = abstractionError_adaptive(nlnsys,Rdelta,[],params.U,options);
+[~,~,L0_2,options] = priv_abstractionError_adaptive(nlnsys,Rdelta,[],params.U,options);
 options.tensorOrder = 3;
-[~,~,L0_3,options] = abstractionError_adaptive(nlnsys,Rdelta,[],params.U,options);
+[~,~,L0_3,options] = priv_abstractionError_adaptive(nlnsys,Rdelta,[],params.U,options);
 
 % cut linear dimensions
 L0_2lin = L0_2(L0_2 ~= 0);
@@ -495,7 +495,7 @@ if options.tensorOrder == 2
     end
     
     % compute set of abstraction errors
-    [VerrorDyn,~,err] = abstractionError_adaptive(nlnsys,Rmax,Rtemp,U,options);
+    [VerrorDyn,~,err] = priv_abstractionError_adaptive(nlnsys,Rmax,Rtemp,U,options);
     Rerror = errorSolution_adaptive(linsys,options,VerrorDyn);
     % simplify to scalar value
     abstrerr_3 = vecnorm(sum(abs(generators(Rerror)),2));
@@ -505,7 +505,7 @@ if options.tensorOrder == 2
         options.kappa_deltat = options.timeStep;
         options.kappa_abstrerr = abstrerr_3;
         options.error_adm_Deltatopt = err;
-        options.error_adm_horizon = zeros(nlnsys.nrOfStates,1);
+        options.error_adm_horizon = zeros(nlnsys.nrOfDims,1);
     else
         options.tensorOrder = 2;
     end
@@ -524,7 +524,7 @@ elseif options.tensorOrder == 3
     end
     
     % compute set of abstraction errors
-    [VerrorDyn,~,err] = abstractionError_adaptive(nlnsys,Rmax,Rtemp,U,options);
+    [VerrorDyn,~,err] = priv_abstractionError_adaptive(nlnsys,Rmax,Rtemp,U,options);
     Rerror = errorSolution_adaptive(linsys,options,VerrorDyn);
     % simplify to scalar value
     abstrerr_2 = vecnorm(sum(abs(generators(Rerror)),2));
@@ -534,7 +534,7 @@ elseif options.tensorOrder == 3
         options.kappa_deltat = options.timeStep;
         options.kappa_abstrerr = abstrerr_2;
         options.error_adm_Deltatopt = err;
-        options.error_adm_horizon = zeros(nlnsys.nrOfStates,1);
+        options.error_adm_horizon = zeros(nlnsys.nrOfDims,1);
     else
         options.tensorOrder = 3;
     end
@@ -751,7 +751,7 @@ end
 
 % propagation matrix
 A = linsys.A;
-n = nlnsys.nrOfStates;
+n = nlnsys.nrOfDims;
 % m = nlnsys.nrOfInputs;
     
 % start set is just a point

@@ -68,7 +68,9 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function S_out = aux_plus_spectraShadow(SpS,S)
+% spectraShadow + spectraShadow
 
+% read properties
 c_1 = SpS.c;
 c_2 = S.c;
 
@@ -78,6 +80,7 @@ G_2 = S.G;
 [A0_1,Ai_1] = priv_getCoeffMatrices(SpS);
 [A0_2,Ai_2] = priv_getCoeffMatrices(S);
 
+% init
 m_1 = size(G_1,2);
 m_2 = size(G_2,2);
 k_1 = size(A0_1,1);
@@ -96,7 +99,9 @@ end
 
 S_out = spectraShadow([A0 cat(2, Ai{:})],c,G);
 
-% Adding some extra information
+% setting some set properties ---
+
+% bounded 
 if ~isempty(SpS.bounded.val) && ~isempty(S.bounded.val)
     if SpS.bounded.val && S.bounded.val
         S_out.bounded.val = true;
@@ -104,10 +109,14 @@ if ~isempty(SpS.bounded.val) && ~isempty(S.bounded.val)
         S_out.bounded.val = false;
     end
 end
+
+% fullDim
 if (~isempty(SpS.fullDim.val) && SpS.fullDim.val) ...
         || (~isempty(S.fullDim.val) && S.fullDim.val)
     S_out.fullDim.val = true;
 end
+
+% emptySet
 if (~isempty(SpS.emptySet.val) && SpS.emptySet.val) ...
         || (~isempty(S.emptySet.val) && S.emptySet.val)
     S_out.emptySet.val = true;
@@ -116,6 +125,7 @@ elseif (~isempty(SpS.emptySet.val) && ~SpS.emptySet.val) ...
     S_out.emptySet.val = false;
 end
 
+% center
 if ~isempty(SpS.center.val) && ~isempty(S.center.val)
     S_out.center.val = SpS.center.val + S.center.val;
 end

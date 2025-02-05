@@ -26,21 +26,26 @@ function res = test_stlInterval_plus
 % test case definition
 test_cases = {
     % {a, b, expected}
+
+    % lhs closed/closed vs all possibilities for rhs
     {stlInterval(10,20,true,true), stlInterval(3,4,true,true), stlInterval(13,24,true,true)};
     {stlInterval(10,20,true,true), stlInterval(3,4,false,true), stlInterval(13,24,false,true)};
     {stlInterval(10,20,true,true), stlInterval(3,4,true,false), stlInterval(13,24,true,false)};
     {stlInterval(10,20,true,true), stlInterval(3,4,false,false), stlInterval(13,24,false,false)};
 
+    % lhs closed/open vs all possibilities for rhs
     {stlInterval(10,20,true,false), stlInterval(3,4,true,true), stlInterval(13,24,true,false)};
     {stlInterval(10,20,true,false), stlInterval(3,4,false,true), stlInterval(13,24,false,false)};
     {stlInterval(10,20,true,false), stlInterval(3,4,true,false), stlInterval(13,24,true,false)};
     {stlInterval(10,20,true,false), stlInterval(3,4,false,false), stlInterval(13,24,false,false)};
 
+    % lhs open/closed vs all possibilities for rhs
     {stlInterval(10,20,false,true), stlInterval(3,4,true,true), stlInterval(13,24,false,true)};
     {stlInterval(10,20,false,true), stlInterval(3,4,false,true), stlInterval(13,24,false,true)};
     {stlInterval(10,20,false,true), stlInterval(3,4,true,false), stlInterval(13,24,false,false)};
     {stlInterval(10,20,false,true), stlInterval(3,4,false,false), stlInterval(13,24,false,false)};
 
+    % lhs open/open vs all possibilities for rhs
     {stlInterval(10,20,false,false), stlInterval(3,4,true,true), stlInterval(13,24,false,false)};
     {stlInterval(10,20,false,false), stlInterval(3,4,false,true), stlInterval(13,24,false,false)};
     {stlInterval(10,20,false,false), stlInterval(3,4,true,false), stlInterval(13,24,false,false)};

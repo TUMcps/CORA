@@ -32,7 +32,8 @@ function res = eliminateTrueFalse(obj)
 
         res = obj;
 
-    elseif strcmp(obj.type,'&')
+        % boolean
+    elseif strcmp(obj.type,'&') % ---
 
         lhs = eliminateTrueFalse(obj.lhs);
         rhs = eliminateTrueFalse(obj.rhs);
@@ -47,7 +48,7 @@ function res = eliminateTrueFalse(obj)
             res = lhs & rhs;
         end
 
-    elseif strcmp(obj.type,'|')
+    elseif strcmp(obj.type,'|') % ---
 
         lhs = eliminateTrueFalse(obj.lhs);
         rhs = eliminateTrueFalse(obj.rhs);
@@ -62,7 +63,7 @@ function res = eliminateTrueFalse(obj)
             res = lhs | rhs;
         end
 
-    elseif strcmp(obj.type,'~')
+    elseif strcmp(obj.type,'~') % ---
 
         inner = eliminateTrueFalse(obj.lhs);
 
@@ -74,7 +75,8 @@ function res = eliminateTrueFalse(obj)
             res = ~inner;
         end
 
-    elseif strcmp(obj.type,'next')
+        % temporal
+    elseif strcmp(obj.type,'next') % ---
 
         inner = eliminateTrueFalse(obj.lhs);
 
@@ -86,7 +88,7 @@ function res = eliminateTrueFalse(obj)
             res = next(inner,obj.from);
         end
 
-    elseif strcmp(obj.type,'until')
+    elseif strcmp(obj.type,'until') % ---
 
         lhs = eliminateTrueFalse(obj.lhs);
         rhs = eliminateTrueFalse(obj.rhs);
@@ -101,7 +103,7 @@ function res = eliminateTrueFalse(obj)
             res = until(lhs,rhs,obj.interval);
         end
 
-    elseif strcmp(obj.type,'release')
+    elseif strcmp(obj.type,'release') % ---
 
         lhs = eliminateTrueFalse(obj.lhs);
         rhs = eliminateTrueFalse(obj.rhs);
@@ -116,7 +118,7 @@ function res = eliminateTrueFalse(obj)
             res = release(lhs,rhs,obj.interval);
         end
 
-    elseif strcmp(obj.type,'finally')
+    elseif strcmp(obj.type,'finally') % ---
 
         inner = eliminateTrueFalse(obj.lhs);
         
@@ -128,7 +130,7 @@ function res = eliminateTrueFalse(obj)
             res = finally(inner,obj.interval);
         end
 
-    elseif strcmp(obj.type,'globally')
+    elseif strcmp(obj.type,'globally') % ---
 
         inner = eliminateTrueFalse(obj.lhs);
         
@@ -140,6 +142,7 @@ function res = eliminateTrueFalse(obj)
             res = globally(inner,obj.interval);
         end    
 
+        % comparator
     elseif ismember(obj.type,{'<','<=','>','>=','true','false'})
         res = obj;
     end

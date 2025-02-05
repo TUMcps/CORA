@@ -1,6 +1,27 @@
 function braking()
-% built: 14-October-2009
-% updated: 01-August-2016
+% braking - ???
+%
+% Syntax:
+%    braking()
+%
+% Inputs:
+%    -
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       ???
+% Written:       14-October-2009
+% Last update:   01-August-2016
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set path
 global filePath
@@ -167,7 +188,7 @@ Rstraight=createPath(R,[pi/2,2,0],[0],[40]);
 figure;
 
 subplot(1,4,1);
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rstraight,avgVelA,1);
 plotCrossing(Rstraight,[36,41]);
@@ -175,7 +196,7 @@ axis([-5, 5, 0, 160]);
 xlabel('car A');
 
 subplot(1,4,2);
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rstraight,avgVelB,1);
 plotCrossing(Rstraight,[36,41]);
@@ -184,7 +205,7 @@ xlabel('car B');
 set(gca,'ytick',[]);
 
 subplot(1,4,3)
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rstraight,avgVelC,1);
 plotCrossing(Rstraight,[36,41]);
@@ -193,8 +214,7 @@ xlabel('car C');
 set(gca,'ytick',[]);
 
 subplot(1,4,4)
-normalizePlot();
-
+aux_normalizePlot();
 
 
 %compute average position probabilities
@@ -267,8 +287,9 @@ for iStep=1:4
 end
 
 
+% Auxiliary functions -----------------------------------------------------
 
-function normalizePlot()
+function aux_normalizePlot()
 
 %plot lowest and highest value for average probability
 %plot using own methods
@@ -276,3 +297,5 @@ IH=[0.1 0.2; 0.1 0.2];
 V=vertices(IH);
 plot(V,'grayTones',0);
 plot(V,'grayTones',18);
+
+% ------------------------------ END OF CODE ------------------------------

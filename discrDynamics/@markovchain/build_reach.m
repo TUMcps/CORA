@@ -1,9 +1,9 @@
 function [Obj,tp]=build_reach(Obj,R,iInput,iState,tranFrac)
-% build - Builds the transition matrices of the Markov chains using 
+% build_reach - Builds the transition matrices of the Markov chains using 
 % reachability analysis.
 %
-% Syntax:  
-%    [Obj,tp] = build(Obj,R,iInput,iState,tranFrac)
+% Syntax:
+%    [Obj,tp] = build_reach(Obj,R,iInput,iState,tranFrac)
 %
 % Inputs:
 %    Obj - Markov chain object
@@ -25,19 +25,19 @@ function [Obj,tp]=build_reach(Obj,R,iInput,iState,tranFrac)
 %
 % See also: vertices, polytope
 
-% Author:       Matthias Althoff
-% Written:      15-September-2006
-% Last update:  28-September-2006
-%               16-August-2007
-%               23-November-2007
-%               21-April-2009
-%               24-July-2020
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       15-September-2006
+% Last update:   28-September-2006
+%                16-August-2007
+%                23-November-2007
+%                21-April-2009
+%                24-July-2020
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get probabilities from actual segment to all segments
-tp = transitionProbability_reach(R,tranFrac.TP,Obj.field);
+tp = priv_transitionProbability_reach(R,tranFrac.TP,Obj.field);
 
 %load transition probability from actual segment to reachable segments in
 %Transition Matrix T
@@ -49,4 +49,4 @@ Obj.T.OT{iInput}(:,actualSegmentNr+1)=sparse(tp.OT);
 Obj.T.T{iInput}(1,1)=1;
 Obj.T.OT{iInput}(1,1)=1;
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

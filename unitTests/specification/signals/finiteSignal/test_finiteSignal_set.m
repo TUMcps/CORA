@@ -53,6 +53,7 @@ sig = bsig.set(stlInterval(0,1.5), false);
 assert(isequal([2.3 3.0], sig.time));
 assert(isequal([false true], sig.value));
 
+% more tests
 sig = bsig.set(stlInterval(1.2,2.3), true);
 assert(isequal(3.0, sig.time));
 assert(isequal(true, sig.value));

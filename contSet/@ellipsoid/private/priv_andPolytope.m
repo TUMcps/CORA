@@ -85,7 +85,7 @@ if ~isFullDim(E)
     % check if E.Q all zero
     if nt==0
         % check if E is contained in the polytope
-        if contains_(P,E.q,'exact',0)
+        if contains_(P,E.q,'exact',0,0,false,false)
             E = ellipsoid(zeros(n),E.q);
         else
             E = ellipsoid.empty(n);

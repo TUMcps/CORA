@@ -90,7 +90,11 @@ function aux_printProperty(property,accuracy)
     elseif isa(property,'contDynamics')
         printSystem(property,accuracy,true,false)
     elseif isa(property,'function_handle')
-        fprintf(func2str(property))
+        funcstr = func2str(property);
+        if ~startsWith(funcstr,'@')
+            funcstr = sprintf('@%s',funcstr);
+        end
+        fprintf(funcstr)
     else
         throw(CORAerror("CORA:noops",property))
     end

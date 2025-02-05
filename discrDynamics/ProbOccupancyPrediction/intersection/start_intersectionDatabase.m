@@ -2,7 +2,7 @@ function start_intersectionDatabase(~)
 % start_intersectionDatabase - sets parameters and stores the results of
 % the intersectionDatabase
 %
-% Syntax:  
+% Syntax:
 %    start_intersectionDatabase(~)
 %
 % Inputs:
@@ -19,12 +19,12 @@ function start_intersectionDatabase(~)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      01-August-2017 
-% Last update:  
+% Authors:       Matthias Althoff
+% Written:       01-August-2017 
+% Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 % obtain uncertain center interval
@@ -60,6 +60,4 @@ cd(path);
 save(file,'fArray');
 
 
-
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

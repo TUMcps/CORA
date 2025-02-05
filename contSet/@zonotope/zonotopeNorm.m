@@ -1,6 +1,6 @@
-function res = zonotopeNorm(Z,p)
+function [res, minimizer] = zonotopeNorm(Z,p)
 % zonotopeNorm - computes the norm of the point p w.r.t. the zonotope-norm
-%    induced by the zonotope Z (see [1, Definition 4])
+%    induced by the zonotope Z (see [1, Definition 4]).
 %
 % Syntax:
 %    res = zonotopeNorm(Z,p)
@@ -11,6 +11,8 @@ function res = zonotopeNorm(Z,p)
 %
 % Outputs:
 %    res - zonotope-norm of the point p
+%    minimizer - (optional) returns a solution x s.t. Gx = p and for
+%                 which norm(x,inf) = zonotopeNorm(Z,p)
 %
 % Example:
 %    c = [0;0];
@@ -45,25 +47,31 @@ function res = zonotopeNorm(Z,p)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% check number of input arguments
+narginchk(2,2);
+
 % check input arguments
 inputArgsCheck({{Z,'att','zonotope'};
                 {p,'att','numeric'}});
 
+% check dimension of Z and p
+equalDimCheck(Z, p);
+
 % empty set
 if representsa_(Z,'emptySet',eps)
     if isempty(p)
-        res = 0; return
+        res = 0; minimizer = []; return
     else
-        res = Inf; return
+        res = Inf; minimizer = []; return
     end
 end
 
 % Retrieve generator-representation of Z
 if isempty(Z.G)
     if ~any(p)
-        res = 0; return
+        res = 0; minimizer = []; return
     else
-        res = Inf; return
+        res = Inf; minimizer = []; return
     end
 end
 
@@ -77,8 +85,8 @@ problem.f = [1; zeros(numGen,1)];
 problem.Aeq = [zeros(n,1), Z.G];
 problem.beq = p;
 
-problem.Aineq = [-ones(numGen,1),  eye(numGen); ...
-                 -ones(numGen,1), -eye(numGen)];
+problem.Aineq = [-ones(numGen,1),  speye(numGen); ...
+                 -ones(numGen,1), -speye(numGen)];
 problem.bineq = zeros(2*numGen,1);
 
 % bounds integrated in inequality constraints
@@ -88,10 +96,11 @@ problem.ub = [];
 % Solve the linear program: If the problem is infeasible, this means that
 % the zonotope must be degenerate, and that the point can not be realized
 % as a linear combination of the generators of the zonotope. In that case,
-% the norm is defined as Inf
+% the norm is defined as Inf. The same goes when the problem is 'unbounded'
 [minimizer_p,res,exitflag] = CORAlinprog(problem);
-if exitflag == -2
-    res = Inf;
+if exitflag == -2 || exitflag == -3
+    res = Inf; minimizer = [];
+
 % In case anything else went wrong, throw out an error
 elseif exitflag ~= 1
     throw(CORAerror('CORA:solverIssue'));

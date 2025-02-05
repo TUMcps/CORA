@@ -74,7 +74,7 @@ options.verbose = isfield(options,'verbose') && options.verbose;
     
 % check if old derivatives can be re-used
 [requiredFiles,requiredFiles_out,storedData,deleteAll] = ...
-    checkTensorRecomputation(sys,fdyn,fcon,fout,path,options);
+    priv_checkTensorRecomputation(sys,fdyn,fcon,fout,path,options);
 
 % already finished if nothing new required
 if ~any([requiredFiles.standard;requiredFiles.int;requiredFiles.higherOrders;...
@@ -123,6 +123,7 @@ if requiredFiles.standard(1)
     Jcon = aux_jacobians(fcon,vars,simplifyOpt);
     [fp,Jp] = aux_parametric(fdyn,Jdyn,vars,paramInt);
     
+    % jacobian
     fname = ['jacobian_' sys.name];
     if ~isempty(Jp)
         writeMatrixFile({Jp.x,Jp.u},path,fname,...
@@ -138,6 +139,7 @@ if requiredFiles.standard(1)
             'VarNamesIn',{'x','u'},'VarNamesOut',{'A','B'},'BracketSubs',true);
     end
     
+    % jacobian_freeParam
     if ~isempty(vars.p)
         fname = ['jacobian_freeParam_' sys.name];
         writeMatrixFile({Jdyn.x,Jdyn.u},path,fname,...
@@ -149,6 +151,7 @@ if requiredFiles_out.standard(1)
     Jout = aux_jacobians(fout,vars,simplifyOpt);
     [fpout,Jpout] = aux_parametric(fout,Jout,vars,paramInt);
 
+    % out_jacobian
     fname = ['out_jacobian_' sys.name];
     if ~isempty(Jpout)
         writeMatrixFile({Jpout.x,Jpout.u},path,fname,...
@@ -164,6 +167,7 @@ if requiredFiles_out.standard(1)
             'VarNamesIn',{'x','u'},'VarNamesOut',{'C','D'},'BracketSubs',true);
     end
     
+    % out_jacobian_freeParam
     if ~isempty(vars.p)
         fname = ['out_jacobian_freeParam_' sys.name];
         writeMatrixFile({Jout.x,Jout.u},path,fname,...

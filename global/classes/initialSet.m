@@ -37,6 +37,7 @@ classdef initialSet
         end
         
         function han = plot(R0, varargin)
+            % plot initial set
             dims = setDefaultValues({[1,2]},varargin);
             NVpairs = readPlotOptions(varargin(2:end),'initialSet');
             han = plot(R0.set, dims, NVpairs{:});
@@ -47,6 +48,7 @@ classdef initialSet
         end
         
         function han = plotOverTime(R0, varargin)
+            % plot initial set over time
             dims = setDefaultValues({1},varargin);
             inputArgsCheck({{R0,'att','initialSet'};
                     {dims,'att',{'numeric'},{'nonempty','scalar','integer','positive'}}});

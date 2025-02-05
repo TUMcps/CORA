@@ -124,7 +124,7 @@ methods
 
     function linARX = computeTVP(linARX, k, iVec)
         % compute time-varying parameters A_tilde and B_tilde for the time 
-        % point k and the indezes in iVec
+        % point k and the indexes in iVec
 
         p = linARX.n_p;
         k_plus = k+p-1;
@@ -134,6 +134,7 @@ methods
             linARX.setTVP;
         end
 
+        % check if A_tilde
         if isfield(linARX, "A_tilde")
             k_last = length(linARX.A_tilde,1);
         else
@@ -142,15 +143,16 @@ methods
             linARX.B_tilde = cell(max(iVec)+1,k+1);
         end
 
+        % check if valid construction
         if max(iVec) > k_plus || min(iVec) < 0
             throw(CORAerror("CORA:notSupported",...
                 "Invalid. Index i must be in 0<=i<=k_plus."));
         end
-
         if k < p
             throw(CORAerror("CORA:notSupported",...
                 "Invalid. Time step k must be in k>=p."));
         end
+        
         if k == 1
             linARX.A_tilde{k+1} = linARX.conv_tvp.A_ext;
             for i = iVec

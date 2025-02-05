@@ -44,6 +44,7 @@ signals = {
 };
 fourValuedVals = [fourValued.True,fourValued.Unknown,fourValued.False,fourValued.Inconclusive];
 
+% run test cases
 for i = 1:length(signals)
     sig = signals{i};
     actual = ~sig;

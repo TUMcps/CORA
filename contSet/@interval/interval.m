@@ -102,6 +102,8 @@ methods
     c = center(I) % center of interval
     cPZ = conPolyZono(I) % conversion to conPolyZono object
     cZ = conZonotope(I) % conversion to conZonotope object
+    [res,cert,scaling] = contains_(I,S,method,tol,maxEval,certToggle,scalingToggle,varargin)
+    % checks if S is contained in I
     res = cos(I) % cosine function
     I = cosh(I) % hyperbolic cosine function
     I = ctranspose(I) % overloaded ' operator

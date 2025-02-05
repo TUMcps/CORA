@@ -4,6 +4,28 @@ function [c] = segmentCenter(segments, segVector, devVector, widthOfLane, nrOfDe
 % (deviation from the path) is given
 %
 % replaces segCenter.m for using without the CORA road class
+%
+% Syntax:
+%    [c] = segmentCenter(segments, segVector, devVector, widthOfLane, nrOfDevSegments)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       ???
+% Written:       ???
+% Last update:   ---
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain x,y and angle values
 x = segments.x;
@@ -48,3 +70,5 @@ else
     end
     c = cDev;
 end
+
+% ------------------------------ END OF CODE ------------------------------

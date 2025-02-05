@@ -1,6 +1,6 @@
 function [dA,dB] = lin_error2dAB(R,U,hessian,p,varargin)
 % lin_error2dAB - computes the uncertainty interval to be added to system
-%    matrix set caused by lagrangian remainder of the linearization
+%    matrix set caused by Lagrangian remainder of the linearization
 %
 % Syntax:
 %    [dA,dB] = lin_error2dAB(R,U,hessian,p,varargin)
@@ -32,6 +32,7 @@ function [dA,dB] = lin_error2dAB(R,U,hessian,p,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% init
 totalInt = interval(R);
 inputInt = interval(U);
 dim_x = size(totalInt,1);
@@ -39,17 +40,17 @@ dim_u = size(inputInt,1);
 dxInt = interval(R+(-p.x));
 duInt = interval(U+(-p.u));
 
-if length(varargin)==1
-    H = hessian(totalInt,inputInt,varargin{1});
-else
-    H = hessian(totalInt,inputInt);
-end
+% compute hessian
+H = hessian(totalInt,inputInt,varargin{:});
 
+% init derivative variables
 dx = max(abs(dxInt.inf),abs(dxInt.sup));
 du = max(abs(duInt.inf),abs(duInt.sup));
 dz = [dx;du];
 dA = zeros(dim_x,dim_x);
 dB = zeros(dim_x,dim_u);
+
+% compute dA, dB
 for i = 1:length(H)
     H_ = abs(H{i});
     H_inf = infimum(H_);

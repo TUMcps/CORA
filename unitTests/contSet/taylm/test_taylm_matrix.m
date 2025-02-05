@@ -29,11 +29,11 @@ b = taylm(interval(-3, -1), 7, {'b'}); %-> b - 2 + [0,0]
 t = eye(2)*[a b; b a];
 tol = 10^-6;
 
-assert(appeq( getCoef(t(1,1)),[2; 1], tol ))
-assert(appeq( getCoef(t(1,2)),[-2; 1], tol ))
-assert(appeq( getCoef(t(2,1)),[-2; 1], tol ))
-assert(appeq( getCoef(t(2,2)),[2; 1], tol ))
-assert(appeq( getRem(t), interval(0, 0), tol))
+assert(priv_appeq( getCoef(t(1,1)),[2; 1], tol ))
+assert(priv_appeq( getCoef(t(1,2)),[-2; 1], tol ))
+assert(priv_appeq( getCoef(t(2,1)),[-2; 1], tol ))
+assert(priv_appeq( getCoef(t(2,2)),[2; 1], tol ))
+assert(priv_appeq( getRem(t), interval(0, 0), tol))
 
 
 %% Test 2
@@ -42,11 +42,11 @@ b = taylm(interval(-3, -1), 7, {'b'}); %-> b - 2 + [0,0]
 t = eye(2).*[a b; b a];
 tol = 10^-6;
 
-assert(appeq( getCoef(t(1,1)),[2; 1], tol ))
-assert(appeq( getCoef(t(1,2)),0, tol ))
-assert(appeq( getCoef(t(2,1)),0, tol ))
-assert(appeq( getCoef(t(2,2)),[2; 1], tol ))
-assert(appeq( getRem(t), interval(0, 0), tol))
+assert(priv_appeq( getCoef(t(1,1)),[2; 1], tol ))
+assert(priv_appeq( getCoef(t(1,2)),0, tol ))
+assert(priv_appeq( getCoef(t(2,1)),0, tol ))
+assert(priv_appeq( getCoef(t(2,2)),[2; 1], tol ))
+assert(priv_appeq( getRem(t), interval(0, 0), tol))
 
 
 %% Test 3
@@ -76,11 +76,11 @@ t21 = b*a + a*b;
 t22 = b*b + a*a;
 tol = 10^-6;
 
-assert(appeq( getCoef(t(1,1)),getCoef(t11), tol ))
-assert(appeq( getCoef(t(1,2)),getCoef(t12), tol ))
-assert(appeq( getCoef(t(2,1)),getCoef(t21), tol ))
-assert(appeq( getCoef(t(2,2)),getCoef(t22), tol ))
-assert(appeq( getRem(t), interval(0, 0), tol))
+assert(priv_appeq( getCoef(t(1,1)),getCoef(t11), tol ))
+assert(priv_appeq( getCoef(t(1,2)),getCoef(t12), tol ))
+assert(priv_appeq( getCoef(t(2,1)),getCoef(t21), tol ))
+assert(priv_appeq( getCoef(t(2,2)),getCoef(t22), tol ))
+assert(priv_appeq( getRem(t), interval(0, 0), tol))
 
 
  %% Test 6
@@ -93,11 +93,11 @@ t21 = b.*b;
 t22 = a.*a;
 tol = 10^-6;
 
-assert(appeq( getCoef(t(1,1)),getCoef(t11), tol ))
-assert(appeq( getCoef(t(1,2)),getCoef(t12), tol ))
-assert(appeq( getCoef(t(2,1)),getCoef(t21), tol ))
-assert(appeq( getCoef(t(2,2)),getCoef(t22), tol ))
-assert(appeq( getRem(t), interval(0, 0), tol))
+assert(priv_appeq( getCoef(t(1,1)),getCoef(t11), tol ))
+assert(priv_appeq( getCoef(t(1,2)),getCoef(t12), tol ))
+assert(priv_appeq( getCoef(t(2,1)),getCoef(t21), tol ))
+assert(priv_appeq( getCoef(t(2,2)),getCoef(t22), tol ))
+assert(priv_appeq( getRem(t), interval(0, 0), tol))
 
  %% Test 7
 syms x1 x2
@@ -108,10 +108,10 @@ t = C*B;
 
 tol = 10^-6;
 
-assert(appeq( getCoef(t(1,1)),1, tol ))
-assert(appeq( getCoef(t(1,2)),0, tol ))
-assert(appeq( getCoef(t(2,1)),0, tol ))
-assert(appeq( getCoef(t(2,2)),1, tol ))
+assert(priv_appeq( getCoef(t(1,1)),1, tol ))
+assert(priv_appeq( getCoef(t(1,2)),0, tol ))
+assert(priv_appeq( getCoef(t(2,1)),0, tol ))
+assert(priv_appeq( getCoef(t(2,2)),1, tol ))
 
 end
 

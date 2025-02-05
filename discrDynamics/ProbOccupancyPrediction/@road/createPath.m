@@ -1,6 +1,28 @@
 function [Obj]=createPath(varargin)
-%Modified: 14.11.07
-%Modified: 29.08.08
+% createPath - ???
+%
+% Syntax:
+%    [Obj]=createPath(varargin)
+%
+% Inputs:
+%    ???
+%
+% Outputs:
+%    ???
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       ???
+% Written:       ???
+% Last update:   14-November-2007
+%                29-August-2008
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %standard specification
 if nargin==4
@@ -43,3 +65,5 @@ Obj.segments.y=y;
 Obj.segments.angle=angle;
 
 save('path.mat', 'x', 'y', 'angle');
+
+% ------------------------------ END OF CODE ------------------------------

@@ -2,8 +2,8 @@ function intervals = cellIntervals(obj,varargin)
 % cellIntervals - returns a cell array of interval objects 
 % corresponding to the cells specified as input.
 %
-% Syntax:  
-%   intervals = segmentInterval(obj,varargin)
+% Syntax:
+%   intervals = cellIntervals(obj,varargin)
 %
 % Inputs:
 %    obj - partition object
@@ -20,13 +20,13 @@ function intervals = cellIntervals(obj,varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff, Aaron Pereira
-% Written:      14-September-2006
-% Last update:  01-August-2017 (AP)
-%               08-August-2018 (MA)
-% Last revision:---
+% Authors:       Matthias Althoff, Aaron Pereira
+% Written:       14-September-2006
+% Last update:   01-August-2017 (AP)
+%                08-August-2018 (MA)
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 
 if nargin > 1   % if the cells are specified
@@ -54,4 +54,4 @@ for i = 1:size(subscripts,1)
     intervals{i} = interval(leftLimit, rightLimit);
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

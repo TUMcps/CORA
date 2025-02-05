@@ -35,7 +35,7 @@ try
 if isa(sys,'contDynamics')
     
     % convert U to a zonotope if given as an interval
-    if ~any(strcmp(func,{'reachInnerProjection','simulateRandom','observe'}))
+    if ~any(strcmp(func,{'priv_reachInnerProjection','simulateRandom','observe'}))
         [params,options] = aux_convert_U(sys,params,options);
     end
     
@@ -75,11 +75,11 @@ if isa(sys,'contDynamics')
     
     % set alg and N
     if isa(sys,'nonlinearSys') && contains(func,'reachInner')
-        if strcmp(func,'reachInnerScaling')
+        if strcmp(func,'priv_reachInnerScaling')
             % use polynomialization, compute number of steps
             [params,options] = aux_set_R0_alg_tensorOrder(sys,params,options);
             [params,options] = aux_set_N(sys,params,options);
-        elseif strcmp(func,'reachInnerProjection')
+        elseif strcmp(func,'priv_reachInnerProjection')
             % R0 converted to an interval
             [params,options] = aux_set_R0int(sys,params,options);
         end
@@ -112,7 +112,7 @@ if isa(sys,'contDynamics')
     end
 
     % verification: specifications and corresponding time intervals
-    if strcmp(func,'verifyRA_zonotope')
+    if strcmp(func,'priv_verifyRA_zonotope')
         % initialize time intervals where (un)safe sets are not yet verified
         [params,options] = aux_set_unsatIntervals(sys,params,options);
 
@@ -278,7 +278,7 @@ end
 B = sys.B;
 if isscalar(B)
     if B == 1
-        B = eye(sys.nrOfStates);
+        B = eye(sys.nrOfDims);
     elseif B == 0
         % 0 * U is only the origin, check offset
         options.originContained = ~any(sys.c); return
@@ -358,7 +358,7 @@ end
 end
 
 function [params,options] = aux_set_R0_alg_tensorOrder(sys,params,options)
-
+% sets default R0 (polyZonotope), alg (poly), and tensorOrder (3)
 params.R0 = polyZonotope(params.R0);
 options.alg = 'poly';
 options.tensorOrder = 3;
@@ -366,7 +366,7 @@ options.tensorOrder = 3;
 end
 
 function [params,options] = aux_set_R0int(sys,params,options)
-
+% sets R0 as interval
 params.R0 = interval(params.R0);
 
 end
@@ -393,7 +393,7 @@ end
 end
 
 function [params,options] = aux_set_N(sys,params,options)
-
+% compute number of time steps
 if isfield(options,'timeStepInner')
     options.N = round(options.timeStepInner/options.timeStep,0);
     options = rmfield(options,'timeStepInner');
@@ -428,7 +428,7 @@ elseif contains(options.alg,'poly')
     options.zetaphi = [0.80; 0.75; 0.63];
     options.tensorOrder = 3;                        % fixed
 end
-options.R.error = zeros(sys.nrOfStates,1);                 % for consistency
+options.R.error = zeros(sys.nrOfDims,1);                 % for consistency
 
 % options to speed up tensor computation
 options.thirdOrderTensorempty = false;
@@ -447,7 +447,7 @@ params.R = params.R0;               % for initial set
 options.redFactor = 0.0005;         % zeta_Z (zonotope order)
 options.zetaK = 0.90;               % zeta_K (tensorOrder)
 options.zetaphi = 0.85;             % zeta_Delta (timeStep)
-options.R.error = zeros(sys.nrOfStates,1);                 % for consistency
+options.R.error = zeros(sys.nrOfDims,1);                 % for consistency
 
 % options to speed up tensor computation
 options.thirdOrderTensorempty = false;
@@ -478,7 +478,7 @@ end
 end
 
 function [params,options] = aux_set_nonlinearSys_reachInnerMinkdiff(sys,params,options)
-% set options for reachInnerMinkdiff algorithm to re-use parts of the code
+% set options for priv_reachInnerMinkdiff algorithm to re-use parts of the code
 % for computing outer approximations
 
 options.alg = 'lin';
@@ -635,7 +635,7 @@ numLoc = length(sys.location);
 
 % small hack for nonlinear dynamics which do not yet support params.W
 if ~isfield(params,'W')
-    params.W = zonotope(zeros(sys.nrOfStates(1),1));
+    params.W = zonotope(zeros(sys.nrOfDims(1),1));
 end
 
 % disturbance set

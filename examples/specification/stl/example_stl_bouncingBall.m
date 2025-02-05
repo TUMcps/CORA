@@ -85,6 +85,7 @@ for j = 1:length(alg)
 
     tFull = 0;
 
+    % run all formulas for the selected algorithm
     for i = 1:length(phi)
         tic
         valid = modelChecking(R,phi{i},alg{j});
@@ -94,6 +95,7 @@ for j = 1:length(alg)
 
         tFull = tFull + tComp;
 
+        % all tested fomulas are valid
         if ~valid
             disp('false negative');
         end

@@ -130,11 +130,11 @@ methods
     % update system dynamics for the new augmented input [u; w] where w is
     % the process noise acting on all states 
     function nlnsysDT = augment_u_with_w(nlnsysDT)
-        dim_x = nlnsysDT.nrOfStates;
+        dim_x = nlnsysDT.nrOfDims;
         fun = @(x,u) nlnsysDT.mFile(x,u(1:nlnsysDT.nrOfInputs)) + u(nlnsysDT.nrOfInputs+1:nlnsysDT.nrOfInputs+dim_x);
         nlnsysDT.mFile = fun;
         nlnsysDT.nrOfInputs = nlnsysDT.nrOfInputs + dim_x;
-        %nlnsysDT = nonlinearSysDT(nlnsysDT.name,fun, obj.dt, obj.nrOfStates, obj.nrOfInputs+dim_x, obj.out_mFile, obj.nrOfOutputs);
+        %nlnsysDT = nonlinearSysDT(nlnsysDT.name,fun, obj.dt, obj.nrOfDims, obj.nrOfInputs+dim_x, obj.out_mFile, obj.nrOfOutputs);
     end
 
     % update system dynamics for the new augmented input [u; v] where v is
@@ -144,7 +144,7 @@ methods
         outfun = @(x,u) nlnsysDT.out_mFile(x,u(1:nlnsysDT.nrOfInputs)) + u(nlnsysDT.nrOfInputs+1:nlnsysDT.nrOfInputs+dim_y);
         nlnsysDT.out_mFile = outfun;
         nlnsysDT.nrOfInputs = nlnsysDT.nrOfInputs + dim_y;
-        %nlnsysDT = nonlinearSysDT(nlnsysDT.name, obj.mFile, obj.dt, obj.nrOfStates, obj.nrOfInputs+dim_y, outfun, dim_y);
+        %nlnsysDT = nonlinearSysDT(nlnsysDT.name, obj.mFile, obj.dt, obj.nrOfDims, obj.nrOfInputs+dim_y, outfun, dim_y);
     end
     
     % set tensors to either numeric or interval arithmetic

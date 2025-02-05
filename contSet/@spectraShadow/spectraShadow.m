@@ -363,6 +363,7 @@ function aux_checkInputArgs(A,c,G,ESumRep,n_in)
 end
 
 function [A,c,G,ESumRep] = aux_computeProperties(A,c,G,ESumRep,n_in)
+% compute properties
     if n_in == 1 && ~isempty(ESumRep)
         A = [ESumRep{1} ESumRep{2}];
         

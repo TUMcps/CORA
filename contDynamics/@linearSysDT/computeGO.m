@@ -50,7 +50,7 @@ function p_GO = computeGO(linsysDT,x0,u_ref,n_k)
 
 if ~isempty(x0) && ~isempty(u_ref)
     n_s = size(u_ref,3);
-    x_ref = zeros(linsysDT.nrOfStates, n_k+1,n_s);
+    x_ref = zeros(linsysDT.nrOfDims, n_k+1,n_s);
     y_ref = zeros(linsysDT.nrOfOutputs, n_k,n_s);
     if isa(x0, 'contSet')
         x0 = center(x0);
@@ -91,19 +91,19 @@ if iscell(linsysDT.A)
             end
             AA_prod = linsysDT.A{k} * A_prod_j;
             p_GO.B{k,j} = AA_prod * linsysDT.B{j};
-            p_GO.F{k,j} = AA_prod * [eye(linsysDT.nrOfStates) zeros(linsysDT.nrOfStates, linsysDT.nrOfOutputs)];
+            p_GO.F{k,j} = AA_prod * [eye(linsysDT.nrOfDims) zeros(linsysDT.nrOfDims, linsysDT.nrOfOutputs)];
 
             CA_prod = linsysDT.C{k} * A_prod_j;
             p_GO.D{k,j} = CA_prod * linsysDT.B{j};
-            p_GO.E{k,j} = CA_prod * [eye(linsysDT.nrOfStates) zeros(linsysDT.nrOfStates, linsysDT.nrOfOutputs)];
+            p_GO.E{k,j} = CA_prod * [eye(linsysDT.nrOfDims) zeros(linsysDT.nrOfDims, linsysDT.nrOfOutputs)];
         end
         p_GO.A{k} = linsysDT.A{k} * A_prod;
         p_GO.B{k,k} = linsysDT.B{k};
-        p_GO.F{k,k} = [eye(linsysDT.nrOfStates) zeros(linsysDT.nrOfStates, linsysDT.nrOfOutputs)]; % L = [L_x; L_y]
+        p_GO.F{k,k} = [eye(linsysDT.nrOfDims) zeros(linsysDT.nrOfDims, linsysDT.nrOfOutputs)]; % L = [L_x; L_y]
 
         p_GO.C{k} = linsysDT.C{k} * A_prod;
         p_GO.D{k,k} = linsysDT.D{k};
-        p_GO.E{k,k} = [zeros(linsysDT.nrOfOutputs, linsysDT.nrOfStates) eye(linsysDT.nrOfOutputs)]; % L = [L_x; L_y]
+        p_GO.E{k,k} = [zeros(linsysDT.nrOfOutputs, linsysDT.nrOfDims) eye(linsysDT.nrOfOutputs)]; % L = [L_x; L_y]
     end
 else
     %linear time-invariant system    

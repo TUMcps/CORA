@@ -45,6 +45,9 @@ end
 
 % list all files
 files = findfiles(directory,true,prefix,fileext);
+% filter s.t. test_codingConventions is always on top (if present)
+idxCC = arrayfun(@(file) strcmp(file.name,'test_codingConventions.m'), files);
+files = [files(idxCC); files(~idxCC)];
 
 % list of currently open figures
 prevFigures = get(groot, 'Children');

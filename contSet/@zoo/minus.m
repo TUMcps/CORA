@@ -25,33 +25,36 @@ function res = minus(factor1, factor2)
 
 % ------------------------------ BEGIN CODE -------------------------------
    
-    if isa(factor1, 'zoo') && isa(factor2, 'zoo')
-        
-        res = arrayfun(@(a, b) aux_s_minus_zz(a, b), factor1, factor2, 'UniformOutput', 0);
+% zoo
+if isa(factor1, 'zoo') && isa(factor2, 'zoo')
+    
+    res = arrayfun(@(a, b) aux_s_minus_zz(a, b), factor1, factor2, 'UniformOutput', 0);
 
-    elseif isa(factor1,'zoo') && isa(factor2,'double')
-        
-        res = arrayfun(@(a) aux_s_minus_zd(a, factor2), factor1, 'UniformOutput', 0);
-        
-    elseif isa(factor1,'double') && isa(factor2,'zoo')
-        
-        res = arrayfun(@(b) aux_s_minus_dz(factor1, b), factor2, 'UniformOutput', 0);
-     
-    elseif isa(factor1,'zoo') && isa(factor2,'interval')
-        
-        res = arrayfun(@(a) aux_s_minus_zd(a, factor2), factor1, 'UniformOutput', 0);
-        
-    elseif isa(factor1,'interval') && isa(factor2,'zoo') 
-        
-        res = arrayfun(@(b) aux_s_minus_dz(factor1, b), factor2, 'UniformOutput', 0);
-        
-    else
-         throw(CORAerror('CORA:wrongValue','first/second',...
-             "('zoo','zoo'), ('zoo','double'), ('double','zoo'), ('zoo','interval'), or ('interval','zoo')"));
-        
-    end
-    A = cat(1, res{:});
-    res = reshape(A, size(res));
+    % numeric
+elseif isa(factor1,'zoo') && isa(factor2,'double')
+    
+    res = arrayfun(@(a) aux_s_minus_zd(a, factor2), factor1, 'UniformOutput', 0);
+    
+elseif isa(factor1,'double') && isa(factor2,'zoo')
+    
+    res = arrayfun(@(b) aux_s_minus_dz(factor1, b), factor2, 'UniformOutput', 0);
+ 
+    % interval
+elseif isa(factor1,'zoo') && isa(factor2,'interval')
+    
+    res = arrayfun(@(a) aux_s_minus_zd(a, factor2), factor1, 'UniformOutput', 0);
+    
+elseif isa(factor1,'interval') && isa(factor2,'zoo') 
+    
+    res = arrayfun(@(b) aux_s_minus_dz(factor1, b), factor2, 'UniformOutput', 0);
+    
+else % throw error
+     throw(CORAerror('CORA:wrongValue','first/second',...
+         "('zoo','zoo'), ('zoo','double'), ('double','zoo'), ('zoo','interval'), or ('interval','zoo')"));
+    
+end
+A = cat(1, res{:});
+res = reshape(A, size(res));
     
 end
 
@@ -60,8 +63,9 @@ end
 
 % Implementation for a scalar
 function res = aux_s_minus_zz(factor1, factor2)
+    % zoo and zoo
 
-    [factor1,factor2] = combineZooObjects(factor1,factor2);
+    [factor1,factor2] = priv_combineZooObjects(factor1,factor2);
     res = factor1;
     for i = 1:length(res.method)
        res.objects{i} = factor1.objects{i} - factor2.objects{i}; 
@@ -70,6 +74,7 @@ function res = aux_s_minus_zz(factor1, factor2)
 end
 
 function res = aux_s_minus_zd(factor1, factor2)
+    % zoo and double
         
     res = factor1;
     for i = 1:length(res.method)
@@ -79,6 +84,7 @@ function res = aux_s_minus_zd(factor1, factor2)
 end
 
 function res = aux_s_minus_dz(factor1, factor2)
+    % double and zoo
         
     res = factor2;
     for i = 1:length(res.method)

@@ -2,7 +2,7 @@ function f = prodDes(x,u)
 % prodDes - system dynamics for the production-destruction benchmark
 %           (see Sec. 3.1 in [1])
 %
-% Syntax:  
+% Syntax:
 %    f = prodDes(x,u)
 %
 % Inputs:
@@ -16,12 +16,12 @@ function f = prodDes(x,u)
 %    [1] L. Geretti, “ARCH-COMP20 Category Report: Continuous and Hybrid 
 %        Systems with Nonlinear Dynamics", 2020
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       22-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     a = 0.3;
     
@@ -31,4 +31,4 @@ function f = prodDes(x,u)
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

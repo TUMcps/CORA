@@ -33,12 +33,14 @@ function S = compact(S,varargin)
 % representation:
 % - capsule, ellipsoid, emptySet, fullspace, halfspace, interval
 if isa(S,'capsule') || isa(S,'ellipsoid') || isa(S,'emptySet') ...
-        || isa(S,'fullspace') || isa(S,'interval')
+        || isa(S,'fullspace') || isa(S,'interval') ...
+        || isa(S,'zonoBundle') || isa(S, 'spectraShadow') ...
+        || isa(S, 'taylm')
     return;
 end
 
 % parse input arguments, set default values
-if isa(S,'zonotope')
+if isa(S,'zonotope') % ---
     [method,tol] = setDefaultValues({'zeros',eps},varargin);
     methods = {'all','zeros','aligned'};
     % reset tolerance for 'aligned' method
@@ -46,29 +48,33 @@ if isa(S,'zonotope')
         tol = 1e-3;
     end
 
-elseif isa(S,'polytope')
+elseif isa(S,'polytope') % ---
     [method,tol] = setDefaultValues({'all',1e-9},varargin);
     methods = {'all','zeros','A','Ae','aligned','V','AtoAe'};
 
-elseif isa(S,'conZonotope')
+elseif isa(S,'conZonotope') % ---
     [method,tol] = setDefaultValues({'all',eps},varargin);
     methods = {'all','zeros'};
 
-elseif isa(S,'polyZonotope')
+elseif isa(S,'polyZonotope') % ---
     [method,tol] = setDefaultValues({'all',eps},varargin);
     methods = {'all','states','exponentMatrix'};
 
-elseif isa(S,'conPolyZono')
+elseif isa(S,'conPolyZono') % ---
     [method,tol] = setDefaultValues({'all',eps},varargin);
     methods = {'all','states','constraints','exponentMatrix'};
 
-elseif isa(S,'levelSet')
+elseif isa(S,'levelSet') % ---
     [method,tol] = setDefaultValues({'all',eps},varargin);
     methods = 'all';
 
-elseif isa(S,'polygon')
+elseif isa(S,'polygon') % ---
     [method,tol] = setDefaultValues({'all',0.01},varargin);
     methods = {'all','simplify','douglasPeucker'};
+
+elseif isa(S,'spectraShadow') % ---
+    [method,tol] = setDefaultValues({'all',eps},varargin);
+    methods = {'all','zeros'};
 
 end
 % check input arguments

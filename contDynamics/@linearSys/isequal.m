@@ -54,7 +54,7 @@ if ~strcmp(linsys1.name,linsys2.name)
 end
 
 % number of states, inputs, outputs
-if linsys1.nrOfStates ~= linsys2.nrOfStates || linsys1.nrOfInputs ~= linsys2.nrOfInputs ...
+if linsys1.nrOfDims ~= linsys2.nrOfDims || linsys1.nrOfInputs ~= linsys2.nrOfInputs ...
         || linsys1.nrOfOutputs ~= linsys2.nrOfOutputs
     res = false; return
 end

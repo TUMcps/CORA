@@ -236,12 +236,13 @@ else
     tComp = toc;
     disp(['Time to compute reachable set: ', num2str(tComp)]);
 
+    % check reachable set
     tic
     Rend = R{end};
     Rend = interval(Rend);
-
     isVeri = ~isIntersecting(Rend, unsafeSet);
     tVeri = toc;
+    
     disp(['Time to check verification: ', num2str(tVeri)]);
 
     if isVeri && i == tFinal
@@ -250,6 +251,7 @@ else
         res = 'UNKNOWN';
     end
 end
+% display result
 tTotal = tSim+tVio+tComp+tVeri;
 disp(['Total Time: ', num2str(tTotal)]);
 disp(['Result: ' res])

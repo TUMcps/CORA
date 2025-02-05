@@ -64,6 +64,7 @@ u5 = until(p, interval(1,9), q);
 assert(isequal([2 9 14], u5.time));
 assert(isequal([false true false], u5.value));
 
+% more tests
 u6 = until(p, interval(6,7), q);
 assert(isequal([2 4 14], u6.time));
 assert(isequal([false true false], u6.value));
@@ -106,6 +107,7 @@ u5 = until(p, interval(1,9), q);
 assert(isequal([2 9 14], u5.time));
 assert(isequal([false true false], u5.value));
 
+% more tests
 u6 = until(p, interval(6,7), q);
 assert(isequal([2 4 14], u6.time));
 assert(isequal([false true false], u6.value));

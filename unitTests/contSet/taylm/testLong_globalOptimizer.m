@@ -235,6 +235,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function f = aux_lennardJonesPotential(x)
+    % lennard jones potential
 
     a{1} = {0;0;0};
     a{2} = {x(1);0;0};
@@ -253,11 +254,13 @@ function f = aux_lennardJonesPotential(x)
 end
 
 function aux_checkOverapproximation(intReal,int)
+    % check over approximation
     assert(all(infimum(int) <= infimum(intReal)))
     assert(all(supremum(int) >= supremum(intReal)))
 end
 
 function aux_checkOverapproximationTol(intReal,int,tol)
+    % check over approximation with tol
     assert(all(infimum(int) <= infimum(intReal)+ones(size(intReal))*tol))
     assert(all(supremum(int) >= supremum(intReal)-ones(size(intReal))*tol))
 end

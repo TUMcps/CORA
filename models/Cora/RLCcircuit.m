@@ -3,7 +3,7 @@ function [matZ_A,matZ_B] = RLCcircuit()
 %              Sec. 5.2 in [1] 
 %             
 %
-% Syntax:  
+% Syntax:
 %    [matZ_A,matZ_B] = RLCcircuit()
 %
 % Inputs:
@@ -19,12 +19,12 @@ function [matZ_A,matZ_B] = RLCcircuit()
 %        Reachability of Linear Dynamic Systems with Parametric 
 %        Uncertainties, pages 69-94. Springer, 2011.
 
-% Author:       Matthias Althoff
-% Written:      04-Oct-2010
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       04-October-2010
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     %nr of nodes
     nrOfNodes=20;
@@ -112,4 +112,4 @@ function [matZ_A,matZ_B] = RLCcircuit()
 
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

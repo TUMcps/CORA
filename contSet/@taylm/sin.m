@@ -54,12 +54,12 @@ function res = aux_s_sin(obj)
         T = obj - c_f;
     end
     
-    % factorial initialisation
+    % factorial initialization
     factor = 1;
     T_factor = 1;
     cs_cf = cos(c_f);
     sn_cf = sin(c_f);
-    % sum initialisation
+    % sum initialization
     T1 = sn_cf;
 
     for i = 1:obj.max_order
@@ -74,7 +74,7 @@ function res = aux_s_sin(obj)
 
     rem = interval(T);
     
-    % temporaly increase max-order to get tight bounds for interval "remPow"
+    % temporally increase max-order to get tight bounds for interval "remPow"
     T_factor.max_order = T_factor.max_order + T.max_order;
     remPow = interval(T_factor.*T);     % remPow = B( T^(k+1) )
     
@@ -98,6 +98,7 @@ function res = aux_s_sin(obj)
 end
 
 function res = aux_sgn_sn(n)
+    % helper function
     if mod(n,4) == 0 || mod(n,4) == 1
         res = 1;
     else

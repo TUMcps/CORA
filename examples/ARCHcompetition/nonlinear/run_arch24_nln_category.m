@@ -38,7 +38,7 @@ benchmarks = struct(...
     'prefix', benchmark_funcs);
 
 cnt = 0;
-% Robertson has an issue... abstractionError_adaptive
+% Robertson has an issue... priv_abstractionError_adaptive
 % all others are ok
 
 % loop over benchmarks

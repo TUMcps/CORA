@@ -2,7 +2,7 @@ function f = tankN(x,u,h,n_x)
 % tankN - system dynamics for the discrete-time version of the tank 
 %   benchmark with n_x states (see Sec. VII in [1])
 %
-% Syntax:  
+% Syntax:
 %    f = tankN(x,u,h)
 %
 % Inputs:
@@ -17,12 +17,12 @@ function f = tankN(x,u,h,n_x)
 %    [1] M. Althoff et al. "Reachability analysis of nonlinear systems with 
 %        uncertain parameters using conservative linearization", CDC 2008
 
-% Author:        Laura Luetzow, Matthias Althoff
+% Authors:       Laura Luetzow, Matthias Althoff
 % Written:       22-September-2023
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parameter
     k = 0.3;
@@ -40,4 +40,4 @@ function f = tankN(x,u,h,n_x)
     end
 
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

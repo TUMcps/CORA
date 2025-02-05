@@ -32,17 +32,21 @@ function int = plus(summand1,summand2)
 % determine the interval object
 [res,summand] = findClassArg(summand1,summand2,'stlInterval');
 
+% check empty set
 if representsa(res,'emptySet') || representsa(summand,'emptySet')
     int = stlInterval();
     return;
 end
 
+% stl + stl
 if isa(summand,'stlInterval')
     lb = res.lower + summand.lower;
     ub = res.upper + summand.upper;
     lc = res.leftClosed && summand.leftClosed;
     rc = res.rightClosed && summand.rightClosed;
     int = stlInterval(lb,ub,lc,rc);
+
+% stl + interval
 elseif isa(summand,'interval')
     if dim(summand) ~= 1
         throw(CORAerror('CORA:dimensionMismatch',res,summand));
@@ -50,6 +54,8 @@ elseif isa(summand,'interval')
     lb = res.lower + infimum(summand);
     ub = res.upper + supremum(summand);
     int = stlInterval(lb,ub,res.leftClosed,res.rightClosed);
+
+% stl + numeric
 elseif isa(summand,'numeric')
     lb = res.lower + summand;
     ub = res.upper + summand;

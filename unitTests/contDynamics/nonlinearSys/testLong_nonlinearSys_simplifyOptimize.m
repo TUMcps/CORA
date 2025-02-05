@@ -121,7 +121,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function dx = aux_testDyn1(x,u)
-
+    % dynamic 1
     dx(1,1) = x(3);
     dx(2,1) = x(4);
     dx(3,1) = 0.0002624*x(2) - 0.576038456806855922248709263104*x(1) - ...
@@ -135,7 +135,7 @@ function dx = aux_testDyn1(x,u)
 end
 
 function dx = aux_testDyn2(x,u)
-
+    % dynamic 2
     dx(1,1) = x(3);
     dx(2,1) = x(4);
     dx(3,1) = 0.0002624*x(2) - 0.576038456806855922248709263104*x(1) - ...

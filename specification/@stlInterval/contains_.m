@@ -1,19 +1,34 @@
-function res = contains_(I,S,type,tol,varargin)
+function [res,cert,scaling] = contains_(I,S,method,tol,maxEval,certToggle,scalingToggle,varargin)
 % contains_ - determines if an STL interval contains a set or a point
 %
 % Syntax:
-%    res = contains_(I,S)
-%    res = contains_(I,S,type)
-%    res = contains_(I,S,type,tol)
+%    [res,cert,scaling] = contains_(I,S,method,tol,maxEval,certToggle,scalingToggle,varargin)
 %
 % Inputs:
 %    I - interval object
 %    S - contSet object or single point
-%    type - 'exact' or 'approx'
-%    tol - tolerance
+%    method - method used for the containment check.
+%       Currently, the only available options are 'exact' and 'approx'.
+%    tol - tolerance for the containment check; the higher the
+%       tolerance, the more likely it is that points near the boundary of I
+%       will be detected as lying in I, which can be useful to counteract
+%       errors originating from floating point errors.
+%    maxEval - Currently has no effect
+%    certToggle - if set to 'true', cert will be computed (see below),
+%       otherwise cert will be set to NaN.
+%    scalingToggle - if set to 'true', scaling will be computed (see
+%       below), otherwise scaling will be set to inf.
 %
 % Outputs:
 %    res - true/false
+%    cert - returns true iff the result of res could be
+%           verified. For example, if res=false and cert=true, S is
+%           guaranteed to not be contained in I, whereas if res=false and
+%           cert=false, nothing can be deduced (S could still be
+%           contained in I).
+%           If res=true, then cert=true.
+%    scaling - returns the smallest number 'scaling', such that
+%           scaling*(I - I.center) + I.center contains S.
 %
 % Example: 
 %    I1 = stlInterval(1,5,false,false);
@@ -35,6 +50,15 @@ function res = contains_(I,S,type,tol,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% The code is not yet ready to deal with scaling or cert
+cert = NaN; 
+scaling = Inf;
+if scalingToggle || certToggle
+    throw(CORAerror('CORA:notSupported',...
+        "The computation of the scaling factor or cert " + ...
+        "for polynomial zonotopes is not yet implemented."));
+end
+
 % set in empty set
 if representsa_(I,'emptySet',0)
     res = representsa_(S,'emptySet',0);
@@ -54,8 +78,8 @@ elseif isa(S,'stlInterval')
         (withinTol(I.lower,S.lower,tol) && (I.leftClosed || ~S.leftClosed));
     res = lowerIncluded && upperIncluded;
 elseif I.leftClosed && I.rightClosed
-    res = contains(interval(I),S,type,tol);
-elseif strcmp(type,'approx')
+    res = contains(interval(I),S,method,tol);
+elseif strcmp(method,'approx')
     if ~I.leftClosed
         lower = I.lower + tol + eps;
     else
@@ -66,7 +90,7 @@ elseif strcmp(type,'approx')
     else
         upper = I.upper;
     end
-    res = contains(interval(lower,upper),S,type,tol);
+    res = contains(interval(lower,upper),S,method,tol);
 else
     throw(CORAerror('CORA:noExactAlg',I,S));
 end

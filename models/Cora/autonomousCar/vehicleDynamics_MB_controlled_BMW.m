@@ -2,7 +2,7 @@ function f = vehicleDynamics_MB_controlled_BMW(x,u)
 % vehicleDynamics_MB_controlled_BMW - enhances multi-body model with 
 % control for trajectory tracking
 %
-% Syntax:  
+% Syntax:
 %    f = vehicleDynamics_MB_controlled_BMW(x,u)
 %
 % Inputs:
@@ -26,12 +26,12 @@ function f = vehicleDynamics_MB_controlled_BMW(x,u)
 %
 % See also: DOTcontrol, vehicleDynamics_MB_BMW
 
-% Author:       Matthias Althoff
-% Written:      26-August-2011
-% Last update:  15-June-2023
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       26-August-2011
+% Last update:   15-June-2023
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %obtain control inputs
 carInput = DOTcontrol(x,u);
@@ -40,5 +40,4 @@ carInput = DOTcontrol(x,u);
 f = vehicleDynamics_MB_BMW(x,carInput);
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

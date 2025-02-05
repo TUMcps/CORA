@@ -1,7 +1,7 @@
 function dx = tank6Eq(x,u)
 % tank6Eq - system dynamics for the tank benchmark (see Sec. VII in [1])
 %
-% Syntax:  
+% Syntax:
 %    dx = tank6Eq(x,u)
 %
 % Inputs:
@@ -15,12 +15,12 @@ function dx = tank6Eq(x,u)
 %    [1] M. Althoff et al. "Reachability analysis of nonlinear systems with 
 %        uncertain parameters using conservative linearization", CDC 2008
 
-% Author:        Matthias Althoff
+% Authors:       Matthias Althoff
 % Written:       22-May-2020
 % Last update:   ---
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
     % parameter
     k = 0.015;
@@ -35,4 +35,4 @@ function dx = tank6Eq(x,u)
     dx(5,1) = k*sqrt(2*g)*(sqrt(x(4))-sqrt(x(5)));          % tank 5
     dx(6,1) = k*sqrt(2*g)*(sqrt(x(5))-sqrt(x(6)));          % tank 6
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

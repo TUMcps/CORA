@@ -1,7 +1,7 @@
 function profileTest(handle,x0,xEnd,acc)
 % profileTest - tests velocity profiles
 %
-% Syntax:  
+% Syntax:
 %    profileTest(handle,x0,xEnd)
 %
 % Inputs:
@@ -21,12 +21,12 @@ function profileTest(handle,x0,xEnd,acc)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      03-July-2008 
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       03-July-2008 
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %generate position vector
 posVector=x0:1:xEnd;
@@ -39,4 +39,4 @@ end
 %plot result
 plot(posVector,velVector);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

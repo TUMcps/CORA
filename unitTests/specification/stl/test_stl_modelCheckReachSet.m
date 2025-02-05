@@ -194,6 +194,7 @@ dyn = linearSys(diag([0 0]), 0, [0;1]);
 inv = polytope([0 -1], -5);
 loc(3) = location(inv,transition(),dyn);
 
+% build automaton
 sys = hybridAutomaton(loc);
 
 params.tFinal = 10;

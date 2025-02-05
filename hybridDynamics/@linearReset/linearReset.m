@@ -114,6 +114,7 @@ function aux_checkInputArgs(A,B,c,n_in)
             {c, 'att', 'numeric'}
         });
 
+        % check size
         if ~isempty(c) && ~isvector(c)
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 'Offset c must be a vector.'));
@@ -132,6 +133,7 @@ function aux_checkInputArgs(A,B,c,n_in)
 end
 
 function [A,B,c,preStateDim,inputDim,postStateDim] = aux_computeProperties(A,B,c)
+    % compute properties
 
     if isempty(A)
         if ~isempty(B)

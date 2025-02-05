@@ -36,7 +36,7 @@ function res = consistentTimeStep(obj,dt)
 
         res = obj;
 
-    elseif strcmp(obj.type,'until')
+    elseif strcmp(obj.type,'until') % ---
 
         res = obj;
         from = scale*res.from; to = scale*res.to;
@@ -50,7 +50,7 @@ function res = consistentTimeStep(obj,dt)
         res.lhs = consistentTimeStep(res.lhs,dt);
         res.rhs = consistentTimeStep(res.rhs,dt);
 
-    elseif strcmp(obj.type,'release')
+    elseif strcmp(obj.type,'release') % ---
 
         res = obj;
         from = scale*res.from; to = scale*res.to;
@@ -64,7 +64,7 @@ function res = consistentTimeStep(obj,dt)
         res.lhs = consistentTimeStep(res.lhs,dt);
         res.rhs = consistentTimeStep(res.rhs,dt);
 
-    elseif strcmp(obj.type,'globally')
+    elseif strcmp(obj.type,'globally') % ---
 
         res = obj;
         from = scale*res.from; to = scale*res.to;
@@ -77,7 +77,7 @@ function res = consistentTimeStep(obj,dt)
 
         res.lhs = consistentTimeStep(res.lhs,dt);
 
-    elseif strcmp(obj.type,'finally')
+    elseif strcmp(obj.type,'finally') % ---
 
         res = obj;
         from = scale*res.from; to = scale*res.to;
@@ -90,7 +90,7 @@ function res = consistentTimeStep(obj,dt)
 
         res.lhs = consistentTimeStep(res.lhs,dt);
 
-    elseif strcmp(obj.type,'next')
+    elseif strcmp(obj.type,'next') % ---
 
         res = obj;
         from = scale*res.from;
@@ -103,7 +103,7 @@ function res = consistentTimeStep(obj,dt)
             res.lhs = consistentTimeStep(res.lhs,dt);
         end
 
-    elseif strcmp(obj.type,'~')
+    elseif strcmp(obj.type,'~') % ---
         
         res = ~consistentTimeStep(obj.lhs,dt);
 

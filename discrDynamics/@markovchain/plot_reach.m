@@ -1,11 +1,11 @@
 function plot_reach(varargin)
-% plots - Generates 3 plots of a Markov chain:
+% plot_reach - Generates 3 plots of a Markov chain:
 % 1. Plot the continuous reachable set together with sample trajectories
 % 2. Plot the reachable cells for the time point
 % 3. Plot the reachable cells for the time interval
 %
-% Syntax:  
-%    plot(Obj,HA,options,(actualSegmentNr))
+% Syntax:
+%    plot_reach(Obj,HA,options,(actualSegmentNr))
 %
 % Inputs:
 %    Obj - markovchain object
@@ -26,13 +26,13 @@ function plot_reach(varargin)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      15-September-2006 
-% Last update:  26-March-2008
-%               24-July-2020
+% Authors:       Matthias Althoff
+% Written:       15-September-2006 
+% Last update:   26-March-2008
+%                24-July-2020
 % Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %read objects
 Obj = varargin{1};
@@ -52,7 +52,7 @@ hold on
 subplot(1,3,1); 
 plot(Obj.field);
 hold on
-traj_plot(HA,R,params);
+aux_traj_plot(HA,R,params);
 
 %choose input that has been devoloped in the end
 iInput=length(Obj.T.T);
@@ -71,9 +71,11 @@ plot(Obj.field);
 xlabel('x_1');
 ylabel('x_2');
 
-%-------------------------------------------------------
-%traj_plot: generates sample trajectories
-function traj_plot(HA,R,params)
+
+% Auxiliary functions -----------------------------------------------------
+
+function aux_traj_plot(HA,R,params)
+%aux_traj_plot: generates sample trajectories
 
 % plot reachable set
 plot(R,[1,2],'b','EdgeColor','b');
@@ -93,5 +95,4 @@ simRes = simulateRandom(HA,params,simOpt);
 % plot simulated trajectories
 plot(simRes,[1,2],'k');
 
-
-%-------------------------------------------------------
+% ------------------------------ END OF CODE ------------------------------

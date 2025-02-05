@@ -31,6 +31,21 @@ function res = taylm(pZ)
 G = [pZ.G,pZ.GI];
 E = blkdiag(pZ.E,eye(size(pZ.GI,2)));
 
+% catch the case where pZ is empty
+if isemptyobject(pZ)
+    n = dim(pZ);
+    res = taylm.empty(n);
+end
+
+% catch the case where pZ has no generators
+if isempty(G)
+    int = interval(zeros([dim(pZ) 1]),zeros([dim(pZ) 1]));
+    tay = taylm(int);
+
+    res = pZ.c + tay;
+    return
+end
+
 % create Taylor model for factors
 p = length(pZ.id) + size(pZ.GI,2);
 int = interval(-ones(p,1),ones(p,1));

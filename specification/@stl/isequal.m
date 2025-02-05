@@ -34,6 +34,7 @@ function res = isequal(obj1,obj2)
 
     if isa(obj1,'stl') && isa(obj2,'stl') && strcmp(obj1.type,obj2.type)
 
+        % atom
         if ismember(obj1.type,{'true','false'})
 
             res = true;
@@ -42,6 +43,7 @@ function res = isequal(obj1,obj2)
 
             res = strcmp(obj1.var,obj2.var);
 
+            % binary
         elseif ismember(obj1.type,{'&','|','+','*'})
 
             if isequal(obj1.lhs,obj2.lhs)
@@ -52,12 +54,14 @@ function res = isequal(obj1,obj2)
                 end
             end
 
+            % comparator
         elseif ismember(obj1.type,{'-','<','<=','>','>='})
 
             if isequal(obj1.lhs,obj2.lhs) && isequal(obj1.rhs,obj2.rhs)
                 res = true;
             end
 
+            % temporal
         elseif ismember(obj1.type,{'finally','globally','next'})
 
             if isequal(obj1.from,obj2.from) && isequal(obj1.to,obj2.to)
@@ -72,7 +76,6 @@ function res = isequal(obj1,obj2)
             end
 
         else
-            
             res = isequal(obj1.lhs,obj2.lhs);           
         end
     end

@@ -151,6 +151,7 @@ methods
         res = nonlinearOperator(obj,'log');
     end
 
+    % a---
     function res = asin(obj)
         res = nonlinearOperator(obj,'asin');
     end
@@ -163,6 +164,7 @@ methods
         res = nonlinearOperator(obj,'atan');
     end
 
+    % ---h
     function res = sinh(obj)
         res = nonlinearOperator(obj,'sinh');
     end

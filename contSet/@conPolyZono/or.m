@@ -95,7 +95,8 @@ A = blkdiag(1,A_,cPZ.A,S.A);
 A = [A, [0;0;-0.5*cPZ.b;0.5*S.b]];
 
 b = [1;b_;0.5*cPZ.b;0.5*S.b];
-        
+
+% check exponent matrices of constraints
 if ~isempty(cPZ.EC)
     if ~isempty(S.EC)
         temp = blkdiag(cPZ.EC,S.EC);
@@ -105,6 +106,7 @@ if ~isempty(cPZ.EC)
         E1 = [zeros(2,temp);cPZ.EC;zeros(p2,temp)];
     end
 else
+    % cPZ.EC is not empty
     if ~isempty(S.EC)
         E1 = [zeros(2+p1,size(S.EC,2));S.EC];
     else

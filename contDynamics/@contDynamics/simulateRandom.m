@@ -59,13 +59,13 @@ options = setDefaultValues({struct()},varargin);
 % call private simulation function based on type
 switch options.type
     case 'standard'
-        simRes = simulateStandard(sys,params,options);
+        simRes = priv_simulateStandard(sys,params,options);
     case 'gaussian'
-        simRes = simulateGaussian(sys,params,options);
+        simRes = priv_simulateGaussian(sys,params,options);
     case 'rrt'
-        simRes = simulateRRT(sys,params,options);
+        simRes = priv_simulateRRT(sys,params,options);
     case 'constrained'
-        simRes = simulateConstrainedRandom(sys,params,options);
+        simRes = priv_simulateConstrainedRandom(sys,params,options);
 end
 
 % ------------------------------ END OF CODE ------------------------------

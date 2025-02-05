@@ -2,7 +2,7 @@ function p0=initialProbability(obj)
 % initialProbability - Calculate probability vector out of the 
 % state space partition and the initial state set
 %
-% Syntax:  
+% Syntax:
 %    p0=initialProbability(obj)
 %
 % Inputs:
@@ -20,13 +20,13 @@ function p0=initialProbability(obj)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      09-October-2006
-% Last update:  17-June-2008 
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       09-October-2006
+% Last update:   17-June-2008 
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 [~, p0] = exactIntersectingCells(obj.simOptions.stateField, obj.simOptions.initialStateSet);
     
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

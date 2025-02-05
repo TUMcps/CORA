@@ -91,13 +91,15 @@ for iEst = 1:length(Estimator)
     % enclose last estimated set by interval
     IH = interval(estSet.timePoint.set{end});
     
-    % obtain enclosing intervals
+    % obtain enclosing intervals ---
+    % VolMin
     if strcmp(options.alg,'VolMin-A') 
         IH_saved = [];
     elseif strcmp(options.alg,'VolMin-B') 
         IH_saved = interval( ...
             [-0.1148743303581211; -0.3792153944480451], ...
             [0.1411256696418790; 0.2127846055519550]);
+    % FRad
     elseif strcmp(options.alg,'FRad-A') 
         IH_saved = interval( ...
             [-0.1252836718233518; -0.3590605415736482], ...
@@ -106,24 +108,27 @@ for iEst = 1:length(Estimator)
         IH_saved = interval( ...
             [-0.1366939546269597; -0.3957333713260606], ...
             [0.1887846470750793; 0.3380097363827392]);
+    elseif strcmp(options.alg,'FRad-C') 
+        IH_saved = interval( ...
+            [-0.2942866270722150; -0.4084412460702273], ...
+            [0.2767909177420897; 0.4113280380282030]);
+    % PRad
     elseif strcmp(options.alg,'PRad-A') 
         IH_saved = [];
     elseif strcmp(options.alg,'PRad-B') 
         IH_saved = [];
     elseif strcmp(options.alg,'PRad-C') 
         IH_saved = [];
-    elseif strcmp(options.alg,'FRad-C') 
-        IH_saved = interval( ...
-            [-0.2942866270722150; -0.4084412460702273], ...
-            [0.2767909177420897; 0.4113280380282030]);
     elseif strcmp(options.alg,'PRad-D') 
         IH_saved = [];
     elseif strcmp(options.alg,'PRad-E') 
         IH_saved = [];
+    % Other
     elseif strcmp(options.alg,'Nom-G') 
         IH_saved = [];
     elseif strcmp(options.alg,'Hinf-G') 
         IH_saved = [];
+    % ESO
     elseif strcmp(options.alg,'ESO-A')
         IH_saved = interval( ...
             [-0.3846268741740866; -0.4863796623829761], ...
@@ -136,6 +141,7 @@ for iEst = 1:length(Estimator)
         IH_saved = [];   
     elseif strcmp(options.alg,'ESO-D')
         IH_saved = [];
+    % CZN
     elseif strcmp(options.alg,'CZN-A')
         IH_saved = interval( ...
             [-0.1062309346120359; -0.2540037859300612], ...
@@ -162,6 +168,8 @@ function [sys,params,options] = aux_load_model()
 
 % generated semi-automatically using printSystem, printSet, etc. 
 % from saved .mat file
+
+% build system
 name = 'linearSysDT';
 A = [ 0.0000000000000000 -0.5000000000000000 ; 1.0000000000000000 1.0000000000000000 ];
 B = 1;
@@ -174,6 +182,7 @@ F = zeros(size(C,1),1);
 dt = 1;
 sys = linearSysDT(name,A,B,c,C,D,k,E,F,dt);
 
+% build params
 params = struct( ...
     'tStart', 0, ...
     'tFinal', 20, ...
@@ -187,6 +196,7 @@ params = struct( ...
     'y', [ 0.0234670727523143, -4.3282364718962034, -4.1973096745991345, -1.9546081148402012, 0.0983604258227819, 1.1666132024783362, 1.1073176387179109, 0.4263920687095986, -0.0092682185713610, -0.3069527304071071, -0.1292621672249405, -0.0195793311301101, -0.0751745657276915, 0.0774426557519688, 0.2618198630568284, -0.0222441951122745, 0.0464232298590576, -0.1385809053684645, 0.0876767710448164, -0.1094667337318030 ] ...
 );
 
+% build options
 options = struct( ...
     'zonotopeOrder', 20, ...
     'timeStep', 1, ...

@@ -79,7 +79,7 @@ else
         % pre-compute static abstraction error
         if options.tensorOrder > 2
             [H,Zdelta,errorStat,T,ind3,Zdelta3] = ...
-                precompStatError(sys,Rdelta,params,options);
+                priv_precompStatError(sys,Rdelta,params,options);
         end
     end
 end
@@ -87,6 +87,7 @@ if isfield(options,'approxDepOnly') && options.approxDepOnly
     if ~exist('errorStat','var')
         errorStat = [];
     end
+    R.tp = Rtp; R.ti = Rti;
     [Rtp,Rti,dimForSplit,options] = aux_approxDepReachOnly(linsys,sys,R,options,errorStat);
     return;
 end
@@ -130,8 +131,8 @@ else
             % compute overall reachable set including linearization error
             Rmax = Rti+RallError;
             % compute linearization error
-            [trueError,VerrorDyn] = abstrerr_lin(sys,Rmax,params,options);
-            VerrorStat = zeros(sys.nrOfStates,1);
+            [trueError,VerrorDyn] = priv_abstrerr_lin(sys,Rmax,params,options);
+            VerrorStat = zeros(sys.nrOfDims,1);
             
         % compute the abstraction error using the conservative
         % polynomialization approach described in [2]    
@@ -141,7 +142,7 @@ else
             Rmax = Rdelta+zonotope(Rdiff)+RallError;
             % compute abstraction error
             [trueError,VerrorDyn,VerrorStat] = ...
-                abstrerr_poly(sys,Rmax,Rdiff+RallError,params,options, ...
+                priv_abstrerr_poly(sys,Rmax,Rdiff+RallError,params,options, ...
                                     H,Zdelta,errorStat,T,ind3,Zdelta3);
 
         end
@@ -194,7 +195,7 @@ end
 dimForSplit = [];
 
 if perfInd > 1
-    dimForSplit = select(sys,Rstart,params,options);
+    dimForSplit = priv_select(sys,Rstart,params,options);
 end
 
 % store the linearization error
@@ -220,7 +221,7 @@ eAt = getTaylor(sys,'eAdt',options);
 F = readFieldForTimeStep(sys.taylor,'F',timeStep);
 
 % first time step homogeneous solution
-n = sys.nrOfStates;
+n = sys.nrOfDims;
 Rhom_tp_delta = (eAt - eye(n))*Rinit + Rtrans;
 
 if isa(Rinit,'zonotope')
@@ -291,16 +292,40 @@ end
 
 % TODO: put this somewhere else
 function [Rtp,Rti,dimForSplit,options] = aux_approxDepReachOnly(linsys,nlnsys,R,options,errorStat)
+% Computes an approximation of the reachable set for controller synthesis.
+% Compared to the over-approximative reachability algorithm, the
+% higher-order terms are only evaluated for the time-point reachable set
+% (errorStat) and the Lagrange remainder is neglected.
+
+    %read tp and ti
     R_tp = R.tp;
     R_ti = R.ti;
-    if ~representsa_(errorStat,'emptySet',eps) && ~all(representsa_(errorStat,'origin',eps))
-        Rerror = linsys.taylor.eAtInt*errorStat;
-        R_tp = exactPlus(R_tp,Rerror) + nlnsys.linError.p.x;
-        R_ti = exactPlus(R_ti,Rerror) + nlnsys.linError.p.x;
-    else
+
+    if representsa_(errorStat,'emptySet',eps) || all(representsa_(errorStat,'origin',eps))
+        % we do not need to consider errorStat then
         R_tp = R_tp + nlnsys.linError.p.x;
         R_ti = R_ti + nlnsys.linError.p.x;
+    else
+        % consider errorStat
+        [id,~,ind] = unique(R_ti.id); E = zeros(length(id),size(R_ti.E,2));
+        for i = 1:length(ind)
+            E(ind(i),:) = E(ind(i),:) + R_ti.E(i,:);
+        end
+        R_ti = polyZonotope(R_ti.c,R_ti.G,R_ti.GI,E,id);
+
+        Asum = options.timeStep*eye(linsys.nrOfDims);
+        for i = 1:options.taylorTerms
+            Asum = Asum + linsys.taylor.Apower{i}*linsys.taylor.dtoverfac{1}(i+1);
+        end
+        eAtInt = Asum + linsys.taylor.E{1}*options.timeStep;
+
+        Rerror = eAtInt*errorStat;
+        R_tp = exactPlus(R_tp,Rerror) + nlnsys.linError.p.x;
+        R_ti = exactPlus(R_ti,Rerror) + nlnsys.linError.p.x;
     end
+
+   
+    % init output variables
     R_tp = noIndep(reduce(R_tp,options.reductionTechnique,options.zonotopeOrder));
     R_ti = noIndep(reduce(R_ti,options.reductionTechnique,options.zonotopeOrder));
     Rtp_.set = R_tp;

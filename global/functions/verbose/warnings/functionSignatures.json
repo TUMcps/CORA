@@ -9,7 +9,7 @@
      [
         {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:global','CORA:app','CORA:contDynamics','CORA:contSet','CORA:converter','CORA:discDynamics','CORA:examples','CORA:global','CORA:hybridDynamics','CORA:manual','CORA:matrixSets','CORA:models','CORA:specification'}"], "purpose":"ID of warning"},
         {"name":"desc", "kind":"required", "type":["char"], "purpose":"description of the warning"},
-        {"name":"varargin", "kind":"optional", "type":["char"], "purpose":"sprintf argument"}
+        {"name":"varargin", "kind":"ordered", "type":["char"], "purpose":"sprintf argument"}
      ]
   },
 
@@ -21,7 +21,7 @@
      [
         {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:nn','CORA:plot','CORA:solver'}"], "purpose":"ID of warning"},
         {"name":"desc", "kind":"required", "type":["char"], "purpose":"description of the warning"},
-        {"name":"varargin", "kind":"optional", "type":["char"], "purpose":"sprintf argument"}
+        {"name":"varargin", "kind":"ordered", "type":["char"], "purpose":"sprintf argument"}
      ]
   },
 

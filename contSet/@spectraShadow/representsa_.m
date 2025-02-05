@@ -65,6 +65,7 @@ function [res,S] = representsa_(SpS,type,tol,varargin)
             for i=1:n
                 ei = zeros([n 1]);
                 ei(i) = 1;
+                % each dir should be 0
                 if ~withinTol(supportFunc_(SpS,ei,'upper'),0,tol) || ~withinTol(supportFunc_(SpS,-ei,'upper'),0,tol)
                     res = false;
                     break
@@ -80,6 +81,7 @@ function [res,S] = representsa_(SpS,type,tol,varargin)
             end
 
         case 'point'
+            % reuse origin computation
             p = priv_findFeasiblePointSpectrahedron(SpS);
             p = SpS.c + SpS.G * p;
 
@@ -91,6 +93,10 @@ function [res,S] = representsa_(SpS,type,tol,varargin)
             else
                 S = [];
             end
+
+        case 'fullspace'
+            % SpS is a fullspace iff interval(SpS) is
+            [res,S] = representsa_(interval(SpS),'fullspace',tol);
 
         otherwise
             throw(CORAerror('CORA:specialError',...
@@ -139,14 +145,20 @@ function res = aux_feasible(SpS)
     
     constraints = A>=0;
     cost = [];
+
+    % get options
     persistent options
     if isempty(options)
-        options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0);
+        if isSolverInstalled('mosek')
+            options = sdpsettings('solver','mosek','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        else
+            options = sdpsettings('solver','sedumi','verbose',0,'allownonconvex',0,'cachesolvers',1);
+        end
     end
-    yalmipOptimizer = optimizer(constraints,cost,options,[],beta);
     
     try
-        [~, exitflag] = yalmipOptimizer();
+        diagnostics = optimize(constraints,cost,options);
+        exitflag = diagnostics.problem;
     catch ME
         if strcmp(ME.identifier,'MATLAB:nonExistentField')
             % Weird bug, specifically with SEDUMI, that means that no solutions

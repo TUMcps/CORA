@@ -29,8 +29,8 @@ a = taylm(a, 7); %-> x + [0,0]
 t = acos(a); %->  pi/2 - x - x^3/3! - 3^2*x^5/5! - 3^2*5^2*x^7/7! + [-0.00092,0]
 eps = 10^-3;
 
-assert(appeq( getCoef(t), [pi/2; -1; -1/6; -0.075; -0.0446], eps ))
-assert(appeq( getRem(t), interval(-0.00092, 0), eps))
+assert(priv_appeq( getCoef(t), [pi/2; -1; -1/6; -0.075; -0.0446], eps ))
+assert(priv_appeq( getRem(t), interval(-0.00092, 0), eps))
 
 
 %% Test 2
@@ -39,8 +39,8 @@ a = taylm(x,interval(-1,1), 7); %-> x + [0,0]
 t = acos(a); %->  pi/2 - x - x^3/3! - 3^2*x^5/5! - 3^2*5^2*x^7/7! + [-0.00092,0]
 eps = 10^-3;
 
-assert(appeq( getCoef(t), [pi/2; -1; -1/6; -0.075; -0.0446], eps ))
-assert(appeq( getRem(t), interval(-0.00092, 0), eps))
+assert(priv_appeq( getCoef(t), [pi/2; -1; -1/6; -0.075; -0.0446], eps ))
+assert(priv_appeq( getRem(t), interval(-0.00092, 0), eps))
 
 end
 

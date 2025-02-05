@@ -248,11 +248,13 @@ function res = aux_rewrite(obj,pred)
 
             res = aux_rewrite(eq,pred);
 
+            % non-standard from - to
         elseif obj.from ~= 0 || obj.to ~= 1
 
             res = aux_rewrite(until(true,obj.lhs, ...
                                 obj.interval),pred);
 
+            % finally
         elseif strcmp(obj.lhs.type,'finally') && obj.lhs.from == 0 && ...
                 obj.lhs.to == 1 && obj.from == 0 && obj.to == 1
 
@@ -261,6 +263,7 @@ function res = aux_rewrite(obj,pred)
 
             res = aux_rewrite(finally(until(true,obj.lhs.lhs,I2),I1),pred);
 
+            % globally
         elseif strcmp(obj.lhs.type,'globally') && obj.lhs.from == 0 && ...
                 obj.lhs.to == 1 && obj.from == 0 && obj.to == 1
 
@@ -368,7 +371,8 @@ function res = aux_rewrite(obj,pred)
 
             res = aux_rewrite(release(false,obj.lhs, ...
                             obj.interval),pred);
-
+            
+            % global ---
         elseif strcmp(obj.lhs.type,'globally') && obj.lhs.from == 0 && ...
                 obj.lhs.to == 1 && obj.from == 0 && obj.to == 1
 
@@ -377,6 +381,7 @@ function res = aux_rewrite(obj,pred)
 
             res = aux_rewrite(globally(release(false,obj.lhs.lhs,I2),I1),pred);
 
+            % finally ---
         elseif strcmp(obj.lhs.type,'finally') && obj.lhs.from == 0 && ...
                 obj.lhs.to == 1 && obj.from == 0 && obj.to == 1
 
@@ -416,7 +421,7 @@ function res = aux_rewrite(obj,pred)
             res = next(inner,obj.from);
         end
 
-    elseif strcmp(obj.type,'&')
+    elseif strcmp(obj.type,'&') % ---
 
         lhs = aux_rewrite(obj.lhs,pred);
 
@@ -436,7 +441,7 @@ function res = aux_rewrite(obj,pred)
             end
         end
 
-    elseif strcmp(obj.type,'|')
+    elseif strcmp(obj.type,'|') % ---
 
         lhs = aux_rewrite(obj.lhs,pred);
 
@@ -467,7 +472,8 @@ function res = aux_scaleTime(obj,dt)
 
         res = obj;
 
-    elseif strcmp(obj.type,'until')
+        % temporal
+    elseif strcmp(obj.type,'until') % ---
 
         res = obj;
         from = scale*res.from; to = scale*res.to;
@@ -481,7 +487,7 @@ function res = aux_scaleTime(obj,dt)
         res.lhs = aux_scaleTime(res.lhs,dt);
         res.rhs = aux_scaleTime(res.rhs,dt);
 
-    elseif strcmp(obj.type,'release')
+    elseif strcmp(obj.type,'release') % ---
 
         res = obj;
         from = scale*res.from; to = scale*res.to;
@@ -495,7 +501,7 @@ function res = aux_scaleTime(obj,dt)
         res.lhs = aux_scaleTime(res.lhs,dt);
         res.rhs = aux_scaleTime(res.rhs,dt);
 
-    elseif strcmp(obj.type,'globally')
+    elseif strcmp(obj.type,'globally') % ---
 
         res = obj;
         from = scale*res.from; to = scale*res.to;
@@ -508,7 +514,7 @@ function res = aux_scaleTime(obj,dt)
 
         res.lhs = aux_scaleTime(res.lhs,dt);
 
-    elseif strcmp(obj.type,'finally')
+    elseif strcmp(obj.type,'finally') % ---
 
         res = obj;
         from = scale*res.from; to = scale*res.to;
@@ -521,7 +527,7 @@ function res = aux_scaleTime(obj,dt)
 
         res.lhs = aux_scaleTime(res.lhs,dt);
 
-    elseif strcmp(obj.type,'next')
+    elseif strcmp(obj.type,'next') % ---
 
         res = obj;
         from = scale*res.from;
@@ -534,7 +540,7 @@ function res = aux_scaleTime(obj,dt)
             res.lhs = aux_scaleTime(res.lhs,dt);
         end
 
-    elseif strcmp(obj.type,'~')
+    elseif strcmp(obj.type,'~') % ---
         
         res = ~aux_scaleTime(obj.lhs,dt);
 

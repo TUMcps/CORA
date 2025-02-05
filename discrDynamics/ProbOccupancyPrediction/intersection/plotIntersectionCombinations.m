@@ -2,7 +2,7 @@ function plotIntersectionCombinations()
 % plotIntersectionCombinations - plots the probability that two vehicle
 % bodies intersect when their set of uncertain vehicle cemters is given
 %
-% Syntax:  
+% Syntax:
 %    plotIntersectionCombinations()
 %
 % Inputs:
@@ -19,12 +19,12 @@ function plotIntersectionCombinations()
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      22-October-2009
-% Last update:  ---
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       22-October-2009
+% Last update:   ---
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 figure
 hold on
@@ -156,4 +156,4 @@ plot(exemplaryBodyVar,[1 2],'blackEdge');
 plot(extractedPointFixed(1),extractedPointFixed(2),'ko');
 plot(extractedPointVar(1),extractedPointVar(2),'ko');
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

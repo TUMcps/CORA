@@ -99,6 +99,7 @@ function res = aux_s_cos(obj)
 end
 
 function res = aux_sgn_cs(n)
+    % helper function
     if mod(n,4) == 0 || mod(n,4) == 3
         res = 1;
     else

@@ -3,7 +3,7 @@ function [pX]=xIntegration(pos,xSegment,intInterval)
 % distribution p crosses an intersection at the position segment xSegment
 % for a certain number of time steps
 %
-% Syntax:  
+% Syntax:
 %    [pX]=xIntegration(p,xSegment,timeSteps,field)
 %
 % Inputs:
@@ -23,12 +23,12 @@ function [pX]=xIntegration(pos,xSegment,intInterval)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      19-November-2007 
-% Last update:  18-June-2008
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       19-November-2007 
+% Last update:   18-June-2008
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 for iStep=1:length(pos)
     %generate step interval
@@ -51,4 +51,4 @@ for iStep=1:length(pos)
     pX(iStep)=pSumFirst-pSumLast;
 end
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

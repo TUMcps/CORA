@@ -29,6 +29,10 @@ function [id,E1,E2] = mergeExpMatrix(id1,id2,E1,E2)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% ensure uniqueness
+[E1,id1] = removeRedundantIds(E1,id1);
+[E2,id2] = removeRedundantIds(E2,id2);
+
 L1 = length(id1);
 L2 = length(id2);
 

@@ -39,55 +39,59 @@ function [res,cnt,list] = aux_recursive(obj,cnt,list)
 % recursive function to assign ids to all non-temporal formulas
 
     if ~obj.temporal
-
         res = obj;
         res.id = cnt;
         list{cnt} = res;
         cnt = cnt + 1;
+        return
+    end
 
-    elseif strcmp(obj.type,'next')
-        
-        [inner,cnt,list] = aux_recursive(obj.lhs,cnt,list);
-        res = next(inner,obj.from);
+    % temporal
+    switch obj.type
+        case 'next'
+            % only compute lhs
+            [inner,cnt,list] = aux_recursive(obj.lhs,cnt,list);
+            res = next(inner,obj.from);
 
-    elseif strcmp(obj.type,'globally')
-
-        [inner,cnt,list] = aux_recursive(obj.lhs,cnt,list);
-        res = globally(inner,obj.interval);
-
-    elseif strcmp(obj.type,'finally')
-
-        [inner,cnt,list] = aux_recursive(obj.lhs,cnt,list);
-        res = finally(inner,obj.interval);
-
-    elseif strcmp(obj.type,'until')
-
-        [lhs,cnt,list] = aux_recursive(obj.lhs,cnt,list);
-        [rhs,cnt,list] = aux_recursive(obj.rhs,cnt,list);
-        res = until(lhs,rhs,obj.interval);
-
-    elseif strcmp(obj.type,'release')
-
-        [lhs,cnt,list] = aux_recursive(obj.lhs,cnt,list);
-        [rhs,cnt,list] = aux_recursive(obj.rhs,cnt,list);
-        res = release(lhs,rhs,obj.interval);
-
-    elseif strcmp(obj.type,'&')
-
-        [lhs,cnt,list] = aux_recursive(obj.lhs,cnt,list);
-        [rhs,cnt,list] = aux_recursive(obj.rhs,cnt,list);
-        res = lhs & rhs;
-
-    elseif strcmp(obj.type,'|')
-
-        [lhs,cnt,list] = aux_recursive(obj.lhs,cnt,list);
-        [rhs,cnt,list] = aux_recursive(obj.rhs,cnt,list);
-        res = lhs | rhs;
-
-    elseif strcmp(obj.type,'~')
-
-        [inner,cnt,list] = aux_recursive(obj.lhs,cnt,list);
-        res = ~inner;
+        case 'globally'
+            % only compute lhs
+            [inner,cnt,list] = aux_recursive(obj.lhs,cnt,list);
+            res = globally(inner,obj.interval);
+    
+        case 'finally'
+            % only compute lhs
+            [inner,cnt,list] = aux_recursive(obj.lhs,cnt,list);
+            res = finally(inner,obj.interval);
+    
+        case 'until'
+            % compute both hs
+            [lhs,cnt,list] = aux_recursive(obj.lhs,cnt,list);
+            [rhs,cnt,list] = aux_recursive(obj.rhs,cnt,list);
+            res = until(lhs,rhs,obj.interval);
+    
+        case 'release'
+            % compute both hs
+            [lhs,cnt,list] = aux_recursive(obj.lhs,cnt,list);
+            [rhs,cnt,list] = aux_recursive(obj.rhs,cnt,list);
+            res = release(lhs,rhs,obj.interval);
+    
+            % boolean
+        case '&'
+            % compute both hs
+            [lhs,cnt,list] = aux_recursive(obj.lhs,cnt,list);
+            [rhs,cnt,list] = aux_recursive(obj.rhs,cnt,list);
+            res = lhs & rhs;
+    
+        case '|'
+            % compute both hs
+            [lhs,cnt,list] = aux_recursive(obj.lhs,cnt,list);
+            [rhs,cnt,list] = aux_recursive(obj.rhs,cnt,list);
+            res = lhs | rhs;
+    
+        case '~'
+            % only compute lhs
+            [inner,cnt,list] = aux_recursive(obj.lhs,cnt,list);
+            res = ~inner;
     end  
 end
 

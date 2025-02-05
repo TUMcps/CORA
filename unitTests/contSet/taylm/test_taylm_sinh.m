@@ -31,8 +31,8 @@ tol = 10^-3;
 s = sinh(1);
 c = cosh(1);
 
-assert(appeq( getCoef(t),[s; c; s/2; c/6], tol ))
-assert(appeq( getRem(t), interval(0, 0.15112), tol))
+assert(priv_appeq( getCoef(t),[s; c; s/2; c/6], tol ))
+assert(priv_appeq( getRem(t), interval(0, 0.15112), tol))
 
 %% Test 2
 syms x
@@ -42,8 +42,8 @@ tol = 10^-3;
 s = sinh(1);
 c = cosh(1);
 
-assert(appeq( getCoef(t),[s; c; s/2; c/6], tol ))
-assert(appeq( getRem(t), interval(0, 0.15112), tol))
+assert(priv_appeq( getCoef(t),[s; c; s/2; c/6], tol ))
+assert(priv_appeq( getRem(t), interval(0, 0.15112), tol))
 
 end
 

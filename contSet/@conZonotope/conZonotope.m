@@ -108,11 +108,9 @@ methods
 
     end
     
-    
-    % methods in seperate files
+    % methods in separate files
     c = center(cZ)
     res = conIntersect(cZ1,cZ2,M)
-    cPZ = conPolyZono(cZ)
     res = cubMap(cZ,varargin)
     cZ = deleteZeros(cZ)
     n = dim(cZ)
@@ -120,16 +118,13 @@ methods
     cZ = enclose(cZ,varargin)
     G = generators(cZ)
     cZ = intersectStrip(cZ,C,phi,y,varargin)
-    I = interval(cZ)
-    res = isFullDim(cZ)
+    [res,subspace] = isFullDim(cZ)
     cZ = minkDiff(cZ1,S,varargin)
-    P = polytope(cZ)
     cZ = mtimes(factor1,factor2)
     cZ = or(cZ1,varargin)
     han = plot(cZ,varargin)
     han = plotZono(cZ,varargin)
     cZ = plus(summand1,summand2)
-    pZ = polyZonotope(cZ)
     cZ = project(cZ,projDim)
     cZ = quadMap(cZ,varargin)
     cZ = reduce(cZ,method,order,varargin)
@@ -137,6 +132,12 @@ methods
     cZ = rescale(cZ,varargin)
     [res,S] = representsa_(cZ,type,tol,varargin)
     cZsplit = split(cZ,varargin)
+
+    % conversion functions
+    cPZ = conPolyZono(cZ)
+    I = interval(cZ)
+    P = polytope(cZ)
+    pZ = polyZonotope(cZ)
     zB = zonoBundle(cZ)
     Z = zonotope(cZ,varargin)             
 end

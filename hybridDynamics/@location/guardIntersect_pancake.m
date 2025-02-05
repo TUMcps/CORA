@@ -47,7 +47,7 @@ function R = guardIntersect_pancake(loc,R0,guard,guardID,params,options)
     c = center(R0);
     P = polytope(guard.Ae,guard.be);
 
-    if contains_(P,c,'exact',1e-12)
+    if contains_(P,c,'exact',1e-12,0,false,false)
         P = polytope(-guard.Ae,-guard.be);
     end
 
@@ -87,7 +87,7 @@ function [sys,params] = aux_scaledSystem(sys,P,R0,guardID,params)
     g = @(x,p) (P.A * x - P.b)./p;
 
     % get system dynamics
-    n = sys.nrOfStates;
+    n = sys.nrOfDims;
     m = sys.nrOfInputs;
     
     if isa(sys,'linearSys')

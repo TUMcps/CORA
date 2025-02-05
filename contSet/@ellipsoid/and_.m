@@ -55,7 +55,7 @@ n = dim(E);
 
 % ellipsoid and point
 if isnumeric(S) && iscolumn(S)
-    if contains_(E,S,'exact',eps)
+    if contains_(E,S,'exact',eps,0,false,false)
         E = ellipsoid(zeros(n),S);
     else
         E = ellipsoid.empty(n);
@@ -71,7 +71,7 @@ end
 % ellipsoid is only a point
 if representsa_(E,'point',eps) 
     % if all sets contain that point, the intersection is that point
-    if all(cellfun(@(S_i) contains_(S_i,E.q,'exact',eps), S, 'UniformOutput', true))
+    if all(cellfun(@(S_i) contains_(S_i,E.q,'exact',eps,0,false,false), S, 'UniformOutput', true))
         E = ellipsoid(zeros(n),E.q);
     else
         E = ellipsoid.empty(n);

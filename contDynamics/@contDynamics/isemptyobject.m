@@ -33,7 +33,7 @@ res = false(r,c);
 % loop over all contDynamics
 for i=1:r
     for j=1:c
-        res(r,c) = sys(r,c).nrOfStates == 0;
+        res(r,c) = sys(r,c).nrOfDims == 0;
     end
 end
 

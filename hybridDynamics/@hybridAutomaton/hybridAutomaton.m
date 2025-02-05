@@ -52,7 +52,7 @@ properties (SetAccess = private, GetAccess = public)
     location = location();	    % cell-array of location objects
 
     % internally-set properties
-    nrOfStates;                 % number of states of each location
+    nrOfDims;                   % number of states of each location
     nrOfInputs;                 % number of inputs for each location
     nrOfOutputs;                % number of outputs for each location
     nrOfDisturbances;           % number of disturbances for each location
@@ -60,6 +60,7 @@ properties (SetAccess = private, GetAccess = public)
 
     % legacy
     dim;                        % (also) state dimension
+    nrOfStates;                 % (also) state dimension
 end
 
 methods
@@ -90,7 +91,7 @@ methods
         % 5. assign properties
         HA.name = name;
         HA.location = reshape(locs,[],1);
-        HA.nrOfStates = states;
+        HA.nrOfDims = states;
         HA.nrOfInputs = inputs;
         HA.nrOfOutputs = outputs;
         HA.nrOfDisturbances = dists;
@@ -105,15 +106,15 @@ end
 methods 
     function dim = get.dim(sys)
         CORAwarning('CORA:deprecated', 'property', 'contDynamics.dim', 'CORA v2025', ...
-            'Please use contDynamics.nrOfStates instead.', ...
+            'Please use contDynamics.nrOfDims instead.', ...
             'This change was made to be consistent with the other properties.')
-        dim = sys.nrOfStates;
+        dim = sys.nrOfDims;
     end
     function sys = set.dim(sys,dim)
         CORAwarning('CORA:deprecated', 'property', 'contDynamics.dim', 'CORA v2025', ...
-            'Please use contDynamics.nrOfStates instead.', ...
+            'Please use contDynamics.nrOfDims instead.', ...
             'This change was made to be consistent with the other properties.')
-        sys.nrOfStates = dim;
+        sys.nrOfDims = dim;
     end
 end
 
@@ -159,7 +160,7 @@ function aux_checkInputArgs(name,locs,n_in)
 
             % 1. invariant of each location must have same dimension as
             % flow equation of that same location (unless empty)
-            if dim(locs(i).invariant) ~= locs(i).contDynamics.nrOfStates
+            if dim(locs(i).invariant) ~= locs(i).contDynamics.nrOfDims
                 throw(CORAerror('CORA:wrongInputInConstructor',...
                     'Ambient dimension of invariant has to match state dimension of flow.'));
             end
@@ -168,7 +169,7 @@ function aux_checkInputArgs(name,locs,n_in)
             % same dimension as flow equation of that same location
             for j=1:length(locs(i).transition)
                 if ~isnumeric(locs(i).transition(j).guard) && ...
-                        dim(locs(i).transition(j).guard) ~= locs(i).contDynamics.nrOfStates
+                        dim(locs(i).transition(j).guard) ~= locs(i).contDynamics.nrOfDims
                     throw(CORAerror('CORA:wrongInputInConstructor',...
                         'Ambient dimension of guard set has to match state dimension of flow.'));
                 end
@@ -189,7 +190,7 @@ function aux_checkInputArgs(name,locs,n_in)
                 % skip empty transitions
                 if ~isemptyobject(locs(i).transition(j)) ...
                         && locs(i).transition(j).reset.postStateDim ...
-                        ~= locs(locs(i).transition(j).target).contDynamics.nrOfStates
+                        ~= locs(locs(i).transition(j).target).contDynamics.nrOfDims
                     throw(CORAerror('CORA:wrongInputInConstructor',...
                         ['Output dimension of reset function has to match '...
                          'the state dimension of the flow equation of the target location.']));
@@ -243,7 +244,7 @@ function [states,inputs,outputs,dists,noises] = aux_computeProperties(locs)
 % for each location
 
     % loop over flows of all locations
-    states = arrayfun(@(x) x.contDynamics.nrOfStates,locs,'UniformOutput',true);
+    states = arrayfun(@(x) x.contDynamics.nrOfDims,locs,'UniformOutput',true);
     inputs = arrayfun(@(x) x.contDynamics.nrOfInputs,locs,'UniformOutput',true);
     outputs = arrayfun(@(x) x.contDynamics.nrOfOutputs,locs,'UniformOutput',true);
     dists = arrayfun(@(x) x.contDynamics.nrOfDisturbances,locs,'UniformOutput',true);

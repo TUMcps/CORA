@@ -30,6 +30,7 @@ ff = kleene.False;
 kleeneVals = [tt,uu,ff];
 test_cases = {};
 
+% case 1
 test_cases{end+1}.lhs = kleeneSignal.indicator(stlInterval(0,5,true,false),tt,ff);
 test_cases{end}.interval = stlInterval(0,1);
 test_cases{end}.rhs = kleeneSignal.indicator(stlInterval(0,1,true,false),uu,ff) ...
@@ -43,6 +44,7 @@ test_cases{end}.expected = {
     [stlInterval(3,inf)];
 };
 
+% case 2
 test_cases{end+1}.lhs = kleeneSignal.indicator(stlInterval(0,1,true,false),uu,ff) ...
     .set(stlInterval(1,5,true,false),tt);
 test_cases{end}.interval = stlInterval(0,1);
@@ -57,6 +59,7 @@ test_cases{end}.expected = {
     [stlInterval(3,inf)];
 };
 
+% case 3
 test_cases{end+1}.lhs = kleeneSignal.indicator(stlInterval(0,4,true,false),tt,ff) ...
     .set(stlInterval(4,5,true,false),uu);
 test_cases{end}.interval = stlInterval(0,1);
@@ -71,6 +74,7 @@ test_cases{end}.expected = {
     [stlInterval(3,inf)];
 };
 
+% case 4
 test_cases{end+1}.lhs = kleeneSignal.indicator(stlInterval(0,4,true,false),tt,ff);
 test_cases{end}.interval = stlInterval(0,1);
 test_cases{end}.rhs = kleeneSignal.indicator(stlInterval(0,1,true,false),uu,ff) ...
@@ -84,6 +88,7 @@ test_cases{end}.expected = {
     [stlInterval(3,inf)];
 };
 
+% case 5
 test_cases{end+1}.lhs = kleeneSignal.indicator(stlInterval(0,3,false),tt,ff) ...
     .set(stlInterval(3,5,true,false),uu);
 test_cases{end}.interval = stlInterval(0,1,false);
@@ -95,6 +100,7 @@ test_cases{end}.expected = {
     [stlInterval(4,inf)];
 };
 
+% case 6
 test_cases{end+1}.lhs = kleeneSignal.indicator(stlInterval(0,3,false),tt,ff) ...
     .set(stlInterval(3,5,true,false),uu);
 test_cases{end}.interval = stlInterval(1,1.5);
@@ -106,6 +112,7 @@ test_cases{end}.expected = {
     [stlInterval(3,inf)];
 };
 
+% test cases
 for i = 1:length(test_cases)
     lhs = test_cases{i}.lhs;
     interval = test_cases{i}.interval;

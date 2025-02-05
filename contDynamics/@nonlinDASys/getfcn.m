@@ -27,12 +27,12 @@ function han = getfcn(nlnsysDA,params)
 
     function dxdt = f(t, z)
         %obtain x and y
-        x = z(1:nlnsysDA.nrOfStates);
-        y = z((nlnsysDA.nrOfStates+1):(nlnsysDA.nrOfStates+nlnsysDA.nrOfConstraints));
+        x = z(1:nlnsysDA.nrOfDims);
+        y = z((nlnsysDA.nrOfDims+1):(nlnsysDA.nrOfDims+nlnsysDA.nrOfConstraints));
         
         %return derivatives
-        dxdt(1:nlnsysDA.nrOfStates,1) = nlnsysDA.dynFile(x, y, params.u);
-        dxdt((nlnsysDA.nrOfStates+1):(nlnsysDA.nrOfStates+nlnsysDA.nrOfConstraints),1) = nlnsysDA.conFile(x, y, params.u);
+        dxdt(1:nlnsysDA.nrOfDims,1) = nlnsysDA.dynFile(x, y, params.u);
+        dxdt((nlnsysDA.nrOfDims+1):(nlnsysDA.nrOfDims+nlnsysDA.nrOfConstraints),1) = nlnsysDA.conFile(x, y, params.u);
     end
     
     han = @f;

@@ -1,8 +1,8 @@
 function x0 = init_MB_BMW(initState)
-% init_MB - generates the initial state vector for the multi-body model
+% init_MB_BMW - generates the initial state vector for the multi-body model
 %
-% Syntax:  
-%     x0 = init_MB(initState, p)
+% Syntax:
+%     x0 = init_MB_BMW(initState, p)
 %
 % Inputs:
 %     initState - core initial states
@@ -19,13 +19,13 @@ function x0 = init_MB_BMW(initState)
 %
 % See also: ---
 
-% Author:       Matthias Althoff
-% Written:      11-January-2017
-% Last update:  15-December-2017
-%               16-June-2023
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       11-January-2017
+% Last update:   15-December-2017
+%                16-June-2023
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 %get model paramters
 p = BMWparameters();
@@ -126,5 +126,4 @@ x0(28,1) = 0; % delta_y_f
 x0(29,1) = 0; % delta_y_r
 
 
-
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

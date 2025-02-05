@@ -60,9 +60,6 @@ n = dim(cPZ);
 S = [];
 
 switch type
-    case 'origin'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
 
     case 'point'
         % Todo: check constraints
@@ -70,14 +67,6 @@ switch type
         if res
             S = cPZ.c;
         end
-
-    case 'capsule'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
-
-    case 'conHyperplane'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
         
     case 'conPolyZono'
         % obviously true
@@ -86,57 +75,14 @@ switch type
             S = cPZ;
         end
 
-    case 'conZonotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
-
-    case 'ellipsoid'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
-
-    case 'halfspace'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
-
-    case 'interval'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
-
-    case 'levelSet'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
-
-    case 'polytope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
-
-    case 'polyZonotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
-
     case 'probZonotope'
+        % cannot be true
         res = false;
-
-    case 'zonoBundle'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
-
-    case 'zonotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
 
     case 'hyperplane'
         % constrained polynomial zonotopes cannot be unbounded (unless 1D,
         % where hyperplane is also bounded)
         res = n == 1;
-
-    case 'parallelotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
-
-    case 'convexSet'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conPolyZono to ' type ' not supported.']));
 
     case 'emptySet'
         res = aux_isEmptySet(cPZ,tol,method,splits,iter);
@@ -147,6 +93,10 @@ switch type
     case 'fullspace'
         % constrained polynomial zonotopes cannot be unbounded
         res = false;
+
+    otherwise
+        throw(CORAerror('CORA:notSupported',...
+            ['Comparison of conPolyZono to ' type ' not supported.']));
 
 end
 

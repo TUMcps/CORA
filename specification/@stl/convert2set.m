@@ -51,6 +51,7 @@ function res = aux_convertToSetRecursiveLinear(obj,n,vars)
             set2 = aux_convertToSetRecursiveLinear(obj.rhs,n,vars);
             res = and_(polytope(set1),polytope(set2),'exact');
 
+            % comparators
         case '<'
             [c,d] = aux_getHalfspace(obj.lhs,n,vars);
             res = polytope(c,obj.rhs-d);
@@ -99,7 +100,7 @@ function res = aux_convertToSetRecursiveNonlinear(obj,var,vars)
             eq = aux_getLevelSet(obj.lhs,var,vars);
             res = levelSet(-(eq - obj.rhs),var,'<=');
 
-        otherwise
+        otherwise % throw error
             throw(CORAerror('CORA:notSupported',...
                   'Conversion to set not supported for these type of stl objects!'));
     end
@@ -113,6 +114,7 @@ function [c,d] = aux_getHalfspace(obj,n,vars)
         return;
     end
 
+    % convert based on type
     switch obj.type
 
         case 'variable'
@@ -134,7 +136,7 @@ function [c,d] = aux_getHalfspace(obj,n,vars)
             [c,d] = aux_getHalfspace(obj.rhs,n,vars);
             c = obj.lhs * c; d = obj.lhs*d;
 
-        otherwise
+        otherwise % throw error
             throw(CORAerror('CORA:notSupported',...
                   'Conversion to set not supported for these type of stl objects!'));
     end
@@ -148,7 +150,7 @@ function eq = aux_getLevelSet(obj,var,vars)
         return;
     end
 
-    switch obj.type
+    switch obj.type % ---
 
         case 'variable'
             ind = find(contains(vars,obj.var));
@@ -173,7 +175,7 @@ function eq = aux_getLevelSet(obj,var,vars)
             eq1 = aux_getLevelSet(obj.lhs,var,vars);
             eq = eq1^obj.rhs;
 
-        otherwise
+        otherwise % throw error
             eq1 = aux_getLevelSet(obj.lhs,var,vars);
             eval(['eq = ',obj.type,'(eq1);']);
     end

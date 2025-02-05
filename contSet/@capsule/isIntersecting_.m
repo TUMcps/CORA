@@ -53,7 +53,7 @@ end
 
 % numeric case: check containment
 if isnumeric(S)
-    res = contains_(C,S,type,tol);
+    res = contains_(C,S,type,tol,0,false,false);
     return
 end
 
@@ -149,7 +149,7 @@ res = true;
 
 % check intersection with hyperplane
 I = supportFunc_(C,P.Ae(1,:)','range');
-if ~contains_(I,P.be(1),'exact',tol)
+if ~contains_(I,P.be(1),'exact',tol,0,false,false)
     res = false;
     return
 end

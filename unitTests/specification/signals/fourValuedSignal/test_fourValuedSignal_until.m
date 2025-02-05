@@ -31,6 +31,7 @@ ii = fourValued.Inconclusive;
 fourValuedVals = [tt,uu,ff,ii];
 test_cases = {};
 
+% case 1
 test_cases{end+1}.lhs = fourValuedSignal.indicator(stlInterval(0,5,true,false),tt,ii);
 test_cases{end}.interval = stlInterval(0,1);
 test_cases{end}.rhs = fourValuedSignal.indicator(stlInterval(0,1,true,false),uu,ii) ...
@@ -45,6 +46,7 @@ test_cases{end}.expected = {
     [stlInterval(4,inf)];
 };
 
+% case 2
 test_cases{end+1}.lhs = fourValuedSignal.indicator(stlInterval(0,1,true,false),uu,ii) ...
     .set(stlInterval(1,5,true,false),tt);
 test_cases{end}.interval = stlInterval(0,1);
@@ -60,6 +62,7 @@ test_cases{end}.expected = {
     [stlInterval(4,inf)];
 };
 
+% case 3
 test_cases{end+1}.lhs = fourValuedSignal.indicator(stlInterval(0,4,true,false),tt,ii) ...
     .set(stlInterval(4,5,true,false),uu);
 test_cases{end}.interval = stlInterval(0,1);
@@ -75,6 +78,7 @@ test_cases{end}.expected = {
     [stlInterval(4,inf)];
 };
 
+% case 4
 test_cases{end+1}.lhs = fourValuedSignal.indicator(stlInterval(0,4,true,false),tt,ii) ...
     .set(stlInterval(4,5,true,false),ff);
 test_cases{end}.interval = stlInterval(0,1);
@@ -90,6 +94,7 @@ test_cases{end}.expected = {
     [stlInterval(5,inf)];
 };
 
+% case 5
 test_cases{end+1}.lhs = fourValuedSignal.indicator(stlInterval(0,3,false),tt,ii) ...
     .set(stlInterval(3,5,true,false),uu) ...
     .set(stlInterval(5,6,true,false),ff);
@@ -106,6 +111,7 @@ test_cases{end}.expected = {
     % which would make until false in [4, 5)
 };
 
+% case 6
 test_cases{end+1}.lhs = fourValuedSignal.indicator(stlInterval(0,3,false),tt,ii) ...
     .set(stlInterval(3,5,true,false),uu) ...
     .set(stlInterval(5,6,true,false),ff);
@@ -122,6 +128,7 @@ test_cases{end}.expected = {
     % which would make until false in [3, 4]
 };
 
+% case 7
 test_cases{end+1}.lhs = fourValuedSignal.indicator(stlInterval(0,1,true,false),uu,ii) ...
     .set(stlInterval(1),ff);
 test_cases{end}.interval = stlInterval(0,2,false);
@@ -138,6 +145,7 @@ test_cases{end}.expected = {
     % even though some parts of its future reach are still inconclusive
 };
 
+% test cases
 for i = 1:length(test_cases)
     lhs = test_cases{i}.lhs;
     interval = test_cases{i}.interval;

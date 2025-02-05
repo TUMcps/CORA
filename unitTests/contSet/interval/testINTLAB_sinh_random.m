@@ -36,6 +36,7 @@ end
 format shortEng
 format compact
 
+% start test
 a = -4*pi;
 b = 4*pi;
 min = (b-a).*rand(10000,1) + a;

@@ -304,6 +304,7 @@ function val = aux_supportFuncQuadProg(cPZ,dir,type)
            b = cPZ_.b;
        end
     else
+        % E is not empty
         if ~isempty(EC)
             cZ = conZonotope(conPolyZono(c,G,E,A_,cPZ_.b, ...
                              EC),'extend','none');

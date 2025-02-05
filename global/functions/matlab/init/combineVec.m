@@ -27,6 +27,7 @@ function Y = combineVec(varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% parse input
 if ~all(cellfun(@(y)isa(y,'double'),varargin))
     throw(CORAerror('CORA:wrongValue','some',...
         'All input arguments need to be of type "double"!'));
@@ -48,6 +49,8 @@ end
 
 Y1 = varargin{1};
 Y2 = varargin{2};
+
+% compute
 [n1,N1] = size(Y1);
 [n2,N2] = size(Y2);
 

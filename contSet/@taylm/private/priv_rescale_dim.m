@@ -46,13 +46,12 @@ for j = 1:length(names2)
     idx = 0;
     for i = 1:length(names1)
         idx = strcmp(char(names1{i}), char(names2{j})  );
-        char(names1{i});
-        char(names2{j});
         if idx
             k{j} = i;
             break
         end
     end
+    % if dimension was not found, add as new one
     if ~idx
         unique_dim = unique_dim + 1;
         united_names{counter} = names2{j};

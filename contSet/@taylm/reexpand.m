@@ -116,6 +116,7 @@ function x = aux_nextMonomial(M,x)
         end
     end
     
+    % return x based on found j
     if j == 1
         t = x(1);
         x(1) = 0;

@@ -533,12 +533,25 @@ for i=1:stlength
 end
 
 % name of file where error occurred
-filename = st(errIdx).name;
+[~,filename,~] = fileparts(st(errIdx).file);
 if contains(filename,'.')
     % likely a constructor -> remove part until dot
     filename = filename(strfind(filename,'.')+1:end);
 end
-filename = [filename '.m'];
+
+% name of the subfunction (different from file if in an aux_ function)
+subfilename = st(errIdx).name;
+if contains(subfilename,'.')
+    % likely a constructor -> remove part until dot
+    subfilename = subfilename(strfind(subfilename,'.')+1:end);
+end
+
+% check if filename == subfilename; if it is, no need to specify it
+if strcmp(filename, subfilename)
+    filename = ['<strong>' filename '</strong>'];
+else
+    filename = ['<strong>' filename '>' subfilename '</strong>'];
+end
 
 % position of all file separators
 filesepPos = strfind(st(errIdx).file,filesep);

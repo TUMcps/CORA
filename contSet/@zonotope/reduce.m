@@ -21,6 +21,7 @@ function [Z,varargout] = reduce(Z,method,varargin)
 %                   - 'methC'           Sec. 2.5.5 in [1]
 %                   - 'pca'             Sec. III.A in [3]
 %                   - 'scott'           Appendix of [5]
+%                   - 'sadraddini'      Proposition 6 in [8]
 %                   - 'redistribute'
 %                   - 'valero'          
 %    order - order of reduced zonotope
@@ -59,6 +60,8 @@ function [Z,varargout] = reduce(Z,method,varargin)
 %        analysis of nonlinear systems", HSCC 2021.
 %    [7] C.E. Valero et al. "On minimal volume zonotope order reduction",
 %        Automatica 2021 (in revision)
+%    [8] S. Sadraddini and R. Tedrake. "Linear Encodings for Polytope
+%        Containment Problems", CDC 2019 (ArXiV version)
 %
 % Other m-files required: none
 % Subfunctions: see below
@@ -82,7 +85,6 @@ narginchk(2,5);
 if startsWith(method,'approxdep_')
     method = erase(method,'approxdep_');
 end
-
 % select option
 switch method
     case 'girard'
@@ -98,6 +100,13 @@ switch method
         % additional output arguments
         varargout{1} = dHerror;
         varargout{2} = gredIdx;
+
+    case strcmp(method,'adaptive-penven')
+        % note: var 'order' is not an order here!
+        [Z,dHerror,gredIdx] = reduceAdaptive(Z,order,'penven');
+        % additional output arguments
+        varargout{1} = dHerror;
+        varargout{2} = gredIdx;
     
     case 'combastel'
         Z = priv_reduceCombastel(Z,order);
@@ -105,6 +114,7 @@ switch method
     case 'pca'
         Z = priv_reducePCA(Z,order);
     
+        % methX
     case 'methA'
         Z = priv_reduceMethA(Z,order);
     
@@ -120,6 +130,7 @@ switch method
     case 'methF'
         Z = priv_reduceMethF(Z);   
     
+        % ---
     case 'redistribute'
         Z = priv_reduceRedistribute(Z,order);   
     
@@ -131,6 +142,9 @@ switch method
     
     case 'valero'
         Z = priv_reduceValero(Z,order);
+
+    case 'sadraddini'
+        Z = priv_reduceSadraddini(Z,order);
     
     % case 'KclusterAllDim'
     %     % order must be 1
@@ -147,8 +161,8 @@ switch method
     % wrong method
         otherwise
         throw(CORAerror('CORA:wrongValue','second',...
-            "'adaptive', 'cluster', 'combastel', 'constOpt', 'girard'" + ...
-            "'methA', 'methB', 'methC', 'pca', 'scott', 'redistribute', or 'valero'"));
+            "'adaptive', 'adaptive-penven', 'cluster', 'combastel', 'constOpt', 'girard'" + ...
+            "'methA', 'methB', 'methC', 'pca', 'scott', 'redistribute', 'sadraddini', or 'valero'"));
 end
 
 % ------------------------------ END OF CODE ------------------------------

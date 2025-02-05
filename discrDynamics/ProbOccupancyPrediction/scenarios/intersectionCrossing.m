@@ -1,6 +1,27 @@
 function intersectionCrossing()
-% built: 14-October-2009
-% updated: 09-August-2018
+% intersectionCrossing - ???
+%
+% Syntax:
+%    intersectionCrossing()
+%
+% Inputs:
+%    -
+%
+% Outputs:
+%    -
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+%
+% See also: -
+
+% Authors:       ???
+% Written:       14-October-2009
+% Last update:   09-August-2018
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
 
 %set path
 global filePath
@@ -223,8 +244,6 @@ Rcurved=createPath(dispR,[3*pi/2,30,190],[0,-0.1,0.1,0],[12;12;12;4]);
 RcurvedLong=createPath(dispR,[3*pi/2,30,190],[0,-0.1,0.1,0],[12;12;12;8]);
 
 
-    
-
 for iStep=1:4
     figure   
     
@@ -271,51 +290,53 @@ Rcurved=createPath(R,[3*pi/2,30,190],[0,-0.1,0.1,0],[12;12;12;4]);
 
 %subplot(1,5,1);
 figure;
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rcurved,avgVelA,1);
-plotRoad();
+aux_plotRoad();
 axis([-40, 40, 20, 190]);
 % xlabel('car A');
 
 %subplot(1,5,2);
 figure;
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rcurved,avgVelB,1);
-plotRoad();
+aux_plotRoad();
 axis([-40, 40, 20, 190]);
 % xlabel('car B');
 % set(gca,'ytick',[]);
 
 %subplot(1,5,3)
 figure;
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rstraight,avgVelC,1);
-plotRoad();
+aux_plotRoad();
 axis([-40, 40, 20, 190]);
 % xlabel('car C');
 % set(gca,'ytick',[]);
 
 %subplot(1,5,4)
 figure;
-normalizePlot();
+aux_normalizePlot();
 %plot velocity distribution
 plot(Rstraight,avgVelD,1);
-plotRoad();
+aux_plotRoad();
 axis([-40, 40, 20, 190]);
 % xlabel('car D');
 % set(gca,'ytick',[]);
 
 
 % subplot(1,5,5)
-% normalizePlot();
+% aux_normalizePlot();
 % set(gca,'xtick',[]);
 % set(gca,'ytick',[]);
 
 
-function normalizePlot()
+% Auxiliary functions -----------------------------------------------------
+
+function aux_normalizePlot()
 
 %plot lowest and highest value for average probability
 %plot using own methods
@@ -324,7 +345,7 @@ V=vertices(IH);
 plot(V,'grayTones',0);
 plot(V,'grayTones',18);
 
-function plotRoad()
+function aux_plotRoad()
 
 %create road
 R=road(4,5,1);
@@ -342,3 +363,5 @@ plot([-9.12,-7,-6],[70.36,71,70],'k-');
 plot([-14.09,-10,-6.5,-6],[76.63,80,85,90],'k-');
 plot([4.02,2.2,2],[85.89,85,90],'k-');
 plot([7.65,3,2.2,2],[78.76,75,73,70],'k-');
+
+% ------------------------------ END OF CODE ------------------------------

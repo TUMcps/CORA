@@ -1,7 +1,7 @@
 function cellIndices = cellIndices(obj,segmentIndices)
 % cellIndices - returns cell indices given a set of cell coordinates.
 %
-% Syntax:  
+% Syntax:
 %   cellIndices = cellIndices(obj,segmentIndices)
 %
 % Inputs:
@@ -19,13 +19,13 @@ function cellIndices = cellIndices(obj,segmentIndices)
 %
 % See also: none
 
-% Author:       Matthias Althoff
-% Written:      17-August-2007
-% Last update:  10-August-2020
-% Last revision:---
+% Authors:       Matthias Althoff
+% Written:       17-August-2007
+% Last update:   10-August-2020
+% Last revision: ---
 
-%------------- BEGIN CODE --------------
+% ------------------------------ BEGIN CODE -------------------------------
 
 [cellIndices]=s2i(obj.nrOfSegments',segmentIndices);
 
-%------------- END OF CODE --------------
+% ------------------------------ END OF CODE ------------------------------

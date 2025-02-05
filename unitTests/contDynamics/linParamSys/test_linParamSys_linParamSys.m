@@ -25,7 +25,7 @@ function res = test_linParamSys_linParamSys
 
 % no input arguments
 sys = linParamSys();
-assert(sys.nrOfStates == 0 && sys.nrOfInputs == 0 && sys.nrOfOutputs == 0);
+assert(sys.nrOfDims == 0 && sys.nrOfInputs == 0 && sys.nrOfOutputs == 0);
 
 % variables for system
 A = [-2 0; 1.5 -3];
@@ -38,17 +38,17 @@ B_int = intervalMatrix(B,Bw);
 
 % check different instantiations
 sys = linParamSys(A_int,B);
-assert(sys.nrOfStates == 2 && sys.nrOfInputs == 1 ...
+assert(sys.nrOfDims == 2 && sys.nrOfInputs == 1 ...
     && sys.nrOfOutputs == 0 && sys.constParam);
 sys = linParamSys(A_zon,B);
-assert(sys.nrOfStates == 2 && sys.nrOfInputs == 1 ...
+assert(sys.nrOfDims == 2 && sys.nrOfInputs == 1 ...
     && sys.nrOfOutputs == 0 && sys.constParam);
 sys = linParamSys(A_int,B,'varParam');
-assert(sys.nrOfStates == 2 && sys.nrOfInputs == 1 ...
+assert(sys.nrOfDims == 2 && sys.nrOfInputs == 1 ...
     && sys.nrOfOutputs == 0 && ~sys.constParam);
 sys = linParamSys('system',A_int,B_int,'varParam');
 assert(strcmp(sys.name,'system') ...
-    && sys.nrOfStates == 2 && sys.nrOfInputs == 1 ...
+    && sys.nrOfDims == 2 && sys.nrOfInputs == 1 ...
     && sys.nrOfOutputs == 0 && ~sys.constParam);
 
 % combine results
