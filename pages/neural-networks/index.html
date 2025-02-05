@@ -82,7 +82,7 @@
 
     <div class="row space-before">
         <div class="col-12 col-lg-6 col-xl-8 order-0 order-md-0">
-            <h2>Formal Verification of Neural Networks</h2>
+            <h2 id="headline">Formal Verification of Neural Networks</h2>
             <p>CORA enables the formal verification of neural networks, both in open-loop and in closed-loop scenarios. Open-loop verification
                 refers to the task where properties of the output set of a neural network are verified, e.g., correctly classified images given noisy
                 input. In closed-loop scenarios, the neural network is used as a controller of a dynamic system and is neatly integrated in the
@@ -201,13 +201,8 @@
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
 </body>
-<script>
-    const navLinks = document.querySelectorAll('.nav-item')
-    const menuToggle = document.getElementById('navbarToggler')
-    const bsCollapse = new bootstrap.Collapse(menuToggle, {toggle: false})
 
-    navLinks.forEach((l) => {
-        l.addEventListener('click', () => { bsCollapse.toggle() })
-    })
-</script>
+<!-- javascript -->
+<script src="../../scripts/general.js"></script>
+
 </html>

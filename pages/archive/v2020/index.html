@@ -80,7 +80,7 @@
 
     <div class="row space-before">
         <div class="col-12 col-lg-6 col-xl-8 order-1 order-lg-0">
-            <h2>CORA v2020</h2>
+            <h2 id="headline">CORA v2020</h2>
             <p>
                 In August 2020, we released CORA v2020:
                 <a href="../../../data/archive/version/CORA_2020.zip"><i class="bi bi-file-earmark-zip-fill"></i> CORA v2020</a>
@@ -155,14 +155,9 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
-<script>
-    const navLinks = document.querySelectorAll('.nav-item')
-    const menuToggle = document.getElementById('navbarToggler')
-    const bsCollapse = new bootstrap.Collapse(menuToggle, {toggle: false})
 
-    navLinks.forEach((l) => {
-        l.addEventListener('click', () => { bsCollapse.toggle() })
-    })
-</script>
+<!-- javascript -->
+<script src="../../../scripts/general.js"></script>
+
 </body>
 </html>

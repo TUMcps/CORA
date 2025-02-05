@@ -211,3 +211,13 @@ hr.visible {
     /* same as default opacity for hr in Bootstrap */
     opacity: 0.25;
 }
+
+#copyURL {
+    opacity: 0.5;
+}
+#copyURL:hover, #copyURL:focus {
+    opacity: 1;
+}
+#copyURL:active {
+    opacity: 0.5;
+}

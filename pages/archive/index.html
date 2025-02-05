@@ -83,7 +83,7 @@
 
     <div class="row space-before">
         <div class="col-12 col-lg-6 col-xl-8 order-1 order-lg-0">
-            <h2>Archive</h2>
+            <h2 id="headline">Archive</h2>
             <p>
                 The first lines of CORA were written in September 2006 by Matthias Althoff.
                 This pages archives all previous versions of CORA and shows the history of CORA.
@@ -206,14 +206,9 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
-<script>
-    const navLinks = document.querySelectorAll('.nav-item')
-    const menuToggle = document.getElementById('navbarToggler')
-    const bsCollapse = new bootstrap.Collapse(menuToggle, {toggle: false})
 
-    navLinks.forEach((l) => {
-        l.addEventListener('click', () => { bsCollapse.toggle() })
-    })
-</script>
+<!-- javascript -->
+<script src="../../scripts/general.js"></script>
+
 </body>
 </html>
