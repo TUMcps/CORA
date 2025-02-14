@@ -36,3 +36,7 @@ headline.innerHTML = `${headline.innerHTML} <span id="copyURL" onclick="copyURL(
 // load tooltips
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+window.onload = function() {
+    document.body.className += " loaded";
+}

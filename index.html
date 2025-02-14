@@ -107,7 +107,7 @@
             </object>
         </div>
     </div>
-    <div class="text-center">
+    <div id="headline" class="text-center">
         A Tool for Continuous Reachability Analysis.
     </div>
 
@@ -124,14 +124,10 @@
 
     <div class="row space-before flyin">
         <p>
-            The <u>Co</u>ntinuous <u>R</u>eachability <u>A</u>nalyzer (CORA) is a collection of MATLAB classes
-                for the formal verification of cyber-physical systems using reachability analysis.
-            CORA integrates various vector and matrix set representations and operations on them as well as
-                reachability algorithms of various dynamic system classes.
-            The software is designed such that set representations can be exchanged without having to modify
-                the code for reachability analysis.
-            CORA is designed using the object oriented paradigm, such that users can safely use methods
-                without concerning themselves with detailed information hidden inside the object.
+            The <u>Co</u>ntinuous <u>R</u>eachability <u>A</u>nalyzer (CORA) is a collection of MATLAB classes for the formal verification of cyber-physical systems using reachability analysis.
+            CORA integrates various vector and matrix set representations and operations on them as well as reachability algorithms of various dynamic system classes.
+            The software is designed such that set representations can be exchanged without having to modify the code for reachability analysis.
+            CORA is designed using the object oriented paradigm, such that users can safely use methods without concerning themselves with detailed information hidden inside the object.
             Since the toolbox is written in MATLAB, the installation and use is platform independent.
             From Release 2018 on, the direct import of SpaceEx models into CORA is also supported.
             The following points summarize the main features of the CORA toolbox.
@@ -143,13 +139,9 @@
     <div class="row space-before flyin">
         <div class="col-12 col-md-6 col-xl-8 order-1 order-md-0">
             <h5>Reachability Analysis for Continuous Systems</h5>
-            <p>CORA computes reachable sets for linear systems, nonlinear systems as well as
-                for systems with
-                constraints.
-                Continuous as well as discrete time models are supported. Uncertainty in the system inputs as
-                well as
-                uncertainty in the model parameters can be explicitly considered. In addition, CORA also
-                provides
+            <p>CORA computes reachable sets for linear systems, nonlinear systems as well as for systems with constraints.
+                Continuous as well as discrete time models are supported. Uncertainty in the system inputs as well as
+                uncertainty in the model parameters can be explicitly considered. In addition, CORA also provides
                 capabilities for the simulation of dynamical models.</p>
             <div class="text-start"><a href="./pages/continuous-systems/index.html" class="btn btn-primary">Read more</a></div>
         </div>
@@ -162,14 +154,13 @@
     </div>
 
     <hr id="reach-hybrid" class="flyin"/>
-
     <div class="row space-before flyin">
         <div class="col-12 col-md-6 col-xl-8 order-1 order-md-1">
             <h5>Reachability Analysis for Hybrid Systems</h5>
-            <p>The toolbox is also capable to calculate the reachable sets for hybrid systems. All implemented dynamic
-                system classes can be used to describe the different continuous flows for the discrete system states.
-                Further, multiple different methods for the calculation of the intersections with guard sets are
-                implemented in CORA.</p>
+            <p>The toolbox is also capable of computing the reachable sets for hybrid systems.
+                All implemented dynamic system classes can be used to describe the different continuous flows
+                for the discrete system states. Further, multiple different methods for the computation of
+                the intersections with guard sets are implemented in CORA.</p>
             <div class="text-start"><a href="./pages/hybrid-systems/index.html" class="btn btn-primary">Read more</a></div>
         </div>
         <div class="col-12 col-md-6 col-xl-4 order-0 order-md-0 text-center">
@@ -180,14 +171,13 @@
     </div>
 
     <hr id="geometric-sets" class="flyin"/>
-
     <div class="row space-before flyin">
         <div class="col-12 col-md-6 col-xl-8 order-1 order-md-0">
             <h5>Geometric Sets</h5>
             <p>CORA has a modular design, making it possible to use the capabilities of the various set representations
                 for other purposes besides reachability analysis. The toolbox implements vector set representation,
-                e.g., intervals, zonotopes, Taylor models, and polytopes, as well as matrix set representations such as matrix
-                zonotopes and interval matrices.</p>
+                e.g., intervals, zonotopes, Taylor models, and polytopes, as well as matrix set representations
+                such as matrix zonotopes and interval matrices.</p>
             <div class="text-start"><a href="./pages/geometric-sets/index.html" class="btn btn-primary">Read more</a></div>
         </div>
         <div class="col-12 col-md-6 col-xl-4 order-0 order-md-1 text-center">
@@ -199,14 +189,13 @@
     </div>
 
     <hr id="nn" class="flyin"/>
-
     <div class="row space-before flyin">
         <div class="col-12 col-md-6 col-xl-8 order-1 order-md-1">
-            <h5>Formal Verification of Neural Networks</h5>
+            <h5>Neural Network Verification and Robust Training</h5>
             <p>CORA enables the formal verification of neural networks, both in open-loop and in closed-loop scenarios. Open-loop verification
                 refers to the task where properties of the output set of a neural network are verified, e.g., correctly classified images given noisy
                 input. In closed-loop scenarios, the neural network is used as a controller of a dynamic system and is neatly integrated in the
-                reachability algorithms above, e.g., controlling a car while keeping a safe distance.</p>
+                reachability algorithms above, e.g., controlling a car while keeping a safe distance. Additionally, one can train verifiably robust neural networks in CORA.</p>
             <div class="text-start"><a href="./pages/neural-networks/index.html" class="btn btn-primary">Read more</a></div>
         </div>
         <div class="col-12 col-md-6 col-xl-4 order-0 order-md-0 text-center">
@@ -302,19 +291,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
-<script>
-    const navLinks = document.querySelectorAll('.nav-item')
-    const menuToggle = document.getElementById('navbarToggler')
-    const bsCollapse = new bootstrap.Collapse(menuToggle, {toggle: false})
-
-    navLinks.forEach((l) => {
-        l.addEventListener('click', () => { bsCollapse.toggle() })
-    })
-
-    window.onload = function() {
-        document.body.className += " loaded";
-    }
-</script>
+<script src="./scripts/general.js"></script>
 <script src="./scripts/animateFlyin.js"></script>
+
 </body>
 </html>
