@@ -46,7 +46,11 @@ end
 
 % add first vertex at the end to close the polygon
 if size(V,2) > 1 && ~any(isnan(V),"all")
+    % close single region
     V = [V,V(:,1)];
+else
+    % close each region in plotPolygon
+    NVpairsPlot = [NVpairsPlot,{'CloseRegions',true}];
 end
 
 % plot vertices

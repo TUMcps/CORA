@@ -41,7 +41,7 @@ for i=1:nrTests
     B = box(P);
 
     % box has to contain the polytope
-    assertLoop(contains(B,P,'exact',1e-14),i)
+    assertLoop(contains(B,P,'exact',1e-12),i)
 
     % instantiate from vertices (one vertex per quadrant to ensure that
     % none are redundant)

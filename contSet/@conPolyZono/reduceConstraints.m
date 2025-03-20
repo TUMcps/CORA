@@ -296,7 +296,7 @@ function r = aux_rescaleIterative(cZ)
             for j = 1:n
                 if abs(iA(i,j)) < 1e10
 
-                    % calculate new tighend domain for the current factor
+                    % calculate new tightend domain for the current factor
                     temp = E;
                     temp(j) = 0;
                     dummy = iA(i,j) .* ( b(i) - A(i,:)*temp );

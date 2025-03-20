@@ -73,26 +73,24 @@ methods
     end
          
     %methods in seperate files     
-    matZ = plus(summand1,summand2)
-    matZ = mtimes(factor1,factor2)
-    matZ = mpower(matZ,exponent)
-    matZ = powers(matZ,varargin)
-    matZ = expmInd(matZ,maxOrder)
-    [eZ,eI,zPow,iPow,E] = expmMixed(matZ,r,intermediateOrder,maxOrder)
-    [eZ,eI,zPow,iPow,E] = expmIndMixed(matZ,intermediateOrder,maxOrder)
-    [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,u)
-    intMat = intervalMatrix(matZ,varargin)
-    matZ = zonotope(matZ)
-    dist = expmDist(matZ,intMat,maxOrder)
-    matZred = reduce(matZ,option,order,filterLength)
-    vol = volume(matZ)
-    matZ1 = concatenate(matZ1,matZ2)
-    res = norm(matZ,varargin)
-    newObj = subsref(matZ,S)
-    h = numgens(matZ)
-    matZ_transposed = transpose(matZ)
-    matZ_reshaped = reshape(matZ,n,m)
-    res = representsa(matZ,varargin)
+    matZ = plus(summand1,summand2) % Minkowski sum
+    matZ = mtimes(factor1,factor2) % set-based product
+    matZ = mpower(matZ,exponent) % power
+    matZ = powers(matZ,varargin) % compute several powers
+    matZ = expmInd(matZ,maxOrder) % exponential matrix of a matrix zonotope; evaluated independently
+    [eZ,eI,zPow,iPow,E] = expmMixed(matZ,r,intermediateOrder,maxOrder) % exponential matrix of a matrix zonotope; evaluated dependently
+    [eZ,eI,zPow,iPow,E] = expmIndMixed(matZ,intermediateOrder,maxOrder) % exponential matrix of a matrix zonotope; evaluated mixed dependently and independently
+    [eZ,eI,zPow,iPow,E,RconstInput] = expmOneParam(matZ,r,maxOrder,u) % exponential matrix of a matrix zonotope; evaluated dependently for a single parameter
+    intMat = intervalMatrix(matZ,varargin) % enclosing interval matrix
+    matZ = zonotope(matZ) % converts a matrix zonotope to a zonotope
+    matZred = reduce(matZ,option,order,filterLength) % reduces the order of a matrix zonotope
+    vol = volume(matZ) % computes the volume of the corresponding zonotope
+    res = norm(matZ,varargin) % computes approximately the maximum norm value of all possible matrices
+    newObj = subsref(matZ,S) % overloads the opertor that selects elements
+    h = numgens(matZ) % returns the number of generators
+    matZ_transposed = transpose(matZ) % transposes the center and the generators
+    matZ_reshaped = reshape(matZ,n,m) % reshapes the center and the generators
+    res = representsa(matZ,varargin) % checks if a set can also be represented by a different set
         
     %display functions
     plot(matZ,varargin)

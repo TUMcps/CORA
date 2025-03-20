@@ -105,10 +105,12 @@ switch type
         [A,b,Ae,be,empty] = priv_compact_zeros(A,b,Ae,be,tol);
 
     case 'aligned'
+        % remove aligned halfspaces
         [A,b] = priv_compact_alignedIneq(A,b,tol);
         [Ae,be,empty] = priv_compact_alignedEq(Ae,be,tol);
 
     case 'AtoAe'
+        % convert inequality to equality constraints
         [A,b,Ae,be] = priv_compact_toEquality(A,b,Ae,be,tol);
 
     case 'A'

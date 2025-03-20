@@ -47,7 +47,7 @@ function res = ellipsoidNorm(E,p)
 
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid','scalar'};
-                {p,'att','double',{'size',[dim(E),1]}}});
+                {p,'att','double',@(p) all(size(p) == [dim(E),1])}});
 
 % The ellipsoid E is given as {x | (x - q)' * Q^(-1) (x - q) <= 1}...
 % ... as a consequence, the norm of a point p w.r.t. E would be given by

@@ -56,7 +56,7 @@ function coeff = eq_dist_coeff(dim,N,varargin)
 %
 % Check number of arguments
 %
-error(nargchk(2,4,nargin));
+narginchk(2,4);
 %
 % dim is the number of dimensions
 % N is the number of regions

@@ -239,11 +239,10 @@ function aux_checkInputArgs(A,c,G,ESumRep,n_in)
                     if mod(m2,1) ~= 0 && (m2 ~= 0)
                         throw(CORAerror('CORA:wrongInputInConstructor',...
                             'The coefficient matrix ESumRep{2} does not have the right dimension (should be k x k*(m+1)).'));
-                    end
-
-                    
+                    end  
                 end
 
+                % Initialize G and c
                 if m2 ~= 0
                     G = [speye(m1) sparse(m1,m2)];
                 else
@@ -365,6 +364,7 @@ end
 function [A,c,G,ESumRep] = aux_computeProperties(A,c,G,ESumRep,n_in)
 % compute properties
     if n_in == 1 && ~isempty(ESumRep)
+        % If only ESumRep is given, we automatically compute A, G, and c
         A = [ESumRep{1} ESumRep{2}];
         
         k = size(A,1);
@@ -374,15 +374,19 @@ function [A,c,G,ESumRep] = aux_computeProperties(A,c,G,ESumRep,n_in)
         G = [speye(m1) sparse(m1,m2)];
         c = sparse(m1,1);
     elseif n_in == 1 && isempty(ESumRep)
+        % If A is given, we set G and c; we don't set ESumRep, as this
+        % would require further computation
         k = size(A,1);
         m = size(A,2)/k-1;
         G = speye(m);
         c = sparse(m, 1);
         ESumRep = {[] []};
     elseif n_in == 2
+        % If all but G are set, automatically set G to be the identity
         G = speye(size(c,1));
         ESumRep = {[] []};
     elseif n_in == 3
+        % If everything is set (except ESumRep), just initialize ESumRep
         ESumRep = {[] []};
     end
 end

@@ -185,12 +185,14 @@ for episode = 1:episodes
     end
 
     if episode > obj.options.rl.earlyStop
+        % Early stoppping.
         if std(learnHistory.reward(episode-obj.options.rl.earlyStop:episode)) < abs(0.01*mean(learnHistory.reward(episode-obj.options.rl.earlyStop:episode)))
             if verbose
                 fprintf(['Stopped early! The reward for the last %i ' ...
                     'episodes did not increase.\n'], ...
                         obj.options.rl.earlyStop);
             end
+            % Clip the losses.
             learnHistory.criticLoss.center = learnHistory.criticLoss.center(1:episode);
             learnHistory.criticLoss.vol = learnHistory.criticLoss.vol(1:episode);
             learnHistory.actorLoss.center = learnHistory.actorLoss.center(1:episode);
@@ -296,6 +298,7 @@ end
 
 function aux_updateInfo(table,learnHistory,trainTime,episode,verbose)
 if verbose
+    % Print a new table row.
     trainTimeVec = [0 0 0 0 0 trainTime];
     cvalues = {episode,datetime(trainTimeVec,'Format','HH:mm:ss'), ...
         learnHistory.actorLoss.center(episode), learnHistory.criticLoss.center(episode), ...

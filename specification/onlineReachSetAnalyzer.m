@@ -14,7 +14,7 @@ classdef onlineReachSetAnalyzer < matlab.mixin.Copyable
 % Example:
 %    x = stl('x',2);
 %    eq = until(x(1) < 6,x(2) > 10,stlInterval(0,1,true,false));
-%    analyzer = onlineReachSetAnalyzer(phi,20)
+%    analyzer = onlineReachSetAnalyzer(eq,20)
 %
 % Other m-files required: none
 % Subfunctions: none

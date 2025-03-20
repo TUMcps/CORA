@@ -62,7 +62,7 @@ assert(isempty(c));
 A = zeros(0,1); b = zeros(0,0);
 P = polytope(A,b);
 c = center(P);
-assert(isscalar(c) && isnan(c));
+assert(isscalar(c) && c == 0);
 
 
 % 2D, only inequalities, bounded
@@ -114,7 +114,7 @@ assert(isempty(c));
 Ae = zeros(0,2); be = zeros(0,0);
 P = polytope([],[],Ae,be);
 c = center(P);
-assert(all(size(c) == [2,1]) && all(isnan(c)));
+assert(all(size(c) == [2,1]) && all(c == 0));
 
 % 2D, V-polytope
 V = [1 1; -1 1; -1 -1; 1 -1]';

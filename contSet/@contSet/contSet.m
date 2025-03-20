@@ -75,18 +75,22 @@ methods
     %    assignment to index with () or {} (subsasgn)
     % note: subsasgn is also used for dot access, e.g., Z.c
     % note: read from index (subsref) is not harmful
+    % vertical concatenation
     function obj = vertcat(varargin)
         throw(CORAerror('CORA:notSupported',...
             'Given subclass of contSet does not support class arrays.'));
     end
+    % horizontal concatenation
     function obj = horzcat(varargin)
         throw(CORAerror('CORA:notSupported',...
             'Given subclass of contSet does not support class arrays.'));
     end
+    % concatenation along different dimensions
     function obj = cat(varargin)
         throw(CORAerror('CORA:notSupported',...
             'Given subclass of contSet does not support class arrays.'));
     end
+    % assignment to index
     function obj = subsasgn(S,strct,val)
         if ~strcmp(strct(1).type,'.')
             throw(CORAerror('CORA:notSupported',...
@@ -96,6 +100,7 @@ methods
     end
 end
 
+% Static methods
 methods (Static = true)
     S = enclosePoints(varargin) % encloses a point cloud with a set
     S = generateRandom(varargin) % generates a random contSet
@@ -104,6 +109,7 @@ methods (Static = true)
     S = Inf(type) % instantiates a fullspace set of a contSet class
 end
 
+% Protected access
 methods (Access = protected)
     [empty,res,S_conv] = representsa_emptyObject(S,type)
     [abbrev,printOrder] = getPrintSetInfo(S)

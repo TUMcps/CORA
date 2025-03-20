@@ -38,7 +38,7 @@ tol = setDefaultValues({1e-12},varargin);
 % check input arguments
 inputArgsCheck({{spec1,'att','specification'},...
                 {spec2,'att','specification'},...
-                {tol,'att','numeric',{'nonnegative,','scalar'}}});
+                {tol,'att','numeric',{'nonnegative','scalar'}}});
 
 % specification objects have to have same length
 nrSpecs = length(spec1);

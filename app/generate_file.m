@@ -566,7 +566,10 @@ fprintf(id, '\n%s\n\n', '% Visualization ---------------------------------------
     
     fprintf(id, 'disp(''- Plotting..'')\n\n');
 
+% TODO: switch to CORAcolor / useCORAcolors
 gray_color = '[0.5,0.5,0.5]';
+
+% read out dimensions to plot ---
 
 if isempty(dims)
     uiwait(msgbox('Missing dimensions to plot', 'Error', 'error', 'modal'))
@@ -574,9 +577,9 @@ if isempty(dims)
     err = 1;
     return
 end
-
 dims = erase(dims,"time, ");
 
+% check given dims with system's dimension
 for i = 1:size(dims)
     dims_eva = evalin('base',dims{i});
     if max(dims_eva)> dimensions(1)

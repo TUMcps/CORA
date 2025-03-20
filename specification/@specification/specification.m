@@ -277,6 +277,7 @@ elseif isnumeric(argIn) || iscell(argIn)
 elseif isa(argIn,'interval')
     time = argIn;
 else
+    % Alter message based on index
     if idx == 2
         throw(CORAerror('CORA:wrongInputInConstructor',...
             ['The second input argument has to be either a char-array (type) '...

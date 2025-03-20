@@ -33,19 +33,20 @@ if ~all(cellfun(@(y)isa(y,'double'),varargin))
         'All input arguments need to be of type "double"!'));
 end
 
+% trivial cases
 if nargin==0
-    Y = [];
-    return;
+    Y = []; return;
 end
 if nargin==1
-    Y = varargin{1};
+    Y = varargin{1}; return;
+end
+if nargin>2
+    % recursive call
+    Y = combineVec(varargin{1},combineVec(varargin{2},varargin{3:end}));
     return;
 end
 
-if nargin>2
-    Y = combineVec(varargin{1},combineVec(varargin{2},varargin{3}));
-    return;
-end
+% exactly two inputs ---
 
 Y1 = varargin{1};
 Y2 = varargin{2};

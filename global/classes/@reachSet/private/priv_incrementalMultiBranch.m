@@ -99,6 +99,7 @@ function [res,tStop,checkpoints] = aux_single_branch(R,analyzer,tStartChildren)
         else
             rc = false;
         end
+        % after creating checkpoints, we can add the observations of this branch
         analyzer.observeSet(timeInterval.set{j},stlInterval(lb,ub,true,rc),R.loc,makeValid);
         v = analyzer.getVerdict();
         if v ~= fourValued.Inconclusive

@@ -164,20 +164,24 @@ simOpts.tFinal = 1;
 [tCont,xCont] = simulate(linsys,simOpts);
 
 % equivalent hybrid automaton
+% location upper bound
 inv = polytope([1,0],1);
 guard = polytope([],[],[1,0],1);
 reset = linearReset.eye(2);
 trans = transition(guard,reset,2);
 loc1 = location(inv,trans,linsys);
 
+% location lower bound
 inv = polytope([-1,0],1);
 guard = polytope([],[],[1,0],-1);
 reset = linearReset.eye(2);
 trans = transition(guard,reset,1);
 loc2 = location(inv,trans,linsys);
 
+% compose HA
 HA = hybridAutomaton([loc1;loc2]);
 
+% simulate HA
 simOpts.startLoc = 2;
 
 [tHyb,xHyb] = simulate(HA,simOpts);

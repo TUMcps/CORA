@@ -77,6 +77,7 @@ for i=5:5:10
 
             catch ME
                 if strcmp(ME.identifier,'CORA:solverIssue')
+                    % ok for random ellipsoids
                     disp('Randomly generated ellipsoids caused solver issues! Ignoring...');
                     continue;
                 end
@@ -89,7 +90,7 @@ end
 end
 
 function res = aux_distanceHyperplane()
-
+% compute distance hyperplane
 res = true;
 nRuns = 2;
 bools = [false,true];
@@ -125,7 +126,7 @@ end
 end
 
 function res = aux_distancePolytope()
-
+% compute distance polytope
 res = true;
 nRuns = 2;
 bools = [false,true];
@@ -172,7 +173,7 @@ end
 end
 
 function res = aux_distancePoint()
-
+% compute distance point
 res = true;
 nRuns = 2;
 bools = [false,true];

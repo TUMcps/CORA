@@ -34,6 +34,7 @@ function han = plotPolygon(V,varargin)
 %                05-April-2024 (TL, added option to plot in background)
 %                16-October-2024 (TL, fixes during contSet/plot restructuring)
 %                17-December-2024 (TL, added 'CloseRegions')
+%                12-February-2025 (TL, fixed plotting with multiple regions)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -278,6 +279,18 @@ function han = aux_plot2D(V,NVpairs,doConvHull,hasFaceColor,facecolor,closeRegio
     else
         % make filled plot
 
+        % make sure it is a single region
+        pgon = polygon(V);
+        if pgon.set.NumRegions > 1
+            % plot each individually
+            han = plotMultipleSetsAsOne( ...
+                arrayfun(@(pshape) polygon(pshape), pgon.set.regions,'UniformOutput',false), ...
+                1:2, ... % dims
+                [NVpairs(:)',{'FaceColor',facecolor,'CloseRegions',closeRegions}]);
+            return;
+        end
+
+        % plot single region
         V = aux_sortMultipleRegionsAndHoles(V);
     
         % for the set with multiple regions/holes to fill correctly,
@@ -356,7 +369,7 @@ if all(withinTol(V(:,1),V(:,end)))
 end
 
 % split vertices into regions
-idxNan = [1,idxNan,size(V,2)+1];
+idxNan = [0,idxNan,size(V,2)+1];
 Vs = arrayfun(@(i) V(:,(idxNan(i)+1):(idxNan(i+1)-1)), 1:(numel(idxNan)-1),'UniformOutput',false);
 
 % determine largest region

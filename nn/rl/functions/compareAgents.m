@@ -93,7 +93,7 @@ fig_trajectories = figure();
 for i = 1:4
     for j = 1:numAgents
         ind = i*floor(length(agents{j}.buffer.visualisationData.episodeNum)/4);
-    
+        % Create a subplot
         subplot(4,numAgents,numAgents*(i-1)+j)
         hold on
         for k = 1:length(stateLabels)
@@ -144,6 +144,7 @@ subplot(3,1,3) % actor loss
 hold on
 for i = 1:numAgents
     yyaxis left
+    % Plot the loss
     plot(agents{i}.learnHistory.actorLoss.center,'Color',cmap(i,:),'LineStyle','-','Marker','none','DisplayName',[labels{i},': $\overline{\mathcal{L}_{a,center}}$'])
     ylabel('$\overline{\mathcal{L}_{a,center}}$')
     if strcmp(agents{i}.options.rl.actor.nn.train.method,'set')

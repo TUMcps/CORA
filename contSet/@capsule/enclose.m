@@ -57,7 +57,7 @@ elseif length(varargin) == 2
     Cplus = varargin{2};
     inputArgsCheck({{C,'att','capsule','scalar'}; ...
                     {Cplus,'att','capsule','scalar'}; ...
-                    {M,'att','numeric',{'size',[dim(C),dim(Cplus)]}}});
+                    {M,'att','numeric',@(M) size(M) == [dim(C),dim(Cplus)]}});
     C2 = M*Cplus;
     
 end

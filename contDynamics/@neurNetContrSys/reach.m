@@ -186,8 +186,10 @@ function R0 = aux_appendU2X(X, U)
                 && all(all(X.E == U.E)) ... 
                 && all(size(X.id) == size(U.id)) ...
                 && all(X.id == U.id)
+            % all ids stayed the same, we can merge directly
             R0 = polyZonotope([X.c; U.c], [X.G; U.G], GI, X.E, X.id);
         else
+            % different ids -> merge exponent matrices considering ids
             ids = unique([X.id; U.id]);
             
             c = [X.c; U.c];

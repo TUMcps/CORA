@@ -82,6 +82,7 @@ for i = 1:length(test_cases)
     negInt = arrayfun(@(match) actual(2).findIntervals(match),kleeneVals,'UniformOutput',false);
     negIntExpected = arrayfun(@(match) findIntervals(~lhs,match),kleeneVals,'UniformOutput',false);
     
+    % check whether we got the expected values
     assertLoop(compareIntervals(impliesInt{1},expected{1}),i)
     assertLoop(compareIntervals(impliesInt{2},expected{2}),i)
     assertLoop(compareIntervals(impliesInt{3},expected{3}),i)

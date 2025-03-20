@@ -67,7 +67,7 @@ function coeff = eq_energy_coeff(dim,N,s,varargin)
 %
 % Check number of arguments
 %
-error(nargchk(2,5,nargin));
+narginchk(2,5);
 %
 % dim is the number of dimensions
 % N is the number of regions

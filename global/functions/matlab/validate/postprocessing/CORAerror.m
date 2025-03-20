@@ -532,6 +532,16 @@ for i=1:stlength
     end
 end
 
+% check if error index is found; if not, probably command window call
+if isempty(errIdx)
+    % early exit
+    filename = 'command window';
+    classname = '<command window call>';
+    functionname = '';
+    sprintfFilesep = filesep;
+    return
+end
+
 % name of file where error occurred
 [~,filename,~] = fileparts(st(errIdx).file);
 if contains(filename,'.')

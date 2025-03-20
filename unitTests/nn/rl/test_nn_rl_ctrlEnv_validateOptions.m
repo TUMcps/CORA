@@ -48,7 +48,7 @@ options.rl.env.initialOps = 'None';
 
 env = ctrlEnvironment(sys,@aux_rewardFun_Quadrocopter1D,@aux_collisionCheck_Quadrocopter1D,options);
 [~, observation] = env.reset();
-
+% Check with no initial ops
 assert(all(observation == [0;0]))
 
 options.rl.env.initialOps = 'inf';
@@ -56,6 +56,7 @@ options.rl.env.initialOps = 'inf';
 env = ctrlEnvironment(sys,@aux_rewardFun_Quadrocopter1D,@aux_collisionCheck_Quadrocopter1D,options);
 [~, observation] = env.reset();
 
+% Check with inf initial ops
 assert(all(observation == options.rl.env.x0.inf))
 
 options.rl.env.initialOps = 'sup';
@@ -63,6 +64,7 @@ options.rl.env.initialOps = 'sup';
 env = ctrlEnvironment(sys,@aux_rewardFun_Quadrocopter1D,@aux_collisionCheck_Quadrocopter1D,options);
 [~, observation] = env.reset();
 
+% Check with sup initial ops
 assert(all(observation == options.rl.env.x0.sup))
 
 % test outOfDomain

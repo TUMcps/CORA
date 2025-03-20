@@ -384,6 +384,7 @@ function res = aux_containsInterval(f,df,X,X_,Y_,varargin)
             break;
         end
         
+        % Check if the approximation is contained
         if contains_(U1_,u1_ + t,'exact',0,0,false,false)
             res = true;
             return; 

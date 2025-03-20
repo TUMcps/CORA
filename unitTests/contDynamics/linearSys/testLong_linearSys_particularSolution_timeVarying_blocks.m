@@ -57,7 +57,10 @@ blocks = [1 2; 3 5];
 Ptp = particularSolution_timeVarying(sys,U,timeStep,truncationOrder);
 % compute particular solution with blocks
 Ptp_blocks = particularSolution_timeVarying(sys,U,timeStep,truncationOrder,blocks);
+
+% compact and reduce to make containment check faster to compute
 Ptp_blocks = compact(recompose(Ptp_blocks),'zeros');
+Ptp_blocks = reduce(Ptp_blocks,'girard',5);
 
 % time-point solutions must be equal
 assert(contains(polytope(Ptp_blocks),Ptp,'exact',tol));

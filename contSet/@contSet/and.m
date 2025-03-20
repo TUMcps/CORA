@@ -65,11 +65,11 @@ equalDimCheck(S1,S2);
 try
     res = and_(S1,S2,type);
 catch ME
-    if isa(S1,'contSet') && representsa_(S1,'emptySet',eps)
+    if isa(S1,'contSet') && representsa_(S1,'emptySet',eps,'linearize',0,1)
         res = S1;
     elseif isnumeric(S1) && isempty(S1)
         res = [];
-    elseif isa(S2,'contSet') && representsa_(S2,'emptySet',eps)
+    elseif isa(S2,'contSet') && representsa_(S2,'emptySet',eps,'linearize',0,1)
         res = S2;
     elseif isnumeric(S2) && isempty(S2)
         res = [];

@@ -65,8 +65,7 @@ for i = 1:length(BC.States)
     if convtype
         [isLin,A,B,c,eqs] = eq2linSys(State.Flow.varNames,...
             State.Flow.expressions,BC.states,BC.inputs);
-        [isLin_out,C,D,k,eqs_out] = outputMatricesComp2Comp(BC.states,BC.inputs,...
-            [BC.outputsLocal;BC.outputsGlobal],State.Invariant);
+        [isLin_out,C,D,k,eqs_out] = outputMatricesComp2Comp(BC.states,BC.inputs,[BC.outputsLocal;BC.outputsGlobal],State.Invariant);
     else
         % what do outputsLocal map to in state vector
         if ~isempty(BC.outputsLocal)

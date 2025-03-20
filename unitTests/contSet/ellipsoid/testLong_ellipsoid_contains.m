@@ -36,7 +36,7 @@ assert(aux_containsZonotope());
 % point containment
 assert(aux_containsPoint());
 
-
+% Set up general set containment check
 S = 2*ellipsoid(eye(2));
 Sdeg = [1 0; 0 0] * S;
 Sempty = ellipsoid.empty(2);
@@ -44,14 +44,13 @@ Sempty = ellipsoid.empty(2);
 implementedSets = {'capsule','conPolyZono','conZonotope','interval','polytope',...
                     'zonoBundle','zonotope','ellipsoid','taylm',...
                     'polyZonotope','conPolyZono','spectraShadow'};
-
 setsNonExact = {'taylm','conPolyZono','polyZonotope',...
                 'spectraShadow'};
 
 additionalAlgorithms = {};
-
 additionalAlgorithms_specificSets = {};
 
+% check containments
 checkAllContainments(S, Sdeg, Sempty, implementedSets, setsNonExact, additionalAlgorithms, additionalAlgorithms_specificSets);
 
 

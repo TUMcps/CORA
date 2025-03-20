@@ -48,6 +48,7 @@ function p = priv_findFeasiblePointSpectrahedron(SpS)
     end
 
 
+    % Parametrization of the spectrahedron
     beta = sdpvar(m,1,'full');
     A = A0;
     for i=1:m
@@ -55,6 +56,7 @@ function p = priv_findFeasiblePointSpectrahedron(SpS)
     end
     constraints = A>=0;
     cost = [];
+    % Choose Mosek or Sedumi, depending on what is available
     persistent options
     if isempty(options)
         if isSolverInstalled('mosek')

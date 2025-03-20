@@ -100,12 +100,14 @@ tComp = toc;
 
 tic
 violation50 = false;
+% check intersecting with unsafe set for each time interval
 for i = 1:length(R.timeInterval.set)
     x_proj = interval(project(R.timeInterval.set{i},[1,4,7]));
     if any(infimum(x_proj) < -50)
         violation50 = true;
     end
 end
+% check intersecting with unsafe set for invariant set
 for i=1:length(RcontInv)
     x_proj = interval(project(RcontInv{i},[1,4,7]));
     if any(infimum(x_proj) < -50)

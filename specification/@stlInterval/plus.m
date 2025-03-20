@@ -12,8 +12,8 @@ function int = plus(summand1,summand2)
 %    int - interval
 %
 % Example:
-%    summand1 = stLInterval(1,2);
-%    summand2 = stLInterval(0,1,false,false);
+%    summand1 = stlInterval(1,2);
+%    summand2 = stlInterval(0,1,false,false);
 %    summand1 + summand2
 %
 % Other m-files required: none

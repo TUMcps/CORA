@@ -48,6 +48,7 @@ while any(inIdx <= cellfun(@length,varargin))
     minIdx = find(isMin);
     inIdx(minIdx) = inIdx(minIdx) + 1;
 
+    % consider each output separately
     for i = 1:numOutputs
         pointValue = pointValues(i);
         intValue = intValues(i);
@@ -74,6 +75,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
+% get time for index
 function val = aux_time(signal,idx)
     if idx <= length(signal{1}.timePoints)
         val = signal{1}.timePoints(idx);
@@ -82,6 +84,7 @@ function val = aux_time(signal,idx)
     end
 end
 
+% get point value for index
 function val = aux_pv(signal,idx,atPoint)
     if atPoint
         val = signal{1}.pointValue(idx);
@@ -90,6 +93,7 @@ function val = aux_pv(signal,idx,atPoint)
     end
 end
 
+% get interval value for index
 function val = aux_iv(signal,idx,atPoint)
     if atPoint
         val = signal{1}.succIntervalValue(idx);

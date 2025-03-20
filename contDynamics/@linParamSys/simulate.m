@@ -51,16 +51,21 @@ if nargin >= 3 && ~isempty(varargin{1})
 	isOpt = true;
 end
 
+% default initialization of input by an all-zero vector 
 if ~isfield(params,'u')
 	params.u = zeros(obj.nrOfInputs,1); 
 end
 
+% default initialization of time by 0
 if ~isfield(params,'tStart')
 	params.tStart = 0;
 end
 
+% tFinal is evenly split in case the input changes, so that each input is
+% active for the same time
 tFinal = params.tFinal/size(params.u,2);
 
+% determine time span for simulation
 if isfield(params,'timeStep')
     tSpan = params.tStart:params.timeStep:tFinal;
     if abs(tSpan(end)-tFinal) > 1e-10
@@ -86,15 +91,21 @@ for i = 1:size(params.u,2)
     params_.u = params.u(:,i);
 
     % simulate using MATLABs ode45 function
+    % simulate until a zero-crossing is detected
     try
+        % options are specified
         if isOpt
             [t_,x_,~,~,ind] = ode45(getfcn(obj,params_),tSpan,x0,options);
+        % options are not specified
         else
             [t_,x_,~,~,ind] = ode45(getfcn(obj,params_),tSpan,x0);
         end
+    % no zero-crossing specified
     catch
+        % options are specified
         if isOpt
             [t_,x_] = ode45(getfcn(obj,params_),tSpan,x0,options);
+        % options are not specified
         else
             [t_,x_] = ode45(getfcn(obj,params_),tSpan,x0);
         end

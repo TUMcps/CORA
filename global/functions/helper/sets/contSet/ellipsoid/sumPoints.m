@@ -26,17 +26,17 @@ function P = sumPoints(varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% parse input
 narginchk(1,Inf);
-
 if ~ismatrix(varargin{1}) 
     throw(CORAerror('CORA:wrongValue','first','Must be double matrix'));
 end
 n = size(varargin{1},1);
-
 for i=1:length(varargin)
-    inputArgsCheck({{varargin{i},'att',{'double'},{'nrows',n}}});
+    inputArgsCheck({{varargin{i},'att','double',@(value) size(value,1) == n}});
 end
 
+% compute
 V = combineVec(varargin{:});
 N = length(varargin);
 n = size(varargin{1},1);

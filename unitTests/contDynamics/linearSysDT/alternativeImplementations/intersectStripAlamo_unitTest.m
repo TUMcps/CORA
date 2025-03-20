@@ -21,7 +21,7 @@ function Zres = intersectStripAlamo_unitTest(Z,C,phi,d)
 %    d = -2;
 % 
 %    Z = zonotope([1 2 2 2 6 2 8; 1 2 2 0 5 0 6 ]);
-%    res_zono = intersectStripAlamo(Z,C,phi,d);
+%    res_zono = intersectStripAlamo_unitTest(Z,C,phi,d);
 % 
 %    % just for comparison
 %    poly = polytope([1 0;-1 0],[3;7]);

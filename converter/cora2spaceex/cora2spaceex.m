@@ -12,9 +12,6 @@ function cora2spaceex(Obj,filename,filepath)
 % Outputs:
 %    xmlFile   - xml-file that contains the SpaceEx-model
 %
-% Example:
-%    spaceex2cora(Obj,'test_example');
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

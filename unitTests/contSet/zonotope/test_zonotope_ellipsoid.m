@@ -23,10 +23,8 @@ function res = test_zonotope_ellipsoid
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% create zonotopes
+% inner:norm
 Z1 = zonotope([-4, -3, -2; 1, 2, 3]);
-Z2 = zonotope([1, 4, 2,1; -3, 2, -1,1]);
-
 E1o = ellipsoid(Z1);
 E1i = ellipsoid(Z1,'inner:norm');
 
@@ -36,6 +34,8 @@ assert(contains(E1o,E1i))
 assert(all(contains(Z1,Y1i)))
 assert(all(contains(E1o,Y1i)))
 
+% outer:exact / inner:exact
+Z2 = zonotope([1, 4, 2,1; -3, 2, -1,1]);
 E2o = ellipsoid(Z2,'outer:exact');
 E2i = ellipsoid(Z2,'inner:exact');
 

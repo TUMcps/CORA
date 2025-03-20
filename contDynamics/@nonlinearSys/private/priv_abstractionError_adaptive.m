@@ -79,6 +79,7 @@ if strcmp(options.alg,'lin') && options.tensorOrder == 2
             end
         end
     catch ME
+        % only catch if the interval arithmetic encountered the error
         if strcmp(ME.identifier,'interval:setoutofdomain')
             ME = MException('reach:setoutofdomain',...
                 'Interval Arithmetic: Set out of domain.');

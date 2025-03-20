@@ -94,6 +94,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function S = aux_set2struct(set)
+% convert set to struct
 
 if isa(set,'interval')
     S.type = 'interval';
@@ -106,7 +107,7 @@ end
 end
 
 function S = aux_spec2struct(spec)
-
+% convert specification to struct
 for i=1:numel(spec)
     S(i) = aux_set2struct(spec(i).set);
 end

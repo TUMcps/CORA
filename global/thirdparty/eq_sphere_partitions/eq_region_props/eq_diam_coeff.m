@@ -54,7 +54,7 @@ function [bound_coeff,vertex_coeff] =  eq_diam_coeff(dim,N)
 %
 % Check number of arguments
 %
-error(nargchk(2,2,nargin));
+narginchk(2,2);
 error(nargoutchk(0,2,nargout));
 
 if nargout < 2

@@ -243,25 +243,26 @@ end
 function res = aux_checkUnsafeSet(set,S)
 % check if reachable set intersects the unsafe sets
 
-    if iscell(S)
-        res = true;
-        for i = 1:length(S)
-            try
-                res = ~isIntersecting_(set,S{i},'exact',1e-8);
-            catch
-                res = ~isIntersecting_(set,S{i},'approx',1e-8); 
-            end
-            if ~res
-               return; 
-            end
-        end   
-    else
-        try
-            res = ~isIntersecting_(set,S,'exact',1e-8);
-        catch
-            res = ~isIntersecting_(set,S,'approx',1e-8); 
-        end
+    % check if cell array is given
+    wasCell = iscell(S);
+    if ~wasCell
+        % convert for easier usage
+        S = {S};
     end
+
+    % S is cell, check each
+    res = true;
+    for i = 1:length(S)
+        try
+            res = ~isIntersecting_(set,S{i},'exact',1e-8);
+        catch
+            res = ~isIntersecting_(set,S{i},'approx',1e-8); 
+        end
+        % early exit
+        if ~res
+           return; 
+        end
+    end   
 end
 
 function res = aux_checkSafeSet(set,S)

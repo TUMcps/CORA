@@ -137,7 +137,7 @@ for i = 1:steps
     end
 
     % if a trajectory should be tracked
-    if isfield(params,'uTransVec') && i ~= steps
+    if isfield(params,'uTransVec') 
         params.uTrans = params.uTransVec(:,i+1);
         % update input set
         if iscell(linsysDT.B)

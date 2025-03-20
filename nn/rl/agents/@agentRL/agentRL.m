@@ -134,8 +134,11 @@ methods
 end
 
 methods  (Access=protected, Abstract)
+    % Training
     [obj,learnHistory] = trainNetworkStep(obj,randBatch, noiseBatchG, learnHistory, episode)
+    % Remove networks from the GPU
     obj = gatherNetworks(obj)
+    % Clear gradients
     obj = deleteAllGradients(obj)
 end
 

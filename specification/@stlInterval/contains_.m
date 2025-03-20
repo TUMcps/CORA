@@ -78,8 +78,11 @@ elseif isa(S,'stlInterval')
         (withinTol(I.lower,S.lower,tol) && (I.leftClosed || ~S.leftClosed));
     res = lowerIncluded && upperIncluded;
 elseif I.leftClosed && I.rightClosed
+    % we can only handle other sets exactly if I is a closed interval
     res = contains(interval(I),S,method,tol);
 elseif strcmp(method,'approx')
+    % for approximate containment with other sets, we simulate openness
+    % by adding a small tolerance to the interval
     if ~I.leftClosed
         lower = I.lower + tol + eps;
     else

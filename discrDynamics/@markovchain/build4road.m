@@ -16,9 +16,6 @@ function [obj,stateField]=build4road(obj,finalStateMat,inputNr,stateField)
 %    obj - Markov chain object
 %    stateField - partition object of the discreteized state space
 %
-% Example: 
-%   ---
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none

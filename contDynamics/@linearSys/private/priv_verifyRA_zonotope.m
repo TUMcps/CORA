@@ -568,7 +568,7 @@ function dist = aux_intersectionCheck(cZ,P)
     %
     %   s.t. C*x <= d, A*\alpha = b, -1 <= \alpha <= 1, 
     %        c + G*\alpha - x <= a, c + G*\alpha - x >= -a
-    
+    % model
     problem.f = [ones(n,1);zeros(n+l,1)];
     
     problem.Aineq = [zeros(size(C,1),n+l), C; ...

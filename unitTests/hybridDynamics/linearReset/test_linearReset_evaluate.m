@@ -39,12 +39,14 @@ linReset_ABc = linearReset(A,B,c);
 x = [5;-2];
 u = [1; 4; -3];
 
+% Basic case
 x_ = evaluate(linReset_A,x);
 x_true = A*x;
 assert(all(withinTol(x_,x_true,tol)));
 x_ = evaluate(linReset_AB,x);
 assert(all(withinTol(x_,x_true,tol)));
 
+% linear system with B matrix
 x_ = evaluate(linReset_AB,x);
 x_true = A*x;
 assert(all(withinTol(x_,x_true,tol)));
@@ -52,6 +54,7 @@ x_ = evaluate(linReset_AB,x,u);
 x_true = A*x + B*u;
 assert(all(withinTol(x_,x_true,tol)));
 
+% lienar system with B and c
 x_ = evaluate(linReset_ABc,x);
 x_true = A*x + c;
 assert(all(withinTol(x_,x_true,tol)));
@@ -63,12 +66,14 @@ assert(all(withinTol(x_,x_true,tol)));
 Z_x = zonotope([1;-1],[1 0 -1; 2 1 1]);
 Z_u = zonotope([0;1;-1],[1 0 1; -1 -2 1; 2 1 3]);
 
+% basic case with zonotopic output
 x_ = evaluate(linReset_A,Z_x);
 x_true = A*Z_x;
 assert(isequal(x_,x_true,tol));
 x_ = evaluate(linReset_AB,Z_x);
 assert(isequal(x_,x_true,tol));
 
+% zonotopic output with B matrix
 x_ = evaluate(linReset_AB,Z_x);
 x_true = A*Z_x;
 assert(isequal(x_,x_true,tol));
@@ -76,6 +81,7 @@ x_ = evaluate(linReset_AB,Z_x,Z_u);
 x_true = A*Z_x + B*Z_u;
 assert(isequal(x_,x_true,tol));
 
+% zonotopic output with B and c
 x_ = evaluate(linReset_ABc,Z_x);
 x_true = A*Z_x + c;
 assert(isequal(x_,x_true,tol));

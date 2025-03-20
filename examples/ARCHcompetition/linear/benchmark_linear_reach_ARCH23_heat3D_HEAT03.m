@@ -175,14 +175,16 @@ function x0 = aux_getInit(A, samples, temp)
     end
 
     for z = 0:max_z
+        % compute offset for the z-axis
         zoffset = z * samples * samples;
 
         for y = 0:(0.2/(1/samples))
+            % compute offset for the y-axis
             yoffset = y * samples;
 
             for x = 0:(0.4/(1/samples))
                 index = x + yoffset + zoffset;
-
+                % final point
                 x0(index+1) = temp;
             end
         end

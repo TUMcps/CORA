@@ -124,7 +124,7 @@ pZ = polyZonotope(c,G,GI,E,cPZ.id);
 % increase dimension of the second set to match dim. of first set
 if ~isempty(cPZ.A)
     if isnumeric(S)
-        S = [S;ones(m,1)];
+        S = [S;ones(m,size(S,2))];
     else
         temp = sqrt(max(sum(cPZ.A.^2,1)))/100 * ones(m,1);
         S = cartProd_(S,interval(-temp,temp),'exact');

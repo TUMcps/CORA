@@ -34,11 +34,11 @@ classdef CORAtable < ASCIItable
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: ASCIItable
+% See also: ASCIItable, CORAtable/printTable
 
 % Authors:       Tobias Ladner
 % Written:       19-September-2024
-% Last update:   ---
+% Last update:   05-March-2025 (TL, printTable)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -62,12 +62,40 @@ methods
     end
 end
 
+methods (Static)
+    function printTable(matlabtable,varargin)
+        % prints a Matlab table in the specified CORA design
+        
+        % parse input
+        inputArgsCheck({{matlabtable,'att','table'}});
+        hvalues = matlabtable.Properties.VariableNames;
+        [design,formats] = setDefaultValues({'single',aux_detectFormats(matlabtable)},varargin);
+
+        % get column widths
+        colWidths = aux_determineColumnWidths(matlabtable,hvalues,formats);
+
+        % init table
+        coratable = CORAtable(design,hvalues,formats,'ColumnWidths',colWidths);
+
+        % print
+       coratable.printHeader()
+       for i=1:height(matlabtable)
+           cvalues = arrayfun(@(j) matlabtable{i,j}, 1:numel(hvalues),'UniformOutput',false);    
+           coratable.printContentRow(cvalues);
+       end
+       coratable.printFooter();
+
+    end
+end
+
 methods (Access=protected)
 
     function [hvalues,colWidths] = formatHeaderAndComputeColWidths(table,varargin)
         t = table;
         switch t.design
             case 'latex'
+                % requires rewriting of header values
+
                 hvalues = cell(size(t.hvalues));
                 % Wrap header values with \text{...} to avoid math-mode;
                 % for summary columns add \multicolumn{...}.
@@ -86,11 +114,10 @@ methods (Access=protected)
                 colWidths = max(t.colWidths,cellfun(@strlength,hvalues));
 
                 % call super function for proper formatting
-                [hvalues,colWidths] = ...
-                    t.formatHeaderAndComputeColWidths@ASCIItable(hvalues,colWidths);
+                [hvalues,colWidths] = formatHeaderAndComputeColWidths@ASCIItable(t,hvalues,colWidths);
             otherwise
-                [hvalues,colWidths] = ...
-                    t.formatHeaderAndComputeColWidths@ASCIItable();
+                % use default function defined in super class
+                [hvalues,colWidths] = formatHeaderAndComputeColWidths@ASCIItable(t);
         end 
     end
 
@@ -104,7 +131,7 @@ methods (Access=protected)
             end
         end
         % Call super-class.
-        format = table.getFormatString@ASCIItable(format,colWidth);
+        format = getFormatString@ASCIItable(table,format,colWidth);
     end
 end
 
@@ -245,6 +272,65 @@ function latexformat = aux_format2latex(format)
         % align numbers etc. on the right; format in math-mode
         latexformat = 'R';
     end
+end
+
+function formats = aux_detectFormats(matlabtable)
+    % extract variable types
+    if height(matlabtable) >= 1
+        if isMATLABReleaseOlderThan('R2024b')
+            % determine class based on first row
+            types = arrayfun(@(i) class(matlabtable{1,i}),1:numel(matlabtable.Properties.VariableNames),'UniformOutput',false);
+        else
+            % select variable types stored in table
+            types = matlabtable.Properties.VariableTypes;
+        end
+    else
+        % just use string; no entries anyway
+        types = arrayfun(@(i) 'string',1:numel(matlabtable.Properties.VariableNames),'UniformOutput',false);
+    end
+    
+    % determine formats
+    formats = cell(1,numel(types));
+    for i=1:numel(types)
+        type = types(i);
+        if ismember(type,{'double','logical'})
+            % numbers are printed with %d option
+            formats{i} = 'd';
+        else
+            % default as string
+            formats{i} = 's';
+        end
+    end
+end
+
+function colWidths = aux_determineColumnWidths(matlabtable,hvalues,formats)
+    % init
+    colWidths = cellfun(@(hvalue) strlength(hvalue),hvalues,'UniformOutput',true);
+
+    % determine column widths
+    for j=1:numel(formats)
+        format = formats{j};
+        % add '%' if necessary
+        if ~contains(format,'%')
+            format = sprintf('%%%s',format);
+        end
+
+        % determine widths of header and all entries
+        widths = [ ...
+            colWidths(j), ...
+            arrayfun(@(i) aux_determineLengthEntry(matlabtable{i,j},format), 1:height(matlabtable)) ...
+        ];
+
+        % save max width
+        colWidths(j) = max(widths);
+    end
+end
+
+function len = aux_determineLengthEntry(entry,format)
+    % format entry
+    formattedEntry = sprintf(format,entry);
+    % determine length (ignoring hyperlink text)
+    [~,len] = centerString(formattedEntry,0);
 end
 
 % ------------------------------ END OF CODE ------------------------------

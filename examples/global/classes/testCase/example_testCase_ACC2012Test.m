@@ -179,6 +179,8 @@ function [v_d, Psi_d, Psi_dot_d, x_d, y_d, aVec_x, t_final] = aux_vehicleTraject
             a_x_new = aVec_x(end) + delta_a_x;
             a_y_new = aVec_y(end) + delta_a_y;
 
+            % If change of acceleration in x-direction is larger than in
+            % y-direction
             if abs(delta_a_x) > abs(delta_a_y)
                 a_extr = a_goal_x(iPhase);
                 a_comp = a_x_new;
@@ -188,7 +190,8 @@ function [v_d, Psi_d, Psi_dot_d, x_d, y_d, aVec_x, t_final] = aux_vehicleTraject
                 a_comp = a_y_new;
                 a_sign = sign(delta_a_y);
             end
-
+            
+            % New acceleartions are set as goal accelerations
             if (a_comp > a_extr) && (a_sign > 0)
                 a_x_new = a_goal_x(iPhase);
                 a_y_new = a_goal_y(iPhase);

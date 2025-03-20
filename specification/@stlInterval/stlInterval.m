@@ -110,6 +110,7 @@ methods
         res = ~isequal(obj,other);
     end
 
+    % string representation
     function str = toStr(obj)
         if isemptyobject(obj)
             str = '∅';
@@ -145,6 +146,7 @@ methods
 end
 
 methods (Static = true)
+    % create empty set
     I = empty(n)
 end
 end

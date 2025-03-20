@@ -48,50 +48,54 @@ if isempty(defaultFields)
        'maxpool_type', 'project';
        'order_reduction_sensitivity', false;
        'graph', graph();
-       'use_approx_error', true;
-       'train', struct('backprop', false);
-       'interval_center', false;
+       % evaluateZonotopeBatch
+       'use_approx_error', true; % use approximation error
+       'interval_center', false; % the center stores approximation errors as an interval
+       % training
+       'train', struct('backprop', false); 
     };
 end
 % default training parameter values
 persistent defaultTrainFields
 if isempty(defaultTrainFields) % TODO sort and add comments
     defaultTrainFields = {
+       % general
        'use_gpu', aux_isGPUavailable();
-       'optim', nnAdamOptimizer;
-       'max_epoch', 10;
-       'mini_batch_size', 64;
-       'loss','mse';
-       'lossFun', @(options) @(t,y) 0;
-       'lossDer', @(options) @(t,y) 0;
-       'backprop', true;
-       'noise', 0;
-       'input_space_inf', 0;
+       'optim', nnAdamOptimizer; % optimizer
+       'max_epoch', 10; % maximum number of training epochs
+       'mini_batch_size', 64; % batch size
+       'loss','mse'; % loss type
+       'lossFun', @(options) @(t,y) 0; % custom loss
+       'lossDer', @(options) @(t,y) 0; % gradient of custom loss
+       'backprop', true; % enable backpropagation
+       'shuffle_data', 'never'; % shuffle the training data
+       'early_stop', inf; % early stopping when val loss is not decreasing
+       'lr_decay', 1; % factor for learning rate decay
+       'lr_decay_epoch', []; % epochs for learning rate decay
+       'val_freq', 50; % validation frequency
+       'print_freq', 50; % verbose training output printing frequency
+       % Robust training parameters
+       'noise', 0; % perturbation radius
+       'input_space_inf', 0; % bounds of the input space
        'input_space_sup', 1;
-       'warm_up', 0;
-       'ramp_up', 0;
-       'gradual_noise', 0;
-       'method', 'point';
+       'warm_up', 0; % number of 'warm-up' training epochs (noise=0)
+       'ramp_up', 0; % noise=0 is linearly increase from 'warm-up' to 'ramp-up'
+       'method', 'point'; % training method
+       'kappa', 1/2; % IBP weighting factor
+       'lambda', 0; % SABR & TRADES weighting factor
        % attack
        'pgd_iterations', 0;
        'pgd_stepsize', 0.01;
        'pgd_stepsize_decay', 1;
        'pgd_stepsize_decay_iter' [];
-       'kappa', 1/2;
-       'lambda', 0;
+       % set-based training
        'volume_heuristic', 'interval';
-       'tau', 0;
-       'zonotope_weight_update', 'center';
-       'exact_backprop', false;
-       'num_approx_err', inf;
-       'num_init_gens', inf;
-       'init_gens', 'l_inf';
-       'shuffle_data', 'never';
-       'early_stop', inf;
-       'lr_decay', 1;
-       'lr_decay_epoch', [];
-       'val_freq', 50;
-       'print_freq', 50;
+       'tau', 0; % weighting factor
+       'zonotope_weight_update', 'center'; % compute weight update
+       'exact_backprop', false; % exact gradient computations of image enc
+       'num_approx_err', inf; % maximum number of approximation errors per nonlinear layer
+       'num_init_gens', inf; % maximum number of input generators
+       'init_gens', 'l_inf'; % type of input generators
     };
 end
 
@@ -262,6 +266,7 @@ end
 % see also inputArgsCheck, TODO integrate
 
 function aux_checkFieldStr(optionsnn, field, admissibleValues, structName)
+    % Check if field has an admissible value.
     if CHECKS_ENABLED
         fieldValue = optionsnn.(field);
         if ~(isa(fieldValue, 'string') || isa(fieldValue, 'char')) || ...
@@ -273,6 +278,7 @@ function aux_checkFieldStr(optionsnn, field, admissibleValues, structName)
 end
 
 function aux_checkFieldClass(optionsnn, field, admissibleClasses, structName)
+    % Check if a field has the correct class.
     if CHECKS_ENABLED
         if ~ismember(class(optionsnn.(field)), admissibleClasses)
             throw(CORAerror('CORA:wrongFieldValue', ...
@@ -297,6 +303,7 @@ function gpu_available = aux_isGPUavailable()
     end
 end
 
+% ploy method has a different default for training
 function poly_method = aux_defaultPolyMethod(options)
     if isfield(options,'train')
         poly_method = 'bounds';

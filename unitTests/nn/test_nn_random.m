@@ -28,21 +28,25 @@ res = true;
 % check examples in syntax
 nn = neuralNetwork.generateRandom();
 
+% nrOfInputs
 nrOfInputs = 2;
 nn = neuralNetwork.generateRandom('NrInputs',nrOfInputs);
 assert(nn.neurons_in == nrOfInputs);
 
+% nrOfOutputs
 nrOfOutputs = 3;
 nn = neuralNetwork.generateRandom('NrInputs',nrOfInputs,...
   'NrOutputs',nrOfOutputs);
 assert(nn.neurons_in == nrOfInputs & nn.neurons_out == nrOfOutputs);
 
+% activation function
 actFun = 'ReLU';
 nn = neuralNetwork.generateRandom('NrInputs',nrOfInputs,...
   'NrOutputs',nrOfOutputs,'ActivationFun',actFun);
 assert(nn.neurons_in == nrOfInputs & nn.neurons_out == nrOfOutputs ...
     & isa(nn.layers{2}, 'nnReLULayer'));
 
+% nrOfLayers
 nrLayers = 3;
 nn = neuralNetwork.generateRandom('NrInputs',nrOfInputs,...
   'NrOutputs',nrOfOutputs,'ActivationFun',actFun,'NrLayers',nrLayers);

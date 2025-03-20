@@ -84,13 +84,15 @@ lossFunDer = @(yPredC) - 1/size(yPredC,2) * ones(size(yPredC));
 
 % compute policy Gradient loss
 loss.center = lossFun(yPredC);
-% compute polivy gradient 
+% compute policy gradient 
 policyGradient = lossFunDer(yPredC);
 
 if isempty(yPredG)
+    % Training point based.
     loss.vol = 0;
     gradOutG = [];
 else
+    % Compute set-based loss and gradient set.
     loss.vol = 1/size(yPredG,3)*sum(log(2*sum(abs(yPredG),2)),'all');
     gradOutG = 1/size(yPredG,3)*1/(sum(abs(yPredG),2)).*sign(yPredG);
     nanIdx = isnan(gradOutG)|isinf(gradOutG);

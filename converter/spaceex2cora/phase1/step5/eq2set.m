@@ -19,10 +19,6 @@ function set = eq2set(ineqExprs,eqExprs,states,outputs)
 % Outputs:
 %    set - polytope or levelSet object
 %
-% Example: 
-%    set = eq2set('x <= eps & v < 0',struct('name',{'x','v'}),...
-%       struct('name',{'eps'},'value',{'0.75'}));
-%
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
@@ -32,7 +28,7 @@ function set = eq2set(ineqExprs,eqExprs,states,outputs)
 % Authors:       ???
 % Written:       ---
 % Last update:   ---
-% Last revision: ---
+% Last revision: 21-February-2025 (TL, simplified catch block)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
@@ -143,15 +139,7 @@ try
 
 % equations are nonlinear -> construct levelSet
 catch
-    if ~isempty(eqExprs)
-        if ~isempty(eqExprs)
-            eq = [eqExprs;ineqExprs];
-        else
-            eq = ineqExprs; 
-        end
-    else
-        eq = ineqExprs; 
-    end
+    eq = [eqExprs;ineqExprs];
     
     compOp1 = repmat({'=='},[length(eqExprs),1]);
     compOp2 = repmat({'<='},[length(ineqExprs),1]);

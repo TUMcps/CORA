@@ -9,10 +9,7 @@ function plotHisto(varargin)
 %    posProb - position probability vector
 %
 % Outputs:
-%    ---
-%
-% Example: 
-%    Text for example...
+%    -
 %
 % Other m-files required: none
 % Subfunctions: none

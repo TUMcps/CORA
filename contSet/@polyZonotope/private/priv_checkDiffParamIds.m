@@ -34,8 +34,8 @@ elseif length(varargin)==2
         id_param = zeros(0,1);
     end
     % check input args
-    inputArgsCheck({{id_diff,'att','double',{'ncols',1,'integer'}};
-                    {id_param,'att','double',{'ncols',1,'integer'}}});
+    inputArgsCheck({{id_diff,'att','double',{'integer','column'}};
+                    {id_param,'att','double',{'integer','column'}}});
 else
     throw(CORAerror('CORA:notSupported',...
         'Either one or three arguments have to be supplied!'));

@@ -31,8 +31,6 @@ uu = kleene.Unknown;
 ksig = finiteSignal([1.2 2.3 3.0], [uu ff tt]);
 
 % test
-res = true;
-
 sig = bsig.set(stlInterval(1,2), true);
 assert(isequal([2.0 2.3 3.0], sig.time));
 assert(isequal([true false true], sig.value));
@@ -49,11 +47,11 @@ sig = bsig.set(stlInterval(1,3), true);
 assert(isequal(3.0, sig.time));
 assert(isequal(true, sig.value));
 
+% more tests
 sig = bsig.set(stlInterval(0,1.5), false);
 assert(isequal([2.3 3.0], sig.time));
 assert(isequal([false true], sig.value));
 
-% more tests
 sig = bsig.set(stlInterval(1.2,2.3), true);
 assert(isequal(3.0, sig.time));
 assert(isequal(true, sig.value));
@@ -62,6 +60,7 @@ sig = bsig.set(stlInterval(1.2,2.3), false);
 assert(isequal([1.2 2.3 3.0], sig.time));
 assert(isequal([true false true], sig.value));
 
+% even more tests
 sig = bsig.set(stlInterval(1.2,1.8), true);
 assert(isequal([1.8 2.3 3.0], sig.time));
 assert(isequal([true false true], sig.value));

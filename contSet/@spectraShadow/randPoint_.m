@@ -55,8 +55,10 @@ function p = randPoint_(SpS,N,type,varargin)
         return
     end
     
+    % Choose the appropriate method
     if strcmp(type,'standard') || strcmp(type,'uniform') ...
             || strcmp(type,'uniform:hitAndRun')
+        % The default is hit-and-run, since it gave the best results so far
         p = aux_randPointHitAndRun(SpS, N);
     elseif strcmp(type,'extreme')
         p = aux_randPointExtreme(SpS, N);
@@ -124,6 +126,9 @@ function p = aux_BilliardWalk(SpS, N)
 
         while true
             
+            % Set up optimization problem to compute the maximal value of
+            % lambda (i.e., how far we can go in direction, starting from
+            % q0)
             lambda = sdpvar(1, 1);
             x = sdpvar(m, 1);
 
@@ -136,6 +141,7 @@ function p = aux_BilliardWalk(SpS, N)
 
             constraints = [constraints, lmi>=0];
 
+            % Solve optimization problem
             diagnostics = optimize(constraints, -lambda, options);
 
             lambda = value(lambda);
@@ -315,6 +321,7 @@ function p = aux_randPointHitAndRun(SpS, N)
             constraints_residual = [constraints_residual s(j)<=tol -s(j)<=tol];
         end
         
+        % Set up the rest of the optimization problem
         constraints = G * beta + c == currentPoint + lambda * direction;
         LMI = A0;
         for j=1:size(G,2)

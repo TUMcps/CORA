@@ -39,7 +39,7 @@ function p = randPoint_(cPZ,N,type,varargin)
 
 % Authors:       Niklas Kochdumper
 % Written:       25-January-2020
-% Last update:   ---
+% Last update:   05-March-2025 (TL, avoid infinity loop)
 % Last revision: 27-March-2023 (MW, rename randPoint_)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -49,34 +49,47 @@ function p = randPoint_(cPZ,N,type,varargin)
         throw(CORAerror('CORA:notSupported',...
             "Number of vertices 'all' is not supported for class conPolyZono."));
     end
+
+    % check if empty
+    if representsa(cPZ,'emptySet') 
+        p = zeros(dim(cPZ),0); return;
+    end
         
     % initialize random points
     p = zeros(dim(cPZ),N);
-    
-    if strcmp(type,'standard')
-        % sample uniformly in beta space
-        i = 1;
-        while i <= N
-            temp = aux_randPointStandard(cPZ);
-            if ~isempty(temp)
-                p(:,i) = temp;
-                i = i + 1;
+
+    % loop until enough points are found
+    MAX_ITER = 10*N;
+    c = 0;
+    for i=1:MAX_ITER
+        % sample points
+        if strcmp(type,'standard')
+            % ... uniformly in beta space
+            p_c = aux_randPointStandard(cPZ);
+        elseif strcmp(type,'extreme')
+            % ... extreme points in beta space
+            p_c = aux_randPointExtreme(cPZ);
+        else
+            % unknown type
+            throw(CORAerror('CORA:noSpecificAlg',type,cPZ));
+        end
+
+        % check if point was found
+        if ~isempty(p_c)
+            c = c+1;
+            p(:,c) = p_c;
+
+            % check if enough points were found
+            if c >= N
+                return
             end
         end
-    elseif strcmp(type,'extreme')
-        % sample extreme points in beta space
-        i = 1;
-        while i <= N
-            temp = aux_randPointExtreme(cPZ);
-            if ~isempty(temp)
-                p(:,i) = temp;
-                i = i + 1;
-            end
-        end
-    else
-        throw(CORAerror('CORA:noSpecificAlg',type,cPZ));
     end
-    
+
+    % unable to find enough points, returning found points
+    % (TL: if no points were found, this might indicate that the set is indeed empty but we are unable to determine it)
+    CORAwarning('CORA:contSet','Unable to sample enough points, returning found points.')
+    p = p(:,1:c);
 end
 
 
@@ -118,7 +131,7 @@ function p = aux_randPointStandard(cPZ)
     
     p = cPZ.c + sum(cPZ.G.*prod(a_.^cPZ.E,1),2);
     
-    % consider the indepenent generators
+    % consider the independent generators
     if ~isempty(cPZ.GI)
         q = size(cPZ.GI,2);
         b = -1 + 2*rand(q,1);

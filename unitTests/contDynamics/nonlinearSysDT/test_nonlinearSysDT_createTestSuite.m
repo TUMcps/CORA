@@ -56,6 +56,9 @@ options.stateSet = zonotope([3;3], 10*eye(2));
 options.inputSet = zonotope([2*sys.dt;0;n_k*sys.dt;8;8], diag([3*sys.dt, 1, 3*sys.dt, 10, 10]));
 T = createTestSuite(sys, params, n_k, n_m, n_s, options);
 
+% compute deviation between measurement trajectories and nominal output
+% trajectories for test case m=1
+T{1}=T{1}.compute_ya(sys);
 
 res = true;
 end

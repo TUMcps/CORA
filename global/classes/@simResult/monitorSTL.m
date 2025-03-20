@@ -39,8 +39,8 @@ function res = monitorSTL(simRes,eq)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-inputArgsCheck({{simRes,'att',{'simResult'},{''}};...
-                {eq,'att',{'stl'},{''}}});
+inputArgsCheck({{simRes,'att',{'simResult'}};...
+                {eq,'att',{'stl'}}});
 
 [phi,aps] = combineAtomicPropositions(desugar(eq));
 

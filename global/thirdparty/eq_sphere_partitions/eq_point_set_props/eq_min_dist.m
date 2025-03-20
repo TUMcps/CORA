@@ -44,7 +44,7 @@ function dist = eq_min_dist(dim,N,varargin)
 %
 % Check number of arguments
 %
-error(nargchk(2,4,nargin));
+narginchk(2,4);
 dist = eq_point_set_property(@point_set_min_dist,dim,N,varargin{:});
 %
 % end function

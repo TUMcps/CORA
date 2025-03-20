@@ -16,10 +16,7 @@ function options = params2options(params, options)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
-%
-% References: 
-%   -
+% See also: validateOptions
 
 % Authors:       Mark Wetzlinger
 % Written:       23-April-2020

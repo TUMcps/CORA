@@ -206,7 +206,7 @@ function val = aux_supportFuncGlobOpt(pZ,dir,type,maxOrder,tol)
     % remove zero rows from the exponent matrix
     E(sum(E,2) == 0,:) = [];
 
-    % function to opimize
+    % function to optimize
     func = @(x) aux_polyPart(x,G,E);
 
     % domain for the optimization variables
@@ -345,7 +345,7 @@ function val = aux_supportFuncQuadProg(pZ,dir,type)
 end
 
 function val = aux_polyPart(x,G,E)
-
+    % evaluate polynomial part
     for i = 1:length(G)
        temp = x(1)^E(1,i);
        for j = 2:size(E,1)

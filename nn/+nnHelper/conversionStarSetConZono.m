@@ -29,16 +29,17 @@ temp = sqrt(sum(C.^2, 2));
 C = diag(temp) * C;
 d = temp .* d;
 
-m = size(G, 2);
+numGens = size(G, 2);
 
 % find hypercube constraints
-u = zeros(m, 1);
+u = zeros(numGens, 1);
 ind = find(any(C' == 1));
 ind_ = setdiff(1:size(C, 1), ind);
 C_ = C(ind, :);
 d_ = d(ind);
 
-for i = 1:m
+% compute upper bounds
+for i = 1:numGens
     ind = find(C_(:, i) == 1);
     if isempty(ind)
         u(i) = u_(i);
@@ -51,13 +52,14 @@ end
 C = C(ind_, :);
 d = d(ind_);
 
-l = zeros(m, 1);
+l = zeros(numGens, 1);
 ind = find(any(C' == -1));
 ind_ = setdiff(1:size(C, 1), ind);
 C_ = C(ind, :);
 d_ = d(ind);
 
-for i = 1:m
+% compute lower bounds
+for i = 1:numGens
     ind = find(C_(:, i) == -1);
     if isempty(ind)
         l(i) = l_(i);
@@ -80,7 +82,7 @@ G = G * R;
 
 % represent inequality constraints as equivalent equality constraints
 if ~isempty(C)
-    Z = zonotope(interval(-ones(m, 1), ones(m, 1)));
+    Z = zonotope(interval(-ones(numGens, 1), ones(numGens, 1)));
     l = infimum(interval(C*Z));
     int = interval(l, d);
     cen = center(int);

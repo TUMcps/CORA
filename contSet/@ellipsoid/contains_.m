@@ -74,8 +74,10 @@ cert = 1;
 scaling = 0;
 
 % Check out trivial cases
+% If E is a point...
 [ell_isPoint, p] = representsa(E, 'point');
 if ell_isPoint
+    % ... check if S is also a point...
     if isnumeric(S)
         res = max(max(abs(S-p))) <= tol;
         cert = true;
@@ -85,7 +87,8 @@ if ell_isPoint
             scaling = Inf;
         end
 
-    else % S is not numeric
+    else % ... if S is not numeric, check if S is a point
+         % (but as a contSet)
         [S_isPoint, q] = representsa(S, 'point');
         if S_isPoint
             res = all(q==p);
@@ -96,10 +99,12 @@ if ell_isPoint
                 scaling = Inf;
             end
         elseif representsa(S, 'emptySet')
+            % If S is not a point at all, test that it is not the empty set
             res = true;
             cert = true;
             scaling = 0;
-        else % S is not numeric and not empty
+        else % S is not numeric and not empty -> S can not possibly be
+             % contained
             res = false;
             cert = true;
             scaling = inf;
@@ -109,23 +114,27 @@ if ell_isPoint
 end
 % E is not a point
 
+% Check if E is empty
 if representsa(E, 'emptySet')
     if isnumeric(S)
+        % If S is numeric, check manually whether it is empty
         if isempty(S)
             res = true;
             scaling = 0;
             cert = true;
         else
+            % If it is not empty, it can not possibly be contained
             res = false;
             scaling = Inf;
             cert = true;
         end
-    else
+    else % S is a set
         if representsa(S, 'emptySet')
             res = true;
             scaling = 0;
             cert = true;
         else
+            % If it is not empty, it can not possibly be contained
             res = false;
             scaling = Inf;
             cert = true;
@@ -157,7 +166,7 @@ else
     try
         [isPoint,p] = representsa(S, 'point');
         if isPoint
-            [res, cert, scaling] = aux_containsPoint(E,p,method,tol,scalingToggle);
+            [res, cert, scaling] = priv_containsPoint(E,p,method,tol,scalingToggle);
             return
         end
     catch ME
@@ -308,6 +317,7 @@ optimizationResults = yalmipOptimizer();
 
 sol = optimizationResults;
 
+% Compute scaling, and using scaling decide whether the set is contained
 scaling = sqrt(abs(trace(G'*Qinv*G*sol)));
 if scaling <= 1+tol
    res = true;
@@ -315,6 +325,8 @@ if scaling <= 1+tol
 else
    res = false;
    if scaling > pi/2
+       % if scaling > pi/2, we know from [3] that the set can not possibly
+       % be contained
        cert = true;
    else
        cert = false;

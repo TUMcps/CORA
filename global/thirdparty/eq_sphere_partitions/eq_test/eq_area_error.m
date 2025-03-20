@@ -50,7 +50,7 @@ function [total_error, max_error] = eq_area_error(dim,N)
 %
 % Check number of arguments
 %
-error(nargchk(2,2,nargin));
+narginchk(2,2);
 error(nargoutchk(2,2,nargout));
 
 %

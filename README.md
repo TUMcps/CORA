@@ -10,29 +10,48 @@ A Tool for COntinuous Reachability Analysis.
 
 <hr style="height: 1px;">
 
-The COntinuous Reachability Analyzer (CORA) is a collection of MATLAB classes for the formal verification of cyber-physical systems using reachability analysis. CORA integrates various vector and matrix set representations and operations on them as well as reachability algorithms of various dynamic system classes. The software is designed such that set representations can be exchanged without having to modify the code for reachability analysis. CORA is designed using the object-oriented paradigm, such that users can safely use methods without concerning themselves with detailed information hidden inside the objects. Since the toolbox is written in MATLAB, the installation and use is platform independent. From Release 2018 on, the direct import of SpaceEx models into CORA is also supported. The following points summarize the main capabilities of the CORA toolbox:
+The COntinuous Reachability Analyzer (CORA) is a collection of MATLAB classes for the formal verification of cyber-physical systems using reachability analysis. 
+CORA integrates various vector and matrix set representations and operations on them as well as reachability algorithms of various dynamic system classes. 
+The software is designed such that set representations can be exchanged without having to modify the code for reachability analysis. 
+CORA is designed using the object oriented paradigm, such that users can safely use methods without concerning themselves with detailed information hidden inside the object.
+ Since the toolbox is written in MATLAB, the installation and use is platform independent. 
+From Release 2018 on, the direct import of SpaceEx models into CORA is also supported. 
+The following points summarize the main features of the CORA toolbox:
 
 
 ### Reachability Analysis for Continuous Systems
 
-CORA computes reachable sets for linear systems, nonlinear systems as well as for systems with constraints. Continuous as well as discrete-time models are supported. Uncertainty in the system inputs as well as uncertainty in the model parameters can be explicitly considered. In addition, CORA also provides capabilities for the simulation of dynamical models.
-
+CORA computes reachable sets for linear systems, nonlinear systems as well as for systems with constraints. 
+Continuous as well as discrete time models are supported. 
+Uncertainty in the system inputs as well as uncertainty in the model parameters can be explicitly considered. 
+In addition, CORA also provides capabilities for the simulation of dynamical models.
 
 ### Reachability Analysis for Hybrid Systems
 
-The toolbox is also capable of computing the reachable sets for hybrid systems. All implemented dynamic system classes can be used to describe the different continuous flows for the discrete system states. Furthermore, various methods for the calculation of the intersections with guard sets are implemented in CORA.
-
+The toolbox is also capable of computing the reachable sets for hybrid systems. 
+All implemented dynamic system classes can be used to describe the different continuous flows for the discrete system states. 
+Further, multiple different methods for the computation of the intersections with guard sets are implemented in CORA.
 
 ### Geometric Sets
 
-CORA has a modular design, making it possible to use the capabilities of the various set representations for other purposes besides reachability analysis. The toolbox implements vector set representation, e.g., zonotopes, Taylor models and intervals, as well as matrix set representations such as matrix zonotope and interval matrices.
+CORA has a modular design, making it possible to use the capabilities of the various set representations for other purposes besides reachability analysis. 
+The toolbox implements vector set representation, e.g., intervals, zonotopes, Taylor models, and polytopes, 
+as well as matrix set representations such as matrix zonotopes and interval matrices.
+
+### Neural Network Verification and Robust Training
+
+CORA enables the formal verification of neural networks, both in open-loop and in closed-loop scenarios. 
+Open-loop verification refers to the task where properties of the output set of a neural network are verified, e.g., correctly classified images given noisy input. 
+In closed-loop scenarios, the neural network is used as a controller of a dynamic system and is neatly integrated in the reachability algorithms above, e.g., controlling a car while keeping a safe distance. 
+Additionally, one can train verifiably robust neural networks in CORA.
 
 
 ### Installation
 
 Please check Section 1.3 in the <a target='_blank' href="https://cora.in.tum.de/manual">CORA manual</a>.
 
-Furthermore, if you clone CORA using git, please also install git lfs (large file storage) and run the command `git lfs pull` to ensure all data files are downloaded correctly.
+Furthermore, if you clone CORA using git, please also i) install <a href="https://git-lfs.com/" target="_blank">git lfs</a> (large file storage) and ii) run the command `git lfs pull` to ensure all data files are downloaded correctly.
+
 
 ### Folder Structure
 

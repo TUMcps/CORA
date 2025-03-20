@@ -559,6 +559,7 @@ function [params,options] = aux_set_HA_timeStep(sys,params,options)
 
 if ~strcmp(options.linAlg,'adaptive')
     
+    % initialize options.timeStepLoc
     if ~iscell(options.timeStep)
         locations = sys.location;
         numLoc = length(locations);
@@ -569,7 +570,7 @@ if ~strcmp(options.linAlg,'adaptive')
     else
         options.timeStepLoc = options.timeStep;
     end
-    
+    % field no longer needed in further computation
     options = rmfield(options,'timeStep');
     
 end

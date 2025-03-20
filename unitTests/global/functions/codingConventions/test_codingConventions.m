@@ -45,6 +45,15 @@ function res = aux_checkDocstrings()
 % check docstrings and file formatting 
 % (everything that requires reading the file content)
 
+% settings ---
+% only consider specific authors
+authors = {}; 
+% max lines w/o comment
+MAX_LINES_WO_COMMENT = 25;
+% show problematic files per author at the end
+showFilesPerAuthor = false;
+
+% find files
 coraroot = CORAROOT; % read once for speed
 files = [
     findfiles([coraroot filesep 'app']);
@@ -63,21 +72,17 @@ files = [
 ];
 
 % exclude:
-% - app/auxiliary files
-% files = excludefiles(files, ['app' filesep 'auxiliary']);
 % - thirdparty files
 files = excludefiles(files, ['global' filesep 'thirdparty']);
 % - models: generated/converted/auxiliary functions (see also resetCORA)
 files = excludefiles(files, ['models' filesep 'auxiliary']);
 files = excludefiles(files, ['models' filesep 'CoraConverted']);
 files = excludefiles(files, ['models' filesep 'powerSystemsConverted']);
-files = excludefiles(files, ['models' filesep 'spaceExConverted']);
+files = excludefiles(files, ['models' filesep 'SpaceExConverted']);
 % - repeatability package: main file (no author block)
 files = excludefiles(files, ['unitTests' filesep 'ci' filesep 'repeatability-template' filesep 'code'],'main.m');
 
 % iterate through all files
-res = true;
-issue_count = 0;
 for i=1:length(files)
     
     % read file
@@ -229,6 +234,13 @@ for i=1:length(files)
 
         if ~startsWith(lines{lcnt}, '% Authors:       ')
             issues{end+1} = 'Authors block is written inconsistently.';        
+        end
+        authorline = lines{lcnt};
+        files(i).authors = authorline(18:end);
+
+        % skip if not by specified author
+        if ~isempty(authors) && all(cellfun(@(author) ~contains(authorline,author), authors))
+            continue
         end
 
         % check if previous line is empty
@@ -392,8 +404,8 @@ for i=1:length(files)
             end
         end
 
-        % find undocummented code
-        cnt = 0; lcnt = 1; MAX_LINES_WO_COMMENT = 25; 
+        % find undocumented code
+        cnt = 0; lcnt = 1;
         while lcnt < numel(lines)
             line = lines{lcnt};
             if ~contains(line,'%')
@@ -401,7 +413,7 @@ for i=1:length(files)
             else
                 if cnt > MAX_LINES_WO_COMMENT
                     issues{end+1} = sprintf('Undocumented code (e.g., <a href="matlab:opentoline(''%s'',%i)">lines %i-%i</a>).',file_path,lcnt-cnt,lcnt-cnt,lcnt-1);
-                    break
+                    % break
                 end
 
                 % long undocumented code is ok for model files
@@ -525,20 +537,53 @@ for i=1:length(files)
         fprintf('  (Maybe try to <a href="matlab:fix_docstring(''%s'')">fix the docstring automatically</a>?)\n', file_path)
         disp(" ")
 
-        % update result
-        issue_count = issue_count + 1;
-        res = false;
-
         % helpful to directly open wrong file in the debugger
         % open(file_path)
         % fix_docstring(file_path)
         % keyboard % acts as breakpoint   
     end
+
+    % save results
+    files(i).all_good = all_good;
+    files(i).issues = issues;
 end
 
-if issue_count > 0
-    fprintf('Found %i file(s) violating the <a href="https://gitlab.lrz.de/cps/cora/-/wikis/home/Coding-conventions">CORA coding conventions</a>.\n', issue_count);
+
+% test completed
+issueFiles = files(~[files.all_good]);
+res = numel(issueFiles) == 0;
+
+% final display
+if ~res
+    fprintf('Found %i file(s) violating the <a href="https://gitlab.lrz.de/cps/cora/-/wikis/home/Coding-conventions">CORA coding conventions</a>.\n', numel(issueFiles));
+
+    % show problematic files per author
+    if showFilesPerAuthor
+        % extract authors
+        authors = [arrayfun(@(file) split(file.authors,', ')', issueFiles, 'UniformOutput', false)'];
+        % flatten cell array
+        authors = [authors{:}];
+
+        % get unique authors
+        authors = unique(authors);
+
+        % list files for each author
+        for a=1:numel(authors)
+            author = authors{a};
+            issueFilesAuthor = issueFiles(arrayfun(@(file) contains(file.authors,author),issueFiles));
+
+            % show issue files for each author
+            fprintf('%s: (%i files)\n', author, numel(issueFilesAuthor));
+            for i=1:numel(issueFilesAuthor)
+                file = issueFilesAuthor(i);
+                filepath = [file.folder filesep file.name];
+                fprintf('- <a href="matlab:open %s">%s</a>\n', filepath,filepath)
+            end
+            fprintf('\n')
+        end
+    end
 end
+
 
 end
 

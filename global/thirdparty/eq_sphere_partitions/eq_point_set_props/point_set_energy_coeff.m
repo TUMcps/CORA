@@ -59,7 +59,7 @@ function coeff = point_set_energy_coeff(points,s)
 %
 % Check number of arguments
 %
-error(nargchk(1,2,nargin));
+narginchk(1,2);
 %
 % dim is the dimension of S^dim as a manifold.
 %

@@ -100,6 +100,7 @@ for i = 1:length(W)
    temp = [];
    ind = strfind(weights{cnt},'[');
    weights{cnt} = weights{cnt}(ind(1)+1:end);
+   % parse string
    while ~startsWith(strtrim(weights{cnt}),[num2str(i+1),':'])
        temp = [temp, strtrim(weights{cnt})];
        cnt = cnt + 1;

@@ -53,7 +53,7 @@ function density = eq_packing_density(dim,N,varargin)
 %
 % Check number of arguments
 %
-error(nargchk(2,4,nargin));
+narginchk(2,4);
 %
 min_euclidean_dist = eq_min_dist(dim,N,varargin{:});
 density = calc_packing_density(dim,N,min_euclidean_dist);

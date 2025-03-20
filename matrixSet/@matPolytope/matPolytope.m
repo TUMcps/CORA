@@ -64,7 +64,6 @@ methods
     display(matP) % display on command window
     matP = expmInd(matP,maxOrder)
     [eP,eI] = expmIndMixed(matP,intermediateOrder,maxOrder)
-    val = expmDist(matP,exactMat,maxOrder) % deprecated?
     intMat = intervalMatrix(matP) % conversion to interval matrix
     matZ = matZonotope(matP) % conversion to matrix polytope
     matP = mpower(matP,exponent) % exponentiation
@@ -81,20 +80,24 @@ methods
 
     % legacy ---
 
+    % get.verts no longer exists
     function h = get.verts(matZ)
         CORAwarning("CORA:deprecated","property",'matPolytope.verts','CORA v2024.2.0','Please use matPolytope/numverts() instead.','This change was made to reduce internal maintenance.');
         h = numgens(matZ);
     end
 
+    % set.verts no longer exists
     function matZ = set.verts(matZ,N)
         throw(CORAerror("CORA:noops",'matZ.verts'));
     end
     
+    % get.vertex no longer exists
     function h = get.vertex(matZ)
         CORAwarning("CORA:deprecated","property",'matPolytope.vertex','CORA v2024.2.0','Please use matPolytope.V instead.','This change was made for clarification, as this properties holds all vertices, not just a single vertex.');
         h = numgens(matZ);
     end
 
+    % set.vertex no longer exists
     function matZ = set.vertex(matZ,V)
         throw(CORAerror("CORA:noops",'matZ.verts'));
     end

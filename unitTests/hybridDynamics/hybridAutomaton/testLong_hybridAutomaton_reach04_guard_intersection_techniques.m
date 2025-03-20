@@ -93,7 +93,7 @@ for i = 1:length(guardIntersect)
     options_.guardIntersect = guardIntersect{i};
     
     switch guardIntersect{i}
-        
+        % execute different intersection algorithms/parameters
         case 'polytope'
             options_.enclose = {'pca'};
             

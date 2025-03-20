@@ -23,13 +23,18 @@ function c = center(I)
 % Authors:       Matthias Althoff
 % Written:       26-June-2015
 % Last update:   02-September-2019 (rename mid -> center)
+%                28-February-2025 (TL, fullspace case, parity)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty set check
 if representsa_(I,'emptySet',eps)
-    c = zeros(dim(I),0); return ;
+    c = zeros(dim(I),0); return;
+end
+% fullspace check
+if isscalar(dim(I)) && representsa_(I,'fullspace',eps)
+    c = zeros(dim(I),1); return;
 end
 
 % compute center

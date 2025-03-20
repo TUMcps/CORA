@@ -146,21 +146,22 @@ for i = 1:length(guardIntersect)
     params_ = params;
     options_.guardIntersect = guardIntersect{i};
     
+    % set enclosure method based on guard intersection method
     switch guardIntersect{i}
-        
+        % polytope
         case 'polytope'
             options_.enclose = {'pca'};
-            
+        % zonotope enclosure according to Le Guernic and Girard 
         case 'zonoGirard'
             options_.enclose = {'pca'};
-            
+        % constrained zonotope    
         case 'conZonotope'
             options_.enclose = {'pca'};
             options_.guardOrder = 5;
-            
+        % hyperplane map    
         case 'hyperplaneMap'
             options_.guardOrder = 3;
-            
+        % nondeterministic guard set    
         case 'nondetGuard'
             options_.enclose = {'pca'};
     end
@@ -168,6 +169,7 @@ for i = 1:length(guardIntersect)
     % reachability analysis (first part)
     u = [-5; 0];                                
 
+    % set parameters
     params_.U{1} = zonotope(B1*u + c1); 
     params_.U{2} = zonotope(B2*u + c2); 
     params_.U{3} = zonotope(B3*u + c3); 
@@ -180,16 +182,20 @@ for i = 1:length(guardIntersect)
     % reachability analysis (second part)
     u = [5; 0];                                
 
+    % set parameters
     params_.U = zonotope(B3*u + c3);
     params_.R0 = R.timePoint.set{end};
     params_.finalLoc = params.finalLoc;
     params_.startLoc = params.startLoc;
     params_.tFinal = 2;
     params_.tStart = interval(0.2);
+
+    % set options
     options_.reductionTechnique = 'girard';
     options_.specification = [];
     options_.intersectInvariant = false;
     
+    % compute reachable set
     [~,Rjump,~] = reach(loc,params_,options_);
     
     % check if all simulated points are located inside the computed guard
@@ -200,6 +206,7 @@ for i = 1:length(guardIntersect)
     end
     poly = polytope(R);
     
+    % Are sampled points enclosed by the set?
     assertLoop(contains(poly,points,'exact',1e-10),i)
 
 end

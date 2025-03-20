@@ -178,6 +178,7 @@ elseif strcmp(type,'lower')
     ksi = -sign(cZ_proj.G)';
     x = cZ.c + cZ.G*ksi;
 elseif strcmp(type,'range')
+    % bound dependant on range in both directions
     val = I;
     ksi = [-sign(cZ_proj.G)', sign(cZ_proj.G)'];
     x = [];

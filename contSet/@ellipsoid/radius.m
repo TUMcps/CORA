@@ -41,7 +41,7 @@ i = setDefaultValues({1},varargin);
 
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid'};
-                {i,'att','numeric',{'integer','>=',1,'<=',dim(E)}}});
+                {i,'att','numeric',{'integer','positive',@(i) i <= dim(E)}}});
 
 % quick check for empty set
 if representsa_(E,'emptySet',eps)

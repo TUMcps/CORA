@@ -35,7 +35,7 @@ function fs = lift_(fs,N,dims)
 % for dims: 'size',[1,fs.dimension] ... but does not work always due to
 % transposition of vector
 inputArgsCheck({{fs,'att','fullspace'};
-                {N,'att','numeric',{'scalar','nonnegative','integer','>=',fs.dimension}};
+                {N,'att','numeric',{'scalar','nonnegative','integer',@(N) N >= fs.dimension}};
                 {dims,'att','numeric',{'vector','nonnegative','integer'}}});
 
 fs.dimension = N;

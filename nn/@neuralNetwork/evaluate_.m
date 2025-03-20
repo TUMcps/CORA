@@ -115,6 +115,8 @@ function r = aux_evaluatePolyZonotope(obj, input, options, idxLayer)
         E = input.E;
         id = input.id;
         id_ = max(id);
+
+        % make sure all properties have correct size
         if isempty(G)
             G = zeros(size(c, 1), 0);
             E = zeros(0,0);
@@ -128,6 +130,8 @@ function r = aux_evaluatePolyZonotope(obj, input, options, idxLayer)
             id_ = 0;
         end
 
+        % find all even exponents, also save others
+        % (TL: this was done for speed, not sure how important it really is...)
         ind = find(prod(ones(size(E))-mod(E, 2), 1) == 1);
         ind_ = setdiff(1:size(E, 2), ind);
 
@@ -145,6 +149,7 @@ function r = aux_evaluatePolyZonotope(obj, input, options, idxLayer)
             obj.propagateBounds(k, options);
         end
     
+        % build result
         r = polyZonotope(c, G, GI, E, id);
 
     catch ME

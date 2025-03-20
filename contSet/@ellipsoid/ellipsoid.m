@@ -78,7 +78,7 @@ methods
         aux_checkInputArgs(Q,q,TOL);
 
         % 4. compute properties
-        [Q,q,TOL] = aux_computeProperties(Q,q,TOL);
+        [Q,q] = aux_computeProperties(Q,q);
 
         % 5. assign properties
         obj.Q = Q;
@@ -167,7 +167,8 @@ function aux_checkInputArgs(Q,q,TOL)
 
 end
 
-function [Q,q,TOL] = aux_computeProperties(Q,q,TOL)
+% returns zero values in case Q or q are empty
+function [Q,q] = aux_computeProperties(Q,q)
 
     if isempty(Q)
         Q = zeros(0,0);

@@ -24,11 +24,10 @@ function powerSystem2cora(filename, varargin)
 %    .bus.slack - index of slack bus
 %
 % Outputs:
-%    x - ...
-%    y - ...
+%    -
 %
 % Example:
-%    [x,y] = powerSystem2cora('IEEE30');
+%    powerSystem2cora('IEEE30');
 %
 % Other m-files required: none
 % Subfunctions: none

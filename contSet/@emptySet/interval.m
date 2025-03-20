@@ -14,7 +14,7 @@ function I = interval(O,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: interval/empty
 
 % Authors:       Tobias Ladner
 % Written:       14-October-2024

@@ -95,21 +95,21 @@ methods (Access = {?nnLayer, ?neuralNetwork})
                 G = M * G;
             else
                 % compute relaxation
-                C1 = [zeros(1, m), -1];
-                d1 = 0;
-                C2 = [G(j, :), -1];
-                d2 = -c(j);
-                C3 = [-u / (u - l) * G(j, :), 1];
-                d3 = u / (u - l) * (c(j) - l);
-                C0 = [C, zeros(size(C, 1), 1)];
-                d0 = d;
-                C = [C0; C1; C2; C3];
-                d = [d0; d1; d2; d3];
-                temp = zeros(n, 1);
-                temp(j) = 1;
+
+                % constraints and offset
+                C = [
+                    C, zeros(size(C, 1), 1)
+                    zeros(1, m), -1;
+                    G(j, :), -1;
+                    -u / (u - l) * G(j, :), 1;
+                    ];
+                d = [d; 0; -c(j); u / (u - l) * (c(j) - l)];
+
+                % center and generators
                 c = M * c;
-                G = M * G;
-                G = [G, temp];
+                G = [M * G, unitvector(j,n)];
+
+                % bounds
                 l_ = [l_; 0];
                 u_ = [u_; u];
             end

@@ -44,6 +44,7 @@ test_cases = {
     {fourValuedSignal.indicator(stlInterval(0,1,true,false),tt,ii).set(stlInterval(4,5,false),ff), stlInterval(1,4,false), stlInterval(0,1,true,false)};
 };
 
+% run test cases
 for i = 1:length(test_cases)
     sig = test_cases{i}{1};
     ignore = test_cases{i}{2};

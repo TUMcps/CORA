@@ -33,6 +33,7 @@ function c = center(P,varargin)
 %                27-July-2023 (MW, add fast method for 1D)
 %                02-January-2024 (MW, fix fully empty polytopes)
 %                31-October-2024 (TL, added methods, added 'avg')
+%                25-February-2025 (TL, unconstrained polytope returns origin)
 % Last revision: 12-July-2024 (MW, refactor)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -48,10 +49,12 @@ inputArgsCheck({ ...
 % read out dimension
 n = dim(P);
 
-% fullspace case: return NaN; empty case: return empty vector
+% fullspace/empty case
 if representsa_(P,'fullspace',0)
-    c = NaN(n,1); return;
+    % return origin; consistent with fullspace/center
+    c = zeros(n,1); return;
 elseif ~isempty(P.emptySet.val) && P.emptySet.val
+    % return empty
     c = double.empty(n,0); return;
 end
 

@@ -209,6 +209,7 @@ function aux_checkInputArgs(c,G,n_in)
 end
 
 function [c,G] = aux_computeProperties(c,G)
+    % make sure that all properties have correct dimension
 
     % if G is empty, set correct dimension
     if isempty(G)

@@ -52,7 +52,7 @@ function density = calc_packing_density(dim,N,min_euclidean_dist)
 %
 % Check number of arguments
 %
-error(nargchk(3,3,nargin));
+narginchk(3,3);
 %
 s_cap = euc2sph_dist(min_euclidean_dist)/2;
 %

@@ -96,16 +96,19 @@ methods
             ylabel(['Neuron ', num2str(obj.neuronIds(2))])
             legend();
         else
+            % return existing figure
             f = figure(fid);
         end
     end
 
     function [nin, nout] = getNumNeurons(obj)
+        % returns number of in- and output neurons
         nin = [];
         nout = [];
     end
 
     function outputSize = getOutputSize(obj, inputSize)
+        % returns output size
         outputSize = inputSize;
     end
 end

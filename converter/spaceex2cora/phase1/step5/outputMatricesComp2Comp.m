@@ -91,12 +91,12 @@ for i=1:length(outputs)
         outputEq = subs(outputEq,inputs(j).name,sym_input(j));
     end
     % convert to string
-    outputEqStr = string(outputEq);
-    % add brackets
-    for j=1:length(states)
+    outputEqStr = char(outputEq);
+    % add brackets (back to front to avoid replacing x25 with x(2)5
+    for j=length(states):-1:1
         outputEqStr = strrep(outputEqStr,"x" + j,"x(" + j + ")");
     end
-    for j=1:length(inputs)
+    for j=length(inputs):-1:1
         outputEqStr = strrep(outputEqStr,"u" + j,"u(" + j + ")");
     end
 

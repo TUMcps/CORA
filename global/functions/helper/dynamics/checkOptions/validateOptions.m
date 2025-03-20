@@ -36,7 +36,7 @@ function [params,options] = validateOptions(sys,params,options,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: params2options
 
 % Authors:       Mark Wetzlinger
 % Written:       25-January-2021

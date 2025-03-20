@@ -44,6 +44,12 @@ V = zeros(3,0);
 P = polytope(V);
 assert(isemptyobject(P));
 
+% check special cases
+P = polytope.Inf(2);
+assert(~isemptyobject(P))
+
+P = polytope.empty(2);
+assert(~isemptyobject(P))
 
 % combine results
 res = true;

@@ -82,6 +82,7 @@ assert(sys.dt == dt)
 % three-dimensional
 f_3D = @(x,u) [sqrt(x(1)) - x(2)*u(1); x(2)-x(1); x(3)*x(2)];
 sys = nonlinearSysDT(f_3D,dt);
+% test with sampling time
 assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfOutputs == 3)
@@ -89,6 +90,7 @@ assert(sys.dt == dt)
 
 sys = nonlinearSysDT(sysname,f_3D,dt,3,1);
 assert(strcmp(sysname,sys.name))
+% test with sampling time, name, and input/output dims
 assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfOutputs == 3)
@@ -98,12 +100,14 @@ assert(sys.dt == dt)
 f_3D = @(x,u) [sqrt(x(1)) - x(2)*u(1); x(2)-exp(x(1)); x(3)*x(2)];
 g_1D = @(x,u) x(1)*x(2);
 sys = nonlinearSysDT(f_3D,dt,g_1D);
+% test fields
 assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
 assert(sys.nrOfOutputs == 1)
 assert(sys.dt == dt)
 
 sys = nonlinearSysDT(sysname,f_3D,dt,g_1D);
+% test with name, output function and sampling time
 assert(strcmp(sysname,sys.name))
 assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)
@@ -111,6 +115,7 @@ assert(sys.nrOfOutputs == 1)
 assert(sys.dt == dt)
 
 sys = nonlinearSysDT(sysname,f_3D,dt,3,1,g_1D,1);
+% test with all parameters
 assert(strcmp(sysname,sys.name))
 assert(sys.nrOfDims == 3)
 assert(sys.nrOfInputs == 1)

@@ -107,9 +107,28 @@ methods
         y_nom = zeros(size(obj.y));
         params.tFinal = sys.dt * size(obj.y,1) - sys.dt;
         for s =1:size(obj.y,3)
-            params.x0 = obj.initialState(:,:,s);
-            params.u = obj.u(:,:,s)';
+            if size(obj.initialState,3) == 1
+                % if same initial state for all trajectories
+                params.x0 = obj.initialState;
+            else
+                % different initial state for all trajectories (e.g.,
+                % possible with objects from class linearSysDT)
+                params.x0 = obj.initialState(:,:,s);
+            end
+            if size(obj.u,3) == 1
+                % if same inputs for all trajectories
+                params.u = obj.u';
+            else
+                % different inputs for all trajectories (e.g.,
+                % possible with objects from class linearSysDT)
+                params.u = obj.u(:,:,s)';
+            end
+            % compute nominal outputs via simulation of the dynamics
             [~,~,~,y_nom(:,:,s)] = simulate(sys, params);
+            if size(obj.initialState,3) == 1 && size(obj.u,3) == 1
+                y_nom = repmat(y_nom(:,:,s),1,1,size(obj.y,3));
+                break
+            end
         end
         obj.y_a = obj.y - y_nom;
     end   

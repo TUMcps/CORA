@@ -31,7 +31,7 @@ function res = isBadDir(E1,E2,L)
 % input check
 inputArgsCheck({{E1,'att','ellipsoid','scalar'};
                 {E2,'att','ellipsoid','scalar'};
-                {L,'att','numeric',{'nrows',dim(E1)}}});
+                {L,'att','numeric',{@(L) size(L,1) == dim(E1)}}});
 
 % check dimension
 equalDimCheck(E1,E2);

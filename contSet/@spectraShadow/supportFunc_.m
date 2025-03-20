@@ -94,7 +94,7 @@ if all_Ai_zero
     return
 end
 
-
+% Define parametrization of the spectrahedral shadow
 beta = sdpvar(m,1,'full');
 
 A = A0;

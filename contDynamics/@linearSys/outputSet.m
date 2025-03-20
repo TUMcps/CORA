@@ -47,6 +47,8 @@ if isempty(linsys.C) || ...
     return;
 end
 
+
+% do we consider inputs in the output?
 isD = false;
 if any(any(linsys.D))
     isD = true;
@@ -55,7 +57,7 @@ end
 
 
 if ~isfield(options,'saveOrder')
-    
+    % output equations without order reduction
     if isD
         Y = linsys.C*R + linsys.D * U + linsys.k + linsys.F * params.V;
     else

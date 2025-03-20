@@ -304,7 +304,7 @@ assert(isempty(P.minVRep.val));
 % test empty polytope
 P = polytope([],[],0,1);
 P = compact(P);
-assert(representsa_(P,'emptySet'),1e-12);
+assert(representsa(P,'emptySet'),1e-12);
 
 % combine results
 res = true;

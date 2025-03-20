@@ -20,12 +20,13 @@ function res = testLong_conPolyZono_reduceConstraints
 % Authors:       Niklas Kochdumper
 % Written:       26-January-2021
 % Last update:   ---
-% Last revision: ---
+% Last revision: 24-February-2025 (TL, added tol)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
 splits = 4;
+tol = 1e-8;
 
 % loop over all test cases
 for i = 1:20
@@ -47,7 +48,7 @@ for i = 1:20
     % check if all points are inside polygon enclosures
     pgon = polygon(cPZ_,splits);
 
-    assertLoop(contains(pgon,points),i)
+    assertLoop(contains(pgon,points,'exact',tol),i)
 end
 
 % ------------------------------ END OF CODE ------------------------------

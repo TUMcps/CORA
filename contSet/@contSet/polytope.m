@@ -18,7 +18,7 @@ function P = polytope(S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: -
 
 % Authors:       Mark Wetzlinger
 % Written:       23-December-2023

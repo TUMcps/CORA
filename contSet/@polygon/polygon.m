@@ -1,5 +1,6 @@
 classdef polygon < contSet
 % polygon class - vertices of a nonconvex set in 2D
+%    based on Matlab's polyshape class
 %
 % Syntax:
 %    obj = polygon(x,y,varargin)
@@ -37,6 +38,7 @@ classdef polygon < contSet
 %                13-March-2024 (TL, enable polyshape NVpairs in constructor)
 %                08-October-2024 (TL, made proper class within contSet)
 %                23-October-2024 (TL, added V property)
+%                13-February-2024 (TL, added nrOfRegions/nrOfHoles properties)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -50,6 +52,10 @@ end
 properties (Access=private)
     V;          % vertices (if present)
     TOL = 1e-8; % for buffered degenerate polygons
+end
+
+properties (Dependent)
+    nrOfRegions; nrOfHoles;
 end
 
 methods
@@ -73,12 +79,14 @@ methods
 end
 
 methods (Static = true)
+    % static functions
     pgon = generateRandom(varargin);
     pgon = enclosePoints(points);
     pgon = empty(n)
 end
 
 methods (Access = protected)
+    % protected functions
     [abbrev,printOrder] = getPrintSetInfo(S)
 end
 
@@ -87,13 +95,25 @@ end
 
 methods
     function x = get.x(pgon)
+        % get x
         V = vertices_(pgon);
         x = V(1,:);
     end
 
     function y = get.y(pgon)
+        % get y
         V = vertices_(pgon);
         y = V(2,:);
+    end
+
+    function nrOfRegions = get.nrOfRegions(pgon)
+        % get number of regions
+        nrOfRegions = pgon.set.NumRegions;
+    end
+
+    function nrOfHoles = get.nrOfHoles(pgon)
+        % get number of holes
+        nrOfHoles = pgon.set.NumHoles;
     end
 end
 

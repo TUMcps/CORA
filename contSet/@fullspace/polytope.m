@@ -20,18 +20,18 @@ function P = polytope(fs)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: polytope/Inf
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Tobias Ladner
 % Written:       14-December-2023
-% Last update:   ---
+% Last update:   25-February-2025 (TL, used polytope.Inf)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 if fs.dimension > 0
-    % n-dimensional constraint fulfilled for all values
-    P = polytope(zeros(1,fs.dimension),1);
+    % init polytope/inf with correct dimensions
+    P = polytope.Inf(fs.dimension);
 else
     throw(CORAerror('CORA:outOfDomain','validDomain','>0'));
 end

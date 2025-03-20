@@ -1,5 +1,5 @@
 function obj = storeVisualData(obj,reachSet,episodeNum)
-% storeVisualData - stor visual data for rendering of environment
+% storeVisualData - store visual data for rendering of environment
 %
 % Syntax:
 %   obj = storeVisualData(obj,reachSet,episodeNum)
@@ -17,7 +17,7 @@ function obj = storeVisualData(obj,reachSet,episodeNum)
 %
 % See also: buffer
 
-% Authors:       Manuel Wendl
+% Authors:       Manuel Wendl, Lukas Koller
 % Written:       03-November-2023
 % Last update:   ---
 % Last revision: ---
@@ -30,12 +30,15 @@ inputArgsCheck({ ...
     })
 
 if isempty(obj.visualisationData.episodeNum)
+    % Store initial reach set.
     obj.visualisationData.episodeNum = episodeNum;
     obj.visualisationData.reachSet = {reachSet};
 elseif episodeNum > obj.visualisationData.episodeNum(end)
+    % Store next reach set.
     obj.visualisationData.episodeNum = [obj.visualisationData.episodeNum, episodeNum];
     obj.visualisationData.reachSet{end+1} = reachSet;
 else
+    % Add to current reach set.
     if isa(reachSet,'struct')
         obj.visualisationData.reachSet{end}.t = [obj.visualisationData.reachSet{end}.t;reachSet.t];
         obj.visualisationData.reachSet{end}.x = [obj.visualisationData.reachSet{end}.x;reachSet.x];

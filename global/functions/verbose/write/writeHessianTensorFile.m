@@ -104,6 +104,7 @@ end
 
 end
 
+% Extract matrices from tensor
 function H = aux_squeeze(J2)
 
 H = cell(size(J2,1),1);
@@ -113,8 +114,8 @@ end
 
 end
 
-function [argsOut,argsIn,cellSymVars] = aux_args(vars)
 % generate output/input arguments and cell-array of used variables
+function [argsOut,argsIn,cellSymVars] = aux_args(vars)
 
 % output arguments
 if ~isempty(vars.y)
@@ -139,6 +140,7 @@ cellSymVars = cellSymVars(nonemptyVars);
 
 end
 
+% Convert symbolic expression to MATLAB function
 function aux_writefunOptimize(fid,path,fname,outFun,vars,cellSymVars)
 
 if ~isempty(vars)

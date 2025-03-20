@@ -45,7 +45,7 @@ function property = eq_point_set_property(fhandle,dim,N,varargin)
 %
 % Check number of arguments
 %
-error(nargchk(3,5,nargin));
+narginchk(3,5);
 %
 % dim is the number of dimensions
 % N is the number of regions

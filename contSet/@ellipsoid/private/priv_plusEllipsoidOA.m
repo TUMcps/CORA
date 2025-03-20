@@ -451,8 +451,8 @@ elseif isSDPT3
     q = -Q*value(b_sol);
     E = ellipsoid(Q,q);
 
-
 elseif isYalmipInstalled()
+    % compute with yalmip
     B = sdpvar(n);
     b = sdpvar(n,1);
     l = sdpvar(N,1);

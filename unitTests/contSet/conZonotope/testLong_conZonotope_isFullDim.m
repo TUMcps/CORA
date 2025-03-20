@@ -102,9 +102,9 @@ for i=1:(nrOfTests/10)
 
     same_subspace = rank([subspace P_subspace], 1e-5) == rank(subspace);
 
-    assert(res_single == res_poly);
-    assert(res_subspace == res_poly);
-    assert(same_subspace);
+    assertLoop(res_single == res_poly,i);
+    assertLoop(res_subspace == res_poly,i);
+    assertLoop(same_subspace,i);
 end
 
 % ------------------------------ END OF CODE ------------------------------

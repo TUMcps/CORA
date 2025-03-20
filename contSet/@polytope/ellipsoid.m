@@ -50,7 +50,7 @@ if representsa_(P,'emptySet',eps)
     return;
 end
 
-switch mode
+switch mode % select mode
     case 'outer'
         V = vertices(P);
         mm = 'cov';
@@ -375,6 +375,7 @@ q = b_sol;
 end
 
 function [Q,q] = aux_ellipsoid_yalmip(A,d,n)
+% solve with yalmip
 
 c = sdpvar(n,1);
 B = sdpvar(n);

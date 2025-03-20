@@ -26,11 +26,10 @@ function res = test_polytope_plus
 tol = 1e-14;
 
 % 1D, fully empty + vector
-A = zeros(0,1); b = zeros(0,0);
-P = polytope(A,b);
+P = polytope.empty(1);
 z = 1;
 P_sum = P + z;
-assert(isemptyobject(P_sum));
+assert(representsa(P_sum,'emptySet'));
 
 % 1D, bounded + scalar
 A = [1; -1]; b = [4; -2];

@@ -51,7 +51,7 @@ function coeff = point_set_dist_coeff(points)
 %
 % Check number of arguments
 %
-error(nargchk(1,1,nargin));
+narginchk(1,1);
 %
 % dim is the dimension of S^dim as a manifold.
 %

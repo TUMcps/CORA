@@ -21,7 +21,7 @@ function res = and_(cPZ,S,varargin)
 %
 %    figure; hold on;
 %    xlim([-5,5]); ylim([-5,5]);
-%    plot(P,[1,2],'r');
+%    plot(P1,[1,2],'r');
 %    plot(res1,[1,2],'FaceColor','b','Splits',10);
 %    plot(cPZ,[1,2],'g','LineWidth',2);
 %
@@ -178,7 +178,7 @@ res = compact_(cPZ,'all',eps);
 
 end
 
-function aux_and_conHyperplane(cPZ,S)
+function res = aux_and_conHyperplane(cPZ,S)
 
 % calculate intersection between conPolyZono object and hyperplane
 % defined as c * x = d

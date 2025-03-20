@@ -173,7 +173,7 @@ delta_z_r = p.h_s - p.R_w + x(22) - x(12);
 
 delta_phi_f = x(7) - x(14);
 delta_phi_r = x(7) - x(19);
-
+% ---
 dot_delta_phi_f = x(8) - x(15);
 dot_delta_phi_r = x(8) - x(20);
 
@@ -182,7 +182,7 @@ dot_delta_z_r = x(23) - x(13);
 
 dot_delta_y_f = x(11) + p.a*x(6) - x(16);
 dot_delta_y_r = x(11) - p.b*x(6) - x(21);
-
+% ---
 delta_f = delta_z_f*sin(x(7)) - x(28)*cos(x(7)) - (p.h_raf - p.R_w)*sin(delta_phi_f);
 delta_r = delta_z_r*sin(x(7)) - x(29)*cos(x(7)) - (p.h_rar - p.R_w)*sin(delta_phi_r);
 
@@ -205,25 +205,32 @@ F_SLR = p.m_s*g*p.a/(2*(p.a+p.b)) - z_SLR*p.K_sr - dz_SLR*p.K_sdr + (x(7) - x(19
 F_SRR = p.m_s*g*p.a/(2*(p.a+p.b)) - z_SRR*p.K_sr - dz_SRR*p.K_sdr - (x(7) - x(19))*p.K_tsr/p.T_r;
 
 
-%auxiliary variables sprung mass
+%% auxiliary variables sprung mass
+% sumX
 sumX = F_x_LR + F_x_RR + (F_x_LF + F_x_RF)*cos(x(3)) - (F_y_LF + F_y_RF)*sin(x(3));
 
+% sumN
 sumN = (F_y_LF + F_y_RF)*p.a*cos(x(3)) + (F_x_LF + F_x_RF)*p.a*sin(x(3))...
        + (F_y_RF - F_y_LF)*0.5*p.T_f*sin(x(3)) + (F_x_LF - F_x_RF)*0.5*p.T_f*cos(x(3))...
        + (F_x_LR - F_x_RR)*0.5*p.T_r - (F_y_LR + F_y_RR)*p.b;
    
+% sumY
 sumY_s = (F_RAF + F_RAR)*cos(x(7)) + (F_SLF + F_SLR + F_SRF + F_SRR)*sin(x(7));
 
+% sumL
 sumL = 0.5*F_SLF*p.T_f + 0.5*F_SLR*p.T_r - 0.5*F_SRF*p.T_f - 0.5*F_SRR*p.T_r...
        - F_RAF/cos(x(7))*(p.h_s - x(12) - p.R_w + x(17) - (p.h_raf - p.R_w)*cos(x(14)))...
        - F_RAR/cos(x(7))*(p.h_s - x(12) - p.R_w + x(22) - (p.h_rar - p.R_w)*cos(x(19)));
-   
+ 
+% sumZ
 sumZ_s = (F_SLF + F_SLR + F_SRF + F_SRR)*cos(x(7)) - (F_RAF + F_RAR)*sin(x(7));
 
+% sumM
 sumM_s = p.a*(F_SLF + F_SRF) - p.b*(F_SLR + F_SRR) + ((F_x_LF + F_x_RF)*cos(x(3))...
        - (F_y_LF + F_y_RF)*sin(x(3)) + F_x_LR + F_x_RR)*(p.h_s - x(12));
 
-%auxiliary variables unsprung mass
+%% auxiliary variables unsprung mass
+% sumL
 sumL_uf = 0.5*F_SRF*p.T_f - 0.5*F_SLF*p.T_f - F_RAF*(p.h_raf - p.R_w)...
           + F_z_LF*(p.R_w*sin(x(14)) + 0.5*p.T_f*cos(x(14)) - p.K_lt*F_y_LF)...
           - F_z_RF*(-p.R_w*sin(x(14)) + 0.5*p.T_f*cos(x(14)) + p.K_lt*F_y_RF)...
@@ -233,11 +240,13 @@ sumL_ur = 0.5*F_SRR*p.T_r - 0.5*F_SLR*p.T_r - F_RAR*(p.h_rar - p.R_w)...
           + F_z_LR*(p.R_w*sin(x(19)) + 0.5*p.T_r*cos(x(19)) - p.K_lt*F_y_LR)...
           - F_z_RR*(-p.R_w*sin(x(19)) + 0.5*p.T_r*cos(x(19)) + p.K_lt*F_y_RR)...
           - (F_y_LR + F_y_RR)*(p.R_w - x(22));   
-      
+     
+% sumZ
 sumZ_uf = F_z_LF + F_z_RF + F_RAF*sin(x(7)) - (F_SLF + F_SRF)*cos(x(7));
 
 sumZ_ur = F_z_LR + F_z_RR + F_RAR*sin(x(7)) - (F_SLR + F_SRR)*cos(x(7));
 
+% sumY
 sumY_uf = (F_y_LF + F_y_RF)*cos(x(3)) + (F_x_LF + F_x_RF)*sin(x(3))...
           - F_RAF*cos(x(7)) - (F_SLF + F_SRF)*sin(x(7));
       

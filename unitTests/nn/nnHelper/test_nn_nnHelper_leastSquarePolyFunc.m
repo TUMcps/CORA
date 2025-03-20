@@ -36,9 +36,10 @@ for order=1:5
 
     assert(res && all(withinTol(y, y_p)));
 
-    % with noise
+    % with noise ---
     n = 50;
 
+    % init 
     x = rand(1, order+1);
     y = rand(1, order+1);
     noise = interval(-1, 1) * 0.0001;
@@ -49,6 +50,7 @@ for order=1:5
     x = repmat(x, n, 1);
     x = reshape(x, 1, []);
 
+    % compute coefficients
     coeffs = nnHelper.leastSquarePolyFunc(x, y, order);
     y_p = polyval(coeffs, x);
 

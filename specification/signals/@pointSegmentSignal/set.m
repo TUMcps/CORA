@@ -43,6 +43,7 @@ if isemptyobject(interval)
     return;
 end
 
+% convert other sets to stlInterval
 if ~isa(interval,'stlInterval')
     interval = stlInterval(interval);
 end
@@ -50,6 +51,8 @@ end
 [lb,lc] = interval.infimum();
 assert(lb >= 0);
 [ub,rc] = interval.supremum();
+
+% if the interval is singular, we can set the point directly
 if lb == ub
     sig = aux_setPoint(obj,lb,value);
     return;
@@ -106,6 +109,8 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
+% check whether adding a new point at the given index
+% with the given point and interval values is necessary
 function justified = aux_isNewPointOk(obj,i,p,vals)
     if obj.timePoints(i) == p
         justified = p == 0 || vals(1) ~= vals(2) || vals(1) ~= obj.precIntervalValue(i);
@@ -114,6 +119,7 @@ function justified = aux_isNewPointOk(obj,i,p,vals)
     end
 end
 
+% set the value for a single point
 function sig = aux_setPoint(obj,point,value)
     [cur,i] = priv_atIdx(obj,point);
     if cur == value

@@ -35,7 +35,7 @@ function [pZ_id,pZ_r] = onlyId(pZ,id)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check input arguments
-inputArgsCheck({{id,'att','double',{'integer','ncols',1}}});
+inputArgsCheck({{id,'att','double',{'integer','column'}}});
 
 % check if unique
 if length(unique(id))<length(id)

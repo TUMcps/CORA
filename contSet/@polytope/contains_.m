@@ -81,6 +81,7 @@ function [res,cert,scaling] = contains_(P,S,method,tol,maxEval,certToggle,scalin
 %                26-April-2022 (added cases for empty objects)
 %                05-February-2024 (AK, added cert and scaling)
 %                31-October-2024 (TL, added v-polytope/contains)
+%                31-October-2024 (TL, added check if P represents a emptySet)
 % Last revision: 10-July-2024 (MW, refactor)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -137,6 +138,12 @@ if representsa(S, 'emptySet')
     res = true;
     cert = true;
     scaling = 0;
+    return
+elseif representsa(P,'emptySet')
+    % S is not empty but P is -> cannot be contained
+    res = false;
+    cert = true;
+    scaling = Inf;
     return
 else
     try

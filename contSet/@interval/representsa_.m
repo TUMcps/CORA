@@ -115,6 +115,7 @@ switch type
     case 'levelSet'
         res = true;
         if nargout == 2
+            % no direct transformation from interval to levelSet available
             S = levelSet(polytope(I));
         end
 

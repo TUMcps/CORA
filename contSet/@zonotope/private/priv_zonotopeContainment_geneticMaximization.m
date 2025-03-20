@@ -80,22 +80,26 @@ norm_Z2_nu = @(nu) -zonotopeNorm(Z2, G*nu' + Z1.center-Z2.center);
         optchanged = false;
     end
 
+% Different options depending on whether scaling should be computed (this
+% may save up some computation time)
 if scalingToggle
     persistent options_zonotope_contains___ga_scalingToggle_true
     if isempty(options_zonotope_contains___ga_scalingToggle_true)
         options_zonotope_contains___ga_scalingToggle_true = optimoptions("ga", ...
         'Display', 'iter', ... % Output on command line is iterative
-        "PlotFcn", 'gaplotbestf',... % Plot value
+        "PlotFcn", [],... % Do not plot value
         'OutputFcn', @customStoppingCriterion,...
         "MaxGenerations", inf);
     end
     options = options_zonotope_contains___ga_scalingToggle_true;
 else
+    % If scaling does not need to be computed, we can stop whenever we find
+    % a value of -1 (this only changes 'FitnessLimit')
     persistent options_zonotope_contains___ga_scalingToggle_false
     if isempty(options_zonotope_contains___ga_scalingToggle_false)
         options_zonotope_contains___ga_scalingToggle_true = optimoptions("ga",...
         "Display", 'iter',... % Output on command line is iterative
-        "PlotFcn", 'gaplotbestf',... % Plot value
+        "PlotFcn", [],... % Do not plot value
         "FitnessLimit", -1-tol,...
         'OutputFcn', @customStoppingCriterion,...
         "MaxGenerations", inf);
@@ -103,6 +107,7 @@ else
     options = options_zonotope_contains___ga_scalingToggle_false;
 end
 
+% Let the genetic algorithm run
 [~, scaling] = ga(norm_Z2_nu, m, [], [], [], [], -ones([m 1])', ones([m 1])', [], ones([m 1])', options);
 
 scaling = abs(scaling);

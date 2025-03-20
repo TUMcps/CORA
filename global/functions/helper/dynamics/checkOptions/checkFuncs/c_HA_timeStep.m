@@ -53,6 +53,7 @@ else
         msg = 'has to match the number of locations';
         res = false; return;
     else
+        % value has to be a non-negative numeric scalar
         for i=1:numLoc
             if ~isscalar(val{i})
                 msg = 'has to be a scalar value';

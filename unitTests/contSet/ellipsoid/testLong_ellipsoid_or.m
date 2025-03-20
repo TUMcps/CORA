@@ -116,6 +116,7 @@ for i=10:5:15
 
             catch ME
                 if strcmp(ME.identifier,'CORA:solverIssue')
+                    % ok for random ellipsoids
                     disp('Randomly generated ellipsoids caused solver issues! Ignoring...');
                     continue;
                 end

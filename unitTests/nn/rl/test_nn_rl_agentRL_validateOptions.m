@@ -61,16 +61,19 @@ options.rl.actor.nn.train.method = 'point';
 
 assertThrowsAs(@agentDDPG,'CORA:wrongFieldValue',nnActor,nnCritic,options);
 
+% Invalid parameters.
 options.rl.critic.nn.train.method = 'grad';
 options.rl.actor.nn.train.method = 'point';
 
 assertThrowsAs(@agentDDPG,'CORA:wrongFieldValue',nnActor,nnCritic,options);
 
+% Invalid parameters.
 options.rl.critic.nn.train.method = 'set';
 options.rl.actor.nn.train.method = 'point';
 
 assertThrowsAs(@agentDDPG,'CORA:wrongFieldValue',nnActor,nnCritic,options);
 
+% Invalid parameters.
 options.rl.critic.nn.train.method = 'set';
 options.rl.actor.nn.train.method = 'naive';
 

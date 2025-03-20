@@ -53,14 +53,15 @@ RewardAdvGrad = zeros(numberOfSeeds,numberofAgents,length(perturbation));
 
 for i = 1:numberOfSeeds
     for j = 1:numberofAgents
+        % Initialize arrays.
         reward = zeros(size(perturbation));
         rewardAdvNaive = zeros(size(perturbation));
         rewardAdvGrad = zeros(size(perturbation));
-
+        % Store the different rewards.
         for k = 1:length(perturbation)
             [~,reward(k),rewardAdvNaive(k),rewardAdvGrad(k)] = agents{i,j}.benchmark(env,perturbation(k),initialOps);
         end
-
+        
         LHReward(i,j,:) = agents{i,j}.learnHistory.reward;
         LHQ0(i,j,:) = agents{i,j}.learnHistory.Q0;
 

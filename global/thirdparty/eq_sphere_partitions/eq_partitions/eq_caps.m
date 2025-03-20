@@ -55,7 +55,7 @@ function [s_cap,n_regions] = eq_caps(dim,N)
 %
 % Check number of arguments
 %
-error(nargchk(2,2,nargin));
+narginchk(2,2);
 error(nargoutchk(2,2,nargout));
 %
 % dim is the number of dimensions

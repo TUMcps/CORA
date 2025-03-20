@@ -219,14 +219,17 @@ function [A,U] = aux_systemParams(sys,Rcont,params)
         int_u = interval(params.U);
         int_u_ = interval(params.U) - u;
         
+        % compute set of Hessians
         H = sys.hessian(int_x,int_u);
         
         dx = max(abs(infimum(int_x_)),abs(supremum(int_x_)));
         du = max(abs(infimum(int_u_)),abs(supremum(int_u_)));
         dz = [dx;du];
         
+        % initialize linearization error
         linError = zeros(length(H),1);
 
+        % compute linearization error
         for i = 1:length(H)
             H_ = abs(H{i});
             H_ = max(infimum(H_),supremum(H_));

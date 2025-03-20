@@ -105,41 +105,7 @@ methods
 
         % 6. set precedence (fixed)
         obj.precedence = 90;
-
-    end
-    
-    % methods in separate files
-    c = center(cZ)
-    res = conIntersect(cZ1,cZ2,M)
-    res = cubMap(cZ,varargin)
-    cZ = deleteZeros(cZ)
-    n = dim(cZ)
-    display(cZ);
-    cZ = enclose(cZ,varargin)
-    G = generators(cZ)
-    cZ = intersectStrip(cZ,C,phi,y,varargin)
-    [res,subspace] = isFullDim(cZ)
-    cZ = minkDiff(cZ1,S,varargin)
-    cZ = mtimes(factor1,factor2)
-    cZ = or(cZ1,varargin)
-    han = plot(cZ,varargin)
-    han = plotZono(cZ,varargin)
-    cZ = plus(summand1,summand2)
-    cZ = project(cZ,projDim)
-    cZ = quadMap(cZ,varargin)
-    cZ = reduce(cZ,method,order,varargin)
-    cZ = reduceConstraints(cZ,varargin)
-    cZ = rescale(cZ,varargin)
-    [res,S] = representsa_(cZ,type,tol,varargin)
-    cZsplit = split(cZ,varargin)
-
-    % conversion functions
-    cPZ = conPolyZono(cZ)
-    I = interval(cZ)
-    P = polytope(cZ)
-    pZ = polyZonotope(cZ)
-    zB = zonoBundle(cZ)
-    Z = zonotope(cZ,varargin)             
+    end        
 end
 
 methods (Static = true)
@@ -177,6 +143,7 @@ methods
             'Please use conZonotope.c and conZonotope.G instead.', ...
             'This change was made to be consistent with the notation in papers.')
         if ~isempty(Z)
+            % read out center and generators
             obj.c = Z(:,1);
             obj.G = Z(:,2:end);
         end

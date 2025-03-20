@@ -121,7 +121,10 @@ cZ = compact(cZ);
 
 % Check out trivial cases
 [cZ_isPoint, p] = representsa(cZ, 'point');
+
+% Constrained zonotope is a point
 if cZ_isPoint
+    % S is numeric
     if isnumeric(S)
         res = max(max(abs(S-p))) <= tol;
         cert = true;
@@ -131,8 +134,10 @@ if cZ_isPoint
             scaling = Inf;
         end
 
-    else % S is not numeric
+    % S is not numeric
+    else 
         [S_isPoint, q] = representsa(S, 'point');
+        % S is a point
         if S_isPoint
             res = all(q==p);
             cert = true;
@@ -145,35 +150,41 @@ if cZ_isPoint
     end
     return
 end
-% cZ is not a point
 
+% Constrained zonotope is an empty set
 if representsa(cZ, 'emptySet')
+    % S is numeric
     if isnumeric(S)
+        % S is empty
         if isempty(S)
             res = true;
             scaling = 0;
             cert = true;
+        % S is not empty
         else
             res = false;
             scaling = Inf;
             cert = true;
         end
 
+    % S is empty
     elseif representsa(S, 'emptySet')
         res = true;
         scaling = 0;
         cert = true;
-        
-    else % S is not numeric and not empty
+
+    % S is not numeric and not empty    
+    else 
         res = false;
         scaling = Inf;
         cert = true;
     end
     return
 end
-% cZ is not empty
+
+% Constrained zonotope is not empty and not a point
         
-% point or point cloud in constrained zonotope containment
+% Point or point cloud in constrained zonotope containment
 if isnumeric(S)
     [res, cert, scaling] = aux_containsPoint(cZ,S,method,tol,scalingToggle);
     return
@@ -196,12 +207,14 @@ if ~isBounded(S)
     cert = true;
     scaling = Inf;
     return
+% S is empty
 elseif representsa(S, 'emptySet')
     % Empty -> always contained
     res = true;
     cert = true;
     scaling = 0;
     return
+% S is not empty
 else
     try
         [isPoint,p] = representsa(S, 'point');
@@ -226,11 +239,14 @@ end
 % which algorithm to use.
 
 switch method
-    case {'exact', 'exact:venum', 'exact:polymax'} % Exact algorithms
+    % Exact algorithms
+    case {'exact', 'exact:venum', 'exact:polymax'} 
         [res, cert, scaling] = aux_exactParser(cZ, S, method, tol, maxEval, certToggle, scalingToggle);
-    case {'approx', 'approx:st'} % Approximative algorithms
+    % Approximative algorithms
+    case {'approx', 'approx:st'}
         [res, cert, scaling] = aux_approxParser(cZ, S, method, tol, maxEval, certToggle, scalingToggle);
-    case {'sampling', 'sampling:primal', 'sampling:dual'} % Stochastic algorithms
+    % Stochastic algorithms
+    case {'sampling', 'sampling:primal', 'sampling:dual'} 
         if ~isa(S, 'conZonotope')
             % For now, we only support the cases where S is a conZonotope
             throw(CORAerror('CORA:noSpecificAlg',method,cZ,S));
@@ -241,6 +257,7 @@ switch method
             case 'sampling:dual'
                 [res, cert, scaling] = aux_samplingDual(cZ, S, tol, maxEval, certToggle, scalingToggle);
         end
+    % error
     otherwise
         throw(CORAerror('CORA:noSpecificAlg',method,cZ,S));
 end
@@ -667,6 +684,7 @@ function [res, cert, scaling] = aux_samplingDual(cZ, S, tol, maxEval, certToggle
             s = linOut(n+n+k+2*m + 1:end);
         end
 
+        % determine scaling
         s = s / norm(s);
 
         L = supportFunc(S,s,'upper');
@@ -674,6 +692,7 @@ function [res, cert, scaling] = aux_samplingDual(cZ, S, tol, maxEval, certToggle
         scaling = max([scaling L]);
 
         if scaling > 1+tol
+            % set has to be enlarged for containment, cannot be contained
             res = false;
             cert = true;
             if ~scalingToggle
@@ -749,7 +768,7 @@ function p = aux_boundaryPoint(cZ, p, c_start)
         problem.lb = [];
         problem.ub = [];
 
-        [val,fval,exitflag] = CORAlinprog(problem);
+        [~,fval] = CORAlinprog(problem);
 
         p(:,i) = p(:,i) + abs(fval) * direction;
     end

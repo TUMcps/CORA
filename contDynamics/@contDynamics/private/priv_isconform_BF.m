@@ -57,7 +57,7 @@ for iCase = 1:length(testSuite)
     testCase = testSuite{iCase};
     timeSteps = size(testCase.y,1);
     options.timeStep = testCase.sampleTime/options.timeStepDivider;
-    params.tFinal = testCase.sampleTime*timeSteps;
+    params.tFinal = testCase.sampleTime*(timeSteps-1);
 
     % input trajectory from test case
     for iSample = 1: size(testCase.u,3) % for linear systems
@@ -84,9 +84,9 @@ for iCase = 1:length(testSuite)
 
         % remove sets not part of the sampling time
         % init
-        R_new.set = cell(timeSteps+1);
-        R_new.time = cell(timeSteps+1);
-        for iStep = 1:timeSteps+1
+        R_new.set = cell(timeSteps);
+        R_new.time = cell(timeSteps);
+        for iStep = 1:timeSteps
             % original index
             ind = (iStep-1)*options.timeStepDivider + 1;
             % saving using new index

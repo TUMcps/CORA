@@ -495,6 +495,7 @@ elseif isSDPT3
     Q = inv(A2);
 
 elseif isYalmipInstalled()
+    % compute with yalmip
     A2 = sdpvar(n); % pd-ness of A ensured by yalmip internally
     bt = sdpvar(n,1);
     l = sdpvar(N,1);
@@ -511,6 +512,7 @@ elseif isYalmipInstalled()
     opts = sdpsettings;
     opts.verbose = 0;
     sol = optimize([C,l>=0],f_obj,opts);
+    % show yalmip warnings
     CORAwarning('CORA:solver',"YALMIP was used to model the problem - " + ...
         "consider installing a supported solver to speed up computation...");
     if any(sol.problem == [-2,-3,-4])

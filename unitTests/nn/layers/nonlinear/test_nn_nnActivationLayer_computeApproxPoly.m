@@ -31,15 +31,19 @@ for act = ["relu","sigmoid","tanh"]
     for poly_method =["regression", "ridgeregression"]
         for order = 1:3
             for n=1:10
+                % init bounds
                 l = -3 + rand(1) * 6;
                 u = l + rand(1);
         
+                % compute coefficients and error
                 [coeffs, d] = layer.computeApproxPoly(l, u, order, poly_method);
         
+                % evaluate polynomial
                 x = linspace(l, u);
                 y = layer.f(x);
                 y_p = polyval(coeffs, x);
     
+                % assert containment
                 assertLoop(all(contains(interval(y_p-d, y_p+d)', y')),'',[],act,poly_method,order,n);
             end
         end
@@ -53,15 +57,19 @@ for act = ["sigmoid", "tanh"]
     for poly_method =["taylor", "throw-catch"]
         for order = 1:3
             for n=1:10
+                % init bounds
                 l = -3 + rand(1) * 6;
                 u = l + rand(1);
         
+                % compute coefficients
                 [coeffs, d] = layer.computeApproxPoly(l, u, order, poly_method);
         
+                % evaluate polynomial
                 x = linspace(l, u);
                 y = layer.f(x);
                 y_p = polyval(coeffs, x);
     
+                % assert containment
                 assertLoop(all(contains(interval(y_p-d, y_p+d)', y')),'',[],act,poly_method,order,n);
             end
         end
@@ -80,15 +88,19 @@ for act = ["relu","sigmoid","tanh"]
     end
     for order = orders
         for n=1:2
+            % init bounds
             l = -3 + rand(1) * 6;
             u = l + rand(1);
     
+            % compute coefficients
             [coeffs, d] = layer.computeApproxPoly(l, u, order, poly_method);
     
+            % evaluate polynomial
             x = linspace(l, u);
             y = layer.f(x);
             y_p = polyval(coeffs, x);
 
+            % assert containment
             assertLoop(all(contains(interval(y_p-d, y_p+d)', y')),'',[],act,poly_method,order,n);
         end
     end

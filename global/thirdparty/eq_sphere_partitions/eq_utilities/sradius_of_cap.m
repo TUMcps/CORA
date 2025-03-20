@@ -74,8 +74,7 @@ otherwise
             else
                 flipped = false;
             end
-            sk = ...
-                fzero(inline(sprintf('area_of_cap(%d,s)-%21.14g',dim,ak),'s'),[0,pi]);
+            sk = fzero(@(s) area_of_cap(dim,s)-ak,[0,pi]);
             if flipped
                 s_cap(k) = pi - sk;
             else

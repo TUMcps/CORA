@@ -121,11 +121,13 @@ WS_vars = evalin('base', 'who');
 WS_vars = [{''}; WS_vars];
 
 if isempty(WS_vars)
+    % no workspace variables given
     set(handles.popIntervalCenter, 'String', 'No Workspace Variables')
     set(handles.popIntervalWidth, 'String', 'No Workspace Variables')
     set(handles.popZonotopeCenter, 'String', 'No Workspace Variables')
     set(handles.popZonotopeGM, 'String', 'No Workspace Variables')
 else
+    % workspace variables given
     set(handles.popIntervalCenter, 'String', WS_vars)
     set(handles.popIntervalCenter, 'Value', 1)
     set(handles.popIntervalWidth, 'String', WS_vars)
@@ -364,10 +366,12 @@ elseif get(handles.rbZonotope, 'Value')
         U.width = GM_str;
         U.type = 'zonotope';
     else
+        % not all parameters for zonotope given
         uiwait(msgbox('Please enter all options for Zonotope', 'Error', 'error', 'modal'))
         return
     end
 else
+    % unknown option
     uiwait(msgbox('please choose one of the two options: Interval or Zonotope', 'Error', 'error', 'modal'))
     return
 end

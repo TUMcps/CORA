@@ -126,27 +126,27 @@ carD=simulateOptimized(carD);
 lcEvolProb=get(carD,'lcEvolProb');
 
 
-%get positio, velocity and input probability distribution
+%get position, velocity and input probability distribution
+% car A
 posA=get(carA,'posProb');
 velA=get(carA,'velProb');
 inputA=get(carA,'inputProb');
 avgVelA=get(carA,'avgVel');
-
+% car B
 posB=get(carB,'posProb');
 velB=get(carB,'velProb');
 inputB=get(carB,'inputProb');
 avgVelB=get(carB,'avgVel');
-
+% car C
 posC=get(carC,'posProb');
 velC=get(carC,'velProb');
 inputC=get(carC,'inputProb');
 avgVelC=get(carC,'avgVel');
-
+% car D
 posD=get(carD,'posProb');
 velD=get(carD,'velProb');
 inputD=get(carD,'inputProb');
 avgVelD=get(carD,'avgVel');
-
 
 %create road
 R=road(4,5,1);

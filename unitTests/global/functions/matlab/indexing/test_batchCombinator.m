@@ -52,11 +52,13 @@ while true
     
     [batch, comb_state] = batchCombinator(n, int16(k), 3, comb_state);
     
+    % save results
     for j=1:length(batch(:,1))
         combs(i,:) = batch(j,:);
         i = i + 1;
     end
 
+    % break once done
     if comb_state.done == true
         break;
     end
@@ -64,7 +66,7 @@ while true
 end
 
 % Test if the correct number of combinations has been generated
-% while their order is irrelvant
+% while their order is irrelevant
 
 %are min and max indices correct
 res_minmax = (max(max(combs)) == n);

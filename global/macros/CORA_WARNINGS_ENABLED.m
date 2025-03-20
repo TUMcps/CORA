@@ -81,15 +81,19 @@ switch identifier
         % controls general CORA warnings in ./models
         res = true;
 
+    case 'CORA:nn'
+        % controls CORA warnings regarding neural network verification
+        res = true;
+
     case 'CORA:specification'
         % controls general CORA warnings in ./specification
         res = true;
 
-        % special warnings ------------------------------------------------
-
-    case 'CORA:nn'
-        % controls CORA warnings regarding neural network verification
+    case 'CORA:unitTests'
+        % controls general CORA warnings in ./specification
         res = true;
+
+        % special warnings ------------------------------------------------
 
     case 'CORA:solver'
         % controls CORA warnings regarding solvers

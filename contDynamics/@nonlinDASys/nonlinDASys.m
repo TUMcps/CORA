@@ -222,32 +222,39 @@ function aux_checkInputArgs(name,dynFun,conFun,states,inputs,constraints,outFun,
     end
     
     % fun and out_fun have to be function handles with two inputs
+    % dynamic function
     if ~isempty(dynFun) && (~isa(dynFun,'function_handle') || nargin(dynFun) ~= 3)
         throw(CORAerror('CORA:wrongInputInConstructor',...
             'Dynamic function has to be a function handle with three input arguments.'));
     end
+    % constraint function
     if ~isempty(conFun) && (~isa(conFun,'function_handle') || nargin(conFun) ~= 3)
         throw(CORAerror('CORA:wrongInputInConstructor',...
             'Constraint function has to be a function handle with three input arguments.'));
     end
+    % output function
     if ~isempty(outFun) && (~isa(outFun,'function_handle') || nargin(outFun) ~= 3)
         throw(CORAerror('CORA:wrongInputInConstructor',...
             'Output function has to be a function handle with three input arguments.'));
     end
 
     % states, inputs, and outputs have to be numeric, scalar integer > 0
+    % in case states are not empty
     if ~isempty(states)
         inputArgsCheck({{states,'att','numeric',...
             {'nonnegative','integer','scalar'}}});
     end
+    % in case inputs are not empty
     if ~isempty(inputs)
         inputArgsCheck({{inputs,'att','numeric',...
             {'nonnegative','integer','scalar'}}});
     end
+    % in case constraints are not empty
     if ~isempty(constraints)
         inputArgsCheck({{constraints,'att','numeric',...
             {'nonnegative','integer','scalar'}}});
     end
+    % in case outputs are not empty
     if ~isempty(outputs)
         inputArgsCheck({{outputs,'att','numeric',...
             {'nonnegative','integer','scalar'}}});

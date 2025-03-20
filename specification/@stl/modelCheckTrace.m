@@ -14,7 +14,7 @@ function res = modelCheckTrace(obj,x,t)
 %
 % Example: 
 %    x = stl('x',2);
-%    eq = aux_until(x(2) < -0.5,x(1) > 0.5,interval(0,1));
+%    eq = until(x(2) < -0.5,x(1) > 0.5,interval(0,1));
 %    
 %    phi = -pi/2:0.01:0;
 %    x = [cos(phi'),sin(phi')];

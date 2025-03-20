@@ -559,6 +559,7 @@ elseif isYalmipInstalled()
         C = [C,Ci>=0];
     end
     sol = optimize([C,l>=0],f_obj,sdpsettings('verbose',0));
+    % show yalmip warning
     CORAwarning('CORA:solver',"YALMIP was used to model the problem - " + ...
         "consider installing a supported solver to speed up computation...");
     if sol.problem==0
@@ -574,6 +575,7 @@ elseif isYalmipInstalled()
     end
 
 else
+    % no suitable solver installed
     throw(CORAerror('CORA:noSuitableSolver','SDP'));
 end
 

@@ -72,6 +72,7 @@ E(indx,:) = [];
 [E,G,c] = priv_removeZeroExponents(E,G);
 c = c + pZ.c;
 if isempty(E) || all(E(:)==0)
+    % nothing left
     c = c + sum(G,2);
     G = [];
     E = [];

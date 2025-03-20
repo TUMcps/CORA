@@ -73,49 +73,13 @@ switch type
         res = s <= 2;
         % note: more points if collinear...
 
-    case 'conHyperplane'
-        throw(CORAerror('CORA:notSupported'));
-
-    case 'conPolyZono'
-        throw(CORAerror('CORA:notSupported'));
-
-    case 'conZonotope'
-        throw(CORAerror('CORA:notSupported'));
-
-    case 'ellipsoid'
-        throw(CORAerror('CORA:notSupported'));
-
     case 'halfspace'
         % point clouds cannot be unbounded
         res = false;
-
-    case 'interval'
-        throw(CORAerror('CORA:notSupported'));
-
-    case 'levelSet'
-        throw(CORAerror('CORA:notSupported'));
-
-    case 'polytope'
-        throw(CORAerror('CORA:notSupported'));
-
-    case 'polyZonotope'
-        throw(CORAerror('CORA:notSupported'));
-
-    case 'probZonotope'
-        res = false;
-
-    case 'zonoBundle'
-        throw(CORAerror('CORA:notSupported'));
-
-    case 'zonotope'
-        throw(CORAerror('CORA:notSupported'));
-
+    
     case 'hyperplane'
         % point clouds cannot be unbounded
         res = false;
-
-    case 'parallelotope'
-        throw(CORAerror('CORA:notSupported'));
 
     case 'emptySet'
         res = isempty(S);
@@ -123,6 +87,11 @@ switch type
     case 'fullspace'
         % point clouds cannot be unbounded
         res = false;
+
+        
+    case {'conHyperplane','conPolyZono','conZonotope','ellipsoid','interval','levelSet','polytope','polyZonotope','probZonotope','zonoBundle','zonotope','parallelotope'}
+        % unsupported set representations
+        throw(CORAerror('CORA:notSupported'));
 
     otherwise
         % throw error

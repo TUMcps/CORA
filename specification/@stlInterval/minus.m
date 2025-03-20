@@ -12,8 +12,8 @@ function int = minus(minuend,subtrahend)
 %    int - interval
 %
 % Example:
-%    minuend = stLInterval(1,2);
-%    subtrahend = stLInterval(0,1,false,false);
+%    minuend = stlInterval(1,2);
+%    subtrahend = stlInterval(0,1,false,false);
 %    minuend - subtrahend
 %
 % Other m-files required: none

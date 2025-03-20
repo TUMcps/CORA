@@ -41,20 +41,24 @@ X = polyZonotope(x, eye(2)*0.01);
 
 % test refine functions ---
 
+% default
 nn.reset();
 nn.evaluate(X);
 nn.refine()
 
+% max_order = 2
 nn.reset();
 nn.evaluate(X);
 nn.refine(2)
 
+% max_order = 5
 nn.reset();
 nn.evaluate(X);
 nn.refine(5, "layer")
 nn.refine(5, "neuron")
 nn.refine(5, "all")
 
+% different types
 nn.reset();
 nn.evaluate(X);
 nn.refine(5, "layer", "approx_error");

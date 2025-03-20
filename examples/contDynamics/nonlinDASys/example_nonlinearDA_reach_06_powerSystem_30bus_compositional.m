@@ -56,31 +56,37 @@ if ~isfile([path filesep 'IEEE30_model.mat'])
     load([path filesep 'IEEE30_model'], 'IEEE30_model');
     derivatives(IEEE30_model, options); % derivatives are not automatically created
 end
+% model of subsystem 1
 if ~isfile([path filesep 'IEEE30_fourParts_sub1_model.mat'])
     powerSystem2cora('IEEE30_fourParts_sub1');
     load([path filesep 'IEEE30_fourParts_sub1_model'], 'IEEE30_fourParts_sub1_model');
     derivatives(IEEE30_fourParts_sub1_model, options); % derivatives are not automatically created for subsystems
 end
+% model of subsystem 2
 if ~isfile([path filesep 'IEEE30_fourParts_sub2_model.mat'])
     powerSystem2cora('IEEE30_fourParts_sub2');
     load([path filesep 'IEEE30_fourParts_sub2_model'], 'IEEE30_fourParts_sub2_model');
     derivatives(IEEE30_fourParts_sub2_model, options); % derivatives are not automatically created for subsystems
 end
+% model of subsystem 3
 if ~isfile([path filesep 'IEEE30_fourParts_sub3_model.mat'])
     powerSystem2cora('IEEE30_fourParts_sub3');
     load([path filesep 'IEEE30_fourParts_sub3_model'], 'IEEE30_fourParts_sub3_model');
     derivatives(IEEE30_fourParts_sub3_model, options); % derivatives are not automatically created for subsystems
 end
+% model of subsystem 4
 if ~isfile([path filesep 'IEEE30_fourParts_sub4_model.mat'])
     powerSystem2cora('IEEE30_fourParts_sub4');
     load([path filesep 'IEEE30_fourParts_sub4_model'], 'IEEE30_fourParts_sub4_model');
     derivatives(IEEE30_fourParts_sub4_model, options); % derivatives are not automatically created for subsystems
 end
+% model of faulty system 
 if ~isfile([path filesep 'IEEE30_fault_model.mat'])
     powerSystem2cora('IEEE30_fault');
     load([path filesep 'IEEE30_fault_model'], 'IEEE30_fault_model');
     derivatives(IEEE30_fault_model, options); % derivatives are not automatically created
 end
+% model of faulty subsystem 1
 if ~isfile([path filesep 'IEEE30_fault_fourParts_sub1_model.mat'])
     powerSystem2cora('IEEE30_fault_fourParts_sub1');
     load([path filesep 'IEEE30_fault_fourParts_sub1_model'], 'IEEE30_fault_fourParts_sub1_model');
@@ -313,25 +319,44 @@ if ~doPlot
     return
 end
 
-%plot dynamic variables
+% plot dynamic variables
+% dimension 1 and 7
 projDimDyn{1} = [1 7];
+% dimension 2 and 8
 projDimDyn{2} = [2 8];
+% dimension 3 and 9
 projDimDyn{3} = [3 9];
+% dimension 4 and 10
 projDimDyn{4} = [4 10];
+% dimension 5 and 11
 projDimDyn{5} = [5 11];
+% dimension 12 and 13
 projDimDyn{6} = [12 13];
-projDimDyn{7} = [14 15];      
+% dimension 14 and 15
+projDimDyn{7} = [14 15];  
+% dimension 16 and 17
 projDimDyn{8} = [16 17];
+% dimension 11 and 18
 projDimDyn{9} = [11 18];
+% dimension 8 and 14
 projDimDyn{10} = [8 14];
-projDimDyn{11} = [9 15];      
+% dimension 9 and 15
+projDimDyn{11} = [9 15];
+% dimension 1 and 13
 projDimDyn{12} = [1 13];
+% dimension 2 and 14
 projDimDyn{13} = [2 14];
-projDimDyn{14} = [3 15];      
-projDimDyn{15} = [4 16];   
+% dimension 3 and 15
+projDimDyn{14} = [3 15]; 
+% dimension 4 and 16
+projDimDyn{15} = [4 16];
+% dimension 1 and 2
 projDimDyn{16} = [1 2];
+% dimension 3 and 4
 projDimDyn{17} = [3 4];
+% dimension 5 and 6
 projDimDyn{18} = [5 6];
+% dimension 7 and 8
 projDimDyn{19} = [7 8];      
 
 
@@ -363,23 +388,41 @@ end
 
 %% plot constraint variables
 % projections
+% dimension 1 and 31
 projDimAlg{1} = [1 31];
+% dimension 2 and 32
 projDimAlg{2} = [2 32];
+% dimension 3 and 33
 projDimAlg{3} = [3 33];
+% dimension 4 and 34
 projDimAlg{4} = [4 34];
+% dimension 5 and 35
 projDimAlg{5} = [5 35];
+% dimension 6 and 36
 projDimAlg{6} = [6 36];
-projDimAlg{7} = [7 37];      
+% dimension 7 and 37
+projDimAlg{7} = [7 37];  
+% dimension 8 and 38
 projDimAlg{8} = [8 38];
+% dimension 9 and 39
 projDimAlg{9} = [9 39];
+% dimension 10 and 40
 projDimAlg{10} = [10 40];
+% dimension 11 and 41
 projDimAlg{11} = [11 41];
+% dimension 12 and 42
 projDimAlg{12} = [12 42];
-projDimAlg{13} = [13 43];      
-projDimAlg{14} = [14 44];   
+% dimension 13 and 43
+projDimAlg{13} = [13 43]; 
+% dimension 14 and 44
+projDimAlg{14} = [14 44];  
+% dimension 1 and 2
 projDimAlg{15} = [1 2];
+% dimension 3 and 4
 projDimAlg{16} = [3 4];
+% dimension 5 and 6
 projDimAlg{17} = [5 6];
+% dimension 7 and 8
 projDimAlg{18} = [7 8];      
 
 for plotRun=1:length(projDimAlg)

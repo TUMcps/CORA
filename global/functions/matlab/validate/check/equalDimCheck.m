@@ -34,6 +34,7 @@ function res = equalDimCheck(S1,S2,varargin)
 %                03-April-2023 (MW, integrate matrix-numeric case)
 %                21-October-2023 (TL, cellfun)
 %                30-September-2024 (MW, allow return value)
+%                27-February-2025 (TL, allow broadcasting)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -85,13 +86,16 @@ if returnValue || CHECKS_ENABLED
         % operation between set and matrix/vector/scalar
         % row dimension of matrix has to fit set dimension
         if isscalar(dim(S1)) 
+            % S1 is regular set
             if dim(S1) ~= size(S2,1) && ~isscalar(S2)
                 res = false;
                 return
             end
         else
-            dims = dim(S1);
-            if ~all(dims == size(S2,1:numel(dims)))
+            % S1 is matrix set, allow broadcasting
+            dimsS1 = dim(S1);
+            dimsS2 = size(S2,1:numel(dimsS1));
+            if ~all(dimsS1 == dimsS2 | dimsS1 == 1 | dimsS2 == 1)
                 res = false;
                 return
             end            

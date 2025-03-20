@@ -94,6 +94,22 @@ I_true = interval(lb,ub+1);
 
 assert(isequal(I,I_true))
 
+% -------------------------------------------------------------------------
+
+% check if broadcasting works
+w = [1 2 3; 4 5 6];
+W = [0;0];
+
+% check all combinations
+I = interval(w) | W;
+assert(contains(I,w) && contains(I,W))
+I = W | interval(w);
+assert(contains(I,w) && contains(I,W))
+I = interval(W) | w;
+assert(contains(I,w) && contains(I,W))
+I = w | interval(W);
+assert(contains(I,w) && contains(I,W))
+
 % test completed
 res = true;
 

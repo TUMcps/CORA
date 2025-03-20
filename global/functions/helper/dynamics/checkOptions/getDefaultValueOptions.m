@@ -33,6 +33,7 @@ switch field
     case 'reductionTechniqueUnderApprox'
         defValue = 'sum';
     case 'linAlg'
+        % linearization algorithm
         defValue = 'standard';
     case 'zonotopeOrder'
         defValue = inf;
@@ -42,6 +43,8 @@ switch field
         defValue = false;
     case 'reductionInterval'
         defValue = Inf;
+        
+    % error bounds
     case 'maxError'
         defValue = aux_def_maxError(sys,params,options);
     case 'maxError_x'

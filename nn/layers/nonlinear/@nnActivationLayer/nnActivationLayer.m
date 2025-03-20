@@ -214,6 +214,8 @@ methods (Access = {?nnLayer, ?neuralNetwork})
             % Store the slope.
             obj.backprop.store.coeffs = m;
             if options.nn.train.exact_backprop
+                % Store gradient for the backprop through an image
+                % enclosure.
                 obj.backprop.store.m_l = m_l;
                 obj.backprop.store.m_u = m_u;
 

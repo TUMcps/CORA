@@ -73,7 +73,6 @@ methods
     % conversion
     matP = matPolytope(intMat)
     matZ = matZonotope(intMat)
-    dist = expmDist(intMat,exactMat,maxOrder)
     vol = volume(intMat)
     I = interval(intMat)
     V = vertices(intMat)

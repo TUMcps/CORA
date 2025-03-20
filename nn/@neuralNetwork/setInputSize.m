@@ -26,6 +26,7 @@ function outputSize = setInputSize(obj, inputSize, verbose)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% parse input
 if nargin < 2
     if isempty(obj.neurons_in)
         throw(CORAerror("CORA:specialError", ...
@@ -37,12 +38,13 @@ if nargin < 3
     verbose = false;
 end
 
+% compute in-/out sizes of all layers
 if verbose
     disp("Computing in-/out sizes of all layers...")
 end
-
 obj.neurons_in = prod(inputSize);
 for i = 1:length(obj.layers)
+    % iterate through all layers
     layer_i = obj.layers{i};
     outputSize = layer_i.computeSizes(inputSize);
     if verbose

@@ -90,6 +90,8 @@ G_prime = [G c-d];
 % compute scaling
 scaling = 0;
 for i = 1:N
+    % We randomly choose a facet of the zonotope, and check containment wrt
+    % that facet
     permutation = randperm(ell);
     ind = permutation(1:n-1);
     Q = H(:,ind);
@@ -97,6 +99,9 @@ for i = 1:N
     
     b = sum(abs(lambda' * H));
     
+    % If b==0, the origin lies on the facet, indicating that the zonotope
+    % is degenerate. This case can be dealt with manually, by interpreting
+    % lambda as 0
     if b == 0
         lambda = 0.*lambda;
     else

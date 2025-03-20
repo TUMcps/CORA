@@ -110,9 +110,9 @@ function res = cubMap(cZ,varargin)
         end 
         
         % check input arguments
-        inputArgsCheck({{cZ,'att',{'conZonotope'},{''}};
-                        {T,'att',{'cell'},{''}};
-                        {ind,'att',{'cell'},{''}}});
+        inputArgsCheck({{cZ,'att',{'conZonotope'}};
+                        {T,'att',{'cell'}};
+                        {ind,'att',{'cell'}}});
 
         % cubic multiplication
         res = aux_cubMapSingle(cZ,T,ind);       

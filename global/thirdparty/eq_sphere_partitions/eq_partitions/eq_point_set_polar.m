@@ -60,7 +60,7 @@ function points_s = eq_point_set_polar(dim,N,varargin)
 %
 % Check number of arguments
 %
-error(nargchk(2,4,nargin));
+narginchk(2,4);
 %
 % dim is the number of dimensions
 % N is the number of regions

@@ -83,6 +83,7 @@ function Zres = intersectStrip(Z,C,phi,y,varargin)
 % parse input
 narginchk(4,5);
 
+% check input arguments
 inputArgs = { ...
     {Z, 'att', 'zonotope'}; ...
     {C, 'att', 'numeric', 'matrix'}; ...
@@ -122,22 +123,28 @@ if CHECKS_ENABLED
     end
 end
 
-% different methods for finding good lambda values
+%% Methods for finding good lambda values
+% singular value decomposition (svd)
 if strcmp(method,'svd') || strcmp(method,'radius')
     Zres = aux_methodSvd(Z, C, phi, y, method);
       
+% alamo-volume according to [3]
 elseif strcmp(method,'alamo-volume') 
     Zres = aux_methodAlamoVolume(Z, C, phi, y);
 
+% alamo-FRad according to [3]
 elseif strcmp(method,'alamo-FRad') 
     Zres = aux_methodAlamoFRad(Z, C, phi, y);
     
+% wang-FRad according to [4]
 elseif strcmp(method,'wang-FRad') 
     Zres = aux_methodWangFRad(Z, C, phi, y, aux);
  
+% bravo accroding to [5]
 elseif strcmp(method,'bravo') 
     Zres = aux_methodBravo(Z, C, phi, y);
 
+% normGen (default, analytical solution)
 elseif strcmp(method,'normGen')
     Zres = aux_methodNormGen(Z, C, phi, y);
     
@@ -404,20 +411,26 @@ function Z = aux_zonotopeFromLambda(Z,phi,C,y,Lambda)
 
 end
 
+% Error handling
 function aux_checkAuxStruct(aux)
     if CHECKS_ENABLED
+        % Correct method specified?
         if ~isfield(aux, 'method')
             throw(CORAerror('CORA:wrongFieldValue', 'aux.method', {'wang-FRad'}))
         end
+        % Is E numeric?
         if ~isfield(aux, 'E')
             throw(CORAerror('CORA:wrongFieldValue', 'aux.E', 'numeric'))
         end
+        % Is F numeric?
         if ~isfield(aux, 'F')
             throw(CORAerror('CORA:wrongFieldValue', 'aux.F', 'numeric'))
         end
+        % Is A numeric?
         if ~isfield(aux, 'A')
             throw(CORAerror('CORA:wrongFieldValue', 'aux.A', 'numeric'))
         end
+        % Is C numeric?
         if ~isfield(aux, 'C')
             throw(CORAerror('CORA:wrongFieldValue', 'aux.C', 'numeric'))
         end

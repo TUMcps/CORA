@@ -59,7 +59,7 @@ methods
         
     end
     
-    % parsing methods    
+    % parsing methods  
     function res = power(obj,exp)
         if ~all(size(obj) == [1,1])
             res = obj;
@@ -79,93 +79,93 @@ methods
         end
     end
     
+    % mpower is derived from power
     function res = mpower(obj,exp)
         fHan = @(x,y) aux_power_(x,exp,y); 
         res = syntaxTree(obj.value^exp,[],'power',fHan,{obj});
     end
     
-    % exp/log/sqrt
+    %% exp/log/sqrt
+    % exp
     function res = exp(obj)
         fHan = @(x,y) aux_exp_(x,y);
         res = syntaxTree(exp(obj.value),[],'exp',fHan,{obj});
     end
-    
+    % log
     function res = log(obj)
         fHan = @(x,y) aux_log_(x,y);
         res = syntaxTree(log(obj.value),[],'log',fHan,{obj});
     end
-    
+    % sqrt
     function res = sqrt(obj)
         fHan = @(x,y) aux_sqrt_(x,y);
         res = syntaxTree(sqrt(obj.value),[],'sqrt',fHan,{obj});
     end
 
-    % geometric functions
+    %% geometric functions
+    % sin
     function res = sin(obj)
         fHan = @(x,y) aux_sin_(x,y);
         res = syntaxTree(sin(obj.value),[],'sin',fHan,{obj});
     end
-    
+    % cos
     function res = cos(obj)
         fHan = @(x,y) aux_cos_(x,y);
         res = syntaxTree(cos(obj.value),[],'cos',fHan,{obj});
     end
-    
+    % tan
     function res = tan(obj)
         fHan = @(x,y) aux_tan_(x,y);
         res = syntaxTree(tan(obj.value),[],'tan',fHan,{obj});
     end
-    
-    % a---
+    % asin
     function res = asin(obj)
         fHan = @(x,y) aaux_sin_(x,y);
         res = syntaxTree(asin(obj.value),[],'asin',fHan,{obj});
     end
-    
+    % acos
     function res = acos(obj)
         fHan = @(x,y) aaux_cos_(x,y);
         res = syntaxTree(acos(obj.value),[],'acos',fHan,{obj});
     end
-    
+    % atan
     function res = atan(obj)
         fHan = @(x,y) aaux_tan_(x,y);
         res = syntaxTree(atan(obj.value),[],'atan',fHan,{obj});
     end
-    
-    % ---h
+    % sinh
     function res = sinh(obj)
         fHan = @(x,y) aux_sinh_(x,y);
         res = syntaxTree(sinh(obj.value),[],'sinh',fHan,{obj});
     end
-    
+    % cosh
     function res = cosh(obj)
         fHan = @(x,y) aux_cosh_(x,y);
         res = syntaxTree(cosh(obj.value),[],'cosh',fHan,{obj});
     end
-    
+    % tanh
     function res = tanh(obj)
         fHan = @(x,y) aux_tanh_(x,y);
         res = syntaxTree(tanh(obj.value),[],'tanh',fHan,{obj});
     end
-    
-    % a---h
+    % asinh
     function res = asinh(obj)
         fHan = @(x,y) aaux_sinh_(x,y);
         res = syntaxTree(asinh(obj.value),[],'asinh',fHan,{obj});
     end
-    
+    % acosh
     function res = acosh(obj)
         fHan = @(x,y) aaux_cosh_(x,y);
         res = syntaxTree(acosh(obj.value),[],'acosh',fHan,{obj});
     end
-    
+    % atanh
     function res = atanh(obj)
         fHan = @(x,y) aaux_tanh_(x,y);
         res = syntaxTree(atanh(obj.value),[],'atanh',fHan,{obj});
     end
     
-    % arithmetic ---
-
+    %% arithmetic 
+    % plus
     function res = plus(obj1,obj2)
         if isscalar(obj1) && isscalar(obj2)
             % both scalar
@@ -198,6 +198,7 @@ methods
         end
     end
     
+    % minus
     function res = minus(obj1,obj2)
         fHan = @(x,y,z) aux_minus_(x,y,z);
         % build syntax tree
@@ -214,17 +215,19 @@ methods
         end
     end
     
-    % unary
+    %% unary
+    % uminus
     function res = uminus(obj)
         fHan = @(x,y,z) aux_uminus_(x,y);
         res = syntaxTree(-obj.value,[],'uminus',fHan,{obj});
     end
-
+    % uplus
     function res = uplus(obj)
         res = obj; % res = +obj;
     end
     
-    % times/mtimes/prod
+    %% times/mtimes/prod
+    % times
     function res = times(obj1,obj2)
         if isscalar(obj1) && isscalar(obj2)
             % both are scalar
@@ -255,7 +258,7 @@ methods
             res = obj1 * obj2;
         end
     end
-    
+    % mtimes
     function res = mtimes(obj1,obj2)
         if isscalar(obj1) && isscalar(obj2) % both are scalar
             res = obj1 .* obj2;
@@ -283,7 +286,7 @@ methods
             end
         end
     end
-    
+    % prod
     function res = prod(obj,varargin)
         % parse input
         narginchk(1,2);
@@ -312,6 +315,7 @@ methods
     
     % sum
     function res = sum(obj,varargin)
+        % input parsing
         narginchk(1,2);
         n = 1;
         if nargin <= 1
@@ -321,6 +325,8 @@ methods
         else
             n = varargin{1};
         end
+
+        % index into object
         S.type = '()';
         if n == 1
             S.subs = {1,':'};
@@ -328,6 +334,8 @@ methods
             S.subs = {':', 1};
         end
         res = subsref(obj,S);
+
+        % sum up result
         for i = 2:size(obj, n)
             res = res + obj(i);
         end

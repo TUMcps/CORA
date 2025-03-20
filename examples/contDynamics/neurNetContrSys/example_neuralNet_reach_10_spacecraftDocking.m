@@ -124,13 +124,13 @@ else
     %isVeri = isSafe([Rend.inf(1:2);Rend.sup(3:4)]);
     % x = [Rend.inf(1:2);Rend.sup(3:4)]';
     
+    % compute safety criterion at last time step
     Q = {};
     for i = 1:4
         Q_i = zeros(4, 4);
         Q_i(i, i) = 1;
         Q{i} = Q_i;
     end
-
     Rend_isSafe = [v1 0 0 0; 
                    0 v1 0 0; 
                    0 0 1 0; 
@@ -138,6 +138,7 @@ else
     Rend_isSafe = quadMap(Rend_isSafe, Q);
     Rend_isSafe = [1 1 0 0; 0 0 1 1] * Rend_isSafe;
 
+    % set up options
     options_isSafe = struct();
     options_isSafe.nn.bound_approx = false;
     options_isSafe.nn.reuse_bounds = true;

@@ -77,22 +77,29 @@ if n ~= Grank
     T = Q(:,1:Grank);
 end
 
+% Zonotope is a parallelotope 
 if size(Z.G,2) == n
     fac = n;
     if startsWith(mode,'inner')
         fac = 1;
     end
     E = ellipsoid(fac*(G*G'),Z.c);
+% Zonotope is not a parallelotope
 else
     switch mode
+        % Exact outer enclosure
         case 'outer:exact'
             E = priv_MVEE(Z);
+        % Norm-based outer enclosure
         case 'outer:norm'
             E = priv_encEllipsoid(Z,'exact');
+        % Norm-based outer enclosure with upper bound for norm value
         case 'outer:norm_bnd'
             E = priv_encEllipsoid(Z,'ub_convex');
+        % Exact inner enclosure
         case 'inner:exact'
             E = priv_MVIE(Z);
+        % Norm-based inner enclosure
         case 'inner:norm'
             E = priv_inscEllipsoid(Z);
         %case 'inner:norm_bnd' % we do not implement the test used to compute the

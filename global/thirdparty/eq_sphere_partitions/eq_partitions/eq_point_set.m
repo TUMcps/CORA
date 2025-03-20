@@ -57,7 +57,7 @@ function points_x = eq_point_set(dim,N,varargin)
 %
 % Check number of arguments
 %
-error(nargchk(2,4,nargin));
+narginchk(2,4);
 points_x = polar2cart(eq_point_set_polar(dim,N,varargin{:}));
 %
 % end function

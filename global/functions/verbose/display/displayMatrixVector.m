@@ -32,6 +32,7 @@ function displayMatrixVector(x,varname)
 % x ... matrix/vector to be displayed
 
 % get size and text for display
+% numeric value
 if isnumeric(x)
     x_size = size(x);
     if any(x_size == 1)
@@ -39,6 +40,7 @@ if isnumeric(x)
     else
         text = "matrix";
     end
+% interval vector/scalar
 elseif isa(x,'interval')
     x_size = size(x);
     if any(x_size == 1)
@@ -46,9 +48,11 @@ elseif isa(x,'interval')
     else
         text = "interval matrix";
     end
+% interval matrix
 elseif isa(x,'intervalMatrix')
     x_size = dim(x);
     text = "interval matrix";
+% zonotope matrix
 elseif isa(x,'matZonotope')
     x_size = dim(x);
     text = 'matrix zonotope';

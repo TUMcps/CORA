@@ -48,6 +48,11 @@ assert(contains(p,[filesep 'contDynamics' filesep]),'CORA is not on the Matlab p
 assert(contains(p,[filesep 'contSet' filesep]),'CORA is not on the Matlab path.'); 
 assert(contains(p,[filesep 'hybridDynamics' filesep]),'CORA is not on the Matlab path.');
 
+% check correct download of git lfs files
+assert(test_gitlfs, [ ...
+    'You seem to have cloned CORA using git but did not use git lfs (large file storage), which is used to synch larger data files.' newline ...
+    'Please i) install git lfs (https://git-lfs.com/) and ii) run ''git lfs pull'' to ensure all data files are downloaded correctly.'])
+
 res = true;
 
 % ------------------------------ END OF CODE ------------------------------

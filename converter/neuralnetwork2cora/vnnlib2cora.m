@@ -37,6 +37,7 @@ nrInputs = 0;
 nrOutputs = 0;
 lineBreaks = strfind(text, newline);
 for ln = 1:(numel(lineBreaks)-1)
+    % iterate through file
     i = lineBreaks(ln)+1;
     i1 = lineBreaks(ln+1);
     if startsWith(text(i:i1), '(declare-const ')
@@ -44,13 +45,16 @@ for ln = 1:(numel(lineBreaks)-1)
         ind = find(temp == ' ');
         temp = temp(1:ind(1)-1);
         if strcmp(temp(1), 'X')
+            % found new input; read out index
             nrInputs = max(nrInputs, str2double(temp(3:end)));
         elseif strcmp(temp(1), 'Y')
+            % found new output; read out index
             nrOutputs = max(nrOutputs, str2double(temp(3:end)));
         end
     end
 end
 
+% +1 due to 0-indexing in vnnlib files
 data.nrInputs = nrInputs + 1;
 data.nrOutputs = nrOutputs + 1;
 data.currIn = 0;

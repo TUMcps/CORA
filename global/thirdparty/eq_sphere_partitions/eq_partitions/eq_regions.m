@@ -81,7 +81,7 @@ function [regions,dim_1_rot] = eq_regions(dim,N,varargin)
 %
 % Check number of arguments
 %
-error(nargchk(2,4,nargin));
+narginchk(2,4);
 error(nargoutchk(0,2,nargout));
 %
 % If the option 'offset' is 'extra', then use experimental extra offsets

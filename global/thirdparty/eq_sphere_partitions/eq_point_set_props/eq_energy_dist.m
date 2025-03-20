@@ -57,7 +57,7 @@ function [energy,dist] = eq_energy_dist(dim,N,s,varargin)
 %
 % Check number of arguments.
 %
-error(nargchk(2,5,nargin));
+narginchk(2,5);
 %
 if nargin < 3
     %

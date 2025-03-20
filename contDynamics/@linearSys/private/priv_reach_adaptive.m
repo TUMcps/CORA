@@ -828,17 +828,20 @@ if fullcomp
     set.GuTrans_center{k_iter,1} = zeros(linsys.nrOfDims,1);
     set.GuTrans_Gbox{k_iter,1} = zeros(linsys.nrOfDims,1);
     if ~any(u)
+        % zero error for empty input
         errs.idv_G{k,1}(k_iter,1) = 0;
     else
         try
             G = priv_correctionMatrixInput(linsys,timeStep,Inf);
         catch ME
+            % handle non-convergence
             if strcmp(ME.identifier,'CORA:notConverged')
                 converged = false; return
             else
                 rethrow(ME);
             end
         end
+        % load results from savedata
         if isuconst && timeStepIdx > 0 && savedata.fullcomp(timeStepIdx)
             set.GuTrans_center{k_iter,1} = savedata.GuTrans_center{timeStepIdx};
             set.GuTrans_Gbox{k_iter,1} = savedata.GuTrans_Gbox{timeStepIdx};

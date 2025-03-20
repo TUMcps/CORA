@@ -282,12 +282,14 @@ function [f,A,Q,T] = aux_evalDerivatives(X,p,tay)
     f = tay.fun(p);
     A = tay.Afun(p);
     
+    % initialize Q with function handles
     Q = cell(length(f),1);
     for i = 1:length(f)
        funHan = tay.Qfun{i};
        Q{i} = funHan(p);
     end
     
+    % evaluate function handle for every index in A
     T = cell(size(A));
     for i = 1:size(A,1)
         for j = 1:size(A,2)

@@ -135,6 +135,7 @@ end
 function [A,B,c,preStateDim,inputDim,postStateDim] = aux_computeProperties(A,B,c)
     % compute properties
 
+    % instantiate A as zeros
     if isempty(A)
         if ~isempty(B)
             A = zeros(size(B,1),0);
@@ -143,14 +144,17 @@ function [A,B,c,preStateDim,inputDim,postStateDim] = aux_computeProperties(A,B,c
         end
     end
 
+    % compute dimensions
     [postStateDim, preStateDim] = size(A);
     
+    % instantiate B as zeros
     inputDim = size(B,2);
     if isempty(B)
         B = zeros(postStateDim,1);
         inputDim = 1;
     end
 
+    % instantiate c as zeros
     if isempty(c)
         c = zeros(postStateDim,1);
     end

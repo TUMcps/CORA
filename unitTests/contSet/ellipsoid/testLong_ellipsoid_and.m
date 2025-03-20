@@ -97,6 +97,7 @@ end
 end
 
 function res = aux_andPolytope()
+% compute polytope and
 
 res = true;
 nRuns = 2;
@@ -137,6 +138,7 @@ end
 end
 
 function res = aux_andHyperplane()
+% compute hyperplane and
 
 res = true;
 nRuns = 2;

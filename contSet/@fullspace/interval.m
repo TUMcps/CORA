@@ -20,18 +20,18 @@ function I = interval(fs)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: interval/Inf
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Tobias Ladner
 % Written:       22-March-2023
-% Last update:   ---
+% Last update:   25-February-2025 (TL, used polytope.Inf)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 if fs.dimension > 0
     % lower and upper bounds are infinity
-    I = interval(-Inf(fs.dimension,1),Inf(fs.dimension,1));
+    I = interval.Inf(fs.dimension);
 else
     throw(CORAerror('CORA:outOfDomain','validDomain','>0'));
 end

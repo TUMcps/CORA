@@ -29,7 +29,7 @@ function [automaton,componentTemplates,componentInstances] = ...
 %
 % Example: 
 %    % requires file 'bball.xml' in cora/models/SpaceEx
-%    SX2structHA('bball.xml',false,'IDball','ball');
+%    SX2structHA('bball.xml',false);
 %
 % Other m-files required: none
 % Subfunctions: none

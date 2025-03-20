@@ -83,6 +83,7 @@ n = size(G_inbody,1);
 G_inbody = sparse(G_inbody);
 G_circum = sparse(G_circum);
 
+% Setting up dual constraints
 positive_constraint = [kron(speye(m_inbody), G_circum') kron(sparse(ones([m_inbody 1])), -speye(m_circum))];
 negative_constraint = [kron(speye(m_inbody), -G_circum') kron(sparse(ones([m_inbody 1])), -speye(m_circum))];
 summation = [sparse(1,n * m_inbody) sparse(ones([1 m_circum]))];
@@ -94,6 +95,8 @@ Aeq = summation;
 beq = 1;
 
 cost = [-G_inbody(:);sparse(m_circum,1)];
+
+% Construct linear program
 
 problem.f = cost;
 problem.Aeq = Aeq;

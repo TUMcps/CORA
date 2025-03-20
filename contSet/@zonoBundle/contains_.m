@@ -85,6 +85,7 @@ end
 % check emptySet
 if representsa(zB, 'emptySet')
     if isnumeric(S)
+        % If S is numeric, check if S is empty manually
         if isempty(S)
             res = true;
             scaling = 0;
@@ -95,6 +96,8 @@ if representsa(zB, 'emptySet')
             cert = true;
         end
     else
+        % If S is a contSet object, check whether it is empty; if not, it
+        % can not possibly be contained
         if representsa(S, 'emptySet')
             res = true;
             scaling = 0;

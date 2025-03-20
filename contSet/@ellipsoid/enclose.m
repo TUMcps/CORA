@@ -57,7 +57,7 @@ elseif nargin == 3
     Eplus = varargin{2};
     inputArgsCheck({{E,'att','ellipsoid','scalar'}; ...
                     {Eplus,'att','ellipsoid','scalar'}; ...
-                    {M,'att','numeric',{'size',[dim(E),dim(Eplus)]}}});
+                    {M,'att','numeric',@(M) size(M) == [dim(E),dim(Eplus)]}});
     E2 = M*Eplus;
     
 end

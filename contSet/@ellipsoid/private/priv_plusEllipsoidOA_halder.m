@@ -42,6 +42,7 @@ for i=2:N
     Q2 = E_cell{i}.Q;
     l_i = eig(Q1\Q2);
     
+    % determine beta
     beta = 0.5;
     while true
         beta_new = (sum(1./(1+beta*l_i))/sum(l_i./(1+beta*l_i)))^(1/2);
@@ -50,11 +51,11 @@ for i=2:N
         end
         beta = beta_new;
     end
-
     if beta_new<0 || withinTol(beta_new,0,TOL)
         throw(CORAerror('CORA:specialError','Value almost zero!'));
     end
 
+    % compute matrix Q and center q
     Q = (1+1/beta_new)*Q1+(1+beta_new)*Q2;
     q = q + E_cell{i}.q;
 end

@@ -27,9 +27,9 @@ function S_out = plus(cPZ,S)
 %    res = cPZ + E; 
 %
 %    figure; hold on;
-%    plot(res,[1,2],'FaceColor','b','Splits',12);
+%    plot(res,[1,2],'FaceColor','b','Splits',10);
 %    plot(E,[1,2],'FaceColor','g');
-%    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
+%    plot(cPZ,[1,2],'FaceColor','r','Splits',10);
 %
 % Other m-files required: none
 % Subfunctions: none

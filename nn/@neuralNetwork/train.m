@@ -110,7 +110,7 @@ function [loss,trainTime] = train(nn, trainX, trainT, valX, valT, varargin)
 %                31-July-2023 (parallelization, point-wise batch-training, cross-entropy loss)
 %                02-August-2023 (added batch-eval & -backprop for zonotope)
 %                19-August-2023 (memory optimizations for GPU training)
-%                16-January-2024 (sensitivty-based generators)
+%                16-January-2024 (sensitivity-based generators)
 %                22-January-2024 (added IBP-based & TRADES training method)
 %                07-February-2024 (added SABR training method + simplified f-radius implementation)
 %                22-February-2024 (trainParams, merged options.nn)
@@ -124,10 +124,10 @@ narginchk(5,7)
 % Validate function arguments
 inputArgsCheck({ ...
     {nn,'att','neuralNetwork'}; ...
-    {trainX,'att','numeric','array'}; ...
-    {trainT,'att','numeric','array'}; ... 
-    {valX,'att','numeric','array'}; ... 
-    {valT,'att','numeric','array'}; ... 
+    {trainX,'att','numeric'}; ...
+    {trainT,'att','numeric'}; ... 
+    {valX,'att','numeric'}; ... 
+    {valT,'att','numeric'}; ... 
     {options,'att','struct'}; ... 
     {verbose,'att','logical'};
 });
@@ -632,23 +632,6 @@ if any(noise > 0)
         if options.nn.interval_center
             % r = reshape(sum(abs(xBatchG),2),[v0 batchSize]);
             % xBatch = interval(xBatch - (noise - r),xBatch + (noise - r));
-            xBatch = permute(cat(3,xBatch,xBatch),[1 3 2]);
-        end
-    elseif strcmp(initGens,'patches')
-        patchSize = [4 4];
-        imgSize = [28 28];
-        numPatch = ceil(imgSize./patchSize);
-
-        patchImg = kron(reshape(1:prod(numPatch),numPatch),ones(patchSize,'like',xBatch));
-        patchImg = patchImg(1:imgSize(1),1:imgSize(2));
-        idx = sub2ind([v0 prod(numPatch)],1:v0,patchImg(:));
-        patchGen = zeros([v0 prod(numPatch)],'like',xBatch);
-        patchGen(idx) = 1;
-        patchGen = epsilon*patchGen;
-
-        xBatchG = repmat(patchGen,1,1,batchSize);
-
-        if options.nn.interval_center
             xBatch = permute(cat(3,xBatch,xBatch),[1 3 2]);
         end
     else

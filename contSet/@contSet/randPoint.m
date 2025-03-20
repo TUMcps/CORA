@@ -54,7 +54,7 @@ end
 inputArgsCheck({{S,'att','contSet'};
                  checkN; % see above...
                 {type,'str',{'standard','extreme','gaussian','uniform','uniform:hitAndRun','uniform:ballWalk','uniform:billiardWalk','radius','boundary'}};
-                {pr,'att','numeric',{'<=',1,'>=',0}}});
+                {pr,'att','numeric',{@(x) 0 <= x & x <= 1}}});
 
 % if N = 'all', then type has to be 'extreme' (nargin ensures that type has
 % been set by calling function)

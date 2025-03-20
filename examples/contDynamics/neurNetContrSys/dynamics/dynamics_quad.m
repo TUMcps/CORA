@@ -48,8 +48,7 @@ u2 = u(2);
 u3 = u(3);
 
 % dynamic equations
-
-
+% model
 f = [
      cos(x8)*cos(x9)*x4 + (sin(x7)*sin(x8)*cos(x9) - cos(x7)*sin(x9))*x5 ...
         + (cos(x7)*sin(x8)*cos(x9) + sin(x7)*sin(x9))*x6;

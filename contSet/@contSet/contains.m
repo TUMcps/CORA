@@ -39,14 +39,15 @@ function [res,cert,scaling] = contains(S1,S2,varargin)
 %            bound on the exact number. See the corresponding contains_
 %            (e.g., zonotope/contains_) for more details.
 %            Note that computing this scaling factor may significantly
-%            increase the runtime.
+%            increase the runtime. This scaling can be used in
+%            contSet/enlarge.
 %    
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: - 
 
 % Authors:       Mark Wetzlinger
 % Written:       18-August-2022

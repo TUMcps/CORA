@@ -49,7 +49,7 @@ function density = point_set_packing_density(points)
 %
 % Check number of arguments
 %
-error(nargchk(1,1,nargin));
+narginchk(1,1);
 %
 % Check that points lie on the unit sphere.
 %

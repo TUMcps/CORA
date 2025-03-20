@@ -40,6 +40,7 @@ function S_out = plus(Z,S)
 %                04-March-2019
 %                13-August-2019
 %                14-February-2024 (MW, prevent sum with row vectors/matrices)
+%                25-February-2025 (TL, speed up)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -63,7 +64,7 @@ try
             S_out = zonotope.empty(dim(S_out));
             return
         end
-        S_out.G(:,(end+1):(end+size(S.G,2))) = S.G;
+        S_out.G = [S_out.G S.G];
         return
     end
     
@@ -76,7 +77,7 @@ try
     if isa(S,'interval')
         S = zonotope(S);
         S_out.c = S_out.c + S.c;
-        S_out.G(:,(end+1):(end+size(S.G,2))) = S.G;
+        S_out.G = [S_out.G S.G];
         return
     end
 

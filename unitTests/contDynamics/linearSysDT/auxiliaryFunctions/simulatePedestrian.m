@@ -63,28 +63,33 @@ for i = 1:length(jerk(1,:))
 end
 
 %% System Dynamics 
-% system matrices
+% system matrix
 A = [ ...
 0, 0, 1, 0; ...
 0, 0, 0, 1; ...
 0, 0, 0, 0; ...
 0, 0, 0, 0];
 
+% input matrix
 B = [ ...
 0, 0; ...
 0, 0; ...
 1, 0;...
 0, 1];
 
-A_d = expm(A*options.timeStep);
-
-B_d = (eye(4)*options.timeStep + A*options.timeStep^2/2)*B;
-
+% output matrix
 C = [1 0 0 0; 0 1 0 0];
 
+% constant input
 c = zeros(length(A), 1);
 
+% system matrix for discrete time
+A_d = expm(A*options.timeStep);
 
+% input matrix for discrete time
+B_d = (eye(4)*options.timeStep + A*options.timeStep^2/2)*B;
+
+% specify system dynamics
 pedestrian = linearSysDT('pedestrian',A_d, B_d, c, C, options.timeStep); %initialize system
 
 

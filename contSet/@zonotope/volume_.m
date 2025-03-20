@@ -64,8 +64,11 @@ if strcmp(method,'exact')
 
     while true
         
+        % Return all possible parallelotopes which together form the
+        % zonotope
         [batch, comb_state] = batchCombinator(nrOfGens, int16(n), batch_size, comb_state);
 
+        % Add volumes of individual parallelotopes
         for j=1:length(batch(:,1))
             try
                 currVol = abs(det(G(:,batch(j,:))));

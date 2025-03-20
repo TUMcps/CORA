@@ -87,7 +87,8 @@ properties (SetAccess = public, GetAccess = public)  % Access = private
     coeff_linComb_b = [];
     coeff_PUtauk_b = [];
 
-    % for bisection
+    % for bisection ---
+    % lower bound
     bisect_lb_timeStep_acc = [];
     bisect_lb_acc = [];
     bisect_lb_accok = [];
@@ -97,6 +98,7 @@ properties (SetAccess = public, GetAccess = public)  % Access = private
     bisect_lb_nonaccok = [];
     bisect_lb_nonacc_perc = [];
 
+    % upper bound
     bisect_ub_timeStep_acc = [];
     bisect_ub_acc = [];
     bisect_ub_accok = [];
@@ -105,7 +107,6 @@ properties (SetAccess = public, GetAccess = public)  % Access = private
     bisect_ub_nonacc = [];
     bisect_ub_nonaccok = [];
     bisect_ub_nonacc_perc = [];
-
 end
 
 methods

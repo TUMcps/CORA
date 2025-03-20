@@ -11,6 +11,9 @@ function res = rescale(cPZ,varargin)
 %    method - algorithm used for contraction ('forwardBackward',
 %             'linearize', 'polynomial', 'interval', or 'all')
 %
+% Outputs:
+%    res - rescaled conPolyZono object
+%
 % Example:
 %    c = [0;0];
 %    G = [1 0 0 0.2;0 -2 1 0.2];
@@ -26,9 +29,6 @@ function res = rescale(cPZ,varargin)
 %    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
 %    plot(polyZonotope(c,G,[],E),[1,2],'b','Splits',12);
 %    plot(polyZonotope(cPZ_.c,cPZ_.G,[],cPZ_.E),[1,2],'g','Splits',12);
-%
-% Outputs:
-%    res - rescaled conPolyZono object
 %
 % Other m-files required: none
 % Subfunctions: none

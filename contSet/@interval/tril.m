@@ -35,7 +35,7 @@ if nargin == 1
     K = 0;
 elseif nargin == 2
     K = varargin{1};
-    inputArgsCheck({{K,'att',{'double'},{'scalar','>=',0}}});
+    inputArgsCheck({{K,'att',{'double'},{'scalar',@(K) K>=0}}});
 end
 
 res = I;

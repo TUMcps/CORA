@@ -211,7 +211,7 @@ I = p.I_z;
 %u(2) = ax longitudinal acceleration
 
 
-%system dynamics
+% model 
 f(1,1) = (mu/(x(4)^2*(lr+lf))*(C_Sr*(g*lf + (x(8)+u(2))*h)*lr - C_Sf*(g*lr - (x(8)+u(2))*h)*lf)-1)*x(3) ...
     -mu/(x(4)*(lr+lf))*(C_Sr*(g*lf + (x(8)+u(2))*h) + C_Sf*(g*lr-(x(8)+u(2))*h))*x(1) ...
     +mu/(x(4)*(lr+lf))*(C_Sf*(g*lr-(x(8)+u(2))*h))*(x(7)+u(1));

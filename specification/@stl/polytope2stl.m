@@ -24,11 +24,15 @@ function res = polytope2stl(obj,P)
 
 % Authors:       Niklas Kochdumper, Benedikt Seidl
 % Written:       09-November-2022 
-% Last update:   ---
+% Last update:   04-March-2025 (TL, ensure constraints are available)
 % Last revision: 23-September-2024 (MW, moved from global functions)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+    % ensure that halfspace representation is available
+    constraints(P);
+
+    % convert into stl
     res = [];
     for i = 1:length(P.b)
         res = res & aux_halfspace2set(obj,P.A(i,:),P.b(i));

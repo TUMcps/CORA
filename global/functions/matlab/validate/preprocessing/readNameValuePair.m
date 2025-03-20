@@ -13,8 +13,8 @@ function [NVpairs,value] = readNameValuePair(NVpairs,name,varargin)
 % Inputs:
 %    NVpairs - cell-array: list of name-value pairs
 %    name - char: name of name-value pair
-%    check - (optional) function name or cell-array of function names:
-%               check functions for value, e.g., 'isscalar'
+%    check - (optional) cell array of admissible attributes
+%         (check function checkValueAttributes for details)
 %    def - (optional) default value
 %
 % Outputs:
@@ -23,18 +23,19 @@ function [NVpairs,value] = readNameValuePair(NVpairs,name,varargin)
 %
 % Example: 
 %    NVpairs = {'Splits',8};
-%    [NVpairs,value] = readNameValuePair(NVpairs,'Splits','isscalar',10);
+%    [NVpairs,value] = readNameValuePair(NVpairs,'Splits','scalar',10);
 %
 % Other m-files required: none
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: readPlotOptions, polyZonotope/plot
+% See also: checkValueAttributes, inputArgsCheck
 
-% Authors:       Mark Wetzlinger, Niklas Kochdumper
+% Authors:       Mark Wetzlinger, Niklas Kochdumper, Tobias Ladner
 % Written:       15-July-2020
 % Last update:   24-November-2021 (allow cell-array of check functions)
 %                07-July-2022 (MW, case-insensitive, string compatibility)
+%                03-March-2025 (TL, reworked using checkValueAttributes)
 %                29-November-2023 (TL, check for CHECKS_ENABLED)
 % Last revision: ---
 
@@ -59,7 +60,9 @@ end
 % checks enabled
 checks_enabled = CHECKS_ENABLED();
 
-% check every second entry
+% check every second entry 
+% (back to front to select last given value in case there are duplicates,
+% which is also how Matlab handles it, e.g., in plot)
 for i=length(NVpairs)-1:-2:1
     
     % has to be a char/string (safety check) and match NVpairs
@@ -68,13 +71,14 @@ for i=length(NVpairs)-1:-2:1
         % name found, get value
         value = NVpairs{i+1};
 
-        if checks_enabled
+        if checks_enabled && ~isempty(funcs)
             % check whether name complies with check
-            for j=1:length(funcs)
-                if ~feval(funcs{j},value)
-                    throw(CORAerror('CORA:specialError', ...
-                        sprintf("Invalid assignment for name-value pair '%s': Must pass '%s'.", name, funcs{j})))
-                end
+            res = checkValueAttributes(value,[],funcs);
+            if ~res
+                throw(CORAerror('CORA:specialError', ...
+                    sprintf("Invalid assignment for name-value pair '%s': Must pass %s.", ...
+                        name, aux_formatFuncs(funcs)) ...
+                ))
             end
         end
 
@@ -85,5 +89,35 @@ for i=length(NVpairs)-1:-2:1
 end
 
 end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function str = aux_formatFuncs(funcs)
+    % format given functions
+    
+    % prepare for formatting
+    if iscell(funcs)
+        % format each
+        for i=1:numel(funcs)
+            funcs{i} = aux_formatFunc(funcs{i});
+        end
+    
+        % join and format
+        str = sprintf('{%s}',strjoin(funcs,', '));
+    else
+        % format single
+        str = aux_formatFunc(funcs);
+    end
+end
+
+function str = aux_formatFunc(func)
+    if isa(func,'function_handle')
+        str = func2str(func);
+    else
+        str = sprintf('''%s''',func);
+    end
+end
+
 
 % ------------------------------ END OF CODE ------------------------------

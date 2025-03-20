@@ -1,13 +1,15 @@
-function [res,subspace] = isFullDim(cZ)
+function [res,subspace] = isFullDim(cZ,varargin)
 % isFullDim - checks if the dimension of the affine hull of a constrained
 %    zonotope is equal to the dimension of its ambient space
 %
 % Syntax:
 %    res = isFullDim(cZ)
+%    res = isFullDim(cZ,tol)
 %    [res,subspace] = isFullDim(cZ)
 %
 % Inputs:
 %    cZ - conZonotope object
+%    tol - tolerance
 %
 % Outputs:
 %    res - true/false
@@ -36,10 +38,19 @@ function [res,subspace] = isFullDim(cZ)
 
 % Authors:       Niklas Kochdumper, Adrian Kulmburg
 % Written:       02-January-2020 
-% Last update:   04-February-2024 (AK, implemented subspace computation)
+% Last update:   04-February-2025 (AK, implemented subspace computation)
+%                13-February-2025 (TL, added tol)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
+
+% parse input
+narginchk(1,2);
+tol = setDefaultValues({1e-8},varargin);
+inputArgsCheck({ ...
+    {cZ,'att','conZonotope'}, ...
+    {tol,'att','numeric','scalar'} ...
+});
 
 % If the user just wants to know whether the cZ is non-degenerate, this can
 % be done quickly
@@ -48,7 +59,7 @@ if nargout < 2
     if isempty(cZ.A)
         
         % call zonotope isFullDim method
-        res = isFullDim(zonotope(cZ.c,cZ.G));
+        res = isFullDim(zonotope(cZ.c,cZ.G),tol);
         
     else
     
@@ -60,7 +71,7 @@ if nargout < 2
     
         % check if rank of generator matrix is equal to the dimension
         dimG = size(G_,1);
-        rankG = rank(G_);
+        rankG = rank(G_,tol);
     
         res = dimG == rankG;
         
@@ -71,7 +82,7 @@ else
     if isempty(cZ.A)
         
         % call zonotope isFullDim method
-        [res, subspace] = isFullDim(zonotope(cZ.c,cZ.G));
+        [res, subspace] = isFullDim(zonotope(cZ.c,cZ.G),tol);
         
     else
     
@@ -101,7 +112,6 @@ else
             else
                 s = diag(Sigma);
             end
-            tol = max(size(G_)) * eps(norm(s,inf)); % This is taken from the default Matlab 'rank' function
             r = sum(s>tol);
 
         end

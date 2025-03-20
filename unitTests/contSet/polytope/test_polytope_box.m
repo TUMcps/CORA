@@ -60,19 +60,19 @@ assert(P_box == P);
 A = [2;-1]; b = [1;-4];
 P = polytope(A,b);
 P_box = box(P);
-assert(representsa_(P_box,'emptySet'));
+assert(representsa(P_box,'emptySet'));
 
 % empty (equalities)
 A = zeros(0,1); b = zeros(0,0); Ae = [2;1]; be = [5;2];
 P = polytope(A,b,Ae,be);
 P_box = box(P);
-assert(representsa_(P_box,'emptySet'));
+assert(representsa(P_box,'emptySet'));
 
 % empty (vertices)
 V = zeros(2,0);
 P = polytope(V);
 P_box = box(P);
-assert(representsa_(P_box,'emptySet'));
+assert(representsa(P_box,'emptySet'));
 
 
 % 2D ----------------------------------------------------------------------

@@ -65,6 +65,7 @@ try
     SpS = spectraShadow(polytope([-0.55 1.7; -0.35 1.7; -0.55 1.6; -0.35 1.6]'));
     plot(SpS,[1 2], 'FaceColor', colorblind('blue'), 'Splits', splits)
 
+    % Test some very special sets, just to be sure...
     SpS = spectraShadow(polytope([-0.760028 0.418087; -0.7625 0.411607; -0.78 0.42; -0.78 0.41]'));
     plot(SpS, [1 2], 'FaceColor', 'k', 'Splits', splits)
     SpS = spectraShadow(polytope([-0.8 0.42; -0.8 0.43; -0.78 0.42; -0.78 0.41]'));
@@ -82,6 +83,9 @@ try
     plot(SpS,[1,2],'LineWidth',2,'FaceColor',colorblind('red'),'Splits',2*splits);
     SpS = convHull(spectraShadow(ellipsoid(0.01*eye(2), [-2.3;1.8])), zonotope([-2.4;1.5]));
     plot(SpS,[1,2],'LineWidth',2,'FaceColor',colorblind('red'),'Splits',2*splits);
+
+    % Again, test some very special sets, just to see if the plots behave
+    % correctly
     SpS = spectraShadow(ellipsoid(0.05*eye(2)));
     SpS = SpS & (interval(SpS)-[0.1;0]);
     SpS = SpS + [-1.8;1.7];

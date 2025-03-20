@@ -145,27 +145,25 @@ subplot(nrows, ncols, ncols+i)
 hold on;
 plot(S,1,'Color',colorblind('r'));
 
-% probZonotope
+% probZonotope ---
 i = i + 1;
 Z = [1, 1, -2; 0, 1, 1];
 G = [0.6, 1.2; 0.6, -1.2];
 S = probZonotope(Z, G);
 
-subplot(nrows, ncols, i)
-hold on;
+% plot 1d
+subplot(nrows, ncols, i); hold on;
 plot(S);
 title("probZonotope")
 pos = [-57.95, -50.30, 0.76];
 set(gca, 'CameraPosition', pos)
-xlim([-6, 6])
-ylim([-6, 6])
+xlim([-6, 6]); ylim([-6, 6]);
 
-subplot(nrows, ncols, ncols+i)
-hold on;
+% plot 2d
+subplot(nrows, ncols, ncols+i); hold on;
 plot(S,1,'Color',colorblind('r'));
 set(gca, 'CameraPosition', pos)
-xlim([-6, 6])
-ylim([-6, 6])
+xlim([-6, 6]); ylim([-6, 6])
 
 % taylm
 i = i + 1;

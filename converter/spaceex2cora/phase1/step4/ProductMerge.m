@@ -15,9 +15,6 @@ function mergedBC = ProductMerge(instances)
 % Outputs:
 %    mergedBC - Base-Component instance of the hybrid automaton product
 %
-% Example:
-%    mergedInstance = ProductMerge(instanceArray)
-%
 % Other m-files required: none
 % Subfunctions: automatonProduct
 % MAT-files required: none

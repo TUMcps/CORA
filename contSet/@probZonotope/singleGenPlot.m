@@ -43,24 +43,27 @@ inputArgsCheck({{probZ,'att','probZonotope'};
                 {type,'str',{'solid','mesh'}};
                 {m,'att','numeric','nonnan'}});  
 
-%dimension of the single generator
+% dimension of the single generator
 n = dim(probZ);
 
-%init number of plotted points
+% init number of plotted points
 nrOfPoints=1e3;
 
-%get center
+% get center
 c = center(probZ);
 
-if n==1 % one-dimensional
+% one-dimensional case
+if n==1 
     %compute Sigma
     Sigma=sigma(probZ);    
     
+    % If the probabilistic zonotope has no uncertain center
     if isscalar(probZ.Z)
         x=linspace(-m*norm(probZ.g),m*norm(probZ.g),nrOfPoints);
         for i=1:nrOfPoints    
             f(i)=gaussian(x(i),Sigma);
         end
+    % If the probabilistic zonotope has an uncertain center
     else
         c1=-sum(abs(probZ.Z(2:end)));
         c2=-c1;
@@ -76,9 +79,9 @@ if n==1 % one-dimensional
         end         
     end
     plot(c+x,f);
-    (x(2)-x(1))*sum(f)
-    
-else % higher-dimensional
+ 
+% multi-dimensional case
+else 
     Sigma=norm(probZ.g)^2;  
     l=linspace(-m,m,nrOfPoints);
     for i=1:nrOfPoints
@@ -87,6 +90,8 @@ else % higher-dimensional
         f(i)=priv_gaussian(norm(probZ.g)*l(i),Sigma);
     end
 
+    % compute two-dimensional range in which the distribution should be
+    % plotted
     xMin=min(x);
     xMax=max(x);
     yMin=min(y);
@@ -95,9 +100,10 @@ else % higher-dimensional
     xRange=linspace(xMin,xMax,20);
     yRange=linspace(yMin,yMax,20);
 
+    % define colormap
     colormap([0,0,1]);
 
-    %plot graph
+    % plot graph
     if strcmp(type,'mesh')
         mesh(xRange,yRange,zeros(20));
         hold on

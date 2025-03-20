@@ -47,12 +47,14 @@ a = pi/10;
 M = [cos(a) sin(a);-sin(a) cos(a)];
 view(140, 40)
 
+% plot first spiral in blue
 Z = Z0;
 for i=1:21
     plot(Z, [1,2], 'ZPos', i, 'FaceColor',colorblind('b'),'EdgeColor','k');
     Z = M*Z;
 end
 
+% plot second spiral in red
 Z = -1 * Z0;
 for i=1:21
     plot(Z, [1,2], 'ZPos', i, 'FaceColor',colorblind('r'),'EdgeColor','k');

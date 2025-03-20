@@ -52,15 +52,16 @@ input_ref = taylm(interval([-1;0],[9;8]));
 
 neurons = options.nn.neurons;
 
+% init weights
 W = cell(length(neurons)-1, 1);
 b = cell(length(neurons)-1, 1);
-
 scale = 1;
 for i = 1:length(neurons) - 1
     W{i} = rand(neurons(i+1), neurons(i)) * scale - scale / 2;
     b{i} = rand(neurons(i+1), 1) * scale - scale / 2;
 end
 
+% init layers
 layers = cell(length(W)*2, 1);
 for i = 1:length(W)
     layers{2*i-1} = nnLinearLayer(W{i}, b{i});

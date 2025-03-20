@@ -35,7 +35,7 @@ function val = supportFunc_(cPZ,dir,type,method,splits,varargin)
 %    GI = [1;0];
 %    cPZ = conPolyZono(c,G,E,A,b,EC,GI);
 %
-%    dir = [1;1];
+%    dir = [1,1];
 %    
 %    b1 = supportFunc(cPZ,dir,'range');
 %    P1_ub = polytope([],[],dir,supremum(b1));
@@ -46,6 +46,7 @@ function val = supportFunc_(cPZ,dir,type,method,splits,varargin)
 %    P2_lb = polytope([],[],dir,infimum(b2));
 %
 %    figure; hold on;
+%    xlim([-5;5]); ylim([-2;2]);
 %    plot(cPZ,[1,2],'FaceColor','r','Splits',12);
 %    plot(P1_ub,[1,2],'b');
 %    plot(P1_lb,[1,2],'b');

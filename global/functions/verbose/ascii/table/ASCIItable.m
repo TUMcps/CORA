@@ -1,4 +1,4 @@
-classdef (Abstract) ASCIItable
+classdef (Abstract) ASCIItable < handle
 % ASCIItable - creates a nice ASCII table
 %
 % Syntax:
@@ -9,6 +9,8 @@ classdef (Abstract) ASCIItable
 %    formats - cell array containing cell formats
 %    tableoptions - name-value pair
 %        <'ColumnWidths',colWidths> - numeric, column widths
+%        <'SaveContent',saveContent> - logical, whether content should be saved
+%        ------------------------------------------------------------------
 %        <'tbhline',tbhline> - char, top boundary horizontal line
 %        <'tbhcorner',tbhcorner> - char, top heading boundary corner
 %        <'tbhsep',tbhsep> - char, top heading boundary separator
@@ -34,6 +36,7 @@ classdef (Abstract) ASCIItable
 %        <'blpost',tbegin> - char, post bottom line text
 %        <'hlpost',tbegin> - char, post header line text
 %        <'clpost',tbegin> - char, post content line text
+%        ------------------------------------------------------------------
 %
 % Outputs:
 %    table - ASCIItable object
@@ -46,7 +49,7 @@ classdef (Abstract) ASCIItable
 
 % Authors:       Lukas Koller, Tobias Ladner
 % Written:       19-September-2024
-% Last update:   ---
+% Last update:   05-March-2025 (TL, option to save content)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -57,6 +60,8 @@ properties
     hvalues
     formats
     colWidths
+    saveContent
+    content = {};
 end
 
 properties (Hidden)
@@ -80,7 +85,7 @@ end
 methods
     function table = ASCIItable(hvalues,formats,varargin)
         % 1. parse input
-        [hvalues,formats,colWidths, ...
+        [hvalues,formats,colWidths,saveContent, ...
             tbhline,tbhcorner,tbhsep, ...
             mbhline,mbhcorner,mbhsep, ...
             bbhline,bbhcorner,bbhsep, ...
@@ -97,6 +102,7 @@ methods
         table.hvalues = hvalues;
         table.formats = formats;
         table.colWidths = colWidths;
+        table.saveContent = saveContent;
         % boundary chars
         table.tbhline = tbhline;
         table.tbhcorner = tbhcorner;
@@ -168,7 +174,12 @@ methods
         ];
 
         % print
-        disp(crow);        
+        disp(crow);
+
+        % save
+        if table.saveContent
+            table.content(end+1,:) = cvalues;
+        end
     end
     
     function printFooter(table)
@@ -197,30 +208,43 @@ methods
         disp(buildBoundaryRow(table,table.bbhline,table.bbhcorner, ...
             table.bbhsep,table.blpre,table.blpost));
     end
+
+    function reprint(table,varargin)
+        % reprints the saved table as CORAtable with the specified design
+        
+        % parse input
+        design = setDefaultValues('single',varargin);
+
+        % show warning if no content was saved
+        if isempty(table.content)
+            CORAwarning("CORA:global",'Table has no saved content. Make sure to set ''SaveContent'' to true when initializing the table.')
+        end
+
+        % reprint table
+        coratable = CORAtable(design,table.hvalues,table.formats,"ColumnWidths",table.colWidths);
+        coratable.printHeader();
+        for i=1:size(table.content,1)
+            coratable.printContentRow(table.content(i,:))
+        end
+        coratable.printFooter();
+    end
 end
 
 methods (Access=protected)
 
     function [hvalues,colWidths] = formatHeaderAndComputeColWidths(table,hvalues,colWidths)
-        t = table;
+        % format header text and determine column width 
+
+        % parse input
         if nargin < 3
-            hvalues = t.hvalues;
-            colWidths = t.colWidths;
+            hvalues = table.hvalues;
+            colWidths = table.colWidths;
         end
 
         % pre/append headings to match column widths
-        hvalues = arrayfun(@(i) [ ...
-            repmat(' ', 1, ceil((colWidths(i)-numel(hvalues{i})) / 2)) ...
-            hvalues{i} ...
-            repmat(' ', 1, floor((colWidths(i)-numel(hvalues{i})) / 2)) ...
-            ], 1:numel(hvalues),'UniformOutput',false);
-    end
-
-    function format = getFormatString(table,format,colWidth)
-        % There is an auxiliary function to avoid duplication of code; this
-        % function is overriden in CORAtable to exchange the separation
-        % indicator for summary-cells.
-        format = aux_getFormatString(format,colWidth);
+        hvalues = arrayfun( ...
+            @(i) centerString(hvalues{i},colWidths(i)), ...
+            1:numel(hvalues),'UniformOutput',false);
     end
 
     function fcolumns = formatColumnValues(table,cvalues)
@@ -229,10 +253,6 @@ methods (Access=protected)
         % Compute column widths, which depend on the design 
         % (see CORAtable); thus are computed dynamically.
         [~,colWidths] = formatHeaderAndComputeColWidths(table);
-
-        % Auxiliary function to center a column.
-        centerCol = @(s,w) [blanks(ceil((w - strlength(s))/2)),s,...
-            blanks(floor((w - strlength(s))/2))];
         
         % Store summarized values.
         fcolumns = {};
@@ -240,19 +260,30 @@ methods (Access=protected)
         for i=1:length(cvalues)
             % Obtain format string.
             format = getFormatString(t,t.formats{i},colWidths(i));
+            % fill in values
             if startsWith(t.formats{i},'sum')
-                fcolumns{end+1} = centerCol(sprintf(format, ...
-                    mean(cvalues{i}),std(cvalues{i})),colWidths(i));
+                formattedValues = sprintf(format,mean(cvalues{i}),std(cvalues{i}));
             else
-                fcolumns{end+1} = sprintf(format,cvalues{i});
+                formattedValues = sprintf(format,cvalues{i});
             end
+            % center values
+            % (alignment is usually already handled in getFormatString,
+            % but we re-center it here if the column-width changed in between)
+            fcolumns{end+1} = centerString(formattedValues,colWidths(i));
         end
+    end
+
+    function format = getFormatString(table,format,colWidth)
+        % There is an auxiliary function to avoid duplication of code; this
+        % function is overwritten in CORAtable to exchange the separation
+        % indicator for summary-cells.
+        format = aux_getFormatString(format,colWidth);
     end
 
     function hbrow = buildBoundaryRow(table,bhline,bhcorner,bhsep,lpre,lpost)
         t = table;
         
-        % Compute column widths, whidh depend on the design 
+        % Compute column widths, which depend on the design 
         % (see CORAtable); thus are computed dynamically.
         [~,colWidths] = formatHeaderAndComputeColWidths(t);
 
@@ -278,7 +309,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [hvalues,formats,colWidths, ...
+function [hvalues,formats,colWidths,saveContent, ...
             tbhline,tbhcorner,tbhsep, ...
             mbhline,mbhcorner,mbhsep, ...
             bbhline,bbhcorner,bbhsep, ...
@@ -299,6 +330,7 @@ function [hvalues,formats,colWidths, ...
 
     % read name-value pairs
     [NVpairs,colWidths] = readNameValuePair(NVpairs,'ColumnWidths','isnumeric',0);
+    [NVpairs,saveContent] = readNameValuePair(NVpairs,'SaveContent','islogical',false);
     % boundary chars
     [NVpairs,tbhline] = readNameValuePair(NVpairs,'tbhline','ischar','-');
     [NVpairs,tbhcorner] = readNameValuePair(NVpairs,'tbhcorner','ischar','+');
@@ -376,7 +408,13 @@ function format = aux_getFormatString(format,colWidth)
     else
         % Add '%' and ensure proper length of formatted string.
         if colWidth > 0
-            format = [num2str(colWidth) format];
+            if strcmp(format,'s')
+                % strings are left aligned
+                format = ['-' num2str(colWidth) format];
+            else
+                % everything else is right aligned
+                format = [num2str(colWidth) format];
+            end
         end
         format = ['%' format];
     end

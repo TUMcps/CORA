@@ -227,10 +227,12 @@ methods (Access = private)
         rc = true;
         for i=1:length(obj.prop)
             if isemptyobject(obj.prop(i))
+                % if we found a parent that did not receive any propagations, we can stop and return the empty interval
                 ub = 0;
                 rc = false;
                 break
             else
+                % otherwise, check if the propagation point is smaller than the current one
                 [nUb, nRc] = supremum(obj.prop(i));
                 if nUb < ub || withinTol(nUb,ub,eps) && ~nRc
                     ub = nUb;

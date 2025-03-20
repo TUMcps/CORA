@@ -55,17 +55,20 @@ else
     for i=1:n
         Ai_ESumRep_new{i} = 0;
         for j=1:n
+            % Manually multiply the coefficient matrices
             Ai_ESumRep_new{i} = Ai_ESumRep_new{i} + Minv(j,i) * Ai_ESumRep{j};
         end
     end
     A_ESumRep_new = [A0_ESumRep_new cat(2,Ai_ESumRep_new{:})];
 end
 
+% Since we have an explicit formula for the ESumRep, we can save it
 ESumRep_new = {A_ESumRep_new B_ESumRep};
 
 res = spectraShadow(A, M*c, M*G);
 res.ESumRep.val = ESumRep_new;
 
+% Set properties
 res.bounded.val = SpS.bounded.val;
 res.fullDim.val = SpS.fullDim.val;
 res.emptySet.val = SpS.emptySet.val;

@@ -42,6 +42,7 @@ end
 try
 
     % over-approximate the set if the summand is a zonotope bundle
+    % S is a zonotope bundle or an interval
     if isa(S,'zonoBundle') || isa(S,'interval')
         S = zonotope(interval(S));
         for i = 1:S_out.parallelSets
@@ -49,14 +50,14 @@ try
         end
         return
     end
-    
+     % S is a zonotope
     if isa(S,'zonotope')
         for i = 1:S_out.parallelSets
             S_out.Z{i} = S_out.Z{i} + S;
         end
         return
     end
-
+    % S is a numeric, column vector
     if isnumeric(S) && iscolumn(S)
         for i = 1:S_out.parallelSets
             S_out.Z{i} = S_out.Z{i} + S;

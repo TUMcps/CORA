@@ -31,6 +31,7 @@ function [intSq,intH] = dependentTerms(obj,r)
 % Last update:   30-April-2007
 %                23-September-2010
 %                30-September-2024 (TL, updated aux_sum)
+%                14-February-2025 (MA, dead code removed)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -95,16 +96,6 @@ function res = aux_g(a,r)
     end
 end
 
-function res= aux_gu(a,r)
-    if in(interval(-3/(2*r)),a)
-        res=-9/24*r;
-    else
-        a_inf=infimum(a);
-        a_sup=supremum(a);
-        res=min(0.5*a_inf*r^2+1/6*a_inf^2*r^3,...
-            0.5*a_sup*r^2+1/6*a_sup^2*r^3);
-    end    
-end
     
 function s=aux_sum(A,i)
 %sum function: s=0.5 \sum_{k:k\neq i,k\neq j} a_{ik}a_{kj}t^2

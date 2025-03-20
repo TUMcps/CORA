@@ -28,6 +28,7 @@ function ub = priv_norm_ub(Z,type)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% parse input
 if type ~= 2
     throw(CORAerror('CORA:notSupported','Only Euclidean norm supported'));
 end
@@ -35,10 +36,12 @@ if ~all(Z.c==0)
     throw(CORAerror('CORA:notSupported','Not implemented for non-zero center'));
 end
 
+% init
 G = Z.G;
 [~,m] = size(G);
 GG = G'*G;
 
+% check if solvers are installed
 persistent isMosek
 if isempty(isMosek)
     isMosek = isSolverInstalled('mosek');

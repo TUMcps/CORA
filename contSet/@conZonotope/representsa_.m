@@ -54,15 +54,7 @@ switch type
         if nargout == 2 && res
             S = center(cZ);
         end
-
-    case 'capsule'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conZonotope to ' type ' not supported.']));
-
-    case 'conHyperplane'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conZonotope to ' type ' not supported.']));
-        
+    
     case 'conPolyZono'
         % obviously true
         res = true;
@@ -77,10 +69,6 @@ switch type
             S = cZ;
         end
 
-    case 'ellipsoid'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conZonotope to ' type ' not supported.']));
-
     case 'halfspace'
         % constrained zonotopes cannot be unbounded
         res = false;
@@ -90,10 +78,6 @@ switch type
         if nargout == 2 && res
             S = interval(cZ);
         end
-
-    case 'levelSet'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conZonotope to ' type ' not supported.']));
 
     case 'polytope'
         res = true;
@@ -129,10 +113,6 @@ switch type
         % hyperplane is also bounded)
         res = n == 1;
 
-    case 'parallelotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of conZonotope to ' type ' not supported.']));
-
     case 'convexSet'
         res = true;
 
@@ -145,6 +125,12 @@ switch type
     case 'fullspace'
         % constrained zonotopes cannot be unbounded
         res = false;
+
+    % unsupported types
+    case {'conHyperplane','capsule','ellipsoid','levelSet','parallelotope'}
+        throw(CORAerror('CORA:notSupported',...
+            ['Comparison of conZonotope to ' type ' not supported.']));
+    
 
 end
 
@@ -220,12 +206,14 @@ if nrCon >= 1
                                 'OptimalityTolerance',1e-10);
     end
 
+    % setup linear program
     problem.f = ones(nrGen,1);
     problem.Aineq = [];
     problem.bineq = [];
     problem.Aeq = cZ.A;
     problem.beq = cZ.b;
     problem.ub = ones(nrGen,1);
+    % negate for upper bound
     problem.lb = -problem.ub;
     problem.options = options;
     

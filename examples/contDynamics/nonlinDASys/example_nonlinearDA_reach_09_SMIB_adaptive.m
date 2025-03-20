@@ -284,7 +284,8 @@ end
 
 function X0 = aux_aux3_init_generator(X,P)
 % Assignment of the variables
-
+    
+    % model
     delta=X(1);
     omega=X(2);
     Eq_=X(3);

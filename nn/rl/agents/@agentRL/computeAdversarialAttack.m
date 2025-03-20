@@ -42,19 +42,21 @@ end
 % Attack is not implemented with a for loop as described in the paper but
 % with a batch evaluation to speed up runtime. 
 if strcmp(obj.options.rl.actor.nn.train.method,'naive')
+    % Extract parameters.
     i = obj.options.rl.actor.nn.train.advOps.numSamples;
     alpha = obj.options.rl.actor.nn.train.advOps.alpha;
     beta = obj.options.rl.actor.nn.train.advOps.beta;
 
     epsilon = obj.options.rl.noise;
-
+    % Compute an action.
     a_star = obj.actor.nn.evaluate_(x,obj.options.rl.actor,obj.actor.idxLayer);
+    % Compute a q value.
     Q_star = obj.targetCritic.nn.evaluate_(cat(1,x,a_star),obj.options.rl.critic,obj.targetCritic.idxLayer);
-
+    % Random sample.
     n = betarnd(alpha,beta,[size(x,1),i]);
-
+    % Add noise to the input.
     xs_adv = x+n*epsilon;
-
+    % Compute perturbed action and q value,
     a_adv = obj.actor.nn.evaluate_(xs_adv,obj.options.rl.actor,obj.actor.idxLayer);
     Q_adv = obj.targetCritic.nn.evaluate(cat(1,xs_adv,a_adv),obj.options.rl.critic,obj.targetCritic.idxLayer);
 

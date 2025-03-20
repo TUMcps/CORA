@@ -45,27 +45,35 @@ lb_mat_inf = [-Inf -2; 2 4];
 ub_mat_inf = [-5 -2; 3 Inf];
 
 % admissible initializations
+% standard case
 I = interval(lb,ub);
 assert(all(withinTol(I.inf,lb,tol)) && all(withinTol(I.sup,ub,tol)));
 
+% point case
 I = interval(lb);
 assert(all(withinTol(I.inf,lb,tol)) && all(withinTol(I.sup,lb,tol)));
 
+% point matrix case
 I = interval(lb_mat);
 assert(all(withinTol(I.inf,lb_mat,tol),"all") && all(withinTol(I.sup,lb_mat,tol),"all"));
 
+% matrix case
 I = interval(lb_mat,ub_mat);
 assert(all(withinTol(I.inf,lb_mat,tol),"all") && all(withinTol(I.sup,ub_mat,tol),"all"));
 
+% unbounded case
 I = interval(lb_inf,ub_inf);
 assert(all(withinTol(I.inf,lb_inf,tol)) && all(withinTol(I.sup,ub_inf,tol)));
 
+% unbounded matrix case
 I = interval(lb_mat_inf,ub_mat_inf);
 assert(all(withinTol(I.inf,lb_mat_inf,tol),"all") && all(withinTol(I.sup,ub_mat_inf,tol),"all"));
 
+% unbounded point case
 I = interval(lb_inf,lb_inf);
 assert(all(size(I.inf) == [0,2]) && all(size(I.sup) == [0,2]));
 
+% unbounded point case 2
 I = interval(ub_inf,ub_inf);
 assert(all(size(I.inf) == [0,2]) && all(size(I.sup) == [0,2]));
 

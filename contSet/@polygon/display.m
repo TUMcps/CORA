@@ -42,8 +42,8 @@ display@contSet(pgon);
 
 %display vertices
 fprintf('- vertices: %i \n',size(vertices_(pgon),2));
-fprintf('- number of regions: %i \n',pgon.set.NumRegions);
-fprintf('- number of holes: %i \n',pgon.set.NumHoles);
+fprintf('- number of regions: %i \n',pgon.nrOfRegions);
+fprintf('- number of holes: %i \n',pgon.nrOfHoles);
 fprintf(newline);
 
 end

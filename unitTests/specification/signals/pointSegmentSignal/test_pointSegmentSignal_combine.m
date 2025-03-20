@@ -27,22 +27,27 @@ function res = test_pointSegmentSignal_combine
 tt = true;
 ff = false;
 
+% test case 1
 test_cases{1}.lhs = pointSegmentSignal([0,1],[ff,tt,ff,tt]);
 test_cases{1}.rhs = pointSegmentSignal([0,1],[tt,tt,ff,ff]);
 test_cases{1}.exp = pointSegmentSignal([0,1],[tt,tt,tt,ff]);
 
+% test case 2
 test_cases{2}.lhs = pointSegmentSignal([0,5],[ff,ff,tt,ff]);
 test_cases{2}.rhs = pointSegmentSignal([0,2],[tt,tt,ff,tt]);
 test_cases{2}.exp = pointSegmentSignal(0,[tt,tt]);
 
+% test case 3
 test_cases{3}.lhs = pointSegmentSignal([0,5],[tt,tt,ff,tt]);
 test_cases{3}.rhs = pointSegmentSignal([0,2],[tt,tt,ff,tt]);
 test_cases{3}.exp = pointSegmentSignal([0,2],[tt,tt,ff,tt]);
 
+% test case 4
 test_cases{4}.lhs = pointSegmentSignal([0,5],[tt,tt,ff,tt]);
 test_cases{4}.rhs = pointSegmentSignal([0,2],[ff,ff,tt,ff]);
 test_cases{4}.exp = pointSegmentSignal([0,2,5],[ff,ff,tt,ff,tt,ff]);
 
+% test case 5
 test_cases{5}.lhs = pointSegmentSignal([0,5],[tt,tt,ff,ff]);
 test_cases{5}.rhs = pointSegmentSignal([0,2],[tt,tt,ff,ff]);
 test_cases{5}.exp = pointSegmentSignal([0,2,5],[tt,tt,ff,ff,tt,tt]);

@@ -71,12 +71,8 @@ if gp.runcontrol.parallel.enable
                 disp('GPTIPS: stopping existing pool for parallel computation.');
                 disp(' ');
             end
-            
-            if verLessThan('matlab','8.3.0')
-                matlabpool close;
-            else
-                delete(gcp('nocreate'));
-            end
+
+            delete(gcp('nocreate'));
         end
         
         try %start new pool
@@ -87,21 +83,15 @@ if gp.runcontrol.parallel.enable
                 disp(' ');
             end
             
-            if verLessThan('matlab','8.3.0')
-                matlabpool close force local;
-                eval(['matlabpool ' num2str(gp.runcontrol.parallel.numWorkers)]);
-            else
-                delete(gcp('nocreate'));
-                
-                if gp.runcontrol.parallel.autosize
-                    a = parpool;
-                    gp.runcontrol.parallel.numWorkers = a.NumWorkers;
-                else
-                    parpool(gp.runcontrol.parallel.numWorkers);
-                end
-                
-            end
+            delete(gcp('nocreate'));
             
+            if gp.runcontrol.parallel.autosize
+                a = parpool;
+                gp.runcontrol.parallel.numWorkers = a.NumWorkers;
+            else
+                parpool(gp.runcontrol.parallel.numWorkers);
+            end
+                
             gp.runcontrol.parallel.ok = true;
             
             if ~gp.runcontrol.quiet
@@ -127,28 +117,20 @@ else
 end
 
 function x = getCurrentPoolSize
-%GETCURRENTPOOLSIZE Get the current parallel pool size. Workaround
-%function: calls either matlabpool('size') or pool_size hack depending on
-%MATLAB version
+%GETCURRENTPOOLSIZE Get the current parallel pool size. 
 
-if verLessThan('matlab', '7.7.0')
-    x = pool_size;
-elseif verLessThan('matlab','8.3.0')
-    x = matlabpool('size');
+pool = gcp('nocreate');
+
+if isempty(pool)
+    x = 0;
 else
-    pool = gcp('nocreate');
-    
-    if isempty(pool)
-        x = 0;
+    if pool.Connected
+        x = pool.NumWorkers;
     else
-        if pool.Connected
-            x = pool.NumWorkers;
-        else
-            x = 0;
-        end
+        x = 0;
     end
-    
 end
+    
 
 function x = getMaxPoolSize
 %getMaxPoolSize - try to get the max number of workers in a pool for the
@@ -160,23 +142,4 @@ if verLessThan('matlab','8.3.0')
 else
     c = parcluster();
     x = c.NumWorkers;
-end
-
-function x = pool_size
-%POOL_SIZE - Mathworks hack to return size of current MATLABPOOL. Used for
-%versions prior to MATLAB 7.7 (R2008b)
-%
-% See:
-% http://www.mathworks.co.uk/support/solutions/en/data/1-5UDHQP/index.html
-
-session = com.mathworks.toolbox.distcomp.pmode.SessionFactory.getCurrentSession;
-if ~isempty( session ) && session.isSessionRunning() && session.isPoolManagerSession()
-    client = distcomp.getInteractiveObject();
-    if strcmp( client.CurrentInteractiveType, 'matlabpool' )
-        x = session.getLabs().getNumLabs();
-    else
-        x = 0;
-    end
-else
-    x = 0;
 end

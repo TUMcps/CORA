@@ -46,7 +46,7 @@ dims = setDefaultValues({[1,2]},varargin);
 
 % check input arguments (only supported for convex sets with edges)
 inputArgsCheck({ {S,'att',{'conZonotope','interval','zonoBundle','zonotope'}} ...
-                 {dims,'att','numeric',{'integer','positive','size',[1 2]}} });
+                 {dims,'att','numeric',{'integer','positive',@(dims) numel(dims) == 2}} });
 
 % project the set
 S = project(S,dims);

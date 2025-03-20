@@ -137,14 +137,17 @@ val = [];
 if isa(sys,'contDynamics')
     if isa(sys,'linearSysDT') || isa(sys,'nonlinearSysDT')
         if size(params.u,2) == 1
+            % constant input, only one step
             val = params.tStart;
         else
+            % input trajector, create tArray
             val = (params.tStart:sys.dt:params.tFinal-sys.dt)';
             if isa(sys,'linearSysDT') && any(any(sys.D))
                 val = (params.tStart:sys.dt:params.tFinal)';
             end
         end
     elseif isa(sys,'linearSys')
+        % create tArray based on input trajectory
         steps = size(params.u,2);
         if any(any(sys.D)) && steps > 1
             steps = steps - 1;
@@ -154,6 +157,7 @@ if isa(sys,'contDynamics')
         if steps > 1 && any(any(sys.D))
             val = (params.tStart:stepsize:params.tFinal)';
         end
+    % handle all other system types
     else % isa(sys,'linParamSys') || isa(sys,'linProbSys')
         if size(params.u,2) == 1
             val = params.tStart;

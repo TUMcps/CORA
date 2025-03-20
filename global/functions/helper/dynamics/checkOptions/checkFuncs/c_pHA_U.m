@@ -57,12 +57,15 @@ else
     	% check if size of input matches inputCompMap
     	dims = length(find(params.inputCompMap == i));
         if dims > 0
+            % check if inputCompMap matches number of locations
             numLoc = length(sys.components(i).location);
             if ~(all(size(val{i}) == [numLoc,1]) || all(size(val{i}) ~= [1,numLoc]))
                 res = false;
                 msg = 'has to match the number of locations';
                 return;
             end
+            % check if number of locations matches inputCompMap (other way
+            % around)
             for j=1:numLoc
                 if dim(val{i}{j}) ~= dims
                     res = false;

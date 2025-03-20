@@ -22,12 +22,7 @@ complexities = zeros(popSize,1);
 fitfun = gp.fitness.fitfun;
 fitvals = zeros(popSize,1);
 returnvals = cell(popSize,1);
-
-if gp.runcontrol.usecache
-    usecache = false; %true;
-else
-    usecache = false;
-end
+usecache = false; %true;
 
 parfor i = 1:popSize;
     

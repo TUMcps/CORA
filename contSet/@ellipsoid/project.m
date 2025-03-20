@@ -31,7 +31,7 @@ function E = project(E,dims)
 % check input arguments
 inputArgsCheck({{E,'att','ellipsoid'};
                 {dims,'att',{'numeric','logical'},{{'nonnan','vector',...
-                     'integer','>=',1,'<=',dim(E)},{'vector'}}}});
+                     'integer','positive',@(dims) dims <= dim(E)},{'vector'}}}});
 
 % project set
 I = eye(length(E.Q));

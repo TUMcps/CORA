@@ -99,6 +99,7 @@ elseif strcmp(type,'lower')
     [val,idx] = min(-vals);
     x = P.V_.val(:,idx);
 elseif strcmp(type,'range')
+    % compute upper and lower bound
     vals_upper = dir' * P.V_.val;
     vals_lower = -dir' * P.V_.val;
     [val_upper,idx_upper] = max(vals_upper);

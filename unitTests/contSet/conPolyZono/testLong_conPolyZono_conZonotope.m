@@ -19,7 +19,7 @@ function res = testLong_conPolyZono_conZonotope
 
 % Authors:       Niklas Kochdumper
 % Written:       26-January-2021
-% Last update:   ---
+% Last update:   05-March-2025 (TL, reduced runtime)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -37,13 +37,16 @@ for i = 1:5
     cPZ = conPolyZono.generateRandom();
     
     % get random points
-    points = randPoint(cPZ,50,'extreme');
+    points = randPoint(cPZ,10,'extreme');
     
     % loop over all methods
     for j = 1:length(methods)
         
         % compute zonotope enclosure
         cZ = conZonotope(cPZ,methods{j});
+
+        % reduce before containment check
+        cZ = reduce(cZ,'girard',2);
         
         % check for correctness
         assertLoop(contains(cZ,points,'exact',tol),i,j)

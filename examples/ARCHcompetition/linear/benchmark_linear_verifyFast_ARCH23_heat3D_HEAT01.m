@@ -91,6 +91,7 @@ function x0 = aux_getInit(A, samples, temp)
         max_z = (0.2/(1/samples));
     end
 
+    % for every x, generate offset in y and z direction based on samples
     for z = 0:max_z
         zoffset = z * samples * samples;
 

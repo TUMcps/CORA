@@ -104,15 +104,19 @@ end
 
 tStart = tic;
 
+% initial set R01
 params.R0 = R01;
 R_11 = reach(HA,params,options);
 
+% initial set R02
 params.R0 = R02;
 R_12 = reach(HA,params,options);
 
+% initial set R03
 params.R0 = R03;
 R_13 = reach(HA,params,options);
 
+% initial set R04
 params.R0 = R04;
 R_14 = reach(HA,params,options);
 
@@ -170,15 +174,19 @@ end
 
 tStart = tic;
 
+% initial set R01
 params.R0 = R01;
 R_21 = reach(HA,params,options);
 
+% initial set R02
 params.R0 = R02;
 R_22 = reach(HA,params,options);
 
+% initial set R03
 params.R0 = R03;
 R_23 = reach(HA,params,options);
 
+% initial set R04
 params.R0 = R04;
 R_24 = reach(HA,params,options);
 

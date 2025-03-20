@@ -109,6 +109,7 @@ if CHECKS_ENABLED
     % check specification
     if isa(spec,'specification')
         for i=1:length(spec)
+            % check each specification
             if strcmp(spec(i).type,'logic')
                 if ~startsWith(verifyAlg,'stl:')
                     throw(CORAerror("CORA:wrongValue",'options.verifyAlg', ...
@@ -116,6 +117,7 @@ if CHECKS_ENABLED
                 end
                 
             else
+                % only reachavoid is implemented
                 if ~startsWith(verifyAlg,'reachavoid:')
                     throw(CORAerror("CORA:wrongValue",'options.verifyAlg', ...
                         'Given reach-avoid specifications need an algorithm designed for reachavoid.'))

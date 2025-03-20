@@ -27,16 +27,17 @@ function res = isemptyobject(P)
 % Authors:       Mark Wetzlinger
 % Written:       25-July-2023
 % Last update:   14-July-2024 (MW, support V representation)
+%                25-February-2025 (TL, bug fix, .inf/.empty cases)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % no inequality or equality constraints
-res_H = P.isHRep.val && isempty(P.b_.val) && isempty(P.be_.val);
+res_H = ~P.isHRep.val || (isempty(P.b_.val) && isempty(P.be_.val));
 % no vertices
-res_V = P.isVRep.val && isempty(P.V_.val);
+res_V = ~P.isVRep.val || (isempty(P.V_.val));
 
 % combine information
-res = res_H || res_V;
+res = res_H && res_V;
 
 % ------------------------------ END OF CODE ------------------------------

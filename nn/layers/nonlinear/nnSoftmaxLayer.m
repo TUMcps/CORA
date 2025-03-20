@@ -189,7 +189,7 @@ methods (Access = {?nnLayer, ?neuralNetwork})
         X_n = reshape(X_n, [], 1);
         X_sum = reshape(X_sum, [], 1);
 
-        % filter out valuse in X_n which are larger than values in
+        % filter out values in X_n which are larger than values in
         % X_sum -> not plausible
         idx = X_n <= X_sum;
         X_n = X_n(idx);
@@ -207,7 +207,7 @@ methods (Access = {?nnLayer, ?neuralNetwork})
         coeffs_sum = co(:, 1:order+1);
         coeffs_n = co(:, order+2:(order + 1)*2);
 
-        % compute difference fo both dimensions
+        % compute difference of both dimensions
         diff = y - polyval(coeffs_n, X_n) - polyval(coeffs_sum, X_sum);
 
         % compute space between points
@@ -232,18 +232,22 @@ methods (Access = {?nnLayer, ?neuralNetwork})
         coeffs = reshape(coeffs, [order + 1, 2])';
 
         % evaluate the approximation on the polynomial zonotope
+
+        % evaluate neuron i
         c_out(1, :) = coeffs(1, 1) + coeffs(1, 2) * c;
         G_out(1, :) = coeffs(1, 2) * G;
         if ~isempty(GI)
             GI_out(1, :) = coeffs(1, 2) * GI;
         end
 
+        % evaluate sum
         c_out(2, :) = coeffs(2, 1) + coeffs(2, 2) * c_sum;
         G_out(2, :) = coeffs(2, 2) * G_sum;
         if ~isempty(GI_sum)
             GI_out(2, :) = coeffs(2, 2) * GI_sum;
         end
 
+        % sum up polynom_neuron + polynom_sum
         c = sum(c_out) + center(L);
         G = sum(G_out);
         GI = sum(GI_out);

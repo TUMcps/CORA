@@ -50,7 +50,7 @@ function coeff = calc_dist_coeff(dim,N,min_euclidean_dist)
 %
 % Check number of arguments
 %
-error(nargchk(3,3,nargin));
+narginchk(3,3);
 %
 % dim is the number of dimensions
 % N is the number of regions

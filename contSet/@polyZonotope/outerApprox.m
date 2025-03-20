@@ -53,23 +53,26 @@ n = dim(pZ);
 % compute length metric for all generators
 ind_even = all(mod(E,2)==0,1);
 G(:,ind_even) = 1/2*G(:,ind_even);
-M = [G,GI];
-m = size(M,2);
-[~,ii_s] = sort(sum(abs(M),1),'ascend');
+GGI = [G,GI];
+numGens = size(GGI,2);
+[~,ii_s] = sort(sum(abs(GGI),1),'ascend');
 
-Val_max = max(abs(M),[],2);
-Th = Val_max*tol;
+% compute threshold
+Th = max(abs(GGI),[],2)*tol;
 
+% find generators under threshold
 Val_curr = zeros(n,1);
-redCount = m;
-for i=1:m
-    M_i = abs(M(:,ii_s(i)));
-    if any(M_i+Val_curr>Th)
+redCount = numGens;
+for i=1:numGens
+    GGI_i = abs(GGI(:,ii_s(i)));
+    if any(GGI_i+Val_curr>Th)
+        % threshold reached
         redCount = i-1;
         break;
     end
-    Val_curr = Val_curr + M_i;
+    Val_curr = Val_curr + GGI_i;
 end
+% select generators to be reduced
 ii_red = ii_s(1:redCount);
 ii_red_G = ii_red(ii_red<=size(G,2));
 ii_red_GI = ii_red(ii_red>size(G,2));

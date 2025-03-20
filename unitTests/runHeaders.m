@@ -12,7 +12,7 @@ function res = runHeaders(varargin)
 
 % Authors:       Mark Wetzlinger, Tobias Ladner
 % Written:       11-April-2023
-% Last update:   ---
+% Last update:   04-March-2025 (TL, all folders are tested now)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -25,28 +25,23 @@ currentDirectory = pwd;
 
 % files from which we want to run the examples from their headers
 files = [
+    aux_addFiles('app');
     aux_addFiles('contDynamics');
     aux_addFiles('contSet');
-%     aux_addFiles('converter');
-    % aux_addFiles('discrDynamics');
+    aux_addFiles('converter');
+    aux_addFiles('discrDynamics');
     aux_addFiles('global');
+    aux_addFiles('examples');
     aux_addFiles('hybridDynamics');
     aux_addFiles('matrixSet');
+    aux_addFiles('nn');
+    aux_addFiles('specification');
+    aux_addFiles('unitTests');
 ];
 
-% exclude file paths
-% contSet
-files = aux_exclFiles(files, ['contSet' filesep '@conPolyZono']);
-% % converter
-% files = aux_exclFiles(files, ['converter' filesep 'powerSystem2cora' filesep 'cases'], 'IEEE14Parameters.m');
-% files = aux_exclFiles(files, ['converter' filesep 'powerSystem2cora' filesep 'cases'], 'IEEE30Parameters.m');
-% global
+% exclude:
+% - thirdparty files
 files = aux_exclFiles(files, ['global' filesep 'thirdparty']);
-files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'combinator']);
-files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'eq_sphere_partitions']);
-files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'm2tex']);
-files = aux_exclFiles(files, ['global' filesep 'functions' filesep 'tprod']);
-files = aux_exclFiles(files, ['global' filesep 'functions'], 'Direct.m');
 
 % check in reverse order
 % files = flipud(files);
@@ -81,7 +76,7 @@ for i=1:length(files)
     % split text into lines
     linestext = splitlines(filetext);
     % find line with 'Example' / 'Examples'
-    startline = find(contains(linestext,'% Example'),1,'first');
+    startline = find(contains(linestext,['%' ' Example']),1,'first');
     if isempty(startline)
         % no example
         continue
@@ -114,7 +109,7 @@ for i=1:length(files)
     % Supress output of example by usage of evalc
     try
         if verbose
-            fprintf('.. rng(%10i); header of %-60s : ', seed, fname);
+            fprintf('.. rng(%10i); header of %-70s : ', seed, fname);
         end
         % call evalc in different scope to avoid storing variables here
         aux_runSingleExample(exampletext, seed);
@@ -122,7 +117,7 @@ for i=1:length(files)
             fprintf('%s\n','passed');
         end
     catch ME
-        if contains(fname,[filesep 'private' filesep])
+        if contains(file_path,[filesep 'private' filesep])
             % ok as private functions cannot be called from outside
             if verbose
                 fprintf('%s\n','maybe');
@@ -168,6 +163,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function files = aux_addFiles(path, includeSubfolders)
+    % add files based on pattern
     if nargin < 2
         includeSubfolders = true;
     end
@@ -181,6 +177,7 @@ function files = aux_addFiles(path, includeSubfolders)
 end
 
 function files = aux_exclFiles(files, path, name)
+    % exclude files based on pattern
     idx = contains({files.folder}', [CORAROOT filesep path]);
     if nargin == 3
         idx = idx & contains({files.name}', name);

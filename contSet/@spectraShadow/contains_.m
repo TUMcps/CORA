@@ -69,6 +69,7 @@ function [res,cert,scaling] = contains_(SpS,S,method,tol,maxEval,certToggle,scal
     % empty set
     if representsa(SpS, 'emptySet')
         if isnumeric(S)
+            % If S is numeric, check manually whether it is empty
             if isempty(S)
                 res = true;
                 scaling = 0;
@@ -79,6 +80,8 @@ function [res,cert,scaling] = contains_(SpS,S,method,tol,maxEval,certToggle,scal
                 cert = true;
             end
         else
+            % Otherwise, check whether S represents an empty set, as a
+            % contSet object
             if representsa(S, 'emptySet')
                 res = true;
                 scaling = 0;
@@ -184,6 +187,7 @@ function res = aux_containsPoint(SpS, p, tol)
     end
     
     for i_N = 1:N
+        % Set up parametrization of the spectrahedral shadow
         G = SpS.G;
         c = SpS.c;
         [A0, Ai] = priv_getCoeffMatrices(SpS);
@@ -304,8 +308,11 @@ function res = aux_containsSpS_OuterSampling(SpS1, SpS2, tol, N)
         end
     end
     
+    % Set up parametrization of the spectrahedral shadows
     G = SpS2.G;
 
+    % Note that we can first translate both sets, so that SpS2 has no
+    % center vector (makes computation easier)
     c = center(SpS2);
     SpS1 = SpS1 - c;
     SpS2 = SpS2 - c;

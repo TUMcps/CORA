@@ -36,16 +36,29 @@ switch field % TODO sort and categorize
         checks = aux_getChecksOptions_reductionTechnique(checks,sys,func,params,options);
     case 'saveOrder'
         checks = aux_getChecksOptions_saveOrder(checks,sys,func,params,options);
+        % alg
+    case 'algInner'
+        checks = aux_getChecksOptions_algInner(checks,sys,func,params,options);
+    case 'reachAlg'
+        checks = aux_getChecksOptions_reachAlg(checks,sys,func,params,options);
+    case 'armaxAlg'
+        checks = aux_getChecksOptions_armaxAlg(checks,sys,func,params,options);
     case 'linAlg'
         checks = aux_getChecksOptions_linAlg(checks,sys,func,params,options);
     case 'alg'
         checks = aux_getChecksOptions_alg(checks,sys,func,params,options);
+        % taylor
+    case 'taylorOrder'
+        checks = aux_getChecksOptions_taylorOrder(checks,sys,func,params,options);
+    case 'taylmOrder'
+        checks = aux_getChecksOptions_taylmOrder(checks,sys,func,params,options);
+    case 'taylorTerms'
+        checks = aux_getChecksOptions_taylorTerms(checks,sys,func,params,options);
+        % ---
     case 'error'
         checks = aux_getChecksOptions_error(checks,sys,func,params,options);
     case 'timeStep'
         checks = aux_getChecksOptions_timeStep(checks,sys,func,params,options);
-    case 'taylorTerms'
-        checks = aux_getChecksOptions_taylorTerms(checks,sys,func,params,options);
     case 'zonotopeOrder'
         checks = aux_getChecksOptions_zonotopeOrder(checks,sys,func,params,options);
     case 'l'
@@ -146,18 +159,6 @@ switch field % TODO sort and categorize
         checks = aux_getChecksOptions_polyZono_maxPolyZonoRatio(checks,sys,func,params,options);
     case 'polyZono.restructureTechnique'
         checks = aux_getChecksOptions_polyZono_restructureTechnique(checks,sys,func,params,options);
-        % alg
-    case 'algInner'
-        checks = aux_getChecksOptions_algInner(checks,sys,func,params,options);
-    case 'reachAlg'
-        checks = aux_getChecksOptions_reachAlg(checks,sys,func,params,options);
-    case 'armaxAlg'
-        checks = aux_getChecksOptions_armaxAlg(checks,sys,func,params,options);
-        % taylor
-    case 'taylorOrder'
-        checks = aux_getChecksOptions_taylorOrder(checks,sys,func,params,options);
-    case 'taylmOrder'
-        checks = aux_getChecksOptions_taylmOrder(checks,sys,func,params,options);
         % ---
     case 'timeStepInner'
         checks = aux_getChecksOptions_timeStepInner(checks,sys,func,params,options);

@@ -26,7 +26,7 @@ function [dt,uniform,hybrid] = timeStepSize(R)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % check input argument
-inputArgsCheck({{R,'att',{'reachSet'},{''}}});
+inputArgsCheck({{R,'att',{'reachSet'}}});
 
 % initialization
 hybrid = false;

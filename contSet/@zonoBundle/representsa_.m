@@ -46,22 +46,10 @@ switch type
     case 'origin'
         res = representsa_(conZonotope(zB),'origin',tol);
         if nargout == 2 && res
+            % return origin as zero vector
             S = zeros(n,1);
         end
 
-    case 'point'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of zonoBundle to ' type ' not supported.']));
-
-        % check contSet
-    case 'capsule'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of zonoBundle to ' type ' not supported.']));
-
-    case 'conHyperplane'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of zonoBundle to ' type ' not supported.']));
-        
     case 'conPolyZono'
         res = true;
         if nargout == 2
@@ -73,10 +61,6 @@ switch type
         if nargout == 2
             S = conZonotope(zB);
         end
-
-    case 'ellipsoid'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of zonoBundle to ' type ' not supported.']));
 
     case 'halfspace'
         % polynomial zonotopes are bounded
@@ -119,17 +103,9 @@ switch type
             S = zB;
         end
 
-    case 'zonotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of zonoBundle to ' type ' not supported.']));
-
     case 'hyperplane'
         % zonotope bundles are bounded
         res = false;
-
-    case 'parallelotope'
-        throw(CORAerror('CORA:notSupported',...
-            ['Comparison of zonoBundle to ' type ' not supported.']));
 
     case 'convexSet'
         res = true;
@@ -139,6 +115,12 @@ switch type
         if nargout == 2 && res
             S = emptySet(n);
         end
+
+    % unsupported set representations
+    case {'point','capsule','conHyperplane','ellipsoid','zonotope','parallelotope'}
+        throw(CORAerror('CORA:notSupported',...
+            ['Comparison of zonoBundle to ' type ' not supported.']));
+
 
     case 'fullspace'
         % zonotope bundles are bounded

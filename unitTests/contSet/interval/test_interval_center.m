@@ -35,13 +35,21 @@ c = center(I);
 c_true = [-3.5,-2,-0.5,0,2.5,6.5];
 assert(all(withinTol(c,c_true,tol)));
 
-% 3. unbounded
+% 3. partially unbounded
 I = interval(-Inf,2);
 c = center(I);
 assert(isnan(c));
 I = interval(2,Inf);
 c = center(I);
 assert(isnan(c));
+
+% 3. unbounded
+I = interval(-Inf,Inf);
+c = center(I);
+assert(c == 0);
+fs = fullspace(3);
+I = interval(fs);
+assert(isequal(center(I), center(fs)))
 
 % n-d arrays
 lb = reshape([ 1.000 3.000 2.000 5.000 -3.000 0.000 2.000 1.000 0.000 -2.000 -1.000 3.000 0.000 0.000 0.000 0.000 1.000 -1.000 1.000 0.000 0.000 0.000 0.000 0.000 ], [2,2,2,3]);
