@@ -51,10 +51,13 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#open-loop">Open-loop Verification</a>
+                    <a class="nav-link" href="#open-loop">Open-Loop Verification</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#closed-loop">Closed-loop Verification</a>
+                    <a class="nav-link" href="#closed-loop">Closed-Loop Verification</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#robust-training">Robust Training</a>
                 </li>
                 <li class="nav-item navbar-text">
                     <div class="d-block d-lg-none">
@@ -104,95 +107,162 @@
         </div>
     </div>
 
-    <!-- Open-loop -->
-    <hr id="open-loop"/>
-    <div class="row space-before">
-        <div class="col-12">
-            <h4>Open-loop Verification</h4>
-            <p>
-                Open-loop verification refers to the task where properties of the output set of a neural network are verified, e.g. correctly classified images given noisy input.
-                The neural network can be imported into CORA from various common neural network formats.
-                CORA currently supports ONNX, NNet, YML, Sherlock, and the conversion for neural networks coming from the Deep Learning Toolbox.
-                The code below shows an exemplary verification of a noisy MNIST image.
-                The neural network file can be found at <code>./models/Cora/nn/mnist_sigmoid_6_200.onnx</code> on <a href="https://github.com/TUMcps/CORA/raw/master/models/Cora/neuralNetworks/mnist_sigmoid_6_200.onnx"><i class="bi bi-github"></i> GitHub</a>.
-            </p>
-            <p>
-                More information on open-loop verification using CORA can be found in Section 6 in the <a href="../../manual/index.html" target="_blank"><i class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.
-            </p>
-        </div>
+    <ul class="list-group list-group-flush">
 
-        <div class="d-none col-0 d-lg-block col-lg-2  col-xl-2 col-xxl-3"></div>
-        <div class="col-6 col-lg-4 col-xl-4 col-xxl-3 text-center">
-            <img src="../../data/images/latex/figures/neural-network/mnist-bag.png"  alt="MNIST Images"/>
-        </div>
-        <div class="col-6 col-lg-4 col-xl-4 col-xxl-3 text-center">
-            <object type="image/svg+xml"
-                    data="../../data/images/latex/figures/neural-network/mnist-output-bounds.svg">
-                Your browser does not support SVG
-            </object>
-        </div>
+        <!-- Open-loop -->
+        <li id="open-loop" class="list-group-item px-0">
+            <a class="btn" data-bs-toggle="collapse" href="#collapse_open-loop" role="button"
+               aria-expanded="true"
+               aria-controls="collapse_open-loop">
+                <div class="row">
+                    <div class="col-11"><h4>Open-Loop Verification</h4></div>
+                    <div class="col-1"><span class="mr-3"></span></div>
+                </div>
+            </a>
+            <div class="collapse show" id="collapse_open-loop">
+                <div class="row">
+                    <div class="col-12">
+                        <p>
+                            Open-loop verification refers to the task where properties of the output set of a neural network are verified, e.g. correctly classified images given noisy input.
+                            The neural network can be imported into CORA from various common neural network formats.
+                            CORA currently supports ONNX, NNet, YML, Sherlock, and the conversion for neural networks coming from the Deep Learning Toolbox.
+                            The code below shows an exemplary verification of a noisy MNIST image.
+                            The neural network file can be found at <code>./models/Cora/nn/mnist_sigmoid_6_200.onnx</code> on <a href="https://github.com/TUMcps/CORA/raw/master/models/Cora/neuralNetworks/mnist_sigmoid_6_200.onnx"><i class="bi bi-github"></i> GitHub</a>.
+                        </p>
+                        <p>
+                            More information on open-loop verification using CORA can be found in Section 6 in the <a href="../../manual/index.html" target="_blank"><i class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.
+                        </p>
+                    </div>
 
-        <div class="col-12 space-before-sm">
-            <div class="position-relative">
-                <iframe class="code code-lg"
-                        src="../../data/matlab/scripts/website/nn/website_nn_openLoop.html"></iframe>
-                <div class="position-absolute top-0 end-0 translate-middle-x">
-                    <div class="code-btn-box">
-                        <a class="btn btn-outline-secondary btn-sm"
-                           href="../../data/matlab/scripts/website/nn/website_nn_openLoop.mlx"
-                           title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                    <div class="d-none col-0 d-lg-block col-lg-2  col-xl-2 col-xxl-3"></div>
+                    <div class="col-6 col-lg-4 col-xl-4 col-xxl-3 text-center">
+                        <img src="../../data/images/latex/figures/neural-network/mnist-bag.png"  alt="MNIST Images"/>
+                    </div>
+                    <div class="col-6 col-lg-4 col-xl-4 col-xxl-3 text-center">
+                        <object type="image/svg+xml"
+                                data="../../data/images/latex/figures/neural-network/mnist-output-bounds.svg">
+                            Your browser does not support SVG
+                        </object>
+                    </div>
+
+                    <div class="col-12 space-before-sm">
+                        <div class="position-relative">
+                            <iframe class="code code-lg"
+                                    src="../../data/matlab/scripts/website/nn/website_nn_openLoop.html"></iframe>
+                            <div class="position-absolute top-0 end-0 translate-middle-x">
+                                <div class="code-btn-box">
+                                    <a class="btn btn-outline-secondary btn-sm"
+                                       href="../../data/matlab/scripts/website/nn/website_nn_openLoop.mlx"
+                                       title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <p>Further examples can be found at <code>./examples/nn</code> on <a target="_blank" href="https://github.com/TUMcps/CORA"><i class="bi bi-github"></i> GitHub</a>.</p>
+                    </div>
+
+                    <div class="col-12">
+                        The verification algorithm conservatively propagates the input set through all layers and checks if the obtained output set with the given specifications.
+                        A visualization of this process is shown below:
+                        <iframe width="100%" height="520" src="https://www.youtube.com/embed/SsszJAwL7ew" title="[CORA] Formal Verification of Neural Networks: Set-Based Layer Propagation" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                     </div>
                 </div>
             </div>
-        </div>
+        </li>
 
-        <div class="col-12">
-            <p>Further examples can be found at <code>./examples/nn</code> on <a target="_blank" href="https://github.com/TUMcps/CORA"><i class="bi bi-github"></i> GitHub</a>.</p>
-        </div>
-    </div>
+        <!-- Closed-loop -->
+        <li id="closed-loop" class="list-group-item px-0">
+            <a class="btn collapsed" data-bs-toggle="collapse" href="#collapse_closed-loop" role="button"
+               aria-expanded="false"
+               aria-controls="collapse_closed-loop">
+                <div class="row">
+                    <div class="col-11"><h4>Closed-Loop Verification</h4></div>
+                    <div class="col-1"><span class="mr-3"></span></div>
+                </div>
+            </a>
+            <div class="collapse" id="collapse_closed-loop">
+                <div class="row">
+                    <div class="col-12">
+                        <p>
+                            In closed-loop scenarios, the neural network is used as controller of a dynamic system and is neatly integrated in the reachability algorithms of CORA.
+                            The code below considers a unicycle model of a car with the x and y coordinates on a
+                            two-dimensional plane, the velocity magnitude (speed), and steering angle as state variables.
+                            The specification is to steer the car into a given goal region.
+                        </p>
+                        <p>
+                            More information on closed-loop verification using CORA can be found in Section 4.2.9 in the <a href="../../manual/index.html" target="_blank"><i class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.
+                        </p>
+                    </div>
+                    <div class="d-none col-0 d-lg-block col-lg-2 col-xl-3"></div>
+                    <div class="col-12 col-lg-8 col-xl-6 text-center">
+                        <object type="image/svg+xml"
+                                data="../../data/images/latex/figures/dynamic-systems/feedback_neuralNetContrSys.svg">
+                            Your browser does not support SVG
+                        </object>
+                    </div>
 
-    <!-- Closed-loop -->
-    <hr id="closed-loop"/>
-    <div class="row space-before">
-        <div class="col-12">
-            <h4>Closed-loop Verification</h4>
-            <p>
-                In closed-loop scenarios, the neural network is used as controller of a dynamic system and is neatly integrated in the reachability algorithms of CORA.
-                The code below considers a unicycle model of a car with the x and y coordinates on a
-                two-dimensional plane, the velocity magnitude (speed), and steering angle as state variables.
-                The specification is to steer the car into a given goal region.
-            </p>
-            <p>
-                More information on closed-loop verification using CORA can be found in Section 4.2.9 in the <a href="../../manual/index.html" target="_blank"><i class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.
-            </p>
-        </div>
-        <div class="d-none col-0 d-lg-block col-lg-2 col-xl-3"></div>
-        <div class="col-12 col-lg-8 col-xl-6 text-center">
-            <object type="image/svg+xml"
-                    data="../../data/images/latex/figures/dynamic-systems/feedback_neuralNetContrSys.svg">
-                Your browser does not support SVG
-            </object>
-        </div>
+                    <div class="col-12 space-before-sm">
+                        <div class="position-relative">
+                            <iframe class="code code-lg"
+                                    src="../../data/matlab/scripts/website/nn/website_nn_closedLoop.html"></iframe>
+                            <div class="position-absolute top-0 end-0 translate-middle-x">
+                                <div class="code-btn-box">
+                                    <a class="btn btn-outline-secondary btn-sm"
+                                       href="../../data/matlab/scripts/website/nn/website_nn_closedLoop.mlx"
+                                       title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-        <div class="col-12 space-before-sm">
-            <div class="position-relative">
-                <iframe class="code code-lg"
-                        src="../../data/matlab/scripts/website/nn/website_nn_closedLoop.html"></iframe>
-                <div class="position-absolute top-0 end-0 translate-middle-x">
-                    <div class="code-btn-box">
-                        <a class="btn btn-outline-secondary btn-sm"
-                           href="../../data/matlab/scripts/website/nn/website_nn_closedLoop.mlx"
-                           title="Download as MATLAB Live Script"><i class="bi bi-download"></i></a>
+                    <div class="col-12">
+                        <p>Further examples can be found at <code>./examples/contDynamics/neurNetContrSys</code> on <a target="_blank" href="https://github.com/TUMcps/CORA"><i class="bi bi-github"></i> GitHub</a>.</p>
+                    </div>
+                    <div class="col-12">
+                        <iframe width="100%" height="520" src="https://www.youtube-nocookie.com/embed/Q86fFLhm8GQ?si=6Dh4ih8h7igCmwF0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                     </div>
                 </div>
             </div>
-        </div>
+        </li>
 
-        <div class="col-12">
-            <p>Further examples can be found at <code>./examples/contDynamics/neurNetContrSys</code> on <a target="_blank" href="https://github.com/TUMcps/CORA"><i class="bi bi-github"></i> GitHub</a>.</p>
-        </div>
-    </div>
+        <!-- Robust Training -->
+        <li id="robust-training" class="list-group-item px-0">
+            <a class="btn collapsed" data-bs-toggle="collapse" href="#collapse_robust-training" role="button"
+               aria-expanded="false"
+               aria-controls="collapse_robust-training">
+                <div class="row">
+                    <div class="col-11"><h4>Robust Training</h4></div>
+                    <div class="col-1"><span class="mr-3"></span></div>
+                </div>
+            </a>
+            <div class="collapse" id="collapse_robust-training">
+                <div class="row">
+                    <div class="col-12">
+                        <p>
+                            CORA also enables the training of verifiably robust neural networks both in the supervised
+                            and in the reinforcement learning setting. This is realized by integrating reachability analysis
+                            into the training process. In particular, we propagate zonotopes through a neural network and
+                            compute a set-based gradient based on the computed output set, target, and loss function.
+                            This is done efficiently in CORA by propagating the sets batch-wise through the network and
+                            every computation can be done on a GPU.
+                        </p>
+                        <p><div class="h6">Supervised Setting:</div> The training process in the supervised setting is visualized below:</p>
+                        <iframe width="100%" height="520" src="https://www.youtube-nocookie.com/embed/AnfrsKRltMY?si=BvijezP8G5ipkYmG" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+                        <p><div class="h6">Reinforcement Learning:</div> Robust training results in verifiably robust controllers. A comparison is visualized below:</p>
+                        <iframe width="100%" height="520" src="https://www.youtube-nocookie.com/embed/gvlLpGr6JK8?si=KrxKABmP3RMiyFNM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <p>
+                            More information on closed-loop verification using CORA can be found in Section 6 in the <a href="../../manual/index.html" target="_blank"><i class="bi bi-file-earmark-pdf-fill"></i> CORA manual</a>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </li>
+
+        <li class="list-group-item px-0"></li> <!-- empty last item to have line underneath previous item -->
+    </ul>
 
     <!-- footer -->
     <div class="row space-before">
