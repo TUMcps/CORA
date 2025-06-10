@@ -49,9 +49,9 @@ powerDyn = nonlinDASys(@bus3Dyn,@bus3Con);
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+timerVal = tic;
 R = reach(powerDyn, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 

@@ -32,7 +32,7 @@ function [R,tcomp] = priv_observe_CZN_A(linsysDT,params,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-tic
+timerVal = tic;
 
 % time period
 tVec = params.tStart:options.timeStep:params.tFinal-options.timeStep;
@@ -64,6 +64,6 @@ for k = 1:length(tVec)-1
     R{k+1} = Rnext.tp; % + 1e-6*zonotope([zeros(length(obj.C(1,:))), eye(length(obj.C(1,:)))]); % add small set for numerical stability
 end
 
-tcomp = toc;
+tcomp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

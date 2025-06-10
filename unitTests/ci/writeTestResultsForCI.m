@@ -1,5 +1,7 @@
 function writeTestResultsForCI(varargin)
 % writeTestResultsForCI - prepares test result for gitlab CI
+%    in particular, writes a file EXIT_CODE.txt containing the exit code
+%    for the job. See .gitlab-ci.yml for full list of exit codes.
 %
 % Syntax:
 %    writeTestResultsForCI()
@@ -8,58 +10,43 @@ function writeTestResultsForCI(varargin)
 % Inputs:
 %    testSuite - (optional) results of which test suite should be displayed:
 %               'short' (default), 'long', 'mp', 'mosek', 'sdpt3',
-%               'intlab', 'nn', 'examples','benchmarks','header'
+%               'nn', 'examples','benchmarks','header'
 %
 % Outputs:
 %    -
 %
-% Example: 
-%    writeTestResultsForCI('long');
-%
-% See also: printTestOverview
+% See also: .gitlab-ci.yml, printTestOverview
 
 % Authors:       Tobias Ladner
 % Written:       22-April-2023
 % Last update:   10-May-2024 (TL, removed resultText.txt for bitbucket)
+%                11-April-2025 (TL, proper EXIT_CODES)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% assume unsuccessful test suite
-failed = true;
+% assume EXIT_SCORE=5 (unknown error)
+EXIT_CODE = 5;
 
-% default format: last run
+% load test suite
 testSuite = setDefaultValues({'short'},varargin);
-% check if correct identifier provided
-inputArgsCheck({{testSuite,'str',{'short','long','flaky','intlab','mosek','mp','sdpt3','nn','examples','benchmarks','website','header'}}});
+testSuiteSummary = loadTestSuiteSummary(testSuite);
 
-% load data
-unitTestsFile = [CORAROOT filesep 'unitTests' filesep 'unitTestsStatus.mat'];
-if ~isfile(unitTestsFile)
-    disp("No data provided. Run '''runTestSuite''' to acquire data.");
-else
-    % latest test results are stored in the variable 'testResults' in
-    % unitTestsStatus.mat
-    load(unitTestsFile,'testResults');
-    % read out data from map
-    if ~ismember(testResults.keys,testSuite)
-        disp("No results for test suite with identifier '" + testSuite + "'");
+% check if test results are recent (<= 5min)
+if minutes(datetime('now')-datetime(testSuiteSummary.dateEnd)) <= 5
+    % read results table
+    results = testSuiteSummary.results;
+    % jobs succeeds with EXIT_CODE=0, and fails for EXIT_CODE=1
+    if strcmp(testSuite,'flaky')
+        EXIT_CODE = sum(~[results.ok]) > 2; 
     else
-        % read results table
-        resultsTestSuite = testResults(testSuite);
-        results = resultsTestSuite.results; 
-        if strcmp(testSuite,'flaky')
-            failed = sum(~[results.ok]) > 2; 
-        else
-            failed = any(~[results.ok]); 
-        end
+        EXIT_CODE = any(~[results.ok]); 
     end
 end
 
 % result of test suite used as exit code
-fileID = fopen('failed.txt','w');
-% EXIT_CODE = 0 means successful test suite
-fprintf(fileID, "%d", failed); 
+fileID = fopen('EXIT_CODE.txt','w');
+fprintf(fileID, "%d", EXIT_CODE); 
 fclose(fileID);
 
 end

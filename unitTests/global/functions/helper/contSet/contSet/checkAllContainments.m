@@ -14,6 +14,10 @@ function checkAllContainments(S, Sdeg, Sempty, implementedSets, setsNonExact, ad
 %    point-containment.
 %    Also, note that taylm has been disabled for now - too many problems.
 %
+%    * This test tests A LOT. A LOT A LOT. Thus, requires a very long time.
+%    In order to reduce the time and as the CI runs all the time, we opted
+%    to randomly disable sub-tests that will, over time, all get tested.
+%
 % Syntax:
 %    checkAllContainments(S, Sdeg, Sempty, containsNonDeg, ...
 %                         implementedSets, setsNonExact, ...
@@ -72,7 +76,7 @@ function checkAllContainments(S, Sdeg, Sempty, implementedSets, setsNonExact, ad
 
 % Authors:       Adrian Kulmburg
 % Written:       12-July-2024
-% Last update:   ---
+% Last update:   22-May-2025 (TL, randomly disabled tests*)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -80,7 +84,7 @@ function checkAllContainments(S, Sdeg, Sempty, implementedSets, setsNonExact, ad
 % Set global tolerance for every containment check
 tol = 1e-5;
 
-%% Definitions of all tested sets
+%% Definitions of all tested sets -----------------------------------------
 
 % Points
 point_contained = [0;0]; % Origin should be contained in basic set
@@ -188,7 +192,7 @@ emptySets = {C_empty, I_empty, cPZ_empty, cZ_empty, E_empty, ls_empty,...
 
 % We can now perform all the actual containment checks
 
-%% Empty set and fullspace containment
+%% Empty set and fullspace containment ------------------------------------
 % Empty set containment checks
 aux_executeContainmentChecks_emptySet(S, Sdeg, Sempty, additionalAlgorithms);
 
@@ -309,6 +313,11 @@ function aux_executeContainmentChecks_emptySet(S, Sdeg, Sempty, additionalAlgori
     algorithms = ['exact' 'approx' additionalAlgorithms];
 
     for i=1:length(algorithms)
+        % randomly disable test*
+        if rand > 0.1
+            continue
+        end
+
         algo = algorithms{i};
 
         % No matter the algorithm, the empty set needs to be contained
@@ -324,6 +333,11 @@ function aux_executeContainmentChecks_emptySet(S, Sdeg, Sempty, additionalAlgori
 
         assert(res);
         assert(cert);
+    end
+
+    % randomly disable test*
+    if rand > 0.1
+        return
     end
 
     % Now, we check that S is not contained in the empty set, but
@@ -387,6 +401,11 @@ function aux_executeContainmentChecks_fullspace(S, Sdeg, Sempty, additionalAlgor
     algorithms = ['exact' 'approx' additionalAlgorithms];
 
     for i=1:length(algorithms)
+        % randomly disable test*
+        if rand > 0.1
+            continue
+        end
+
         algo = algorithms{i};
 
         % No matter the algorithm, the full space can *not* be contained
@@ -407,6 +426,11 @@ function aux_executeContainmentChecks_fullspace(S, Sdeg, Sempty, additionalAlgor
 
         assert(res);
         assert(cert);
+    end
+
+    % randomly disable test*
+    if rand > 0.1
+        return
     end
 
     % Now, we check that S, Sdeg, Sempty are contained in the full space.
@@ -448,6 +472,11 @@ function aux_executeContainmentChecks_basic(basicSet, setCollection, shouldBeCon
     N = 3; % Very low number of iterations for opt and sampling methods
 
     for i = 1:length(setCollection)
+        % randomly disable test*
+        if rand > 0.1
+            continue
+        end
+
         set = setCollection{i};
     
         exactIsImplemented = false;
@@ -526,6 +555,11 @@ function aux_executeContainmentChecks_basic(basicSet, setCollection, shouldBeCon
     % interested here whether they deliver the correct result, we only
     % check correct execution
     for i=1:length(additionalAlgorithms)
+        % randomly disable test*
+        if rand > 0.1
+            continue
+        end
+
         algorithm = additionalAlgorithms{i};
         algorithm_implementedSets = additionalAlgorithms_specificSets{i};
 

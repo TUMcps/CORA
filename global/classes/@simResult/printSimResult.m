@@ -1,19 +1,23 @@
-function printSimResult(simRes,varargin)
+function res = printSimResult(varargin)
 % printSimResult - prints a simResult object such that if one executes this command
 %    in the workspace, this simResult object would be created
 %
 % Syntax:
-%    printSimResult(simResult)
-%    printSimResult(simResult,'high')
+%    printSimResult(simRes)
+%    printSimResult(simRes,accuracy,doCompact,clearLine)
+%    printSimResult(fid,simRes,varargin)
+%    printSimResult(filename,simRes,varargin)
 %
 % Inputs:
 %    simRes - simResult object
-%    accuracy - (optional) floating-point precision
-%    doCompact - (optional) whether to compactly print the set
-%    clearLine - (optional) whether to finish with '\n'
+%    accuracy - floating-point precision
+%    doCompact - whether to compactly print the set
+%    clearLine - whether to finish with '\n'
+%    filename - char, filename to print given obj to
+%    fid - char, fid to print given obj to
 %
 % Outputs:
-%    -
+%    res - logical
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,67 +27,60 @@ function printSimResult(simRes,varargin)
 
 % Authors:       Tobias Ladner
 % Written:       10-October-2024
-% Last update:   ---
+% Last update:   20-May-2025 (TL, added option for fid)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
-narginchk(0,4);
-[accuracy,doCompact,clearLine] = setDefaultValues({'%4.3f%s',false,true},varargin);
-if ischar(accuracy) && strcmp(accuracy,'high')
-    accuracy = '%16.16f%s';
-end
-inputArgsCheck({ ...
-    {simRes,'att','simResult'}, ...
-    {accuracy,'att', {'char','string'}}, ...
-    {doCompact,'att','logical'}, ...
-    {clearLine,'att','logical'}
-})
+[fid,closefid,simRes,accuracy,doCompact,clearLine] = initPrint(varargin{:});
 
 % call constructor
-fprintf('simResult(')
+fprintf(fid,'simResult(');
 if ~doCompact
-    fprintf(' ...\n')
+    fprintf(fid,' ...\n');
 end
 % x
-printCell(simRes.x,accuracy,true,false)
-fprintf(', ')
+printCell(fid,simRes.x,accuracy,true,false);
+fprintf(fid,', ');
 if ~doCompact
-    fprintf('...\n')
+    fprintf(fid,'...\n');
 end
 % t
-printCell(simRes.t,accuracy,true,false)
-fprintf(', ')
+printCell(fid,simRes.t,accuracy,true,false);
+fprintf(fid,', ');
 if ~doCompact
-    fprintf('...\n')
+    fprintf(fid,'...\n');
 end
 % loc
 loc = simRes.loc;
 if iscell(loc)
     loc = cell2mat(loc);
 end
-printMatrix(loc,'%i',true,false)
-fprintf(', ')
+printMatrix(fid,loc,'%i',true,false);
+fprintf(fid,', ');
 if ~doCompact
-    fprintf('...\n')
+    fprintf(fid,'...\n');
 end
 % y
-printCell(simRes.y,accuracy,true,false)
-fprintf(', ')
+printCell(fid,simRes.y,accuracy,true,false);
+fprintf(fid,', ');
 if ~doCompact
-    fprintf('...\n')
+    fprintf(fid,'...\n');
 end
 % a
-printCell(simRes.a,accuracy,true,false)
+printCell(fid,simRes.a,accuracy,true,false);
 if ~doCompact
-    fprintf(' ...\n')
+    fprintf(fid,' ...\n');
 end
-fprintf(')')
+fprintf(fid,')');
 
 if clearLine
-    fprintf('\n')
+    fprintf(fid,'\n');
 end
+
+% finalize
+res = closePrint(fid,closefid);
 
 end
 

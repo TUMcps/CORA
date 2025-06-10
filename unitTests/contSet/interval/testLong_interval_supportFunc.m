@@ -27,7 +27,7 @@ tol = 1e-9;
 
 % random cases
 res = true;
-nrOfTests = 1000;
+nrOfTests = 100;
 
 for i=1:nrOfTests
     

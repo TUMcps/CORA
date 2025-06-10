@@ -12,7 +12,7 @@ function obj = train(obj,env,varargin)
 % 
 % Outputs:
 %   obj - trained DDPGagent
-%   learnHistory - learninig history 
+%   learnHistory - learning history 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -54,13 +54,13 @@ if useGpu
 end
 
 
-% Allocate generators for initial perturbance set.
+% Allocate generators for initial perturbation set.
 if numel(obj.options.rl.noise) == 1
-    % If pertubation radius is given
+    % If perturbation radius is given
     idMat = eye(obj.options.rl.actor.nn.train.num_init_gens,'like',inputDataClass);
     noiseBatchG = cast(repmat(idMat*obj.options.rl.noise,1,1,obj.options.rl.batchsize),'like',inputDataClass);
 else
-    % if custom pertubation generators are given check
+    % if custom perturbation generators are given check
     % dimensions
     if size(obj.options.rl.noise,1) ~= obj.environment.ctrlDynamics.nrOfDims
         throw(CORAerror("CORA:dimensionMismatch",obj.options.rl.noise,obj.environment.ctrlDynamics.nrOfDims));
@@ -72,11 +72,8 @@ end
 % Reset buffer from previous learning
 obj.buffer = obj.buffer.resetBuffer();
 
-% initialise exploration factor for exploration decay
+% initialize exploration factor for exploration decay
 explorationFactor = 1;
-
-% start timer
-tic
 
 % Begin Training Loop -----------------------------------------------------
 for episode = 1:episodes
@@ -128,12 +125,12 @@ for episode = 1:episodes
         % evaluate environment
         [env, nextObservation, reward, isDone, visual] = env.step(action);
         
-        % cast environemnt outputs
+        % cast environment outputs
         nextObservation = cast(nextObservation,'like',inputDataClass);
         isDone = cast(isDone,'like',inputDataClass);
         reward = cast(reward,'like',inputDataClass);
 
-        % store transition in replay buffer
+        % store transition in replay buffer (TL: should these be stored on GPU?)
         if strcmp(obj.options.rl.critic.nn.train.method,'set')
             data = {observation,zAction,reward,nextObservation,isDone};
         else
@@ -178,14 +175,12 @@ for episode = 1:episodes
     
     learnHistory = aux_normalizeLossHistory(learnHistory,episode,numberOfUpdates);
     
-    time = toc;
-    
     if 0 == mod(episode,obj.options.rl.printFreq)
-        aux_updateInfo(table,learnHistory,time,episode,verbose)
+        aux_updateInfo(table,learnHistory,episode,verbose)
     end
 
     if episode > obj.options.rl.earlyStop
-        % Early stoppping.
+        % Early stopping.
         if std(learnHistory.reward(episode-obj.options.rl.earlyStop:episode)) < abs(0.01*mean(learnHistory.reward(episode-obj.options.rl.earlyStop:episode)))
             if verbose
                 fprintf(['Stopped early! The reward for the last %i ' ...
@@ -286,7 +281,7 @@ if verbose
 
     % start training table
     hvalues = {'Epoch','Training Time','Actor Loss','Critic Loss','Reward','Q0'};
-    formats = {'d','s','.2f','.2f','.2f','.2f'};
+    formats = {'d','time','.2f','.2f','.2f','.2f'};
     colWidths = [0,0,0,0,10,10];
     table = CORAtable('double',hvalues,formats,'ColumnWidths',colWidths);
     table.printHeader();
@@ -296,11 +291,10 @@ end
 
 end
 
-function aux_updateInfo(table,learnHistory,trainTime,episode,verbose)
+function aux_updateInfo(table,learnHistory,episode,verbose)
 if verbose
     % Print a new table row.
-    trainTimeVec = [0 0 0 0 0 trainTime];
-    cvalues = {episode,datetime(trainTimeVec,'Format','HH:mm:ss'), ...
+    cvalues = {episode,[], ...
         learnHistory.actorLoss.center(episode), learnHistory.criticLoss.center(episode), ...
         learnHistory.reward(episode), learnHistory.Q0(episode) ...
     };

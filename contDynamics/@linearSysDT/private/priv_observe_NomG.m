@@ -37,8 +37,8 @@ function [R,tcomp] = priv_observe_NomG(linsysDT,params,options)
 options.L = priv_observe_gain_NomG(linsysDT, params, options);
 
 % apply set-membership approach
-tic
+timerVal = tic;
 R = priv_observe_intersectionFree(linsysDT, params, options);
-tcomp = toc;
+tcomp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

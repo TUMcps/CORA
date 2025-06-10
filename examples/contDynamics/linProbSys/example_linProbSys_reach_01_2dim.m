@@ -53,9 +53,9 @@ twoDimSys = linProbSys('twoDimSys',A,B,C);
 
 % Reachability Analysis ---------------------------------------------------
 
-tic;
+timerVal = tic;
 R = reach(twoDimSys, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 

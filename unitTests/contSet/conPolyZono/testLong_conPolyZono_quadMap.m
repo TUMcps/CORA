@@ -20,7 +20,7 @@ function res = testLong_conPolyZono_quadMap
 % Authors:       Niklas Kochdumper
 % Written:       03-February-2021
 % Last update:   ---
-% Last revision: ---
+% Last revision: 28-March-2025 (TL, fixed test and randPoint can return [])
 
 % ------------------------------ BEGIN CODE -------------------------------
 
@@ -46,9 +46,24 @@ for i = 1:10
     N = 10;
     points = zeros(dim(cPZ),N);
 
-    for k = 1:N
+    % try to sample N points
+    cnt = 0;
+    for k = 1:2*N
+        % sample point
         p = randPoint(cPZ1,1,'extreme');
-        points(:,k) = quadMapPoint(p,p,Q);
+
+        % randPoint might return [] if no point was found
+        if isempty(p)
+            continue
+        end
+
+        % store
+        cnt = cnt + 1;
+        points(:,cnt) = quadMapPoint(p,p,Q);
+
+        if cnt == N
+            break
+        end
     end
     
     % check if all points are inside polygon enclosures

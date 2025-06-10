@@ -38,7 +38,7 @@ function [OGain, tComp] = priv_observe_gain_PRadA(linsysDT,params,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-tic;
+timerVal = tic;
 
 % store full output matrix and noise set
 tmpC = linsysDT.C;
@@ -64,6 +64,6 @@ end
 linsysDT.C = tmpC;
 
 % computation time
-tComp = toc;
+tComp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -68,6 +68,11 @@ Z2 = zonotope(ones(4,1));
 assert(contains(Z1,Z1));
 assert(~contains(Z1,Z2));
 
+% outer zonotope is an interval
+Z1 = zonotope(interval([1;2],[4;6]));
+Z2 = zonotope([3;4],[1;1]);
+assert(contains(Z1,Z2));
+
 % two sets with one being degenerate
 c = [ 5.000 ; 0.000 ];
 G = [ 0.000 ; 1.000 ];

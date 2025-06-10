@@ -73,9 +73,9 @@ options.zonotopeOrder = 6;
 
 options.linAlg = 'backward_maxmin_coarse';
 
-tic
+timerVal = tic;
 R_over = reach(sys, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 % Reachability Analysis (under-approximative) -----------------------------
@@ -84,9 +84,9 @@ options.reductionTechnique = 'sum';
 %options.linAlg = 'backward_minmax_RKweighted';
 options.linAlg = 'backward_minmax';
 
-tic
+timerVal = tic;
 R_under = reach(sys, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 

@@ -1,19 +1,23 @@
-function printSet(S,varargin)
+function res = printSet(varargin)
 % printSet - prints a set such that if one executes this command
 %    in the workspace, this set would be created
 %
 % Syntax:
 %    printSet(S)
-%    printSet(S,'high')
+%    printSet(S,accuracy,doCompact,clearLine)
+%    printSet(fid,S,varargin)
+%    printSet(filename,S,varargin)
 %
 % Inputs:
-%    S - contSet
-%    accuracy - (optional) floating-point precision
-%    doCompact - (optional) whether to compactly print the set
-%    clearLine - (optional) whether to finish with '\n'
+%    M - matrix
+%    accuracy - floating-point precision, or 'high'
+%    doCompact - whether the matrix is printed compactly
+%    clearLine - whether to finish with '\n'
+%    filename - char, filename to print given obj to
+%    fid - char, fid to print given obj to
 %
 % Outputs:
-%    -
+%    res - logical
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,68 +27,62 @@ function printSet(S,varargin)
 
 % Authors:       Tobias Ladner
 % Written:       10-October-2024
-% Last update:   ---
+% Last update:   20-May-2025 (TL, added option for fid)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-narginchk(0,4);
-[accuracy,doCompact,clearLine] = setDefaultValues({'%4.3f',false,true},varargin);
-if ischar(accuracy) && strcmp(accuracy,'high')
-    accuracy = '%16.16f';
-end
-inputArgsCheck({ ...
-    {S,'att',{'contSet','matrixSet'}}, ...
-    {accuracy,'att', {'char','string'}}, ...
-    {doCompact,'att','logical'}, ...
-    {clearLine,'att','logical'}
-})
+% parse input
+[fid,closefid,S,accuracy,doCompact,clearLine] = initPrint(varargin{:});
 
 % get print info
 [abbrev,propertyOrder] = getPrintSetInfo(S);
 
 if doCompact
     % print in one line
-    fprintf('%s(',class(S))
+    fprintf(fid,'%s(',class(S));
     for p = 1:numel(propertyOrder)
         pname = propertyOrder{p};
-        aux_printProperty(S.(pname),accuracy);
+        aux_printProperty(fid,S.(pname),accuracy);
         if p < numel(propertyOrder)
-            fprintf(', ')
+            fprintf(fid,', ');
         end
     end
-    fprintf(')')
+    fprintf(fid,')');
 
 else
     % print each property as variable
     for p = 1:numel(propertyOrder)
         pname = propertyOrder{p};
-        fprintf('%s = ',pname);
-        aux_printProperty(S.(pname),accuracy);
-        fprintf(';\n');
+        fprintf(fid,'%s = ',pname);
+        aux_printProperty(fid,S.(pname),accuracy);
+        fprintf(fid,';\n');
     end
     % init set
-    fprintf('%s = %s(%s);',abbrev,class(S),strjoin(propertyOrder,','));
+    fprintf(fid,'%s = %s(%s);',abbrev,class(S),strjoin(propertyOrder,','));
 end
 
 if clearLine
-    fprintf('\n');
+    fprintf(fid,'\n');
 end
+
+% finalize
+res = closePrint(fid,closefid);
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function aux_printProperty(property,accuracy)
+function aux_printProperty(fid,property,accuracy)
     if isnumeric(property)
-        printMatrix(property,accuracy,true,false);
+        printMatrix(fid,property,accuracy,true,false);
     elseif iscell(property)
-        printCell(property,accuracy,true,false);
+        printCell(fid,property,accuracy,true,false);
     elseif isstruct(property)
-        printStruct(property,accuracy,true,false);
+        printStruct(fid,property,accuracy,true,false);
     elseif isa(property,'contSet')
-        printSet(property,accuracy,true,false)
+        printSet(fid,property,accuracy,true,false)
     else
         throw(CORAerror("CORA:noops",property))
     end

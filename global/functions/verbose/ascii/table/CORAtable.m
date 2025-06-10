@@ -8,11 +8,17 @@ classdef CORAtable < ASCIItable
 %    design - char, 'single', 'double', 'modern', 'minimalistic', 
 %       'ascii', 'latex', 'html', 'markdown'
 %    hvalues - cell array containing headings
-%    formats - cell array containing cell formats; for summary columns
-%       'sum{%.3e & %.3e}', where '&' indicates the position of '+-' 
-%       (or \pm in latex design).
+%    formats - cell array containing cell formats
+%       e.g., 's', 'i', '.3f', ...
+%           Special column formats:
+%           - 'rownr', displays current row number
+%           - 'time', displays time since header was printed as HH:mm:ss
+%           - 'sum{%.3e & %.3e}', mean+std summary, '&' represents '+-' 
 %    varargin - name-value pairs
 %        <'ColumnWidths',colWidths> - numeric, column width
+%        <'SaveContent',saveContent> - logical, whether content should be saved
+%        <'FileName',filename> - char, filename
+%        <'fid',fid> - numeric, file identifier
 %
 % Outputs:
 %    table - CORAtable object
@@ -39,6 +45,7 @@ classdef CORAtable < ASCIItable
 % Authors:       Tobias Ladner
 % Written:       19-September-2024
 % Last update:   05-March-2025 (TL, printTable)
+%                15-May-2025 (TL, added 'rownr' and 'time' format)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -65,17 +72,33 @@ end
 methods (Static)
     function printTable(matlabtable,varargin)
         % prints a Matlab table in the specified CORA design
+        % Syntax:
+        %    CORAtable.printTable(matlabtable)
+        %    CORAtable.printTable(matlabtable,design,varargin)
+        %    CORAtable.printTable(matlabtable,design,formats,varargin)
+        % 
+        % Inputs: 
+        %    matlabtable - table
+        %    all other parameters as for the CORAtable constructor
+        %
+        % See also: CORAtable
         
         % parse input
         inputArgsCheck({{matlabtable,'att','table'}});
         hvalues = matlabtable.Properties.VariableNames;
-        [design,formats] = setDefaultValues({'single',aux_detectFormats(matlabtable)},varargin);
+
+        % parse table to have atomic values
+        matlabtable = aux_parseAtomicValues(matlabtable);
+
+        % detect design and format
+        design = setDefaultValues({'single'},varargin);
+        [formats,varargin] = aux_detectFormats(matlabtable,varargin(2:end));
 
         % get column widths
         colWidths = aux_determineColumnWidths(matlabtable,hvalues,formats);
 
         % init table
-        coratable = CORAtable(design,hvalues,formats,'ColumnWidths',colWidths);
+        coratable = CORAtable(design,hvalues,formats,'ColumnWidths',colWidths,varargin{:});
 
         % print
        coratable.printHeader()
@@ -100,12 +123,17 @@ methods (Access=protected)
                 % Wrap header values with \text{...} to avoid math-mode;
                 % for summary columns add \multicolumn{...}.
                 for i=1:length(t.hvalues)
+                    % read out hvalue
+                    hvalue = t.hvalues{i};
+                    % escape '#'
+                    hvalue = strrep(hvalue,'#','\#');
+
                     format = t.formats{i};
                     if startsWith(format,'sum')
                         hvalues{i} = sprintf(...
-                            '\\multicolumn{2}{c}{\\text{%s}}',t.hvalues{i});
+                            '\\multicolumn{2}{c}{\\text{%s}}',hvalue);
                     else
-                        hvalues{i} = sprintf('\\text{%s}',t.hvalues{i});
+                        hvalues{i} = sprintf('\\text{%s}',hvalue);
                     end
                 end
 
@@ -144,7 +172,7 @@ function [design,hvalues,formats,tableoptions] = aux_parseInput(design,hvalues,f
 
     % check input args
     inputArgsCheck({ ...
-        {design,'str',{'single', 'double', 'modern', 'minimalistic','ascii','latex','html','markdown'}};    ...
+        {design,'str',{'single', 'double', 'modern', 'minimalistic','ascii','latex','html','markdown','csv'}};    ...
         {hvalues,'att','cell'};    ...
         {formats,'att','cell'};    ...
     })
@@ -167,6 +195,8 @@ function [design,hvalues,formats,tableoptions] = aux_parseInput(design,hvalues,f
             tableoptions = aux_getHTMLTableOptions();
         case 'markdown'
             tableoptions = aux_getMarkdownTableOptions();
+        case 'csv'
+            tableoptions = aux_getCSVTableOptions();
         otherwise
             % should have been caught at inputArgsCheck
             throw(CORAerror('CORA:wrongValue','third','Unknown design.'))
@@ -261,6 +291,13 @@ function tableoptions = aux_getMarkdownTableOptions()
     };
 end
 
+function tableoptions = aux_getCSVTableOptions()
+    % design: 'csv' 
+    tableoptions = {
+        'tbhline','','tbhcorner','','hbvline','','hsep',';'
+    };
+end
+
 function latexformat = aux_format2latex(format)
     if startsWith(format,'sum')
         % Insert \pm in between.
@@ -274,20 +311,20 @@ function latexformat = aux_format2latex(format)
     end
 end
 
-function formats = aux_detectFormats(matlabtable)
-    % extract variable types
-    if height(matlabtable) >= 1
-        if isMATLABReleaseOlderThan('R2024b')
-            % determine class based on first row
-            types = arrayfun(@(i) class(matlabtable{1,i}),1:numel(matlabtable.Properties.VariableNames),'UniformOutput',false);
-        else
-            % select variable types stored in table
-            types = matlabtable.Properties.VariableTypes;
-        end
-    else
-        % just use string; no entries anyway
-        types = arrayfun(@(i) 'string',1:numel(matlabtable.Properties.VariableNames),'UniformOutput',false);
+function [formats,givenvalues] = aux_detectFormats(matlabtable,givenvalues)
+
+    % check if formats are given
+    if numel(givenvalues) > 1 && iscell(givenvalues{1})
+        % assume first entry is formats
+        formats = givenvalues{1};
+        givenvalues = givenvalues(2:end);
+        return
     end
+
+    % try to guess the format from given table ---
+
+    % extract variable types
+    types = aux_getColumnTypes(matlabtable);
     
     % determine formats
     formats = cell(1,numel(types));
@@ -331,6 +368,53 @@ function len = aux_determineLengthEntry(entry,format)
     formattedEntry = sprintf(format,entry);
     % determine length (ignoring hyperlink text)
     [~,len] = centerString(formattedEntry,0);
+end
+
+function matlabtable = aux_parseAtomicValues(matlabtable)
+    % parses the matlab table to only have atomic values
+    
+    % find cell columns
+    types = aux_getColumnTypes(matlabtable);
+    idx = find(strcmp('cell',types));    
+    for i=idx
+        % convert each column
+
+        % read out column
+        column = matlabtable(:,i);
+        columnname = column.Properties.VariableNames{1};
+
+        formatfun = @(value) sprintf("%s",value{1});
+        if height(column) > 1
+            value = column{1,1};
+            if ismember(class(value{1}),{'double','logical'})
+                formatfun = @(value) value{1};
+            end
+        end
+
+        % remove outer cell
+        column = rowfun(formatfun, column);
+        column.Properties.VariableNames{1} = columnname;
+
+        % store back into table
+        matlabtable = [matlabtable(:,1:(i-1)),column,matlabtable(:,(i+1):end)];
+
+    end
+
+end
+
+function types = aux_getColumnTypes(matlabtable)
+    if height(matlabtable) >= 1
+        if isMATLABReleaseOlderThan('R2024b')
+            % determine class based on first row
+            types = arrayfun(@(i) class(matlabtable{1,i}),1:numel(matlabtable.Properties.VariableNames),'UniformOutput',false);
+        else
+            % select variable types stored in table
+            types = matlabtable.Properties.VariableTypes;
+        end
+    else
+        % just use string; no entries anyway
+        types = arrayfun(@(i) 'string',1:numel(matlabtable.Properties.VariableNames),'UniformOutput',false);
+    end
 end
 
 % ------------------------------ END OF CODE ------------------------------

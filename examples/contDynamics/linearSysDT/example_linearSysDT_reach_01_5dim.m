@@ -57,9 +57,9 @@ options.zonotopeOrder = 200;
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+timerVal = tic;
 R = reach(fiveDimSys, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 

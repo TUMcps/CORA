@@ -55,6 +55,12 @@ assert(isequal(R_loc,R2))
 R_parent = find(R,'parent',parents(1));
 assert(isequal(R_parent,R1))
 
+tFinal = R(end).timePoint.time{end};
+R_time = find(R,'time',tFinal);
+assert(~isemptyobject(R_time));
+R_time = find(R,'time',tFinal+1);
+assert(isemptyobject(R_time));
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -41,11 +41,15 @@ params.R0 = zonotope(interval( ...
 
 % Reachability Settings ---------------------------------------------------
 
-options.timeStep = 0.01;
 options.alg = 'lin';
 options.tensorOrder = 2;
 options.taylorTerms = 1;
-options.zonotopeOrder = 80;
+options.zonotopeOrder = 10;
+if strcmp(type,'point')
+    options.timeStep = 0.05;
+else
+    options.timeStep = 0.1;
+end
 
 % Parameters for NN evaluation --------------------------------------------
 
@@ -84,7 +88,7 @@ spec = add(specGoalSet,specObstacle);
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, true);
+[res, R, simRes] = verify(sys, spec, params, options, true, 9);
 tTotal = toc(t);
 disp(['Result: ' res])
 

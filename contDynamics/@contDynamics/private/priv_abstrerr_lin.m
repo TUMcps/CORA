@@ -89,9 +89,14 @@ if options.tensorOrder == 2
             H_ = max(infimum(H_),supremum(H_));
             errorLagr(i) = 0.5 * dz' * H_ * dz;
         end
+
+        % check if Lagrange remainder is too large
+        if any(isnan(errorLagr)) || any(isinf(errorLagr))
+            throw(CORAerror('CORA:reachSetExplosion','Lagrange remainder exploded.'))
+        end
         
         trueError = errorLagr;
-        VerrorDyn = zonotope(0*trueError,diag(trueError));
+        VerrorDyn = zonotope(zeros(size(trueError)),diag(trueError));
 
     else
         % no interval arithmetic (?)

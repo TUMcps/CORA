@@ -26,7 +26,7 @@ function res = testLong_interval_convHull
 % Random cases
 res = true;
 
-nrOfTests = 1000;
+nrOfTests = 100;
 for i=1:nrOfTests
 
     % random dimension

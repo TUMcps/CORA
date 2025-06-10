@@ -45,7 +45,7 @@ for i = 1:2
     for j = 1:length(sets)
         
         % generate random object of the current set representation
-        temp = sets{i}('Dimension',2);
+        temp = sets{j}('Dimension',2);
         cPZ2 = conPolyZono(temp);
 
         % compute union

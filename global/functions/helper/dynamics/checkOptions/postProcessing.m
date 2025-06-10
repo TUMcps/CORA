@@ -411,8 +411,10 @@ options.zetaTabs = 0.005;               % zeta_T,abs (taylorTerms)
 if contains(options.alg,'lin')
     params.R0 = zonotope(params.R0);    % convert to zono
     params.R = params.R0;               % for start set
-    options.redFactor = 0.0005;         % zeta_Z (zonotope order)
-    options.zetaK = 0.90;               % zeta_K (tensorOrder)
+    if ~isfield(options,'redFactor')
+        options.redFactor = 0.0005;         % zeta_Z (zonotope order)
+    end
+    options.zetaK = 0.9;               % zeta_K (tensorOrder)
     % zeta_h (timeStep) ... depends on order (chosen in code) and decrFactor
     options.zetaphi = [0.85; 0.76; 0.68]; 	
 elseif contains(options.alg,'poly')

@@ -12,7 +12,7 @@ function [R,R_Krylov] = priv_exponential_Krylov(linsys,R,options)
 %
 % Outputs:
 %    R - reachable set
-%    R_Krylov - rechable set due to Krylov error
+%    R_Krylov - reachable set due to Krylov error
 %
 % Example: 
 %    -

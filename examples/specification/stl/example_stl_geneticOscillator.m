@@ -57,18 +57,18 @@ sys = nonlinearSys(f);
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+timerVal = tic;
 R = reach(sys, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 
 % Simulation --------------------------------------------------------------
 
-tic
+timerVal = tic;
 simOpt.points = 5;
 simRes = simulateRandom(sys, params, simOpt);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of simulated traces: ',num2str(tComp)]);
 
 
@@ -91,7 +91,7 @@ P = stl('P', atomicProposition(polytope([0 0 0 0 0 -1 0 0 0], -1)));
 
 % 0.032 − 125^2(x4 − 0.003)^2 − 3(x6 − 0.5)^2 > 0
 Q = stl('Q', atomicProposition(ellipsoid(Q * factor, q), [4 6]));
-% overapproximating the ellipsoid as a level set speeds up the computation
+% over-approximating the ellipsoid as a level set speeds up the computation
 % Q = stl('Q', atomicProposition(levelSet(ellipsoid(Q * factor, q)), [4 6]));
 
 % define formula
@@ -101,23 +101,23 @@ phi = globally(P | globally(Q, interval(3,3.5)), interval(0,1));
 res = true;
 
 % Model check formula on reachable set
-tic
+timerVal = tic;
 res = res && modelChecking(R,phi,'signals');
-tComp = toc;
+tComp = toc(timerVal);
 disp(['verification of reachable set: ',num2str(tComp)]);
 
 % Model check formula on reachable set using the incremental algorithm
-tic
+timerVal = tic;
 res = res && modelChecking(R,phi,'incremental','verbose',true);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['verification of reachable set (incremental): ',num2str(tComp)]);
 
 % Verify all simulation traces
-tic
+timerVal = tic;
 for i = 1:length(simRes)
     res = res && monitorSTL(simRes(i),phi);
 end
-tComp = toc;
+tComp = toc(timerVal);
 disp(['verification of simulation traces: ',num2str(tComp)]);
 
 

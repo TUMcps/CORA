@@ -28,7 +28,7 @@ res = true;
 layer = nnSigmoidLayer();
 % compute error
 l = 1; u = 2;
-[coeffs, ~] = layer.computeApproxPoly(1, 2, 1, 'regression');
+[coeffs, ~] = layer.computeApproxPoly(l, u, 1, 'regression');
 [der1l,der1u] = layer.getDerBounds(l, u);
 [diff2l,diff2u] = nnHelper.minMaxDiffOrder(coeffs, l, u, layer.f, der1l, der1u);
 L = interval(diff2l,diff2u);
@@ -39,7 +39,7 @@ y_f = layer.f(x);
 assert(res && all(contains(L, y_f-y_p)));
 
 l = 1; u = 2;
-[coeffs, ~] = layer.computeApproxPoly(1, 2, 1, 'singh');
+[coeffs, ~] = layer.computeApproxPoly(l, u, 1, 'singh');
 [der1l,der1u] = layer.getDerBounds(l, u);
 [diff2l,diff2u] = nnHelper.minMaxDiffOrder(coeffs, l, u, layer.f, der1l, der1u);
 L = interval(diff2l,diff2u);
@@ -52,7 +52,7 @@ assert(res && all(contains(L, y_f-y_p)));
 layer = nnTanhLayer();
 % compute error
 l = 1; u = 2;
-[coeffs, ~] = layer.computeApproxPoly(1, 2, 1, 'regression');
+[coeffs, ~] = layer.computeApproxPoly(l, u, 1, 'regression');
 [der1l,der1u] = layer.getDerBounds(l, u);
 [diff2l,diff2u] = nnHelper.minMaxDiffOrder(coeffs, l, u, layer.f, der1l, der1u);
 L = interval(diff2l,diff2u);
@@ -63,7 +63,7 @@ y_f = layer.f(x);
 assert(res && all(contains(L, y_f-y_p)));
 
 l = 1; u = 2;
-[coeffs, ~] = layer.computeApproxPoly(1, 2, 1, 'singh');
+[coeffs, ~] = layer.computeApproxPoly(l, u, 1, 'singh');
 [der1l,der1u] = layer.getDerBounds(l, u);
 [diff2l,diff2u] = nnHelper.minMaxDiffOrder(coeffs, l, u, layer.f, der1l, der1u);
 L = interval(diff2l,diff2u);

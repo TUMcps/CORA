@@ -48,8 +48,11 @@ for i = 1:length(obj.layers)
 end
 y = x;
 
-% calculate sensitivity [1]
-S = ones([1 1 size(y,2)],'like',y);
+% Obtain number of output dimensions and batch size.
+[nK,bSz] = size(y);
+
+% Initialize the sensitivity in for the output, i.e., identity matrix.
+S = repmat(eye(nK,'like',y),1,1,bSz);
 
 % backward propagation
 for i = length(obj.layers):-1:1

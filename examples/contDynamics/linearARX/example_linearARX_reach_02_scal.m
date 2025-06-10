@@ -97,10 +97,10 @@ for fk = fk_0*fk_vec
 
             for i_m = 1 : 3    
                 for i_j = 1:num_rep
-                    tic;
+                    timerVal = tic;
                     options.armaxAlg = T{i_m,1};
                     R_ARX = reach(sys_ARX,params,options);
-                    Ts(i_j) = toc;
+                    Ts(i_j) = toc(timerVal);
                 end
                 T{i_m,i_T} = median(Ts);
             end

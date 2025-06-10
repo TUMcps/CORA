@@ -88,10 +88,10 @@ switch method
         scaling = inf(1,size(p,2));
         % check for each point whether zonotope norm is <= 1
         for i = 1:size(p,2)
-            scaling(i) = zonotopeNorm(Z,p(:,i)-Z.center);
-            res(i) = scaling(i) <= 1 || withinTol(scaling(i),1,tol);
-            cert(i) = true;
+            scaling(i) = zonotopeNorm(Z,p(:,i)-Z.c);
         end
+        res = scaling <= 1 | withinTol(scaling,1,tol);
+        cert = true;
     case {'exact', 'approx', 'approx:st'}
         % If the user has not specifically chosen between venum and
         % polymax, we need to make the choice by estimating the runtime

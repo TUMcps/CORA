@@ -36,12 +36,16 @@ matZ = matZonotope(C,G);
 % try different syntaxes for runtime issues
 M = randPoint(matZ);
 assert(size(M,3) == 1);
+assert(all(contains(matZ,M)))
 M = randPoint(matZ,5);
 assert(size(M,3) == 5);
+assert(all(contains(matZ,M)))
 M = randPoint(matZ,5,'extreme');
 assert(size(M,3) == 5);
+assert(all(contains(matZ,M)))
 M = randPoint(matZ,5,'standard');
 assert(size(M,3) == 5);
+assert(all(contains(matZ,M)))
 
 % combine results
 res = true;

@@ -25,12 +25,14 @@ function [diffl,diffu] = minMaxDiffOrder(coeffs, l, u, f, der1l,der1u)
 % Written:       28-March-2022
 % Last update:   31-August-2022 (adjust tol)
 %                30-May-2023 (output bounds)
+%                02-May-2025 (added maxPoints)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 tol = 1e-4;
-minPoints = 10000;
+minPoints = 1e4;
+maxPoints = 5e9; % requires 40GB
 
 if l == u
     % compute exact result directly
@@ -56,7 +58,7 @@ der = max(abs([ ...
 % determine number of points to sample
 dx = tol / der;
 reqPoints = ceil((u - l)/dx);
-numPoints = max(reqPoints, minPoints);
+numPoints = min(max(reqPoints, minPoints), maxPoints);
 
 % re-calculate tolerance with number of used points
 dx = (u-l)/numPoints;

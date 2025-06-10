@@ -33,7 +33,7 @@ params.R0 = zonotope(I);
 
 % Reachability Settings ---------------------------------------------------
 
-options.timeStep = 0.005; 
+options.timeStep = tFinal/165; % = 0.0221
 options.taylorTerms = 3;
 options.zonotopeOrder = 20;
 
@@ -195,6 +195,7 @@ function [R,tFinal] = aux_reachRem(HA,R,params,options,tshift,flow)
     sys = locs(1).contDynamics;
     
     params.tFinal = params.tFinal - tshift - infimum(I(3));
+    options.timeStep = params.tFinal/ceil(params.tFinal/options.timeStep);
     params.R0 = Rjump;
     params = rmfield(params,'startLoc');
     options = rmfield(options,'guardIntersect');

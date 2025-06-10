@@ -75,7 +75,7 @@ linSys_n  = linearSys('n',A_n, B);
 
 % Reachability Analysis ---------------------------------------------------
 
-clock = tic;
+timerVal = tic;
 R = []; 
 params.R0 = R0;
 
@@ -93,7 +93,7 @@ for i = 1:2
     R = add(R,Rtemp);
 end
 
-tComp = toc(clock);
+tComp = toc(timerVal);
 
 % post-processing for plotting
 t = 0;
@@ -125,7 +125,7 @@ end
 
 % Verification ------------------------------------------------------------
 
-tic
+timerVal = tic;
 violation30 = false;
 
 for i = 1:size(R,1)
@@ -137,7 +137,7 @@ for i = 1:size(R,1)
     end
 end
 
-tVer = toc;
+tVer = toc(timerVal);
 
 disp(['specification verified: ',num2str(~violation30)]);
 disp(['computation time: ',num2str(tVer+tComp)]);

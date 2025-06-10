@@ -84,12 +84,16 @@ methods
 
         % additional information
         if isa(obj, 'nnGNNGlobalPoolingLayer')
-            str = str + "(pooling across nodes)";
+            str = str + sprintf('(pooling across nodes (%s))', obj.type);
         elseif isa(obj, 'nnGNNLayer')
             str = str + "(per node)";
         end
     end
+end
 
+% evaluate ----------------------------------------------------------------
+
+methods
     function r = evaluate(obj, varargin)
         % wrapper to propagate a single layer
         nn = neuralNetwork({obj});
@@ -100,8 +104,6 @@ methods
         % Callback when data type of learnable parameters was changed
     end
 end
-
-% evaluate ----------------------------------------------------------------
 
 methods(Abstract, Access = {?nnLayer, ?neuralNetwork})
     % numeric
@@ -159,6 +161,70 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
+methods
+    function layerStruct = exportAsStruct(obj)
+       layerStruct = struct;
+       layerStruct.type = class(obj);
+       layerStruct.name = obj.name;
+       layerStruct.fields = getFieldStruct(obj);
+    end
+
+    function fieldStruct = getFieldStruct(obj)
+        throw(CORAerror('CORA:nnLayerNotSupported',obj,'field struct'));
+    end
+end
+
+methods (Static)
+    function layer = importFromStruct(layerStruct)
+        fieldStruct = layerStruct.fields;
+
+        % init layer
+        switch(layerStruct.type)
+            % linear ---
+            case 'nnLinearLayer'
+                W = fieldStruct.W;
+                W = reshape(W,reshape(fieldStruct.size_W,1,[]));
+                b = fieldStruct.b;
+                b = reshape(b,fieldStruct.size_W(1),[]);
+                layer = nnLinearLayer(W,b);
+                d = fieldStruct.d;
+                if ~isempty(d)
+                    d = interval(d.inf, d.sup);
+                    d = reshape(d,fieldStruct.size_W(1),[]);
+                end
+                layer.d = d;
+            case 'nnElementwiseAffineLayer'
+                scale = fieldStruct.scale;
+                offset = fieldStruct.offset;
+                layer = nnElementwiseAffineLayer(scale, offset);
+                % nonlinear ---
+            case 'nnReLULayer'
+                layer = nnReLULayer();
+            case 'nnLeakyReLULayer'
+                alpha = fieldStruct.alpha;
+                layer = nnLeakyReLULayer(alpha);
+            case 'nnSigmoidLayer'
+                layer = nnSigmoidLayer();
+            case 'nnTanhLayer'
+                layer = nnTanhLayer();
+                % special ---
+            case 'nnReshapeLayer'
+                idx_out = fieldStruct.idx_out;
+                layer = nnReshapeLayer(idx_out);
+            otherwise
+                throw(CORAerror('CORA:specialError',sprintf('Unknown layer type: %s',layerStruct.type)))
+        end
+
+        % update name            
+        layer.name = layerStruct.name;
+
+        % network reduction: read merged neurons if available
+        if isfield(layerStruct.fields,'merged_neurons')
+            layer.merged_neurons = layerStruct.fields.merged_neurons;
+        end
+    end
+end
+
 methods (Abstract)
     [nin, nout] = getNumNeurons(obj)
     outputSize = getOutputSize(obj, inputSize)
@@ -208,7 +274,7 @@ methods (Access = protected)
     % overwrite copy function
     function cp = copyElement(obj)
         cp = copyElement@matlab.mixin.Copyable(obj);
-        cp.name = sprintf("%s_copy", obj.name);
+        cp.name = sprintf('%s_copy', obj.name);
     end
 end
 

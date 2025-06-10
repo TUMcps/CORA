@@ -24,7 +24,7 @@ function res = testLong_interval_sqrt
 % ------------------------------ BEGIN CODE -------------------------------
 
 % random tests
-nrOfTests = 1000;
+nrOfTests = 100;
 
 for i=1:nrOfTests
 

@@ -37,8 +37,8 @@ function [R,tcomp] = priv_observe_HinfG(linsysDT,params,options)
 options.L = priv_observe_gain_HinfG(linsysDT,params,options);
 
 % apply set-membership approach
-tic
+timerVal = tic;
 R = priv_observe_interval(linsysDT,params,options);
-tcomp = toc;
+tcomp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -106,7 +106,7 @@ for frame=1:nrFramesAnimation
     title(sprintf('$t=%.2fs$',t_i1),'Interpreter','latex')
 
     % plot reachable set
-    tic
+    timerVal = tic;
     for r=1:size(Rs,1)
         R_all = Rs{r,1};
 
@@ -130,7 +130,7 @@ for frame=1:nrFramesAnimation
         % save for next round
         Rs_to_i{r} = R_to_i;
     end
-    plotTime = toc;
+    plotTime = toc(timerVal);
 
     % if time to plot reachable sets took too long, 
     % keep current reachable sets and only delete subsequent

@@ -52,7 +52,7 @@ set(groot,'DefaultAxesBox','on')
 
 linestyles = {'-','--','-.',':','-','--'};
 
-% Specifiy plot colors and labels for each agent
+% Specify plot colors and labels for each agent
 cmap = zeros(numAgents,3);
 labels = cell(1,numAgents);
 
@@ -88,7 +88,7 @@ for i = 1:numAgents
     end
 end
 
-% Plot trajectroies 
+% Plot trajectories 
 fig_trajectories = figure();
 for i = 1:4
     for j = 1:numAgents

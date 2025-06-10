@@ -62,9 +62,9 @@ vanderPol = nonlinearSys(@vanderPolEq);
 params.R0 = R0;
 
 % compute reachable set
-tic
+timerVal = tic;
 R = reach(vanderPol, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time (zonotope): ',num2str(tComp)]);
 
 
@@ -76,9 +76,9 @@ params.R0 = polyZonotope(R0);
 options.polyZono = polyZono;
 
 % compute reachable set
-tic
+timerVal = tic;
 Rpoly = reach(vanderPol, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time (polynomial zonotope): ',num2str(tComp)]);
 
 

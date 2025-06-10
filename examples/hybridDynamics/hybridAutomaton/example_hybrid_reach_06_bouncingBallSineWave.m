@@ -80,9 +80,9 @@ HA = hybridAutomaton('bouncingBallSineWave',loc);
 
 % Reachability Analysis ---------------------------------------------------
 
-tic;
+timerVal = tic;
 R = reach(HA,params,options);
-tComp = toc;
+tComp = toc(timerVal);
 
 disp(['Computation time for reachable set: ',num2str(tComp),' s']);
 

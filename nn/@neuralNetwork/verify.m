@@ -75,12 +75,12 @@ n0 = size(x,1);
 
 res = [];
 
-tic
+timerVal = tic;
 
 % Main splitting loop.
 while size(xs,2) > 0
 
-    time = toc;
+    time = toc(timerVal);
     if time > timeout
         res = 'UNKNOWN';
         x_ = [];

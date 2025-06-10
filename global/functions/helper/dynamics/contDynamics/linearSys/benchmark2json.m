@@ -23,7 +23,7 @@ function res = benchmark2json(sys,params,spec,varargin)
 %    sys - linearSys object
 %    params - model parameters
 %    spec - safety specifications
-%    filename - (optional) name of .json file, incl. extension
+%    filename - (optional) path/name of .json file, incl. extension
 %
 % Outputs:
 %    res - JSON file successfully generated
@@ -31,6 +31,7 @@ function res = benchmark2json(sys,params,spec,varargin)
 % Authors:       Mark Wetzlinger, Tobias Ladner
 % Written:       07-June-2024
 % Last update:   28-June-2024 (TL, superior implementation)
+%                05-May-2025 (TL, better handling of given filename)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -79,9 +80,17 @@ S.unsafeSet = aux_spec2struct(spec);
 % convert to JSON
 jsonstring = jsonencode(S,'PrettyPrint',true);
 
-% write to root CORA folder
+% write to root CORA folder ---
+
+% check if parent folder exists
+parentfolder = fileparts(filename);
+if ~exist("parentfolder","dir")
+    mkdir(parentfolder);
+end
+
 try
-    fid = fopen([CORAROOT filesep filename],'w');
+    % write file
+    fid = fopen(filename,'w');
     fprintf(fid,'%s',jsonstring);
     fclose(fid);
 catch ME

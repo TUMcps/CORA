@@ -23,6 +23,7 @@ function res = isemptyobject(simRes)
 % Authors:       Mark Wetzlinger
 % Written:       01-May-2023
 % Last update:   22-May-2023 (MW, extend to class arrays)
+%                28-April-2025 (TL, also check if each entry is empty)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -34,7 +35,7 @@ res = false(r,c);
 for i=1:r
     for j=1:c
         % check time
-        res(i,j) = isempty(simRes(i,j).t);
+        res(i,j) = isempty(simRes(i,j).t) || all(cellfun(@isempty, simRes(i,j).t),'all');
     end
 end
 

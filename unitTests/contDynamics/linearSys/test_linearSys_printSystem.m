@@ -29,10 +29,17 @@ B = [1; 1];
 C = [1 0];
 sys = linearSys(A,B,[],C);
 
-printSystem(sys)
-printSystem(sys,'high')
-printSystem(sys,'high',true)
-printSystem(sys,'high',false)
+printSystem(sys);
+printSystem(sys,'high');
+printSystem(sys,'high',true);
+printSystem(sys,'high',false);
+
+% test fid
+filename = 'test.txt';
+printSystem(filename,sys,'high',true);
+sys_copy = eval(fileread(filename));
+assert(isequal(sys,sys_copy));
+delete(filename)
 
 % combine results
 res = true;

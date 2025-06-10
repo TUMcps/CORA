@@ -7,8 +7,9 @@ function res = installCORA(varargin)
 %
 % Inputs:
 %    interactive - logical, whether installation should be done interactively
-%    installNNV - logical, whether toolboxed for NNV should be installed
+%    installNNV - logical, whether toolboxes for NNV should be installed
 %    defaultpath - char, path where toolboxes should be installed
+%    mppath - char, path where mp is installed
 %
 % Outputs:
 %    -
@@ -24,6 +25,7 @@ function res = installCORA(varargin)
 % Last update:   10-January-2024 (added non-interactive mode)
 %                29-January-2024 (changes for automatic installation in docker)
 %                04-August-2024 (limit number of cpu threads)
+%                21-March-2025 (added mp installation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -33,7 +35,7 @@ disp("Adding CORA to the Matlab path..")
 aux_add_corapath()
 
 % init
-[interactive,installNNV,defaultpath] = setDefaultValues({true,false,[]},varargin);
+[interactive,installNNV,defaultpath,mppath] = setDefaultValues({true,false,[],[]},varargin);
 
 % display information
 disp("--------------------------------------------------------------------------------")
@@ -62,7 +64,7 @@ try
 
 % check yalmip
 disp('  [1/4] YALMIP')
-aux_install_yalmip(interactive,defaultpath)
+aux_install_yalmip(interactive,defaultpath,mppath)
 
 % further toolboxes
 toolboxes = {
@@ -153,7 +155,7 @@ function aux_display_install_prompt(text, id_short)
     throw(CORAerror('CORA:install',text))
 end
 
-function aux_install_yalmip(interactive,defaultpath)
+function aux_install_yalmip(interactive,defaultpath,mppath)
     if ~isYalmipInstalled()
         disp("  - Yalmip is installed via the Matlab tbxmanager.")
         % partially taken from: https://www.mpt3.org/Main/Installation
@@ -200,22 +202,6 @@ function aux_install_yalmip(interactive,defaultpath)
             errortext = ['Unfortunately, the sdpt solver ''sedumi'' could not be installed automatically together with yalmip.\n' ...
                 'Please install another solver manually, e.g. SDPT3 https://blog.nus.edu.sg/mattohkc/softwares/sdpt3/'];
         end
-
-        % also install mp
-        % mppath = [fileparts(tbxpath),filesep,'MultiPrecisionToolbox'];
-        % try
-        %     fprintf('\nInstalling "MultiPrecision" toolbox to: %s\n\n',mppath);
-        %     % download mp toolbox
-        %     mkdir(mppath)
-        %     mpzip = [mppath filesep 'mp.zip'];
-        %     websave(mpzip,'https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/e54ba25f-4a80-11e4-9553-005056977bd0/4b93a1ca-e163-425c-a70e-345faa48d6bc/packages/zip');
-        %     % unzip
-        %     unzip(mpzip);
-        %     % delete zip
-        %     delete(mpzip);
-        % catch ME
-        %     fprintf('    MultiPrecision toolbox could not be installed automatically: %s', ME.message)
-        % end
 
         % modify startup file
         startuppaths = {
@@ -269,14 +255,30 @@ function aux_install_yalmip(interactive,defaultpath)
         lines{end+1,1} = sprintf('%% startup (written by %s)',CORAVERSION);
         lines{end+1,1} = 'fprintf(''Startup file: %s\n'',which(mfilename))';
         lines{end+1,1} = '';
+        % tbxmanager
         lines{end+1,1} = '%% init tbxmanager';
         lines{end+1,1} = sprintf('addpath(genpath(''%s''))',tbxpath);
         lines{end+1,1} = 'tbxmanager restorepath';
         lines{end+1,1} = '';
-        % lines{end+1,1} = '%% init MultiPrecision toolbox';
-        % lines{end+1,1} = sprintf('addpath(genpath(''%s''))',mppath);
-        % lines{end+1,1} = 'fprintf(''Toolbox "mp" added to the Matlab path.\n'');';
-        lines{end+1,1} = '';
+        if ~isempty(mppath)
+            % MultiPrecision toolbox
+            lines{end+1,1} = '%% init MultiPrecision toolbox';
+            lines{end+1,1} = sprintf('addpath(genpath(''%s''))',mppath);
+            lines{end+1,1} = 'fprintf(''Toolbox "multiprecision:2.0" added to the Matlab path.\n'');';
+            lines{end+1,1} = '';
+            try
+                % try to compiling MultiPrecision toolbox
+                currDir = pwd;
+                addpath(genpath(mppath))
+                cd([fileparts(which('mp')) filesep 'private'])
+                mp_compile_all
+                cd(currDir)
+            catch ME
+                CORAwarning('CORA:global',sprintf('Unable to compile MultiPrecision toolbox. Error: %s', ME.message))
+                cd(currDir)
+            end
+        end
+        % cora
         lines{end+1,1} = '%% init cora';
         lines{end+1,1} = sprintf('addpath(genpath(''%s''));', CORAROOT);
         lines{end+1,1} = 'if ~isempty(which(''CORAVERSION''))';

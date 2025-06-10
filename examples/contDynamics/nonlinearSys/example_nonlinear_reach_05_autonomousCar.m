@@ -63,9 +63,9 @@ vehicle = nonlinearSys(@vmodel_A_bicycle_linear_controlled,8,26);
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+timerVal = tic;
 R = reach(vehicle, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 

@@ -69,8 +69,8 @@ tswitch = [0 0.1 0.3 1];
 modes = {'normal','fault','normal'};
 syshandles = {sys{1},sys{2},sys{1}};
 
-tic;
 % loop over all mode switches
+timerVal = tic;
 for i = 1:length(modes)
 
     % update time
@@ -89,7 +89,7 @@ for i = 1:length(modes)
     % Initial state of last state of previous mode
     params.R0 = Rtemp.timePoint.set{end};
 end
-compTime = toc;
+compTime = toc(timerVal);
 
 
 % Simulation --------------------------------------------------------------

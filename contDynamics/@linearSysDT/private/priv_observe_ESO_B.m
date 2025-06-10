@@ -33,7 +33,7 @@ function [R,tcomp] = priv_observe_ESO_B(linsysDT,params,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-tic
+timerVal = tic;
 
 % time period
 tVec = params.tStart:options.timeStep:params.tFinal-options.timeStep;
@@ -79,6 +79,6 @@ for k = 1:length(tVec)-1
     % Store result
     R{k+1} = Rnext.tp;
 end
-tcomp = toc;
+tcomp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

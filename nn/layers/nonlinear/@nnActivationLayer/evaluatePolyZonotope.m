@@ -27,6 +27,7 @@ function [c, G, GI, E, id, id_, ind, ind_] = evaluatePolyZonotope(obj, c, G, GI,
 %                21-March-2023 (bugfix GI)
 %                03-May-2023 (LK, backprop)
 %                01-August-2023 (simplified order reduction)
+%                16-January-2024 (TL, added option to disable approx error)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -110,7 +111,9 @@ E = E_out;
 [c, G, GI, E, id, d, id_] = aux_postOrderReduction(obj, c, G, GI, E, id, id_, d, options);
 
 % add approximation error
-[G, GI, E, id, id_] = aux_addApproxError(obj, d, G, GI, E, id, id_, options);
+if options.nn.use_approx_error
+    [G, GI, E, id, id_] = aux_addApproxError(obj, d, G, GI, E, id, id_, options);
+end
 
 % update indices of all-even exponents (for zonotope encl.)
 ind = find(prod(ones(size(E))-mod(E, 2), 1) == 1);
@@ -354,14 +357,23 @@ function [c, G, GI, E, id, d, id_] = aux_postOrderReduction(obj, c, G, GI, E, id
 % read max number of generators
 nrGen = options.nn.num_generators;
 
-if ~isempty(nrGen) && nrGen < size(G, 2) + size(GI, 2)
+if ~isempty(nrGen) && nrGen < size(G, 2) + size(GI, 2) + nnz(d)
     % order reduction
-    [c, G, GI, E, id, dred] = nnHelper.reducePolyZono(c, G, GI, ...
+    [c, G, GI, E, id, d] = nnHelper.reducePolyZono(c, G, [GI,diag(d)], ...
         E, id, nrGen, obj.sensitivity);
-    id_ = max(max(id), id_);
 
-    % add approx error from reduction to error from approximation
-    d = d + dred;
+    [n,q] = size(GI);
+    if q > 0 && options.nn.remove_GI
+        % restructure GI to G
+        G = [G,GI];
+        E = blkdiag(E, eye(q));
+        id = [id; id_ + (1:q)'];
+    
+        GI = zeros(n, 0);
+    end
+    
+    % update auxiliary variables
+    id_ = max(max(id), id_);
 
 elseif max(obj.order) > 1 && ~options.nn.sort_exponents
     % exponents remain equal with order = 1

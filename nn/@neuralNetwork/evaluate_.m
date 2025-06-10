@@ -23,7 +23,7 @@ function r = evaluate_(obj, input, options, idxLayer)
 
 % Authors:       Tobias Ladner
 % Written:       21-February-2024
-% Last update:   ---
+% Last update:   21-March-2024 (TL, updateOptions)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -74,6 +74,7 @@ function r = aux_evaluateNumeric(obj, input, options, idxLayer)
             layer_k.backprop.store.input = r;
         end
         r = layer_k.evaluateNumeric(r, options);
+        options = aux_updateOptions(obj, options, 'numeric', k, layer_k);
     end
 
 end
@@ -89,6 +90,7 @@ function r = aux_evaluateInterval(obj, input, options, idxLayer)
             layer_k.backprop.store.input = r;
         end
         r = layer_k.evaluateInterval(r, options);
+        options = aux_updateOptions(obj, options, 'interval', k, layer_k);
     end
 
 end
@@ -146,7 +148,7 @@ function r = aux_evaluatePolyZonotope(obj, input, options, idxLayer)
             layer_k = obj.layers{k};
             [c, G, GI, E, id, id_, ind, ind_] = ...
                 layer_k.evaluatePolyZonotope(c, G, GI, E, id, id_, ind, ind_, options);
-            obj.propagateBounds(k, options);
+            options = aux_updateOptions(obj, options, 'polyZonotope', k, layer_k);
         end
     
         % build result
@@ -179,6 +181,7 @@ function r = aux_evaluateTaylm(obj, input, options, idxLayer)
         options.nn.layer_k = k;
         layer_k = obj.layers{k};
         r = layer_k.evaluateTaylm(r, options);
+        options = aux_updateOptions(obj, options, 'taylm', k, layer_k);
     end
 
 end
@@ -194,10 +197,23 @@ function r = aux_evaluateConZonotope(obj, input, options, idxLayer)
         layer_k = obj.layers{k};
         [c, G, C, d, l, u] = ...
             layer_k.evaluateConZonotope(c, G, C, d, l, u, options);
+        options = aux_updateOptions(obj, options, 'conZonotope', k, layer_k);
     end
     % convert star set back to constrained zonotope
     r = nnHelper.conversionStarSetConZono(c, G, C, d, l, u);
 
+end
+
+function options = aux_updateOptions(obj, options, type, k, layer_k)
+    if strcmp(type,'polyZonotope')
+        obj.propagateBounds(k, options);
+    end
+
+    if isa(layer_k,'nnGNNProjectionLayer')
+        % update graph
+        options.nn.graph = subgraph(options.nn.graph,layer_k.nodes_keep);
+        layer_k.updateMessagePassing();
+    end
 end
 
 % ------------------------------ END OF CODE ------------------------------

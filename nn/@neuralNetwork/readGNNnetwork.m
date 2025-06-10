@@ -3,10 +3,10 @@ function obj = readGNNnetwork(file_path, varargin)
 % a cora neuralNetwork for verification
 %
 % Syntax:
-%    obj = readGNNnetwork(file_path,verbose)
+%    obj = neuralNetwork.readGNNnetwork(file_path,verbose)
 %
 % Inputs:
-%    file_path - path to file(information of # of layers, bias, weight...'features')
+%    file_path - path to file (list of layer objects)
 %    verbose - bool if information should be displayed
 %
 % Outputs:
@@ -22,6 +22,7 @@ function obj = readGNNnetwork(file_path, varargin)
 % Written:       02-December-2022
 % Last update:   15-January-2023
 %                23-February-2023 (TL, clean up)
+%                29-January-2024 (TL, new model structure)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -47,41 +48,42 @@ model = jsondecode(str);
 % layers: cell array containing different types of layers
 
 % calculating the number of layers
-fn = fieldnames(model);
-l = length(fn);
-layer_number = (l - 4) / 4;
+layer_number = length(model.layers);
 layers = {};
 
 % iterate through the fields of the file to check and append layers together
-for i = 0:layer_number
-    type_name = aux_getJSONLayerName(i, 'type');
-    type_i = model.(type_name);
+for i = 1:layer_number
+
+    % read data
+    layer_i = model.layers(i);
+    type_i = layer_i.type;
+    W_i = layer_i.W;
+    b_i = layer_i.b;
+    act_i = layer_i.act;
+
     % linear layer
-    if type_i == "gcn"
-        W = double(model.(aux_getJSONLayerName(i, 'weight')));
-        b = double(model.(aux_getJSONLayerName(i, 'bias')));
-        layers{end+1} = nnGCNLayer(W, b);
+    switch(type_i)
+        case "gcn"
+            layers{end+1} = nnGCNLayer();
+            layers{end+1} = nnGNNLinearLayer(W_i, b_i);
 
-    elseif type_i == "lin"
-        W = double(model.(aux_getJSONLayerName(i, 'weight')));
-        b = double(model.(aux_getJSONLayerName(i, 'bias')));
-        layers{end+1} = nnGNNLinearLayer(W, b);
+        case "lin"
+            layers{end+1} = nnGNNLinearLayer(W_i, b_i);
 
-    else
-        throw(CORAerror('CORA:wrongFieldValue', type_name, {'gcn', 'lin'}))
+        case 'global_add_pool'
+            layers{end+1} = nnGNNGlobalPoolingLayer('add');
+
+        case 'global_mean_pool'
+            layers{end+1} = nnGNNGlobalPoolingLayer('mean');
+
+        otherwise
+            throw(CORAerror('CORA:wrongFieldValue', type_i, {'gcn', 'lin','global_add_pool','global_mean_pool'}))
     end
 
     % following by activation
-    act_name = aux_getJSONLayerName(i, 'act');
-    if isfield(model, act_name)
-        act_i = model.(act_name);
+    if ~isempty(act_i)
         layers{end+1} = nnActivationLayer.instantiateFromString(act_i);
     end
-end
-
-% append global pooling layer last
-if isfield(model, 'global_pooling_type')
-    layers{end+1} = nnGNNGlobalPoolingLayer(model.global_pooling_type);
 end
 
 obj = neuralNetwork(layers);
@@ -91,13 +93,6 @@ if verbose
     display(obj)
 end
 
-end
-
-
-% Auxiliary functions -----------------------------------------------------
-
-function str = aux_getJSONLayerName(n, type)
-    str = ['l_', num2str(n), '_', type];
 end
 
 % ------------------------------ END OF CODE ------------------------------

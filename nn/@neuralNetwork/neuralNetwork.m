@@ -37,6 +37,8 @@ properties
 
     neurons_in
     neurons_out
+
+    reductionRate = 1;
 end
 methods
     % constructor
@@ -91,10 +93,15 @@ methods
     reset(obj)
     resetApproxOrder(obj)
     resetBounds(obj)
+    resetGNN(obj)
 
     % verify --------------------------------------------------------------
     
     [res, x_, y_] = verify(nn, x, r, A, b, safeSet, options, timeout, verbose)
+
+    % reduce --------------------------------------------------------------
+    
+    [nn_red, S] = computeReducedNetwork(obj, S, varargin)
 
     % training ------------------------------------------------------------
 
@@ -114,17 +121,25 @@ methods
     [gc, gG] = backpropZonotopeBatch(nn, gc, gG, varargin)
     [gc, gG] = backpropZonotopeBatch_(nn, gc, gG, options, idxLayer)
 
+    % explain -------------------------------------------------------------
+
+    [idxFreedFeats,featOrder,timesPerFeat] = explain(nn, x, target, epsilon, varargin)
+
     % convert & export ----------------------------------------------------
 
     nn_dlt = convertToDLToolboxNetwork(nn)
     res = exportONNXNetwork(nn,file_path,varargin)
     res = exportNetworkAsCellArray(nn,file_path)
+    jsonstr = exportAsJSON(obj,varargin);
+    nnStruct = exportAsStruct(obj);
 
     % Auxiliary functions -------------------------------------------------
 
     pattern = getOrderPattern(obj)
     numNeurons = getNumNeurons(obj)
     nn_normal = getNormalForm(obj)
+    neuronOrder = getInputNeuronOrder(obj,method,x,inputSize)
+    gnn_red = reduceGNNForNode(obj,G,n0)
 
     function l = length(obj)
         % returns the number of layers
@@ -139,12 +154,19 @@ methods (Static)
 
     % read & convert ------------------------------------------------------
     
+    % read
     obj = readNetwork(file_path)
     obj = readONNXNetwork(file_path, varargin)
     obj = readNNetNetwork(file_path)
     obj = readYMLNetwork(file_path)
     obj = readSherlockNetwork(file_path)
     obj = readGNNnetwork(file_path, varargin)
+    data = readGNNdata(file_path, varargin)
+    obj = readJSONNetwork(file_path)
+
+    % import
+    obj = importFromJSON(jsonstr);
+    obj = importFromStruct(nnStruct);
     
     % convert
     obj = convertDLToolboxNetwork(dltoolbox_layers, verbose)

@@ -127,7 +127,9 @@ function [res,cert,scaling] = contains_(Z,S,method,tol,maxEval,certToggle,scalin
 %                06-March-2024 (TL, check emptiness of zonotopes)
 %                27-September-2024 (MW, remove halfspace call)
 %                02-October-2024 (MW, point-in-zono, type decides LP/polytope)
-%                15-January-2024 (TL, point-in-zono, tol is used for degeneracy check)
+%                15-January-2025 (TL, point-in-zono, tol is used for degeneracy check)
+%                28-March-2025 (TL, buffer degenerate sets)
+%                28-May-2025 (TL, quick check for representsa interval)
 % Last revision: 27-March-2023 (MW, rename contains_)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -136,12 +138,14 @@ function [res,cert,scaling] = contains_(Z,S,method,tol,maxEval,certToggle,scalin
 % as possible
 Z = compact(Z);
 
-% Check out trivial case
+% Quick checks for trivial cases ------------------------------------------
+
+% represents a point?
 [Z_isPoint, p] = representsa(Z, 'point');
 if Z_isPoint
     if isnumeric(S)
         % point containment
-        res = max(max(abs(S-p))) <= tol;
+        res = all(withinTol(S,p,tol));
         cert = true;
         if res
             scaling = 0;
@@ -153,7 +157,7 @@ if Z_isPoint
         % check if S is also a point
         [S_isPoint, q] = representsa(S, 'point');
         if S_isPoint
-            res = all(q==p);
+            res = all(withinTol(p,q,tol));
             cert = true;
             if res
                 scaling = 0;
@@ -163,6 +167,41 @@ if Z_isPoint
         end
         return
     end
+end
+
+% represents an interval?
+[Z_isInterval,I] = representsa_(Z,'interval',tol);
+if Z_isInterval && any(startsWith(method,{'exact','approx'}))
+    try
+        [res,cert,scaling] = contains_(I,S,method,tol,maxEval,certToggle,scalingToggle);
+    catch ME
+        % check if a specific method was used
+        if contains(method,':')
+            % try with base method
+            method = split(method,':');
+            method = method{1};
+            try
+                 % retry with base method
+                [res,cert,scaling] = contains_(I,S,method,tol,maxEval,certToggle,scalingToggle);
+            catch ME2
+                % not successfull, rethrow original exception
+                rethrow(ME);
+            end
+        else
+            % unable to fix automatically, rethrow exception
+            rethrow(ME);
+        end
+    end
+    return
+end
+
+% full check --------------------------------------------------------------
+
+% check if full-dimensional
+if ~isFullDim(Z,tol)
+    % buffer degenerate sets slightly
+    I = tol*interval(-ones(dim(Z),1),ones(dim(Z),1));
+    Z = Z + I;
 end
 
 % point or point cloud in zonotope containment

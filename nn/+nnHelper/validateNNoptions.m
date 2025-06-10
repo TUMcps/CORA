@@ -47,7 +47,14 @@ if isempty(defaultFields)
        'sort_exponents', false;
        'maxpool_type', 'project';
        'order_reduction_sensitivity', false;
+       'use_approx_error', true;
+       'train', struct('backprop', false);
+       'interval_center', false;
+       % gnn
        'graph', graph();
+       'idx_pert_edges', [];
+       'invsqrt_order', 1;
+       'invsqrt_use_approx_error', true;
        % evaluateZonotopeBatch
        'use_approx_error', true; % use approximation error
        'interval_center', false; % the center stores approximation errors as an interval
@@ -174,13 +181,26 @@ if CHECKS_ENABLED
     
     % order_reduction_sensitivity
     aux_checkFieldClass(options.nn, 'order_reduction_sensitivity', {'logical'}, structName);
+
+    % gnn ---
     
     % graph
     aux_checkFieldClass(options.nn, 'graph', {'graph'}, structName);
 
+    % idx_pert_edges
+    aux_checkFieldClass(options.nn, 'idx_pert_edges', {'double'}, structName);
+
+    % invsqrt_order
+    aux_checkFieldClass(options.nn, 'invsqrt_order', {'double'}, structName);
+
+    % invsqrt_use_approx_error
+    aux_checkFieldClass(options.nn, 'invsqrt_use_approx_error', {'logical'}, structName);
+
+    % check training fields ---
+
+    % use_approx_error
     aux_checkFieldClass(options.nn,'use_approx_error',{'logical'},structName);
 
-    % check training fields
     if setTrainFields
         aux_checkFieldClass(options.nn.train,'optim', ...
             {'nnSGDOptimizer','nnAdamOptimizer'},structName);

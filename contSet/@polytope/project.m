@@ -38,17 +38,18 @@ function P_out = project(P,dims)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % dimension
-n = dim(P);
+n_in = dim(P);
+n_out = numel(dims);
 
 % no projection, copy the polyhedron
-if isequal(dims,1:n)
+if isequal(dims,1:n_in)
     P_out = polytope(P);
     return;
 end
 
-if any(dims > n)
+if any(dims > n_in)
     throw(CORAerror('CORA:wrongValue','second',...
-        sprintf('Cannot compute projection on higher dimension than %i.',n)));
+        sprintf('Cannot compute projection on higher dimension than %i.',n_in)));
 end
 
 % if vertex representation given, much simpler projection
@@ -63,8 +64,8 @@ method = 'fourier_jones';
 tol = 1e-12;
 
 % check emptiness
-if priv_representsa_emptySet(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val,n,tol)
-    P_out = polytope.empty(n);
+if priv_representsa_emptySet(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val,n_in,tol)
+    P_out = polytope.empty(n_out);
     return;
 end
 
@@ -72,13 +73,13 @@ end
 
 % remove redundant halfspaces (override input object)
 [A,b,Ae,be] = priv_normalizeConstraints(P.A_.val,P.b_.val,P.Ae_.val,P.be_.val,'A');
-[A,b,Ae,be] = priv_compact_all(A,b,Ae,be,n,tol);
+[A,b,Ae,be] = priv_compact_all(A,b,Ae,be,n_in,tol);
 % copy input object (rewrite equality constraints as pairwise
 % inequality constraints)
 [A,b] = priv_equalityToInequality(A,b,Ae,be);
 
 % determine dimensions that have to be projected away
-removeDims = setdiff(1:n,dims);
+removeDims = setdiff(1:n_in,dims);
 
 % different methods
 switch method
@@ -115,7 +116,7 @@ switch method
             
             % remove redundant halfspaces
             [A,b] = priv_normalizeConstraints(A,b,[],[],'A');
-            [A,b] = priv_compact_all(A,b,[],[],n,1e-12);
+            [A,b] = priv_compact_all(A,b,[],[],n_in,1e-12);
         end
         
         % sort dimensions of the remaining projected polytope according to dims

@@ -29,10 +29,17 @@ A = intervalMatrix(Ac,Aw);
 B = [1; 1];
 sys = linParamSys(A,B,'varParam');
 
-printSystem(sys)
-printSystem(sys,'high')
-printSystem(sys,'high',true)
-printSystem(sys,'high',false)
+printSystem(sys);
+printSystem(sys,'high');
+printSystem(sys,'high',true);
+printSystem(sys,'high',false);
+
+% test fid
+filename = 'test.txt';
+printSystem(filename,sys,'high',true);
+sys_copy = eval(fileread(filename));
+assert(isequal(sys,sys_copy));
+delete(filename)
 
 % combine results
 res = true;

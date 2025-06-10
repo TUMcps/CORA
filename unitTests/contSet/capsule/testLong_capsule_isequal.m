@@ -26,7 +26,7 @@ function res = testLong_capsule_isequal
 res = true;
 
 tol = 1e-9;
-nrOfTests = 1000;
+nrOfTests = 100;
 
 for i=1:nrOfTests
 

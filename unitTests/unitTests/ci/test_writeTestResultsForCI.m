@@ -27,12 +27,12 @@ function res = test_writeTestResultsForCI
 writeTestResultsForCI('short');
 
 % test exit code
-text = fileread('failed.txt');
+text = fileread('EXIT_CODE.txt');
 % just single number
 assert(~isnan(str2double(text)));
 
 % delete files
-delete failed.txt;
+delete EXIT_CODE.txt;
 
 % return result
 res = true;

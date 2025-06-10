@@ -46,7 +46,7 @@ rng('default')
 
 %% define linearSys -------------------------------------------------------
 
-load([CORAROOT filesep 'unitTests' filesep 'contDynamics' filesep 'linearSysDT' filesep 'models' filesep 'pedestrianModel.mat'], "pedestrian");
+load('pedestrianModel.mat', "pedestrian");
 A = pedestrian.A;
 B = pedestrian.B;
 C = pedestrian.C;

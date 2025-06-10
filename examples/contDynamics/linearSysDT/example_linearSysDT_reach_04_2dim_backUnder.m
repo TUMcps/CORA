@@ -57,9 +57,9 @@ options.linAlg = 'backward_minmax';
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+timerVal = tic;
 R = reach(sys, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 

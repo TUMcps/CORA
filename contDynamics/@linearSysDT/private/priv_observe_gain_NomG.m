@@ -33,7 +33,7 @@ function [OGain,tComp]= priv_observe_gain_NomG(linsysDT,params,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-tic;
+timerVal = tic;
 
 % obtain system dimension and nr of outputs
 n = linsysDT.nrOfDims;
@@ -75,6 +75,6 @@ else
 end
 
 % computation time
-tComp = toc;
+tComp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

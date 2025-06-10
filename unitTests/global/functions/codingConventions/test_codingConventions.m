@@ -26,6 +26,7 @@ function res = test_codingConventions()
 %                10-May-2024 (improved usability in command window)
 %                16-July-2024 (TL, checks for CORAwarning and CORAlinprog)
 %                05-February-2025 (TL, renamed to test_codingConventions, speed up)
+%                11-April-2025 (TL, enforced timerVal in tic-toc)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -453,7 +454,7 @@ for i=1:length(files)
         % check error(...) -> CORAerror(...)
         probCall = 'error(';
         allowedCalls = {'CORAerror(','.error(','_error(','yalmiperror('};
-        if ~ismember(filename,{'CORAerror','test_codingConventions'}) && ...
+        if ~ismember(filename,{'CORAerror',mfilename}) && ...
                 ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
             issues{end+1} = "Please replace error(...) calls with CORAerror(id, ...)";
         end
@@ -461,7 +462,7 @@ for i=1:length(files)
         % check CORAerror(...) -> throw(CORAerror(...))
         probCall = 'CORAerror(';
         allowedCalls = {'throw(CORAerror(','throwAsCaller(CORAerror('};
-        if ~ismember(filename,{'CORAerror','test_codingConventions'}) && ...
+        if ~ismember(filename,{'CORAerror',mfilename}) && ...
                 ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
             issues{end+1} = "Please replace CORAerror(...) calls with throw(CORAerror(id, ...))";
         end
@@ -469,7 +470,7 @@ for i=1:length(files)
         % check warning(...) -> CORAwarning(...)
         probCall = 'warning(';
         allowedCalls = {'CORAwarning(','warning(''on''','warning(''off''','warning()','warning(w)','warning(warOrig)'};
-        if ~ismember(filename,{'CORAwarning','test_codingConventions'}) && ...
+        if ~ismember(filename,{'CORAwarning',mfilename}) && ...
                 ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
             issues{end+1} = "Please replace warning(...) calls with CORAwarning(id, ...)";
         end
@@ -477,7 +478,7 @@ for i=1:length(files)
         % check linprog(...) -> CORAlinprog(...)
         probCall = 'linprog(';
         allowedCalls = {'CORAlinprog(','intlinprog('};
-        if ~ismember(filename,{'CORAlinprog','test_codingConventions'}) && ...
+        if ~ismember(filename,{'CORAlinprog',mfilename}) && ...
             ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
             issues{end+1} = "Please replace linprog(...) calls with CORAlinprog(problem)";
         end
@@ -485,9 +486,17 @@ for i=1:length(files)
         % check quadprog(...) -> CORAquadprog(...)
         probCall = 'quadprog(';
         allowedCalls = {'CORAquadprog('};
-        if ~ismember(filename,{'CORAquadprog','test_codingConventions'}) && ...
+        if ~ismember(filename,{'CORAquadprog',mfilename}) && ...
             ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
             issues{end+1} = "Please replace quadprog(...) calls with CORAquadprog(problem)";
+        end
+
+        % check toc -> toc(
+        probCall = 'toc';
+        allowedCalls = {'toc(','toch'}; % as in stochastic
+        if ~ismember(filename,{mfilename}) && ...
+            ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
+            issues{end+1} = "Please provide toc calls with their corresponding stopwatch: timerVal = tic; ...; toc(timerVal);";
         end
     
         % spelling
@@ -496,7 +505,7 @@ for i=1:length(files)
         end
 
         % check evParams -> options.nn
-        if ~strcmp(filename,'test_codingConventions') && contains(filetext, 'evParams')
+        if ~strcmp(filename,mfilename) && contains(filetext, 'evParams')
             issues{end+1} = 'With appropriate changes, please replace evParams with options.nn.';
         end
 
@@ -596,7 +605,7 @@ res = true;
 % find indices with potentially problematic calls
 idx = strfind(filetext,probCall);
 
-% check each occurence
+% check each occurrence
 for pos = idx
     % check if matches with allowed calls
     resvec = false(1,numel(allowedCalls));

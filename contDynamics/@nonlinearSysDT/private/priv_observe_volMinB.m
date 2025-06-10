@@ -37,8 +37,8 @@ options.intersectionType = 1;
 options.intersectionTechnique = 'bravo'; % unclear whether method is an intersection method
 
 % apply set-membership approach
-tic;
+timerVal = tic;
 R = observe_stripBased(nlnsysDT,params,options);
-tcomp = toc;
+tcomp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

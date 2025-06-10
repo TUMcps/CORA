@@ -16,7 +16,7 @@ function M = randPoint(matZ,varargin)
 %
 % Example: 
 %    C = [0 0; 0 0];
-%    G{1} = [1 3; -1 2]; G{2} = [2 0; 1 -1];
+%    G(:,:,1) = [1 3; -1 2]; G(:,:,2) = [2 0; 1 -1];
 %    matZ = matZonotope(C,G);
 %
 %    M = randPoint(matZ,5);
@@ -48,18 +48,15 @@ M = repmat(matZ.C,1,1,N);
 % get betas
 [n,m,h] = size(matZ.G);
 if strcmp(type,'extreme')
-    betas = sign(2*rand(n,m,h,N)-1);
+    betas = sign(2*rand(1,1,h,N)-1);
 elseif strcmp(type, 'standard')
-    betas = 2*rand(n,m,h,N)-1;
+    betas = 2*rand(1,1,h,N)-1;
 end
 
 % compute betas*G
-if isempty(matZ.G)
-    M = M + reshape(sum(pagemtimes(matZ.G,betas),3),n,m,N);
+if ~isempty(matZ.G)
+    M = M + reshape(sum(matZ.G .* betas,3),n,m,N);
 end
-
-% add center
-
 
 end
 

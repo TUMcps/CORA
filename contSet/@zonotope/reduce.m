@@ -22,6 +22,8 @@ function [Z,varargout] = reduce(Z,method,varargin)
 %                   - 'pca'             Sec. III.A in [3]
 %                   - 'scott'           Appendix of [5]
 %                   - 'sadraddini'      Proposition 6 in [8]
+%                   - 'scale'
+%                   - 'scaleHausdorff'  
 %                   - 'redistribute'
 %                   - 'valero'          
 %    order - order of reduced zonotope
@@ -31,8 +33,9 @@ function [Z,varargout] = reduce(Z,method,varargin)
 %
 % Outputs:
 %    Z - zonotope object
-%    dHerror - (optional, only 'adaptive') over-approximation of the
-%              Hausdorff distance between the original and reduced zonotope
+%    dHerror - (optional, only 'adaptive' and 'scaleHausdorff') 
+%              over-approximation of the Hausdorff distance between the 
+%              original and reduced zonotope
 %    gredIdx - index of reduced generators
 %
 % Example: 
@@ -145,6 +148,13 @@ switch method
 
     case 'sadraddini'
         Z = priv_reduceSadraddini(Z,order);
+
+    case 'scale'
+        Z = priv_reduceScale(Z,order);
+
+    case 'scaleHausdorff'
+        [Z,dHerror] = priv_reduceScaleHausdorff(Z,order);
+        varargout{1} = dHerror;
     
     % case 'KclusterAllDim'
     %     % order must be 1
@@ -162,7 +172,8 @@ switch method
         otherwise
         throw(CORAerror('CORA:wrongValue','second',...
             "'adaptive', 'adaptive-penven', 'cluster', 'combastel', 'constOpt', 'girard'" + ...
-            "'methA', 'methB', 'methC', 'pca', 'scott', 'redistribute', 'sadraddini', or 'valero'"));
+            "'methA', 'methB', 'methC', 'pca', 'scott', 'redistribute', 'sadraddini'" + ...
+            "'scale', 'scaleHausdorff', or 'valero'"));
 end
 
 % ------------------------------ END OF CODE ------------------------------

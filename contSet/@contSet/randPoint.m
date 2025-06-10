@@ -12,7 +12,7 @@ function x = randPoint(S,varargin)
 %    type - type of the random point ('standard', 'extreme', 'gaussian',
 %           'uniform' or 'uniform:hitAndRun', 'uniform:billiardWalk',
 %           'unfirom:ballWalk')
-%    pr - probability that a value is within the set (only type = 'gaussian') 
+%    pr - probability that a value is within the set (only if type = 'gaussian') 
 %
 % Outputs:
 %    x - random point in R^n

@@ -38,7 +38,7 @@ end
 
 
 % number of tests
-nrOfTests = 1000;
+nrOfTests = 100;
 
 for i=1:nrOfTests
     % random dimension

@@ -24,27 +24,36 @@ function res = test_printMatrix
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty
-printMatrix([])
+printMatrix([]);
 
 % scalar
-printMatrix(1)
-printMatrix(2)
-printMatrix(-4)
-printMatrix(Inf)
+printMatrix(1);
+printMatrix(2);
+printMatrix(-4);
+printMatrix(Inf);
 
 % row vector
-printMatrix([1 2 3])
-printMatrix([1 2 3 4 5])
+printMatrix([1 2 3]);
+printMatrix([1 2 3 4 5]);
 
 % column vector
-printMatrix([1 2 3]')
-printMatrix([1 2 3 4 5]')
+printMatrix([1 2 3]');
+printMatrix([1 2 3 4 5]');
 
 % matrix
-printMatrix([1 2 3; 4 5 6])
+printMatrix([1 2 3; 4 5 6]);
+
+% non-integer
+printMatrix(rand(2,3));
+
+% special matrices
+printMatrix(zeros(2,3));
+printMatrix(ones(2,3));
+printMatrix(4*ones(2,3));
+printMatrix(eye(2));
 
 % parameters
-M = [1 2 3; 4 5 6];
+M = [1.1 2 3.3; 4 5 6];
 printMatrix(M);
 printMatrix(M,'%.4e');
 printMatrix(M,'high');
@@ -55,9 +64,12 @@ fprintf('\n')
 printMatrix(M,'high',false,false);
 fprintf('\n')
 
-% example
-M = [2 3; -2 1];
-printMatrix(M)
+% test fid
+filename = 'test.txt';
+printMatrix(filename,M,'high');
+M_copy = eval(fileread(filename));
+assert(isequal(M,M_copy));
+delete(filename)
 
 % combine results
 res = true;

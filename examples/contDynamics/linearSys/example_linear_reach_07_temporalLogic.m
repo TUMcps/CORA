@@ -60,9 +60,9 @@ spec = specification(eq,'logic');
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+timerVal = tic;
 [R,res] = reach(sys, params, options, spec);
-tComp = toc;
+tComp = toc(timerVal);
 
 disp(['computation time of reachable set: ',num2str(tComp)]);
 if res

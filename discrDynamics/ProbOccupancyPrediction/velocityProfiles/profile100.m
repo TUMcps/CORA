@@ -1,17 +1,20 @@
-function [velocity,input]=profile100(pos,acc)
+function [velocity,input] = profile100(pos,acc)
 % profile100 - returns the velocity for a given position and maximum 
-% accelerationof the velocity profile of the corresponding path.
+%    acceleration of the velocity profile of the corresponding path.
 %
 % Syntax:
-%    [velocity,input]=profile100(pos,acc)
+%    [velocity,input] = profile100(pos,acc)
 %
 % Inputs:
 %    pos - position on the path
-%    acc - ???
+%    acc - acceleration
 %
 % Outputs:
 %    velocity - velocity of the velocity profile
 %    input - ???
+%
+% Example: 
+%    ---
 %
 % Other m-files required: none
 % Subfunctions: none

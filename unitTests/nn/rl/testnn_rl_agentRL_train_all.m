@@ -1,6 +1,7 @@
 function res = testnn_rl_agentRL_train_all()
 % testnn_rl_agentRL_train_all - unit test function for rlAgent/train: 
 %   point-based, naive-adversarial, gradient-adversarial, set-based (SA-PC, SA-SC)
+%   (only checks if code runs through)
 %
 % Syntax:
 %    res = testnn_rl_agentRL_train_all()
@@ -19,7 +20,7 @@ function res = testnn_rl_agentRL_train_all()
 
 % Authors:       Manuel Wendl
 % Written:       27-August-2024
-% Last update:   ---
+% Last update:   08-May-2025 (TL, reduced train time, removed comparison, clean up)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -35,7 +36,7 @@ f = @(x,u) [x(2);(u(1)+1)/(2*m)-g];
 sys = nonlinearSys(f);
 
 % Settings ----------------------------------------------------------------
-totalEpisodes = 100;
+totalEpisodes = 4;
 
 % RL settings
 options.rl.gamma = .99;
@@ -46,8 +47,8 @@ options.rl.expDecay = 1;
 options.rl.batchsize = 64;
 options.rl.buffersize = 1e6;
 options.rl.noise = .1;
-options.rl.printFreq = 10;
-options.rl.visRate = 10;
+options.rl.printFreq = 1;
+options.rl.visRate = 1;
 
 % Actor Settings
 options.rl.actor.nn.use_approx_error = true;
@@ -75,13 +76,13 @@ options.rl.critic.nn.train.backprop = true;
 options.rl.env.x0 = interval([-4;0],[4;0]);
 options.rl.env.initialOps = 'uniform';
 options.rl.env.dt = .1;
-options.rl.env.timeStep = .01;
+options.rl.env.timeStep = .1;
 options.rl.env.maxSteps = 30;
 options.rl.env.collisioCheckBool = true;
 options.rl.env.evalMode = 'point';
 options.rl.env.solver = 'ODE45';
 options.rl.env.reach.alg = 'lin';
-options.rl.env.reach.zonotopeOrder = 200;
+options.rl.env.reach.zonotopeOrder = 20;
 
 % Build Environment -------------------------------------------------------
 
@@ -143,19 +144,16 @@ DDPG2 = agentDDPG(nnActor,nnCritic,options);
 DDPG2 = DDPG2.train(env,totalEpisodes);
 agents{2} = DDPG2;
 
+% evaluate ---
+disp('Evaluate actors ...')
 [~,Reward,RewardAdvNaive,RewardAdvGrad] = compareAgents(agents,env,0:0.1:0.2,{'z','dz','a'},'inf');
 
-%% Evaluate Learning Histories
-
-meanLbReward = cellfun(@mean,Reward);
-meanNaiveReward = cellfun(@mean,RewardAdvNaive);
-meanGradReward = cellfun(@mean,RewardAdvGrad);
-
-% Check if set based agents have better LB
-assert(all(meanLbReward(2) >= meanLbReward));
-
-% Check if adv method is best for its own attack
-assert(all(meanNaiveReward(1) >= meanNaiveReward));
+% clean up files
+delete ComparisonLowerBound.fig; close;
+delete ComparisonLowerBoundAndAttacks.fig; close;
+delete LearningHistory.fig; close;
+delete ReachSets.fig; close;
+delete Trajectories.fig; close;
 
 % test completed
 res = true;

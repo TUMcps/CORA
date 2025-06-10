@@ -29,10 +29,17 @@ x = {rand(N,n),rand(N,n)};
 t = {(1:N)',(1:N)'};
 simRes = simResult(x,t);
 
-printSimResult(simRes)
-printSimResult(simRes,'high')
-printSimResult(simRes,'high',true)
-printSimResult(simRes,'high',false)
+printSimResult(simRes);
+printSimResult(simRes,'high');
+printSimResult(simRes,'high',true);
+printSimResult(simRes,'high',false);
+
+% test fid
+filename = 'test.txt';
+printSimResult(filename,simRes,'high',true);
+simRes_copy = eval(fileread(filename));
+% assert(isequal(simRes,simRes_copy)); % not implemented
+delete(filename)
 
 % combine results
 res = true;

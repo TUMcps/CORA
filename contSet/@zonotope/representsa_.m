@@ -23,7 +23,7 @@ function [res,S] = representsa_(Z,type,tol,varargin)
 
 % Authors:       Mark Wetzlinger
 % Written:       19-July-2023
-% Last update:   ---
+% Last update:   28-May-2025 (TL, speed up for 'interval')
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -95,7 +95,7 @@ switch type
         res = false;
 
     case 'interval'
-        res = n == 1 || aux_isInterval(Z,tol);
+        res = aux_isInterval(Z,tol);
         if nargout == 2 && res
             S = interval(Z);
         end
@@ -172,15 +172,8 @@ function res = aux_isInterval(Z,tol)
         return
     end
     
-    G = Z.G;
-    for i=1:size(G,2)
-        if nnz(~withinTol(G(:,i),0,tol)) > 1
-            % two entries -> not an axis-aligned generator
-            res = false;
-            return
-        end
-    end
-
+    % check if no generator has more than one entry
+    res = ~any(sum(~withinTol(Z.G,0,tol),1) > 1,2);
 end
 
 function res = aux_isParallelotope(Z,tol)

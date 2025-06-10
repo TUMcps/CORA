@@ -47,7 +47,7 @@ for i = 1:3
     for j = 1:length(sets)
         
         % generate random object of the current set representation
-        S = sets{i}('Dimension',2);
+        S = sets{j}('Dimension',2);
         cPZ2 = conPolyZono(S);
 
         % compute convex hull

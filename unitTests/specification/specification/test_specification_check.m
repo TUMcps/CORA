@@ -61,6 +61,16 @@ assert(~check(specUnsafe,simRes));
 assert(check(specSafe,simRes));
 assert(check(specInvariant,simRes));
 
+% check timed ---
+
+specTimed = specification(interval(-1,1),'safeSet',interval(1));
+
+% no simulation in time, something is wrong with simRes object
+simRes = simResult({ones(11,1)},{(0:0.01:0.1)'});
+assert(~check(specTimed,simRes))
+% but with time, all is good
+simRes = simResult({ones(11,1)},{(0:0.1:1)'});
+assert(check(specTimed,simRes))
 
 % combine results
 res = true;

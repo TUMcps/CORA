@@ -120,9 +120,9 @@ params_id_init.U = zonotope([c_U eye(size(c_U,1)) ones(size(c_U))]);
 for i = 1:length(methodsGray)
     type = methodsGray(i);
     fprintf("Identification with method %s \n", type);
-    tic;
+    timerVal = tic;
     [configs{i+1}.params, results] = conform(sys,params_id_init,options,type);
-    Ts = toc;
+    Ts = toc(timerVal);
     configs{i+1}.sys = results.sys;
     configs{i+1}.options = options_reach;
     configs{i+1}.name = type;

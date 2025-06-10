@@ -43,6 +43,7 @@ function [res, minimizer] = zonotopeNorm(Z,p)
 % Authors:       Adrian Kulmburg
 % Written:       14-May-2021
 % Last update:   16-January-2024 (MW, handle edge cases)
+%                28-March-2025 (TL, return minimizer)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -99,11 +100,16 @@ problem.ub = [];
 % the norm is defined as Inf. The same goes when the problem is 'unbounded'
 [minimizer_p,res,exitflag] = CORAlinprog(problem);
 if exitflag == -2 || exitflag == -3
-    res = Inf; minimizer = [];
-
-% In case anything else went wrong, throw out an error
+    res = Inf; minimizer = []; return;
 elseif exitflag ~= 1
+    % In case anything else went wrong, throw out an error
     throw(CORAerror('CORA:solverIssue'));
 end
+
+% all good, compute minimizer
+    
+% remove first entry from minimizer as obtained by lp
+minimizer = minimizer_p(2:end);
+
 
 % ------------------------------ END OF CODE ------------------------------

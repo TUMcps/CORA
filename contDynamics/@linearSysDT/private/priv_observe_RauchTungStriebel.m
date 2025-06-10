@@ -61,7 +61,7 @@ rxa(:,1) = x0;
 rxe(:,1) = x0;
 xe = x0;
 
-tic
+timerVal = tic;
 
 %% Forward Kalman filtering
 for k = 2:timeSteps
@@ -90,6 +90,6 @@ for k = (timeSteps-1):-1:1
     R{k} = xs(:,k);
 end
 
-tcomp = toc;
+tcomp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

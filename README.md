@@ -10,14 +10,14 @@ A Tool for COntinuous Reachability Analysis.
 
 <hr style="height: 1px;">
 
-The COntinuous Reachability Analyzer (CORA) is a collection of MATLAB classes for the formal verification of cyber-physical systems using reachability analysis. 
-CORA integrates various vector and matrix set representations and operations on them as well as reachability algorithms of various dynamic system classes. 
-The software is designed such that set representations can be exchanged without having to modify the code for reachability analysis. 
-CORA is designed using the object oriented paradigm, such that users can safely use methods without concerning themselves with detailed information hidden inside the object.
- Since the toolbox is written in MATLAB, the installation and use is platform independent. 
-From Release 2018 on, the direct import of SpaceEx models into CORA is also supported. 
-The following points summarize the main features of the CORA toolbox:
-
+The Continuous Reachability Analyzer (CORA) is a MATLAB-based toolbox designed for the formal verification of cyber-physical systems through reachability analysis. 
+It offers a comprehensive suite of tools for modeling and analyzing various system dynamics, including linear, nonlinear, and hybrid systems. 
+CORA supports both continuous and discrete-time systems, accommodating uncertainties in system inputs and parameters. 
+These uncertainties are captured by a diverse range of set representations such as intervals, zonotopes, Taylor models, and polytopes. 
+Additionally, CORA provides functionalities for the formal verification of neural networks as well as data-driven system identification with reachset conformance. 
+Various converters are implemented to easily model a system in CORA such as the well-established SpaceEx format for dynamic systems and ONNX format for neural networks. 
+CORA ensures the seamless integration of different reachability algorithms without code modifications and aims for a user-friendly experience through automatic parameter tuning, 
+making it a versatile tool for researchers and engineers in the field of cyber-physical systems.
 
 ### Reachability Analysis for Continuous Systems
 
@@ -50,8 +50,19 @@ Additionally, one can train verifiably robust neural networks in CORA.
 
 Please check Section 1.3 in the <a target='_blank' href="https://cora.in.tum.de/manual">CORA manual</a>.
 
-Furthermore, if you clone CORA using git, please also i) install <a href="https://git-lfs.com/" target="_blank">git lfs</a> (large file storage) and ii) run the command `git lfs pull` to ensure all data files are downloaded correctly.
+The installation of all required toolboxes can be checked individually by running `test_requiredToolboxes` in MATLAB. 
+To check whether the core functionality of CORA has been set up correctly, 
+run the standard test suite `runTestSuite` which should take about 10 minutes.
 
+Furthermore, if you clone CORA using git, please also 
+i) install <a href="https://git-lfs.com/" target="_blank">git lfs</a> (large file storage) 
+sand ii) run the `git lfs pull` in the command line to ensure all data files are downloaded correctly.
+Then, iii) you can check the correct download of the data files in MATLAB using `test_gitlfs`.
+
+**Repeatability package:**
+We also provide a template for a repeatability package to run CORA within Docker in one click.
+This can also be used to use CORA without installing Matlab directly on your device.
+Please visit `./unitTests/ci/repeatability-template` for details.
 
 ### Folder Structure
 

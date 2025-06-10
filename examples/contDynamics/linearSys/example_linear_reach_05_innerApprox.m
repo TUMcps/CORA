@@ -49,16 +49,16 @@ fiveDimSys = linearSys('fiveDimSys',A,B);
 % Reachability Analysis ---------------------------------------------------
 
 % compute inner-approximation
-tic
+timerVal = tic;
 Rin = reachInner(fiveDimSys, params, options1);
-tComp = toc;
+tComp = toc(timerVal);
 
 disp(['computation time (inner-approximation): ',num2str(tComp)]);
 
 % compute outer-approximation
-tic
+timerVal = tic;
 Rout = reach(fiveDimSys, params, options2);
-tComp = toc;
+tComp = toc(timerVal);
 
 disp(['computation time (outer-approximation): ',num2str(tComp)]);
 

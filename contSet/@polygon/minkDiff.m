@@ -19,7 +19,7 @@ function pgon = minkDiff(pgon, subtrahend)
 
 % Authors:       Niklas Kochdumper
 % Written:       13-March-2020
-% Last update:   ---
+% Last update:   26-May-2025 (TL, bug fix, reset V property)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -29,7 +29,7 @@ narginchk(2, 2);
 
 inputArgsCheck({ ...
     {pgon, 'att', 'polygon'}; ...
-    {subtrahend, 'att', {'polygon', 'numeric'}}; ...
+    {subtrahend, 'att', {'contSet', 'numeric'}}; ...
     })
 
 % numeric case
@@ -37,6 +37,10 @@ if isnumeric(subtrahend)
     pgon = pgon - subtrahend;
     return
 end
+
+% check dimension and convert to polygon
+equalDimCheck(pgon,subtrahend);
+subtrahend = polygon(subtrahend);
 
 % compute Mink. diff. by translating the mirrored subtrahend along
 % the boundary of the polygon
@@ -87,7 +91,10 @@ for i = 1:vs
     diff = linComb(subtrahend+Vi, subtrahend+Vi1) | diff;
 end
 
+% compute polyshape object
 pgon.set = subtract(pgon.set, diff.set);
+% reset vertices stored in polygon object
+pgon.V = [];
 
 end
 

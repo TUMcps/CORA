@@ -1,5 +1,5 @@
 
-# Settings -----------------------------------------------
+# Settings ----------------------------------------------------------------
 
 # define variables
 variables:
@@ -16,12 +16,13 @@ variables:
     entrypoint: [""]
   tags:
     - matlab
-  # default timeout
-  timeout: 1h
+  timeout: 1h # default timeout
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: always
   before_script: 
+    - echo "[$(date)] Before script starts -------------------------------"
+
     # any non-zero exit code should fail the job
     - set +e
 
@@ -55,34 +56,31 @@ test-job:
       when: always
   variables:
     testSuite: 'short'
+    checkTime: 'true'
   script: 
-    # reset CORA
-    - matlab -batch "addpath(genpath('.')); resetCORA();"
+    - echo "[$(date)] Main script starts ---------------------------------"
+
+    # run testSuite and write results
+    - matlab -batch "addpath(genpath('.')); maxNumCompThreads(4); runTestSuite('$testSuite',true,[],$checkTime); writeTestResultsForCI('$testSuite');"
     
-    # remove unitTestsStatus.mat in case runTestSuite fails and old 'successful' run is still present
-    - if [ -f "./unitTests/unitTestsStatus.mat" ]; then rm -Rf ./unitTests/unitTestsStatus.mat; fi
-
-    # run testSuite
-    - matlab -batch "addpath(genpath('.')); maxNumCompThreads(4); runTestSuite('$testSuite');"
-
-    # check test results
-    - matlab -batch "addpath(genpath('.')); writeTestResultsForCI('$testSuite');"
-
-    # reset CORA
-    - matlab -batch "addpath(genpath('.')); resetCORA();"
-    - if [ -d "./DLT_CustomLayers" ]; then rm -Rf ./DLT_CustomLayers; fi
-    
-    # exit with exit code 
-    # - EXIT_CODE=0: 'Job succeeded'
-    # - EXIT_CODE=1: 'Job failed due to failing test suite'
-    # - EXIT_CODE=500: 'Job failed for unknown reasons' (likely server issue)
-    - if [ -f "failed.txt" ]; then EXIT_CODE=$(<failed.txt); else EXIT_CODE=500; fi
-    - rm failed.txt
-    - echo "Exiting with code $EXIT_CODE."
-    - exit $EXIT_CODE
-  retry: # only restart if job failed for unknown reasons
-    exit_codes: [500]
-    max: 1
+    - | # exit with EXIT_CODE (must be < 256)
+      # - EXIT_CODE=0: 'Job succeeded'
+      # - EXIT_CODE=1: 'Job failed due to failing test suite'
+      # - EXIT_CODE=2: 'Job failed as runTestSuite did not finish properly (i.e., got killed)'
+      # - EXIT_CODE=5: 'Job failed for unknown reasons'
+      if [ -f "EXIT_CODE.txt" ]; then EXIT_CODE=$(<EXIT_CODE.txt); else EXIT_CODE=5; fi
+      rm EXIT_CODE.txt
+      echo "Exiting with code $EXIT_CODE."
+      exit $EXIT_CODE
+  retry: # only restart if job failed for specific reasons
+    exit_codes: [2, 5]
+    max: 2
+  artifacts:
+    paths:
+      - ./unitTests/ci/results
+    expire_in: 1 month # except last run, which is always kept per default
+    when: always # also keep if job fails
+  dependencies: []  # prevents downloading artifact in subsequent runs
 
 # run short tests
 test-short:
@@ -109,7 +107,7 @@ test-short:
 # run long duration tests
 test-long:
   extends: .base-runTestSuite-ext
-  timeout: 4h
+  timeout: 5h
   variables:
     testSuite: 'long'
 
@@ -130,6 +128,21 @@ test-flaky:
   variables:
     testSuite: 'flaky'
 
+# run mp tests
+test-mp:
+  extends: .base-runTestSuite-ext
+  # image can be removed from r2025a onwards as it will always be installed
+  image:
+    name: tobiasladnertum/cora:r2024b-mp
+    entrypoint: [""]
+  variables:
+    testSuite: 'mp'
+  rules: 
+    - !reference [.base-runTestSuite-ext, rules]
+    # always run on '*krylov*' branches
+    - if: $DO_CI == "true" && $CI_COMMIT_BRANCH =~ "/^.*krylov.*/"
+      when: always
+
 # Compatibility with other versions ---------------------------------------
 
 .base-runTestSuite-compatibility:
@@ -139,6 +152,7 @@ test-flaky:
     name: tobiasladnertum/cora:$matlabVersion
   variables:
     testSuite: 'short'
+    checkTime: 'false'
   rules:
     - !reference [.base-runTestSuite-ext, rules]
     # additionally run if compatibility should be tested
@@ -169,7 +183,7 @@ test-compatibility-2024b:
   variables:
     matlabVersion: 'r2024b'
 
-# Examples test stage ---------------------------------------------------------
+# Examples test stage -----------------------------------------------------
 
 .base-runTestSuite-examples:
   stage: examples
@@ -205,3 +219,4 @@ test-header:
   variables:
     testSuite: 'header'
 
+# -------------------------------------------------------------------------

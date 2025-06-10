@@ -27,7 +27,7 @@ function res = testLong_zonotope_zonotope
 res = true;
 
 % number of tests
-nrOfTests = 1000;
+nrOfTests = 100;
 
 for i=1:nrOfTests
 

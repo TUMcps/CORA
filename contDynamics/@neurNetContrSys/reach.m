@@ -109,7 +109,7 @@ end
 
 function [params,options] = aux_parseSettings(obj, params, options)
 
-% initilize the algorithm settings ----------------------------------------
+% initialize the algorithm settings ---------------------------------------
 
 % check if the algorithm settings provided by the user are correct
 % doing some corrections to reuse config file for nonlinearSys/reach
@@ -146,7 +146,7 @@ end
 
 % parse nn options --------------------------------------------------------
 
-if ~isfield(options, 'add_approx_error_to_GI')
+if ~isfield(options.nn, 'add_approx_error_to_GI')
     % to reduce computational overhead
     options.nn.add_approx_error_to_GI = true;
 end
@@ -164,6 +164,7 @@ function R0 = aux_appendU2X(X, U)
         % TODO: only works if no order reduction is applied within nn
         G = [X.G, zeros(size(X.G, 1), size(U.G, 2)-size(X.G, 2)); U.G];
         R0 = zonotope([X.c;U.c],G);
+        
     elseif isa(X, 'polyZonotope')
         if ~isempty(X.GI)
             if size(X.GI, 2) > size(U.GI, 2)
@@ -246,7 +247,7 @@ for i = 1:length(tVec) - 1
     catch ME
         R = aux_constructReachSet(Rpoint, Rint, i-1);
 
-        if true || strcmp(ME.identifier, 'reach:setexplosion') ...
+        if strcmp(ME.identifier, 'reach:setexplosion') ...
             || strcmp(ME.identifier, 'CORA:reachSetExplosion')
             % display information to user
             fprintf("\n");
@@ -255,12 +256,12 @@ for i = 1:length(tVec) - 1
             disp("The reachable sets until the current step are returned.");
             fprintf("\n");
             res = false;
+            return;
 
         else
             % any other run-time error: report information
             rethrow(ME);
         end
-        return;
     end
 
     % save reachable set

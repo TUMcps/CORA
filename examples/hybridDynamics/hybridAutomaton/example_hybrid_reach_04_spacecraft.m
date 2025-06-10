@@ -62,9 +62,9 @@ HA = spacecraft_levelSet();
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+timerVal = tic;
 R = reach(HA,params,options);
-tComp = toc;
+tComp = toc(timerVal);
 
 disp(['computation time: ',num2str(tComp)]);
 

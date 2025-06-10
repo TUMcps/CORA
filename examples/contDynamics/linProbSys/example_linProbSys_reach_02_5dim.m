@@ -53,9 +53,9 @@ fiveDimSys = linProbSys('fiveDimSys',A,B,C);
 
 % Reachability Analysis ---------------------------------------------------
 
-tic;
+timerVal = tic;
 R = reach(fiveDimSys, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 

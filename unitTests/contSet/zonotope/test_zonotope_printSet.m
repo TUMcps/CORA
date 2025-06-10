@@ -26,20 +26,27 @@ function res = test_zonotope_printSet
 % test empty
 Z = zonotope.empty(2);
 
-printSet(Z)
-printSet(Z,'high')
-printSet(Z,'high',true)
-printSet(Z,'high',false)
+printSet(Z);
+printSet(Z,'high');
+printSet(Z,'high',true);
+printSet(Z,'high',false);
 
 % test normal set
 c = [1;1];
 G = [1 1 1; 1 -1 0];
 Z = zonotope(c,G);
 
-printSet(Z)
-printSet(Z,'high')
-printSet(Z,'high',true)
-printSet(Z,'high',false)
+printSet(Z);
+printSet(Z,'high');
+printSet(Z,'high',true);
+printSet(Z,'high',false);
+
+% test fid
+filename = 'test.txt';
+printSet(filename,Z,'high',true);
+Z_copy = eval(fileread(filename));
+assert(isequal(Z,Z_copy));
+delete(filename)
 
 % combine results
 res = true;

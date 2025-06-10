@@ -10,6 +10,8 @@ classdef (Abstract) ASCIItable < handle
 %    tableoptions - name-value pair
 %        <'ColumnWidths',colWidths> - numeric, column widths
 %        <'SaveContent',saveContent> - logical, whether content should be saved
+%        <'FileName',filename> - char, filename
+%        <'fid',fid> - numeric, file identifier
 %        ------------------------------------------------------------------
 %        <'tbhline',tbhline> - char, top boundary horizontal line
 %        <'tbhcorner',tbhcorner> - char, top heading boundary corner
@@ -50,6 +52,7 @@ classdef (Abstract) ASCIItable < handle
 % Authors:       Lukas Koller, Tobias Ladner
 % Written:       19-September-2024
 % Last update:   05-March-2025 (TL, option to save content)
+%                23-May-2025 (TL, option to print into file)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -62,6 +65,14 @@ properties
     colWidths
     saveContent
     content = {};
+
+    % sdtout/file to print table into
+    fid;
+    closefid;
+
+    % special row
+    rownr = 0;
+    timerVal = tic;
 end
 
 properties (Hidden)
@@ -96,7 +107,9 @@ methods
             hlpre,hlpost, ...
             mlpre,mlpost, ...
             blpre,blpost, ...
-            clpre,clpost] = aux_parseInput(hvalues,formats,varargin);
+            clpre,clpost,...
+            fid,closefid ...
+        ] = aux_parseInput(hvalues,formats,varargin);
 
         % 2. save properties
         table.hvalues = hvalues;
@@ -132,6 +145,9 @@ methods
         table.blpost = blpost;
         table.clpre = clpre;
         table.clpost = clpost;
+        % fid
+        table.fid = fid;
+        table.closefid = closefid;
     end
 
     function printHeader(table)
@@ -150,14 +166,19 @@ methods
         ];
 
         % print
-        fprintf(t.tpre)
+        fprintf(table.fid,t.tpre);
         table.printTopBoundaryRow();
-        disp(hrow);
+        fprintf(table.fid,'%s\n',hrow);
         table.printMidBoundaryRow();
+
+        % reset row number
+        t.rownr = 0;
+        t.timerVal = tic;
     end
  
     function printContentRow(table,cvalues)
         % print content row
+        table.rownr = table.rownr+1;
 
         % Format column values.
         fcolumns = formatColumnValues(table,cvalues);
@@ -174,7 +195,7 @@ methods
         ];
 
         % print
-        disp(crow);
+        fprintf(table.fid,'%s\n',crow);
 
         % save
         if table.saveContent
@@ -185,27 +206,31 @@ methods
     function printFooter(table)
         % print bottom of table
         table.printBottomBoundaryRow();
-        fprintf(table.tpost)
-        disp(' ')
+        fprintf(table.fid,table.tpost);
+        fprintf(table.fid,'\n');
+
+        if table.closefid
+            fclose(table.fid);
+        end
     end
 
     % helper ---
 
     function printTopBoundaryRow(table)
         % print top boundary row "\toprule"
-        disp(buildBoundaryRow(table,table.tbhline,table.tbhcorner, ...
+        fprintf(table.fid,'%s\n',buildBoundaryRow(table,table.tbhline,table.tbhcorner, ...
             table.tbhsep,table.tlpre,table.tlpost));
     end
 
     function printMidBoundaryRow(table)
         % print top boundary row "\midrule"
-        disp(buildBoundaryRow(table,table.mbhline,table.mbhcorner, ...
+        fprintf(table.fid,'%s\n',buildBoundaryRow(table,table.mbhline,table.mbhcorner, ...
             table.mbhsep,table.mlpre,table.mlpost));
     end
 
     function printBottomBoundaryRow(table)
         % print top boundary row "\bottomrule"
-        disp(buildBoundaryRow(table,table.bbhline,table.bbhcorner, ...
+        fprintf(table.fid,'%s\n',buildBoundaryRow(table,table.bbhline,table.bbhcorner, ...
             table.bbhsep,table.blpre,table.blpost));
     end
 
@@ -221,7 +246,7 @@ methods
         end
 
         % reprint table
-        coratable = CORAtable(design,table.hvalues,table.formats,"ColumnWidths",table.colWidths);
+        coratable = CORAtable(design,table.hvalues,table.formats,"ColumnWidths",table.colWidths,varargin{2:end});
         coratable.printHeader();
         for i=1:size(table.content,1)
             coratable.printContentRow(table.content(i,:))
@@ -263,6 +288,11 @@ methods (Access=protected)
             % fill in values
             if startsWith(t.formats{i},'sum')
                 formattedValues = sprintf(format,mean(cvalues{i}),std(cvalues{i}));
+            elseif contains(format,'rownr')
+                formattedValues = sprintf(strrep(format,'rownr','i'),table.rownr);
+            elseif contains(format,'time')
+                timestr = datetime([0 0 0 0 0 toc(table.timerVal)],'Format','HH:mm:ss');
+                formattedValues = sprintf(strrep(format,'time','s'),timestr);
             else
                 formattedValues = sprintf(format,cvalues{i});
             end
@@ -320,7 +350,9 @@ function [hvalues,formats,colWidths,saveContent, ...
             hlpre,hlpost, ...
             mlpre,mlpost, ...
             blpre,blpost, ...
-            clpre,clpost] = aux_parseInput(hvalues,formats,NVpairs)
+            clpre,clpost,...
+            fid,closefid ...
+            ] = aux_parseInput(hvalues,formats,NVpairs)
 
     % parse input
     inputArgsCheck({ ...
@@ -360,6 +392,9 @@ function [hvalues,formats,colWidths,saveContent, ...
     [NVpairs,blpost] = readNameValuePair(NVpairs,'blpost','ischar',tlpost);
     [NVpairs,clpre] = readNameValuePair(NVpairs,'clpre','ischar',hlpre);
     [NVpairs,clpost] = readNameValuePair(NVpairs,'clpost','ischar',hlpost);
+    % filename/fid
+    [NVpairs,filename] = readNameValuePair(NVpairs,'FileName','ischar',[]);
+    [NVpairs,fid] = readNameValuePair(NVpairs,'fid','isnumeric',1);
 
     % check name-value pairs
 
@@ -372,16 +407,27 @@ function [hvalues,formats,colWidths,saveContent, ...
     formatWidth = zeros(size(colWidths));
     numColElems = cellfun(@(f) max(1,sum(f == '%')),formats);
     for i=1:length(formats)
-        % Create enough format arguments.
-        args = repmat({0},1,numColElems(i));
+
         % Extract format strings.
         format = aux_getFormatString(formats{i},0);
-        % Compute length of a formatted string.
-        formatWidth(i) = strlength(sprintf(format,args{:}));
+
+        switch format
+            case '%time'
+                formatWidth(i) = 8;
+            otherwise % determine format width
+                % Create enough format arguments.
+                args = repmat({0},1,numColElems(i));
+                % Compute length of a formatted string.
+                formatWidth(i) = strlength(sprintf(format,args{:}));
+        end
     end
 
     % Make columns width at least as long as headings and format widths.
-    colWidths = max([colWidths; cellfun(@strlength,hvalues); formatWidth]);
+    colWidths = max([ ...
+        colWidths; ...
+        cellfun(@strlength,hvalues); ...
+        formatWidth
+    ], [], 1);
 
     if CHECKS_ENABLED
         % length of hvalues and formats must match
@@ -398,6 +444,14 @@ function [hvalues,formats,colWidths,saveContent, ...
         % if numel(hvalues) ~= numel(colWidths)
         %     throw(CORAerror('CORA:wrongValue','first/second','Length of headings and column widths must match.'))
         % end
+    end
+
+    % print into file?
+    if isempty(filename)
+        closefid = false;
+    else
+        fid = fopen(filename,'w');
+        closefid = true;
     end
 end
 

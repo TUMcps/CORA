@@ -45,13 +45,11 @@ params.R0 = polyZonotope(R0);
 
 % Reachability Settings ---------------------------------------------------
 
-options.timeStep = 0.05;
+options.timeStep = 0.1;
 options.alg = 'lin';
-options.tensorOrder = 3;
-options.taylorTerms = 4;
-options.zonotopeOrder = 200;
-options.errorOrder = 10;
-options.intermediateOrder = 50;
+options.tensorOrder = 2;
+options.taylorTerms = 1;
+options.zonotopeOrder = 10;
 
 % Options for NN evaluation -----------------------------------------------
 

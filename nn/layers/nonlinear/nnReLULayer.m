@@ -117,6 +117,12 @@ methods (Access = {?nnLayer, ?neuralNetwork})
     end
 end
 
+methods
+    function buckets = getMergeBuckets(obj)
+        buckets = 0;
+    end
+end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

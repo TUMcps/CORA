@@ -63,9 +63,9 @@ params_verify.R0 = zonotope(params_verify.R0);
 params_verify.U = zonotope(params_verify.U);
 
 % solve verification task
-tic;
+timerVal = tic;
 res_verify = verify(sys_verify,params_verify,options,spec_verify);
-tComp_verify = toc;
+tComp_verify = toc(timerVal);
 disp("Verification successful? " + res_verify);
 
 
@@ -93,9 +93,9 @@ params_falsify.R0 = zonotope(params_falsify.R0);
 params_falsify.U = zonotope(params_falsify.U);
 
 % solve falsification task
-tic;
+timerVal = tic;
 res_falsify = verify(sys_falsify,params_falsify,options,spec_falsify);
-tComp_falsify = toc;
+tComp_falsify = toc(timerVal);
 disp("Falsification successful? " + ~res_falsify);
 
 % output text

@@ -53,15 +53,15 @@ sys_int  = linParamSys(matI_A, 1, 'varParam');
 % Reachability Analysis ---------------------------------------------------
 
 % compute reachable set using matrix zonotopes
-tic
+timerVal = tic;
 Rzono = reach(sys_zono, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set for zonotopic matrix: ',num2str(tComp)]);
 
 % compute reachable set using interval matrices
-tic
+timerVal = tic;
 Rint = reach(sys_int, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set for interval matrix: ',num2str(tComp)]);
 
 

@@ -1,4 +1,4 @@
-function linsys = priv_inputSolution_Krylov(linsys,options)
+function linsys = priv_inputSolution_Krylov(linsys,params,options)
 % priv_inputSolution_Krylov - computes the set of input solutions in the Krylov
 %    subspace
 %
@@ -21,42 +21,29 @@ function linsys = priv_inputSolution_Krylov(linsys,options)
 %
 % See also: none
 
-% Authors:       Matthias Althoff
+% Authors:       Matthias Althoff, Maximilian Perschl
 % Written:       19-December-2016
-% Last update:   28-October-2017
-%                25-October-2018
-% Last revision: ---
+% Last update:   25-April-2025 (MP, major refactor)
+% Last revision: 21-March-2025 (TL)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% set of possible inputs
-V = linsys.B*options.U;
+U = params.U;
 
-% separate input set into center and generators
-U_c = sparse(V.c);
-U_G = sparse(V.G);
+% initialize variables
+U_G = sparse(U.G);
 nrOfGens = size(U_G,2);
 
 % equivalent initial state
-eqivState = [zeros(linsys.nrOfDims,1); 1];
+eqivState = [sparse([],[],[],linsys.nrOfDims,1);1];
 
 % init Krylov order
 KrylovOrder = 1;
 
-% consider center; first check if center is zero
-if ~all(withinTol(U_c,0))
-    % obtain constant input solution
-    [Usum, errorTaylor_c, ~, KrylovOrderConst] = ...
-        aux_constInputSolution(linsys, U_c, KrylovOrder, options, false);
-else
-    Usum = zeros(linsys.nrOfDims,1);
-    errorTaylor_c = zeros(linsys.nrOfDims,1);
-    KrylovOrderConst = 1;
-end
 
 % init
 Ugen = [];
-errorTaylor_sum = errorTaylor_c;
+errorTaylor_sum_rad = sparse([],[],[],linsys.nrOfDims,1);
 
 % consider generators; first check if generator is zero
 for iGen = 1:nrOfGens
@@ -66,26 +53,22 @@ for iGen = 1:nrOfGens
         % create integrator system; minus sign to fit paper
         A_int_g = [linsys.A, U_g; zeros(1,linsys.nrOfDims), 0];
 
-        % minimum eigenvalue
-        %nu_A_int_g = eigs((A_int_g+A_int_g')/2, 1, 'sa'); % lambda_min(A+A*/2) %<-- for Wang approx.
-        nu_A_int_g = eigs((A_int_g+A_int_g')/2, 1, 'lm'); % lambda_max(A+A*/2) %<-- for Jia approx.
+        A_int_g = sparse(A_int_g);
 
         % Arnoldi
         [V_Ug,H_Ug,KrylovOrder] = ...
-            priv_subspace_Krylov_individual(A_int_g,nu_A_int_g,eqivState,KrylovOrder,options);
+            priv_subspace_Krylov_individual_Jawecki(A_int_g,eqivState,KrylovOrder,options);
 
-        % change results back \dot{x} = Ax (Krylov papers use \dot{x} = -Ax);
-        % V remains unchanged
-        %H_Ug = -H_Ug;
-        
-        % generate reduced order system for the generators
+        % generate reduced order system for the generator
         A_red_g = H_Ug;
         B_red_g = V_Ug;
         %initialize linear reduced dynamics
-        linRedSys_g = linearSys('linearReducedDynamics',A_red_g,B_red_g);
-
+        linRedSys_g = linearSys('linearReducedDynamics',A_red_g,B_red_g');
+        linRedSys_g.taylor = taylorLinSys(A_red_g);
+        
         % Loop through Taylor terms
-        for i=1:options.taylorTerms
+        linRedSys_g.taylor = taylorLinSys(A_red_g);
+        for i=1:options.taylorTerms+1
             % unprojected, partial result
             Apower_i = getTaylor(linRedSys_g,'Apower',struct('ithpower',i));
             U_unprojected = V_Ug*Apower_i(:,1)*options.timeStep^i/factorial(i);
@@ -94,136 +77,56 @@ for iGen = 1:nrOfGens
         end
 
         % compute exponential matrix
-        % priv_expmRemainder?
-        E = new_expmRemainder(linRedSys_g,options.timeStep,options.taylorTerms);
+        E = priv_expmRemainder(linRedSys_g,options.timeStep,options.taylorTerms);
         
         % error due to finite Taylor series
-        errorTaylor_g = V_Ug*E(:,1); 
-        errorTaylor_sum = errorTaylor_sum + errorTaylor_g(1:linsys.nrOfDims);
+        errorTaylor_g = supremum(V_Ug*E(:,1)); 
+        errorTaylor_sum_rad = errorTaylor_sum_rad + errorTaylor_g(1:linsys.nrOfDims);
     end
-    iGen
+    % iGen
 end
 
-%compute vTrans 
-if iscell(options.uTrans)
-    timeSteps = length(options.uTrans(1,:)); % number of time steps
-    vTrans = cell(timeSteps); % init vTrans
-    for i=1:timeSteps
-        vTrans{i}=linsys.B*options.uTrans{i};
-    end
-else
-    vTrans=linsys.B*options.uTrans;
-end
-
-if ~all(withinTol(vTrans,0)) % input trajectory not yet implemented
-    
-    %compute additional uncertainty if origin is not contained in input set
-    if options.originContained
-        [inputSolVtrans, errorTaylor_vTrans] = ...
-            aux_constInputSolution(linsys, vTrans, KrylovOrderConst, options, false);
-        inputCorr = zeros(linsys.nrOfDims,1);
-    else
-        % obtain constant input solution
-        [inputSolVtrans, errorTaylor_vTrans, inputCorr] = ...
-            aux_constInputSolution(linsys, vTrans, KrylovOrderConst, options, true);
-    end
-else
-    inputSolVtrans = zeros(linsys.nrOfDims,1);
-    inputCorr = zeros(linsys.nrOfDims,1);
-    errorTaylor_vTrans = zeros(linsys.nrOfDims,1);
-end
+% round to 0 for numerical stability
+errorTaylor_sum_rad(abs(errorTaylor_sum_rad) < eps) = 0;
+% sparsify
+errorTaylor_sum_rad = sparse(errorTaylor_sum_rad);
+errorTaylor_sum = interval(-errorTaylor_sum_rad,errorTaylor_sum_rad);
 
 % input zonotope without error terms
-inputSolV = zonotope(Usum,Ugen);
+inputSolV = zonotope(sparse([],[],[],linsys.nrOfDims,1),Ugen);
 
 % Check if error due to finite Taylor series needs to be considered
 if options.krylovError > 2*eps
     % error due to order reduction
     errorRed = interval(-ones(linsys.nrOfDims,1),ones(linsys.nrOfDims,1)) * ...
-        options.krylovError*norm(V+vTrans)*options.timeStep;
+        options.krylovError*size(U.G,2);
     % total error
-    err = errorTaylor_sum + errorRed + errorTaylor_vTrans;
-    % final input set
-    inputSolV = inputSolV + zonotope(err);
+    error_set = errorTaylor_sum + errorRed;
+else
+    error_set = errorTaylor_sum;
 end
+
+% initialize error for adaptive algorithm
+linsys.krylov.total_U_0_error = radius(error_set);
+
+% final input set
+inputSolV = inputSolV + zonotope(error_set);
 
 
 %write to object structure
-linsys.taylor.V = V;
-linsys.taylor.RV = inputSolV;
-% to avoid additional generators, all errors of inputSolVtrans are added to inputSolV
-linsys.taylor.Rtrans = inputSolVtrans;
-linsys.taylor.inputCorr = inputCorr;
-linsys.taylor.eAtInt = [];
+linsys.krylov.V = U;
+linsys.krylov.RV = inputSolV;
+
+C = linsys.C;
+
+% if clause in case this method is called again in adaptive case
+if ~isfield(linsys.krylov,'Rpar_proj')
+    linsys.krylov.Rpar_proj = zeros(linsys.nrOfOutputs,1);%interval(C*inputSolV);
+end
+linsys.krylov.Rpar_proj_0 = C*inputSolV;
+
+linsys.krylov.RV_0 = inputSolV;
 
 end
-
-
-% Auxiliary functions -----------------------------------------------------
-
-function [Usum, errorTaylor, inputCorr, KrylovOrder] = ...
-    aux_constInputSolution(sys, input, KrylovOrder, options, inputTieFlag)
-
-    inputCorr = [];
-
-    % equivalent initial state
-    eqivState = [zeros(sys.nrOfDims,1); 1];
-    
-    % init Usum
-    Usum = zeros(sys.nrOfDims,1);
-
-    % create integrator system
-    A_int = [sys.A, input; zeros(1,sys.nrOfDims), 0];
-
-    % minimum eigenvalue
-    %nu_A_int_g = eigs((A_int_g+A_int_g')/2, 1, 'sa'); % lambda_min(A+A*/2) %<-- for Wang approx.
-    nu_A_int = eigs((A_int+A_int')/2, 1, 'lm'); % lambda_max(A+A*/2) %<-- for Jia approx.
-    
-    % Arnoldi
-    [V_U,H_U,KrylovOrder] = ...
-        priv_subspace_Krylov_individual(A_int,nu_A_int,eqivState,KrylovOrder,options);
-    
-    % change results back \dot{x} = Ax (Krylov papers use \dot{x} = -Ax);
-    % V remains unchanged
-    %H_U = -H_U;
-    
-    % generate reduced order system for the generators
-    A_red = H_U;
-    B_red = V_U;
-    %initialize linear reduced dynamics
-    linRedSys = linearSys('linearReducedDynamics',A_red,B_red);
-
-    % compute exponential matrix
-    % priv_expmRemainder?
-    E = new_expmRemainder(linRedSys,options.timeStep,options.taylorTerms);
-    
-    % Loop through Taylor terms
-    for i=1:options.taylorTerms
-        % unprojected, partial result
-        Apower_i = getTaylor(linRedSys_g,'Apower',struct('ithpower',i));
-        U_unprojected = V_U*Apower_i(:,1)*options.timeStep^i/factorial(i);
-        % compute sums
-        Usum = Usum + U_unprojected(1:sys.nrOfDims); 
-    end
-    
-    % error due to finite Taylor series
-    errorTaylor_unproj = V_U*E(:,1);
-    errorTaylor = errorTaylor_unproj(1:sys.nrOfDims);
-    
-    % if inputTie is required
-    if inputTieFlag
-        % priv_curvatureInput?
-        G = new_curvatureInput(linRedSys,options.timeStep,options.taylorTerms);
-        Gmid = center(G);
-        Grad = rad(G);
-        inputTie_error_mid = V_U*Gmid(:,1); % norm(equiv_state) = 1;
-        inputTie_error_rad = abs(V_U*Grad(:,1)); % norm(equiv_state) = 1;
-        inputCorr_unprojected = interval(...
-            inputTie_error_mid - inputTie_error_rad, ...
-            inputTie_error_mid + inputTie_error_rad); 
-        inputCorr = zonotope(inputCorr_unprojected(1:sys.nrOfDims)); 
-    end
-end
-
 
 % ------------------------------ END OF CODE ------------------------------

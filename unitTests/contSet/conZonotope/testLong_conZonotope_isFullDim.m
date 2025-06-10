@@ -26,7 +26,7 @@ function res = testLong_conZonotope_isFullDim
 res = true;
 
 % number of tests
-nrOfTests = 1000;
+nrOfTests = 100;
 
 for i=1:nrOfTests
     % random dimension

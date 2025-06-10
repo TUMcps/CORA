@@ -87,9 +87,9 @@ params.U = zonotope(zeros(nrOfInputs,1));
 
 
 % computation of reachable set
-tic
+timerVal = tic;
 R_1 = reach(IEEE14_model, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 %% operation under fault
@@ -104,9 +104,9 @@ params.u = [u0_gen; u0_load]*ones(1,timeSteps);
 % initial set is final set of normal operation
 params.R0 = R_1.timePoint.set{end}; %initial state for reachability analysis
 % computation of reachable set
-tic
+timerVal = tic;
 R_2 = reach(IEEE14_fault_model, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 %% operation after fixing the fault
@@ -121,9 +121,9 @@ params.u = [u0_gen; u0_load]*ones(1,timeSteps);
 % initial set is final set of normal operation
 params.R0 = R_2.timePoint.set{end}; %initial state for reachability analysis
 % computation of reachable set
-tic
+timerVal = tic;
 R_3 = reach(IEEE14_model, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 

@@ -24,27 +24,27 @@ function res = test_printCell
 % ------------------------------ BEGIN CODE -------------------------------
 
 % empty
-printCell({})
+printCell({});
 
 % scalar
-printCell({1})
-printCell({"text"})
-printCell({1,"text"})
-printCell({1,"text",[1;2;3]})
-printCell({1,"text",[1 2 3;4 5 6],interval(2,3)})
+printCell({1});
+printCell({"text"});
+printCell({1,"text"});
+printCell({1,"text",[1;2;3]});
+printCell({1,"text",[1 2 3;4 5 6],interval(2,3)});
 
 C = {1,"text",[1 2 3;4 5 6],interval(2,3)};
 
 % row vector
-printCell([C,C])
-printCell([C,C,C,C,C])
+printCell([C,C]);
+printCell([C,C,C,C,C]);
 
 % column vector
-printCell([C;C])
-printCell([C;C;C;C;C])
+printCell([C;C]);
+printCell([C;C;C;C;C]);
 
 % matrix
-printCell([C C;C C])
+printCell([C C;C C]);
 
 % parameters
 printCell(C);
@@ -54,9 +54,12 @@ printCell(C,'high',true);
 printCell(C,'high',false);
 fprintf('\n')
 
-% example
-C = struct('a',[1 2 3],'b','text');
-printStruct(C)
+% test fid
+filename = 'test.txt';
+printCell(filename,C,'high');
+C_copy = eval(fileread(filename));
+assert(isequal(C,C_copy));
+delete(filename)
 
 % combine results
 res = true;

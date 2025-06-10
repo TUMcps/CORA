@@ -26,6 +26,7 @@ function reset(obj)
 
 obj.resetApproxOrder();
 obj.resetBounds();
+obj.resetGNN();
 
 end
 

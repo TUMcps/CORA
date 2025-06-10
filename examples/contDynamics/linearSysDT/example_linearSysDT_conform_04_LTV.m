@@ -89,12 +89,12 @@ for i_id = 1:num_id
     options.cs.constraints = constraints{i_id};
     fprintf("Identification with %s-constraints, n_m=%d, " + ...
         "n_k=%d, n_x=%d\n",options.cs.constraints, n_m, n_k, 3*n_n);
-    tic;
+    timerVal = tic;
     [configs{i_id+1}.params, ~] = conform(sys,params_id_init,options);
     configs{i_id+1}.sys = sys;
     configs{i_id+1}.options = options_reach;
     configs{i_id+1}.name = options.cs.constraints;
-    Ts=toc;
+    Ts=toc(timerVal);
     fprintf("Identification time: %.4f\n", Ts);
 end
 

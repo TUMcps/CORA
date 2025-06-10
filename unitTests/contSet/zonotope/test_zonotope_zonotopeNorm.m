@@ -43,6 +43,21 @@ Z = Z + [1;-2];
 assert(withinTol(zonotopeNorm(Z,[5;3]),2.2));
 assert(withinTol(zonotopeNorm(Z,[-5;3]),1));
 
+% check boundary point
+[~,p,beta_true] = supportFunc(Z,[1;1]);
+[res,minimizer] = zonotopeNorm(Z,p);
+assert(withinTol(res,1))
+assert(compareMatrices(p,c+G*minimizer))
+% this does not hold as minimizer might not be unique
+% assert(isequal(p,beta_true))
+
+c = [0;0];
+G = [1 0 -1; 0 1 -1];
+Z = zonotope(c,G);
+[~,p] = supportFunc(Z,[1;1]);
+[res,minimizer] = zonotopeNorm(Z,p);
+assert(withinTol(res,1))
+assert(compareMatrices(p,c+G*minimizer))
 
 % combine results
 res = true;

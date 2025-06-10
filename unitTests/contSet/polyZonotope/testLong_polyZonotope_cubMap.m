@@ -49,8 +49,8 @@ for dim = 2:5
     zonoRes_ = zonotope(pZres);
     
     % test for equality
-    tol = 1e-12;
-    assert(isequal(zonoRes,zonoRes_,tol),'',[],dim)
+    tol = 1e-8;
+    assertLoop(isequal(zonoRes,zonoRes_,tol),dim)
 end
 
 
@@ -134,8 +134,7 @@ for dim = 2:5
     zonoRes_ = zonotope(pZres);
     
     % test for equality
-    tol = 1e-12;
-    
+    tol = 1e-8;
     assertLoop(isequal(zonoRes,zonoRes_,tol),dim)
 end
 

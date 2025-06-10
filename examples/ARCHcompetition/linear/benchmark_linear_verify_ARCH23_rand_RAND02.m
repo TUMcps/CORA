@@ -34,9 +34,9 @@ params.U = zonotope(params.U);
 options.verifyAlg = 'reachavoid:zonotope';
 
 % solve verification task
-tic;
+timerVal = tic;
 res = verify(sys,params,options,spec);
-tComp_verify = toc;
+tComp_verify = toc(timerVal);
 disp("Verification successful? " + res);
 
 % output text

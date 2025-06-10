@@ -48,6 +48,7 @@ function [x,fval,exitflag,output,lambda] = CORAlinprog(problem)
 % Last update:   04-October-2024 (MW, switch to interior-point in MATLAB call)
 %                09-October-2024 (TL, compatibility >=R2024a)
 %                29-October-2024 (TL, problem fields should be doubles)
+%                30-May-2026 (MP, Included new option with higher precision)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -161,7 +162,15 @@ else
                 warning(w);
             end
             options = [options {optionsDualSimplexLegacy}];
+
+            % final set of options with lower tolerances in case of very small
+            % values occuring in the LP
+            % Contained within this 'if' block since it leads to problems
+            % with old matlab versions
+            optionsHighTol = optimoptions('linprog','Algorithm','dual-simplex','display','off','ConstraintTolerance',1e-10,'OptimalityTolerance',1e-10);
+            options = [options {optionsHighTol}];
         end
+
     end
 
     % test all options

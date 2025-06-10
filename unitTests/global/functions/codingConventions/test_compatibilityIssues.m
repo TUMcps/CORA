@@ -37,7 +37,7 @@ infoIssues = issues(issues.Severity == matlab.codeanalysis.IssueSeverity.info,:)
 % print fatal issues
 disp('Urgent issues:')
 CORAtable.printTable(errorIssues,'single');
-fprintf('%i urgent issues found. %i warnings. %i infos. Open <a href="matlab:codeCompatibilityReport">Code Compatibility Analyzer</a> too see all issues.\n', height(errorIssues),height(warningIssues),height(infoIssues))
+fprintf('%i urgent issues found. %i warnings. %i infos. Open <a href="matlab:codeCompatibilityReport">Code Compatibility Analyzer</a> to see all issues.\n', height(errorIssues),height(warningIssues),height(infoIssues))
 
 % get results
 res = isempty(errorIssues);

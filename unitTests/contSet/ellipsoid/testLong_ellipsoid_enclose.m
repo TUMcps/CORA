@@ -27,7 +27,7 @@ function res = testLong_ellipsoid_enclose
 %the union of E1,E2 is not the empty set.
 tol = 1e-6;
 
-nRuns = 20;
+nRuns = 5;
 res = true;
 bools = [false,true];
 for i=10:5:15

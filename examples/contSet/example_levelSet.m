@@ -31,6 +31,7 @@ ls1 = levelSet(eq,[x;y],'==');
 ls2 = levelSet(eq,[x;y],'<=');
 
 % visualize the level sets
+figure;
 subplot(1,2,1)
 xlim([-1.5,1.5]);
 ylim([-1,1]);

@@ -52,9 +52,9 @@ HA = bouncing_ball(-0.75);
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+timerVal = tic;
 R = reach(HA, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 
@@ -87,9 +87,9 @@ for j = 1:length(alg)
 
     % run all formulas for the selected algorithm
     for i = 1:length(phi)
-        tic
+        timerVal = tic;
         valid = modelChecking(R,phi{i},alg{j});
-        tComp = toc;
+        tComp = toc(timerVal);
 
         disp(['computation time for ',num2str(i),' is ',num2str(tComp)]);
 

@@ -80,14 +80,14 @@ linSys  = linParamSys(matZ_A, B,'constParam');
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+timerVal = tic;
 R = reach(linSys, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 
 
 % Verification ------------------------------------------------------------
 
-tic
+timerVal = tic;
 violation42 = false;
 for i=1:length(R.timeInterval.set)
     x_proj = interval(project(R.timeInterval.set{i},[1,4,7]));
@@ -95,7 +95,7 @@ for i=1:length(R.timeInterval.set)
         violation42 = true;
     end
 end
-tVer = toc;
+tVer = toc(timerVal);
 
 disp(['specifications verified: ',num2str(~violation42)]);
 disp(['computation time: ',num2str(tVer+tComp)]);

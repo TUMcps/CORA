@@ -82,6 +82,64 @@
      "outputs": [
          {"name":"nn_normal", "type":"neuralNetwork"}
      ]
+  },
+
+  "neuralNetwork.computeReducedNetwork":
+  {
+     "inputs":
+     [
+        {"name":"obj", "kind":"required", "type":["neuralNetwork"],"purpose":"neuralNetwork"},
+        {"name":"S", "kind":"required", "type":["contSet"],"purpose":"input set"},
+        {"name":"BucketType", "kind":"namevalue", "type":["char", "choices={'static','dynamic'}"],"purpose":"bucket type"},
+        {"name":"BucketTol", "kind":"namevalue", "type":["numeric"],"purpose":"bucket tolerance"},
+        {"name":"ReductionRate", "kind":"namevalue", "type":["numeric"],"purpose":"max. rate of remaining neurons"},
+        {"name":"InputCompression", "kind":"namevalue", "type":["numeric"],"purpose":"whether input set should be compressed "},
+        {"name":"Verbose", "kind":"namevalue", "type":["numeric"],"purpose":"verbose output"},
+        {"name":"Plot", "kind":"namevalue", "type":["numeric"],"purpose":"whether information should be plotted"},
+        {"name":"MinSearches", "kind":"namevalue", "type":["numeric"],"purpose":"min searches of binary search algorithm"}
+     ],
+     "outputs": [
+         {"name":"nn_red", "type":"neuralNetwork"},
+         {"name":"S", "type":"polyZonotope"}
+     ]
+  },
+
+  "neuralNetwork.explain":
+  {
+     "inputs":
+     [
+        {"name":"obj", "kind":"required", "type":["neuralNetwork"],"purpose":"neuralNetwork"},
+        {"name":"x", "kind":"required", "type":["numeric"],"purpose":"input"},
+        {"name":"target", "kind":"required", "type":["numeric"],"purpose":"target class"},
+        {"name":"epsilon", "kind":"required", "type":["numeric"],"purpose":"noise radius"},
+        {"name":"Verbose", "kind":"namevalue", "type":["logical"],"purpose":"verbose output"},
+        {"name":"Method", "kind":"namevalue", "type":["char", "choices={'standard','abstract+refine'}"],"purpose":"main method to compute explanation"},
+        {"name":"FeatOrder", "kind":"namevalue", "type":["char", "choices={'sensitivity','in-order','<numeric feature order>'}"],"purpose":"method to determine order to process the features"},
+        {"name":"RefineMethod", "kind":"namevalue", "type":["char", "choices={'all','sensitivity','rand'}"],"purpose":"method to refine abstract network"},
+        {"name":"InputSize", "kind":"namevalue", "type":["numeric"],"purpose":"size of the input"},
+        {"name":"RefinementSteps", "kind":"namevalue", "type":["numeric"],"purpose":"refinement steps, e.g. [0.1, 0.2, ...]"},
+        {"name":"BucketType", "kind":"namevalue", "type":["char", "choices={'static','dynamic'}"],"purpose":"bucket type for reduction"},
+        {"name":"OutputThreshold", "kind":"namevalue", "type":["numeric"],"purpose":"Output threshold for regression tasks"},
+        {"name":"Timeout", "kind":"namevalue", "type":["numeric"],"purpose":"timeout for explanation computation"}
+     ],
+     "outputs": [
+         {"name":"nn_red", "type":"neuralNetwork"},
+         {"name":"S", "type":"polyZonotope"}
+     ]
+  },
+
+  "neuralNetwork.getInputNeuronOrder":
+  {
+     "inputs":
+     [
+        {"name":"obj", "kind":"required", "type":["neuralNetwork"],"purpose":"neuralNetwork"},
+        {"name":"Method", "kind":"required", "type":["char", "choices={'in-order','sensitivity','snake'}"],"purpose":"main method to compute neuron order"},
+        {"name":"x", "kind":"ordered", "type":["numeric"],"purpose":"input point x"},
+        {"name":"inputSize", "kind":"ordered", "type":["numeric"],"purpose":"input size (H,W,C)"}
+     ],
+     "outputs": [
+         {"name":"neuronOrder", "type":["inferredFrom=x"]}
+     ]
   }
 
 }

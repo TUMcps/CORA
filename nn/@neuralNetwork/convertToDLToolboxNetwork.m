@@ -19,7 +19,7 @@ function nn_dlt = convertToDLToolboxNetwork(nn)
 
 % Authors:       Tobias Ladner
 % Written:       30-April-2024
-% Last update:   ---
+% Last update:   29-May-2024 (TL, considered approx error in linear layers)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -41,6 +41,12 @@ for k=1:numel(layers_cora)
             % read properties
             W = layer_cora_k.W;
             b = layer_cora_k.b;
+
+            % check approximation error
+            if ~representsa(layer_cora_k.d,'emptySet')
+                CORAwarning('CORA:nn','Converting linear layer with non-empty approximation error. Adding center to bias...')
+                b = b + center(layer_cora_k.d);
+            end
 
             % init dlt layer
             layer_dlt_k = fullyConnectedLayer(size(W,1));

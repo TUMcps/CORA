@@ -56,14 +56,14 @@ options.lagrangeRem.simplify = 'simplify';
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+timerVal = tic;
 
 options.armaxAlg = 'exactAddition';
 R_exact = reach(sys, params, options);
 options.armaxAlg = 'tvpGeneral';
 R_gen = reach(sys, params, options);
 
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachablity analysis: ',num2str(tComp)]);
 
 

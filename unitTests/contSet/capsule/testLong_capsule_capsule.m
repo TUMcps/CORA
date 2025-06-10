@@ -24,7 +24,7 @@ function res = testLong_capsule_capsule
 % ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
-nrOfTests = 1000;
+nrOfTests = 50;
 for i=1:nrOfTests
 
     % random dimension

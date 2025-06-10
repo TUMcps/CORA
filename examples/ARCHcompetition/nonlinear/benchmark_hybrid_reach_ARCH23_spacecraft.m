@@ -87,9 +87,9 @@ spec{3} = spec3;
 % Reachability Analysis ---------------------------------------------------
 
 % reachable set computations
-tic
+timerVal = tic;
 [R,res] = reach(HA,params,options,spec);
-tComp = toc;
+tComp = toc(timerVal);
 
 % display results
 disp(['specifications verified: ',num2str(res)]);

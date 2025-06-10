@@ -83,9 +83,9 @@ CommonRoadMB2 = nonlinearSys(@vehicleDynamics_MB_controlled_BMW,29,10); % refere
 options.refModel = CommonRoadMB2; 
     
 %% Conformance checking
-tic
+timerVal = tic;
 [res, R, simRes] = isconform(vehModelACC2012,params,options,confAlg); % RRT results should also be returned by conform
-tComp = toc
+tComp = toc(timerVal);
 
 if res
     disp('Model is reachset conformant');

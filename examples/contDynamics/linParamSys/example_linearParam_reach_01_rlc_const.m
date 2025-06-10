@@ -70,15 +70,15 @@ options.compTimePoint = false;
 % Reachability Analysis ---------------------------------------------------
 
 % compute reachable set using matrix zonotopes
-tic
+timerVal = tic;
 RmatZono = reach(sysMatZono, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set using matrix zonotopes: ',num2str(tComp)]);
 
 % compute reachable set using interval matrices
-tic
+timerVal = tic;
 RintMat = reach(sysIntMat, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set using interval matrices: ',num2str(tComp)]);
 
 

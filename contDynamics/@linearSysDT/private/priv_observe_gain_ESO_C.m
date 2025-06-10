@@ -35,7 +35,7 @@ function [OGain,P,gamma,lambda,tComp] = priv_observe_gain_ESO_C(linsysDT,params,
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-tic
+timerVal = tic;
 
 % obtain system dimension and nr of outputs
 n = linsysDT.nrOfDims; 
@@ -81,7 +81,7 @@ lambda = min(eigs(Q,P));
 OGain = P\Y;
 
 % computation time
-tComp = toc;
+tComp = toc(timerVal);
 
 end
 

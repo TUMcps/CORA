@@ -37,6 +37,7 @@ function Z = compact_(Z,method,tol,varargin)
 % Written:       15-January-2009
 % Last update:   27-August-2019
 %                05-October-2024 (MW, remove superfluous 'aligned', rewrite deleteAligned)
+%                27-May-2025 (TL, bug fix, outputs are now consistent for 'all')
 % Last revision: 29-July-2023 (MW, merged from deleteZeros/deleteAligned)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -72,8 +73,17 @@ function Z = aux_deleteAligned(Z,tol)
     end
     
     % normalize generators
-    G_norm = G ./ vecnorm(G);
+    vnormG = vecnorm(G);
+    G_norm = G ./ vnormG;
     nrGen = size(G,2);
+
+    % sort generators for consistent outputs
+    % TL: We had issues with it compacting less generators depending on the
+    % order of the generators. Sorting them should solve the issue and
+    % should not be slower than the subsequent computations.
+    [~,idx] = sort(vnormG);
+    G_norm = G_norm(:,idx);
+    G = G(:,idx);
     
     % find aligned generators: since the generators are normalized, aligned
     % generators must have a dot product of 1 (parallel) or -1

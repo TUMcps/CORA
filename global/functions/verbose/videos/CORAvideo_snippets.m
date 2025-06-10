@@ -264,6 +264,7 @@ finishCORAvideo(vidObj,fig)
 % c. run this code snippet
 
 % settings
+% (download mp3 within ./music from here: https://drive.google.com/drive/folders/1-7V_PWM6ORPg5KQytt1y9zJAShKe3GjZ?usp=sharing)
 filenameMusic = [CORAROOT '/global/functions/verbose/videos/July - John Patitucci.mp3'];
 filenameVideoLooped = strrep(filenameVideo,'.mp4','_looped.mp4');
 TotalDuration = 60;

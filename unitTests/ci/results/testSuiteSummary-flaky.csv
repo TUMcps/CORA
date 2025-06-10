@@ -1,0 +1,22 @@
+# date: 21-May-2025 14:06:02
+# dateEnd: 21-May-2025 14:09:48
+# hostsystem: Unix
+# matlabversion: 24.2.0.2712019 (R2024b)
+# coraversion: CORA v2025.1.1
+# testSuite: flaky
+
+                 fname                ; ok ;    seed    ;  time ; checkTime 
+
+ testFlaky_conPolyZono_reduce         ;  1 ; 1559750451 ;  7.99 ;         0 
+ testFlaky_conPolyZono_supportFunc    ;  1 ; 1440862932 ; 76.04 ;         0 
+ testFlaky_conZonotope_and            ;  1 ; 1834496804 ;  3.44 ;         0 
+ testFlaky_conZonotope_reduce         ;  1 ; 2303844962 ;  7.99 ;         0 
+ testFlaky_conZonotope_vertices       ;  1 ; 3552284642 ; 58.97 ;         0 
+ testFlaky_ellipsoid_isIntersecting   ;  1 ; 3167634624 ;  0.63 ;         0 
+ testFlaky_polytope_project           ;  1 ;  199941877 ;  7.27 ;         0 
+ testFlaky_polytope_randPoint         ;  1 ;  820627046 ; 44.17 ;         0 
+ testFlaky_polytope_vertices          ;  1 ; 3306853669 ;  8.53 ;         0 
+ testFlaky_spectraShadow_randPoint    ;  1 ;  969607936 ;  9.09 ;         0 
+ testFlaky_nn_polyZonotope_cnn_random ;  1 ; 1854352025 ;  1.61 ;         0 
+
+

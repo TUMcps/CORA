@@ -40,8 +40,8 @@ options.intersectionTechnique.E = generators(params.W); % disturbance matrix
 options.intersectionTechnique.F = generators(params.V); % sensor noise matrix
 
 % apply set-membership approach
-tic;
+timerVal = tic;
 R = observe_stripBased(nlnsysDT,params,options);
-tcomp = toc;
+tcomp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

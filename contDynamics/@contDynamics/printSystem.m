@@ -1,19 +1,23 @@
-function printSystem(sys,varargin)
+function res = printSystem(varargin)
 % printSystem - prints a contDynamic object such that if one executes this command
 %    in the workspace, this contDynamic object would be created
 %
 % Syntax:
 %    printSystem(sys)
-%    printSystem(sys,'high')
+%    printSystem(sys,accuracy,doCompact,clearLine)
+%    printSystem(fid,sys,varargin)
+%    printSystem(filename,sys,varargin)
 %
 % Inputs:
-%    sys - contDynamic
-%    accuracy - (optional) floating-point precision
-%    doCompact - (optional) whether to compactly print the set
-%    clearLine - (optional) whether to finish with '\n'
+%    sys - contDynamics
+%    accuracy - floating-point precision
+%    doCompact - whether to compactly print the set
+%    clearLine - whether to finish with '\n'
+%    filename - char, filename to print given obj to
+%    fid - char, fid to print given obj to
 %
 % Outputs:
-%    -
+%    res - logical
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -23,78 +27,74 @@ function printSystem(sys,varargin)
 
 % Authors:       Tobias Ladner
 % Written:       10-October-2024
-% Last update:   ---
+% Last update:   20-May-2025 (TL, added option for fid)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-narginchk(0,4);
-[accuracy,doCompact,clearLine] = setDefaultValues({'%4.3f',false,true},varargin);
-if ischar(accuracy) && strcmp(accuracy,'high')
-    accuracy = '%16.16f';
-end
-inputArgsCheck({ ...
-    {sys,'att',{'contDynamics'}}, ...
-    {accuracy,'att', {'char','string'}}, ...
-    {doCompact,'att','logical'}, ...
-    {clearLine,'att','logical'}
-})
+% parse input
+[fid,closefid,sys,accuracy,doCompact,clearLine] = initPrint(varargin{:});
 
 % get print info
 [propertyOrder] = getPrintSystemInfo(sys);
 
 if doCompact
     % print in one line
-    fprintf('%s(',class(sys))
+    fprintf(fid,'%s(',class(sys));
     for p = 1:numel(propertyOrder)
         pname = propertyOrder{p};
-        aux_printProperty(sys.(pname),accuracy);
+        aux_printProperty(fid,sys.(pname),accuracy);
         if p < numel(propertyOrder)
-            fprintf(', ')
+            fprintf(fid,', ');
         end
     end
-    fprintf(')')
+    fprintf(fid,')');
 
 else
     % print each property as variable
     for p = 1:numel(propertyOrder)
         pname = propertyOrder{p};
-        fprintf('%s = ',pname);
-        aux_printProperty(sys.(pname),accuracy);
-        fprintf(';\n');
+        fprintf(fid,'%s = ',pname);
+        aux_printProperty(fid,sys.(pname),accuracy);
+        fprintf(fid,';\n');
     end
     % init set
-    fprintf('sys = %s(%s);',class(sys),strjoin(propertyOrder,','));
+    fprintf(fid,'sys = %s(%s);',class(sys),strjoin(propertyOrder,','));
 end
 
 if clearLine
-    fprintf('\n');
+    fprintf(fid,'\n');
 end
+
+% finalize
+res = closePrint(fid,closefid);
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function aux_printProperty(property,accuracy)
+function aux_printProperty(fid,property,accuracy)
+    % Matlab objects ---
     if ischar(property) || isstring(property)
-        fprintf("'%s'",property);
+        fprintf(fid,"'%s'",property);
     elseif isnumeric(property)
-        printMatrix(property,accuracy,true,false);
+        printMatrix(fid,property,accuracy,true,false);
     elseif iscell(property)
-        printCell(property,accuracy,true,false);
+        printCell(fid,property,accuracy,true,false);
     elseif isstruct(property)
-        printStruct(property,accuracy,true,false);
-    elseif isa(property,'contSet') || isa(property,'matrixSet')
-        printSet(property,accuracy,true,false)
-    elseif isa(property,'contDynamics')
-        printSystem(property,accuracy,true,false)
+        printStruct(fid,property,accuracy,true,false);
     elseif isa(property,'function_handle')
         funcstr = func2str(property);
         if ~startsWith(funcstr,'@')
             funcstr = sprintf('@%s',funcstr);
         end
-        fprintf(funcstr)
+        fprintf(fid,funcstr);
+        % CORA objects ---
+    elseif isa(property,'contSet') || isa(property,'matrixSet')
+        printSet(fid,property,accuracy,true,false);
+    elseif isa(property,'contDynamics')
+        printSystem(fid,property,accuracy,true,false);
     else
         throw(CORAerror("CORA:noops",property))
     end

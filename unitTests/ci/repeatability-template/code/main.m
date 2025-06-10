@@ -23,26 +23,7 @@ PAPER_TITLE = '<paper-title>'; % !
 VENUE_NAME = '<venue-name>';   % !
 aux_runStartup(PAPER_TITLE,VENUE_NAME);
 
-% plotting settings
-plotSettings = struct;
-plotSettings.saveOpenFigures = true;
-plotSettings.saveAsFig = true;
-plotSettings.saveAsPng = true;
-plotSettings.saveAsEps = false;
-
-% also change 3. Scripts below
-
 % 2. SETUP (nothing to change here) ---------------------------------------
-
-% parse input
-if nargin < 1
-    evalname = datestr(datetime,'yymmdd-hhMMss');
-else
-    evalname = varargin{1};
-end
-
-% set up paths
-basepath = '.';
 
 % PATH                      VARIABLE        PURPOSE
 % ./                        basepath        base path
@@ -57,14 +38,17 @@ basepath = '.';
 %                                           each script will be stored there
 %   - ./results.txt         -               logs all outputs to command window
 %
-[codepath,datapath,resultspath,evalpath,plotspath] = aux_setup(basepath,evalname);
+[evalname,basepath,codepath,datapath,resultspath,evalpath,plotspath,plotSettings] = aux_setup(varargin{:});
 
 % 3. RUN SCRIPTS (update as needed) ---------------------------------------
 
 scripts = {; ...
-    % list all scripts of evaluation here
-    @aux_mysimplefunc, "figure_1";
-    @() aux_mycomplexfunc(datapath,evalpath), "sec5_2";
+    % list all evaluation scripts here:
+    % "<scriptname>", @my_function_handle;
+    % (<scriptname> is used for display and naming figures etc.)
+    % e.g.
+    "figure_1", @aux_mysimplefunc;
+    "sec5_2", @() aux_mycomplexfunc(datapath,evalpath);
     };
 
 % run scripts
@@ -123,9 +107,6 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function aux_runStartup(PAPER_TITLE,VENUE_NAME)
-    rng(1)
-    warning off
-
     % show startup block
     disp(' ')
     aux_seperateLine()
@@ -140,14 +121,26 @@ function aux_runStartup(PAPER_TITLE,VENUE_NAME)
     end
     fprintf('Matlab: %s\n', version)
     fprintf('System: %s\n', computer)
-    fprintf('GPU available: %i', canUseGPU)
+    fprintf('GPU available: %i\n', canUseGPU)
     disp(' ')
     aux_seperateLine()
     disp(' ')
     pause(2) % to make the startup block readable
 end
 
-function [codepath,datapath,resultspath,evalpath,plotspath] = aux_setup(basepath,evalname)
+function [evalname,basepath,codepath,datapath,resultspath,evalpath,plotspath,plotSettings] = aux_setup(varargin)
+    % determine evaluation name, set up paths, and define plot settings
+
+    % parse input
+    if nargin < 1
+        evalname = datestr(datetime,'yymmdd-hhMMss');
+    else
+        evalname = varargin{1};
+    end
+
+    % set up paths
+    basepath = '.';
+
     % set up paths
     codepath = sprintf("%s/code", basepath);
     datapath = sprintf("%s/data", basepath);
@@ -163,8 +156,18 @@ function [codepath,datapath,resultspath,evalpath,plotspath] = aux_setup(basepath
     
     % set up diary
     resultstxt = sprintf("%s/results.txt", resultspath);
-    delete(resultstxt)
+    if exist("resultstxt","file")
+        delete(resultstxt)
+    end
     diary(resultstxt)
+
+    % set up plotting settings
+    plotSettings = struct;
+    plotSettings.saveOpenFigures = true;
+    plotSettings.saveAsFig = true;
+    plotSettings.saveAsPng = true;
+    plotSettings.saveAsEps = false;
+
 end
 
 function aux_runScripts(scripts,plotspath,plotSettings)
@@ -179,8 +182,8 @@ function aux_runScripts(scripts,plotspath,plotSettings)
         % run script i
         aux_seperateLine()
         disp(' ')
-        script = scripts{i, 1};
-        name = scripts{i, 2};
+        name = scripts{i, 1};
+        script = scripts{i, 2};
     
         try
             % call script

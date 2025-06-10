@@ -44,6 +44,10 @@ function [res, subspace] = isFullDim(Z,varargin)
 % parse input
 tol = setDefaultValues({1e-6},varargin);
 
+if issparse(Z.G)
+    throw(CORAerror("CORA:notSupported","The operation isFullDim does not support sparse generator matrices!"));
+end
+
 if ~representsa_(Z,'emptySet',eps)
     % If the user only wants to know if the set is non-degenerate, we can do
     % this quickly with the rank (note that this requires the computation

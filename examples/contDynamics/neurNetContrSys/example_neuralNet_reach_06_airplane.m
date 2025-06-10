@@ -58,7 +58,7 @@ options.timeStep = 0.1;
 options.alg = 'lin';
 options.tensorOrder = 2;
 options.taylorTerms = 4;
-options.zonotopeOrder = 50;
+options.zonotopeOrder = 10;
 
 % Options for NN evaluation -----------------------------------------------
 

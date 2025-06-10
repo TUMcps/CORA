@@ -65,9 +65,9 @@ p = getSubset(params.R0,1:2,alpha);            % initial point
 Rfin = R.timePoint.set{end};
 Rfin = reduce(Rfin,'girard',3);
 
-tic
+timerVal = tic;
 Rsubset = getSubset(Rfin,1:2,alpha);           % reachable subset
-tComp = toc;
+tComp = toc(timerVal);
 
 disp(['Computation time (subset extraction): ',num2str(tComp),'s']);
 
@@ -137,14 +137,14 @@ ub = ones(size(Rproj.E,1),1);
 
 x0 = zeros(size(Rproj.E,1),1);
 
-tic
+timerVal = tic;
 alpha = fmincon(objFun,x0,[],[],[],[],lb,ub);
 p = getSubset(params.R0,1:2,alpha);
 
 % compute the falsifying trajectory
 paramSim.x0 = p;
 [~,xTraj] = simulate(sys,paramSim);
-tComp = toc;
+tComp = toc(timerVal);
 
 disp(['Computation time (falsification): ',num2str(tComp),'s']);
 
@@ -188,9 +188,9 @@ A = [1 -1 0 0;0 0 1 -1];
 b = [0;0];
 
 % solve optimization problem (see (24) in [1])
-tic
+timerVal = tic;
 x = fmincon(fun,[-1;1;-1;1],A,b,[],[],-ones(4,1),ones(4,1),@aux_conFun);
-topt1 = toc;
+topt1 = toc(timerVal);
 disp(['Computation time (optimization): ',num2str(topt1)]);
 
 % compute optimized final reachable set

@@ -44,8 +44,8 @@ params.R0 = polyZonotope(R0);
 options.timeStep = 0.1;
 options.alg = 'lin';
 options.tensorOrder = 2;
-options.taylorTerms = 4;
-options.zonotopeOrder = 20;
+options.taylorTerms = 1;
+options.zonotopeOrder = 10;
 
 % Options for NN evaluation -----------------------------------------------
 
@@ -88,14 +88,14 @@ sys = neurNetContrSys(sys, nn, 0.1);
 
 % Simulation --------------------------------------------------------------
 
-tic;
+timerVal = tic;
 simRes = simulateRandom(sys, params);
-tSim = toc;
+tSim = toc(timerVal);
 disp(['Time to compute random simulations: ', num2str(tSim)]);
 
 % Check Violation --------------------------------------------------------
 
-tic;
+timerVal = tic;
 simResDistances = [];
 isVio = false;
 for i = 1:length(simRes)
@@ -119,7 +119,7 @@ for i = 1:length(simRes)
 
     end
 end
-tVio = toc;
+tVio = toc(timerVal);
 disp(['Time to check violation in simulations: ', num2str(tVio)]);
 
 if isVio
@@ -131,14 +131,14 @@ if isVio
 else
     % Reachability Analysis -----------------------------------------------
 
-    tic;
+    timerVal = tic;
     R = reach(sys, params, options);
-    tComp = toc;
+    tComp = toc(timerVal);
     disp(['Time to compute reachable set: ', num2str(tComp)]);
 
     % Verification --------------------------------------------------------
 
-    tic;
+    timerVal = tic;
 
     % transform 
     R_distances = DM * R + Db;
@@ -155,7 +155,7 @@ else
             isVeri = isVeri && (infimum(distance) > supremum(safe_distance));
         end
     end
-    tVeri = toc;
+    tVeri = toc(timerVal);
     disp(['Time to check verification: ', num2str(tVeri)]);
 
     if isVeri

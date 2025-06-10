@@ -235,9 +235,6 @@ if verbose
     table.printHeader();
 end
 
-% Start training time
-tic
-
 % Main training loop
 for epoch=1:maxEpoch % epoch
     if strcmp('every_epoch',options.nn.train.shuffle_data)
@@ -350,8 +347,7 @@ for epoch=1:maxEpoch % epoch
 
         % Print loss of current training iteration
         if verbose && ismember(iter,printIter) 
-            trainTime = toc;
-            aux_printTrainingIteration(table,iter,epoch,trainTime,valIter,loss)
+            aux_printTrainingIteration(table,iter,epoch,valIter,loss)
         end
 
         % Check for early-stopping
@@ -367,15 +363,13 @@ for epoch=1:maxEpoch % epoch
         % Increment counter for current training iteration
         iter = iter + 1;
     end
-    % Stop training time
-    trainTime = toc;
     % Check if we stopped early
     if numNonDecrVal > options.nn.train.early_stop
         break;
     end
 end
 
-% brint bottom
+% print bottom
 if verbose
     table.printFooter();
 end
@@ -860,16 +854,15 @@ function table = aux_setUpTrainingTable(options)
         sprintf('Loss (%s; train)',options.nn.train.loss),'Loss (Vol; train)',...
         'Loss (Total; train)','Loss (Total; val)'};
     % Specify formats for column values
-    formats = {'d','d','s','.4e','.4e','.4e','.4e'};
+    formats = {'d','d','time','.4e','.4e','.4e','.4e'};
     table = CORAtable('double',hvalues,formats);
 end
 
-function aux_printTrainingIteration(table,iter,epoch,trainTime,valIter,loss)
+function aux_printTrainingIteration(table,iter,epoch,valIter,loss)
 
     % Set values for each column
     valIterIdx = find(valIter == iter);
-    trainTimeVec = [0 0 0 0 0 trainTime];
-    cvalues = {epoch,iter,datetime(trainTimeVec,'Format','HH:mm:ss'),...
+    cvalues = {epoch,iter,[],...
         loss.center(iter),loss.vol(iter),loss.total(iter),...
         loss.valTotal(valIterIdx)};
     

@@ -1,0 +1,64 @@
+# date: 06-Jun-2025 09:40:33
+# dateEnd: 06-Jun-2025 12:42:45
+# hostsystem: Unix
+# matlabversion: 24.2.0.2712019 (R2024b)
+# coraversion: CORA v2025.1.1
+# testSuite: benchmarks
+
+                          fname                          ; ok ;    seed    ;   time  ; checkTime 
+
+ benchmark_hybrid_reach_ARCH23_brake_BRKDC01             ;  1 ; 2445571022 ;   20.53 ;         1 
+ benchmark_hybrid_reach_ARCH23_brake_BRKNC01             ;  1 ; 2144170857 ;  386.25 ;         1 
+ benchmark_hybrid_reach_ARCH23_brake_BRKNP01             ;  1 ; 1188728329 ;  423.64 ;         1 
+ benchmark_hybrid_reach_ARCH23_gearbox_GRBX01            ;  1 ; 4234450963 ;    3.58 ;         1 
+ benchmark_hybrid_reach_ARCH23_gearbox_GRBX02            ;  1 ; 1877499461 ;    3.12 ;         1 
+ benchmark_hybrid_reach_ARCH23_powerTrain_DTN01          ;  1 ; 2522567136 ;   30.96 ;         1 
+ benchmark_hybrid_reach_ARCH23_powerTrain_DTN02          ;  1 ; 1634225580 ;   29.26 ;         1 
+ benchmark_hybrid_reach_ARCH23_powerTrain_DTN03          ;  1 ; 1807087005 ;   29.63 ;         1 
+ benchmark_hybrid_reach_ARCH23_powerTrain_DTN04          ;  1 ;  319854618 ;  106.85 ;         1 
+ benchmark_hybrid_reach_ARCH23_powerTrain_DTN05          ;  1 ;  948572426 ;  208.04 ;         1 
+ benchmark_hybrid_reach_ARCH23_powerTrain_DTN06          ;  1 ; 1174599323 ;  526.22 ;         1 
+ benchmark_hybrid_reach_ARCH23_rendezvous_SRA01          ;  1 ; 2375400939 ;   18.76 ;         1 
+ benchmark_hybrid_reach_ARCH23_rendezvous_SRA02          ;  1 ; 1730345438 ;   23.94 ;         1 
+ benchmark_hybrid_reach_ARCH23_rendezvous_SRA03          ;  1 ; 1415396163 ;   38.67 ;         1 
+ benchmark_hybrid_reach_ARCH23_rendezvous_SRA04          ;  1 ;  323485141 ;   70.28 ;         1 
+ benchmark_hybrid_reach_ARCH23_rendezvous_SRA05          ;  1 ; 3240681707 ;   92.27 ;         1 
+ benchmark_hybrid_reach_ARCH23_rendezvous_SRA06          ;  1 ; 2023936010 ;   92.81 ;         1 
+ benchmark_hybrid_reach_ARCH23_rendezvous_SRA07          ;  1 ; 3109662210 ;  162.18 ;         1 
+ benchmark_hybrid_reach_ARCH23_rendezvous_SRA08          ;  1 ; 2098023542 ;  359.35 ;         1 
+ benchmark_hybrid_reach_ARCH23_rendezvous_SRNA01         ;  1 ; 4167107748 ;   88.50 ;         1 
+ benchmark_hybrid_reach_ARCH23_rendezvous_SRU01          ;  1 ; 2384411608 ;   62.74 ;         1 
+ benchmark_hybrid_reach_ARCH23_rendezvous_SRU02          ;  1 ; 1172517415 ;  363.47 ;         1 
+ benchmark_linearParam_reach_ARCH23_platoon_PLAA01_BND42 ;  1 ;  573898523 ;   22.02 ;         1 
+ benchmark_linearParam_reach_ARCH23_platoon_PLAA01_BND50 ;  1 ; 2133606688 ;    6.93 ;         1 
+ benchmark_linearParam_reach_ARCH23_platoon_PLAD01_BND30 ;  1 ; 1531822307 ;    4.07 ;         1 
+ benchmark_linearParam_reach_ARCH23_platoon_PLAD01_BND42 ;  1 ; 3285230905 ;   10.98 ;         1 
+ benchmark_linearParam_reach_ARCH23_platoon_PLAN01       ;  1 ; 3119252970 ;  134.09 ;         1 
+ benchmark_linear_reach_ARCH23_heat3D_HEAT03             ;  1 ; 2408486496 ;    0.09 ;         0 
+ benchmark_linear_verifyFast_ARCH23_beam_CBC01           ;  1 ; 2408443498 ;    0.41 ;         1 
+ benchmark_linear_verifyFast_ARCH23_beam_CBC02           ;  1 ; 3447393769 ;    2.70 ;         1 
+ benchmark_linear_verifyFast_ARCH23_beam_CBC03           ;  1 ; 2690931616 ;   18.16 ;         1 
+ benchmark_linear_verifyFast_ARCH23_beam_CBF01           ;  1 ;  736234238 ;    4.05 ;         1 
+ benchmark_linear_verifyFast_ARCH23_beam_CBF02           ;  1 ; 1705713780 ;   37.77 ;         1 
+ benchmark_linear_verifyFast_ARCH23_beam_CBF03           ;  1 ;  338697402 ;  188.14 ;         1 
+ benchmark_linear_verifyFast_ARCH23_heat3D_HEAT01        ;  1 ; 3180701454 ;    0.19 ;         1 
+ benchmark_linear_verifyFast_ARCH23_heat3D_HEAT02        ;  1 ;  657377167 ;    2.47 ;         1 
+ benchmark_linear_verifyFast_ARCH23_iss_ISSC01_ISS02     ;  1 ;  115466367 ;    0.26 ;         1 
+ benchmark_linear_verifyFast_ARCH23_iss_ISSC01_ISU02     ;  1 ; 1559825829 ;    0.24 ;         1 
+ benchmark_linear_verifyFast_ARCH23_iss_ISSF01_ISS01     ;  1 ; 2935445741 ;    0.62 ;         1 
+ benchmark_linear_verifyFast_ARCH23_iss_ISSF01_ISU01     ;  1 ; 4010144685 ;    0.28 ;         1 
+ benchmark_linear_verify_ARCH23_rand_RAND01              ;  1 ; 3011504977 ;    0.90 ;         1 
+ benchmark_linear_verify_ARCH23_rand_RAND02              ;  1 ; 3971718445 ;    4.39 ;         1 
+ benchmark_linear_verify_ARCH24_rand_generation          ;  1 ; 2709447356 ;   14.93 ;         1 
+ benchmark_hybrid_reach_ARCH23_lotkaVolterra             ;  1 ;  974442584 ;   18.42 ;         1 
+ benchmark_hybrid_reach_ARCH23_spacecraft                ;  1 ; 3192043818 ;   61.97 ;         1 
+ benchmark_nonlinearDAS_reach_ARCH23_powerSystem         ;  1 ; 3782338493 ;  462.27 ;         1 
+ benchmark_nonlinear_reach_ARCH23_Robertson              ;  1 ; 2120601736 ; 1909.58 ;         1 
+ benchmark_nonlinear_reach_ARCH23_laubLoomis             ;  1 ; 1192810267 ;  267.82 ;         1 
+ benchmark_nonlinear_reach_ARCH23_trafficscenario        ;  1 ;  541685941 ;  133.90 ;         1 
+ benchmark_nonlinear_reach_ARCH23_vanDerPol              ;  1 ; 3043060212 ; 1435.06 ;         1 
+ benchmark_neuralNet_reach_09_QUAD                       ;  1 ; 2568102850 ;   39.84 ;         1 
+ benchmark_neuralNetwork_rl_agentDDPG_Quad1D             ;  1 ; 2099629877 ; 1263.40 ;         1 
+ benchmark_neuralNetwork_rl_agentTD3_Pendulum            ;  1 ; 4051743496 ; 1729.67 ;         1 
+
+

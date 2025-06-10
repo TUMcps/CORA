@@ -19,7 +19,7 @@ function res = testLong_conPolyZono_linComb
 
 % Authors:       Niklas Kochdumper
 % Written:       03-February-2021
-% Last update:   ---
+% Last update:   06-June-2025 (TL, fixed unit test)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -47,25 +47,25 @@ for i = 1:2
     for j = 1:length(sets)
         
         % generate random object of the current set representation
-        temp = sets{i}('Dimension',2);
-        cPZ2 = conPolyZono(temp);
+        S2 = sets{j}('Dimension',2);
 
         % compute linear combination
-        cPZ = linComb(cPZ1,temp);
+        cPZ3 = linComb(cPZ1,S2);
 
         % get random points inside the two conPolyZono objects
-        N1 = 10;
-        points1 = randPoint(cPZ1,N1,'extreme');
-        points2 = randPoint(cPZ2,N1,'extreme');
+        N12 = 10;
+        points1 = randPoint(cPZ1,N12,'extreme');
+        points2 = randPoint(S2,N12,'extreme');
         
         % compute random combinations of the points
-        N2 = 100;
-        points3 = zeros(dim(cPZ),N2);
+        N3 = 100;
+        points3 = zeros(dim(cPZ3),N3);
         
-        for k = 1:N2
-            ind1 = randi([1,N1]);
-            ind2 = randi([1,N1]);
-            points2(:,k) = points1(:,ind1) + ...
+        for k = 1:N3
+            ind1 = randi([1,N12]);
+            ind2 = randi([1,N12]);
+            % compute random point on the line between point 1 and 2
+            points3(:,k) = points1(:,ind1) + ...
                            rand()*(points2(:,ind2) - points1(:,ind1));
         end
         
@@ -73,8 +73,7 @@ for i = 1:2
         points = [points1,points2,points3];
         
         % check if all points are inside polygon enclosures
-        pgon = polygon(cPZ,splits);
-        
+        pgon = polygon(cPZ3,splits);
         assertLoop(contains(pgon,points),i,j)
     end
 end

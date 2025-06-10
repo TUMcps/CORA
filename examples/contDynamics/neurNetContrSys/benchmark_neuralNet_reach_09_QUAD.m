@@ -40,11 +40,11 @@ params.R0 = polyZonotope(interval( ...
 
 % Reachability Settings ---------------------------------------------------
 
-options.timeStep = 0.01;
+options.timeStep = 0.1;
 options.alg = 'lin';
 options.tensorOrder = 2;
 options.taylorTerms = 1;
-options.zonotopeOrder = 80;
+options.zonotopeOrder = 20;
 
 % Options for NN evaluation -----------------------------------------------
 
@@ -60,6 +60,8 @@ sys = nonlinearSys(f);
 % load neural network controller
 % [12, 64, 64, 64, 3]
 nn = neuralNetwork.readONNXNetwork('quad_controller_3_64_torch.onnx');
+
+% refine ---
 nn.evaluate(params.R0, options);
 nn.refine(2, "layer", "both", params.R0.c, true);
 

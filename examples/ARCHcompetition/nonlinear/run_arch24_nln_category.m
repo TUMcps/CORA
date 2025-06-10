@@ -19,8 +19,8 @@ function run_arch24_nln_category
 % ------------------------------ BEGIN CODE -------------------------------
 
 % local
-outputdir = [CORAROOT filesep 'examples' filesep 'ARCHcompetition' ...
-    filesep 'nonlinear' filesep 'results' filesep];
+outputdir = [CORAROOT filesep '..' filesep '..' ...
+    filesep 'results' filesep];
 fid = fopen([outputdir 'results.csv'],'w');
 
 % header
@@ -30,16 +30,15 @@ fprintf(fid,'%s\n',text);
 longdashes = '-------------------------------------------------------------------';
 
 benchmark_names = {'Robertson'; 'vanDerPol'; 'laubloomis'; ...
-    'lotkaVolterra'; 'spacecraft'; 'trafficscenario'};
+    'lotkaVolterra'; 'spacecraft'; 'trafficscenario';'powerSystem'};
 benchmark_funcs = {'nonlinear'; 'nonlinear'; 'nonlinear'; ...
-    'hybrid'; 'hybrid'; 'nonlinear'};
+    'hybrid'; 'hybrid'; 'nonlinear';'nonlinearDAS'};
 benchmarks = struct(...
     'name', benchmark_names, ...
     'prefix', benchmark_funcs);
 
 cnt = 0;
-% Robertson has an issue... priv_abstractionError_adaptive
-% all others are ok
+
 
 % loop over benchmarks
 for g=1:length(benchmarks)

@@ -129,6 +129,11 @@ methods
         coeffs(end) = coeffs(end) - diffc;
         d = diffu-diffc; % error is radius then.
     end
+
+    function fieldStruct = getFieldStruct(obj)
+        fieldStruct = struct;
+        fieldStruct.alpha = obj.alpha;
+    end
 end
 
 methods(Access=protected)

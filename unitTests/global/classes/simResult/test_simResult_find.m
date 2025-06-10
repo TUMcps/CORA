@@ -73,6 +73,9 @@ assert(compareMatrices(simRes_.x{1}',x{2}') ...
 % check equality of location vector
 assert(all(cellfun(@(x) all(x' == [1;2]),simRes_.loc,'UniformOutput',true)));
 
+% no matching simulation should return isemptyobject
+assert(isemptyobject(find(simRes,'time',9)))
+
 % combine results
 res = true;
 

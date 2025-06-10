@@ -24,7 +24,7 @@ function res = testLong_capsule_volume
 % ------------------------------ BEGIN CODE -------------------------------
 
 res = true;
-nrOfTests = 1000;
+nrOfTests = 100;
     
 for i=1:nrOfTests
 

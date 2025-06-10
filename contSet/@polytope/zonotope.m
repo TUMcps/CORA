@@ -29,10 +29,11 @@ function Z = zonotope(P,varargin)
 %
 % See also: none
 
-% Authors:       Victor Gassmann
+% Authors:       Victor Gassmann, Tobias Ladner
 % Written:       17-March-2023
 % Last update:   08-January-2024 (MW, empty case)
 %                13-March-2024 (TL, bug fix v rep given)
+%                23-May-2025 (TL, added 'inner')
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -63,7 +64,7 @@ switch mode
         throw(CORAerror('CORA:notSupported'));
 
     case 'inner'
-        throw(CORAerror('CORA:notSupported'));
+        Z = aux_zonotope_inner(P,n);
 
     case 'outer'
         Z = aux_zonotope_outer(P,n);
@@ -109,6 +110,26 @@ rt = 1/2*(sF_upper-sF_lower);
 
 % init resulting zonotope
 Z = Q_r*zonotope(ct,diag(rt)) + c;
+
+end
+
+function Z = aux_zonotope_inner(P,n)
+% computes an inner approximation of the polytope
+
+% get Chebychev center
+c = center(P);
+
+% get a centered template zonotope
+% (choosing a ball-ish zonotope here as Chebychev center fits a ball into P)
+% (the 3*n is an arbitrary number, breaks symmetry but not too large...)
+Z_temp = zonotope(ellipsoid(eye(n),c),'outer:norm',3*n);
+
+% compute support function in direction of halfspaces
+Zvals = sum(abs(P.A * Z_temp.G),2);
+maxVals = P.b - P.A*c;
+
+% scale zonotope to not exceed polytope
+Z = enlarge(Z_temp,min(maxVals./Zvals));
 
 end
 

@@ -88,11 +88,11 @@ if ~isempty(Ae)
             % check for aligned vectors
             alignedConstraints = all(...
                 withinTol(Ae(i,:) - dotprod_norm(:,i)*Ae(i,:),...
-                zeros(1,n)), 2);
+                zeros(1,n),tol), 2);
         
             if nnz(alignedConstraints) > 1
                 % at least two constraints are aligned
-                if ~all(withinTol(be(alignedConstraints),be(i)))
+                if ~all(withinTol(be(alignedConstraints),be(i),tol))
                     % polytope is the empty set
                     empty = true;
                     return
@@ -139,6 +139,9 @@ elseif exitflag == -3 || (exitflag > 0 && b'*x < 1e-10)
     % if problem is unbounded (below since minimization) or
     % objective value is smaller zero, polytope is empty
     empty = true;
+elseif exitflag == 0
+    % max iterations exceeded; can not guarantee emptiness
+    empty = false;
 else
     throw(CORAerror('CORA:solverIssue','linprog'));
 end

@@ -149,7 +149,7 @@ S = [S,zeros(n,n-nrGen)];
 Z_ = U'*[c,G];
 
 % remove dimensions with all zeros
-ind = find(diag(S) <= tol);
+ind = find(diag(S) <= tol*2);
 ind_ = setdiff(1:size(S,1),ind);
 
 if ~isempty(ind)

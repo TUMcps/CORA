@@ -58,17 +58,17 @@ tankParam = nonlinParamSys(@tank6paramEq);
 % Reachability Analysis ---------------------------------------------------
         
 % compute reachable set of tank system without uncertain parameters
-tic
+timerVal = tic;
 RcontNoParam = reach(tank, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set without uncertain parameters: ',num2str(tComp)]);
 
 % compute reachable set of tank system with uncertain parameters
 options.intermediateTerms = 4;
 params.paramInt = 0.015;
-tic
+timerVal = tic;
 RcontParam = reach(tankParam, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set with uncertain parameters: ',num2str(tComp)]);
 
 

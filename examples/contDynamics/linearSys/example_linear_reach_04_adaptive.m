@@ -61,9 +61,9 @@ R = cell(length(errs),1);
 % compute reachable sets for different max. allowed errors
 for i=1:length(errs)
     options.error = errs(i);
-    tic;
+    timerVal = tic;
     R{i} = reach(sys,params,options);
-    timesS(i) = toc;
+    timesS(i) = toc(timerVal);
     stepssS(i) = length(R{i}.timeInterval.set);
 end
 

@@ -41,9 +41,9 @@ options1.alg = 'poly-adaptive';
 
 sys = nonlinearSys('laubLoomis1_ARCH23',@laubLoomis); 
 
-tic
+timerVal = tic;
 R{1} = reach(sys, params, options1);
-tComp1 = toc;
+tComp1 = toc(timerVal);
 
 width1 = 2*rad(interval(project(R{1}.timePoint.set{end},4)));
 disp(['computation time of reachable set (W=0.1): ',num2str(tComp1)]);
@@ -60,9 +60,9 @@ options2.alg = 'lin-adaptive';
 
 sys = nonlinearSys('laubLoomis2_ARCH23',@laubLoomis); 
 
-tic
+timerVal = tic;
 R{2} = reach(sys, params, options2);
-tComp2 = toc;
+tComp2 = toc(timerVal);
 
 width2 = 2*rad(interval(project(R{2}.timePoint.set{end},4)));
 disp(['computation time of reachable set (W=0.05): ',num2str(tComp2)]);
@@ -79,9 +79,9 @@ options3.alg = 'lin-adaptive';
 
 sys = nonlinearSys('laubLoomis3_ARCH23',@laubLoomis); 
 
-tic
+timerVal = tic;
 R{3} = reach(sys, params, options3);
-tComp3 = toc;
+tComp3 = toc(timerVal);
 
 width3 = 2*rad(interval(project(R{3}.timePoint.set{end},4)));
 disp(['computation time of reachable set (W=0.01): ',num2str(tComp3)]);

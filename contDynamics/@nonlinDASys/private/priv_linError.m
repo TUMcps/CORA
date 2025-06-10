@@ -81,7 +81,7 @@ end
 % du = sup(abs(interval(IH_u)));
 % dz = [dx; dy; du];
 % 
-% tic
+% timerVal = tic;
 % %obtain hessian tensor
 % [Hf, Hg] = hessianTensor(totalInt_x, totalInt_y, totalInt_u);
 % 
@@ -94,13 +94,13 @@ end
 % for i=1:length(Hg)
 %     error_y(i) = 0.5*dz'*sup(abs(Hg{i}))*dz;
 % end
-% toc
+% toc(timerVal)
 % 
 % %compute linearization error by passing the intervals to the Lagrange
 % %remainder mFile
-% tic
+% timerVal = tic;
 % [error_x, error_y] = lagrangeRemainder(totalInt_x,totalInt_y,totalInt_u,dx,dy,du);
-% toc
+% toc(timerVal)
 
 %compute final error
 Z_error_x = zonotope(interval(infimum(error_x),supremum(error_x)));

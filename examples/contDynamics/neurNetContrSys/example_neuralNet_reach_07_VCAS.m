@@ -134,7 +134,7 @@ spec = specification(unsafeSet, 'unsafeSet');
 numSims = 10;
 adv = ones(10, 1) * adv_init;
 
-tic
+timerVal = tic;
 simRes = [];
 time = 1:tFinal;
 for j = 1:numSims
@@ -167,14 +167,14 @@ for j = 1:numSims
     end
     simRes = [simRes; simResult({xs}, {[0 time]'})];
 end
-tSim = toc;
+tSim = toc(timerVal);
 disp(['Time to compute random simulations: ', num2str(tSim)]);
 
 % Check Violation -----------------------------------------------------
 
-tic
+timerVal = tic;
 isVio = ~check(spec, simRes);
-tVio = toc;
+tVio = toc(timerVal);
 disp(['Time to check violation in simulations: ', num2str(tVio)]);
 
 if isVio
@@ -189,7 +189,7 @@ else
     R0 = polyZonotope(R0);
     R = {R0};
 
-    tic
+    timerVal = tic;
     Ri = R0;
     adv_cur = adv_init;
     for i = 1:tFinal
@@ -233,15 +233,15 @@ else
         R = [R, {Ri}];
         adv_cur = adv_next;
     end
-    tComp = toc;
+    tComp = toc(timerVal);
     disp(['Time to compute reachable set: ', num2str(tComp)]);
 
     % check reachable set
-    tic
+    timerVal = tic;
     Rend = R{end};
     Rend = interval(Rend);
     isVeri = ~isIntersecting(Rend, unsafeSet);
-    tVeri = toc;
+    tVeri = toc(timerVal);
     
     disp(['Time to check verification: ', num2str(tVeri)]);
 

@@ -23,10 +23,11 @@ function zB = generateRandom(varargin)
 %
 % See also: zonotope/generateRandom
 
-% Authors:       Mark Wetzlinger
+% Authors:       Mark Wetzlinger, Tobias Ladner
 % Written:       17-September-2019
 % Last update:   19-May-2022 (MW, name-value pair syntax)
 %                04-October-2024 (MW, faster algorithm)
+%                22-May-2025 (TL, bug fix, fixed point was not always contained)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -61,12 +62,12 @@ listZ = cell(nrZonos,1);
 % 1) fix a point that will be contained in all generated zonotopes
 p = randn(n,1);
 for z=1:nrZonos
-    % 2) randomly generate zonotopes centered at the origin
-    Z = zonotope.generateRandom('Dimension',n,'Center',zeros(n,1));
-    % 3) find the boundary point in the direction of the fixed point
-    boundary_point = boundaryPoint(Z,p);
-    % 4) random factor [0,1] to shift the zonotope
-    listZ{z} = Z + rand(1)*boundary_point;
+    % 2) randomly generate zonotopes centered at p
+    Z = zonotope.generateRandom('Dimension',n,'Center',p);
+    % 3) find vertex in random direction
+    [~,v] = supportFunc(Z,rand(n,1));
+    % 4) random factor [0,1] to shift the zonotope between v and p
+    listZ{z} = Z + rand(1) * (v-p);
 end
 
 % instantiate zonotope bundle

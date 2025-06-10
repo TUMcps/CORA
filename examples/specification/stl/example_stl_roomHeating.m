@@ -44,9 +44,9 @@ options.guardIntersect = 'zonoGirard';
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+timerVal = tic;
 R = reach(HA, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 
@@ -62,24 +62,24 @@ res = true;
 
 % 1. Three-valued Signals
 
-tic
+timerVal = tic;
 
 for i = 1:length(phi)
     assertLoop(modelChecking(R,phi{i},'signals'),i);
 end
 
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time with signals: ',num2str(tComp)]);
 
 % 2. Incremental with four-valued signals
 
-tic
+timerVal = tic;
 
 for i = 1:length(phi)
     assertLoop(modelChecking(R,phi{i},'incremental','propFreq',100,'verbose',true),i);
 end
 
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time with incremental: ',num2str(tComp)]);
 
 % Warning
@@ -90,26 +90,26 @@ return
 % 3. Reachset Temporal Logic
 % takes a very long time
 
-tic
+timerVal = tic;
 
 for i = 1:length(phi)
     assertLoop(modelChecking(R,phi{i},'rtl'),i);
 end
 
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time with rtl: ',num2str(tComp)]);
 
 
 % 4. Sampled Time
 % takes a very long time
 
-tic
+timerVal = tic;
 
 for i = 1:length(phi)
     assertLoop(modelChecking(R,phi{i},'sampledTime'),i);
 end
 
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time with sampledTime: ',num2str(tComp)]);
 
 

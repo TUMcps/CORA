@@ -29,10 +29,17 @@ G(:,:,1) = [1 3; -1 2];
 G(:,:,2) = [2 0; 1 -1];
 matZ = matZonotope(C,G);
 
-printSet(matZ)
-printSet(matZ,'high')
-printSet(matZ,'high',true)
-printSet(matZ,'high',false)
+printSet(matZ);
+printSet(matZ,'high');
+printSet(matZ,'high',true);
+printSet(matZ,'high',false);
+
+% test fid
+filename = 'test.txt';
+printSet(filename,matZ,'high',true);
+matZ_copy = eval(fileread(filename));
+assert(isequal(matZ,matZ_copy));
+delete(filename)
 
 % combine results
 res = true;

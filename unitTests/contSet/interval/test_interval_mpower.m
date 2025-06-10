@@ -1,5 +1,5 @@
 function res = test_interval_mpower
-% test_interval_mpower - unit_test_function of power,
+% test_interval_mpower - unit_test_function of mpower,
 %    overloaded '^' operator for intervals
 %
 % Syntax:

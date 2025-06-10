@@ -98,18 +98,20 @@ end
 
 function res = aux_containsZonotope()
 
+% first test
 res = true;
 nRuns = 2;
+tol = 1e-8;
 for i=2:3
     for j=1:nRuns
         % do not test vertices in high dims as comp. complexity prevents it
         % for high dimensions
         Z = zonotope.generateRandom('Dimension',2);
         E_Zo = ellipsoid(Z,'outer:exact');
-        assertLoop(contains(E_Zo,Z),i,j)
+        assertLoop(contains(E_Zo,Z,'exact',tol),i,j)
 
         E_Zi = ellipsoid(Z,'inner:exact');
-        assertLoop(contains(E_Zo,E_Zi),i,j)
+        assertLoop(contains(E_Zo,E_Zi,'exact',tol),i,j)
     end
 end
 
@@ -171,7 +173,6 @@ for r=runs
         end
     end
 end
-
 
 end
 

@@ -22,11 +22,21 @@ function nn_normal = getNormalForm(obj)
 % Authors:       Tobias Ladner
 % Written:       14-December-2022
 % Last update:   17-January-2023 (TL, Reshape)
+%                06-August-2024 (TL, check if already in normal form)
 % Last revision: 01-August-2023
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 layers = {};
+
+% check if is already normal form
+if aux_isNormalForm(obj)
+    % create copy
+    nn_normal = neuralNetwork( ...
+        cellfun(@(layer) layer.copy(), obj.layers,'UniformOutput',false));
+    nn_normal.reset();
+    return
+end
 
 % init properties
 W = 1; 
@@ -83,6 +93,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function layer = aux_getLinearLayer(W, b)
+    % construct linear layer
     if length(W) > 1 || length(b) > 1
         layer = nnLinearLayer(W, b);
     elseif W ~= 1 || b ~= 0
@@ -90,6 +101,24 @@ function layer = aux_getLinearLayer(W, b)
     else
         layer = nnIdentityLayer();
     end
+end
+
+function res = aux_isNormalForm(nn)
+    % check if given network is of normal form
+    for i=1:numel(nn.layers)
+        if mod(i,2) == 1 
+            if ~isa(nn.layers{i},'nnLinearLayer')
+                res = false;
+                return;
+            end
+        else
+            if ~isa(nn.layers{i},'nnActivationLayer')
+                res = false;
+                return;
+            end
+        end
+    end
+    res = true;
 end
 
 % ------------------------------ END OF CODE ------------------------------

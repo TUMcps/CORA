@@ -6,7 +6,7 @@ function runTestSuite(varargin)
 %    runTestSuite()
 %    runTestSuite(testSuite)
 %    runTestSuite(testSuite,verbose)
-%    runTestSuite(testSuite,verbose,directory)
+%    runTestSuite(testSuite,verbose,directory,checkTime)
 %
 % Inputs:
 %    testSuite - (optional) name for test suite (case insensitive)
@@ -26,6 +26,7 @@ function runTestSuite(varargin)
 %                         default = true
 %    directory - (optional) directory from which to search for tests
 %                         default = cora/unitTests
+%    checkTime - (optional) logical, compare execution time with saved run
 %
 % Outputs:
 %    (text to console)
@@ -34,10 +35,11 @@ function runTestSuite(varargin)
 %    runTestSuite();
 %    runTestSuite('long',false,[CORAROOT filesep 'unitTests' filesep 'contSet' filesep 'capsule']);
 
-% Authors:       Matthias Althoff, Mark Wetzlinger
+% Authors:       Matthias Althoff, Mark Wetzlinger, Tobias Ladner
 % Written:       31-August-2016
 % Last update:   22-January-2021 (MW, save results of full run)
 %                16-June-2023 (MW, add ':failed')
+%                21-May-2025 (TL, print results instead of .mat)
 % Last revision: 09-April-2023 (MW, unify all runTestSuite_* files)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -46,10 +48,12 @@ function runTestSuite(varargin)
 currentDirectory = pwd;
 
 % set default values
+[testSuite,verbose,directory,checkTime] = setDefaultValues(...
+    {'short',true,[],true},varargin);
+
+% set directory
 rootUnitTests = [CORAROOT filesep 'unitTests'];
 rootExamples = [CORAROOT filesep 'examples'];
-[testSuite,verbose,directory] = setDefaultValues(...
-    {'short',true,[]},varargin);
 if isempty(directory) 
     switch testSuite
         case {'examples','benchmarks','website'}
@@ -72,7 +76,7 @@ end
 % save start date and time (only full runs)
 isFullRun = strcmp(directory,rootUnitTests) || strcmp(directory,rootExamples);
 if isFullRun
-    timeStart = char(datetime(now,'ConvertFrom','datenum'));
+    timeStart = datetime('now','Format','dd-MMM-yyyy HH:mm:ss');
 end
 
 % robustify
@@ -94,8 +98,6 @@ switch testSuite
         prefix = 'testLong';
     case 'flaky'
         prefix = 'testFlaky';
-    case 'intlab'
-        prefix = 'testINTLAB';
     case 'mosek'
         prefix = 'testMOSEK';
     case 'mp'
@@ -119,64 +121,68 @@ switch testSuite
     otherwise
         throw(CORAerror('CORA:specialError','Unknown test suite.'))
 end
-
-% currently, only nn test suite has three calls
+% convert to cell. Currently, only nn test suite has three calls
 if ~iscell(prefix)
     prefix = {prefix};
+end
+
+% load previous results (or init empty)
+oldResults = [];
+if checkTime
+    try
+        oldTestSuiteSummary = loadTestSuiteSummary(testSuite);
+        oldResults = oldTestSuiteSummary.results;
+        disp('Previous results loaded successfully.')
+    catch ME
+        fprintf('! No previous results loaded (%s).\n',ME.message)
+    end
+else
+    disp('Not checking previous results.')
 end
 
 % run main program performing the tests
 results = [];
 for i=1:length(prefix)
-    results_i = testSuiteCore(prefix{i},verbose,directory);
+    results_i = testSuiteCore(prefix{i},verbose,directory,oldResults);
     results = [results; results_i];
 end
 
 % some test suites switch the directory...
-cd(rootUnitTests);
+cd(currentDirectory);
 
 % save result (only full runs)
 if isFullRun
-    % end time
-    timeEnd = char(datetime(now,'ConvertFrom','datenum'));
+    % init results struct
+    testSuiteSummary = struct;
 
     % save end date and time
-    data.date = [timeStart ' - ' timeEnd(13:end)];
-    % save full results
-    data.results = results;
-
-    % save CORA version
-    data.coraversion = CORAVERSION;
-
-    % save matlab version
-    data.matlabversion = version;
+    testSuiteSummary.date = timeStart;
+    testSuiteSummary.dateEnd = datetime('now','Format','dd-MMM-yyyy HH:mm:ss');
 
     % save operating system
-    data.hostsystem = 'Unknown';
+    testSuiteSummary.hostsystem = 'Unknown';
     if ismac
-        data.hostsystem = 'Mac';
+        testSuiteSummary.hostsystem = 'Mac';
     elseif isunix
-        data.hostsystem = 'Unix';
+        testSuiteSummary.hostsystem = 'Unix';
     elseif ispc
-        data.hostsystem = 'Windows';
+        testSuiteSummary.hostsystem = 'Windows';
     end
 
-    % use map to save results (we use containers.Map for legacy support
-    % over dictionary which only exists since R2022b)
-    newResults = containers.Map(testSuite,data);
+    % save matlab version
+    testSuiteSummary.matlabversion = version;
 
-    try
-        % load data from .mat file
-        load('unitTestsStatus.mat','testResults');
-        % append result to map (if the key has already been in use, the new
-        % results overwrite the old results)
-        testResults = [testResults; newResults];
-    catch
-        % no previous results saved -> save directly to .mat file
-        testResults = newResults;
-    end
-    % save results
-    save('unitTestsStatus.mat','testResults');
+    % save CORA version
+    testSuiteSummary.coraversion = CORAVERSION;
+
+    % save test suite
+    testSuiteSummary.testSuite = testSuite;
+    
+    % save full results
+    testSuiteSummary.results = results;
+    
+    % save test suite summary
+    writeTestSuiteSummary(testSuiteSummary)
 
     % print result
     printTestOverview(testSuite);

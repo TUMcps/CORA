@@ -16,12 +16,12 @@ PAPERABBREV="mypaper"
 
 # setup
 DATE=`date +%y%m%d-%H%M%S`
-EVALNAME="${1:-$DATE}" # defaults to datetime
-DOCKER_NAME=$NAME-$PAPERABBREV-$EVALNAME
+EVAL_NAME="${1:-$DATE}" # defaults to datetime
+DOCKER_NAME=$NAME-$PAPERABBREV-$EVAL_NAME
 SCREEN_NAME=$DOCKER_NAME
 
 # Matlab
-MAIN_SCRIPT="main('$EVALNAME')"
+MAIN_SCRIPT="main('$EVAL_NAME')"
 
 # Matlab licensing
 USE_LICENSE_SERVER="true"
@@ -31,7 +31,15 @@ LICENSE_SERVER="28000@mlm1.rbg.tum.de"
 GPU_DEVICE="device=${2:-none}"
 
 # system
-OS_VERSION=`cat /proc/version`
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    OS_NAME="Linux $(uname -r)"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    OS_NAME="macOS $(sw_vers -productVersion)"
+elif [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+    OS_NAME="Windows $(uname -r)"
+else
+    OS_NAME="Unknown OS"
+fi
 
 # for verbose outputs
 SEP_LINE="------------------------------------------------------------------"
@@ -41,28 +49,29 @@ SEP_LINE="------------------------------------------------------------------"
 echo $SEP_LINE
 echo
 echo "Repeatability Package:"
-echo "  Paper Abbreviation: $PAPERABBREV"
-echo "  Name:               $NAME"
-echo "  Date:               $DATE"
+echo "  Paper Abbreviation:               $PAPERABBREV"
+echo "  Name:                             $NAME"
+echo "  Date:                             $DATE"
 echo
 echo "Variables:"
-echo "  Evaluation Name:    $EVALNAME"
-echo "  Docker Name:        $DOCKER_NAME"
-echo "  Linux Screen Name:  $SCREEN_NAME (if used)"
+echo "  Evaluation Name (\$EVAL_NAME):     $EVAL_NAME"
+echo "  Docker Name (\$DOCKER_NAME):       $DOCKER_NAME"
+echo "  Linux Screen Name (\$SCREEN_NAME): $SCREEN_NAME (if used)"
+echo "  (make available via 'source settings.sh $EVAL_NAME')"
 echo
 echo "Matlab:"
 if [[ "$USE_LICENSE_SERVER" == "true" ]]; then
     # Option 1: License server
-    echo "  License Server:     $LICENSE_SERVER"
+    echo "  License Server:                   $LICENSE_SERVER"
 else
     # Option 2: License file
-    echo "  License File:       license.lic"
+    echo "  License File:                     license.lic"
 fi
-echo "  Main Script:        $MAIN_SCRIPT"
+echo "  Main Script:                      $MAIN_SCRIPT"
 echo
 echo "System:"
-echo "  OS:                 $OS_VERSION"
-echo "  GPU:                $GPU_DEVICE"
+echo "  OS:                               $OS_NAME"
+echo "  GPU:                              $GPU_DEVICE"
 echo
 echo $SEP_LINE
 echo

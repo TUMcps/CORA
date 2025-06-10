@@ -113,14 +113,14 @@ for N_m = N_m_vec
                         f = parfeval(@conform,2,sys,params_id_init,options);
                         while f.State == "queued"
                         end
-                        tic;
+                        timerVal = tic;
                         while f.State == "running"
-                            if toc > maxTimeStand
+                            if toc(timerVal) > maxTimeStand
                                 cancel(f)
                             end
                         end
                         if f.State == "finished"
-                            Ts(i_c,j) = toc;
+                            Ts(i_c,j) = toc(timerVal);
                         end
                         if Ts(i_c,j) > maxTimeStand
                             Ts(i_c,:) = Inf;

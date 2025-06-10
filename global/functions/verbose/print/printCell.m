@@ -1,18 +1,23 @@
-function printCell(C,varargin)
+function res = printCell(varargin)
 % printCell - prints a cell array such that if one executes this command
 %    in the workspace, this cell array would be created
 %
 % Syntax:
 %    printCell(C)
+%    printCell(C,accuracy,doCompact,clearLine)
+%    printCell(fid,C,varargin)
+%    printCell(filename,C,varargin)
 %
 % Inputs:
 %    C - cell array
-%    accuracy - (optional) floating-point precision
-%    doCompact - (optional) whether the matrix is printed compactly
-%    clearLine - (optional) whether to finish with '\n'
+%    accuracy - floating-point precision
+%    doCompact - whether the matrix is printed compactly
+%    clearLine - whether to finish with '\n'
+%    filename - char, filename to print given obj to
+%    fid - char, fid to print given obj to
 %
 % Outputs:
-%    -
+%    res - logical
 %
 % Example: 
 %    C = {2 3; -2 1};
@@ -22,34 +27,25 @@ function printCell(C,varargin)
 
 % Authors:       Tobias Ladner
 % Written:       10-October-2024
-% Last update:   ---
+% Last update:   20-May-2025 (TL, added option for fid)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
-narginchk(0,4);
-[accuracy,doCompact,clearLine] = setDefaultValues({'%4.3f',false,true},varargin);
-if ischar(accuracy) && strcmp(accuracy,'high')
-    accuracy = '%16.16f';
-end
-inputArgsCheck({ ...
-    {C,'att','cell'}, ...
-    {accuracy,'att', {'char','string'}}, ...
-    {doCompact,'att','logical'}, ...
-    {clearLine,'att','logical'}
-})
+[fid,closefid,C,accuracy,doCompact,clearLine] = initPrint(varargin{:});
 
 % empty case
 if isempty(C)
     if all(size(C) == 0)
-        fprintf('{}');
+        fprintf(fid,'{}');
     else
-        fprintf('cell(%i,%i)',size(C,1),size(C,2));
+        fprintf(fid,'cell(%i,%i)',size(C,1),size(C,2));
     end
     if clearLine
-        fprintf('\n')
+        fprintf(fid,'\n');
     end
+    res = closePrint(fid,closefid);
     return
 end
 
@@ -58,9 +54,9 @@ numRows = size(C,1);
 numCols = size(C,2);
 
 % write first element
-fprintf('{ ');
+fprintf(fid,'{ ');
 if numRows > 1 && ~doCompact
-    fprintf('...\n ')
+    fprintf(fid,'...\n ');
 end
 
 %write each row
@@ -68,43 +64,48 @@ for iRow=1:numRows
     for iCol=1:numCols
         %write in command window
         value = C{iRow,iCol};
-        if isnumeric(value)
-            printMatrix(value,accuracy,doCompact,false)
+        if isnumeric(value) || islogical(value)
+            printMatrix(fid,value,accuracy,doCompact,false);
         elseif isa(value,"struct")
-            printStruct(value,accuracy,doCompact,false)
+            printStruct(fid,value,accuracy,doCompact,false);
         elseif ischar(value) || isstring(value)
-            fprintf("'%s'",value)
+            fprintf(fid,"'%s'",value);
         elseif isa(value,'contSet')
-            % always print compactly
-            printSet(value,accuracy,true,false)
+            % always print compactly (as no longer one-liner)
+            printSet(fid,value,accuracy,true,false);
         elseif isa(value,'contDynamics')
-            % always print compactly
-            printSystem(value,accuracy,true,false)
+            % always print compactly (as no longer one-liner)
+            printSystem(fid,value,accuracy,true,false);
+        elseif isa(value,'simResult')
+            printSimResult(fid,value,accuracy,doCompact,false);
         else
             % print as string and hope for the best
-            fprintf("%s",value)
+            fprintf(fid,"%s",value);
         end
 
         if iCol < numCols && ~doCompact
-            fprintf(',')
+            fprintf(fid,',');
         end
-        fprintf(' ')
+        fprintf(fid,' ');
     end
 
     if numRows > 1 || iRow<numRows
         if doCompact
             if iRow < numRows
-                fprintf('; ')
+                fprintf(fid,'; ');
             end
         else
             %write new line
-            fprintf('; ...\n ')
+            fprintf(fid,'; ...\n ');
         end
     end
 end
-fprintf('}')
+fprintf(fid,'}');
 if clearLine
-    fprintf('\n')
+    fprintf(fid,'\n');
+end
+res = closePrint(fid,closefid);
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

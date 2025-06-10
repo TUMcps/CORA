@@ -60,9 +60,9 @@ vanderPol = nonlinearSys(@vanderPolEq);
 
 % Reachability Analysis ---------------------------------------------------
       
-tic
+timerVal = tic;
 R = reach(vanderPol, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 

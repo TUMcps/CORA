@@ -38,7 +38,7 @@ inputArgsCheck({{simRes1,'att',{'simResult'}};
                 {simRes2,'att',{'simResult'}}});
 
 % general case
-if isempty(simRes1.loc) ~= isempty(simRes2.loc)
+if isempty({simRes1.loc}) ~= isempty({simRes2.loc})
     throw(CORAerror('CORA:specialError','Objects are not compatible!')); 
 end
 

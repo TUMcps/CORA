@@ -1,0 +1,12 @@
+# date: 06-Jun-2025 09:40:33
+# dateEnd: 06-Jun-2025 10:03:49
+# hostsystem: Unix
+# matlabversion: 24.2.0.2712019 (R2024b)
+# coraversion: CORA v2025.1.1
+# testSuite: header
+
+         fname         ; ok ;    seed    ;   time  ; checkTime 
+
+ testHeader_runHeaders ;  1 ; 2445571022 ; 1389.35 ;         0 
+
+

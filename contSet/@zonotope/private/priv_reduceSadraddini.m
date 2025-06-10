@@ -50,12 +50,6 @@ function Zred = priv_reduceSadraddini(Z,order)
     problem.Aeq = Aeq; problem.beq = beq;
     problem.lb = lb; problem.ub = ub;
     
-    persistent options
-    if isempty(options)
-        options = optimoptions('linprog','display','off');
-    end
-    problem.options = options;
-    
     [x,~,exitflag] = CORAlinprog(problem);
     
     if exitflag < 0

@@ -16,14 +16,14 @@ function corapath = CORAROOT()
 %
 % See also: ---
 
-% Authors:       ???
+% Authors:       ???, Tobias Ladner
 % Written:       ---
-% Last update:   ---
+% Last update:   23-May-2025 (TL, major speedup)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-s = which('coraroot');
+s = mfilename("fullpath");
 corapath = fileparts(fileparts(fileparts(s)));
 
 % ------------------------------ END OF CODE ------------------------------

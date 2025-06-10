@@ -14,6 +14,8 @@ function updateCORApath()
 % Authors:       Tobias Ladner
 % Written:       25-November-2022
 % Last update:   22-May-2023
+%                24-March-2025 (TL, no longer include repeatability template)
+%                14-April-2025 (TL, speed up)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -24,15 +26,20 @@ warning off;
 
 % add all files from corapath to path
 corapath = CORAROOT;
-rmpath(genpath(corapath))
-addpath(genpath(corapath))
+genedpath = genpath(corapath);
+rmpath(genedpath)
+addpath(genedpath)
+
+% remove repeatability template to avoid conflicts with other main.m files
+rmpath(genpath([corapath filesep 'unitTests' filesep 'ci' filesep 'repeatability-template']))
+
+% rehash path
 rehash path
-% savepath
 
 % restore warning
 warning(w)
 
-% restore class definitions (e.g. after switching git branch)
+% restore class definitions (e.g., after switching git branch)
 clear classes
 
 end

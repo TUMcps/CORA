@@ -1,0 +1,31 @@
+function res = jetEngine_daisy(x1, x2)
+% jetEngine_daisy - a benchmark from https://github.com/malyzajko/daisy/blob/master/testcases/control/JetEngine.scala
+%
+% Syntax:
+%    res = jetEngine_daisy(x1, x2) 
+%
+% Inputs:
+%    x1-x2 - see benchmark
+%
+% Outputs:
+%    res - result
+%
+% Other m-files required: none
+% Subfunctions: none
+% MAT-files required: none
+
+% Authors:       Dmitry Grebenyuk
+% Written:       09-October-2017
+% Last update:   26-May-2025 (TL, rename to jetEngine_daisy)
+% Last revision: ---
+
+% ------------------------------ BEGIN CODE -------------------------------
+
+res = x1 + (...
+      (2*x1*((3*x1*x1 + 2*x2 - x1)/(x1*x1 + 1))*((3*x1*x1 + 2*x2 - x1)/(x1*x1 + 1) - 3) +...
+     x1*x1*(4*((3*x1*x1 + 2*x2 - x1)/(x1*x1 + 1))-6))...
+      *(x1*x1 + 1) +...
+    3*x1*x1*((3*x1*x1 + 2*x2 - x1)/(x1*x1 + 1)) + x1*x1*x1 + x1 + 3*((3*x1*x1 + 2*x2 -x1)/(x1*x1 + 1)));
+end
+
+% ------------------------------ END OF CODE ------------------------------

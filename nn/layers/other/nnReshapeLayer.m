@@ -115,6 +115,13 @@ methods(Access=private)
     end
 end
 
+methods
+    function fieldStruct = getFieldStruct(obj)
+        fieldStruct = struct;
+        fieldStruct.idx_out = obj.idx_out;
+    end
+end
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -66,9 +66,9 @@ spec = add(spec,specification(P,'safeSet'));
 
 % Verification ------------------------------------------------------------
 
-tic;
+timerVal = tic;
 [res,R] = verify(sys,params,options,spec);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['Computation time: ',num2str(tComp),'s']);
 disp(['Specifications satisfied? ' num2str(res)]);
 

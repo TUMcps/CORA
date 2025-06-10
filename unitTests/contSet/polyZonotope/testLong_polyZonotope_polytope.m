@@ -79,6 +79,8 @@ for j = 10:15
     ind = convhulln(points');
     ind = unique(ind(:,1),'stable');
     V = points(:,ind(1:min(j,length(ind))));
+    % get rid of collinear points
+    V = vertices(simplify(polygon(V)));
 
     % Construct a polytope object from the vertices
     P = polytope(V);

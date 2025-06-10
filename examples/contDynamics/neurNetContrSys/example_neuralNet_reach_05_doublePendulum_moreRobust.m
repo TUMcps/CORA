@@ -42,8 +42,8 @@ params.R0 = polyZonotope(R0);
 options.timeStep = 0.02;
 options.alg = 'lin';
 options.tensorOrder = 2;
-options.taylorTerms = 4;
-options.zonotopeOrder = 200;
+options.taylorTerms = 1;
+options.zonotopeOrder = 20;
 
 % Options for NN evaluation -----------------------------------------------
 

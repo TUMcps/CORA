@@ -52,6 +52,8 @@ properties
 
     l = []                  % lower bound of last input
     u = []                  % upper bound of last input
+
+    merged_neurons = []     % network reduction
 end
 
 methods
@@ -64,23 +66,6 @@ methods
         obj.f = @(x) obj.evaluateNumeric(x, struct('backprop', false));
         obj.df = obj.getDf(1);
     end
-
-    function [nin, nout] = getNumNeurons(obj)
-        nin = [];
-        nout = [];
-    end
-
-    function outputSize = getOutputSize(obj, inputSize)
-        outputSize = inputSize; % for most activation functions
-    end
-end
-
-methods (Static)
-    layer = instantiateFromString(activation)
-end
-
-methods (Abstract)
-    [df_l,df_u] = getDerBounds(obj, l, u)
 end
 
 % evaluate (element-wise) -------------------------------------------------
@@ -96,7 +81,7 @@ methods (Access = {?nnLayer, ?neuralNetwork})
     function bounds = evaluateInterval(obj, bounds, options)
         if options.nn.reuse_bounds
             % save bounds
-            if isempty(obj.l) || isempty(obj.u)
+            if isempty(obj.l) || isempty(obj.u) || ~all(size(bounds) == size(obj.l))
                 obj.l = bounds.inf;
                 obj.u = bounds.sup;
 
@@ -118,101 +103,17 @@ methods (Access = {?nnLayer, ?neuralNetwork})
     [c, G, GI, E, id, id_, ind, ind_] = evaluatePolyZonotope(obj, c, G, GI, E, id, id_, ind, ind_, options)
     [c, G, GI, d] = evaluatePolyZonotopeNeuron(obj, c, G, GI, E, Es, order, ind, ind_, options)
 
-    function [c, G] = evaluateZonotopeBatch(obj, c, G, options)
-        % Obtain indices of active generators.
-        genIds = obj.backprop.store.genIds;
-        % Get size of generator matrix
-        [n,q,batchSize] = size(G);
-        % Compute radius of generators.
-        r = reshape(sum(abs(G(:,genIds,:)),2),[n batchSize]);
-        % Compute the bounds of the input.
-        if options.nn.interval_center
-            cl = reshape(c(:,1,:),[n batchSize]);
-            cu = reshape(c(:,2,:),[n batchSize]);
-            l = cl - r;
-            u = cu + r;
-        else
-            l = c - r;
-            u = c + r;
-        end
+    function [rc, rG] = evaluateZonotopeBatch(obj, c, G, options)
+        % Compute image enclosure
+        [rc,rG,coeffs] = aux_imgEncBatch(obj,obj.f,obj.df,c,G,options, ...
+            @(m) obj.computeExtremePointsBatch(m,options));
 
-        % Compute an image enclosure.
-        [m,m_l,m_u,dl,dl_l,dl_u,du,du_l,du_u] = ...
-            aux_imgEncBatch(obj,obj.f,obj.df,l,u,options,...
-                @(m) obj.computeExtremePointsBatch(m,options));
-
-        % Compute resulting generator matrix (without approx. errors).
-        G = permute(m,[1 3 2]).*G;
-
-        if options.nn.use_approx_error
-            % Retrieve stored id-matrix and generator indices
-            approxErrGenIds = obj.backprop.store.approxErrGenIds;
-            % Retrieve number of approximation errors.
-            if options.nn.interval_center
-                dn = n;
-            else
-                dn = length(approxErrGenIds);
-            end
-            % Obtain number of generators after adding the approximation
-            % errors.
-            p = max(approxErrGenIds);
-            % Identify for which dimensions to consider the approximation
-            % error.
-            % [~,dDims] = sort(1/2*(du - dl),1,'descend');
-            % [~,dDims] = sort(rand([n batchSize],'like',c),1);
-            dDims = repmat((1:n)',1,batchSize);
-            dDimsIdx = reshape(sub2ind([n batchSize], ...
-                dDims,repmat(1:batchSize,n,1)),size(dDims));
-            notdDimsIdx = dDimsIdx(dn+1:end,:);
-            dDimsIdx = dDimsIdx(1:dn,:);
-            % % Set not considered approximation errors to 0.
-            % dl(notdDimsIdx) = 0;
-            % dl_l(notdDimsIdx) = 0;
-            % dl_u(notdDimsIdx) = 0;
-            % du(notdDimsIdx) = 0;
-            % du_l(notdDimsIdx) = 0;
-            % du_u(notdDimsIdx) = 0;
-            % % Scale not-dropped dimensions.
-            % if dn < n % && options.nn.train.noise > 0
-            %     dropFac = n/dn;
-            % else
-            %     dropFac = 1;
-            % end
-            % % dropFac = 1;
-            % m(dDimsIdx) = dropFac.*m(dDimsIdx);
-            % dl(dDimsIdx) = dropFac.*dl(dDimsIdx);
-            % du(dDimsIdx) = dropFac.*du(dDimsIdx);
-
-            if ~options.nn.interval_center
-                % Compute indices for approximation errors in the generator
-                % matrix.
-                GdIdx = reshape(sub2ind([n p batchSize], ...
-                   reshape(dDims(1:dn,:),1,[]),...
-                   repmat(approxErrGenIds,1,batchSize), ...
-                   repelem(1:batchSize,1,dn)),[dn batchSize]);
-
-                % Extend the generator matrix and add approximation errors.
-               if q < p
-                   % Append generators for the approximation errors
-                   G = cat(2,G,zeros(n,length(approxErrGenIds),batchSize,'like',G));
-               end
-               % Add approximation errors to the generators.
-               d = 1/2*(du - dl);
-               G(GdIdx) = d(dDimsIdx);
-            end
-        end
-
-        % Compute result.
-        if options.nn.interval_center
-            c = permute(cat(3,m.*cl - dl,m.*cu + du),[1 3 2]);
-        else
-            c = m.*c + 1/2*(du + dl);
-        end
-
-        % Store the gradients for backpropagation.
+        % store inputs and coeffs for backpropagation
         if options.nn.train.backprop
+            % Store coefficients
+            obj.backprop.store.coeffs = coeffs;
+
             % Store the slope.
-            obj.backprop.store.coeffs = m;
             if options.nn.train.exact_backprop
                 % Store gradient for the backprop through an image
                 % enclosure.
@@ -275,123 +176,55 @@ methods (Access = {?nnLayer, ?neuralNetwork})
     end
 
     function [gc, gG] = backpropZonotopeBatch(obj, c, G, gc, gG, options)
-        % Obtain indices of active generators.
+        % obtain stored coefficients of image enclosure from forward prop.
+        coeffs = obj.backprop.store.coeffs;
+        % obtain slope of the approximation
+        m = reshape(coeffs(:,1,:),size(coeffs,[1 3]));
+        % obtain indices of active generators
         genIds = obj.backprop.store.genIds;
-        % Obtain stored slope.
-        m = obj.backprop.store.coeffs;
-
         if options.nn.train.exact_backprop
-            % Obtain the stored gradients.
-            m_l = obj.backprop.store.m_l;
-            m_u = obj.backprop.store.m_u;
-            % Obtain the stored gradients.
-            dl_l = obj.backprop.store.dl_l;
-            dl_u = obj.backprop.store.dl_u;
-            du_l = obj.backprop.store.du_l;
-            du_u = obj.backprop.store.du_u;
+            % Obtain indices of the approximation errors in the generator
+            % matrix.
+            GdIdx = obj.backprop.store.GdIdx;
+            dDimsIdx = obj.backprop.store.dDimsIdx;
 
-            r_G = sign(G(:,genIds,:));
-            m_G = permute(m_u - m_l,[1 3 2]).*r_G;
+            m_c = obj.backprop.store.m_c;
+            m_G = obj.backprop.store.m_G;
 
-            [n,~,batchSize] = size(G);
+            dc_c = obj.backprop.store.dc_c;
+            dc_G = obj.backprop.store.dc_G;
 
-            if options.nn.interval_center
-                cl = reshape(c(:,1,:),[n batchSize]);
-                cu = reshape(c(:,2,:),[n batchSize]);
-                gl = reshape(gc(:,1,:),[n batchSize]);
-                gu = reshape(gc(:,2,:),[n batchSize]);
-                % Precompute outer product of gradients and inputs.
-                hadProd_l = permute(gl.*cl,[1 3 2]);
-                hadProd_u = permute(gu.*cu,[1 3 2]);
-                hadProd = hadProd_l + hadProd_u + sum(gG(:,genIds,:).*G,2);
+            d_c = obj.backprop.store.d_c;
+            d_G = obj.backprop.store.d_G;
 
-                % Backprop gradients.
-                rgc_l = gl.*m + m_l.*reshape(hadProd,[n batchSize]);
-                rgc_u = gu.*m + m_u.*reshape(hadProd,[n batchSize]);
-                rgG = gG(:,genIds,:).*permute(m,[1 3 2]) + m_G.*hadProd; 
+            % Precompute outer product of gradients and inputs.
+            hadProdc = permute(gc.*c,[1 3 2]);
+            hadProdG = gG(:,genIds,:).*G;
 
-                if options.nn.use_approx_error
-                    % Obtain indices of the approximation errors in the generator
-                    % matrix.
-                    dDimsIdx = obj.backprop.store.dDimsIdx;
-                    notdDimsIdx = obj.backprop.store.notdDimsIdx;
-                    % Compute gradients w.r.t. center and generators.
-                    du_G = permute(du_u - du_l,[3 1 2]);
-                    dl_G = permute(dl_u - dl_l,[3 1 2]);
-    
-                    % Backprop gradients.
-                    rgc_l(dDimsIdx) = rgc_l(dDimsIdx) ...
-                        + du_l.*gu(dDimsIdx) + dl_l.*gl(dDimsIdx);
-                    % rgc_l(notdDimsIdx) = obj.df(c.inf(notdDimsIdx)).*gc.inf(notdDimsIdx);
-                    rgc_u(dDimsIdx) = rgc_u(dDimsIdx) ...
-                        + du_u.*gu(dDimsIdx) + dl_u.*gl(dDimsIdx);
-                    % rgc_u(notdDimsIdx) = obj.df(c.sup(notdDimsIdx)).*gc.sup(notdDimsIdx);
-    
-                    rgG = permute(rgG,[2 1 3]);
-                    r_G = permute(r_G,[2 1 3]);
-                    rgG(:,dDimsIdx) = rgG(:,dDimsIdx) ... 
-                        + (du_G(:,:).*gu(dDimsIdx(:))' ...
-                            + dl_G(:,:).*gl(dDimsIdx(:))').*r_G(:,dDimsIdx);
-                    % rgG(:,notdDimsIdx) = 0; % reshape(obj.df(c(notdDimsIdx)),1,[]).*gG(:,notdDimsIdx);
-                    rgG = permute(rgG,[2 1 3]);     
-                    % Assign results.
-                    gc = permute(cat(3,rgc_l,rgc_u),[1 3 2]);
-                    gG = rgG;
-                else
-                    % TODO
-                end
-            else
-                m_c = (m_u + m_l);
+            % Backprop gradients.
+            rgc = gc.*m + m_c.*reshape(hadProdc + sum(hadProdG,2),size(c));
+            rgc(dDimsIdx) = rgc(dDimsIdx) + dc_c.*gc(dDimsIdx);
+            rgc(dDimsIdx) = rgc(dDimsIdx) + d_c.*gG(GdIdx);
+            % Assign results.
+            gc = rgc;
 
-                % Precompute outer product of gradients and inputs.
-                hadProd = permute(gc.*c,[1 3 2]) + sum(gG(:,genIds,:).*G,2);
-    
-                % Backprop gradients.
-                rgc = gc.*m + m_c.*reshape(hadProd,[n batchSize]);
-                rgG = gG(:,genIds,:).*permute(m,[1 3 2]) + m_G.*hadProd;  
+            rgG = gG(:,genIds,:).*permute(m,[1 3 2]) + m_G.*(hadProdc + hadProdG);
+            rgG = permute(rgG,[2 1 3]);
+            rgG(:,dDimsIdx) = rgG(:,dDimsIdx) + dc_G.*reshape(gc(dDimsIdx),1,[]);
+            rgG(:,dDimsIdx) = rgG(:,dDimsIdx) + d_G.*reshape(gG(GdIdx),1,[]);
+            rgG = permute(rgG,[2 1 3]);          
+            % Assign results.
+            gG = rgG;
 
-                if options.nn.use_approx_error
-                    % Obtain indices of the approximation errors in the generator
-                    % matrix.
-                    GdIdx = obj.backprop.store.GdIdx;
-                    dDimsIdx = obj.backprop.store.dDimsIdx;
-                    notdDimsIdx = obj.backprop.store.notdDimsIdx;
-                    % Compute gradients w.r.t. center and generators.
-                    dc_c = 1/2*(du_u + du_l + dl_u + dl_l);
-                    dc_G = 1/2*permute(du_u - du_l + dl_u - dl_l,[3 1 2]);
-    
-                    d_c = 1/2*(du_u + du_l - dl_u - dl_l);
-                    d_G = 1/2*permute(du_u - du_l - dl_u + dl_l,[3 1 2]);
-    
-                    % Backprop gradients.
-                    rgc(dDimsIdx) = rgc(dDimsIdx) ...
-                        + dc_c.*gc(dDimsIdx) + d_c.*gG(GdIdx);
-                    rgc(notdDimsIdx) = obj.df(c(notdDimsIdx)).*gc(notdDimsIdx);
-    
-                    rgG = permute(rgG,[2 1 3]);
-                    r_G = permute(r_G,[2 1 3]);
-                    rgG(:,dDimsIdx) = rgG(:,dDimsIdx) ... 
-                        + dc_G(:,:).*r_G(:,dDimsIdx).*gc(dDimsIdx(:))' ...
-                        + d_G(:,:).*r_G(:,dDimsIdx).*gG(GdIdx(:))';
-                    % rgG(:,notdDimsIdx) = 0; % reshape(obj.df(c(notdDimsIdx)),1,[]).*gG(:,notdDimsIdx);
-                    rgG = permute(rgG,[2 1 3]);     
-                    % Assign results.
-                    gc = rgc;
-                    gG = rgG;
-                else
-                    % TODO
-                end
-            end
         else
             % Consider the approximation as fixed. Use the slope of the
-            % approximation for backpropagation.
-            if options.nn.interval_center
-                gc = permute(m,[1 3 2]).*gc;
-            else
-                gc = gc.*m;
-            end
+            % approximation for backpropagation
+            gc = gc.*m;
             gG = gG(:,genIds,:).*permute(m,[1 3 2]);
         end
+
+        % Clear backprop storage.
+        clear 'obj.backprop.store';
     end
 end
 
@@ -401,6 +234,15 @@ methods
 
     function df_i = getDf(obj, i)
         df_i = nnHelper.lookupDf(obj,i);
+    end
+
+    function [nin, nout] = getNumNeurons(obj)
+        nin = [];
+        nout = [];
+    end
+
+    function outputSize = getOutputSize(obj, inputSize)
+        outputSize = inputSize; % for most activation functions
     end
 
     % approximation polynomial + error
@@ -422,6 +264,21 @@ methods
 
     % find regions with approximating polynomials
     coeffs = findRegionPolys(obj,tol,order,l_max,u_max,pStart,dStart,pEnd,dEnd)
+
+    function fieldStruct = getFieldStruct(obj)
+        fieldStruct = struct;
+        if ~isempty(obj.merged_neurons)
+            fieldStruct.merged_neurons = obj.merged_neurons;
+        end
+    end
+end
+
+methods (Static)
+    layer = instantiateFromString(activation)
+end
+
+methods (Abstract)
+    [df_l,df_u] = getDerBounds(obj, l, u)
 end
 
 methods(Access=protected)
@@ -438,35 +295,40 @@ methods(Access=protected)
     %     throw(CORAerror('CORA:nnLayerNotSupported', obj, 'computeExtremePointsDfBatch'))
     % end
 
-    function [m,m_l,m_u,dl,dl_l,dl_u,du,du_l,du_u] = ...
-            aux_imgEncBatch(obj,f,df,l,u,options,extremePoints)
-        % Compute center and radius.
-        c = 1/2*(u + l);
-        r = 1/2*(u - l);
-        % Compute slope.
-        m = (f(u) - f(l))./(2*r);
-        % Find indices where upper and lower bounds are equal.
-        idxBoundsEq = abs(u - l) < eps('like',c); 
-        % If lower and upper bound are too close, approximate the slope
-        % at center; to prevent numerical issues.
-        m(idxBoundsEq) = df(c(idxBoundsEq));
-
-        % Compute gradient of the slope.
-        if options.nn.train.backprop && ...
-                options.nn.train.exact_backprop
-            m_l = m./(2*r) - df(l)./(2*r);
-            m_u = df(u)./(2*r) - m./(2*r);
-            % Prevent numerical issues.
-            ddf = obj.getDf(2);
-            m_l(idxBoundsEq) = ddf(l(idxBoundsEq));
-            m_u(idxBoundsEq) = ddf(u(idxBoundsEq));
+    function [rc,rG,coeffs,d] = aux_imgEncBatch(obj,f,df,c,G,options,extremePoints)
+        % obtain indices of active generators
+        genIds = obj.backprop.store.genIds;
+        % compute bounds
+        r = reshape(sum(abs(G(:,genIds,:)),2),size(c));
+        % r = max(eps('like',c),r); % prevent numerical instabilities
+        l = c - r;
+        u = c + r;
+        % compute slope of approximation
+        if strcmp(options.nn.poly_method,'bounds')
+            m = (f(u) - f(l))./(2*r);
+            % indices where upper and lower bound are equal
+            idxBoundsEq = abs(u - l) < eps('like',c); 
+            % If lower and upper bound are too close, approximate the slope
+            % at center.
+            m(idxBoundsEq) = df(c(idxBoundsEq));
+            if options.nn.train.backprop
+                obj.backprop.store.idxBoundsEq = idxBoundsEq;
+            end
+        elseif strcmp(options.nn.poly_method,'center')
+            m = cast(df(c),'like',c);
+        elseif strcmp(options.nn.poly_method,'singh')
+            m = min(cast(df(l),'like',l),cast(df(u),'like',u));
         else
-            % No gradient of the slope.
-            m_l = 0;
-            m_u = 0;
+            throw(CORAerror('CORA:wrongFieldValue', ...
+                sprintf("Unsported 'options.nn.poly_method': %s",...
+                    options.nn.poly_method)));
         end
 
-        % Compute the approximation errors.
+        % evaluate image enclosure
+        rc = m.*c;
+        % rG(:,genIds,:) = permute(m,[1 3 2]).*G(:,genIds,:);
+        rG = permute(m,[1 3 2]).*G;
+
         if options.nn.use_approx_error
            % Compute extreme points.
            [xs,xs_m] = extremePoints(m);
@@ -489,52 +351,128 @@ methods(Access=protected)
            [dl,dlIdx] = min(ds,[],3,'linear');
            ds(notInBoundsIdx) = -inf;
            [du,duIdx] = max(ds,[],3,'linear');
-        else
-            % No approximation errors. Use approximation errors for the
-            % offset.
-            dl = 1/2*(f(c) - m.*c);
-            du = dl;
-        end
 
-        if options.nn.train.backprop && options.nn.train.exact_backprop
-            if options.nn.use_approx_error
-                if strcmp(options.nn.poly_method,'bounds')
-                    % We only consider the lower bound. The approximation
-                    % error at the lower and upper bound is equal.
-                    x_l = cat(3,xs_m.*m_l,ones(size(l),'like',l));
-                    x_u = cat(3,xs_m.*m_u,zeros(size(u),'like',u));
-                else
-                    x_l = cat(3,xs_m.*m_l,ones(size(l),'like',l), ...
-                        zeros(size(l),'like',l));
-                    x_u = cat(3,xs_m.*m_u,zeros(size(u),'like',u), ...
-                        ones(size(u),'like',u));
-                end
-    
-                % Compute gradient of the approximation errors.
-                xl = xs(dlIdx);
-                dfxlm = obj.df(xl) - m;
-                dl_l = dfxlm.*x_l(dlIdx) - m_l.*xl;
-                dl_u = dfxlm.*x_u(dlIdx) - m_u.*xl;
-    
-                xu = xs(duIdx);
-                dfxum = obj.df(xu) - m;
-                du_l = dfxum.*x_l(duIdx) - m_l.*xu;
-                du_u = dfxum.*x_u(duIdx) - m_u.*xu;
-            else
-                dl_l = 1/2*(df(c) - m);
-                dl_u = dl_l;
-    
-                du_l = dl_l;
-                du_u = dl_l;
-            end
-        else
-            % No gradients of the approximation errors.
-            dl_l = 0;
-            dl_u = 0;
+           % Retrieve stored id-matrix and generator indices
+           approxErrGenIds = obj.backprop.store.approxErrGenIds;
+           % Retrieve number of approximation errors.
+           dn = length(approxErrGenIds);
+           % Get size of generator matrix
+           [n,q,batchSize] = size(rG);
+           p = max(approxErrGenIds);
+           if q < p
+               % Append generators for the approximation errors
+               rG = cat(2,rG,zeros(n,length(approxErrGenIds),batchSize,'like',rG));
+           end
+           % Obtain the dn largest approximation errors.
+           % [~,dDims] = sort(1/2*(du - dl),1,'descend');
+           dDims = repmat((1:n)',1,batchSize);
+           dDimsIdx = reshape(sub2ind([n batchSize], ...
+               dDims,repmat(1:batchSize,n,1)),size(dDims));
+           notdDimsIdx = dDimsIdx(dn+1:end,:);
+           % set not considered approx. error to 0
+           dl(notdDimsIdx) = f(c(notdDimsIdx)) - m(notdDimsIdx).*c(notdDimsIdx);
+           du(notdDimsIdx) = dl(notdDimsIdx);
+           % shift y-intercept by center of approximation errors
+           t = 1/2*(du + dl);
+           d = 1/2*(du - dl);
 
-            du_l = 0;
-            du_u = 0;
+           % Compute indices for approximation errors in the generator
+           % matrix.
+           GdIdx = reshape(sub2ind([n p batchSize], ...
+               repmat(1:n,1,batchSize), ...reshape(dDims(1:dn,:),1,[]),...
+               repmat(approxErrGenIds,1,batchSize), ...
+               repelem(1:batchSize,1,n)),[dn batchSize]);
+           % Store indices of approximation error in generator matrix.
+           obj.backprop.store.GdIdx = GdIdx;
+           dDimsIdx = dDimsIdx(1:dn,:);
+           obj.backprop.store.dDimsIdx = dDimsIdx;
+           % Add approximation errors to the generators.
+           rG(GdIdx) = d; % (dDimsIdx);
+
+           % compute gradients
+           if options.nn.train.backprop && options.nn.train.exact_backprop
+               % derivative of radius wrt. generators
+               r_G = sign(G);
+               % Compute gradient of the slope.
+               if strcmp(options.nn.poly_method,'bounds')
+                   m_c = (obj.df(u) - obj.df(l))./(2*r);
+                   m_G = r_G.*permute((obj.df(u) + obj.df(l) - 2*m)./(2*r),[1 3 2]);
+                   % prevent numerical issues
+                   ddf = obj.getDf(2);
+                   m_c(idxBoundsEq) = obj.df(c(idxBoundsEq));
+                   m_G = permute(m_G,[2 1 3]);
+                   r_G = permute(r_G,[2 1 3]);
+                   m_G(:,idxBoundsEq) = r_G(:,idxBoundsEq).*ddf(c(idxBoundsEq))';
+                   m_G = permute(m_G,[2 1 3]);
+                   r_G = permute(r_G,[2 1 3]);
+               elseif strcmp(options.nn.poly_method,'center')
+                   ddf = obj.getDf(2);
+                   m_c = ddf(inc).*ones(size(inc),'like',c); 
+                   m_G = zeros(size(inG),'like',inG);
+               elseif strcmp(options.nn.poly_method,'singh')
+                   lu = cat(3,l,u);
+                   [~,mIdx] = min(obj.df(lu),[],3,'linear');
+                   ddf = obj.getDf(2);
+                   m_c = ddf(lu(mIdx)).*ones(size(c),'like',c);
+                   [~,~,mIdx] = ind2sub(size(lu),mIdx);
+                   m_G = permute(-1*(mIdx == 1).*m_c,[1 3 2]).*drdG;
+               else
+                   throw(CORAerror('CORA:wrongFieldValue', ...
+                       sprintf("Unsported 'options.nn.poly_method': %s",...
+                           options.nn.poly_method)));
+               end
+
+               % Add gradients for interval bounds.
+               if strcmp(options.nn.poly_method,'bounds')
+                   % We only consider the lower bound. The approximation
+                   % error at the lower and upper bound is equal.
+                   x_c = cat(3,xs_m.*m_c,ones(size(l),'like',l));
+                   x_G = cat(4,permute(xs_m,[1 2 4 3]).*permute(m_G,[1 3 2]), ...
+                       -permute(r_G,[1 3 2]));
+               else
+                   x_c = cat(3,xs_m.*mc,ones(size(l),'like',l), ...
+                       ones(size(u),'like',u));
+                   x_G = cat(4,permute(xs_m,[1 2 4 3]).*permute(m_G,[1 3 2]), ...
+                       -permute(r_G,[1 3 2]),permute(r_G,[1 3 2]));
+               end
+               x_G = permute(x_G,[3 1 2 4]);
+
+               % Compute gradient of the approximation errors.
+               xl = xs(dlIdx);
+               dfxlm = obj.df(xl) - m;
+               dl_c = dfxlm.*x_c(dlIdx) - m_c.*xl;
+               xl_G = reshape(x_G(:,dlIdx),[q n batchSize]);
+               dl_G = permute(dfxlm,[3 1 2]).*xl_G - permute(m_G,[2 1 3]).*permute(xl,[3 1 2]);
+
+               xu = xs(duIdx);
+               dfxum = obj.df(xu) - m;
+               du_c = dfxum.*x_c(duIdx) - m_c.*xu;
+               xu_G = reshape(x_G(:,duIdx),[q n batchSize]);
+               du_G = permute(dfxum,[3 1 2]).*xu_G - permute(m_G,[2 1 3]).*permute(xu,[3 1 2]);
+
+               % Compute components for the backpropagation.
+               obj.backprop.store.m_c = m_c;
+               obj.backprop.store.m_G = m_G;
+
+               obj.backprop.store.dc_c = 1/2*(du_c(dDimsIdx) + dl_c(dDimsIdx));
+               obj.backprop.store.dc_G = ...
+                   1/2*(du_G(:,dDimsIdx) + dl_G(:,dDimsIdx));
+
+               obj.backprop.store.d_c = 1/2*(du_c(dDimsIdx) - dl_c(dDimsIdx));
+               obj.backprop.store.d_G = ...
+                   1/2*(du_G(:,dDimsIdx) - dl_G(:,dDimsIdx));
+
+           end
+        else
+            % compute y-intercept
+            t = f(c) - m.*c;
+            % approximation errors are 0
+            d = 0;
         end
+        % return coefficients
+        coeffs = permute(cat(3,m,t),[1 3 2]);
+        % Add y-intercept.
+        rc = rc + t;
     end
 end
 

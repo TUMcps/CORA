@@ -80,13 +80,13 @@ catch ME
     end
 end
 
-% standard help message
+% standard help message (clickable)
 if ~strcmp(classname,functionname)
-    helpmsg = sprintf("  Type 'help %s%s%s' for more information.",...
-        classname,sprintfFilesep,functionname);
+    helpmsg = sprintf('  Type ''<a href="matlab:help %s%s%s">help %s%s%s</a>'' for more information.',...
+        classname,sprintfFilesep,functionname, classname,sprintfFilesep,functionname);
 else
     % different call for constructors
-    helpmsg = sprintf("  Type 'help %s' for more information.",classname);
+    helpmsg = sprintf('  Type ''<a href="matlab:help %s">help %s</a>'' for more information.',classname,classname);
 end
 
 % copy to name-value pairs for processing in some errors
@@ -346,8 +346,7 @@ switch identifier
         else
             errmsg_form = 'The constructor of the %s class requires either %s input arguments.\n %s';
         end
-        % remove '.m' from filename for better text
-        errmsg = sprintf(errmsg_form,filename(1:end-2),numstr,helpmsg);
+        errmsg = sprintf(errmsg_form,filename,numstr,helpmsg);
 
 
     % function takes name-value pairs, but provided pair has a name which
@@ -538,7 +537,7 @@ if isempty(errIdx)
     filename = 'command window';
     classname = '<command window call>';
     functionname = '';
-    sprintfFilesep = filesep;
+    sprintfFilesep = '/';
     return
 end
 

@@ -64,9 +64,9 @@ spec = specification(eq,'logic');
 
 % Verification ------------------------------------------------------------
 
-tic
+timerVal = tic;
 [res,R,fals] = verify(sys, params, options, spec);
-tComp = toc;
+tComp = toc(timerVal);
 
 disp(['computation time for verification: ',num2str(tComp)]);
 if res

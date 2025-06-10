@@ -38,13 +38,13 @@ timeout = 2;
 % Load model and specification.
 [nn,x,r,A,b,safeSet,options] = aux_readModelAndSpecs(modelPath,specPath);
 % Do verification.
-tic
+timerVal = tic;
 [res,x_,y_] = nn.verify(x,r,A,b,safeSet,options,10,verbose);
 % Print result.
 if verbose
     % Print result.
     fprintf('%s -- %s: %s\n',modelPath,specPath,res);
-    time = toc;
+    time = toc(timerVal);
     fprintf('--- Verification time: %.4f / %.4f [s]\n',time,timeout);
 end
 % Write results.

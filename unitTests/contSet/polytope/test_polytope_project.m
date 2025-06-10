@@ -70,12 +70,16 @@ assert(compareMatrices(V,V_));
 
 
 % 3D, fully empty
-A = zeros(0,3); b = zeros(0,0);
+P = polytope.empty(3);
+P_proj = project(P,1);
+P_true = polytope.empty(1);
+assert(dim(P_proj) == 1 && isequal(P_proj,P_true));
+
+% check without given vertices
+A = [-1 0 0; 1 0 0]; b=[-2;-2];
 P = polytope(A,b);
 P_proj = project(P,1);
-A_true = zeros(0,1); b_true = zeros(0,0);
-P_true = polytope(A_true,b_true);
-assert(isequal(P_proj,P_true));
+assert(dim(P_proj) == 1 && representsa(P_proj,'emptySet'))
 
 % 3D, vertex representation
 V = [1 1 1; -1 1 1; 1 -1 1; 1 1 -1]';

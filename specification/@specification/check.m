@@ -26,6 +26,7 @@ function [res,indSpec,indObj] = check(spec,S,varargin)
 % Written:       29-May-2020             
 % Last update:   22-March-2022 (TL, simResult, indObj)
 %                24-May-2024 (TL, vectorized check for numeric input)
+%                28-April-2025 (TL, reachSet/simResult and timed specifications)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -125,19 +126,39 @@ if isnumeric(S) % ---------------------------------------------------------
     
 elseif isa(S,'simResult') % -----------------------------------------------
 
-    % loop over all simulations
-    for i = 1:length(S)
-        S_i = S(i);
-        % loop over all trajectories
-        for j = 1:length(S_i.x)
-            Si_x_j = S_i.x{j};
-            Si_t_j = S_i.t{j};
 
-            % check simulation points with respective time
-            [res,indSpec,k] = check(spec, Si_x_j', Si_t_j');
-            if ~res
-                indObj = {i,j,k};
-                return; 
+    % loop over all specifications
+    for i = 1:size(spec,1)
+        spec_i = spec(i);
+
+        % check if any simResult is present for timed specification
+        if ~representsa_(spec_i.time,'emptySet',1e-8)
+            % find simulation corresponding to the time
+            S_timed = find(S,'time',spec_i.time);
+            if isemptyobject(S_timed)
+                % no simulation found, return false 
+                % as behavior is undefined for that time
+                indSpec = i;
+                res = false;
+                return
+            end
+        end
+
+        % loop over all simulations
+        for j = 1:length(S)
+            S_j = S(j);
+            % loop over all trajectories
+            for k = 1:length(S_j.x)
+                Si_x_k = S_j.x{k};
+                Si_t_k = S_j.t{k};
+    
+                % check simulation points with respective time
+                [res,~,l] = check(spec_i, Si_x_k', Si_t_k');
+                if ~res
+                    indSpec = i;
+                    indObj = {j,k,l};
+                    return; 
+                end
             end
         end
     end
@@ -147,6 +168,19 @@ elseif isa(S,'reachSet') % ------------------------------------------------
     % loop over all specifications
     for i = 1:size(spec,1)
         spec_i = spec(i);
+
+        % check if any reachSet is present for timed specification
+        if ~representsa_(spec_i.time,'emptySet',1e-8)
+            % find reachable set corresponding to the time
+            S_timed = find(S,'time',spec_i.time);
+            if isemptyobject(S_timed)
+                % no reachable set found, return false 
+                % as behavior is undefined for that time
+                indSpec = i;
+                res = false;
+                return
+            end
+        end
 
         % loop over all reachable sets
         for k = 1:size(S,1)

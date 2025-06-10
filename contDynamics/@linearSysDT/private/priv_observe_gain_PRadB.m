@@ -34,7 +34,7 @@ function [OGain,tComp]= priv_observe_gain_PRadB(linsysDT,params,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-tic
+timerVal = tic;
 
 % E and F in [1] are chosen such that they are multiplied with unit
 % uncertainties; thus, E and F can be seen as generators of zonotopes
@@ -111,6 +111,6 @@ Y = value(Y);
 OGain = P\Y;
 
 % computation time
-tComp = toc;
+tComp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

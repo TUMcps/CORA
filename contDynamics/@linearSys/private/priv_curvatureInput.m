@@ -31,7 +31,7 @@ try
     C_input = block_mtimes(G,U);
 catch
     % convert set to interval if interval matrix * set not supported
-    C_input = block_mtimes(F,block_operation(@interval,U));
+    C_input = block_mtimes(G,block_operation(@interval,U));
 end
 
 % ------------------------------ END OF CODE ------------------------------

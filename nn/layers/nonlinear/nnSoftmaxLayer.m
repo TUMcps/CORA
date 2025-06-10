@@ -81,7 +81,7 @@ methods (Access = {?nnLayer, ?neuralNetwork})
         sx = permute(obj.evaluateNumeric(x, options),[1 3 2]);
         % compute Jacobian of softmax
         J = pagemtimes(-sx,'none',sx,'transpose') + sx.*eye(size(x,1));
-        S = S * J;
+        S = pagemtimes(S,J);
     end
 
     % numeric

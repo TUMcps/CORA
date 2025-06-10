@@ -36,7 +36,7 @@ function [OGain,P,gamma,lambda,tComp] = priv_observe_gain_ESO_D(linsysDT,params,
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-tic
+timerVal = tic;
 
 % essential values
 n = linsysDT.nrOfDims;
@@ -76,7 +76,7 @@ lambda = min(eigs(Q,P));
 
 
 % computation time
-tComp = toc;
+tComp = toc(timerVal);
 
 end
 

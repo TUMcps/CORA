@@ -43,8 +43,8 @@ options.intersectionType = 2;
 options.intersectionTechnique = OGain; % gain directly provided
 
 % apply set-membership approach
-tic
+timerVal = tic;
 R = observe_stripBased(linsysDT,params,options);
-tcomp = toc;
+tcomp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

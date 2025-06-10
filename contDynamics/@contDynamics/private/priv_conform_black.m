@@ -84,9 +84,9 @@ for i_y = 1:size(ytrain,2)
     if options.approx.verbose
         fprintf('Output dimension %d. \n', i_y)
     end
-    tic
+    timerVal = tic;
     gp = rungp(@(x) config_gp(x, params, options, 'blackGP'));
-    T = toc;
+    T = toc(timerVal);
     if options.approx.save_res
         save(file_approx_iy,"gp", "T");
     end
@@ -106,7 +106,7 @@ options.approx.xtrain = xtrain;
 options.approx.yval = yval;
 options.approx.ytrain = ytrain;
 options.approx.pop_pre = true;
-tic
+timerVal = tic;
 % create initial propulation with normal genetic programming
 del_res = false;
 if ~isfield(options.approx, 'cgp_file_pop_pre') && ...
@@ -125,7 +125,7 @@ end
 
 params.testSuite = params.testSuite_val;
 gp = rungp(@(x)config_gp(x, params, options, 'blackCGP'));
-T = toc;
+T = toc(timerVal);
 if options.approx.save_res
     save(options.approx.filename,"gp", "T");
 end

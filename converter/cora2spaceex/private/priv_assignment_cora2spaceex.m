@@ -47,7 +47,7 @@ if isa(reset,'linearReset')
     % convert the equation to a character sequence
     eqs = '';
     for idx = 1:n
-        lhs = sprintf('x%d''', idx); % first derivative of x_n
+        lhs = sprintf('x%d', idx); % first derivative of x_n
         eq_c = char(eq(idx));
         eq_c = [lhs, ' := ', eq_c];
         if idx > 1

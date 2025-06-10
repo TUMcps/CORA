@@ -36,8 +36,8 @@ function [R,tcomp] = priv_observe_FRadC(linsysDT,params,options)
 options.observerType = 1; % combastel
 
 % apply set-membership approach
-tic
+timerVal = tic;
 R = priv_observe_intersectionFreeAdaptive(linsysDT,params,options);
-tcomp = toc;
+tcomp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

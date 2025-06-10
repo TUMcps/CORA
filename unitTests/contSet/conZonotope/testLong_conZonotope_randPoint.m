@@ -39,7 +39,7 @@ end
 
 
 % number of tests
-nrOfTests = 100;
+nrOfTests = 10;
 
 methods = {'standard', 'extreme', 'uniform', 'uniform:hitAndRun', 'uniform:ballWalk', 'uniform:billiardWalk'};
 

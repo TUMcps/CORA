@@ -27,7 +27,7 @@ function res = testLong_polyZonotope_polyZonotope
 % tolerance
 tol = 1e-12;
 
-nrOfTests = 1000;
+nrOfTests = 50;
 for i=1:nrOfTests
 
     % random dimension

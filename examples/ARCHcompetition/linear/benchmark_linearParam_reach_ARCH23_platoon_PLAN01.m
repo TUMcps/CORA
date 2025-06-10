@@ -83,7 +83,7 @@ linsys = linParamSys(matZ_A, B,'varParam');
 % Reachability Analysis ---------------------------------------------------
 
 % reachable set computations
-tic
+timerVal = tic;
 R = reach(linsys, params, options);
 
 % invariant computation
@@ -93,12 +93,12 @@ options.zonotopeOrder = 800;
 
 [RcontInv,tadd] = aux_reachInv(linsys, params, options);
 
-tComp = toc;
+tComp = toc(timerVal);
 
 
 % Verification ------------------------------------------------------------
 
-tic
+timerVal = tic;
 violation50 = false;
 % check intersecting with unsafe set for each time interval
 for i = 1:length(R.timeInterval.set)
@@ -115,7 +115,7 @@ for i=1:length(RcontInv)
     end
 end
 
-tVer = toc;
+tVer = toc(timerVal);
 
 disp(['specifications verified: ',num2str(~violation50)]);
 disp(['computation time: ',num2str(tVer + tComp)]);

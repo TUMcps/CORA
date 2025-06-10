@@ -87,17 +87,12 @@ function [R,dims,NVpairs,order,splits,unify,totalsets,whichset] = aux_preprocess
     whichset = aux_checkSet(R,whichset);
 end
 
-function res = aux_hasTimeInterval(R)
-    % check whether reachSet has a time interval set
-    res = ~isempty(R(1).timeInterval);
-end
-
 function whichset = aux_checkSet(R,whichset)
 
 % must be character vector for switch-expression to work properly
 if isempty(whichset)
     % default value
-    if ~isempty(R(1).timeInterval)
+    if ~hasTimeInterval(R)
         whichset = 'ti';
     else
         whichset = 'tp';
@@ -106,7 +101,7 @@ end
 
 switch whichset
     case 'ti'
-        if ~aux_hasTimeInterval(R) && ~isempty(R(1).timePoint)
+        if ~hasTimeInterval(R) && ~isempty(R(1).timePoint)
             CORAwarning('CORA:plot',"No time-interval reachable set. Time-point reachable set plotted instead.");
             whichset = 'tp';
         end

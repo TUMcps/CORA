@@ -36,13 +36,15 @@ function res = checkValueAttributes(value,class,attributes)
 
 % parse input
 % internal function, expecting correct inputs
-nchoosek(3,3); 
+narginchk(3,3); 
 
 % init
 resvec = false(1,numel(attributes)+1);
 
 % check class
-resvec(1) = isempty(class) || isa(value,class);
+resvec(1) = isempty(class) || isa(value,class) || ...
+    ... % for a gpuArray value, isnumeric(value) ~= isa(value,'numeric')
+    (strcmp(class,'numeric') && isnumeric(value));
 
 % check attributes
 for i = 1:numel(attributes)

@@ -51,9 +51,9 @@ tank = nonlinearSysDT('tankSystem',fun,dt); % initialize tank system
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+timerVal = tic;
 R = reach(tank, params, options);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['computation time of reachable set: ',num2str(tComp)]);
 
 

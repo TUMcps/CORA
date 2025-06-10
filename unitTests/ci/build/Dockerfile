@@ -79,12 +79,35 @@ WORKDIR /home/matlab
 # -------------------------------------------------------------------------
 # CORA CUSTOM INSTALLATIONS
 
+# Install multi-precision toolbox ---
+WORKDIR /home/matlab
+RUN mkdir -p toolboxes
+WORKDIR /home/matlab/toolboxes
+# download mp 2.0; check for new versions: https://de.mathworks.com/matlabcentral/fileexchange/6446-multiple-precision-toolbox-for-matlab (also update in installCORA)
+RUN wget "https://de.mathworks.com/matlabcentral/mlc-downloads/downloads/e54ba25f-4a80-11e4-9553-005056977bd0/7814cf6f-57bd-44a0-b1ef-ed7e3ffe40dc/packages/zip"
+RUN unzip zip -d MultiPrecisionToolbox
+# install required libraries
+# - gmplib
+RUN sudo apt-get update && sudo apt-get install -y lzip m4
+RUN wget "https://gmplib.org/download/gmp/gmp-6.2.1.tar.lz"
+RUN tar --lzip -xvf gmp-6.2.1.tar.lz
+RUN cd gmp-6.2.1 && ./configure && make && make check && sudo make install
+# - mpfrlib
+RUN wget "https://www.mpfr.org/mpfr-4.2.1/mpfr-4.2.1.zip"
+RUN unzip mpfr-4.2.1
+RUN cd mpfr-4.2.1 && ./configure && make && make check && sudo make install
+# \!/ Then, in Matlab, run
+#     cd /home/matlab/toolboxes/MultiPrecisionToolbox/@mp/private
+#     mp_compile_all
+# (this will be done in installCORA if an mppath is provided)
+
+# Install CORA ---
 WORKDIR /tmp
 USER matlab
 
 # run installCORA non-interactively; requires write access to startup
 RUN sudo chmod 777 /home/matlab/Documents/MATLAB/startup.m
-RUN --mount=type=bind,target=/tmp/cora matlab -batch "cd /tmp/cora; installCORA(false,true,'/home/matlab')"
+RUN --mount=type=bind,target=/tmp/cora matlab -batch "cd /tmp/cora; installCORA(false,true,'/home/matlab','/home/matlab/toolboxes/MultiPrecisionToolbox')"
 
 # reading ONNX networks within docker can cause exceptions
 # due to some gui issue (see neuralNetwork/readONNXNetwork)

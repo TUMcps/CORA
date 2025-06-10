@@ -160,6 +160,17 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
     end
 end
 
+
+% Auxiliary functions -----------------------------------------------------
+
+methods
+    function fieldStruct = getFieldStruct(obj)
+        fieldStruct = struct;
+        fieldStruct.scale = obj.scale;
+        fieldStruct.offset = obj.offset;
+    end
+end
+
 % protected methods
 methods (Access = protected)
     function [scale,offset] = aux_getScaleAndOffset(obj)

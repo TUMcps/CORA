@@ -112,7 +112,7 @@ for i = 1:length(time) - 1
     u = evaluate(obj.nn, x0);
     x0 = [x0; u];
 
-    % get number of disturbance changes duing sampling time
+    % get number of disturbance changes during sampling time
     index = find(tu(cnt:end) < time(i+1));
     w = params.u(cnt:cnt+index(end)-1);
 

@@ -35,15 +35,15 @@ disp("BENCHMARK: Double Pendulum (less robust)")
 R0 = interval([1;1;1;1],[1.3;1.3;1.3;1.3]);
 
 params.tFinal = 1;
-params.R0 = polyZonotope(R0);
+params.R0 = zonotope(R0);
 
 % Reachability Settings ---------------------------------------------------
 
-options.timeStep = 0.05;
+options.timeStep = 0.01;
 options.alg = 'lin';
 options.tensorOrder = 2;
 options.taylorTerms = 4;
-options.zonotopeOrder = 200;
+options.zonotopeOrder = 20;
 
 % Options for NN evaluation -----------------------------------------------
 

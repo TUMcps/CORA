@@ -1,0 +1,108 @@
+# date: 06-Jun-2025 07:58:49
+# dateEnd: 06-Jun-2025 08:01:13
+# hostsystem: Unix
+# matlabversion: 24.2.0.2712019 (R2024b)
+# coraversion: CORA v2025.1.1
+# testSuite: nn
+
+                      fname                      ; ok ;    seed    ;  time ; checkTime 
+
+ test_nn_converter_vnnlib2cora                   ;  1 ; 2135799564 ;  1.42 ;         1 
+ test_nn_conZonotope_ReLU_approx                 ;  1 ; 3896045044 ;  1.27 ;         1 
+ test_nn_conZonotope_ReLU_exact                  ;  1 ; 4083900692 ;  1.81 ;         1 
+ test_nn_folderStructure                         ;  1 ; 3596922775 ;  0.26 ;         1 
+ test_nn_gcn                                     ;  1 ; 1973025453 ;  0.57 ;         1 
+ test_nn_interval                                ;  1 ; 3000674055 ;  1.11 ;         1 
+ test_nn_numeric                                 ;  1 ; 3081243644 ;  0.02 ;         1 
+ test_nn_polyZonotope_adaptive                   ;  1 ; 2985925705 ;  0.26 ;         1 
+ test_nn_polyZonotope_adaptive_large             ;  1 ; 1238817337 ;  0.25 ;         1 
+ test_nn_polyZonotope_adaptive_output_ref        ;  1 ;  387170786 ;  0.21 ;         1 
+ test_nn_polyZonotope_adaptive_refine            ;  1 ;  845415580 ;  0.29 ;         1 
+ test_nn_polyZonotope_cub                        ;  1 ; 2786978603 ;  0.21 ;         1 
+ test_nn_polyZonotope_lin                        ;  1 ;  398101232 ;  0.05 ;         1 
+ test_nn_polyZonotope_quad                       ;  1 ; 2803841738 ;  0.07 ;         1 
+ test_nn_polyZonotope_softmax                    ;  1 ; 3162093116 ;  2.17 ;         1 
+ test_nn_random                                  ;  1 ; 3114306831 ;  0.03 ;         1 
+ test_nn_taylm_ReLU                              ;  1 ; 2293567523 ;  0.22 ;         1 
+ test_nn_taylm_sigmoid                           ;  1 ; 3462766279 ;  0.08 ;         1 
+ test_nn_taylm_tanh                              ;  1 ; 1490944509 ;  0.09 ;         1 
+ test_nn_zonotope_relu                           ;  1 ; 1881783843 ;  0.12 ;         1 
+ test_nn_zonotope_tanh                           ;  1 ; 2818921790 ;  0.06 ;         1 
+ test_nn_nnActivationLayer_getMergeBuckets       ;  1 ; 1533531215 ;  0.01 ;         1 
+ test_nn_nnLayer_nnLayer                         ;  1 ;  874252734 ;  0.01 ;         1 
+ test_nn_nnAvgPool2DLayer                        ;  1 ; 2775881455 ;  0.30 ;         1 
+ test_nn_nnConv2DLayer                           ;  1 ;  953766185 ;  0.12 ;         1 
+ test_nn_nnElementwiseAffineLayer                ;  1 ;  618424467 ;  0.03 ;         1 
+ test_nn_nnIdentityLayer                         ;  1 ;  709896834 ;  0.03 ;         1 
+ test_nn_nnLinearLayer                           ;  1 ;  714337854 ;  0.01 ;         1 
+ test_nn_nnActivationLayer_computeApproxPoly     ;  1 ;  552412666 ;  0.78 ;         1 
+ test_nn_nnActivationLayer_getDerBounds          ;  1 ; 1814073213 ;  0.01 ;         1 
+ test_nn_nnActivationLayer_instantiateFromString ;  1 ;  558535800 ;  0.02 ;         1 
+ test_nn_nnLeakyReLULayer                        ;  1 ; 2200877404 ;  0.06 ;         1 
+ test_nn_nnReLULayer                             ;  1 ; 1567980941 ;  0.02 ;         1 
+ test_nn_nnRootLayer                             ;  1 ; 1173237079 ;  0.04 ;         1 
+ test_nn_nnSigmoidLayer                          ;  1 ; 2311914301 ;  0.03 ;         1 
+ test_nn_nnTanhLayer                             ;  1 ;   85649414 ;  0.03 ;         1 
+ test_nn_nnGCNLayer                              ;  1 ; 2602703617 ;  2.31 ;         1 
+ test_nn_nnGNNGlobalPoolingLayer                 ;  1 ; 3074922728 ;  0.04 ;         1 
+ test_nn_nnGNNLinearLayer                        ;  1 ; 1183354158 ;  2.26 ;         1 
+ test_nn_nnGNNProjectionLayer                    ;  1 ; 3247046109 ;  0.07 ;         1 
+ test_nn_neuralNetwork_calcSensitivity           ;  1 ; 2031432181 ;  0.03 ;         1 
+ test_nn_neuralNetwork_computeReducedNetwork     ;  1 ; 2210622256 ;  0.38 ;         1 
+ test_nn_neuralNetwork_display                   ;  1 ; 3713678243 ;  0.04 ;         1 
+ test_nn_neuralNetwork_evaluate                  ;  1 ; 3623745908 ;  0.19 ;         1 
+ test_nn_neuralNetwork_evaluate_refine           ;  1 ; 4239640123 ;  0.78 ;         1 
+ test_nn_neuralNetwork_explain                   ;  1 ;  424226553 ;  2.91 ;         1 
+ test_nn_neuralNetwork_exportAsJSON              ;  1 ; 2284880837 ;  0.03 ;         1 
+ test_nn_neuralNetwork_exportAsStruct            ;  1 ; 3703222110 ;  0.01 ;         1 
+ test_nn_neuralNetwork_getFromCellArray          ;  1 ; 3043198729 ;  0.02 ;         1 
+ test_nn_neuralNetwork_getInputNeuronOrder       ;  1 ; 3861534549 ;  0.02 ;         1 
+ test_nn_neuralNetwork_getNormalForm             ;  1 ; 1989297942 ;  0.07 ;         1 
+ test_nn_neuralNetwork_getNumNeurons             ;  1 ; 2029828960 ;  0.02 ;         1 
+ test_nn_neuralNetwork_importFromJSON            ;  1 ; 3602260060 ;  0.03 ;         1 
+ test_nn_neuralNetwork_importFromStruct          ;  1 ;  357595520 ;  0.02 ;         1 
+ test_nn_neuralNetwork_neuralNetwork             ;  1 ; 1053181391 ;  0.01 ;         1 
+ test_nn_neuralNetwork_readGNNnetwork            ;  1 ; 2630799005 ;  0.18 ;         1 
+ test_nn_neuralNetwork_readNNetNetwork           ;  1 ; 2431854258 ;  0.05 ;         1 
+ test_nn_neuralNetwork_readSherlockNetwork       ;  1 ;  731293979 ;  0.07 ;         1 
+ test_nn_neuralNetwork_readYMLNetwork            ;  1 ; 3382644097 ;  0.03 ;         1 
+ test_nn_neuralNetwork_reduceGNNForNode          ;  1 ;  864967659 ;  2.51 ;         1 
+ test_nn_neuralNetwork_refine                    ;  1 ; 2071673460 ;  0.09 ;         1 
+ test_nn_nnHelper_calcSquared                    ;  1 ; 2273241727 ;  0.08 ;         1 
+ test_nn_nnHelper_computeBoundsPolyZono          ;  1 ; 1485782206 ;  0.15 ;         1 
+ test_nn_nnHelper_gerDerInterval                 ;  1 ; 3368884530 ;  0.01 ;         1 
+ test_nn_nnHelper_heap                           ;  1 ; 1430211793 ;  0.03 ;         1 
+ test_nn_nnHelper_leastSquarePolyFunc            ;  1 ; 1674909398 ;  0.02 ;         1 
+ test_nn_nnHelper_minMaxDiffOrder                ;  1 ; 1767306503 ;  0.03 ;         1 
+ test_nn_nnHelper_validateNNoptions              ;  1 ; 3302823383 ;  0.02 ;         1 
+ test_nn_nnAdamOptimizer_step                    ;  1 ; 2909905177 ;  0.10 ;         1 
+ test_nn_nnSGDOptimizer_step                     ;  1 ;  964887312 ;  0.04 ;         1 
+ test_nn_rl_agentRL_validateOptions              ;  1 ; 4222434256 ;  2.74 ;         1 
+ test_nn_rl_buffer                               ;  1 ; 2268427748 ;  0.03 ;         1 
+ test_nn_rl_ctrlEnv_step                         ;  1 ; 3936986860 ;  2.00 ;         1 
+ test_nn_rl_ctrlEnv_validateOptions              ;  1 ;  541899265 ;  0.62 ;         1 
+ test_neurNetContrSys_neurNetContrSys            ;  1 ; 3659409080 ;  0.11 ;         1 
+ test_neurNetContrSys_reach_01_toyExample        ;  1 ; 2135437706 ;  2.13 ;         1 
+ test_neurNetContrSys_simulate                   ;  1 ; 2228601245 ;  0.79 ;         1 
+ testnn_neurNetContrSys_reach_02_unicycle        ;  1 ; 4247036013 ;  6.67 ;         1 
+ testnn_neurNetContrSys_reach_03_timeMismatch    ;  1 ; 1307506452 ;  1.83 ;         1 
+ testnn_polyZonotope_cnn_verivital_avg           ;  1 ; 1458876419 ;  7.57 ;         1 
+ testnn_polyZonotope_cnn_verivital_max           ;  1 ; 3032216645 ;  3.17 ;         1 
+ testnn_verify                                   ;  1 ; 1784403327 ;  4.40 ;         1 
+ testnn_vnnlib2cora                              ;  1 ; 2867880007 ;  0.12 ;         1 
+ testnn_nnVisualizationLayer                     ;  1 ;  795592920 ;  4.55 ;         1 
+ testnn_neuralNetwork_addVisualizationLayers     ;  1 ;  574445831 ;  1.67 ;         1 
+ testnn_neuralNetwork_computeReducedNetwork      ;  1 ; 1988012292 ; 10.98 ;         1 
+ testnn_neuralNetwork_exportNetworkAsCellArray   ;  1 ; 1241969687 ;  0.55 ;         1 
+ testnn_neuralNetwork_exportONNXNetwork          ;  1 ;  500921527 ;  3.13 ;         1 
+ testnn_neuralNetwork_importFromJSON             ;  1 ; 4139329258 ;  0.70 ;         1 
+ testnn_neuralNetwork_readNetwork                ;  1 ; 3606063861 ;  0.56 ;         1 
+ testnn_neuralNetwork_readONNXNetwork            ;  1 ; 1525137908 ;  1.38 ;         1 
+ testnn_neuralNetwork_train                      ;  1 ; 2171156074 ;  7.98 ;         0 
+ testnn_neuralNetwork_train_set                  ;  1 ; 1399231903 ; 13.60 ;         0 
+ testnn_neuralNetwork_verify                     ;  1 ; 4073443661 ;  3.46 ;         1 
+ testnn_rl_agentRL_train_all                     ;  1 ;  275576161 ; 26.13 ;         0 
+ testnn_rl_agentRL_train_point                   ;  1 ; 3227662105 ; 11.70 ;         0 
+ testnn_requiredToolboxes                        ;  1 ; 1682242276 ;  0.21 ;         1 
+
+

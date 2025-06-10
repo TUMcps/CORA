@@ -20,19 +20,11 @@ function completed = example_probOccupancyPrediction_road_01_braking()
 % Authors:       Matthias Althoff
 % Written:       14-October-2009
 % Last update:   01-August-2016
-% Last revision: ---
+% Last revision: 16-May-2025 (TL, removed unccessary folder switch)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-
-%set path
-global filePath
-filePath = [CORAROOT filesep 'contDynamics' filesep 'stateSpaceModels'];
-dataPath = [CORAROOT filesep 'examples' filesep 'discrDynamics' filesep 'probOccupancyPrediction' filesep 'data'];
-curPath = pwd;
-
 %load Markov chain of car
-cd(dataPath);
 file = load('probModel_car_sim_02September2016_newPartitionFormat.mat');
 probModel = file.probModel;
 
@@ -286,8 +278,7 @@ for iStep=1:4
 end
 
 %example completed
-cd(curPath);
-completed = 1;
+completed = true;
 
 end
 

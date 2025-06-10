@@ -35,7 +35,7 @@ if ~isfile(file_path)
     end
 end
 [~, ~, ext] = fileparts(file_path);
-possibleExtensions = {'.onnx', '.nnet', '.yml', '.sherlock'};
+possibleExtensions = {'.onnx', '.nnet', '.yml', '.sherlock', '.json'};
 inputArgsCheck({{ext, 'str', possibleExtensions}});
 
 % redirect to specific read function
@@ -47,6 +47,8 @@ elseif strcmp(ext, '.yml')
     obj = neuralNetwork.readYMLNetwork(file_path,varargin{:});
 elseif strcmp(ext, '.sherlock')
     obj = neuralNetwork.readSherlockNetwork(file_path,varargin{:});
+elseif strcmp(ext, '.json')
+    obj = neuralNetwork.readJSONNetwork(file_path,varargin{:});
 else
     throw(CORAerror('CORA:wrongValue','first',...
         sprintf('has to end in %s', strjoin(possibleExtensions, ', ')) ...

@@ -36,6 +36,7 @@ classdef nnLinearLayer < nnLayer
 properties
     W                       % weight matrix
     b                       % bias
+    d = []                  % approx error (additive)
 end
 
 properties (Constant)
@@ -71,15 +72,6 @@ methods
         obj.W = double(W);
         obj.b = double(b);
     end
-
-    function outputSize = getOutputSize(obj, inputSize)
-        outputSize = [size(obj.W, 1), 1];
-    end
-
-    function [nin, nout] = getNumNeurons(obj)
-        nin = size(obj.W, 2);
-        nout = size(obj.W, 1);
-    end
 end
 
 % evaluate ----------------------------------------------------------------
@@ -88,7 +80,18 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
     
     % numeric
     function r = evaluateNumeric(obj, input, options)
-        r = obj.W * input + obj.b;
+        % linear transformation
+        if representsa_(input,'emptySet',eps)
+            r = obj.b .* ones(1,size(input,2));
+        else
+            r = obj.W * input + obj.b;
+        end
+
+        % add approx error
+        if ~representsa_(obj.d,'emptySet',eps)
+            samples = obj.d.randPoint(size(r,2));
+            r = r + samples;
+        end
     end
 
     % interval 
@@ -102,6 +105,11 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
         r = pagemtimes(abs(obj.W),r);
         % Convert center and radius back to lower and upper bound.
         bounds = interval(mu - r,mu + r);
+
+        % add approx error
+        if ~representsa_(obj.d,'emptySet',eps)
+            bounds = bounds + obj.d;
+        end
     end
 
     % sensitivity
@@ -117,6 +125,11 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
         c = obj.W * c + obj.b;
         G = obj.W * G;
         GI = obj.W * GI;
+
+        if ~representsa_(obj.d,'emptySet',eps)
+            c = c + center(obj.d);
+            GI = [GI, diag(rad(obj.d))];
+        end
     end
     
     % zonotope batch (for training)
@@ -287,6 +300,29 @@ methods
         % Scale remaining dimensions s.t. their sum remains constant.
         mask(keepIdx) = 1/(1 - dropFactor);
     end
+end
+
+% Auxiliary functions -----------------------------------------------------
+
+methods
+
+    function outputSize = getOutputSize(obj, inputSize)
+        outputSize = [size(obj.W, 1), 1];
+    end
+
+    function [nin, nout] = getNumNeurons(obj)
+        nin = size(obj.W, 2);
+        nout = size(obj.W, 1);
+    end
+
+    function fieldStruct = getFieldStruct(obj)
+        fieldStruct = struct;
+        fieldStruct.size_W = size(obj.W); % is lost for vectors in json
+        fieldStruct.W = obj.W;
+        fieldStruct.b = obj.b;
+        fieldStruct.d = obj.d;
+    end
+
 end
 
 end

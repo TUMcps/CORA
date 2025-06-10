@@ -96,9 +96,9 @@ params_id_init.U = zonotope([c_U eye(sys.nrOfInputs) ...
 % Identification ------------------------------------------------------
 fprintf("Identification with %s-cost, %s-constraints \n", ...
     options.cs.cost, options.cs.constraints);
-tic;
+timerVal = tic;
 [configs{2}.params] = conform(sys,params_id_init,options,"white");
-Ts = toc;
+Ts = toc(timerVal);
 configs{2}.sys = sys;
 configs{2}.options = options_reach;
 configs{2}.name = options.cs.constraints;

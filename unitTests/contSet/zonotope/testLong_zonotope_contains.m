@@ -98,8 +98,9 @@ implementedSets = {'capsule','conPolyZono','conZonotope','interval','polytope',.
                     'zonoBundle','zonotope','ellipsoid','taylm',...
                     'polyZonotope','conPolyZono','spectraShadow'};
 
-setsNonExact = {'taylm','conPolyZono','polyZonotope',...
-                'spectraShadow'};
+setsNonExact = {'taylm','conPolyZono','polyZonotope'}; 
+% 'spectraShadow' is generally not exact, but for the specific zonotope (an interval), it is.
+% However, checkAllContainments expects it that way...
 
 additionalAlgorithms = {'exact:venum', 'exact:polymax', 'approx:st', 'approx:stDual', 'sampling', 'sampling:primal', 'sampling:dual'};
 

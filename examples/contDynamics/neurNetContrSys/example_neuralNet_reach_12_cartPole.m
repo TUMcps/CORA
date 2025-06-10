@@ -30,8 +30,8 @@ disp("BENCHMARK: Cartpole");
 % Parameters --------------------------------------------------------------
 
 params.tFinal = 10;
-params.R0 = zonotope( ...
-    enlarge(interval([-0.1; -0.05; -0.1; -0.05], [0.1; -0.05; 0.1; 0.05]),0.02) ...
+params.R0 = polyZonotope( ...
+    enlarge(interval([-0.1; -0.05; -0.1; -0.05], [0.1; 0.05; 0.1; 0.05]),0.4) ...
 );
 
 % Reachability Settings ---------------------------------------------------
@@ -39,15 +39,15 @@ params.R0 = zonotope( ...
 options.timeStep = 0.02;
 options.alg = 'lin';
 options.tensorOrder = 2;
-options.taylorTerms = 4;
+options.taylorTerms = 1;
 % options.errorOrder = 10;
 % options.intermediateOrder = 10;
-options.zonotopeOrder = 100;
+options.zonotopeOrder = 50;
 
 % Options for NN evaluation -----------------------------------------------
 
 options.nn = struct();
-options.nn.poly_method = "singh";
+options.nn.poly_method = "regression";
 
 % System Dynamics ---------------------------------------------------------
 
@@ -72,7 +72,7 @@ spec = specification(goalSet, 'safeSet', interval(8,params.tFinal));
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, true);
+[res, R, simRes] = verify(sys, spec, params, options, true, 10);
 tTotal = toc(t);
 disp(['Result: ' res])
 
@@ -81,15 +81,16 @@ disp(['Result: ' res])
 disp("Plotting..")
 figure; hold on; box on;
 
-% plot goal set
-plot(specification(goalSet, 'safeSet'), [1, 3], 'DisplayName', 'Goal set');
-
 % plot reachable set
 useCORAcolors("CORA:contDynamics")
 plot(R, [1, 3], 'DisplayName', 'Reachable set','Unify',true,'UnifyTotalSets',5);
 
 % plot initial set
 plot(R(1).R0, [1, 3], 'DisplayName', 'Initial set');
+
+% plot goal set
+plot(specification(goalSet, 'safeSet'), [1, 3], 'DisplayName', 'Goal set');
+updateColorIndex(2)
 
 % plot simulations
 plot(simRes,[1, 3], 'DisplayName', 'Simulations');

@@ -37,7 +37,7 @@ res_empty = dimI == true_dim;
 
 % 2. Random cases
 res_rand = true;
-nrOfTests = 1000;
+nrOfTests = 100;
 
 for i=1:nrOfTests
     

@@ -51,7 +51,7 @@ try
         size(params_id_init.testSuite{1}.u,2), gp.userdata.p);
 
     % compute conformance cost
-    tic;
+    timerVal = tic;
     fval = 0;
     meas_dist = zeros(n_id,1);
 
@@ -69,7 +69,7 @@ catch ME
     display(ME.message)
     fval = inf;
 end
-T=toc;
+T=toc(timerVal);
 fitness = mean(meas_dist)*fval + round(T,1);
 end
 

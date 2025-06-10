@@ -83,21 +83,21 @@ sys = nonlinearSys(brusselator);
 % Reachability Analysis ---------------------------------------------------
 
 % compute inner-approximation with the algorithm from [1] 
-tic
+timerVal = tic;
 [Rin1,Rout1] = reachInner(sys,params,options1);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['Computation time (scale): ',num2str(tComp),' s']);
 
 % compute inner-approximation with the algorithm from [2] 
-tic
+timerVal = tic;
 [Rin2,Rout2] = reachInner(sys,params,options2);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['Computation time (proj): ',num2str(tComp),' s']);
 
 % compute inner-approximation with the algorithm from [3] 
-tic
+timerVal = tic;
 [Rin3,~] = reachInner(sys,params,options3);
-tComp = toc;
+tComp = toc(timerVal);
 disp(['Computation time (parallelo): ',num2str(tComp),' s']);
 
 

@@ -1,0 +1,24 @@
+# date: 06-Jun-2025 07:58:49
+# dateEnd: 06-Jun-2025 07:59:23
+# hostsystem: Unix
+# matlabversion: 24.2.0.2863752 (R2024b) Update 5
+# coraversion: CORA v2025.1.1
+# testSuite: mp
+
+                      fname                      ; ok ;    seed    ;  time ; checkTime 
+
+ testMP_Krylov_errorBounds                       ;  1 ; 3404678757 ;  1.11 ;         1 
+ testMP_Krylov_homogeneousSolution               ;  1 ; 1929496977 ;  1.56 ;         1 
+ testMP_Krylov_homogeneousSolution_iss           ;  1 ;  473779665 ;  1.04 ;         1 
+ testMP_Krylov_homogeneousSolution_precise       ;  1 ;  794018944 ;  0.21 ;         1 
+ testMP_Krylov_homogeneousSolution_projection    ;  1 ; 3697572993 ;  0.23 ;         1 
+ testMP_Krylov_inputSolution                     ;  1 ; 2423937083 ;  1.60 ;         1 
+ testMP_Krylov_linearTimeErrorBound              ;  1 ; 3033604577 ;  0.47 ;         1 
+ testMP_Krylov_reach_iss                         ;  1 ; 3134883542 ;  1.21 ;         1 
+ testMP_Krylov_reach_one_step                    ;  1 ; 4277456314 ;  0.37 ;         1 
+ testMP_exponential_Krylov_projected_linSysInput ;  1 ;  977895972 ;  7.22 ;         1 
+ testMP_subspace_Krylov_individual_Jawecki       ;  1 ; 1673931048 ;  2.16 ;         1 
+ testMP_subspace_Krylov_jaweckiBound             ;  1 ; 2175580777 ; 15.67 ;         1 
+ testMP_mp_installation                          ;  1 ;  932111631 ;  0.00 ;         1 
+
+

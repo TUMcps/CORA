@@ -61,9 +61,8 @@ r = radius(params.R0);
 lambda_max = eigs(P,1);
 mu = lambda_max*r^2/c_bar;
 
-tic;
-
 %% loop over all time steps
+timerVal = tic;
 for k = 1:timeSteps-1
     
     % center, eq. (65) in [1]
@@ -78,7 +77,6 @@ for k = 1:timeSteps-1
     % Store result
     R{k+1} = Rnext.tp;
 end
-
-tcomp = toc;
+tcomp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

@@ -33,7 +33,7 @@ function [OGain,tComp]= priv_observe_gain_HinfG(linsysDT,params,options)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-tic
+timerVal = tic;
 
 % It is assumed that E and F are multiplied with unit
 % uncertainties; thus, E and F can be seen as generators of zonotopes
@@ -94,6 +94,6 @@ for i = 1:length(gamma)
 end
 
 % computation time
-tComp = toc;
+tComp = toc(timerVal);
 
 % ------------------------------ END OF CODE ------------------------------

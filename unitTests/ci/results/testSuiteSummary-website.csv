@@ -1,0 +1,36 @@
+# date: 06-Jun-2025 09:40:33
+# dateEnd: 06-Jun-2025 09:41:49
+# hostsystem: Unix
+# matlabversion: 24.2.0.2712019 (R2024b)
+# coraversion: CORA v2025.1.1
+# testSuite: website
+
+                 fname                ; ok ;    seed    ;  time ; checkTime 
+
+ website_linearSys                    ;  1 ; 2445571022 ;  5.85 ;         1 
+ website_nonlinearSys_tank            ;  1 ; 2144170857 ; 24.56 ;         1 
+ website_capsule                      ;  1 ; 1188728329 ;  1.39 ;         1 
+ website_conPolyZono                  ;  1 ; 4234450963 ;  1.89 ;         1 
+ website_conZonotope                  ;  1 ; 1877499461 ;  0.58 ;         1 
+ website_ellipsoid                    ;  1 ; 2522567136 ;  0.92 ;         1 
+ website_emptySet                     ;  1 ; 1634225580 ;  0.64 ;         1 
+ website_fullspace                    ;  1 ; 1807087005 ;  0.54 ;         1 
+ website_interval                     ;  1 ;  319854618 ;  0.28 ;         1 
+ website_levelSet                     ;  1 ;  948572426 ;  3.23 ;         1 
+ website_polyZonotope                 ;  1 ; 1174599323 ;  0.65 ;         1 
+ website_polytope                     ;  1 ; 2375400939 ;  0.45 ;         1 
+ website_probZonotope                 ;  1 ; 1730345438 ;  0.64 ;         1 
+ website_spectraShadow                ;  1 ; 1415396163 ;  8.43 ;         1 
+ website_taylm                        ;  1 ;  323485141 ;  1.20 ;         1 
+ website_zonoBundle                   ;  1 ; 3240681707 ;  0.28 ;         1 
+ website_zonotope                     ;  1 ; 2023936010 ;  0.23 ;         1 
+ website_convHull                     ;  1 ; 3109662210 ;  0.04 ;         1 
+ website_mtimes                       ;  1 ; 2098023542 ;  0.02 ;         1 
+ website_plot                         ;  1 ; 4167107748 ;  0.19 ;         1 
+ website_plus                         ;  1 ; 2384411608 ;  0.02 ;         1 
+ website_hybridDynamics_bouncing_ball ;  1 ; 1172517415 ;  2.85 ;         1 
+ website_nn_closedLoop                ;  1 ;  573898523 ;  8.42 ;         1 
+ website_nn_openLoop                  ;  1 ; 2133606688 ; 11.70 ;         1 
+ website_CORA_testInstallation        ;  1 ; 1531822307 ;  0.13 ;         1 
+
+

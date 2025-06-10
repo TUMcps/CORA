@@ -249,7 +249,7 @@ for iSet = 1:10
                 % resPartial(end+1) = ~contains(Z_m, Z_s + smallBox + center(Z_m) - center(Z_s));
             end
         end
-    catch
+    catch ME
         disp('MPT Toolbox failed');
     end
 end

@@ -64,9 +64,9 @@ options.Rlock=interval([-100; -100; -100; -1/3600],[100; 100; 100; 1/3600]);
 % Reachability Analysis ---------------------------------------------------
 
 % no saturation
-tic
+timerVal = tic;
 R = aux_reachPLL_general_noSat(A, c, params, options);
-tComp_reach = toc;
+tComp_reach = toc(timerVal);
 
 
 % Simulation --------------------------------------------------------------
@@ -79,7 +79,7 @@ simCycles = plotRange(end);
 %samples = 30;
 samples = 3;
 
-tic
+timerVal = tic;
 for iSim = 1:samples
     % set initial state, input
     if iSim<=15
@@ -109,7 +109,7 @@ for iSim = 1:samples
     iSim
 end
 
-tComp_sim = toc;
+tComp_sim = toc(timerVal);
 
 
 % Visualization -----------------------------------------------------------

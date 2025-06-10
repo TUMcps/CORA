@@ -50,9 +50,9 @@ sysDisc = nonlinearSysDT('stirredTankReactor',fun,0.015);
 
 % Reachability Analysis ---------------------------------------------------
 
-tic
+timerVal = tic;
 R = reach(sysDisc,params,options);
-tComp = toc;
+tComp = toc(timerVal);
 disp("Computation time: " + tComp);
 
 

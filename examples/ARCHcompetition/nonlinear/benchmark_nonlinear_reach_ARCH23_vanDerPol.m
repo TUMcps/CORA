@@ -142,7 +142,7 @@ HA = hybridAutomaton('vanDerPol_hybrid',loc);
 % simRes = simulateRandom(sys,params,simOptions);
 
 res = false(length(R0),1);
-tic;
+timerVal = tic;
 for i=1:length(R0)
     % display status
     disp("Split " + i + "/" + length(R0));
@@ -160,7 +160,7 @@ for i=1:length(R0)
         R = [R; R_];
     end
 end
-tComp = toc;
+tComp = toc(timerVal);
 disp(['specifications verified: ', num2str(all(res))]);
 disp(['computation time for van der Pol: ',num2str(tComp)]);
 

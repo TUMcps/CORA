@@ -42,6 +42,7 @@ classdef zonotope < contSet
 %                29-March-2023 (TL, optimized constructor)
 %                13-September-2023 (TL, replaced Z property with c and G)
 %                05-October-2024 (MW, removed halfspace property)
+%                05-October-2024 (TL, enabled gpuArray)
 % Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -186,8 +187,8 @@ function aux_checkInputArgs(c,G,n_in)
         elseif n_in == 2
         
             inputArgsCheck({ ...
-                {c, 'att', 'numeric', 'nonnan'}; ...
-                {G, 'att', 'numeric', 'nonnan'}; ...
+                {c, 'att', {'numeric','gpuArray'}, 'nonnan'}; ...
+                {G, 'att', {'numeric','gpuArray'}, 'nonnan'}; ...
             })
     
             % check dimensions
