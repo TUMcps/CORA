@@ -32,7 +32,7 @@ function [t,x,ind,y] = simulate(nlnsysDT,params,varargin)
 %
 %    [t,x] = simulate(nlnsysDT,params);
 %
-%    plot(x(:,2),x(:,3),'.k','MarkerSize',20);
+%    plot(x(2,:),x(3,:),'.k','MarkerSize',20);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -47,6 +47,7 @@ function [t,x,ind,y] = simulate(nlnsysDT,params,varargin)
 %                08-May-2020 (MW, update interface)
 %                25-March-2021 (MA, initial state and time removed)
 %                22-June-2023 (LL, keep initial state and time, add output)
+%                28-August-2025 (LL, transpose t, x, and y)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -70,8 +71,11 @@ if ~isfield(params,'tStart')
 	params.tStart = 0; 
 end
 
+if ~isfield(params,'u')
+	params.u = zeros(nlnsysDT.nrOfInputs,1); 
+end
+
 t = params.tStart:nlnsysDT.dt:params.tFinal;
-t = t';
 
 if t(end) ~= params.tFinal
 	throw(CORAerror('CORA:specialError',...
@@ -91,30 +95,28 @@ if size(params.u,2) ~= 1
 end
 
 % initialization
-x = zeros(length(t),length(params.x0));
-x(1,:) = params.x0';
+x = zeros(length(params.x0),length(t));
+x(:,1) = params.x0;
 
 if comp_y
-    y = zeros(length(t),nlnsysDT.nrOfOutputs);
-    y(1,:) = nlnsysDT.out_mFile(x(1,:)',params.u(:,1))';
+    y = zeros(nlnsysDT.nrOfOutputs,length(t));
+    y(:,1) = nlnsysDT.out_mFile(x(:,1),params.u(:,1));
 end
 
 % loop over all time steps
 for i = 1:length(t)-1
 
     if change
-        temp = nlnsysDT.mFile(x(i,:)',params.u(:,i));
+        x(:,i+1) = nlnsysDT.mFile(x(:,i),params.u(:,i));
         if comp_y
-            y(i+1,:) = nlnsysDT.out_mFile(temp,params.u(:,i+1))';
+            y(:,i+1) = nlnsysDT.out_mFile(x(:,i+1),params.u(:,i+1));
         end
     else
-        temp = nlnsysDT.mFile(x(i,:)',params.u);
+        x(:,i+1) = nlnsysDT.mFile(x(:,i),params.u);
         if comp_y
-            y(i+1,:) = nlnsysDT.out_mFile(temp,params.u)';
+            y(:,i+1) = nlnsysDT.out_mFile(x(:,i+1),params.u);
         end
     end
-
-    x(i+1,:) = temp';
 end
 
 % ------------------------------ END OF CODE ------------------------------

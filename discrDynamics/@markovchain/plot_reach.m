@@ -90,9 +90,9 @@ simOpt.fracInpVert = 0.5;  % fraction of vertices input set
 simOpt.inpChanges = 10;    % changes of input over time horizon  
 
 % random simulation
-simRes = simulateRandom(HA,params,simOpt); 
+traj = simulateRandom(HA,params,simOpt); 
 
 % plot simulated trajectories
-plot(simRes,[1,2],'k');
+plot(traj,[1,2],'k');
 
 % ------------------------------ END OF CODE ------------------------------

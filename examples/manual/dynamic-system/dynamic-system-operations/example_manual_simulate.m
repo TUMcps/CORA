@@ -40,7 +40,7 @@ params.u = [0.1 0 -0.1 0.2];
 % plot --------------------------------------------------------------------
 
 figure; hold on;
-plot(x(:,1),x(:,2),'k')
+plot(x(1,:),x(2,:),'k')
 plot(x(1,1),x(1,2),'.r')
 
 % title('$\mathcal{S}$ and center','Interpreter','latex');

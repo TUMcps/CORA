@@ -104,6 +104,7 @@ params.R0 = zonotope([params.x0.',Bound_x]);
 dim_x = dim(params.R0);
 
 t = cell(runs,1); x = cell(runs,1);
+traj(runs,1) = trajectory();
 for r=1:runs
     % set init conditions for run
     if r<=20
@@ -118,15 +119,13 @@ for r=1:runs
         params.tStart = tswitch(i);
         params.tFinal = tswitch(i+1);
         [t_new,x_new] = simulate(syshandles{i},params);
-        t{r} = [t{r}; t_new]; x{r} = [x{r}; x_new];
+        t{r} = [t{r} t_new]; x{r} = [x{r} x_new];
         % update for new mode
-        xFinal = x{r}(end,:)';
+        xFinal = x{r}(:,end);
         params.x0 = xFinal(1:dim_x);
     end
+    traj(r) = trajectory([],x{r},[],t{r});
 end
-
-% write to simResult object
-simRes = simResult(x,t);
 
 
 % Visualization -----------------------------------------------------------
@@ -190,7 +189,7 @@ plot(R,projDim,'DisplayName','Reachable set');
 plot(R(1).R0,projDim, 'DisplayName','Initial set');
 
 % plot simulation results      
-plot(simRes,projDim,'DisplayName','Simulations');
+plot(traj,projDim,'DisplayName','Simulations');
 
 legend()
 

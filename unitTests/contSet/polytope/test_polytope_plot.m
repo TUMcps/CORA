@@ -62,9 +62,14 @@ try
      1, 1, -1, -3, -3, -1, 1 ; ...
     ];
     % check points
-    assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
+    assert(compareMatrices(V, readVerticesFromFigure(ax.Children(1)),1e-4,'equal',true));
     % test color
-    assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+    if CORA_PLOT_FILLED
+        assert(isequal(colorOrder(1,:), ax.Children(1).EdgeColor));
+        assert(isequal(colorOrder(1,:), ax.Children(1).FaceColor));
+    else
+        assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+    end
 
     % check polytope with redundant vertices
     V = [ 1.000 4.000 4.000 1.000 1.000 4.000 4.000 4.000 4.000 7.000 7.000 4.000 4.000 7.000 7.000 1.000 ; 3.000 3.000 6.000 3.000 3.000 3.000 6.000 0.000 0.000 0.000 3.000 2.000 2.000 2.000 5.000 3.000 ];
@@ -76,7 +81,7 @@ try
      3, 6, 5, 0, 0, 3 ; ...
     ];
     % check points
-    assert(compareMatrices(V_true, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
+    assert(compareMatrices(V_true, readVerticesFromFigure(ax.Children(1)),1e-4,'equal',true));
     assert(all(contains(P,V)))
     
     % unbounded case
@@ -91,6 +96,14 @@ try
     
     % check points
     assert(compareMatrices(V_true, [ax.Children(1).XData ax.Children(1).YData],1e-4,'equal',true));
+
+    % check degenerate set of points in 3d
+    P = [ ...
+     1.180, 0.220, 0.820, 1.780 ; ...
+     -0.797, -0.242, 0.797, 0.242 ; ...
+     0.770, 1.230, 1.230, 0.770 ; ...
+    ];
+    plot(polytope(P),1:3)
 
     % close figure
     close;

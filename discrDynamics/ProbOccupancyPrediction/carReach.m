@@ -102,26 +102,24 @@ for iInput=1:totalNrOfInputs
                     params.startLoc=4; %deceleartion
                 end                  
                 
-                traj.t = {}; traj.x = {}; traj.loc = {};
+                t = []; x = []; loc = [];
                 
                 %set time steps
                 for iTime=1:timeSteps
                     %set final time
                     params.tFinal=iTime*finalTime/timeSteps;
                     %simulate HA
-                    [t,x,loc] = simulate(HA,params); 
-                    traj.t = [traj.t;t];
-                    traj.x = [traj.x;x];
-                    traj.loc = [traj.loc;loc];
+                    [t_i,x_i,loc_i] = simulate(HA,params); 
+                    t = [t t_i];
+                    x = [x x_i];
+                    loc = [loc loc_i];
                     %get final state
-                    finalState = x{end}(end,:)';
+                    finalState = x_i(:,end);
                     %store result for time intervals
                     finalStateMat.OT(end+1,:)=finalState;
                 end
                 %store result for time points
                 finalStateMat.T(end+1,:)=finalState;
-                %get trajectory
-                trajectories{initIndx,inputIndx} = traj;
             end
         end
         

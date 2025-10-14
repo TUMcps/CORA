@@ -31,8 +31,8 @@ function [value,isterminal,direction] = eventFcn(trans,x)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% [value,isterminal,direction] = eventFcn(trans.guard,x,0);
+[value,isterminal,direction] = eventFcn(trans.guard,x,0);
 % [value,isterminal,direction] = eventFcn(trans.guard,x,1);
-[value,isterminal,direction] = eventFcn(trans.guard,x,-1);
+% [value,isterminal,direction] = eventFcn(trans.guard,x,-1);
 
 % ------------------------------ END OF CODE ------------------------------

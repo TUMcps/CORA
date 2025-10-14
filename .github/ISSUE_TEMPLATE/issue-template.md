@@ -35,6 +35,6 @@ plot(Z2);
 
 ## Versions
 
-- CORA version: *v2025.0.0* (type `CORAVERSION` in command window)
-- Matlab version: *R2024b* (type `version` in command window)
+- CORA version: *v202x.x.x* (type `CORAVERSION` in command window)
+- Matlab version: *R202xx* (type `version` in command window)
 - OS: *Linux/Windows/Mac*

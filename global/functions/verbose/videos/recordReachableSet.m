@@ -9,8 +9,8 @@ function res = recordReachableSet(vidObj,fig,varargin)
 %    fig - figure
 %    varargin - name-value-pairs
 %       'ReachSet' - reachSet object
-%       'SimResult' - simResult object
-%       'RefTrajectory' - simResult object
+%       'Trajectory' - trajectory object
+%       'RefTrajectory' - trajectory object
 %       'Dimensions' - dimensions to plot (1 for plotOverTime, 2 for plot)
 %       'RefDimensions' - dimensions to plot reference trajectory
 %       'Specification' - specification object
@@ -18,7 +18,7 @@ function res = recordReachableSet(vidObj,fig,varargin)
 %       'TotalDuration' - total duration of video
 %       'FreezeDuration' - duration of freezed animation at the end
 %       'ReachSets' - cell array of {<reachSet>,<display-name>,<color>}
-%       'PlotMethodSimResult' - one of 'Time', 'Percent', 'AllAtOnce'
+%       'PlotMethodTrajectory' - one of 'Time', 'Percent', 'AllAtOnce'
 %
 % Outputs:
 %    res - logical
@@ -38,8 +38,8 @@ disp('Recording reachable set:')
 
 % parse input ---
 
-[Rs,simRes,refTrajectory,dims,refDims,spec, ...
-    Unify,UnifyTotalSets,MaxTimeRs,TotalDuration,FreezeDuration,PlotMethodSimResult] = aux_parseInput(varargin);
+[Rs,traj,refTrajectory,dims,refDims,spec, ...
+    Unify,UnifyTotalSets,MaxTimeRs,TotalDuration,FreezeDuration,PlotMethodTrajectory] = aux_parseInput(varargin);
 simName = 'Simulations';
 refName = 'Ref. trajectory';
 
@@ -58,10 +58,10 @@ ylabel(sprintf('x_{(%i)}',dims(end)))
 
 % enlarge axis in case not set already, ensures reachable set is doesn't
 % change axis limits, which does not look nice on the video
-if ~isempty([simRes.x])
-    aux_plot(simRes,dims,'DisplayName',simName,'Color',CORAcolor('CORA:simulations'));
+if ~isempty([traj.x])
+    aux_plot(traj,dims,'DisplayName',simName,'Color',CORAcolor('CORA:simulations'));
     aux_enlargeAxis(1.2,dims);
-    if ~strcmp(PlotMethodSimResult,'all')
+    if ~strcmp(PlotMethodTrajectory,'all')
         aux_deletegraphics(simName);
     end
 end
@@ -144,34 +144,34 @@ for frame=1:nrFramesAnimation
     end
 
     % plot simulations (delete all previous simulations)
-    if ~isempty([simRes.x])
-        if strcmp(PlotMethodSimResult, 'time')
+    if ~isempty([traj.x])
+        if strcmp(PlotMethodTrajectory, 'time')
             % plot simulations at the same time as reachable set
             aux_deletegraphics(simName);
             tau_0i1 = interval(0,min(t_i1,tFinalUpToFrame));
-            aux_plot(find(simRes,'time',tau_0i1),dims, ...
+            aux_plot(find(traj,'time',tau_0i1),dims, ...
                 'DisplayName',simName,'Color',CORAcolor('CORA:simulations'));
     
-        elseif strcmp(PlotMethodSimResult, 'percent')
+        elseif strcmp(PlotMethodTrajectory, 'percent')
             % iteratively plot new simulations based on the current progress
             % (similar to website)
             aux_deletegraphics(simName);
-            percent = ceil(frame/nrFrames * numel(simRes));
-            aux_plot(simRes(1:percent),dims, ...
+            percent = ceil(frame/nrFrames * numel(traj));
+            aux_plot(traj(1:percent),dims, ...
                 'DisplayName',simName,'Color',CORAcolor('CORA:simulations'));
         end
     end
     
     % plot reference trajectory
     if ~isempty(refTrajectory)
-        if strcmp(PlotMethodSimResult, 'time')
+        if strcmp(PlotMethodTrajectory, 'time')
             % plot reference trajectory at the same time as reachable set
             aux_deletegraphics(refName);
             tau_0i1 = interval(0,min(t_i1,tFinalUpToFrame));
             aux_plot(find(refTrajectory,'time',tau_0i1),refDims, ...
                 'DisplayName',refName,'Color',[1 0 0],'LineWidth',2);
     
-        elseif strcmp(PlotMethodSimResult, 'percent')
+        elseif strcmp(PlotMethodTrajectory, 'percent')
             % always plot single given reference trajactory
             % (similar to website)
             aux_deletegraphics(refName);
@@ -199,12 +199,12 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [Rs,simRes,refTrajectory,dims,refDims,spec,Unify,UnifyTotalSets,MaxTimeRs,TotalDuration,FreezeDuration,PlotMethodSimResult] = aux_parseInput(NVpairs)
+function [Rs,traj,refTrajectory,dims,refDims,spec,Unify,UnifyTotalSets,MaxTimeRs,TotalDuration,FreezeDuration,PlotMethodTrajectory] = aux_parseInput(NVpairs)
     
     % read input args
     [NVpairs,R] = readNameValuePair(NVpairs,'ReachSet');
     [NVpairs,Rs] = readNameValuePair(NVpairs,'ReachSets');
-    [NVpairs,simRes] = readNameValuePair(NVpairs,'SimResult');
+    [NVpairs,traj] = readNameValuePair(NVpairs,'Trajectory');
     [NVpairs,refTrajectory] = readNameValuePair(NVpairs,'RefTrajectory');
     [NVpairs,dims] = readNameValuePair(NVpairs,'Dimensions');
     [NVpairs,refDims] = readNameValuePair(NVpairs,'RefDimensions');
@@ -213,14 +213,14 @@ function [Rs,simRes,refTrajectory,dims,refDims,spec,Unify,UnifyTotalSets,MaxTime
     [NVpairs,UnifyTotalSets] = readNameValuePair(NVpairs,'UnifyTotalSets');
     [NVpairs,FreezeDuration] = readNameValuePair(NVpairs,'FreezeDuration');
     [NVpairs,TotalDuration] = readNameValuePair(NVpairs,'TotalDuration');
-    [NVpairs,PlotMethodSimResult] = readNameValuePair(NVpairs,'PlotMethodSimResult');
+    [NVpairs,PlotMethodTrajectory] = readNameValuePair(NVpairs,'PlotMethodTrajectory');
 
     % check must haves
     if isempty(R) && isempty(Rs)
         throw(CORAerror('CORA:wrongValue','name-value pair ''ReachSet''','missing mandatory value'))
     end
-    if isempty(simRes)
-        throw(CORAerror('CORA:wrongValue','name-value pair ''SimResult''','missing mandatory value'))
+    if isempty(traj)
+        throw(CORAerror('CORA:wrongValue','name-value pair ''Trajectory''','missing mandatory value'))
     end
     if isempty(dims)
         throw(CORAerror('CORA:wrongValue','name-value pair ''Dimensions''','missing mandatory value'))
@@ -235,8 +235,8 @@ function [Rs,simRes,refTrajectory,dims,refDims,spec,Unify,UnifyTotalSets,MaxTime
     Rs = flipud(Rs);
 
     % check reference trajectory
-    if ~isempty(refTrajectory) && ~isa(refTrajectory,'simResult')
-        throw(CORAerror('CORA:wrongValue','name-value pair ''RefTrajectory''','simResult'))
+    if ~isempty(refTrajectory) && ~isa(refTrajectory,'trajectory')
+        throw(CORAerror('CORA:wrongValue','name-value pair ''RefTrajectory''','trajectory'))
     end
 
     % set missing values ---
@@ -268,8 +268,8 @@ function [Rs,simRes,refTrajectory,dims,refDims,spec,Unify,UnifyTotalSets,MaxTime
     end
 
     % ploting method for simulations
-    if isempty(PlotMethodSimResult)
-        PlotMethodSimResult = 'time';
+    if isempty(PlotMethodTrajectory)
+        PlotMethodTrajectory = 'time';
     end
 end
 

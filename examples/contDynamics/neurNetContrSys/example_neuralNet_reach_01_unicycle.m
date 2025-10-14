@@ -32,7 +32,7 @@ disp("BENCHMARK: Sherlock-Benchmark 10 (Unicycle Car Model)");
 % Parameters --------------------------------------------------------------
 
 params.tFinal = 10;
-params.R0 = polyZonotope(interval([9.5; -4.5; 2.1; 1.5], [9.55; -4.45; 2.11; 1.51]));
+params.R0 = zonotope(interval([9.5; -4.5; 2.1; 1.5], [9.55; -4.45; 2.11; 1.51]));
 
 % Reachability Settings ---------------------------------------------------
 
@@ -69,7 +69,7 @@ spec = specification(goalSet, 'safeSet', interval(params.tFinal));
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, true);
+[res, R, traj] = verify(sys, spec, params, options, true);
 tTotal = toc(t);
 disp(['Result: ' res])
 
@@ -89,7 +89,7 @@ plot(R, [1, 2], 'DisplayName', 'Reachable set');
 plot(R(1).R0, [1, 2], 'DisplayName', 'Initial set');
 
 % plot simulations
-plot(simRes,[1, 2], 'DisplayName', 'Simulations');
+plot(traj,[1, 2], 'DisplayName', 'Simulations');
 
 % labels and legend
 xlabel('x'); ylabel('y');

@@ -12,6 +12,7 @@ function [S,y] = calcSensitivity(obj, x, varargin)
 %    options - options for neural network evaluation (stored in options.nn)
 %    store_sensitivty - {0,1} if sensitivity should be stored in each
 %       layer; default: 1
+%    idxLayer - indices of layers to be evaluated
 %
 % Outputs:
 %    S - sensitivity matrix at x
@@ -35,33 +36,31 @@ function [S,y] = calcSensitivity(obj, x, varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
-narginchk(2,4);
-[options,storeSensitivty] = setDefaultValues({struct,true}, varargin);
+narginchk(2,5);
+[options,storeSensitivty,idxLayer] = setDefaultValues(...
+    {struct,true,1:length(obj.layers)}, varargin);
 options = nnHelper.validateNNoptions(options);
 
-% forward propagation
-xs = cell(length(obj.layers), 1);
-for i = 1:length(obj.layers)
-    xs{i} = x;
-    layer_i = obj.layers{i};
-    x = layer_i.evaluateNumeric(x, options);
-end
-y = x;
+% Enable backpropagation to store the inputs to each layer.
+options.nn.train.backprop = true;
 
+% Do a forward propagation to store the inputs.
+y = obj.evaluate(x,options,idxLayer);
 % Obtain number of output dimensions and batch size.
 [nK,bSz] = size(y);
 
 % Initialize the sensitivity in for the output, i.e., identity matrix.
 S = repmat(eye(nK,'like',y),1,1,bSz);
 
-% backward propagation
-for i = length(obj.layers):-1:1
-    layer_i = obj.layers{i};
-    S = layer_i.evaluateSensitivity(S, xs{i}, options);
-    % save sensitivity at layer i for refinement
-    if storeSensitivty
-        layer_i.sensitivity = S;
-    end
+% Enable storing the sensitivity.
+options.nn.store_sensitivity = storeSensitivty;
+
+% Back-propagate the sensitivity matrix.
+for i=flip(idxLayer)
+    % Obtain the i-th layer.
+    layeri = obj.layers{i};
+    % Evaluate the sensitivity.
+    S = layeri.evaluateSensitivity(S,options);
 end
 
 end

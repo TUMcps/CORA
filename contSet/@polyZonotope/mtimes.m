@@ -30,7 +30,7 @@ function pZ = mtimes(factor1,factor2)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: plus, zonotope/mtimes
+% See also: plus, zonotope/mtimes, polyZonotope/matMap
 
 % Authors:       Niklas Kochdumper
 % Written:       25-June-2018 

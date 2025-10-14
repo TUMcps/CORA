@@ -1,4 +1,4 @@
-function res = priv_simulateConstrainedRandom(sys,params,options)
+function traj = priv_simulateConstrainedRandom(sys,params,options)
 % priv_simulateConstrainedRandom - performs several random simulation of the system
 %    so that the simulations stay within a given reachable set; this 
 %    reachable set is typically a backwards minmax reachable set. These 
@@ -18,12 +18,13 @@ function res = priv_simulateConstrainedRandom(sys,params,options)
 %    options - settings for random simulation
 %
 % Outputs:
-%    res - object of class simResult storing time and states of the 
+%    traj - object of class trajectory storing time and states of the 
 %          simulated trajectories.
 
 % Authors:       Matthias Althoff
 % Written:       05-January-2023
 % Last update:   29-June-2024 (TL, bug fix for empty R0)
+%                08-August-2025 (LL, create trajectory object)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -43,37 +44,28 @@ end
 nrPoints = size(X0,2);
 
 % initialize time and state
-t = cell(nrPoints,1);
-x = cell(nrPoints,1);
+y_r = [];
+
 % output equation only for linearSys and linearSysDT currently
 comp_y = (isa(sys,'linearSys') || isa(sys,'linearSysDT')) && ~isempty(sys.C);
-if comp_y; y = cell(nrPoints,1); end
 
 % loop over all starting points in X0
+traj(nrPoints,1) = trajectory();
 for r = 1:nrPoints
-    
-    % Is output desired?
-    if comp_y
-        y{r} = zeros(1,sys.nrOfOutputs); 
-    end
     
     % start of trajectory
     params.x0 = X0(:,r);
 
     % simulate dynamical system
     if comp_y
-        [t{r},x{r},~,y{r}] = simulateConstrained(sys,params,options);
+        % Is output desired?
+        [t_r,x_r,~,y_r] = simulateConstrained(sys,params,options);
     else
-        [t{r},x{r}] = simulateConstrained(sys,params,options);
+        [t_r,x_r] = simulateConstrained(sys,params,options);
     end
-    
-end
 
-% construct object storing the simulation results
-if comp_y
-    res = simResult(x,t,{},y);
-else
-    res = simResult(x,t);
+    % construct trajectory object storing the simulation results
+    traj(r) = trajectory([],x_r,y_r,t_r);
 end
 
 end

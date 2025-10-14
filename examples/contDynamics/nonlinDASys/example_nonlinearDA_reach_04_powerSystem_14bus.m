@@ -130,6 +130,9 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % Simulation --------------------------------------------------------------
 
 nrRuns = 10;
+traj_1 = [];
+traj_2 = [];
+traj_3 = [];
 for iRun = 1:nrRuns
     simOpt.points = 1;
     
@@ -140,7 +143,7 @@ for iRun = 1:nrRuns
     u0_load = [0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0];
     u0_gen = [2; 0.4; 0; 0; 0];
     params.u = [u0_gen; u0_load];
-    simRes_1{iRun} = simulateRandom(IEEE14_model, params, simOpt);
+    traj_1 = [traj_1; simulateRandom(IEEE14_model, params, simOpt)];
 
     % operation under fault
     params.tStart = 0.1; 
@@ -148,8 +151,8 @@ for iRun = 1:nrRuns
     u0_gen = [0; 0.4; 0; 0; 0];
     params.u = [u0_gen; u0_load];
     % initial set is final solution of normal operation
-    params.R0 = zonotope(simRes_1{iRun}.x{1}(end,:)');
-    simRes_2{iRun} = simulateRandom(IEEE14_fault_model, params, simOpt);
+    params.R0 = zonotope(traj_1(iRun).x(:,end));
+    traj_2 = [traj_2; simulateRandom(IEEE14_fault_model, params, simOpt)];
     
     % operation after fixing the fault
     params.tStart = 0.13; 
@@ -157,8 +160,8 @@ for iRun = 1:nrRuns
     u0_gen = [2; 0.4; 0; 0; 0];
     params.u = [u0_gen; u0_load];
     % initial set is final solution of normal operation
-    params.R0 = zonotope(simRes_2{iRun}.x{1}(end,:)');
-    simRes_3{iRun} = simulateRandom(IEEE14_model, params, simOpt);
+    params.R0 = zonotope(traj_2(iRun).x(:,end));
+    traj_3 = [traj_3; simulateRandom(IEEE14_model, params, simOpt)];
 end
     
 % Visualization -----------------------------------------------------------
@@ -190,9 +193,9 @@ for plotRun=1:19
 
     % plot simulation results
     for j=1:nrRuns
-        plot(simRes_1{j},projDim);
-        plot(simRes_2{j},projDim);
-        plot(simRes_3{j},projDim);
+        plot(traj_1(j),projDim);
+        plot(traj_2(j),projDim);
+        plot(traj_3(j),projDim);
     end
 
     % label plot
@@ -219,9 +222,9 @@ for plotRun=1:18
 
     % plot simulation results
     for j=1:nrRuns
-        plot(simRes_1{j},projDim,'Traj','a');
-        plot(simRes_2{j},projDim,'Traj','a');
-        plot(simRes_3{j},projDim,'Traj','a');
+        plot(traj_1(j),projDim,'Traj','a');
+        plot(traj_2(j),projDim,'Traj','a');
+        plot(traj_3(j),projDim,'Traj','a');
     end
 
     % label plot

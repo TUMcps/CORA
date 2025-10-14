@@ -80,7 +80,7 @@ spec = specification(goalSet, 'safeSet', interval(params.tFinal));
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, true);
+[res, R, traj] = verify(sys, spec, params, options, true);
 tTotal = toc(t);
 disp(['Result: ' res])
 
@@ -101,7 +101,7 @@ plot(R, projDims, 'DisplayName', 'Reachable set');
 plot(R(1).R0, projDims, 'DisplayName', 'Initial set');
 
 % plot simulations
-plot(simRes, projDims, 'DisplayName', 'Simulations');
+plot(traj, projDims, 'DisplayName', 'Simulations');
 
 % labels, limits, and legend
 xlabel('$x_1$ (distance)', 'interpreter', 'latex');

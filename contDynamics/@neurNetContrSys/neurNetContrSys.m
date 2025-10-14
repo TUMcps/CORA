@@ -19,10 +19,12 @@ classdef neurNetContrSys < contDynamics
 %
 %    % neural network controller
 %    layers = cell(4, 1);
-%    W1 = rand(10,2); b1 = rand(10,1);
+%    W1 = [ 0.318 -0.056 ; 0.163 -0.841 ; 1.159 -0.155 ; 0.128 1.189 ; 1.039 -0.415 ; -0.117 -0.659 ; -0.648 0.984 ; -0.038 0.101 ; -0.199 -0.363 ; 0.882 -0.739 ]; 
+%    b1 = [ -0.448 ; 0.714 ; -1.316 ; 0.627 ; -1.331 ; -0.131 ; -1.827 ; 0.536 ; 0.693 ; -0.688 ];
 %    layers{1} = nnLinearLayer(W1, b1);
 %    layers{2} = nnSigmoidLayer();
-%    W2 = rand(2,10); b2 = rand(2,1);
+%    W2 = [ -1.480 -0.317 -1.457 0.487 1.057 0.302 -0.878 0.536 -0.598 -0.690 ; 0.153 0.319 1.322 -1.567 -0.588 0.219 -2.861 -0.342 0.419 0.671 ]; 
+%    b2 = [ 0.151 ; -0.991 ];
 %    layers{3} = nnLinearLayer(W2, b2);
 %    layers{4} = nnSigmoidLayer();
 %    nn = neuralNetwork(layers);

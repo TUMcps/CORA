@@ -109,7 +109,7 @@ params_init.tFinal = (p-1)*dt;
 % parameters for simulating the linearARX
 params_ARX_sim.tStart = tStart;
 params_ARX_sim.tFinal = tFinal;
-params_ARX_sim.y0 = y_init';
+params_ARX_sim.y0 = y_init;
 
 % simulate initial point
 y_sim = cell(num_samples,1);
@@ -135,7 +135,7 @@ end
 % reachability parameters for linearARX
 params_ARX_reach.tStart = tStart;
 params_ARX_reach.tFinal = tFinal;
-params_ARX_reach.y0 = y_init';
+params_ARX_reach.y0 = y_init;
 params_ARX_reach.U = cartProd(U, cartProd(W,V));
 params_ARX_reach.u = [u; zeros(dim_x+dim_y, size(u,2))];
 
@@ -172,7 +172,7 @@ for i_y = 1:length(y)
     y_i = y{i_y};
     for k=k_start:length(R)
         % check containment
-        assertLoop(contains(R{k}, y_i(k,:)', 'exact', tol_contains),i_y,k)
+        assertLoop(contains(R{k}, y_i(:,k), 'exact', tol_contains),i_y,k)
     end
 end
 end

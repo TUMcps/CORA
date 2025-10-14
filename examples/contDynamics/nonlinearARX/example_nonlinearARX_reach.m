@@ -95,9 +95,9 @@ for k = 1:length(dims)
     % plot simulation results     
     for i = 1:sim_points
         if i == 1
-            plot(y_sim{i}(:, projDim(1)),y_sim{i}(:,projDim(2)),'Color',[.7 .7 .7],'Marker','*', 'LineWidth',0.05, 'MarkerEdgeColor','black', 'DisplayName', 'Simulations');
+            plot(y_sim{i}(projDim(1),:),y_sim{i}(projDim(2),:),'Color',[.7 .7 .7],'Marker','*', 'LineWidth',0.05, 'MarkerEdgeColor','black', 'DisplayName', 'Simulations');
         else
-            plot(y_sim{i}(:, projDim(1)),y_sim{i}(:,projDim(2)),'Color',[.7 .7 .7],'Marker','*', 'LineWidth',0.05, 'MarkerEdgeColor','black', 'HandleVisibility','off');
+            plot(y_sim{i}(projDim(1),:),y_sim{i}(projDim(2),:),'Color',[.7 .7 .7],'Marker','*', 'LineWidth',0.05, 'MarkerEdgeColor','black', 'HandleVisibility','off');
         end
     end
 
@@ -115,9 +115,11 @@ for k = 1:length(dims)
             name_2 = 'Ypred, general';
         end
         if i == 1 || i == 3
+            % plot and update legend
             plot(R_exact.timePoint.set{i},projDim, 'Color', col_1, 'LineWidth',2, 'DisplayName', name_1);
             plot(R_gen.timePoint.set{i},projDim, 'Color', col_2, 'LineWidth',2, 'DisplayName', name_2);
         else
+            % plot without updating legend
             plot(R_exact.timePoint.set{i},projDim, 'Color', col_1, 'LineWidth',2, 'HandleVisibility','off');
             plot(R_gen.timePoint.set{i},projDim, 'Color', col_2, 'LineWidth',2, 'HandleVisibility','off');
         end

@@ -52,26 +52,26 @@ options.points = 5;
 
 % only time horizon
 params.tFinal = 1;
-simRes = simulateRandom(sys,params,options);
+traj = simulateRandom(sys,params,options);
 
 % check if start and end time correct
-assert(length(simRes) == options.points);
-assert(all(arrayfun(@(z) z.t{1}(1) == 0,simRes,'UniformOutput',true)));
-assert(all(arrayfun(@(z) withinTol(z.t{1}(end),params.tFinal),simRes,'UniformOutput',true)));
+assert(length(traj) == options.points);
+assert(all(arrayfun(@(z) z.t(1) == 0,traj,'UniformOutput',true)));
+assert(all(arrayfun(@(z) withinTol(z.t(end),params.tFinal),traj,'UniformOutput',true)));
 % check location
-assert(all(arrayfun(@(z) isscalar(z.loc) && z.loc(1) == 0,simRes,'UniformOutput',true)));
+assert(all(arrayfun(@(z) isempty(z.loc),traj,'UniformOutput',true)));
 
 % set start time as well
 params.tStart = 0.5;
 params.tFinal = 1;
-simRes = simulateRandom(sys,params,options);
+traj = simulateRandom(sys,params,options);
 
 % check if start and end time correct
-assert(length(simRes) == options.points);
-assert(all(arrayfun(@(z) withinTol(z.t{1}(1),params.tStart),simRes,'UniformOutput',true)));
-assert(all(arrayfun(@(z) withinTol(z.t{1}(end),params.tFinal),simRes,'UniformOutput',true)));
+assert(length(traj) == options.points);
+assert(all(arrayfun(@(z) withinTol(z.t(1),params.tStart),traj,'UniformOutput',true)));
+assert(all(arrayfun(@(z) withinTol(z.t(end),params.tFinal),traj,'UniformOutput',true)));
 % check location
-assert(all(arrayfun(@(z) isscalar(z.loc) && z.loc(1) == 0,simRes,'UniformOutput',true)));
+assert(all(arrayfun(@(z) isempty(z.loc),traj,'UniformOutput',true)));
 
 % combine results
 res = true;

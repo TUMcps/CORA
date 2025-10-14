@@ -60,7 +60,7 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 10;
-simRes = simulateRandom(tank, params, simOpt);
+traj = simulateRandom(tank, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -75,13 +75,13 @@ for k = 1:length(dims)
     
     % plot reachable sets
     useCORAcolors("CORA:contDynamics")
-    plot(R,projDim,'DisplayName','Reachable set','Unify',true,'UnifyTotalSets',5);
+    plot(R,projDim,'DisplayName','Reachable set');
     
     % plot initial set
     plot(R(1).R0,projDim, 'DisplayName','Initial set');
     
     % plot simulation results      
-    plot(simRes,projDim,'DisplayName','Simulations');
+    plot(traj,projDim,'DisplayName','Simulations');
 
     % label plot
     xlabel(['x_{',num2str(projDim(1)),'}']);

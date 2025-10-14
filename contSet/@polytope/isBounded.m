@@ -198,7 +198,7 @@ function res = aux_isBounded_nD_Hpoly(P,n)
     % loop over columns of identity matrix
     for i=1:n
         % check every axis-aligned direction
-        direction = [zeros(i-1,1);1;zeros(n-i,1)];
+        direction = unitvector(i,n);
         % evaluate support function
         val = supportFunc_(P,direction,'upper');
         if val == Inf

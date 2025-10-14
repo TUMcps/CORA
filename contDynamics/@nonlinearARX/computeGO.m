@@ -131,14 +131,15 @@ for k = 1:n_p
     [D{k,1:k}] = deal(zeros(n_y, n_u));
 end
 
+% save nominal signals in p_GO
 p_GO.x = zeros(n_p*n_y, n_k);
 for i = 1:n_p
     p_GO.x((i-1)*n_y+1:i*n_y,n_p:end) = y_ref(:,i:end-n_p+i);
 end
-
 p_GO.y = y_ref;
 p_GO.u = u_ref;
 
+% save matrices of GO model in p_GO
 p_GO.A = A;
 p_GO.B = B;
 p_GO.F = F;

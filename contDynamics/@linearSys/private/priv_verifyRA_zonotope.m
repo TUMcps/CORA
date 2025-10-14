@@ -399,31 +399,31 @@ function err = aux_initError(sys,params)
             % read out k-th unsafe set
             P = params.unsafeSet{k}.set;
 
-            for j = 1:size(y,1)
+            for j = 1:size(y,2)
                 % check whether unsafe set is active
                 if contains(params.unsafeSet{k}.time,t(j))
                     scale = 10 - 9/t(end)*t;
 
                     % update error
-                    if contains(P,y(j,:)')
+                    if contains(P,y(:,j))
                         % trajectory is contained in unsafe set
-                        err_estimate = min(abs(P.A*y(j,:)'-P.b));
+                        err_estimate = min(abs(P.A*y(:,j)-P.b));
                         err = min(err,err_estimate*min(scale));
 
                     elseif params.unsafeSet{k}.isBounded
                         % trajectory outside of bounded unsafe set
                         % -> compute distance to interval enclosure
-                        if aux_distanceIntervalPoint(params.unsafeSet{k}.int,y(j,:)') < err
-                            err_estimate = aux_distancePolyPoint(P,y(j,:)');
+                        if aux_distanceIntervalPoint(params.unsafeSet{k}.int,y(:,j)) < err
+                            err_estimate = aux_distancePolyPoint(P,y(:,j));
                             err = min(err,err_estimate*min(scale));
                         end
                     else
                         % trajectory outside of unbounded unsafe set
                         % -> compute distance to unsafe set
                         if size(P.A,1) == 1
-                            err_estimate = P.A*y(j,:)'-P.b;
+                            err_estimate = P.A*y(:,j)-P.b;
                         else
-                            err_estimate = aux_distancePolyPoint(P,y(j,:)');
+                            err_estimate = aux_distancePolyPoint(P,y(:,j));
                         end
                         err = min(err,err_estimate*min(scale));
                     end
@@ -438,18 +438,18 @@ function err = aux_initError(sys,params)
 
             if size(P.A,1) == 1 && representsa(params.safeSet{k}.time,"emptySet")
                 scale = 10 - 9/t(end)*t;
-                err_ = min(min(abs(P.A*y'-P.b),[],1) .* scale');
+                err_ = min(min(abs(P.A*y-P.b),[],1) .* scale);
                 err = min(err,err_);
             else
                 % general case
-                for j = 1:size(y,1)
+                for j = 1:size(y,2)
                    if contains(params.safeSet{k}.time,t(j))
-                       if contains(P,y(j,:)')
-                           err_estimate = min(abs(P.A*y(j,:)'-P.b));
+                       if contains(P,y(:,j))
+                           err_estimate = min(abs(P.A*y(:,j)-P.b));
                        elseif size(P.A,1) == 1
-                           err_estimate = P.A*y(j,:)'-P.b;
+                           err_estimate = P.A*y(:,j)-P.b;
                        else
-                           err_estimate = aux_distancePolyPoint(P,y(j,:)');
+                           err_estimate = aux_distancePolyPoint(P,y(:,j));
                        end
                        scale = 10 - 9/t(end)*t;
                        err = min(err,err_estimate*scale); 

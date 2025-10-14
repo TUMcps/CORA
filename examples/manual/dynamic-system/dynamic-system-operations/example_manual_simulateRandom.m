@@ -39,7 +39,7 @@ options.fracInpVert = 1;
 options.nrConstInp = 10;
 
 % random simulation
-simRes = simulateRandom(sys,params,options);
+traj = simulateRandom(sys,params,options);
 
 % reachability settings
 options.timeStep = 0.05;
@@ -55,7 +55,7 @@ figure; hold on;
 useCORAcolors("CORA:contDynamics")
 plot(R)
 plot(R(1).R0)
-plot(simRes)
+plot(traj)
 
 % title('$\mathcal{S}$ and center','Interpreter','latex');
 xlabel('$x_{(1)}$','Interpreter','latex')

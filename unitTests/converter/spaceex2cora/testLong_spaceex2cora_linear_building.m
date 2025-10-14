@@ -48,10 +48,10 @@ params.tFinal = 2; %final time
 
 %% Compute error between the simulation of the two files
 
-num_channels = size(x, 2); %number of channels in the system
+num_channels = size(x, 1); %number of channels in the system
 
 for ch = 1:num_channels
-    diff = x(:,ch) - xSX(:,ch);
+    diff = x(ch,:) - xSX(ch,:);
     error = norm(diff); %length of the difference vector
 
     assert(error <= 1e-5,ch)

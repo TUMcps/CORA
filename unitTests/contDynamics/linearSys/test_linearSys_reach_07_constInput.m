@@ -57,18 +57,18 @@ R = reach(linsys,params,options);
 
 % number of initial points
 simOpt.points = 5;
-simRes = simulateRandom(linsys,params,simOpt); 
+traj = simulateRandom(linsys,params,simOpt); 
 
 
 % Visualization -----------------------------------------------------------
 
 % figure; hold on; box on;
 % plot(R);
-% plot(simRes);
+% plot(traj);
 
 % Numerical check ---------------------------------------------------------
 
 % check containment of simulation results in reachable set
-assert(contains(R,simRes));
+assert(contains(R,traj));
 
 % ------------------------------ END OF CODE ------------------------------

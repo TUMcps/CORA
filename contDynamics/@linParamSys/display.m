@@ -55,4 +55,8 @@ displayMatrixVector(sys.A,"A");
 disp("Input matrix:");
 displayMatrixVector(sys.B,"B");
 
+% display constant input
+disp("Constant input:");
+displayMatrixVector(sys.c,"c");
+
 % ------------------------------ END OF CODE ------------------------------

@@ -27,17 +27,21 @@ function han = plotPolytope3D(V,varargin)
 % Written:       02-December-2020
 % Last update:   18-April-2024 (TL, fix color order and legend entries)
 %                10-December-2024 (TL, output all graphic handles)
+%                14-July-2025 (TL, return in single graphics handle)
+%                27-August-2025 (TL, bug fix, face color requires separate handles?)
+%                11-September-2025 (TL, better handling of face color plots)
+%                06-October-2025 (TL, bugfix degenerate convex sets)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% default
-NVpairs = {'Color',nextcolor};
-
-% read plot options if provided
-if ~isempty(varargin)
+% parse name-value pairs
+if isempty(varargin)
+    NVpairs = {'Color',nextcolor};
+else
     NVpairs = readPlotOptions(varargin);
 end
+
 % readout 'FaceColor' to decide plot/fill call where necessary
 [~,facecolor] = readNameValuePair(NVpairs,'FaceColor');
 
@@ -56,7 +60,7 @@ else
         % not really 3D...
 
         try % try with plotPolygon            
-            han = plotPolygon(V',NVpairs{:},'ConvHull',true);
+            han = plotPolygon(V',NVpairs{:},'ConvHull',true,'NVPAIRS_VALIDATED',true);
             return
         catch 
             rethrow(ME)
@@ -90,51 +94,43 @@ else
         lower = i;
     end
     
-    % set hold on
-    holdStatus = ishold;
-    if ~holdStatus
-        % flush current axis
-        plot(nan,nan,'HandleVisibility','off');
-    end
+    % loop over all facets ---
 
-    % save color order index
-    ax = gca();
-    oldColorOrderIndex = ax.ColorOrderIndex;
-
-    hold on;
-    
-    % loop over all facets
-    han = [];
+    % preallocate
+    N = sum(cellfun(@numel,K));
+    % pre-allocate facets cell
+    psCell = cell(N,1);
+    cnt = 1;
     for i = 1:length(K)
-        for j = 1:length(K{i})
-            
+        for j = 1:length(K{i})  
             % compute vertex connection using the convex hull
             B = gramSchmidt(D{i}');
             vert = V(K{i}{j},:);
             vert_ = B'*vert';
             ind = convhull(vert_(2:end,:)');
-        
-            % plot the facet
-            if isempty(facecolor) || strcmp(facecolor,'none')
-                han_ij = plot3(vert(ind,1),vert(ind,2),vert(ind,3), NVpairs{:});
-            else
-                han_ij = fill3(vert(ind,1),vert(ind,2),vert(ind,3), facecolor, NVpairs{:});
-            end
-            han = [han;han_ij];
 
-            if i == 1 && j == 1
-                NVpairs = [NVpairs, {'HandleVisibility', 'off'}];
-            end
+            % store respective vertices
+            psCell{cnt} = [
+                vert(ind,:);
+                nan(1,3); % separating nan
+            ];
+            cnt = cnt+1; 
         end
     end
 
-    % reset hold status
-    if ~holdStatus
-        hold('off');
+    % merge cell to matrix
+    ps = cell2mat(psCell);
+
+    % plot the facet
+    if isempty(facecolor) || strcmp(facecolor,'none')
+        han = plot3(ps(:,1),ps(:,2),ps(:,3), NVpairs{:});
+    else
+        % plot into one axis 
+        % (doesn't show facecolor if there are nan values...)
+        % -> plot each face individually using polytopes
+        Ps = cellfun(@(ps) polytope(ps(1:end-1,:)'),psCell,'UniformOutput',false);
+        han = plotMultipleSetsAsOne(Ps,1:3,[NVpairs,{'FaceColor',facecolor}]);
     end
-    
-    % update color order index
-    updateColorIndex(oldColorOrderIndex);
     
     % show z-axis if currently not visible
     [az,~] = view();

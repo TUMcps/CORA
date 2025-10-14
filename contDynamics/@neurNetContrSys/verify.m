@@ -1,4 +1,4 @@
-function [res, R, simRes] = verify(obj, spec, params, options, varargin)
+function [res, R, traj] = verify(obj, spec, params, options, varargin)
 % verify - tries to verify the specification with the given params/options
 %    1. simulation random rusn
 %    2. check violations in simulations
@@ -7,7 +7,7 @@ function [res, R, simRes] = verify(obj, spec, params, options, varargin)
 %    3. compute reachable set
 %
 % Syntax:
-%    [res, R, simRes] = verify(obj, spec, params, options)
+%    [res, R, traj] = verify(obj, spec, params, options)
 %    res = verify(obj, spec, params, options)
 %
 % Inputs:
@@ -20,6 +20,7 @@ function [res, R, simRes] = verify(obj, spec, params, options, varargin)
 % Outputs:
 %    res - 'VIOLATED', 'VERIFIED', 'UNKNOWN'
 %    R - object of class reachSet storing the computed reachable set
+%    traj - trajectory object
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -53,7 +54,7 @@ inputArgsCheck({ ...
 % Simulation --------------------------------------------------------------
 
 timerVal = tic;
-simRes = simulateRandom(obj, params);
+traj = simulateRandom(obj, params);
 tSim = toc(timerVal);
 if verbose
     disp(['Time to compute random simulations: ', num2str(tSim)]);
@@ -62,7 +63,7 @@ end
 % Check Violation ---------------------------------------------------------
 
 timerVal = tic;
-[isNotVio, ~, indObj] = check(spec, simRes);
+[isNotVio, ~, indObj] = check(spec, traj);
 isVio = ~isNotVio; % spec is safeSet
 tVio = toc(timerVal);
 if verbose
@@ -71,10 +72,10 @@ end
 
 if isVio
     % only continue with violating run
-    simRes = simResult( ...
-        simRes(indObj{1}).x(indObj{2}), ...
-        simRes(indObj{1}).t(indObj{2}));
-    params.R0 = polyZonotope(simRes.x{1}(1, :)');
+    traj = trajectory([], ...
+        traj(indObj{1}).x(:,:,indObj{2}), [], ...
+        traj(indObj{1}).t);
+    params.R0 = polyZonotope(traj.x(:,1,1));
     
 end
 

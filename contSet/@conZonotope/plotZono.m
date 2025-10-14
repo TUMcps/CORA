@@ -23,7 +23,7 @@ function han = plotZono(cZ,varargin)
 %    cZ = conZonotope(Z,A,b);
 %
 %    plotOptZ = {'r','LineWidth',2};
-%    plotOptCon = {'b','EdgeColor','none'};
+%    plotOptCon = {'b'};
 %    plotZono(cZ,[1,2],plotOptZ,plotOptCon);
 %    
 %

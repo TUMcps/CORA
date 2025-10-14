@@ -299,17 +299,7 @@ end
 
 % testSuite
 function checks = aux_getChecksParams_testSuite(checks,sys,func,params,options)
-    checks(end+1) = add2checks(@(val)all(cellfun(@(x)isa(x,'testCase'),val)), 'istestCase');
-end
-
-% testSuite_train
-function checks = aux_getChecksParams_testSuite_train(checks,sys,func,params,options)
-    checks(end+1) = add2checks(@(val)all(cellfun(@(x)isa(x,'testCase'),val)), 'istestCase');
-end
-
-% testSuite_val
-function checks = aux_getChecksParams_testSuite_val(checks,sys,func,params,options)
-    checks(end+1) = add2checks(@(val)all(cellfun(@(x)isa(x,'testCase'),val)), 'istestCase');
+    checks(end+1) = add2checks(@(val)isa(val,'trajectory'), 'istrajectory');
 end
 
 % w

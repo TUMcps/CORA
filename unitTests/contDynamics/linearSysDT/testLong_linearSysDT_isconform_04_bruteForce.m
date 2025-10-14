@@ -45,7 +45,7 @@ params.testSuite = Pellegrini2009Test;
 % create pedestrian model (see Lecture "Formal Methods for Cyber-Physical
 % Systems - Conformance Checking")
 % sample time
-dt = Pellegrini2009Test{1}.sampleTime;
+dt = Pellegrini2009Test(1).dt;
 % discrete time system matrix from continuous system matrix Ac
 Ac = [0 0 1 0; 0 0 0 1; 0 0 0 0; 0 0 0 0];
 A = expm(Ac*dt);

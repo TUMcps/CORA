@@ -24,7 +24,7 @@ rng('default')
 
 cost_norm = "interval"; 
 constraints = "half";
-id_methods = ["blackGP","blackCGP"];   
+algorithm = {'gp','cgp'};   
 n_m = 2;
 n_s = 50;
 n_k = 4;
@@ -40,12 +40,6 @@ n_k_val = 4;
 [sys, params_true.R0, params_true.U] = loadDynamics('NARX');
 params_true.tFinal = sys.dt * n_k - sys.dt;
 
-% Create identification data 
-params_true.testSuite = createTestSuite(sys, params_true, n_k, n_m, n_s);
-params_true.testSuite_train = createTestSuite(sys, params_true, ...
-    n_k_train, n_m_train, n_s_train);
-params_true.testSuite_val = createTestSuite(sys, params_true, ...
-    n_k_val, n_m_val, n_s_val);
 
 % Reachability Settings  
 options_reach.zonotopeOrder = 100;
@@ -55,29 +49,30 @@ options_reach.tensorOrderOutput = 2;
 
 % Conformance Options
 options = options_reach;
-options.cs.robustnessMargin = 1e-9;
+options.cs.robustness = 1e-9;
 options.cs.verbose = false;
 options.cs.cost = cost_norm;
 options.cs.constraints = constraints;
 
 % Black-box approximation options
-options.approx.nn_lr = 5e-3;
-options.approx.gp_parallel = true;
-options.approx.gp_pop_size = 50;
-options.approx.gp_num_gen = 20;
-options.approx.cgp_num_gen = 2;
-options.approx.gp_parallel = false;
-options.approx.cgp_pop_size_base = 2;
-options.approx.save_res = false;
-options.approx.p = sys.n_p;
-% options.approx.nn_lrDropPeriod = 6;
-% options.approx.nn_lrDropFactor = 0.1;
-% options.approx.nn_act = "tanh";
-% options.approx.nn_bs = 256;
-% options.approx.nn_neurons = [16 16];
-% options.approx.cgp_n_m_conf = 5;
-% options.approx.folder_data = folder_data;
+options.id.gp_parallel = true;
+options.id.gp_pop_size = 50;
+options.id.gp_num_gen = 20;
+options.id.cgp_num_gen = 2;
+options.id.gp_parallel = false;
+options.id.cgp_pop_size_base = 2;
+options.id.gp_func_names = {'times','plus', 'square'};
+options.id.gp_max_genes = 2;
+options.id.gp_max_depth = 2;
+options.id.save_res = false;
+options.id.p = sys.n_p;
 
+% Create identification data 
+params_true.testSuite = createTestSuite(sys, params_true, n_k, n_m, n_s);
+options.id.testSuite_id = createTestSuite(sys, params_true, ...
+    n_k_train, n_m_train, n_s_train);
+options.id.testSuite_val = createTestSuite(sys, params_true, ...
+    n_k_val, n_m_val, n_s_val);
 
 %% Conformance Identification ---------------------------------------------
 
@@ -89,10 +84,11 @@ params_id_init.R0 = zonotope([c_R0 eye(sys.n_p*sys.nrOfOutputs) ones(sys.n_p*sys
 params_id_init.U = zonotope([c_U eye(sys.nrOfInputs) ...
     ones(sys.nrOfInputs,1)]);
 
-for i_id = 1:length(id_methods)
+for i_id = 1:length(algorithm)
 
     % Identification
-    [params_id, results] = conform(sys,params_id_init,options, id_methods(i_id));   
+    options.idAlg = algorithm{i_id};
+    [params_id, results] = conform(sys,params_id_init,options, 'black');   
     sys_upd = results.sys;
 
     % check containment of the test cases
@@ -101,14 +97,14 @@ for i_id = 1:length(id_methods)
 
         % compute the reachable set (sometimes not computable due to 
         % by-zero-division in linerization error computation)
-        params_id.u = params_true.testSuite{m}.u';
-        params_id.R0 = X0 + params_true.testSuite{m}.initialState;
+        params_id.u = params_true.testSuite(m).u;
+        params_id.R0 = X0 + params_true.testSuite(m).x(:,1,1);
         %R_id = reach(sys_upd, params_id, options_reach); 
 
         % compute the partial reachable set Y_p (without considering
         % linerization error)
         p_GO = computeGO(sys_upd, params_id.R0.c, ...
-            params_id.U.c + params_true.testSuite{m}.u', n_k);
+            params_id.U.c + params_true.testSuite(m).u, n_k);
         Y_p = cell(n_k,1);
         for k=1:n_k
             Y_p{k} = p_GO.y(:,k) + p_GO.C{k} * ...
@@ -121,11 +117,11 @@ for i_id = 1:length(id_methods)
 
         % check containment
         for k=1:n_k
-            for s=1:length(params_true.testSuite{m}.y)
+            for s=1:length(params_true.testSuite(m).y)
                 % might fail due to numerical errors in linprog
                 % (result might violate the constraints marginally, 
                 % as observed for "blackNN" with "gen")
-                assertLoop(contains(Y_p{k}, params_true.testSuite{m}.y(k,:,s)','exact',1e-5),i_id,m,k,s)
+                assertLoop(contains(Y_p{k}, params_true.testSuite(m).y(:,k,s),'exact',1e-5),i_id,m,k,s)
             end
         end
     end

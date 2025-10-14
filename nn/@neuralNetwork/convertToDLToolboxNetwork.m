@@ -9,7 +9,7 @@ function nn_dlt = convertToDLToolboxNetwork(nn)
 %    nn - dlnetwork
 %
 % Outputs:
-%    nn_dlt - 
+%    nn_dlt - dlnetwork
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -19,7 +19,7 @@ function nn_dlt = convertToDLToolboxNetwork(nn)
 
 % Authors:       Tobias Ladner
 % Written:       30-April-2024
-% Last update:   29-May-2024 (TL, considered approx error in linear layers)
+% Last update:   09-May-2025 (TL, added conv + batch norm + avg pool)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -28,8 +28,16 @@ function nn_dlt = convertToDLToolboxNetwork(nn)
 if isempty(nn.neurons_in)
     throw(CORAerror('CORA:converterIssue','Unable to determine number of input neurons. See also neuralNetwork/setInputSize.'))
 end
-layers_dlt = featureInputLayer(nn.neurons_in);
 layers_cora = nn.layers;
+
+% init input of dlt network
+if any(cellfun(@(layer_cora) isa(layer_cora,'nnConv2DLayer'), layers_cora))
+    % image input
+    layers_dlt = inputLayer(layers_cora{1}.inputSize,'SSC');
+else
+    % feature input
+    layers_dlt = featureInputLayer(nn.neurons_in);
+end
 
 % iterate over all layers
 for k=1:numel(layers_cora)
@@ -37,8 +45,9 @@ for k=1:numel(layers_cora)
 
     switch class(layer_cora_k)
 
+        % linear ---
+
         case 'nnLinearLayer'
-            % read properties
             W = layer_cora_k.W;
             b = layer_cora_k.b;
 
@@ -53,6 +62,47 @@ for k=1:numel(layers_cora)
             layer_dlt_k.Weights = W;
             layer_dlt_k.Bias = b;
 
+        case 'nnElementwiseAffineLayer'
+            scale = layer_cora_k.scale;
+            offset = layer_cora_k.offset;
+            layer_dlt_k = nnet.onnx.layer.ElementwiseAffineLayer('', scale, offset);
+
+        % convolutional ---
+
+        case 'nnConv2DLayer'
+            % conv 2d
+            filterSize = size(layer_cora_k.W,1:2);
+            numFilters = size(layer_cora_k.W,4);
+            layer_dlt_k = convolution2dLayer(filterSize,numFilters,...
+                'Weights',layer_cora_k.W, ...
+                'Bias',reshape(layer_cora_k.b,1,1,[]), ...
+                'Stride',layer_cora_k.stride, ...
+                'Padding',layer_cora_k.padding, ...
+                'DilationFactor',layer_cora_k.dilation ...
+                );
+            
+        case 'nnBatchNormLayer'
+            % batch norm
+            layer_dlt_k = batchNormalizationLayer;
+            layer_dlt_k.Scale = layer_cora_k.scale;
+            layer_dlt_k.Offset = layer_cora_k.offset;
+            layer_dlt_k.TrainedMean = layer_cora_k.movMean;
+            layer_dlt_k.TrainedVariance = layer_cora_k.movVar;
+            layer_dlt_k.Epsilon = layer_cora_k.epsilon;
+
+        case 'nnAvgPool2DLayer'
+            % avg pooling
+            layer_dlt_k = averagePooling2dLayer( ...
+                layer_cora_k.poolSize, ...
+                'Stride',layer_cora_k.stride ...
+            );
+
+        case 'nnReshapeLayer'
+            % assuming flattening; requires adaptation for other cases
+            layer_dlt_k = flattenLayer;
+
+        % nonlinear/activation ---
+
         case 'nnReLULayer'
             layer_dlt_k = reluLayer;
 
@@ -62,12 +112,7 @@ for k=1:numel(layers_cora)
         case 'nnSigmoidLayer'
             layer_dlt_k = sigmoidLayer;
 
-        case 'nnElementwiseAffineLayer'
-            scale = layer_cora_k.scale;
-            offset = layer_cora_k.offset;
-            layer_dlt_k = nnet.onnx.layer.ElementwiseAffineLayer('', scale, offset);
-
-        otherwise
+        otherwise % throw error ---
             throw(CORAerror('CORA:converterIssue', sprintf("Layer conversion of '%s' not implemented yet.", class(layer_cora_k))))
 
     end
@@ -79,9 +124,10 @@ for k=1:numel(layers_cora)
     layers_dlt(end+1) = layer_dlt_k;
 end
 
-
 % init DLT network
 nn_dlt = dlnetwork(layers_dlt);
+
+end
 
 
 % ------------------------------ END OF CODE ------------------------------

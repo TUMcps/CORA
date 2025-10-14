@@ -11,9 +11,9 @@ function Zsplit = split(Z,varargin)
 %    Zsplit - cell array of parallelpipeds represented as zonotopes
 %
 % Example: 
-%    Z = zonotope(rand(2,4));
+%    Z = zonotope([ 0.835 ; 0.895 ], [ 0.583 0.855 0.885 ; 0.583 0.035 0.408 ]);
 %    Zsplit = split(Z);
-%
+% 
 %    figure; hold on;
 %    plot(Z);
 %    plot(Zsplit{1}{1});

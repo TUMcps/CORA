@@ -48,7 +48,7 @@ options.linAlg = 'adaptive';  % use adaptive parameter tuning
 
 % Simulation --------------------------------------------------------------
 
-simRes = simulateRandom(sys, params);
+traj = simulateRandom(sys, params);
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -87,7 +87,7 @@ plot(R{2}, projDims, 'DisplayName', sprintf("Reachable set: error=%.2f", errs(2)
 plot(R{1}.R0,projDims, 'DisplayName', 'Initial set');
 
 % plot simulation
-plot(simRes,projDims, 'DisplayName', 'Simulations');
+plot(traj,projDims, 'DisplayName', 'Simulations');
 
 % formatting
 xlabel('x_1'); ylabel('x_2');

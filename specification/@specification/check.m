@@ -7,7 +7,7 @@ function [res,indSpec,indObj] = check(spec,S,varargin)
 %
 % Inputs:
 %    spec - specification object
-%    S - numeric, contSet, reachSet, or simResult object
+%    S - numeric, contSet, reachSet, or trajectory object
 %    time - (optional) interval (class: interval) for the set inputs,
 %           numeric for points (scalar or match number of points)
 %
@@ -27,6 +27,7 @@ function [res,indSpec,indObj] = check(spec,S,varargin)
 % Last update:   22-March-2022 (TL, simResult, indObj)
 %                24-May-2024 (TL, vectorized check for numeric input)
 %                28-April-2025 (TL, reachSet/simResult and timed specifications)
+%                28-August-2025 (LL, use trajectory instead of simResult)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -124,14 +125,14 @@ if isnumeric(S) % ---------------------------------------------------------
         end
     end
     
-elseif isa(S,'simResult') % -----------------------------------------------
+elseif isa(S,'trajectory') % -----------------------------------------------
 
 
     % loop over all specifications
     for i = 1:size(spec,1)
         spec_i = spec(i);
 
-        % check if any simResult is present for timed specification
+        % check if any trajectory is present for timed specification
         if ~representsa_(spec_i.time,'emptySet',1e-8)
             % find simulation corresponding to the time
             S_timed = find(S,'time',spec_i.time);
@@ -148,12 +149,12 @@ elseif isa(S,'simResult') % -----------------------------------------------
         for j = 1:length(S)
             S_j = S(j);
             % loop over all trajectories
-            for k = 1:length(S_j.x)
-                Si_x_k = S_j.x{k};
-                Si_t_k = S_j.t{k};
+            for k = 1:size(S_j.x,3)
+                Si_x_k = S_j.x(:,:,k);
+                Si_t_k = S_j.t(:,:,k);
     
                 % check simulation points with respective time
-                [res,~,l] = check(spec_i, Si_x_k', Si_t_k');
+                [res,~,l] = check(spec_i, Si_x_k, Si_t_k);
                 if ~res
                     indSpec = i;
                     indObj = {j,k,l};

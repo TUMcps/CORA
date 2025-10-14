@@ -84,6 +84,8 @@ Connect to server with port forwarding:
 
     ssh -L 6080:<host-ipv4>:6080 <YOUR-NAME>@<hostname>
 
+_(you can find <host-ipv4> using `ping <hostname> -4`)_
+
 Navigate to CORA/your scripts (and upload them):
 
     cd ./matlab-scripts

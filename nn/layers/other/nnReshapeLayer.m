@@ -74,9 +74,16 @@ methods (Access = {?nnLayer, ?neuralNetwork})
     end
 
     % sensitivity
-    function S = evaluateSensitivity(obj, S, x, options)
-        % S = obj.aux_reshape(S')';
-        S = pagetranspose(obj.aux_reshape(pagetranspose(S)));
+    function S = evaluateSensitivity(obj, S, options)
+        inSize = obj.inputSize;
+        S_ = permute(S,[2 1 3]);
+        S_ = obj.aux_embed(S_,inSize);
+        S = permute(S_,[2 1 3]);
+
+        if options.nn.store_sensitivity
+            % Store the gradient (used for the sensitivity computation).
+            obj.sensitivity = S;
+        end
     end
 
     % zonotope batch (for training)
@@ -104,14 +111,71 @@ methods (Access = {?nnLayer, ?neuralNetwork})
         c = obj.aux_reshape(c);
         G = obj.aux_reshape(G);
     end
+
+    % backprop ------------------------------------------------------------
+
+    % numeric
+    function grad_in = backpropNumeric(obj, input, grad_out, options, updateWeights)
+        inSize = obj.inputSize;
+        grad_in = obj.aux_embed(grad_out,inSize);
+    end
+
+    % interval batch
+    function [gl, gu] = backpropIntervalBatch(obj, l, u, gl, gu, options, updateWeights)
+        inSize = obj.inputSize;
+        gl = obj.aux_embed(gl,inSize);
+        gu = obj.aux_embed(gu,inSize);
+    end
+    
+    % zonotope batch
+    function [gc, gG] = backpropZonotopeBatch(obj, c, G, gc, gG, options, updateWeights)
+        inSize = obj.inputSize;
+        gc = obj.aux_embed(gc,inSize);
+        gG = obj.aux_embed(gG,inSize);
+    end
 end
 
 % Auxiliary functions -----------------------------------------------------
 
 methods(Access=private)
     function r = aux_reshape(obj, input)
+        isMatrix = ndims(input) > 2;
+        % Obtain the batch size.
+        if isMatrix
+            [~,q,bSz] = size(input);
+            % Reshape input for easier handling.
+            input = input(:,:);
+        end
+
         idx_vec = obj.idx_out(:);
-        r = input(idx_vec, :, :);
+        r = input(idx_vec,:);
+
+        if isMatrix
+            % Reshape result to original shape.
+            r = reshape(r,[],q,bSz);
+        end
+    end
+
+    function r = aux_embed(obj, input, inSize)
+        isMatrix = ndims(input) > 2;
+        % Obtain the batch size.
+        if isMatrix
+            [~,q,bSz_] = size(input);
+            % Reshape input for easier handling.
+            bSz = q*bSz_;
+            input = input(:,:);
+        else
+            [~,bSz] = size(input);
+        end
+        % The inverse of reshape; needed for backpropagation.
+        idx_vec = obj.idx_out(:);
+        r = zeros([prod(inSize) bSz],'like',input);
+        r(idx_vec,:) = input;
+
+        if isMatrix
+            % Reshape result to original shape.
+            r = reshape(r,[],q,bSz_);
+        end
     end
 end
 

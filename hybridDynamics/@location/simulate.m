@@ -73,7 +73,7 @@ end
 
 % re-compute index because simulate often just returns the first of 
 % potentially multiple events that occurred at the same time
-indexNew = find(abs(fun(t(end),x(end,:)')) < 1e-6);
+indexNew = find(abs(fun(t(end),x(:,end))) < 1e-6);
 index = unique([index;indexNew]);
 
 % determine active guard
@@ -88,6 +88,22 @@ if all(list(index) == 0)
         'Trajectory left the invariant set without hitting a guard set!')); 
 end
 
+% do not consider events where the state jumps from outside of the
+% invariant back inside (it can happen due to numeric imprecisions that the
+% state is slightly located outside of the invariant)
+if length(t) > 1
+
+    ind = find(list == 0);
+    before = fun(t(end-1),x(:,end-1));
+    after = fun(t(end),x(:,end));
+    small = find(abs(before(ind)) < eps | abs(after(ind)) < eps);
+    
+    if any(before(ind) > 0 & after(ind) < 0) || ...
+           (~isempty(small) && any(before(ind(small)) > after(ind(small))))
+        nextloc = currentLoc; xJump = x(:,end); return;
+    end
+end
+
 % loop over all active guards
 for iActivatedGuard = 1:nActivatedGuards
     
@@ -99,11 +115,11 @@ for iActivatedGuard = 1:nActivatedGuards
         
         % check whether only one halfspace has beed crossed or if 
         % the point is indeed inside the guard set
-        if contains_(guardSet,x(end,:)','exact',1e-6,0,false,false)
+        if contains_(guardSet,x(:,end),'exact',1e-6,0,false,false)
             
             % next location and reset function
             nextloc = loc.transition(guard).target;
-            xJump = evaluate(loc.transition(guard).reset,x(end,:)');
+            xJump = evaluate(loc.transition(guard).reset,x(:,end));
             break;
             
         else
@@ -111,7 +127,7 @@ for iActivatedGuard = 1:nActivatedGuards
             % only one halfspace crossed -> continue simulation in
             % the current location
             nextloc = currentLoc;
-            xJump = x(end,:);
+            xJump = x(:,end);
         end
         
         activatedGuards = [activatedGuards,guard];

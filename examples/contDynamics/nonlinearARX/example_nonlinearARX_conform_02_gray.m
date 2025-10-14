@@ -13,7 +13,8 @@ function completed = example_nonlinearARX_conform_02_gray
 %    completed - true/false 
 %
 % References:
-%    [1] 
+%    [1] L. Luetzow and M. Althoff, "Reachset-Conformant System
+%        Identification," arXiv, 2025. 
 
 % Authors:       Laura Luetzow
 % Written:       03-June-2024
@@ -40,9 +41,9 @@ methodsGray = ["graySeq","grayLS","graySim"];
 rng(2)
 
 % conformance identification
-n_m = 5; % number of different input trajectories
-n_s = 30; % number of sample trajectories per input trajectory
-n_k = 4; % length of the identification trajectories
+n_m = 3; % number of different input trajectories
+n_s = 10; % number of sample trajectories per input trajectory
+n_k = 3; % length of the identification trajectories
 
 % validation
 n_m_val = 2;
@@ -75,12 +76,13 @@ params_true.testSuite = createTestSuite(sys, params_true, n_k, n_m, ...
 
 % Identification Options
 options = options_reach;
-options.cs.robustnessMargin = 1e-9;
+options.cs.robustness = 1e-9;
 options.cs.verbose = false;
 options.cs.cost = cost_norm;
 options.cs.constraints = constraints;
 options.cs.p0 = 0.01*randn(size(p_true,1)+sys.nrOfInputs,1); % estimate parameter and center of U
 options.cs.set_p = @(p,params) aux_set_p(p, params, dynamics);
+options.cs.updateDeriv = false; % no recomputation of derivatives to decrease computation time
 
 % Create struct for saving the identification results for each system
 configs = cell(length(methodsGray) + 1,1);
@@ -120,10 +122,10 @@ num_out = 0;
 check_contain = 1;
 methods = ["true" methodsGray];
 for m=1:length(params_true.testSuite)
-    [~, eval] = validateReach(params_true.testSuite{m}, configs, check_contain);
+    [~, eval] = validateReach(params_true.testSuite(m), configs, check_contain);
     num_out = num_out + eval.num_out;
 end
-num_all = length(params_true.testSuite)*n_k_val*size(params_true.testSuite{1}.y,3);
+num_all = length(params_true.testSuite)*n_k_val*size(params_true.testSuite(1).y,3);
 fprintf("IDENTIFICATION DATA: \n");
 for i = 1:length(configs)
     p_contained = 100-num_out(i)/num_all*100;
@@ -141,10 +143,10 @@ testSuite_val = createTestSuite(sys, params_true, n_k_val, n_m_val, ...
 num_out = 0;
 check_contain = 1;
 for m=1:length(testSuite_val)
-    [~, eval] = validateReach(testSuite_val{m}, configs, check_contain, plot_settings);
+    [~, eval] = validateReach(testSuite_val(m), configs, check_contain, plot_settings);
     num_out = num_out + eval.num_out;
 end
-num_all = length(testSuite_val)*n_k_val*size(testSuite_val{1}.y,3);
+num_all = length(testSuite_val)*n_k_val*size(testSuite_val(1).y,3);
 fprintf("VALIDATION DATA: \n");
 for i = 1:length(configs)
     p_contained = 100-num_out(i)/num_all*100;

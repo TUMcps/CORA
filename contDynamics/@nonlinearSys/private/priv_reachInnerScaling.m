@@ -39,7 +39,7 @@ function [Rin,Rout] = priv_reachInnerScaling(nlnsys,params,options)
     % options preprocessing
     input = isfield(params,'U');
     if input
-        params.U = interval(zeros(nlnsys.nrOfInputs));
+        params.U = interval(zeros(nlnsys.nrOfInputs, 1), zeros(nlnsys.nrOfInputs, 1));
     end
     
     [params,options] = validateOptions(nlnsys,params,options);

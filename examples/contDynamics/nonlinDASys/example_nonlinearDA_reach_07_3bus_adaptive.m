@@ -55,7 +55,7 @@ simOpt.fracVert = 0.5;
 simOpt.fracInpVert = 0.5;
 simOpt.nrConstInp = 6;
 
-simRes = simulateRandom(sys, params, simOpt);
+traj = simulateRandom(sys, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -71,7 +71,7 @@ plot(R,dim_x,'DisplayName','Reachable set');
 plot(R(1).R0,dim_x,'DisplayName','Initial set');
 
 % plot simulation results
-plot(simRes,dim_x,'DisplayName','Simulations');
+plot(traj,dim_x,'DisplayName','Simulations');
 
 % label plot
 xlabel(['x_{',num2str(dim_x(1)),'}']);

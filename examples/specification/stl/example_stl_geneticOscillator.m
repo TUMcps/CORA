@@ -67,7 +67,7 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 
 timerVal = tic;
 simOpt.points = 5;
-simRes = simulateRandom(sys, params, simOpt);
+traj = simulateRandom(sys, params, simOpt);
 tComp = toc(timerVal);
 disp(['computation time of simulated traces: ',num2str(tComp)]);
 
@@ -114,8 +114,8 @@ disp(['verification of reachable set (incremental): ',num2str(tComp)]);
 
 % Verify all simulation traces
 timerVal = tic;
-for i = 1:length(simRes)
-    res = res && monitorSTL(simRes(i),phi);
+for i = 1:length(traj)
+    res = res && monitorSTL(traj(i),phi);
 end
 tComp = toc(timerVal);
 disp(['verification of simulation traces: ',num2str(tComp)]);
@@ -137,7 +137,7 @@ for k = 1:length(dims)
     plot(params.R0,projDim,'k','FaceColor','w');
 
     % plot simulation results
-    plot(simRes,projDim);
+    plot(traj,projDim);
 
     % plot atomic propositions
     plot(polytope(P.lhs.set), projDim, 'y');

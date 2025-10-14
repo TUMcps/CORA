@@ -1,9 +1,9 @@
-function simRes = simulateRandom(pHA,params,varargin)
+function traj = simulateRandom(pHA,params,varargin)
 % simulateRandom - simulates a trajectory of a parallel hybrid automaton
 %
 % Syntax:
-%    simRes = simulateRandom(pHA,params)
-%    simRes = simulateRandom(pHA,params,options)
+%    traj = simulateRandom(pHA,params)
+%    traj = simulateRandom(pHA,params,options)
 %
 % Inputs:
 %    pHA - parallelHybridAutomaton object
@@ -16,7 +16,7 @@ function simRes = simulateRandom(pHA,params,varargin)
 %       .nrConstInp - number of different inputs in one simulation run
 %
 % Outputs:
-%    simRes - object of class simResult storing the simulation results
+%    traj - object of class trajectory storing the simulation results
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -28,6 +28,7 @@ function simRes = simulateRandom(pHA,params,varargin)
 % Written:       04-July-2018 
 % Last update:   08-May-2020 (MW, update interface)
 %                19-May-2023 (MW, return correct number of trajectories)
+%                24-September-2025 (LL, use new trajectory object)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -51,14 +52,14 @@ end
 time = linspace(params.tStart,params.tFinal,options.nrConstInp);
 
 % initialization
-t = []; x = []; locs = [];
-simRes = [];
+traj(options.points,1) = trajectory();
 
 % simulate the parallel hybrid automaton
 for i = 1:options.points
 
     counter = 1;
     loc = params.startLoc;
+    t = []; x = []; locs = [];
     
     % loop over all input changes
     for g = 1:length(time)-1
@@ -80,18 +81,18 @@ for i = 1:options.points
         [tTemp,xTemp,locTemp] = simulate(pHA,params_);
         
         % concatenate to one full trajectory
-        t = [t; tTemp];
-        x = [x; xTemp];
-        locs = [locs; locTemp];
+        t = [t tTemp];
+        x = [x xTemp];
+        locs = [locs locTemp];
         
         % update location and initial point
-        points(:,i) = xTemp{end}(end,:)';
-        loc = locTemp(end,:)';
+        points(:,i) = xTemp(:,end);
+        loc = locTemp(:,end);
         counter = counter + 1;
     end
     
-    % construct simResult object
-    simRes = [simRes; simResult(x,t,locs)];
+    % construct trajectory object
+    traj(i) = trajectory([],x,[],t,[],locs);
 
 end
     

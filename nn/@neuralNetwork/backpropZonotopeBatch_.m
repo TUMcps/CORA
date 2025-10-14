@@ -1,4 +1,4 @@
-function [gc,gG] = backpropZonotopeBatch_(nn,gc,gG,options,idxLayer)
+function [gc,gG] = backpropZonotopeBatch_(nn,gc,gG,options,idxLayer,updateWeights)
 % backpropZonotopeBatch_ - compute the backpropagation for the previous input
 %    with batches of zonotopes without validating the input arguments.
 %
@@ -30,11 +30,10 @@ function [gc,gG] = backpropZonotopeBatch_(nn,gc,gG,options,idxLayer)
 for i = flip(idxLayer)
     layeri = nn.layers{i};
     % Retrieve stored input
-    if options.nn.train.backprop
-        c = layeri.backprop.store.inc;
-        G = layeri.backprop.store.inG;
-    end
-    [gc,gG] = layeri.backpropZonotopeBatch(c,G,gc,gG,options);
+    c = layeri.backprop.store.inc;
+    G = layeri.backprop.store.inG;
+    % Compute incoming gradient.
+    [gc,gG] = layeri.backpropZonotopeBatch(c,G,gc,gG,options,updateWeights);
 end
 
 end

@@ -55,17 +55,18 @@ params.tFinal = 3;
 % simulate trajectory
 [t,x,loc] = simulate(HA,params); 
 
-% must be cell-arrays
-assert(iscell(t) && iscell(x) && isnumeric(loc));
 % must be of same length
+assert(size(t,2) == size(x,2) && size(t,2) == size(loc,2));
 assert(length(t) == length(x) && length(t) == length(loc));
 % check whether points are contained in respective invariant
-assert(all(contains_(inv1,vertcat(x{loc==1})','exact',1e-10,0,false,false)));
-assert(all(contains_(inv2,vertcat(x{loc==2})','exact',1e-10,0,false,false)));
+assert(all(contains_(inv1,x(:,loc==1),'exact',1e-10,0,false,false)));
+assert(all(contains_(inv2,x(:,loc==2),'exact',1e-10,0,false,false)));
 % time before and after jumps must be the same, but state not
-for i=1:length(t)-1
-    assert(withinTol(t{i}(end),t{i+1}(1)));
-    assert(~compareMatrices(x{i}(end,:)',x{i+1}(1,:)'));
+nums = 1: size(loc,2)-1;
+idz_locChange = nums(abs(diff(loc)) > 0);
+for idx=idz_locChange 
+    assert(withinTol(t(idx),t(idx+1)));
+    assert(~compareMatrices(x(:,idx),x(:,idx+1)));
 end
 
 
@@ -99,19 +100,26 @@ params.tFinal = 3;
 % simulate trajectory
 [t,x,loc] = simulate(HA,params); 
 
-% must be cell-arrays
-assert(iscell(t) && iscell(x) && isnumeric(loc));
 % must be of same length
+assert(size(t,2) == size(x,2) && size(t,2) == size(loc,2));
 assert(length(t) == length(x) && length(t) == length(loc));
 % check whether points are contained in respective invariant
-assert(all(contains_(inv1,vertcat(x{loc==1})','exact',1e-10,0,false,false)));
-assert(all(contains_(inv2,vertcat(x{loc==2})','exact',1e-10,0,false,false)));
+dims_1 = ~all(isnan(x(:,loc==1)),2);
+dims_2 = ~all(isnan(x(:,loc==2)),2);
+assert(all(contains_(inv1,x(dims_1,loc==1),'exact',1e-10,0,false,false)));
+assert(all(contains_(inv2,x(dims_2,loc==2),'exact',1e-10,0,false,false)));
 % time before and after jumps must be the same, but state not
-for i=1:length(t)-1
-    assert(withinTol(t{i}(end),t{i+1}(1)));
-    assert(~compareMatrices(x{i}(end,:)',x{i+1}(1,:)'));
+nums = 1: size(loc,2)-1;
+idz_locChange = nums(abs(diff(loc)) > 0);
+for idx=idz_locChange
+    assert(withinTol(t(idx),t(idx+1)));
+    if loc(idx) == 1
+        % change from loc=1 to loc=2
+        assert(~compareMatrices(x(dims_1,idx),x(dims_2,idx+1)));
+    else
+        assert(~compareMatrices(x(dims_2,idx),x(dims_1,idx+1)));
+    end
 end
-
 
 % automaton with nonlinear invariant and guard sets (previously there was
 % an error for invariants with multiple inequality constraints, which is
@@ -143,10 +151,8 @@ params.tFinal = 4;
 [~,x,~] = simulate(HA,params); 
 
 % check if trajectory stayed within the invariant
-for i = 1:length(x)
-    for j = 1:size(x{i},1)
-        assertLoop(contains(inv,x{i}(j,:)'),i,j)
-    end
+for i = 1:size(x,2)
+    assert(contains(inv,x(:,i)))
 end
 
 
@@ -186,11 +192,8 @@ simOpts.startLoc = 2;
 
 [tHyb,xHyb] = simulate(HA,simOpts);
 
-tHyb = vertcat(tHyb{:});
-xHyb = vertcat(xHyb{:});
-
 % check if the two simulated trajectories are equivalent
-xCont = interp1(tCont,xCont,tHyb);
+xCont = interp1(tCont,xCont',tHyb)';
 
 assert(max(max(abs(xHyb-xCont))) <= 0.01)
 

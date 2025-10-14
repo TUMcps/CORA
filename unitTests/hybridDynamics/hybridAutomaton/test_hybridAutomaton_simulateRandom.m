@@ -70,31 +70,31 @@ R = reach(HA,params,options);
 
 % simulate random trajectories
 simOpt.points = 5;
-simRes = simulateRandom(HA,params,simOpt);
+traj = simulateRandom(HA,params,simOpt);
 
 % five trajectories
-assert(length(simRes) == simOpt.points);
+assert(length(traj) == simOpt.points);
 
 % correct start and end time
 assert(all(arrayfun(...
-    @(traj) traj.t{1}(1) == 0 && traj.t{end}(end) == params.tFinal,...
-    simRes,'UniformOutput',true)));
+    @(traj_) traj_.t(1) == 0 && traj_.t(end) == params.tFinal,...
+    traj,'UniformOutput',true)));
 
 % correct start point for each trajectory
 assert(all(arrayfun(...
-    @(traj) contains_(params.R0,traj.x{1}(1,:)','exact',eps,0,false,false),...
-    simRes,'UniformOutput',true)));
+    @(traj_) contains_(params.R0,traj_.x(:,1),'exact',eps,0,false,false),...
+    traj,'UniformOutput',true)));
 
 % correct start location for each trajectory
-assert(all(arrayfun(@(x) x.loc(1) == params.startLoc,...
-    simRes,'UniformOutput',true)));
+assert(all(arrayfun(@(traj_) traj_.loc(:,1) == params.startLoc,...
+    traj,'UniformOutput',true)));
 
 % time is strictly increasing
-assert(all(arrayfun(@(x) all(diff(vertcat(x.t{:})) > -eps), ...
-    simRes,'UniformOutput',true)));
+assert(all(arrayfun(@(traj_) all(diff(traj_.t) > -eps), ...
+    traj,'UniformOutput',true)));
 
 % check if simulations are contained in reachable set
-assert(contains(R,simRes));
+assert(contains(R,traj));
 
 % simulate edge case with a single input segment (caused a bug previously)
 simOpt.nrConstInp = 1;

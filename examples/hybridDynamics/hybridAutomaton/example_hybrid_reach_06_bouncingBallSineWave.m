@@ -89,7 +89,7 @@ disp(['Computation time for reachable set: ',num2str(tComp),' s']);
 
 % Simulation --------------------------------------------------------------
 
-simRes = simulateRandom(HA,params);
+traj = simulateRandom(HA,params);
 
 
 % Visualization -----------------------------------------------------------
@@ -109,7 +109,7 @@ ground = levelSet(y-sin(x),[x;y;vx;vy],'<=');
 plot(ground,[1,2],'FaceColor',colorblind('gray'));
 
 % plot simulated trajectories
-plot(simRes);
+plot(traj);
 
 % completed successfully
 res = true;

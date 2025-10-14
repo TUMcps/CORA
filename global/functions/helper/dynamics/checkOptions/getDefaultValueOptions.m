@@ -112,6 +112,8 @@ switch field
         defValue = inf;
     case 'armaxAlg'
         defValue = 'tvpGeneral';
+    case 'idAlg'
+        defValue = aux_def_idAlg(sys,params,options);
     % for conform_white:
     case 'cs.cp_lim'
         defValue = Inf;
@@ -129,42 +131,55 @@ switch field
         defValue = aux_def_cs_w(sys,params,options);
     case 'cs.verbose'
         defValue = false;
-    case 'cs.robustnessMargin'
+    case 'cs.robustness'
         defValue = 1e-9;
-    case 'cs.derivRecomputation'
+    case 'cs.updateDeriv'
         defValue = true;
+        % recursive identification
+    case 'cs.recMethod'
+        defValue = '';
+    case 'cs.numPoints'
+        defValue = 1;
+    case 'cs.numCluster'
+        defValue = 10;
+    case 'cs.forgetting'
+        defValue = 1;
+    case 'cs.forgettingCost'
+        defValue = 1;
+    case 'cs.batchSize'
+        defValue = 50;
     % for conform_black
-    case 'approx.p'
+    case 'id.p'
         defValue = 1;    
-    case 'approx.verbose'
+    case 'id.verbose'
         defValue = false;   
-    case 'approx.filename'
+    case 'id.filename'
         t = datetime;
         t.Format = 'yyyyMMddHHmmss';
         defValue = sprintf('%s_approx', string(t));
-    case 'approx.save_res'
+    case 'id.save_res'
         defValue = true;    
         % gp
-    case 'approx.gp_parallel'
+    case 'id.gp_parallel'
         defValue = canUseParallelPool;   
-    case 'approx.gp_runs'
+    case 'id.gp_runs'
         defValue = 1;    
-    case 'approx.gp_num_gen'
+    case 'id.gp_num_gen'
         defValue = 100;   
-    case 'approx.gp_pop_size'
+    case 'id.gp_pop_size'
         defValue = 300;     
-    case 'approx.gp_func_names'
+    case 'id.gp_func_names'
         defValue = {'times','minus','plus','tanh','square','sin','rdivide'};
-    case 'approx.gp_max_genes' 
+    case 'id.gp_max_genes' 
         defValue = 5;
-    case 'approx.gp_max_depth' 
+    case 'id.gp_max_depth' 
         defValue = 6;      
         % cgp
-    case 'approx.cgp_num_gen'
+    case 'id.cgp_num_gen'
         defValue = 5;       
-    case 'approx.cgp_n_m_conf'
+    case 'id.cgp_n_m_conf'
         defValue = 5;      
-    case 'approx.cgp_pop_size_base'
+    case 'id.cgp_pop_size_base'
         defValue = 10;    
     otherwise
         throw(CORAerror('CORA:specialError',...
@@ -194,41 +209,40 @@ end
 
 end
 
-function val = aux_def_nrConstInp(sys,params,options)
+function nrConstInp = aux_def_nrConstInp(sys,params,options)
 
-val = [];
+nrConstInp = [];
 if isa(sys,'contDynamics')
     if isa(sys,'linearSysDT') ...
         || isa(sys,'nonlinearSysDT') ...
-        || isa(sys,'neurNetContrSys')
+        || isa(sys,'neurNetContrSys') ...
+        || isa(sys,'linearARX')...
+        || isa(sys,'nonlinearARX')
 
         steps = round((params.tFinal - params.tStart) / sys.dt);
         
+        % infinite time-horizon?
         if isinf(steps)
-            val = 1;
+            nrConstInp = 1;
         else
-            % start at 10, go down to 1
-            for i=10:-1:1
-                if mod(steps,i) == 0
-                    val = i; break
-                end
-            end
+            % max for undefined params.u
+            nrConstInp = max(size(params.u,2),1);
         end
     else
         if size(params.u,2) > 1
             if isa(sys,'linearSys') && any(any(sys.D))
-                val = size(params.u,2) - 1;
+                nrConstInp = size(params.u,2) + 1;
             else
-                val = size(params.u,2);
+                nrConstInp = size(params.u,2);
             end
-        else % no input trajectory
-            val = 10;
+        else % no input trajectory (single constant input)
+            nrConstInp = 1;
         end
     end
 elseif isa(sys,'hybridAutomaton') || isa(sys,'parallelHybridAutomaton')
     % this will most likely be changed in the future (e.g., different
     % values for each location)
-    val = 10;
+    nrConstInp = 10;
 end
 
 end
@@ -249,6 +263,19 @@ function val = aux_def_maxError_y(sys,params,options)
 val = [];
 if isa(sys,'nonlinDASys')
     val = Inf(sys.nrOfConstraints,1);
+end
+
+end
+
+function val = aux_def_idAlg(sys,params,options)
+
+% default
+val = 'lin';
+
+% explicitly stated for the below classes
+if isa(sys,'nonlinearARX')
+    val = 'gp';
+elseif isa(sys,'nonlinearSysDT')
 end
 
 end

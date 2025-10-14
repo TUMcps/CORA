@@ -59,7 +59,7 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 simOpt.points = 25;
 simOpt.type = 'gaussian';
 
-simRes = simulateRandom(fiveDimSys, params, simOpt);
+traj = simulateRandom(fiveDimSys, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -74,13 +74,13 @@ for k = 1:length(dims)
     projDims = dims{k};
 
     % plot reachable sets
-    plot(R,projDims, 'DisplayName', 'Reachable set','Unify',true);
+    plot(R,projDims, 'DisplayName', 'Reachable set');
 
     % plot initial set
     plot(R.R0,projDims,'DisplayName','Initial set');
 
     % plot simulation results
-    plot(simRes,projDims, 'DisplayName', 'Simulations');
+    plot(traj,projDims, 'DisplayName', 'Simulations');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);

@@ -73,7 +73,7 @@ for i = 1:N
     [~,x] = simulate(sysInv,simOpts);
 
     % check if final point is inside initial set
-    p = x(end,:)';
+    p = x(:,end);
     points(:,i) = p;
 
     assert(contains(R0,p,'exact',1e-4));

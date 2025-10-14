@@ -31,11 +31,11 @@ if isempty(lookupDf)
     lookupDf = containers.Map('KeyType','char','ValueType','any');
 end
 
-% find layer name
-layerName = class(layer);
+% read out layer id
+layerid = layer.layerid;
 
 % check if present
-if ~isKey(lookupDf,layerName)
+if ~isKey(lookupDf,layerid)
     % init layer struct
     layerStruct = struct;
 
@@ -49,11 +49,11 @@ if ~isKey(lookupDf,layerName)
     layerStruct(1).df = df;
 
     % store
-    lookupDf(layerName) = layerStruct;
+    lookupDf(layerid) = layerStruct;
 end
 
 % read layer struct
-layerStruct = lookupDf(layerName);
+layerStruct = lookupDf(layerid);
 
 % returns a function handle of the i-th derivative of this layer
 if i == 0
@@ -89,7 +89,7 @@ else
     df_i = df_j;
 
     % store result
-    lookupDf(layerName) = layerStruct;
+    lookupDf(layerid) = layerStruct;
 end
 
 end

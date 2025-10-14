@@ -57,12 +57,19 @@ assert(contains(linear_ls,[0;1]))
 % not included
 assert(~contains(linear_ls,[0;1+1e-5],'exact',1e-6))
 
+% multiple points
+assert(all(contains(linear_ls,[0 0;1 1+1e-5],'exact',1e-6) == [1 0]));
+
 % same for nonlinear set
 % included
 assert(contains(nonlinear_ls,[sqrt(2);-1],'exact',1e-5))
 
 % not included
 assert(~contains(nonlinear_ls,[sqrt(2);-1+1e-5],'exact',1e-6))
+
+% multiple points
+assert(all(contains(nonlinear_ls,[sqrt(2) sqrt(2);-1 -1+1e-5], ...
+                                                'exact',1e-6) == [1 0]));
 
 % inclusion with non-linear level set with multiple constraints
 multiple_ls = levelSet([x - 1; x.^2 + y.^2 - 4],[x;y],'<=');

@@ -11,7 +11,9 @@ function P = sumPoints(varargin)
 %    P - sum of points 
 %
 % Example: 
-%    P = sumPoints(randn(2,4),randn(2,5));
+%    P1 = [ -0.359 0.734 1.136 0.472 ; -0.130 0.120 -0.687 0.288 ];
+%    P2 = [ 1.392 0.001 -2.342 2.809 0.287 ; -1.346 0.053 1.248 -0.232 -0.465 ];
+%    S = sumPoints(P1,P2);
 %
 % Other m-files required: -
 % Subfunctions: none

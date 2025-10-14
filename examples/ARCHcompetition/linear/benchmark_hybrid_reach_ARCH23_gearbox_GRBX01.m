@@ -82,7 +82,7 @@ figure; hold on; box on;
 
 % plot reachable set
 useCORAcolors("CORA:contDynamics")
-plot(R,[3,4],'Unify',true);
+plot(R,[3,4]);
 plot(R(1).R0,[3,4])
 
 % plot tooth of gear

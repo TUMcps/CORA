@@ -28,6 +28,11 @@ function [res] = test_nn_neuralNetwork_readNNetNetwork()
 % Test 1
 nn = neuralNetwork.readNNetNetwork('VertCAS_noResp_pra01_v9_20HU_200.nnet');
 
+assert(nn.neurons_in == 3)
+assert(nn.neurons_out == 9)
+assert(numel(nn.layers) == 12)
+
+% test completed
 res = true;
 
 end

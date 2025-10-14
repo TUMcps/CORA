@@ -32,6 +32,18 @@ function R = reach(linARX,params,options,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% create initial state set from the initial measurements
+if ~isfield(params,'y0')
+    if isfield(params, 'x0')
+        params.y0 = reshape(params.x0,[],linARX.n_p);
+    elseif isfield(params, 'R0') && sum(abs(params.R0.G),'all') < 1e-6
+        params.y0 = reshape(center(params.R0),[],linARX.n_p);
+    elseif isfield(params, 'Y0')
+        throw(CORAerror("CORA:specialError", ...
+            "Reachability analysis with initial state set not implemented."))
+    end
+end
+
 % preprocessing of params
 [params,options] = validateOptions(linARX,params,options);
 
@@ -41,7 +53,7 @@ tVec = params.tStart:linARX.dt:params.tFinal;
 % initialize Y
 Y = cell(length(tVec),1);
 for i=1:linARX.n_p
-    Y{i} = params.y0(:, i);   
+    Y{i} = params.y0(:, i);    
 end
 
 % reachability analysis
@@ -57,6 +69,11 @@ switch options.armaxAlg
     otherwise
         % use general algorithm [1, Theorem 2]
         Y = aux_general(linARX,params,Y,tVec);
+end
+
+% transofrm initial measurements to zonotopes for consistency
+for i=1:linARX.n_p
+    Y{i} = zonotope(Y{i});    
 end
 
 % construct reachable set object
@@ -160,7 +177,7 @@ p = linARX.n_p;
 n_y = linARX.nrOfOutputs;
 U_const = params.U;
 
-y_init = reshape(params.y0,[],1);
+y_init = params.y0(:);
 if isfield(params,'uTrans')
     u = [params.uTrans zeros(size(params.uTrans,1),p)];
 elseif isfield(params,'uTransVec')

@@ -29,6 +29,7 @@ function Asq = exactSquare(intMat)
 % Authors:       Matthias Althoff
 % Written:       04-January-2009 
 % Last update:   02-November-2017
+%                27-August-2025 (TL, bug fix indexing in aux_sum)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -78,9 +79,8 @@ function s=aux_sum(A,i)
 
 %get indices that should be 0
 n=length(A);
-k=0:n;
-ind=k*n+1:n+1:n^2;
-A(ind)=zeros(n,1);
+ind=1:n+1:n^2;
+A(ind)=0;
 
 s=A(i,:)*A;
 

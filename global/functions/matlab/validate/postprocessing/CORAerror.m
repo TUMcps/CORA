@@ -163,9 +163,9 @@ switch identifier
         infomsg = varargin{1};
         try
             convertername = aux_readConverter(st);
-            errmsg = ['Error in converter ' convertername ':\n  ' infomsg];
+            errmsg = sprintf('Error in converter %s:\n  %s',convertername, infomsg);
         catch
-            errmsg = ['Error in converter:\n  ' infomsg];
+            errmsg = sprintf('Error in converter:  %s', infomsg);
         end
 
 

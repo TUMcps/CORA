@@ -77,10 +77,18 @@ end
 methods (Access = {?nnLayer, ?neuralNetwork})
 
     % sensitivity
-    function S = evaluateSensitivity(obj, S, x, options)
+    function S = evaluateSensitivity(obj, S, options)
+        % Obtain the stored input.
+        x = obj.backprop.store.input;
+        
         sx = permute(obj.evaluateNumeric(x, options),[1 3 2]);
         % compute Jacobian of softmax
         J = pagemtimes(-sx,'none',sx,'transpose') + sx.*eye(size(x,1));
+
+        if options.nn.store_sensitivity
+            % Store the gradient (used for the sensitivity computation).
+            obj.sensitivity = S;
+        end
         S = pagemtimes(S,J);
     end
 

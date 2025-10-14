@@ -77,7 +77,7 @@ disp(['computation time of reachable set with uncertain parameters: ',num2str(tC
 simOpt.points = 60;
 params = rmfield(params,'paramInt');
 
-simRes = simulateRandom(tank, params, simOpt);
+traj = simulateRandom(tank, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -115,7 +115,7 @@ for k = 1:length(dims)
         subplot(1,2,sp); hold on;
         
         % plot simulation results      
-        plot(simRes,projDims);
+        plot(traj,projDims);
 
         % label plot
         xlabel(['x_{',num2str(projDims(1)),'}']);

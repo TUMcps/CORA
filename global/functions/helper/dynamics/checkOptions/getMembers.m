@@ -167,12 +167,18 @@ switch fieldname
         memberlist = {'zonotope','interval','ellipsoid','polyZonotope',...
             'conZonotope','capsule','polytope','conPolyZono','zonoBundle'}; 
         
+    case 'idAlg'
+        memberlist = {'gp', 'cgp'};   
+
         % cs
     case 'cs.cost'
         memberlist = {'interval','frob'};
     
     case 'cs.constraints'
         memberlist = {'half','gen'};
+
+    case 'cs.recMethod'
+        memberlist = {'','recUnSiCo', 'recAlpha'};
 
     otherwise
         throw(CORAerror('CORA:wrongValue','first','Check file.'));

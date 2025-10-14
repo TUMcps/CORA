@@ -202,7 +202,7 @@ for i = 1:length(pertubation)
             hold on
             for j = 1:numAgents
                 try
-                    plotOverTime(reachSets{sortInd(j)},k,'FaceColor',cmap(sortInd(j),:),'Unify',true,'DisplayName',labels{sortInd(j)})
+                    plotOverTime(reachSets{sortInd(j)},k,'FaceColor',cmap(sortInd(j),:),'DisplayName',labels{sortInd(j)})
                 catch ME
                     fprintf('Unable to plot reachable set of agent %i: %s\n', j, ME.message);
                 end

@@ -100,7 +100,7 @@ spec = specification(safeSet,'safeSet');
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, true);
+[res, R, traj] = verify(sys, spec, params, options, true);
 tTotal = toc(t);
 disp(['Result: ' res])
 
@@ -121,7 +121,7 @@ plot(R, projDims, 'DisplayName', 'Reachable set')
 plot(R0, projDims, 'k', 'FaceColor', [1 1 1], 'DisplayName', 'Initial set');
 
 % plot simulation
-plot(simRes,projDims, 'DisplayName', 'Simulations');
+plot(traj,projDims, 'DisplayName', 'Simulations');
 
 % labels and legend
 xlabel('y'); ylabel('\phi');

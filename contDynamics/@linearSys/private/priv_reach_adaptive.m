@@ -172,6 +172,8 @@ while params.tFinal - t > 1e-9
             else
                 % take sets for time step from previous iteration (must be ok)
                 k_iter_chosen = find(timeStepIdx(1:k_iter) == timeStepIdx(k_iter-1),1,'first');
+                % load timestep
+                timeStep = savedata.timeStep(timeStepIdx(k_iter_chosen));
                 break
             end
         end

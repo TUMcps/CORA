@@ -75,7 +75,7 @@ spec = specification(unsafeSet,'unsafeSet',interval(params.tFinal));
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, true);
+[res, R, traj] = verify(sys, spec, params, options, true);
 tTotal = toc(t);
 disp(['Result: ' res])
 
@@ -97,7 +97,7 @@ for w=1:3
     plotOverTime(R(1).R0, w, 'DisplayName', 'Initial set');
 
     % plot simulation
-    plotOverTime(simRes, w, 'DisplayName', 'Simulations');
+    plotOverTime(traj, w, 'DisplayName', 'Simulations');
 
     % labels and legend
     xlabel('time');

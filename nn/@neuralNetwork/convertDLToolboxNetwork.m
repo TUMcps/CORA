@@ -1,13 +1,13 @@
-function obj = convertDLToolboxNetwork(dltoolbox_layers, verbose)
+function obj = convertDLToolboxNetwork(dlt_layers, verbose)
 % convertDLToolboxNetwork - converts a network from the Deep Learning
 %    Toolbox to a CORA neuralNetwork for verification
 %
 % Syntax:
-%    res = neuralNetwork.convertDLToolboxNetwork(dltoolbox_layers)
-%    res = neuralNetwork.convertDLToolboxNetwork(dltoolbox_layers,verbose)
+%    res = neuralNetwork.convertDLToolboxNetwork(dlt_layers)
+%    res = neuralNetwork.convertDLToolboxNetwork(dlt_layers,verbose)
 %
 % Inputs:
-%    dltoolbox_layers - layer array (e.g. dltoolbox_nn.Layers)
+%    dlt_layers - layer array (e.g. dltoolbox_nn.Layers)
 %    verbose - true/false whether information should be displayed
 %
 % Outputs:
@@ -34,57 +34,17 @@ if nargin < 2
     verbose = false;
 end
 
-n = length(dltoolbox_layers);
-
-layers = {};
-inputSize = [];
-currentSize = [];
-
 if verbose
     disp("Converting Deep Learning Toolbox Model to neuralNetwork...")
 end
 
-for i = 1:n
-    dlt_layer = dltoolbox_layers{i};
-    if verbose
-        fprintf("#%d: %s\n", i, class(dlt_layer))
-    end
+% Initialize input size and current size.
+inputSize = [];
+currentSize = [];
 
-    if iscell(dlt_layer)
-        % We need to construct a composite layer.
-        layers_ = {};
-        currentSize_ = currentSize;
-        for j=1:length(dlt_layer)
-            layersj_ = {};
-            for k=1:length(dlt_layer{j})
-                [layersj_,~,currentSize_] = aux_convertLayer(layersj_, ...
-                    dlt_layer{j}(k),currentSize_,verbose);
-            end
-            layers_{j} = layersj_;
-        end
-        % Obtain aggregation layer
-        i = i+1;
-        aggr_dlt_layer = dltoolbox_layers{i};
-        if isa(aggr_dlt_layer,'nnet.cnn.layer.AdditionLayer')
-            aggregation = 'add';
-        else
-            % Error
-            aggregation = [];
-        end
-        compLayer = nnCompositeLayer(layers_,aggregation);
-        layers{end+1} = compLayer;
-
-        currentSize = layers{end}.getOutputSize(currentSize);
-    else
-        % Just append a regular layer.
-        [layers,inputSize_,currentSize] = aux_convertLayer(layers, ...
-            dlt_layer,currentSize,verbose);
-        if isempty(inputSize)
-            inputSize = inputSize_;
-        end
-    end
-end
-layers = reshape(layers, [], 1); % 1 column
+% Convert the layers in the nested cell array.
+[layers,inputSize,~] = aux_convertLayers(dlt_layers, ...
+    inputSize,currentSize,verbose);
 
 % instantiate neural network
 obj = neuralNetwork(layers);
@@ -109,7 +69,91 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [layers,inputSize,currentSize] = aux_convertLayer(layers,dlt_layer,currentSize,verbose)
+function [layers,inputSize,currentSize] = aux_convertLayers( ...
+        dlt_layers,inputSize,currentSize,verbose)
+    % Initialize the layers cell array.
+    layers = {};
+
+    % Needed to separate different input for reshape layers that are
+    % followed by a composite layer.
+    nextInputIdx = {};
+
+    % Recursively convert the layers in the nested cell array.
+    for i=1:length(dlt_layers)
+        % Obtain the i-th layer.
+        dlt_layer = dlt_layers{i};
+        
+        if iscell(dlt_layer)
+            if verbose
+                fprintf("#%d: Composite\n", i)
+            end
+            % We need to construct a composite layer.
+            layersi = {};
+            % Iterate the computation paths.
+            for j=1:length(dlt_layer)
+                if ~isempty(nextInputIdx)
+                    % Construct the reshape layers that reshapes the input
+                    % of the j-th computation path.
+                    reshapeIdx = reshape(nextInputIdx{j},1,[]);
+                    preshapeLayer = nnReshapeLayer( ...
+                        reshapeIdx,dlt_layers{i-1}.Name);
+                    currentSize = size(nextInputIdx{j});
+                end
+                % Convert the j-th computation path.
+                [layersij,~,~] = aux_convertLayers( ...
+                    dlt_layer{j},inputSize,currentSize,verbose);
+                if ~isempty(nextInputIdx)
+                    % Prepend the reshape layer.
+                    layersij = [{preshapeLayer}; layersij];
+                end
+                % Append the converted layers.
+                layersi{j} = layersij;
+            end
+            % Increment the index to obtain aggregation layer.
+            i = i+1;
+            % Obtain the aggregation layer.
+            aggr_dlt_layer = dlt_layers{i};
+            % Check the type of aggregation layer.
+            if isa(aggr_dlt_layer,'nnet.cnn.layer.AdditionLayer')
+                aggregation = 'add';
+            elseif isa(aggr_dlt_layer,'nnet.cnn.layer.ConcatenationLayer')
+                aggregation = 'concat';
+            else
+                % Aggregation type is not supported.
+                aggregation = [];
+            end
+            % Instantiate the composite layer.
+            compLayer = nnCompositeLayer(layersi,aggregation);
+            % Append the composite layer.
+            layers{end+1} = compLayer;
+            % Update the output size.
+            currentSize = layers{end}.getOutputSize(currentSize);
+            % Reset the input indices.
+            nextInputIdx = {};
+        else
+            if verbose
+                fprintf("#%d: %s\n", i, class(dlt_layer))
+            end
+            % Just append a regular layer.
+            [layers,inputSize_,currentSize,nextInputIdx] = ...
+                aux_convertLayer(layers,dlt_layer,currentSize,verbose);
+            if isempty(inputSize)
+                inputSize = inputSize_;
+            end
+        end
+    end
+    layers = reshape(layers, [], 1); % 1 column
+end
+
+function [layers,inputSize,currentSize,nextInputIdx] = ...
+        aux_convertLayer(layers,dlt_layer,currentSize,verbose)
+    % By default all inputs are given to the next layer; for reshape layers
+    % with multiple input we can encode the path of the inputs.
+    nextInputIdx = {};
+
+    % Initialize the input size.
+    inputSize = [];
+
     % handle different types of layers
     if isa(dlt_layer, 'nnet.cnn.layer.ImageInputLayer') || ...
             isa(dlt_layer, 'nnet.cnn.layer.FeatureInputLayer')
@@ -125,12 +169,18 @@ function [layers,inputSize,currentSize] = aux_convertLayer(layers,dlt_layer,curr
             mu = dlt_layer.Mean;
             sigma = dlt_layer.StandardDeviation;
             layers{end+1} = nnElementwiseAffineLayer(1/sigma, ...
-                -mu/sigma,dlt_layer.Name);
+                -mu./sigma,dlt_layer.Name);
         end
+        currentSize = inputSize;
+        return
+    elseif isa(dlt_layer,'nnet.cnn.layer.SequenceInputLayer')
+        inputSize = [dlt_layer.InputSize dlt_layer.MinLength];
         currentSize = inputSize;
         return
 
         % Normal Layers ---------------------------------------------------
+
+        % linear layers ---
 
     elseif isa(dlt_layer, 'nnet.cnn.layer.FullyConnectedLayer')
             W = double(dlt_layer.Weights);
@@ -169,33 +219,7 @@ function [layers,inputSize,currentSize] = aux_convertLayer(layers,dlt_layer,curr
 
         layers{end+1} = nnElementwiseAffineLayer(s, o, dlt_layer.Name);
 
-    elseif isa(dlt_layer, 'nnet.cnn.layer.BatchNormalizationLayer')
-        % can be converted to elementwise layers
-        % https://onnx.ai/onnx/operators/onnx__BatchNormalization.html
-
-        mean = dlt_layer.TrainedMean;
-        var = dlt_layer.TrainedVariance;
-        epsilon = dlt_layer.Epsilon;
-        scale = dlt_layer.Scale;
-        bias = dlt_layer.Offset;
-
-        % (x-mean) / sqrt(var+epsilon) * scale + B
-        % = x / sqrt(var+epsilon) * scale + (B - mean / sqrt(var+epsilon) * scale)
-        % thus,
-
-        final_scale =  1 ./ sqrt(var+epsilon) .* scale;
-        final_offset = (bias - mean .* final_scale);
-
-        layers{end+1} = nnElementwiseAffineLayer(final_scale, final_offset, dlt_layer.Name);
-        
-    elseif isa(dlt_layer, 'nnet.cnn.layer.AveragePooling2DLayer')
-        % average pooling 
-        poolSize = dlt_layer.PoolSize;
-        padding = dlt_layer.PaddingSize;
-        stride = dlt_layer.Stride;
-        dilation = [1, 1];
-
-        layers{end+1} = nnAvgPool2DLayer(poolSize, padding, stride, dilation, dlt_layer.Name);
+        % convolutional ---
 
     elseif isa(dlt_layer, 'nnet.cnn.layer.Convolution2DLayer')
         % convolutional 2D
@@ -206,12 +230,32 @@ function [layers,inputSize,currentSize] = aux_convertLayer(layers,dlt_layer,curr
         dilation = dlt_layer.DilationFactor;
         layers{end+1} = nnConv2DLayer(W, b, padding, stride, dilation, dlt_layer.Name);
 
+    elseif isa(dlt_layer, 'nnet.cnn.layer.BatchNormalizationLayer')
+        % batch normalization
+        mean = dlt_layer.TrainedMean;
+        var = dlt_layer.TrainedVariance;
+        epsilon = dlt_layer.Epsilon;
+        scale = dlt_layer.Scale;
+        bias = dlt_layer.Offset;
+        layers{end+1} = nnBatchNormLayer(scale, bias, var, mean, dlt_layer.Name, epsilon);
+        
+    elseif isa(dlt_layer, 'nnet.cnn.layer.AveragePooling2DLayer')
+        % average pooling 
+        poolSize = dlt_layer.PoolSize;
+        padding = dlt_layer.PaddingSize;
+        stride = dlt_layer.Stride;
+        dilation = [1, 1];
+
+        layers{end+1} = nnAvgPool2DLayer(poolSize, padding, stride, dilation, dlt_layer.Name);
+
     elseif isa(dlt_layer, 'nnet.cnn.layer.MaxPooling2DLayer')
+        % max pooling
         poolSize = dlt_layer.PoolSize;
         stride = dlt_layer.Stride;
         layers{end+1} = nnMaxPool2DLayer(poolSize, stride, dlt_layer.Name);
 
         % activation functions ---
+
     elseif isa(dlt_layer, 'nnet.cnn.layer.ReLULayer')
         % relu
         layers{end+1} = nnReLULayer(dlt_layer.Name);
@@ -244,17 +288,30 @@ function [layers,inputSize,currentSize] = aux_convertLayer(layers,dlt_layer,curr
         inputSize = [];
         return
 
-        % Custom Layers -----------------------------------------------
+    % Custom Layers -----------------------------------------------
 
     elseif contains(lower(class(dlt_layer)), 'flatten') || ...
-            contains(lower(class(dlt_layer)), 'reshape')
+            contains(lower(class(dlt_layer)), 'reshape') || ...
+            contains(lower(class(dlt_layer)), 'slice')
         % flatten
         
         idx = dlarray(1:prod(currentSize));
         idx = reshape(idx, currentSize);
-        idx_out = dlt_layer.predict(idx);
-        idx_out = double(extractdata(idx_out));
-        layers{end+1} = nnReshapeLayer(idx_out, dlt_layer.Name);
+
+        idx_out = cell(1,dlt_layer.NumOutputs);
+        [idx_out{:}] = dlt_layer.predict(idx);
+        idx_out = cellfun(@(idx) double(extractdata(idx)),idx_out, ...
+            'UniformOutput',false);
+
+        if length(idx_out) > 1
+            % There are multiple successor layer. We prepend the reshape
+            % layer to each computation path.
+            nextInputIdx = idx_out;
+            return;
+        else
+            % There is only a single successor layer.
+            layers{end+1} = nnReshapeLayer(idx_out{1}, dlt_layer.Name);
+        end
 
     elseif strcmp(dlt_layer.Name, 'MatMul_To_ReluLayer1003')
         % for VNN Comp (test -- test_nano.onnx)
@@ -324,8 +381,8 @@ function [layers,inputSize,currentSize] = aux_convertLayer(layers,dlt_layer,curr
         inputSize = [];
         return
     end
+    % Update the current size.
     currentSize = layers{end}.getOutputSize(currentSize);
-    inputSize = [];
 end
 
 end

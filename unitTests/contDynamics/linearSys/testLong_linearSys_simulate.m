@@ -122,7 +122,7 @@ for k=1:length(y_lin)
     end
     
     for j=1:length(S.timeInterval.set)
-        assert(contains(S.timeInterval.set{j},y_lin(k,:)'))        
+        assert(contains(S.timeInterval.set{j},y_lin(:,k)))        
     end
 end
 

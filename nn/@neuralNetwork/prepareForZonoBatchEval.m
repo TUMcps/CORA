@@ -43,44 +43,70 @@ end
 numApproxErr = options.nn.train.num_approx_err;
 numNeurons = v0; % store number of neurons of the current layer
 
-for i=idxLayer
-    % Extract current layer.
-    layeri = nn.layers{i};
-    % Handle the sublayers of composite layers separately.
-    if isa(layeri,'nnCompositeLayer')
-        for j=1:length(layeri.layers)
-            % Extract the j-th computation path.
-            layerij = layeri.layers{j};
-            % Iterate over the layers of the current computation path.
-            for k=1:length(layerij)
-                % Prepare the current layer and update the number of 
-                % generators and neurons.
-                [numGen,numNeurons] = aux_prepareLayer(layerij{k}, ...
-                    numApproxErr,numGen,numNeurons,options);
-            end
-        end
-    else
-        % Prepare the current layer and update the number of generators and
-        % neurons.
-        [numGen,numNeurons] = aux_prepareLayer(layeri,numApproxErr, ...
-            numGen,numNeurons,options);
-    end
-end
+% Store indices of active generators.
+genIds = 1:numGen;
+% The first neuron has index 1.
+neuronId = 1;
+
+[~,~,numGen,~] = aux_prepareLayers(nn.layers,idxLayer,numApproxErr, ...
+    genIds,neuronId,numGen,numNeurons);
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function [numGen,numNeurons] = aux_prepareLayer(layeri,numApproxErr, ...
-    numGen,numNeurons,options)
+function [genIds,neuronId,numGen,numNeurons] = aux_prepareLayers( ...
+    layers,idxLayer,numApproxErr,genIds,neuronId,numGen,numNeurons)
+    % Recursively prepare the layers.
+
+    for i=idxLayer
+        % Extract current layer.
+        layeri = layers{i};
+        % Handle the sublayers of composite layers separately.
+        if isa(layeri,'nnCompositeLayer')
+            % Store number generators of the input
+            layeri.genIds = genIds;
+            % Store new generators from the different computation paths.
+            newGenIds = [];
+            for j=1:length(layeri.layers)
+                % Extract the layers of the j-th computation path.
+                layersij = layeri.layers{j};
+                % Store active generator for the current computation path.
+                genIdsij = genIds;
+                % Iterate over the layers of the current computation path.
+                idxLayerij = 1:length(layersij);
+                [genIdsij,neuronId,numGen,numNeurons] = aux_prepareLayers( ...
+                    layersij,idxLayerij,numApproxErr,genIdsij,neuronId, ...
+                        numGen,numNeurons);
+                % Add new generators.
+                newGenIds = [newGenIds setdiff(genIdsij,genIds)];
+            end
+            % Add new generators to active generators.
+            genIds = [genIds newGenIds];
+        else
+            % Prepare the current layer and update the number of generators and
+            % neurons.
+            [genIds,neuronId,numGen,numNeurons] = aux_prepareLayer(layeri, ...
+                numApproxErr,genIds,neuronId,numGen,numNeurons);
+        end
+    end
+end
+
+function [genIds,neuronId,numGen,numNeurons] = aux_prepareLayer(layeri, ...
+    numApproxErr,genIds,neuronId,numGen,numNeurons)
     % Store number generators of the input
-    layeri.backprop.store.genIds = 1:numGen;
+    layeri.genIds = genIds;
+    % Store indices for the neurons of the current layer; used for 
+    % identifying split in neuralNetwork/verify.
+    layeri.neuronIds = neuronId + (1:numNeurons) - 1;
+    neuronId = neuronId + numNeurons;
+
     if isa(layeri,'nnGeneratorReductionLayer')
         layeri.maxGens = min(numGen,layeri.maxGens);
         numGen = layeri.maxGens;
     elseif isa(layeri,'nnActivationLayer')
-        if numApproxErr > 0 && ~options.nn.interval_center
+        if numApproxErr > 0 % && ~options.nn.interval_center
             % % We store an id-matrix in each activation layer to append 
             % % the approximation errors of image enclosures to the 
             % % generator matrix. This eliminates the need to allocate 
@@ -94,17 +120,17 @@ function [numGen,numNeurons] = aux_prepareLayer(layeri,numApproxErr, ...
             % and (ii) copies the new generators in the correct spot in
             % the generator matrix.
             layerNumApproxErr = min(numApproxErr,numNeurons);
-            layeri.backprop.store.approxErrGenIds = 1 + ...
-                numGen:(numGen + layerNumApproxErr);
+            approxErrGenIds = 1 + numGen:(numGen + layerNumApproxErr);
+            layeri.approxErrGenIds = approxErrGenIds;
             % add a generator for each neuron to store the approx. error
-            numGen = numGen + min(numApproxErr,numNeurons);
+            numGen = numGen + layerNumApproxErr;
+            genIds = [genIds approxErrGenIds];
         else
             % no approximation error are stored
-            layeri.backprop.store.approxErrGenIds = [];
+            layeri.approxErrGenIds = [];
         end
     elseif isa(layeri,'nnElementwiseAffineLayer')
         % Does not change the number of neurons.
-        return
     else
         % Update the number of neurons.
         [~,numNeurons] = layeri.getNumNeurons();

@@ -60,17 +60,20 @@ try
     plot(O,[1,2]);
     V = zeros(2,0);
     % check points
-    assert(all(isnan([ax.Children(1).XData;ax.Children(1).YData])));
+    assert(all(isnan(readVerticesFromFigure(ax.Children(1)))));
     % test color
-    assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+    if CORA_PLOT_FILLED
+        assert(isequal(colorOrder(1,:), ax.Children(1).EdgeColor));
+        assert(isequal(colorOrder(1,:), ax.Children(1).FaceColor));
+    else
+        assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+    end
 
     % plot second set
     plot(O,[1,3]);
     V = zeros(2,0);
     % check points
-    assert(all(isnan([ax.Children(1).XData;ax.Children(1).YData])));
-    % test color
-    assert(isequal(colorOrder(2,:), ax.Children(1).Color));
+    assert(all(isnan(readVerticesFromFigure(ax.Children(1)))));
     
     % close figure
     close;
@@ -89,7 +92,7 @@ try
 
     % check points
     V = zeros(2,0);
-    assert(all(isnan([ax.Children(1).XData;ax.Children(1).YData])));
+    assert(all(isnan(readVerticesFromFigure(ax.Children(1)))));
 
     % close figure
     close;

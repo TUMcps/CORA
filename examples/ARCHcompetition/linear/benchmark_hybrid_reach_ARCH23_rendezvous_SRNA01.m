@@ -82,7 +82,7 @@ spec = add(spec1,spec2);
 % Simulation --------------------------------------------------------------
 
 % random simulation
-simRes = simulateRandom(HA,params); 
+traj = simulateRandom(HA,params); 
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -108,13 +108,13 @@ set(h,'FaceColor',colorblind('gray'));
 useCORAcolors('CORA:contDynamics')
 
 % plot reachable set
-plot(R,[1,2],'Unify',true,'UnifyTotalSets',20);
+plot(R,[1,2]);
 
 % plot initial set
 plot(R(1).R0,[1,2]);
 
 % plot simulation
-plot(simRes,[1,2]);
+plot(traj,[1,2]);
 
 xlabel('$s_x$','interpreter','latex');
 ylabel('$s_y$','interpreter','latex');

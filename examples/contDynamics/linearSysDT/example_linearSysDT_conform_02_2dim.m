@@ -31,12 +31,11 @@ params.tFinal = 5; %final time
 params.R0 = zonotope(zeros(2,1),eye(2)); % initial set template for conformance
 params.V = zonotope(0,1); % sensor noise set
 params.W = [-6; 1]*zonotope([0,1]); % disturbance set
-y = [0.79; 5.00; 4.35; 1.86; -0.11; -1.13]; % measurement vector
-delta = [0.1; 0.2; 0.1; 0; -0.1; -0.2]; % deviation of measurement vector
-params.testSuite{1} = testCase(y, zeros(6,2), [1,1], 1); % test case 1
-params.testSuite{2} = testCase(y + delta, zeros(6,2), [1,1], 1); % test case 2
-params.testSuite{3} = testCase(y - delta, zeros(6,2), [1,1], 1); % test case 3
-
+y = [0.79; 5.00; 4.35; 1.86; -0.11; -1.13]'; % measurement vector
+delta = [0.1; 0.2; 0.1; 0; -0.1; -0.2]'; % deviation of measurement vector
+params.testSuite = [trajectory(zeros(2,6), [1;1], y, [], 1); ... % trajectory 1
+    trajectory(zeros(2,6), [1;1], y + delta, [], 1); ... % trajectory 2
+    trajectory(zeros(2,6), [1;1], y - delta, [], 1)]; % trajectory 3
 
 %% Algorithmic Settings 
 options = struct;
@@ -55,20 +54,20 @@ twoDimSys = linearSysDT('twoDimSys',A,B,c,C,[],[],E,F,1);
 
 %% Reachset Synthesis
 [params_conform, results] = conform(twoDimSys,params,options);
-unifiedOutputs = results.unifiedOutputs;
+union_y_a = results.unifiedOutputs;
 
 %% Compute reachable set using obtained parameters
 options.zonotopeOrder = inf;
 R = reach(twoDimSys, params_conform, options);
 
-%% Plot test cases and reachable sets
+%% Plot trajectories and reachable sets
 
 figure; hold on;
 % plot time elapse
 plotOverTime(R,1,'LineWidth',2);
-% plot unified test cases
-for iStep = 1:length(unifiedOutputs)
-    plot(iStep-1, unifiedOutputs{iStep}(:,1),'k','Marker','.','LineStyle', 'none');
+% plot unified trajectories
+for k = 1:size(union_y_a,2)
+    plot(k-1, squeeze(union_y_a(1,k,:)),'k','Marker','.','LineStyle', 'none');
 end
 
 % label plot

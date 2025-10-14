@@ -47,7 +47,7 @@ function [t,x,ind,y] = simulateConstrained(linsysDT,params,options)
 
 % Authors:       Matthias Althoff
 % Written:       21-December-2022
-% Last update:   ---
+% Last update:   28-August-2025 (LL, transpose x and y)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -62,7 +62,7 @@ ind = [];
 y = [];
 
 % compute time vector and number of steps
-t = (params.tStart:linsysDT.dt:params.tFinal)';
+t = (params.tStart:linsysDT.dt:params.tFinal);
 steps = length(t)-1;
 
 % check end of time vector
@@ -73,15 +73,15 @@ end
 
 
 % initial state
-x = zeros(steps+1,linsysDT.nrOfDims);
-x(1,:) = params.x0';
+x = zeros(linsysDT.nrOfDims,steps+1);
+x(:,1) = params.x0;
 
 % computation of output set desired / possible
 comp_y = nargout == 4 && ~isempty(linsysDT.C);
 
 % init output
 if comp_y
-    y = zeros(steps+1,linsysDT.nrOfOutputs);
+    y = zeros(linsysDT.nrOfOutputs,steps+1);
 end
 
 % loop over all time steps
@@ -94,18 +94,17 @@ for i = 1:steps
     R = options.R.timePoint.set{end-i};
     
     % compute u using linear programming
-    u = aux_linProg_sol(linsysDT, params, R, x(i,:)', w);
+    u = aux_linProg_sol(linsysDT, params, R, x(:,i), w);
     
     % compute successor state
-    temp = linsysDT.A * x(i,:)' + linsysDT.B * u + linsysDT.c + w;
-    x(i+1,:) = temp';
+    x(:,i+1) = linsysDT.A * x(:,i) + linsysDT.B * u + linsysDT.c + w;
 
     % compute output
     if comp_y
         % sample v
         v = randPoint(params.V);
         % compute output
-        y(i,:) = linsysDT.C * x(i,:)' + linsysDT.D * u + linsysDT.k + v;
+        y(:,i) = linsysDT.C * x(:,i) + linsysDT.D * u + linsysDT.k + v;
     end
     
 end
@@ -117,7 +116,7 @@ if comp_y
     % sample v
     v = randPoint(params.V);
     % compute output
-    y(i+1,:) = linsysDT.C * x(i+1,:)' + linsysDT.D * u + linsysDT.k + v;
+    y(:,i+1) = linsysDT.C * x(:,i+1) + linsysDT.D * u + linsysDT.k + v;
 end
 
 end

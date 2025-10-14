@@ -1,0 +1,40 @@
+; ACAS Xu property 8
+
+(declare-const X_0 Real)
+(declare-const X_1 Real)
+(declare-const X_2 Real)
+(declare-const X_3 Real)
+(declare-const X_4 Real)
+
+(declare-const Y_0 Real)
+(declare-const Y_1 Real)
+(declare-const Y_2 Real)
+(declare-const Y_3 Real)
+(declare-const Y_4 Real)
+
+; Unscaled Input 0: (0, 60760)
+(assert (<= X_0 0.679857769))
+(assert (>= X_0 -0.328422877))
+
+; Unscaled Input 1: (-3.141592, -2.3561940000000003)
+(assert (<= X_1 -0.374999922))
+(assert (>= X_1 -0.499999896))
+
+; Unscaled Input 2: (-0.1, 0.1)
+(assert (<= X_2 0.015915494))
+(assert (>= X_2 -0.015915494))
+
+; Unscaled Input 3: (600, 1200)
+(assert (<= X_3 0.5))
+(assert (>= X_3 -0.045454545))
+
+; Unscaled Input 4: (600, 1200)
+(assert (<= X_4 0.5))
+(assert (>= X_4 0.0))
+
+; weak left is minimal or COC is minimal
+(assert (or
+    (and (<= Y_2 Y_0) (<= Y_2 Y_1))
+    (and (<= Y_3 Y_0) (<= Y_3 Y_1))
+    (and (<= Y_4 Y_0) (<= Y_4 Y_1))
+))

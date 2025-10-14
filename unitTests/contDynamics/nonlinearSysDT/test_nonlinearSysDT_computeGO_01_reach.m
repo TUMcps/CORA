@@ -42,6 +42,7 @@ params.U = 0.001*zonotope(randn(n_u,n_u+2));
 params.uTransVec = 0.001*randn(n_u,n_k);
 params.tFinal = sys.dt * n_k - sys.dt;
 
+% specify options
 options.zonotopeOrder = 200;
 options.tensorOrder = 2;
 options.errorOrder = 1;

@@ -142,7 +142,7 @@ if isa(sys,'contDynamics')
         else
             % input trajector, create tArray
             val = (params.tStart:sys.dt:params.tFinal-sys.dt)';
-            if isa(sys,'linearSysDT') && any(any(sys.D))
+            if (isa(sys,'linearSysDT') && any(any(sys.D)) || isa(sys,'nonlinearSysDT'))
                 val = (params.tStart:sys.dt:params.tFinal)';
             end
         end

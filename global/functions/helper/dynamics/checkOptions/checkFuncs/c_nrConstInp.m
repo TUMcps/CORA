@@ -46,7 +46,7 @@ end
 isDT = isa(sys,'linearSysDT') || isa(sys,'nonlinearSysDT') || ...
                                                 isa(sys,'neurNetContrSys');
 if isDT
-    reachSteps = round((params.tFinal - params.tStart)/sys.dt);
+    reachSteps = round((params.tFinal - params.tStart)/sys.dt)+1;
 end
 
 % check if size of params.u matches options.nrConstInp

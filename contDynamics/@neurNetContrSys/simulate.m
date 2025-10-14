@@ -45,7 +45,7 @@ function [t, x, ind, y] = simulate(obj, params, varargin)
 %    [t,x] = simulate(sys,params);
 % 
 %    figure
-%    plot(x(:,1),x(:,2),'k', 'DisplayName', 'Simulation');
+%    plot(x(1,:),x(2,:),'k', 'DisplayName', 'Simulation');
 %    legend()
 %
 % Other m-files required: none
@@ -57,6 +57,7 @@ function [t, x, ind, y] = simulate(obj, params, varargin)
 % Authors:       Niklas Kochdumper, Tobias Ladner
 % Written:       13-December-2021
 % Last update:   28-November-2022
+%                28-August-2025 (LL, transpose t and x)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -149,9 +150,9 @@ for i = 1:length(time) - 1
         end
 
         % store the results
-        x = [x; x_(:, 1:obj.nrOfDims)];
-        t = [t; t_];
-        x0 = x(end, 1:obj.nrOfDims)';
+        x = [x x_(:, 1:obj.nrOfDims)'];
+        t = [t t_'];
+        x0 = x(1:obj.nrOfDims,end);
         cnt = cnt + index(end);
 
         if ~isempty(ind)

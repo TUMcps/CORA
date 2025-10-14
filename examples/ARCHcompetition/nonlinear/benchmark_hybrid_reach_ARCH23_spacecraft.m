@@ -108,13 +108,13 @@ set(h,'FaceColor',colorblind('y'));
 
 % plot reachable set
 R1 = find(R,'location',1);
-plot(R1,sxsy,'FaceColor',colorblind('b'),'Unify',true);
+plot(R1,sxsy,'FaceColor',colorblind('b'));
 
 R2 = find(R,'location',2);
-plot(R2,sxsy,'FaceColor',colorblind('r'),'Unify',true);
+plot(R2,sxsy,'FaceColor',colorblind('r'));
 
 R3 = find(R,'location',3);
-plot(R3,sxsy,'FaceColor',colorblind('b'),'Unify',true);
+plot(R3,sxsy,'FaceColor',colorblind('b'));
 
 % plot initial set
 plot(params.R0,sxsy,'k','FaceColor','w');

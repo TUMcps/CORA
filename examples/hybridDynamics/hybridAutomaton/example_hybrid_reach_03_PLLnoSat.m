@@ -100,10 +100,7 @@ for iSim = 1:samples
         end
     
         %simulate hybrid automaton
-        x_cycle = aux_simulatePLL(HAsim,params,simCycles); 
-
-        %get simulation results
-        simRes{iSim} = x_cycle;
+        x_cycle{iSim} = aux_simulatePLL(HAsim,params,simCycles); 
     end
     
     iSim
@@ -134,10 +131,9 @@ for i = 1:4
         for n = plotRange
             %plot results
             try
-                xProj = Psim*simRes{n}(iSet,:)';
+                xProj = Psim*x_cycle{n}(iSet,:)';
                 plot(xProj(dims(i,1)),xProj(dims(i,2)),...
                     'Color',colorblind('k'),'Marker','.');
-                %plot(simRes{n}(iSet,dims(i,1)),simRes{n}(iSet,dims(i,2)),'ro');
             catch
             end
         end
@@ -472,10 +468,10 @@ end
 function x_cycle = aux_simulatePLL(obj,params,simCycles)
 
 %initialize intermediate state
-x_cycle=params.x0'; %intermediate state at transitions
+x_cycle=params.x0; %intermediate state at transitions
 
 %while final time not reached
-while length(x_cycle(:,1)) < simCycles
+while length(x_cycle(1,:)) < simCycles
 
     %simulate within the actual location
     params.u = params.uLoc{params.loc};
@@ -483,10 +479,10 @@ while length(x_cycle(:,1)) < simCycles
     
     %store results at the end of location 1
     if params.loc==2 && (params.x0(4)<=params.x0(5))
-        x_cycle(end+1,:) = params.x0';
+        x_cycle(:,end+1) = params.x0;
     end
     if params.loc==3 && (params.x0(4)>=params.x0(5)) % loc 4 was used previously; check
-        x_cycle(end+1,:) = params.x0';
+        x_cycle(:,end+1) = params.x0;
     end
 end
 

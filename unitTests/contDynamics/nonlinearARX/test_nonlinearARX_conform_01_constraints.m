@@ -64,7 +64,7 @@ params.testSuite = createTestSuite(sys, params, n_k, n_m, n_s);
 
 % General Options
 options = options_reach;
-options.cs.robustnessMargin = 1e-9;
+options.cs.robustness = 1e-9;
 options.cs.verbose = false;
 
 num_id = length(constraints);
@@ -78,8 +78,8 @@ for i_id = 1:num_id
     c_R0 = zeros(size(center(params.R0)));
     c_U = zeros(size(center(params.U)));
     params_id_init = params;
-    params_id_init.R0 = zonotope([c_R0 eye(length(c_R0)) ones(length(c_R0),1)]);
-    params_id_init.U = zonotope([c_U eye(length(c_U)) ones(length(c_U),1)]);
+    params_id_init.R0 = zonotope([c_R0 eye(length(c_R0))]);
+    params_id_init.U = zonotope([c_U eye(length(c_U))]);
 
     % Identification ------------------------------------------------------
     [params_id{i_id}, ~] = conform(sys,params_id_init,options);   
@@ -92,10 +92,8 @@ G_U2 = params_id{2}.U.G;
 
 tolX = max(1e-5*max([G_X01 G_X02], [],'all'), 1e-6); 
 tolU = max(1e-5*max([G_U1 G_U2], [],'all'), 1e-6); 
-assert(all(G_X01 <= G_X02 + tolX, 'all'))
-assert(all(G_X01 >= G_X02 - tolX, 'all'))
-assert(all(G_U1 <= G_U2 + tolU, 'all'))
-assert(all(G_U1 >= G_U2 - tolU, 'all'))
+assert(all(withinTol(G_X01, G_X02, tolX), 'all'))
+assert(all(withinTol(G_U1, G_U2, tolU), 'all'))
 
 res = true;
 

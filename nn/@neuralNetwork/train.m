@@ -43,6 +43,8 @@ function [loss,trainTime] = train(nn, trainX, trainT, valX, valT, varargin)
 %               .num_init_gens: number of generators of the input 
 %                   zonotopes; ignored if initial_generators='l_inf'
 %               .init_gens: {'l_inf','random','sensitivity'}
+%               .propagation_batch_size: mini batch is split up to save
+%                   memory
 %               .poly_method: {'bounds','singh','center'}
 %           'madry': augment training inputs with adversarial attacks, see [3]
 %               .pgd_iterations: number of iterations
@@ -78,15 +80,15 @@ function [loss,trainTime] = train(nn, trainX, trainT, valX, valT, varargin)
 %    loss - loss during training, struct
 %        .center: (training) loss
 %        .vol: (training) volume heuristic loss
-%        .total: total training training loss
+%        .train: total training training loss
 %        .val: validation loss
 %    trainTime - training time
 %    
 % References:
 %    [1] C. M. Bishop. Pattern Recognition and Machine Learning. 
 %        Information Science and Statistics. Springer New York, NY, 2006.
-%    [2] Koller, L. "Co-Design for Training and Verifying Neural Networks",
-%           Master's Thesis
+%    [2] Koller, L. et al. Set-based Training for Neural Network
+%           Verification. TMLR 2025
 %    [3] Madry, A. et al. Towards deep learning models resistant to 
 %           adversarial attacks. ICLR. 2018
 %    [4] Gowal, S. et al. Scalable verified training for provably
@@ -137,13 +139,16 @@ options = nnHelper.validateNNoptions(options,true);
 % Extract training parameters
 maxEpoch = options.nn.train.max_epoch;
 miniBatchSize = options.nn.train.mini_batch_size;
+propBatchSize = min(miniBatchSize,options.nn.train.propagation_batch_size);
 
 maxNoise = options.nn.train.noise;
+numWarmUpEpochs = options.nn.train.warm_up;
 % Compute numbre of ramp up epochs
-numRampUpEpochs = options.nn.train.ramp_up - options.nn.train.warm_up;
+numRampUpEpochs = options.nn.train.ramp_up - numWarmUpEpochs;
 
 % Obtain number of input dimension and number of data points
-[v0,N] = size(trainX);
+[~,N] = size(trainX);
+[v0,~] = size(valX);
 % Validate input generators
 if strcmp(options.nn.train.init_gens,'l_inf')
     options.nn.train.num_init_gens = v0;
@@ -185,7 +190,7 @@ end
 % Initialize loss struct to store loss values
 loss = struct('center',zeros(numIter,1),...
     'vol',zeros(numIter,1),...
-    'total',zeros(numIter,1),...
+    'train',zeros(numIter,1),...
     'valCenter',zeros(length(valIter),1),...
     'valVol',zeros(length(valIter),1),...
     'valTotal',zeros(length(valIter),1)...
@@ -226,7 +231,6 @@ if strcmp(options.nn.train.method,'set')
     numGen = nn.prepareForZonoBatchEval(trainX,options,idxLayer);
     % Allocate generators for initial perturbance set.
     idMat = eye(v0,'like',inputDataClass);
-    batchG = cast(repmat(idMat,1,1,miniBatchSize),'like',inputDataClass);
 end
 
 % set up verbose output table
@@ -234,6 +238,9 @@ table = aux_setUpTrainingTable(options);
 if verbose
     table.printHeader();
 end
+
+% Start training time
+timerVal = tic;
 
 % Main training loop
 for epoch=1:maxEpoch % epoch
@@ -247,21 +254,27 @@ for epoch=1:maxEpoch % epoch
     for i=1:miniBatchSize:max(1,N - mod(N,miniBatchSize)) % training iterations
         % Compute a scaling factor to scale training noise based on warm-up
         % and ramp-up epochs.
-        iterScale = (iter - options.nn.train.warm_up*iterPerEpoch)...
+        iterScale = (iter - numWarmUpEpochs*iterPerEpoch)...
             /(numRampUpEpochs*iterPerEpoch);
         iterScale = min(max(0,iterScale),1);
+        loss.iterScale(iter) = iterScale;
         % Scale training noise
-        options.nn.train.noise = maxNoise*iterScale;
+        options.nn.train.noise = maxNoise*iterScale; % *noiseScale;
 
         % Compute indices for elements in current batch
         miniBatchIdx = i:i+min(miniBatchSize,N)-1;
         % Extract data of current batch
         xBatch = cast(trainX(:,miniBatchIdx),'like',inputDataClass);
         tBatch = cast(trainT(:,miniBatchIdx),'like',inputDataClass);
+        % Data augmentation.
+        if isfield(options.nn.train,'data_augmentation')
+            xBatch = options.nn.train.data_augmentation(xBatch);
+        end
         % enable backpropagation
         options.nn.train.backprop = true;
         options.nn.interval_center = ivalC;
-        if strcmp(options.nn.train.method,'point')
+        if strcmp(options.nn.train.method,'point') ...
+                || options.nn.train.noise == 0 ... (strcmp(options.nn.train.method,'set') && options.nn.train.noise == 0)
             % Forward propagation
             yBatch = nn.evaluate_(xBatch,options,idxLayer);
             % Compute loss
@@ -269,17 +282,49 @@ for epoch=1:maxEpoch % epoch
             % Backpropagation
             nn.backprop(grad,options,idxLayer);
         elseif strcmp(options.nn.train.method,'set')
-            % construct input generators
-            [xBatch,xBatchG] = aux_construtInputGenerators(nn,xBatch, ...
-                batchG(:,:,1:length(miniBatchIdx)),idMat,tBatch,options);
-            % Set-based forward propagation
-            [ycBatch,yGBatch] = nn.evaluateZonotopeBatch_(xBatch,xBatchG, ...
-                options,idxLayer);
-            % Compute set-based loss
-            [lossBatch,gc,gG] = aux_computeLoss(tBatch,ycBatch,yGBatch, ...
-                options);
-            % Set-based backpropagation
-            nn.backpropZonotopeBatch_(gc,gG,options,idxLayer);
+            % Split mini-batch and propagate parts to save memory.
+            lossBatch.center = 0;
+            lossBatch.vol = 0;
+            lossBatch.train = 0;
+            % lossBatch.approxErrRel = 0;
+            lossBatch.minMeanMaxVarGG = 0;
+            lossBatch.minMeanMaxVarGR = 0;
+            lossBatch.minMeanMaxVarGc = 0;
+            for j=1:propBatchSize:...
+                    max(1,miniBatchSize - mod(miniBatchSize,propBatchSize))
+                % Compute indices for elements in current batch
+                propIdx = j:j+min(propBatchSize,miniBatchSize)-1;
+
+                % Batch norm is based on statistics of the nominal input; normal forward
+                % propagation to compute stats.
+                options.nn.batch_norm_calc_stats = true; % compute batch stats.
+
+                % construct input generators
+                [xBatch_,GBatch_] = aux_construtInputGenerators(nn, ...
+                    xBatch(:,propIdx),... idBatch(:,:,1:length(propIdx)), ...
+                        idMat,tBatch(:,propIdx),options);
+                if strcmp(options.nn.approx_error_order,'sensitivity*length')
+                    % Compute sensitivity; need to select most influential
+                    % approximation errors.
+                    nn.calcSensitivity(xBatch(:,propIdx));
+                end
+                % Set-based forward propagation.
+                [cyBatch,GyBatch] = nn.evaluateZonotopeBatch_( ...
+                    xBatch_,GBatch_,options,idxLayer);
+                % Compute set-based loss.
+                [lossBatch_,gc,gG] = aux_computeLoss(tBatch(:,propIdx), ...
+                    cyBatch,GyBatch,options);
+                % Set-based backpropagation.
+                nn.backpropZonotopeBatch_(gc,gG,options,idxLayer,true);
+                % Add propgation loss.
+                lossScale = length(propIdx)/length(miniBatchIdx);
+                lossBatch.center = lossBatch.center + ...
+                    lossScale*lossBatch_.center;
+                lossBatch.vol = lossBatch.vol + ...
+                    lossScale*lossBatch_.vol;
+                lossBatch.train = lossBatch.train + ...
+                    lossScale*lossBatch_.train;
+            end
         else
             % Train using other methods ('madry','gowal','trades','sabr'), 
             % see [3-6]
@@ -287,13 +332,15 @@ for epoch=1:maxEpoch % epoch
                 options,iterScale);
         end
         % Store loss of current batch
-        loss.center(iter) = lossBatch.center;
-        loss.vol(iter) = lossBatch.vol;
-        loss.total(iter) = lossBatch.total;
+        loss.center(iter) = loss.center(iter) + lossBatch.center;
+        loss.vol(iter) = loss.vol(iter) + lossBatch.vol;
+        loss.train(iter) = loss.train(iter) + lossBatch.train;
+        % loss.noiseScale(iter) = noiseScale;
+
         % To save memory, we clear all variables that are only used
         % during the batch computation
-        batchVars = {'xBatch','tBatch','yBatch','grad','xBatchG','ycBatch',...
-            'yGBatch','gc','gG'};
+        batchVars = {'xBatch','tBatch','yBatch','grad','GBatch','cyBatch',...
+            'GyBatch','gc','gG'};
         clear(batchVars{:});
 
         % Step the optimizer to update the weights
@@ -311,6 +358,8 @@ for epoch=1:maxEpoch % epoch
             % disable backpropagation
             options.nn.train.backprop = false;
             options.nn.interval_center = false;
+            % Loop index.
+            k = 1;
             for j=1:miniBatchSize:max(1,valN - mod(valN,miniBatchSize))
                 % compute indices for elements in current batch
                 valBatchIdx = j:min(j+miniBatchSize-1,valN);
@@ -322,9 +371,11 @@ for epoch=1:maxEpoch % epoch
                 % Compute loss
                 [lossValBatch,~,~] = aux_computeLoss(valTBatch,valYBatch,[],options);
                 % Store loss
-                lossValCenter(j) = lossValBatch.center*length(valBatchIdx);
-                lossValVol(j) = lossValBatch.vol*length(valBatchIdx);
-                lossValTotal(j) = lossValBatch.total*length(valBatchIdx);
+                lossValCenter(k) = lossValBatch.center*length(valBatchIdx);
+                lossValVol(k) = lossValBatch.vol*length(valBatchIdx);
+                lossValTotal(k) = lossValBatch.train*length(valBatchIdx);
+                % Increment loop index.
+                k = k + 1;
 
                 % To save memory, we clear all variables that are only used
                 % during the batch computation
@@ -347,7 +398,8 @@ for epoch=1:maxEpoch % epoch
 
         % Print loss of current training iteration
         if verbose && ismember(iter,printIter) 
-            aux_printTrainingIteration(table,iter,epoch,valIter,loss)
+            trainTime = toc(timerVal);
+            aux_printTrainingIteration(options,table,iter,epoch,trainTime,valIter,loss)
         end
 
         % Check for early-stopping
@@ -375,7 +427,7 @@ if verbose
 end
 
 % Clear variables that are no longer used.
-vars = {'batchG','idMat'};
+vars = {'idMat'}; ... 'idBatch'
 clear(vars{:});
 
 % (potentially) gather weights of the network from gpu
@@ -389,8 +441,8 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [loss,gc,gG] = aux_computeLoss(t,yc,yG,options)
-% Compute the loss for a given zonotope Y=(yc,yG). If the generator matrix
+function [loss,gc,gG] = aux_computeLoss(t,cy,Gy,options)
+% Compute the loss for a given zonotope Y=(cy,Gy). If the generator matrix
 % is empty, we just compute the point based loss.
 
 % Obtain mini-batch size
@@ -403,48 +455,46 @@ if strcmp(options.nn.train.loss,'mse')
     gradFun = @(t,y) 1/batchSize*(y + (-t));
 elseif strcmp(options.nn.train.loss,'softmax+log')
     % Improve numerical stability of softmax
-    % yc = yc - max(yc,[],1);
+    % cy = cy - max(cy,[],1);
+    subMax = @(x) x - max(x,[],1);
     % Use numerically stable log-softmax
     logSoftmax = @(x) x - log(sum(exp(x),1));
     % Classification loss (cross-entropy)
-    lossFun = @(t,y) -1/batchSize*sum(t.*logSoftmax(y),'all');
-    gradFun = @(t,y) 1/batchSize*(softmax(y) + (-t));
+    lossFun = @(t,y) -1/batchSize*sum(t.*logSoftmax(subMax(y)),'all');
+    gradFun = @(t,y) 1/batchSize*(softmax(subMax(y)) + (-t));
 elseif strcmp(options.nn.train.loss,'custom')
     % Take given loss function and derivative
     lossFun = options.nn.train.loss_fun;
     gradFun = options.nn.train.loss_grad;
+    % Compute custom loss
+    loss.train = lossFun(t,cy,Gy);
+    loss.center = 0;
+    loss.vol = 0;
+    [gc,gG] = gradFun(t,cy,Gy);
+    return
 else
-    throw(CORAerror('CORA:wrongFieldValue', ...
-        sprintf("Unsported loss function: %s; Only supported values " + ...
-            "for 'point_loss_fun_type' are 'mse','softmax+log', and " + ...
-                "'custom'!",options.nn.train.loss)));
+    throw(CORAerror('CORA:wrongFieldValue',...
+        'options.nn.train.loss',{'mse','softmax+log','custom'}));
 end
 
-if options.nn.interval_center
-    ycl = reshape(yc(:,1,:),[vK batchSize]);
-    ycu = reshape(yc(:,2,:),[vK batchSize]);
-
-    % % Gowal-IBP Loss
-    % z = t.*ycl + (1-t).*ycu;
-    % % Compute loss of center
-    % loss.center = cast(lossFun(t,z),'like',single(1));
-    % % Compute gradient of center
-    % gc = gradFun(t,z);
-    % gc = permute(cat(3,t.*gc,(1-t).*gc),[1 3 2]);
+if options.nn.interval_center && ndims(cy) == 3
+    cyl = reshape(cy(:,1,:),[vK batchSize]);
+    cyu = reshape(cy(:,2,:),[vK batchSize]);
 
     % Center Loss
-    z = 1/2*(ycu + ycl);
+    z = 1/2*(cyu + cyl);
     % Compute loss of center
-    loss.center = cast(lossFun(t,z),'like',single(1));    
+    loss.center = cast(lossFun(t,z),'like',single(1));  
+   
     % Compute gradient of center
     gc = gradFun(t,z);
     gc = 1/2*permute(cat(3,gc,gc),[1 3 2]);
-
+   
     idMat = eye(size(z,1),'like',z);
-    yG = cat(2,yG,1/2*permute(ycu - ycl,[1 3 2]).*idMat);
+    Gy = cat(2,Gy,1/2*permute(cyu - cyl,[1 3 2]).*idMat);
 else
     % Use center.
-    z = yc;
+    z = cy;
     % Compute loss of center.
     loss.center = cast(lossFun(t,z),'like',single(1));
     % Compute gradient of center.
@@ -452,33 +502,36 @@ else
 end
 
 
-if isempty(yG) 
+if isempty(Gy) 
     % Training point-based: There is no volume loss
     loss.vol = 0;
-    loss.total = loss.center;
+    loss.train = loss.center;
     % There is not gradient for the generator matrix
-    gG = zeros(size(yG),'like',yG);
+    gG = zeros(size(Gy),'like',Gy);
 else 
     % Compute volume heuristic
     if strcmp(options.nn.train.volume_heuristic,'interval')
         % The interval norm is the sum of all absolute values of the
         % generator matrix.
-        yPredVolHeu = 1/batchSize*sum(abs(yG),'all');
-        gG = 1/batchSize*sign(yG);
+        yPredVolHeu = 1/batchSize*sum(abs(Gy),'all');
+        gG = 1/batchSize*sign(Gy);
     elseif strcmp(options.nn.train.volume_heuristic,'f-radius')
         % The F-radius is the square-root of the sum of all squared entries
         % of the generator matrix.
-        frad = sqrt(sum(yG.^2,[1 2]));
+        frad = sqrt(sum(Gy.^2,[1 2]));
         zIdx = (frad(:) < eps('like',frad));
         yPredVolHeu = 1/batchSize*sum(frad);
-        gG = 1/batchSize*(yG./frad);
+        gG = 1/batchSize*(Gy./frad);
         gG(:,:,zIdx) = 0;
+    elseif strcmp(options.nn.train.volume_heuristic,'set-eval')
+        % Set-based evaluation of the gradient.
+        yPredVolHeu = 1/batchSize*1/2*sum(Gy.^2,'all');
+        gG = 1/batchSize*Gy;
     else
-        throw(CORAerror('CORA:wrongFieldValue', ...
-            sprintf("Unsported volume heuristic: %s; Only supported values " + ...
-                "for 'volume_heuristic' are 'interval' and 'f-radius'!!",...
-                    options.nn.train.volume_heuristic)));
+        throw(CORAerror('CORA:wrongFieldValue',...
+            'options.nn.train.volume_heuristic',{'interval','f-radius'}));
     end
+
     loss.vol = cast(yPredVolHeu,'like',single(1));
     % Extract training parameters
     noise = options.nn.train.noise;
@@ -495,42 +548,26 @@ else
     cCenter = 1 - tau;
     cVol = tau;
     % Compute total loss
-    loss.total = cCenter*loss.center + cVol*loss.vol;
+    loss.train = cCenter*loss.center + cVol*loss.vol;
     % Scale the gradients according to their weights
     gc = cCenter*gc;
     gG = cVol*gG; 
 
-    if strcmp(options.nn.train.zonotope_weight_update,'outer_product')
-        % For 'outer_product' or 'sum', we compute the set of 
-        % classification losses. Thus, we additionally add the generator
-        % matrix to the gradient.
-        gG = gG + 1/batchSize*cCenter*yG;
-    elseif strcmp(options.nn.train.zonotope_weight_update,'sum')
-        % Ensure uniform distribution over the output set.
-        % yGnorm = yG./max(vecnorm(yG),eps('like',yG));
-        % Ebbt = vK/(vK+2)*pagemtimes(yGnorm,'transpose',yGnorm,'none');
-        % Ebbt = vK/(vK+2)*sign(pagemtimes(yG,'transpose',yG,'none'));
-        % Ebbt = Ebbt./max(Ebbt,[],3);
-        % Ebbt(isnan(Ebbt)) = 1;
-
-        % gG = gG + pagemtimes(1/batchSize*cCenter*yG,Ebbt);
-        % gG = pagemtimes(gG + 1/batchSize*cCenter*yG,Ebbt);
-        % gG = gG + 1/batchSize*cCenter*yG;
-    end
-
-    if options.nn.interval_center
-        q = size(yG,2) - vK;
-        diagIdx = reshape(sub2ind(size(yG),repmat(1:vK,1,batchSize),...
+    if options.nn.interval_center % && ~options.nn.train.ibp_center_loss
+        % Extract gradient for the interval center.
+        q = size(Gy,2) - vK;
+        diagIdx = reshape(sub2ind(size(Gy),repmat(1:vK,1,batchSize),...
             q + repmat(1:vK,1,batchSize),repelem(1:batchSize,1,vK)),...
             [vK batchSize]);
         gc = gc + 1/2*permute(cat(3,-gG(diagIdx),gG(diagIdx)),[1 3 2]);
-        gG = gG(:,1:q,:); % 1/3.*yG(:,1:q,:); % 
+        gG = gG(:,1:q,:);
     end
 end
 
 end
 
-function [xBatch,xBatchG] = aux_construtInputGenerators(nn,xBatch,batchG,idMat,tBatch,options)
+function [xBatch,GBatch] = ...
+    aux_construtInputGenerators(nn,xBatch,idMat,tBatch,options) ... ,idBatch
 % Construct the generator matrix for the input zonotopes.
 [v0,batchSize] = size(xBatch);
 % Extract training parameters
@@ -552,91 +589,92 @@ if any(noise > 0)
     if strcmp(initGens,'l_inf')
         % l_inf-ball as input zonotope; the generator matrix is the 
         % indentity matrix
-        xBatchG = batchG;
-        idx1 = repmat(cast(1:v0,'like',xBatch),1,batchSize);
-        idx2 = repelem(cast(1:batchSize,'like',xBatch),1,v0);
-        % Scale non-zero entries by training perturbation noise
-        nnzIdx = reshape(sub2ind(size(xBatchG),idx1,idx1,idx2), ...
-            [v0 batchSize]);
-        xBatchG(nnzIdx) = noise.*reshape(xBatchG(nnzIdx),[v0 batchSize]);
+        GBatch = permute(noise,[1 3 2]).*idMat;
 
         if options.nn.interval_center
             xBatch = permute(cat(3,xBatch,xBatch),[1 3 2]);
         end
     elseif strcmp(initGens,'random')
         % sample a random generators from [-1,1].
-        xBatchG = 2*rand(v0,numInitGens,batchSize,'like',xBatch) - 1;
-        xBatchG = cast(xBatchG,'like',xBatch);
+        GBatch = 2*rand(v0,numInitGens,batchSize,'like',xBatch) - 1;
+        GBatch = cast(GBatch,'like',xBatch);
         % Scale the generators by the current training noise.
-        xBatchG = epsilon*xBatchG./max(sum(abs(xBatchG),2),eps('like',xBatchG));
+        GBatch = epsilon*GBatch./max(sum(abs(GBatch),2),eps('like',GBatch));
     elseif strcmp(initGens,'sensitivity')
-        % disable backpropagation for the computation of the sensitivity
-        options.nn.train.backprop = false;
-        % Compute the sensitivity matrix for each input of the
-        % current batch.
-        [S,~] = nn.calcSensitivity(xBatch,options,false);
-        % re-enable backpropagation
+        
+        % 1. Forward propagation, with backprop enabled.
         options.nn.train.backprop = true;
-        % Group input dimensions to have similar sensitivity.
+        yBatch = nn.evaluate(xBatch,options);
+        % 2. Backpropagation.
+        idxLayer = 1:length(nn.layers);
+        gradBatch = nn.backprop(yBatch - tBatch,options,idxLayer,false);
         % Find the input pixels that affect the output the most.
-        [~,idx] = sort(sum(abs(S)),2,'descend');
-        % % Compute the number of entries per generator.
-        % entsPerGen = floor(v0/numInitGens);
-        % % Transform the indices for an efficient construction of
-        % % the generator matrix.
-        % idx = {':',reshape(idx(:,1:numInitGens*entsPerGen,:),1,[])};
-        % % Construct the generator matrix and sum along the extra
-        % % dimension to combine the unimportant generators.
-        % xBatchG = reshape(idMat(idx{:}), [v0 numInitGens entsPerGen batchSize]);
-        % xBatchG = reshape(sum(xBatchG,3),[v0 numInitGens batchSize]);
-        xBatchG = reshape(idMat(:,idx(:,1:numInitGens,:)),[v0 numInitGens batchSize]);
-        % Scale the generators by the current training noise.
-        xBatchG = permute(noise,[1 3 2]).*xBatchG;
+        [~,dimIdx] = sort(gradBatch,'descend');
+
+        % Initialize generator matrix.
+        GBatch = zeros([v0 numInitGens batchSize],'like',xBatch);
+        % Compute indices for non-zero entries.
+        gIdx = sub2ind(size(GBatch),...
+            dimIdx(1:numInitGens,:),...
+            repmat((1:numInitGens)',1,batchSize),...
+            repelem(1:batchSize,numInitGens,1));
+        % Permute noise vector.
+        noise_ = noise(dimIdx);
+        % Set non-zero generator entries.
+        GBatch(gIdx) = noise_(1:numInitGens,:);
 
         if options.nn.interval_center
-            idx_ = sub2ind([v0 batchSize],idx(:,numInitGens+1:end,:),repelem(1:batchSize',v0 - numInitGens,1));
-            mask = zeros(size(xBatch),'like',xBatch);
-            mask(idx_) = 1;
-            xBatch = permute(cat(3,mask.*xBatchL + (1-mask).*xBatch,mask.*xBatchU + (1-mask).*xBatch),[1 3 2]);
+            % Move remaining noise to the interval center.
+            rBatch = sum(GBatch,2);
+            xBatch = permute(cat(3,xBatchL + rBatch,xBatchU - rBatch),[1 3 2]);
         end
-    elseif strcmp(initGens,'fgsm')
+    elseif startsWith(initGens,'fgsm')
         % Compute a FGSM attack for each generator
         xsBatch = repmat(xBatch,[1 1 numInitGens]);
         xsBatchL = repmat(xBatchL,[1 1 numInitGens]);
-        xsBatchU = repmat(xBatchU,[1 1 numInitGens]);
+        xsBatchU = repmat(xBatchU,[1 1 numInitGens]);        
         % add random noise
         xsBatch = xsBatch + noise.*(2*rand(size(xsBatch),'like',xsBatch) - 1);
         tsBatch = repmat(tBatch,[1 1 numInitGens]);
         zBatch = nn.computePGDAttack(xsBatch(:,:),tsBatch(:,:),options, ...
-            1/2*epsilon,1,xsBatchL(:,:),xsBatchU(:,:));
+            epsilon,1,xsBatchL(:,:),xsBatchU(:,:), ...
+            epsilon,0,[]); % @(t,y) 1 - t);
         zBatch = reshape(zBatch,[v0 batchSize numInitGens]);
+
         % Move center in the middle of attacks.
-        % xBatch = 1/numInitGens*reshape(sum(zBatch,3),[v0 batchSize]);
+        xBatch = 1/numInitGens*reshape(sum(zBatch,3),[v0 batchSize]);
+        % xBatch = 1/2*reshape(max(zBatch,[],3) + min(zBatch,[],3),[v0 batchSize]);
         % Update noise.
-        % noise = min(xBatchU - xBatch,xBatch - xBatchL);
-        % noise = 1/2*(min(xBatch + epsilon,inpSup) - max(xBatch - epsilon,inpInf));
-        % Compute generators from FGSM attacks.
-        xBatchG = permute(xBatch - zBatch,[1 3 2]);
+        noise = min(xBatchU - xBatch,xBatch - xBatchL);
+
         % Scale generators.
-        % s = permute(noise,[1 3 2])./sum(abs(xBatchG),2);
-        % s(isnan(s)) = 0;
-        % xBatchG = s.*xBatchG;
-        xBatchG = 1/numInitGens*xBatchG;
+        if endsWith(initGens,'1')
+            % Compute generators from FGSM attacks.
+            GBatch = permute(xBatch - zBatch,[1 3 2]);
+            s = permute(noise,[1 3 2])./sum(abs(GBatch),2);
+            s(isnan(s)) = 0;
+            GBatch = s.*GBatch;
+        elseif endsWith(initGens,'2')
+            % Compute generators from FGSM attacks.
+            GBatch = 1/numInitGens*permute(xBatch - zBatch,[1 3 2]);
+        elseif endsWith(initGens,'3')
+            GBatch = zeros([v0 numInitGens batchSize],'like',xBatch);
+        end
 
         if options.nn.interval_center
-            % r = reshape(sum(abs(xBatchG),2),[v0 batchSize]);
-            % xBatch = interval(xBatch - (noise - r),xBatch + (noise - r));
-            xBatch = permute(cat(3,xBatch,xBatch),[1 3 2]);
+            r = reshape(sum(abs(GBatch),2),[v0 batchSize]);
+            xBatch = permute(cat(3,xBatch - (noise - r),xBatch + (noise - r)),[1 3 2]);
+            % xBatch = permute(cat(3,xBatch,xBatch),[1 3 2]);
         end
     else
         throw(CORAerror('CORA:wrongFieldValue', ...
-            sprintf("options.nn.train.init_gens: %s!",initGens)));
+            'options.nn.train.init_gens',{'l_inf','random','sensitivity','fgsm'}));
     end
 else
     if options.nn.interval_center
         xBatch = permute(cat(3,xBatch,xBatch),[1 3 2]);
     end
-    xBatchG = zeros([v0 numInitGens batchSize],'like',xBatch);
+    GBatch = zeros([v0 numInitGens batchSize],'like',xBatch);
 end
 
 % To save memory, we clear all variables that are no longer used.
@@ -649,6 +687,17 @@ function [lossBatch] = aux_trainOtherMethods(nn,xBatch,tBatch,idxLayer,...
 % Obtain the bound of the input space.
 inpInf = options.nn.train.input_space_inf;
 inpSup = options.nn.train.input_space_sup;
+
+% Batch norm is based on statistics of the nominal input; normal forward
+% propagation to compute stats.
+options.nn.batch_norm_calc_stats = true; % compute batch stats.
+options.nn.train.backprop = false; % Disable backprop.
+nn.evaluate_(xBatch,options,idxLayer);
+% Reset flags.
+options.nn.batch_norm_calc_stats = false;
+options.nn.train.backprop = true;
+options.nn.batch_norm_moving_stats = true;
+
 % Handle forward and back-propagation of other training methods for robust
 % neural networks, see references [3-6]
 if strcmp(options.nn.train.method,'madry')
@@ -691,7 +740,7 @@ elseif strcmp(options.nn.train.method,'gowal')
     batchU = min(xBatch + r,inpSup);
     xBatchIval = interval(batchL,batchU);
     % elision of the last linear layer
-    elision = isa(nn.layers{idxLayer(end)},'nnLinearLayer');
+    elision = false; % isa(nn.layers{idxLayer(end)},'nnLinearLayer');
     if elision
         % compute output bounds (except last layer)
         yBatchIval = nn.evaluate_(xBatchIval,options,idxLayer(1:end-1));
@@ -741,7 +790,7 @@ elseif strcmp(options.nn.train.method,'gowal')
     % combine losses
     lossBatch.center = kappa*lossBatch.center + (1 - kappa)*lossBatchIval.center;
     lossBatch.vol = kappa*lossBatch.vol + (1 - kappa)*lossBatchIval.vol;
-    lossBatch.total = kappa*lossBatch.total + (1 - kappa)*lossBatchIval.total;
+    lossBatch.train = kappa*lossBatch.train + (1 - kappa)*lossBatchIval.train;
 elseif strcmp(options.nn.train.method,'trades')            
     % normal forward propagation
     yBatch = nn.evaluate_(xBatch,options,idxLayer);
@@ -779,10 +828,10 @@ elseif strcmp(options.nn.train.method,'trades')
             1/options.nn.train.lambda*lossBatchRob.center;
         lossBatch.vol = lossBatch.vol + ...
             1/options.nn.train.lambda*lossBatchRob.vol;
-        lossBatch.total = lossBatch.total + ...
-            1/options.nn.train.lambda*lossBatchRob.total;
+        lossBatch.train = lossBatch.train + ...
+            1/options.nn.train.lambda*lossBatchRob.train;
     end
-elseif strcmp(options.nn.train.method,'sabr')     
+elseif strcmp(options.nn.train.method,'sabr')
     % clamp values to [0,1]
     batchL = max(inpInf,xBatch - options.nn.train.noise);
     batchU = min(inpSup,xBatch + options.nn.train.noise);
@@ -809,8 +858,8 @@ elseif strcmp(options.nn.train.method,'sabr')
     nn.backpropIntervalBatch(tBatch.*gradIval,(1-tBatch).*gradIval, ...
         options,idxLayer);
 else
-    throw(CORAerror('CORA:wrongFieldValue', ...
-        sprintf("Unsported training method: %s;",options.nn.train.method)));
+    throw(CORAerror('CORA:wrongFieldValue',...
+        'options.nn.train.method',{'point','set','mardy','gowal','trades','sabr'}));
 end
 % To save memory, we clear all variables that are no longer used.
 batchVars = {'yBatch','grad','r','xBatchIval','yBatchIval','zBatch','xl','xu'};
@@ -849,22 +898,33 @@ function aux_printParameters(options,optim,maxEpoch,miniBatchSize,maxNoise)
 end
 
 function table = aux_setUpTrainingTable(options)
-    % Specify values to print
-    hvalues = {'Epoch','Iteration','Training Time',...
-        sprintf('Loss (%s; train)',options.nn.train.loss),'Loss (Vol; train)',...
-        'Loss (Total; train)','Loss (Total; val)'};
-    % Specify formats for column values
-    formats = {'d','d','time','.4e','.4e','.4e','.4e'};
+    % Specify values to print and formats for column values
+    if strcmp(options.nn.train.method,'set') && ~strcmp(options.nn.train.loss,'custom')
+        hvalues = {'Epoch','Iteration','Training Time',...
+            sprintf('Loss (%s; train)',options.nn.train.loss),...
+                'Loss (Vol; train)','Loss (Total; train)','Loss (Total; val)'};
+        formats = {'d','d','s','.4e','.4e','.4e','.4e'};
+    else
+        hvalues = {'Epoch','Iteration','Training Time',...
+            'Loss (train)','Loss (val)'};
+        formats = {'d','d','s','.4e','.4e'};
+    end
     table = CORAtable('double',hvalues,formats);
 end
 
-function aux_printTrainingIteration(table,iter,epoch,valIter,loss)
+function aux_printTrainingIteration(options,table,iter,epoch,trainTime,valIter,loss)
 
     % Set values for each column
     valIterIdx = find(valIter == iter);
-    cvalues = {epoch,iter,[],...
-        loss.center(iter),loss.vol(iter),loss.total(iter),...
-        loss.valTotal(valIterIdx)};
+    trainTimeVec = [0 0 0 0 0 trainTime];
+    if strcmp(options.nn.train.method,'set') && ~strcmp(options.nn.train.loss,'custom')
+        cvalues = {epoch,iter,datetime(trainTimeVec,'Format','HH:mm:ss'),...
+            loss.center(iter),loss.vol(iter),loss.train(iter),...
+                loss.valTotal(valIterIdx)};
+    else
+        cvalues = {epoch,iter,datetime(trainTimeVec,'Format','HH:mm:ss'),...
+            loss.train(iter),loss.valTotal(valIterIdx)};
+    end
     
     table.printContentRow(cvalues)
 

@@ -7,7 +7,7 @@
      [
         {"name":"obj", "kind":"required", "type":["nnLayer"], "purpose":"nnLayer"},
         {"name":"input", "kind":"required", "type":["numeric", "interval", "zonotope", "polyZonotope", "taylm", "conZonotope"], "purpose":"input"},
-        {"name":"evParams", "kind":"ordered", "type":["struct"], "purpose":"evaluation parameter"}
+        {"name":"options", "kind":"ordered", "type":["struct"], "purpose":"network evaluation options in options.nn"}
      ],
      "outputs": [
          {"name":"output", "type":["inferredFrom=input"]}

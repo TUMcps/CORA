@@ -189,6 +189,10 @@ methods (Access = protected)
     [printOrder] = getPrintSystemInfo(S)
 end
 
+methods (Static = true)
+    sys = identify(varargin)
+end
+
 end
 
 

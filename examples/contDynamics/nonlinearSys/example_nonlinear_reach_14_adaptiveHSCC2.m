@@ -72,12 +72,12 @@ for sys_no = 1:sys_total
         simOpt.points = 1000;                       % number of initial points
         simOpt.fracVert = 2^sys.nrOfDims/simOpt.points;  % fraction of vertices initial set
 
-        simRes = simulateRandom(sys,params,simOpt);
+        traj = simulateRandom(sys,params,simOpt);
 
         % computation of gamma_min
         endpoints = zeros(sys.nrOfDims,simOpt.points);
         for i=1:simOpt.points
-            endpoints(:,i) = simRes(i).x{1}(end,:)';
+            endpoints(:,i) = traj(i).x(:,end);
         end
         simendset = interval.enclosePoints(endpoints);
         if contains(options.alg,'poly')

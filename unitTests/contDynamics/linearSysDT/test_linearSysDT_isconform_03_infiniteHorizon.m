@@ -69,7 +69,7 @@ Vmat = vertices(S);
 params.R0 = R0;
 % init test cases
 nrOfTests = size(Vmat,2);
-synthesizedTests = cell(nrOfTests,1);
+synthesizedTests(nrOfTests,1) = trajectory();
 % loop over each vertex
 for i = 1:nrOfTests
     % overwrite parameters
@@ -77,11 +77,9 @@ for i = 1:nrOfTests
     params.V = zonotope(Vmat(5:6,i)); % measurement uncertainty  
     % simulate system
     simOpt.points = 1;
-    simRes = simulateRandom(pedestrian,params,simOpt);
-    % construct input vector
-    uVec = zeros(maxNrOfTimeSteps+1,1);
-    % save in test case
-    synthesizedTests{i} = testCase(simRes.y{1}, uVec, simRes.x{1}, dt);
+    traj = simulateRandom(pedestrian,params,simOpt);
+    % save
+    synthesizedTests(i) = traj;
 end
 
     

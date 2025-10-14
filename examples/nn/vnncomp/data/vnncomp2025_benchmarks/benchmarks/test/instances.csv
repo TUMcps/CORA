@@ -1,0 +1,5 @@
+onnx/test_nano.onnx,vnnlib/test_nano.vnnlib,60
+onnx/test_tiny.onnx,vnnlib/test_tiny.vnnlib,60
+onnx/test_small.onnx,vnnlib/test_small.vnnlib,60
+onnx/test_sat.onnx,vnnlib/test_prop.vnnlib,60
+onnx/test_unsat.onnx,vnnlib/test_prop.vnnlib,60

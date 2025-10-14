@@ -16,6 +16,7 @@ function [z] = computePGDAttack(obj,x,t,options,epsilon,Q,varargin)
 %    stepsizeDecay - decay factor for stepsize
 %    stepsizeDecayIter - iterations where decay factor is applied
 %    lossDer - derivative of loss function
+%    idxLayer - indices of layers to be evaluated
 %
 % Outputs:
 %    z - altered input
@@ -43,15 +44,16 @@ function [z] = computePGDAttack(obj,x,t,options,epsilon,Q,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
-narginchk(6,12)
-[l,u,stepsize,stepsizeDecay,stepsizeDecayIter,lossDer] = setDefaultValues(...
-    {-inf,+inf,epsilon/Q,1,[],@(t,y) softmax(y) - t},varargin);
+narginchk(6,13)
+[l,u,stepsize,stepsizeDecay,stepsizeDecayIter,lossDer,idxLayer] = ...
+    setDefaultValues({-inf,+inf,epsilon/Q,1,[],@(t,y) softmax(y) - t,...
+        1:length(obj.layers)},varargin);
 
 % validate input
 inputArgsCheck({ ...
     {obj,'att','neuralNetwork'}; ...
-    {x,'att','numeric','array'}; ...
-    {t,'att','numeric','array'}; ... 
+    {x,'att','numeric'}; ...
+    {t,'att','numeric'}; ... 
     {options,'att','struct'}; ... 
     {epsilon,'att','numeric'}; ...
     {Q,'att','numeric'};
@@ -66,7 +68,7 @@ for q=1:Q
         stepsize = stepsize*stepsizeDecay;
     end
     % iterated FGSM attack
-    z = computeFGSMAttack(obj,z,t,options,stepsize,lossDer);
+    z = computeFGSMAttack(obj,z,t,options,stepsize,lossDer,idxLayer);
     % clip values
     z = min(u,max(l,z));
 end

@@ -23,9 +23,7 @@ function example_plot1Dsets()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-close all;
 figure;
-set(gcf, 'units', 'normalized', 'outerposition', [0, 0, 1, 1])
 
 nrows = 2;
 ncols = 14;
@@ -45,7 +43,7 @@ ylabel("plot(S_{1D}, [1, 2])")
 
 subplot(nrows, ncols, ncols+i)
 hold on;
-plot(S,1,'Color',colorblind('r'));
+plot(S,1,'Color',CORAcolor('CORA:red'));
 ylabel("plot(S, 1)")
 
 % conPolyZono
@@ -61,7 +59,7 @@ title("conPolyZono")
 subplot(nrows, ncols, ncols+i)
 hold on;
 ylim([-1, 1])
-plot(S,1,'Color',colorblind('r'));
+plot(S,1,'Color',CORAcolor('CORA:red'));
 
 % conZonotope
 i = i + 1;
@@ -74,7 +72,7 @@ title("conZonotope")
 
 subplot(nrows, ncols, ncols+i)
 hold on;
-plot(S,1,'Color',colorblind('r'));
+plot(S,1,'Color',CORAcolor('CORA:red'));
 
 % ellipsoid
 i = i + 1;
@@ -87,7 +85,7 @@ title("ellipsoid")
 
 subplot(nrows, ncols, ncols+i)
 hold on;
-plot(S,1,'Color',colorblind('r'));
+plot(S,1,'Color',CORAcolor('CORA:red'));
 
 % interval
 i = i + 1;
@@ -100,7 +98,7 @@ title("interval")
 
 subplot(nrows, ncols, ncols+i)
 hold on;
-plot(S,1,'Color',colorblind('r'));
+plot(S,1,'Color',CORAcolor('CORA:red'));
 
 % levelset
 i = i + 1;
@@ -117,7 +115,7 @@ title("levelset")
 
 subplot(nrows, ncols, ncols+i)
 xlim([0,3]); ylim([-1,1]);
-plot(ls,1,'Color',colorblind('r'));
+plot(ls,1,'Color',CORAcolor('CORA:red'));
 
 % polytope
 i = i + 1;
@@ -130,7 +128,7 @@ title("polytope")
 
 subplot(nrows, ncols, ncols+i)
 hold on;
-plot(S,1,'Color',colorblind('r'));
+plot(S,1,'Color',CORAcolor('CORA:red'));
 
 % polyZonotope
 i = i + 1;
@@ -143,7 +141,7 @@ title("polyZonotope")
 
 subplot(nrows, ncols, ncols+i)
 hold on;
-plot(S,1,'Color',colorblind('r'));
+plot(S,1,'Color',CORAcolor('CORA:red'));
 
 % probZonotope ---
 i = i + 1;
@@ -161,7 +159,7 @@ xlim([-6, 6]); ylim([-6, 6]);
 
 % plot 2d
 subplot(nrows, ncols, ncols+i); hold on;
-plot(S,1,'Color',colorblind('r'));
+plot(S,1,'Color',CORAcolor('CORA:red'));
 set(gca, 'CameraPosition', pos)
 xlim([-6, 6]); ylim([-6, 6])
 
@@ -176,7 +174,7 @@ title("taylm")
 
 subplot(nrows, ncols, ncols+i)
 hold on;
-plot(interval(S),1,'color',colorblind('r'));
+plot(interval(S),1,'Color',CORAcolor('CORA:red'));
 
 % zonoBundle
 i = i + 1;
@@ -190,9 +188,9 @@ ylim([-1.5,1.5]);
 Z1 = zonotope([1.5;0.5], 0.5*eye(2));
 Z2 = zonotope([1.5;-0.5], 0.5*eye(2));
 
-plot(Z1, [1, 2], ':',  'Color', colorblind('b'));
-plot(Z2, [1, 2], '--',  'Color', colorblind('b'));
-plot(zonoBundle({Z1, Z2}), [1, 2], 'Color', colorblind('b'));
+plot(Z1, [1, 2], ':',  'Color', CORAcolor('CORA:blue'));
+plot(Z2, [1, 2], '--',  'Color', CORAcolor('CORA:blue'));
+plot(zonoBundle({Z1, Z2}), [1, 2], 'Color', CORAcolor('CORA:blue'));
 title("zonoBundle")
 
 % 1d plot
@@ -203,9 +201,9 @@ xlim([0,3]);
 Z1 = zonotope(1, 0.5);
 Z2 = zonotope(2, 0.5);
 
-plot(Z1, 1, ':', 'Color', colorblind('r'));
-plot(Z2, 1, '--', 'Color', colorblind('r'));
-plot(zonoBundle({Z1,Z2}),1, 'Color', colorblind('r'));
+plot(Z1, 1, ':', 'Color', CORAcolor('CORA:red'));
+plot(Z2, 1, '--', 'Color', CORAcolor('CORA:red'));
+plot(zonoBundle({Z1,Z2}),1, 'Color', CORAcolor('CORA:red'));
 
 % zonotope
 i = i + 1;
@@ -218,6 +216,6 @@ title("zonotope")
 
 subplot(nrows, ncols, ncols+i)
 hold on;
-plot(S,1,'Color',colorblind('r'));
+plot(S,1,'Color',CORAcolor('CORA:red'));
 
 % ------------------------------ END OF CODE ------------------------------

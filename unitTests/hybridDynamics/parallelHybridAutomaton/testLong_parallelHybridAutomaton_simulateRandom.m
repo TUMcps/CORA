@@ -47,13 +47,13 @@ R = reach(PHA,params,options);
 simOpt.points = 1;
 
 % simulation
-simRes = simulateRandom(PHA,params,simOpt);
+traj = simulateRandom(PHA,params,simOpt);
 
 
 % five resulting trajectories
-assert(length(simRes) == simOpt.points);
+assert(length(traj) == simOpt.points);
 % reachable set has to contain trajectories
-assert(contains(R,simRes));
+assert(contains(R,traj));
 
 res = true;
 

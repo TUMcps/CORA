@@ -22,7 +22,7 @@ making it a versatile tool for researchers and engineers in the field of cyber-p
 ### Reachability Analysis for Continuous Systems
 
 CORA computes reachable sets for linear systems, nonlinear systems as well as for systems with constraints. 
-Continuous as well as discrete time models are supported. 
+Continuous as well as discrete time models are supported.  
 Uncertainty in the system inputs as well as uncertainty in the model parameters can be explicitly considered. 
 In addition, CORA also provides capabilities for the simulation of dynamical models.
 

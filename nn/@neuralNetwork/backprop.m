@@ -9,6 +9,7 @@ function grad_in = backprop(nn, grad_out, options, varargin)
 %    grad_out - gradient of the output of the neural network
 %    options - training parameters
 %    idxLayer - indices of layers that should be evaluated
+%    updateWeights - boolean, if gradient should be stored
 %
 % Outputs:
 %    grad_in - gradient w.r.t the input
@@ -30,7 +31,7 @@ function grad_in = backprop(nn, grad_out, options, varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % parse input
-narginchk(2,4)
+narginchk(2,5)
 if nargin == 2
     options = struct;
 end
@@ -42,7 +43,7 @@ inputArgsCheck({ ...
 })
 
 % validate parameters
-[idxLayer] = setDefaultValues({1:length(nn.layers)}, varargin);
+[idxLayer,updateWeights] = setDefaultValues({1:length(nn.layers),true}, varargin);
 
 % execute -----------------------------------------------------------------
 
@@ -51,10 +52,8 @@ if isnumeric(grad_out)
     for i = flip(idxLayer)
         layer_i = nn.layers{i};
         % Retrieve stored input
-        if options.nn.train.backprop
-            input = layer_i.backprop.store.input;
-        end
-        grad_out = layer_i.backpropNumeric(input, grad_out, options);
+        input = layer_i.backprop.store.input;
+        grad_out = layer_i.backpropNumeric(input, grad_out, options,updateWeights);
     end
     grad_in = grad_out;
 else

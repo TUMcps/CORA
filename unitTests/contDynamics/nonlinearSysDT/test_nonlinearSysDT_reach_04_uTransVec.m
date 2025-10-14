@@ -59,7 +59,7 @@ for s = 1:nr_points
     params.u = params.uTransVec + randPoint(params.U, 6,'extreme');
     [~,x,~,~] = simulate(sysDisc,params);
     for k=1:size(x,1)
-        assertLoop(contains(R.timePoint.set{k}, x(k,:)'),s,k)
+        assertLoop(contains(R.timePoint.set{k}, x(:,k)),s,k)
     end
 end
 

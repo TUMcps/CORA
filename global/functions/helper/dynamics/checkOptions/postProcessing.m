@@ -54,7 +54,7 @@ if isa(sys,'contDynamics')
         
         % correct splitting of inputs into U (containing origin) and uTrans
         % (if shift is constant) or uTransVec (if shift is time-varying)
-        if ~isa(sys,'nonlinearARX') && isfield(params,'u')
+        if isfield(params,'u') && ~isa(sys,'nonlinearARX')
             [params,options] = aux_set_U_uTrans_uTransVec(sys,params,options);
         end
         

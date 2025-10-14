@@ -74,11 +74,11 @@ methods
         aux_checkInputArgs(name,A_bar,B_bar,dt,nargin);
 
         % 4. compute number of states, inputs, and outputs
-        [name,A_bar,B_bar,dt,n_p,inputs,outputs] = ...
+        [name,A_bar,B_bar,dt,n_p,nrOfInputs,nrOfOutputs] = ...
             aux_computeProperties(name,A_bar,B_bar,dt);
         
         % 5a. instantiate parent class
-        linARX@contDynamics(name,0,inputs,outputs);
+        linARX@contDynamics(name,n_p*nrOfOutputs,nrOfInputs,nrOfOutputs);
 
         % 5b. assign object properties
         linARX.A_bar = A_bar;
@@ -204,6 +204,10 @@ methods (Access = protected)
     [printOrder] = getPrintSystemInfo(S)
 end
 
+methods (Static = true)
+    linARX = identify(varargin)   % identifies linear ARX system from data
+end
+
 end
 
 
@@ -231,6 +235,7 @@ function aux_checkInputArgs(name,A_bar,B_bar,dt,n_in)
 if CHECKS_ENABLED && n_in > 0
 
     if strcmp(name,'linearARX')
+        % also check type for name
         inputArgsCheck({ ...
                 {name, 'att', {'char','string'}}
                 {A_bar, 'att', 'cell', 'nonempty'}
@@ -239,6 +244,7 @@ if CHECKS_ENABLED && n_in > 0
                 });
 
     else
+        % no check of type for name
         inputArgsCheck({ ...
                 {A_bar, 'att', 'cell', 'nonempty'}
                 {B_bar, 'att', 'cell', 'nonempty'}

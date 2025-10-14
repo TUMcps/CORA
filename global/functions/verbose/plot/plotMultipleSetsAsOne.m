@@ -16,7 +16,7 @@ function han = plotMultipleSetsAsOne(sets,varargin)
 %           or cell array containing purpose for each set
 %
 % Outputs:
-%    han - handle to the graphics object
+%    han - handle to the graphics objects
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -27,6 +27,7 @@ function han = plotMultipleSetsAsOne(sets,varargin)
 % Authors:       Tobias Ladner
 % Written:       12-July-2023
 % Last update:   04-October-2023 (TL, catch polyshape objects)
+%                11-July-2025 (TL, return all graphics handles)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -105,11 +106,12 @@ function [holdStatus,oldColorIndex] = aux_prepareAxis()
     % prepare hold status
     holdStatus = ishold;
     if ~holdStatus
-        % clear any plot if hold status is 'off'
-        plot(NaN,NaN,'HandleVisibility','off');
+        % clear axis
+        cla(ax,'reset')
         % reset color index (before readPlotOptions!)
         set(ax,'ColorOrderIndex',1);
     end
+    % fix hold status
     hold on;
 
     % prepare index in color order
@@ -128,7 +130,7 @@ function han = aux_plotSets(sets,dims,NVpairs)
         handleVis = {};
 
         % iterate over all sets
-        for i=1:length(sets)
+        for i=1:numel(sets)
             % read set i
             sets_i = sets{i};
             NVpairs_i = NVpairs{i};
@@ -137,16 +139,18 @@ function han = aux_plotSets(sets,dims,NVpairs)
             if isa(sets_i,'polyshape')
                 sets_i = polygon(sets_i);
             end
-            han_i = plot(sets_i,dims,NVpairs_i{:}, handleVis{:});
+
+            % save in reverse to pre-allocate and appears as allchild(gca)
+            han{numel(sets)+1-i,1} = plot(sets_i,dims,NVpairs_i{:}, handleVis{:});
                 
             if i == 1    
                 % force not showing subsequent plots in legend            
                 handleVis = {'HandleVisibility','off'};
-
-                % return first plotted set as handle
-                han = han_i;
             end
         end
+
+        % convert cell array to class array
+        han = [han{:}];
     end
 end
 

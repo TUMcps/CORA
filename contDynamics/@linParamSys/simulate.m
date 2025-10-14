@@ -35,6 +35,7 @@ function [t,x,ind,y] = simulate(obj,params,varargin)
 % Written:       16-May-2007 
 % Last update:   07-January-2009
 %                08-May-2020 (MW, update interface)
+%                28-August-2025 (LL, transpose t, x, and y)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -112,13 +113,13 @@ for i = 1:size(params.u,2)
     end
 
     % store the results
-    x = [x;x_]; 
+    x = [x x_']; 
     if isempty(t)
-        t = [t;t_];
+        t = [t t_'];
     else
-        t = [t;t_ + t(end)]; 
+        t = [t t_'+t(end)]; 
     end
-    x0 = x(end,:)';
+    x0 = x(:,end);
 
     if ~isempty(ind)
     	return; 

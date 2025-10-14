@@ -43,7 +43,7 @@ R = reach(sys,params,options);
 % Simulations -------------------------------------------------------------
 
 simOpts.points = 10;
-simRes = simulateRandom(sys,params,simOpts);
+traj = simulateRandom(sys,params,simOpts);
 
 % Visualization -----------------------------------------------------------
 
@@ -51,7 +51,7 @@ figure; hold on;
 useCORAcolors("CORA:contDynamics")
 plot(R,[1 2],'DisplayName','Reachable set')
 plot(R.R0,[1 2],'DisplayName','Initial set')
-plot(simRes,[1 2],'DisplayName','Simulations')
+plot(traj,[1 2],'DisplayName','Simulations')
 legend()
 
 % ------------------------------ END OF CODE ------------------------------

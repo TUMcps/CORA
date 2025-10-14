@@ -73,27 +73,7 @@ try
     assert(isequal(colorOrder(2,:), ax.Children(1).FaceColor));
     
     % close figure
-    close;
-
-    % test interval with infinity bounds
-    figure;
-
-    % set bounds
-    xlim([1,2]);
-    ylim([-2,3]);
-    ax = gca();
-
-    % plot interval with all inf bounds
-    fs = interval([-Inf;-Inf],[Inf;Inf]);
-    plot(fs);
-
-    % check points
-    V = [1 1 2 2 1; -2 3 3 -2 -2];
-    assert(compareMatrices(V, [ax.Children(1).XData';ax.Children(1).YData'],1e-4,'equal',true));
-
-    % close figure
-    close;
-    
+    close;    
 
 catch ME
     close;

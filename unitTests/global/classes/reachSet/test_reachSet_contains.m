@@ -42,19 +42,19 @@ R = reach(sys_ct,params,options);
 
 % compute simulation
 simOpt.points = 25;
-simRes = simulateRandom(sys_ct,params,simOpt);
+traj = simulateRandom(sys_ct,params,simOpt);
 
 % visualization
 % figure; hold on; box on;
 % useCORAcolors("CORA:contDynamics");
 % plot(R);
 % plot(R.R0);
-% plot(simRes);
+% plot(traj);
 % close;
 
 % check containment
 tol = 1e-10;
-assert(contains(R,simRes,'exact',tol));
+assert(contains(R,traj,'exact',tol));
 
 
 % simple discrete-time linear system
@@ -76,18 +76,18 @@ options.zonotopeOrder = 10;
 R = reach(sys_dt,params,options);
 
 % compute simulation
-simRes = simulateRandom(sys_dt,params,simOpt);
+traj = simulateRandom(sys_dt,params,simOpt);
 
 % visualization
 % figure; hold on; box on;
 % useCORAcolors("CORA:contDynamics");
 % plot(R);
 % plot(R.R0);
-% plot(simRes);
+% plot(traj);
 % close;
 
 % check containment
 tol = 1e-10;
-assert(res & contains(R,simRes,'exact',tol));
+assert(res & contains(R,traj,'exact',tol));
 
 % ------------------------------ END OF CODE ------------------------------

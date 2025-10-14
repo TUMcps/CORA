@@ -63,9 +63,15 @@ optionsList(end+1,1) = add2list('cs.a_min','default');
 optionsList(end+1,1) = add2list('cs.a_max','default'); 
 optionsList(end+1,1) = add2list('cs.verbose','default');
 optionsList(end+1,1) = add2list('cs.w','default');
-optionsList(end+1,1) = add2list('cs.robustnessMargin','default');
+optionsList(end+1,1) = add2list('cs.robustness','default');
 optionsList(end+1,1) = add2list('cs.P','default');
-optionsList(end+1,1) = add2list('cs.derivRecomputation','default'); 
+optionsList(end+1,1) = add2list('cs.updateDeriv','default'); 
+optionsList(end+1,1) = add2list('cs.recMethod','default'); %rec
+optionsList(end+1,1) = add2list('cs.forgetting','default'); %rec
+optionsList(end+1,1) = add2list('cs.forgettingCost','default'); %rec
+optionsList(end+1,1) = add2list('cs.batchSize','default'); %rec
+optionsList(end+1,1) = add2list('cs.numPoints','default'); %UnSiCo
+optionsList(end+1,1) = add2list('cs.numCluster','default'); %UnSiCo
 
 % optional
 optionsList(end+1,1) = add2list('saveOrder','optional');

@@ -43,12 +43,12 @@ gamma_o = 2*rad(interval(endset));
 simOpt.points = 10;                % number of initial points
 simOpt.fracVert = 0.8;             % fraction of vertices initial set
 
-simRes = simulateRandom(sys,params,simOpt);
+traj = simulateRandom(sys,params,simOpt);
 
 % computation of gamma_min
 endpoints = zeros(sys.nrOfDims,simOpt.points);
 for i=1:simOpt.points
-    endpoints(:,i) = simRes(i).x{1}(end,:)';
+    endpoints(:,i) = traj(i).x(:,end);
 end
 simendset = interval.enclosePoints(endpoints);
 gamma_u = 2*rad(interval(simendset));
@@ -65,7 +65,7 @@ figure; subplot(1,2,1); hold on; box on;
 useCORAcolors("CORA:contDynamics")
 plot(R,[1,2]);
 plot(R(1).R0,[1,2]);
-plot(simRes,[1,2]);
+plot(traj,[1,2]);
 
 % 2. time step size
 subplot(1,2,2); hold on; box on;

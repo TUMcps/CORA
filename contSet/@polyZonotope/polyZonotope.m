@@ -220,7 +220,7 @@ function aux_checkInputArgs(c,G,GI,E,id,n_in)
             throw(CORAerror('CORA:wrongInputInConstructor',...
                 'Identifier vector should be a column vector.'));
         end
-        if ~isempty(E) && ~isempty(id) && size(id, 1) ~= size(E,1)
+        if ~isempty(id) && size(id, 1) ~= size(E,1)
              throw(CORAerror('CORA:wrongInputInConstructor',...
                  'Dimension mismatch between exponent matrix and identifier vector.'));
         end
@@ -252,6 +252,8 @@ function [c,G,GI,E,id] = aux_computeProperties(c,G,GI,E,id)
     if isempty(id)
         p = size(E,1);
         id = (1:p)'; % column vector
+    elseif isempty(E)
+        E = zeros(numel(id),0);
     end
 
 end

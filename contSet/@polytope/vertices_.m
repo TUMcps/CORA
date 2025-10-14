@@ -40,6 +40,7 @@ function V = vertices_(P,method,varargin)
 %                30-May-2023 (MW, support degenerate cases)
 %                21-November-2023 (MW, improve comb algorithm)
 %                24-November-2023 (MW, implement cdd method)
+%                11-September-2025 (TL, V-polytope recomputed V if not minmial)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -59,6 +60,7 @@ if P.isVRep.val
     % compact polytope
     P = compact_(P,'V',tol);
     V = vertices_(P);
+    return;
 end
 
 % dimension

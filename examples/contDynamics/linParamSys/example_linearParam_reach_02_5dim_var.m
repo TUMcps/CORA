@@ -68,7 +68,7 @@ disp(['computation time of reachable set for interval matrix: ',num2str(tComp)])
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 60;
-simRes = simulateRandom(sys_zono, params, simOpt);
+traj = simulateRandom(sys_zono, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -90,7 +90,7 @@ for k = 1:length(dims)
     plot(Rint.R0,projDims,'DisplayName','Initial set');
     
     % plot simulation results      
-    plot(simRes,projDims,'DisplayName','Simulations');
+    plot(traj,projDims,'DisplayName','Simulations');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);

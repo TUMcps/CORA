@@ -84,7 +84,7 @@ simOpt.tFinal = params.tFinal;
 
 % simulate the system
 [t,x,loc] = simulate(pHA,simOpt);
-simRes = simResult(x,t,loc);
+traj = trajectory([],x,[],t,[],loc);
 
 
 % Visualization -----------------------------------------------------------
@@ -94,7 +94,7 @@ projDim = {[2,1],[4,3],[6,5]};
 for k=1:3
     figure; hold on; box on;
     plot(R,projDim{k});
-    plotOverTime(simRes,projDim{k}(2));
+    plotOverTime(traj,projDim{k}(2));
     xlabel('Time');
     ylabel('Output');
     title(['Neuron ' num2str(k)]);

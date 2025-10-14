@@ -50,37 +50,37 @@ params.x0 = [5;-3];
 params.u = 0;
 [~,x_lin] = simulate(sys_lin,params);
 [~,x_nonlin] = simulate(sys_nonlin,params);
-assert(compareMatrices(x_lin',x_nonlin',tol,'equal',true));
+assert(compareMatrices(x_lin,x_nonlin,tol,'equal',true));
 
 % with output equation
 params.u = 0;
 [~,~,~,y_lin] = simulate(sys_lin_withoutput,params);
 [~,~,~,y_nonlin] = simulate(sys_nonlin_withoutput,params);
-assert(compareMatrices(y_lin',y_nonlin',tol,'equal',true));
+assert(compareMatrices(y_lin,y_nonlin,tol,'equal',true));
 
 % no output equation
 params.u = 2;
 [~,x_lin] = simulate(sys_lin,params);
 [~,x_nonlin] = simulate(sys_nonlin,params);
-assert(compareMatrices(x_lin',x_nonlin',tol,'equal',true));
+assert(compareMatrices(x_lin,x_nonlin,tol,'equal',true));
 
 % with output equation
 params.u = 2;
 [~,~,~,y_lin] = simulate(sys_lin_withoutput,params);
 [~,~,~,y_nonlin] = simulate(sys_nonlin_withoutput,params);
-assert(compareMatrices(y_lin',y_nonlin',tol,'equal',true));
+assert(compareMatrices(y_lin,y_nonlin,tol,'equal',true));
 
 % no output equation
 params.u = [1 1.5 2 0.5 0.25 0 -0.5 -1 -1.5 -0.5];
 [~,x_lin] = simulate(sys_lin,params);
 [~,x_nonlin] = simulate(sys_nonlin,params);
-assert(compareMatrices(x_lin',x_nonlin',tol,'equal',true));
+assert(compareMatrices(x_lin,x_nonlin,tol,'equal',true));
 
 % with output equation
 params.u = [1 1.5 2 0.5 0.25 0 -0.5 -1 -1.5 -0.5 0.5];
 [~,~,~,y_lin] = simulate(sys_lin_withoutput,params);
 [~,~,~,y_nonlin] = simulate(sys_nonlin_withoutput,params);
-assert(compareMatrices(y_lin',y_nonlin',tol,'equal',true));
+assert(compareMatrices(y_lin,y_nonlin,tol,'equal',true));
 
 
 % combine results

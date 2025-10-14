@@ -20,8 +20,8 @@ function obj = getFromCellArray(W, b, actFun)
 %    res - generated network
 %
 % Example:
-%   W = {rand(3, 2), rand(3, 3), rand(3, 2)};
-%   b = {rand(3, 1), rand(3, 1), rand(3, 1)};
+%   W = {[ 0.837 -0.893 ; 0.475 -0.895 ; 1.252 0.313 ],[ 0.667 -0.236 0.885 ; 0.828 0.653 0.085 ; 0.007 1.965 -0.575 ], [ 0.500 0.778 ; -0.484 0.924 ; 0.238 0.588 ]};
+%   b = {[ 1.378 ; 1.851 ; -1.898 ], [ 1.378 ; 1.851 ; -1.898 ], [ -0.357 ; -0.336 ; 0.250 ]};
 %   actFun = {'relu', 'relu', 'identity'};
 %   nn = neuralNetwork.getFromCellArray(W, b, actFun);
 %

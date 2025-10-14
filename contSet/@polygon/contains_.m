@@ -57,6 +57,11 @@ pgon1 = expandBoundaries(pgon1, tol);
 
 if isnumeric(pgon2)
 
+    % polyshape/interior does not check for boundary points 
+    % (except trivial cases, e.g., integer, it seems..)
+    % -> enlarge it a bit + using given tolerance
+    tol_boundary = 1e-6; % empirically determined
+    pgon1 = expandBoundaries(pgon1, tol + tol_boundary);
     res = isinterior(pgon1.set, pgon2(1, :), pgon2(2, :))';
 
 elseif isa(pgon2, 'contSet')

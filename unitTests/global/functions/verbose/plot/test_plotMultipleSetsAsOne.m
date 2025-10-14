@@ -49,6 +49,10 @@ try
     plotMultipleSetsAsOne({S1,S2,S3},[2,1]);
     assert(length(ax.Children) == 1);
 
+    % check if all handles are returned
+    han = plotMultipleSetsAsOne({S1,S2,S3},[2,1]);
+    assert(numel(han) == 3);
+
     % check plot options
     plotMultipleSetsAsOne({S1,S2,S3},[1,2],{'FaceColor',[0 0 1]});
     assert(length(ax.Children) == 1);

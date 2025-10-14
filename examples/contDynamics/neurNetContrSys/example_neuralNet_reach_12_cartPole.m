@@ -72,7 +72,7 @@ spec = specification(goalSet, 'safeSet', interval(8,params.tFinal));
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, true, 10);
+[res, R, traj] = verify(sys, spec, params, options, true, 10);
 tTotal = toc(t);
 disp(['Result: ' res])
 
@@ -83,7 +83,7 @@ figure; hold on; box on;
 
 % plot reachable set
 useCORAcolors("CORA:contDynamics")
-plot(R, [1, 3], 'DisplayName', 'Reachable set','Unify',true,'UnifyTotalSets',5);
+plot(R, [1, 3], 'DisplayName', 'Reachable set');
 
 % plot initial set
 plot(R(1).R0, [1, 3], 'DisplayName', 'Initial set');
@@ -93,7 +93,7 @@ plot(specification(goalSet, 'safeSet'), [1, 3], 'DisplayName', 'Goal set');
 updateColorIndex(2)
 
 % plot simulations
-plot(simRes,[1, 3], 'DisplayName', 'Simulations');
+plot(traj,[1, 3], 'DisplayName', 'Simulations');
 
 % labels and legend
 xlabel('x_{(1)} (position)'); ylabel('x_{(3)} (angle)');

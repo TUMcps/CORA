@@ -53,7 +53,7 @@ options.guardOrder = 3;
 
 % Simulation --------------------------------------------------------------
 
-simRes = simulateRandom(pHA,params);
+traj = simulateRandom(pHA,params);
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -68,9 +68,9 @@ projDim = {[1,2],[3,4]};
 for k=1:2
     figure; box on; hold on;
     useCORAcolors("CORA:contDynamics")
-    plot(R,projDim{k},'Unify',true,'UnifyTotalSets',5);
+    plot(R,projDim{k});
     updateColorIndex;
-    plot(simRes,projDim{k});
+    plot(traj,projDim{k});
     xlabel(['$x_{' num2str(projDim{k}(1)) '}$'],'interpreter','latex','FontSize',20);
     ylabel(['$x_{' num2str(projDim{k}(2)) '}$'],'interpreter','latex','FontSize',20);
     title(['Filter ' num2str(k)]);

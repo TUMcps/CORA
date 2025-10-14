@@ -332,9 +332,9 @@ for i = 1:size(R,1)
     x = [x; x_];
 end
 
-% use 'simResult' to convert 'FaceColor'/'EdgeColor' to 'Color' for line
+% use 'trajectory' to convert 'FaceColor'/'EdgeColor' to 'Color' for line
 % plot below
-NVpairs = readPlotOptions(NVpairs,'simResult');
+NVpairs = readPlotOptions(NVpairs,'trajectory');
 
 % plot line
 han = plot(t,x,NVpairs{:});

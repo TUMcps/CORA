@@ -58,8 +58,8 @@ for k=n_p:n_k-1
         y = y + p_GO.D{k+1,i+1} * (u(:,i+1) - u_ref(:,i+1));
     end
     
-    assert(~(sum(y-y_sim(k+1,:)', 'all') > 1e-6 || ...
-            sum(x(end-n_p+1:end)-y_sim(k+1,:)', 'all') > 1e-6));
+    assert(~(sum(y-y_sim(:,k+1), 'all') > 1e-6 || ...
+            sum(x(end-n_p+1:end)-y_sim(:,k+1), 'all') > 1e-6));
 end
 res = true;
 end

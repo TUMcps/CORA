@@ -105,41 +105,43 @@ for j = 1:length(list)
     v_sys = aux_get_v(sys,V,dt_steps);
 
     % no input set, disturbance, or sensor noise
-    simulate(sys,params);
+    [t,x,~,y] = simulate(sys,params);
+    assert(size(t,2) == size(x,2))
+    assert(size(t,2) == size(y,2))
 
     % u, no w, no v
     params.u = u_sys;
-    simulate(sys,params);
+    [t,x,~,y] = simulate(sys,params);
     params = rmfield(params,'u');
 
     % no u, w, no v
     params.w = w_sys;
-    simulate(sys,params);
+    [t,x,~,y] = simulate(sys,params);
     params = rmfield(params,'w');
 
     % no u, no w, v
     params.v = v_sys;
-    simulate(sys,params);
+    [t,x,~,y] = simulate(sys,params);
     params = rmfield(params,'v');
 
     % u, w, no v
     params.u = u_sys;
     params.w = w_sys;
-    simulate(sys,params);
+    [t,x,~,y] = simulate(sys,params);
     params = rmfield(params,'u');
     params = rmfield(params,'w');
 
     % u, no w, v
     params.u = u_sys;
     params.v = v_sys;
-    simulate(sys,params);
+    [t,x,~,y] = simulate(sys,params);
     params = rmfield(params,'u');
     params = rmfield(params,'v');
 
     % no u, w, v
     params.w = w_sys;
     params.v = v_sys;
-    simulate(sys,params);
+    [t,x,~,y] = simulate(sys,params);
     params = rmfield(params,'w');
     params = rmfield(params,'v');
 
@@ -147,7 +149,9 @@ for j = 1:length(list)
     params.u = u_sys;
     params.w = w_sys;
     params.v = v_sys;
-    simulate(sys,params);
+    [t,x,~,y] = simulate(sys,params);
+    assert(size(t,2) == size(x,2))
+    assert(size(t,2) == size(y,2))
     params = rmfield(params,'u');
     params = rmfield(params,'w');
     params = rmfield(params,'v');

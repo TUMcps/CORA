@@ -17,7 +17,7 @@ function han = plotTimeStep(R,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: @simResult/plotTimeStep
+% See also: @trajectory/plotTimeStep
 
 % Authors:       Mark Wetzlinger
 % Written:       18-June-2020

@@ -16,7 +16,7 @@ classdef (Abstract) nnLayer < matlab.mixin.Copyable
 %
 % See also: neuralNetwork
 
-% Authors:       Tobias Ladner
+% Authors:       Tobias Ladner, Lukas Koller
 % Written:       28-March-2022
 % Last update:   15-February-2023 (re-organized, simplified)
 %                24-February-2023 (added options to all evaluate func)
@@ -25,12 +25,14 @@ classdef (Abstract) nnLayer < matlab.mixin.Copyable
 %                22-January-2022 (LK, functions for IBP-based training)
 %                24-February-2023 (added options to all evaluate func)
 %                18-August-2024 (MW, updateGradient -> policy grad)
+%                11-September-2025 (LK, learnable parameters flag)
 % Last revision: 10-August-2022 (renamed)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 properties
-    name = [];          % name of the layer
+    name = [];          % name of the specific layer
+    layerid = [];       % general id of the name (defaults to class name)
 
     % stores the size of the input. Needed to propagate images.
     inputSize = [];
@@ -38,18 +40,34 @@ properties
     % sensitivity of input
     sensitivity = [];
 
+    % Fields set by neuralNetwork/prepareForZonoBatchEval.
+    neuronIds = []; % Neurons Ids.
+    genIds = []; % Generator Ids.
+    approxErrGenIds = []; % Approximation Error Generator Ids.
+
     % for backpropagation
     backprop = struct('store', struct)
+
+    % Flag that indicates if the parameters are learnable.
+    areParamsLearnable      
 end
 
 methods
-    function obj = nnLayer(name)
-        if nargin < 1 || isempty(name)
+    function obj = nnLayer(varargin)
+        % parse input
+        [name, areParamsLearnable] = ...
+            setDefaultValues({[], false}, varargin);
+
+        % set name if not already (done like that as also subclasses pass
+        % empty arrays to this layer)
+        if isempty(name) 
             name = obj.getDefaultName();
         end
 
         obj.name = name;
+        obj.layerid = class(obj);
         obj.inputSize = [];
+        obj.areParamsLearnable = areParamsLearnable;
     end
 
     function outputSize = computeSizes(obj, inputSize)
@@ -115,7 +133,7 @@ methods (Access = {?nnLayer, ?neuralNetwork})
     % will be overwritten in subclasses if supported by that layer
 
     % sensitivity
-    function S = evaluateSensitivity(obj, S, x, options)
+    function S = evaluateSensitivity(obj, S, options)
         throw(CORAerror('CORA:nnLayerNotSupported', obj, 'evaluate/sensitivity'))
     end
 
@@ -146,15 +164,15 @@ methods (Access = {?nnLayer, ?neuralNetwork})
 
     % backprop ------------------------------------------------------------
 
-    function grad_in = backpropNumeric(obj, input, grad_out, options)
+    function grad_in = backpropNumeric(obj, input, grad_out, options, updateWeights)
         throw(CORAerror('CORA:nnLayerNotSupported', obj, 'backprop/numeric'))
     end
 
-    function [l,u] = backpropIntervalBatch(obj, l, u, gl, gu, options)
+    function [l,u] = backpropIntervalBatch(obj, l, u, gl, gu, options, updateWeights)
         throw(CORAerror('CORA:nnLayerNotSupported', obj, 'backprop/interval'))
     end
 
-    function [c,G] = backpropZonotopeBatch(obj, c, G, gc, gG, options)
+    function [c,G] = backpropZonotopeBatch(obj, c, G, gc, gG, options, updateWeights)
         throw(CORAerror('CORA:nnLayerNotSupported', obj, 'backprop/zonotope (batch)'))
     end
 end
@@ -238,22 +256,28 @@ methods (Access=protected)
         end
     end
 
-    function updateGrad(obj, name, grad_i, options)
-        % Add gradient.
-        if ~isfield(options.nn.train,'updateGradient')
+    function obj = updateGrad(obj, name, grad_i, options)
+        if ismember(name,obj.getLearnableParamNames())
+            % Add gradient.
             obj.backprop.grad.(name) = obj.backprop.grad.(name) + grad_i;
-        else
-            if options.nn.train.updateGradient
-                obj.backprop.grad.(name) = obj.backprop.grad.(name) + grad_i;
-            end
         end
     end
 end
 
 methods
     function names = getLearnableParamNames(obj)
-        % list of learnable properties
-        names = {}; % default none
+        if obj.areParamsLearnable
+            % Return the parameters.
+            names = getParamNames(obj);
+        else
+            % The parameters are fixed there are not learnable.
+            names = {};
+        end
+    end
+
+    function names = getParamNames(obj)
+        % Return the list of parameters.
+        names = {};
     end
 end
 

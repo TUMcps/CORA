@@ -62,7 +62,6 @@ options.lagrangeRem.simplify = 'simplify';
 params.x0 = x0_ref;
 params.u = u_ref;
 [~,~,~,y_sim] = simulate(sys, params);
-y_sim = y_sim';
 
 % stack the input sets
 uref_stacked = getStackedU(sys, u_ref);

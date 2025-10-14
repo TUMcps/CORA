@@ -37,13 +37,22 @@ specPath = 'prop_2.vnnlib';
 timeout = 2;
 % Load model and specification.
 [nn,x,r,A,b,safeSet,options] = aux_readModelAndSpecs(modelPath,specPath);
+% Set the falsification method: {'fgsm','center','zonotack'}.
+options.nn.falsification_method = 'zonotack';
+% Set the input set refinedment method: {'naive','zonotack'}.
+options.nn.refinement_method = 'zonotack';
+% Restrict the number of input generators.
+options.nn.train.num_init_gens = 5;
+% Restrict the number of approximation error generators per layer.
+options.nn.train.num_approx_err = 50;
+options.nn.approx_error_order = 'sensitivity*length';
 % Do verification.
 timerVal = tic;
 [res,x_,y_] = nn.verify(x,r,A,b,safeSet,options,10,verbose);
 % Print result.
 if verbose
     % Print result.
-    fprintf('%s -- %s: %s\n',modelPath,specPath,res);
+    fprintf('%s -- %s: %s\n',modelPath,specPath,res.str);
     time = toc(timerVal);
     fprintf('--- Verification time: %.4f / %.4f [s]\n',time,timeout);
 end
@@ -91,10 +100,10 @@ end
 
 function aux_writeResults(res,x_,y_)
     % Write results.
-    if strcmp(res,'VERIFIED')
+    if strcmp(res.str,'VERIFIED')
         % Write content.
         fprintf(['unsat' newline]);
-    elseif strcmp(res,'COUNTEREXAMPLE')
+    elseif strcmp(res.str,'COUNTEREXAMPLE')
         % Write content.
         fprintf(['sat' newline '(']);
         % Write input values.

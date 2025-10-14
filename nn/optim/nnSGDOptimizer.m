@@ -41,29 +41,15 @@ methods
     % constructor
     function optim = nnSGDOptimizer(varargin)
         % parse input
-        narginchk(0,5)
-        [lr, momentum, lambda, lrDecayIter, lrDecay] = ...
-            setDefaultValues({0.001, 0.9, 0, [], 1}, varargin);
+        narginchk(0,6)
+        [lr, momentum, lambda, lrDecayIter, lrDecay, gradThreshold] = ...
+            setDefaultValues({0.001, 0.9, 0, [], 1, 0}, varargin);
         inputArgsCheck({ ...
             {momentum, 'att', 'numeric', {'scalar', 'nonnegative'}}; ...
         })
 
-        optim@nnOptimizer(lr, lambda, lrDecayIter, lrDecay);
+        optim@nnOptimizer(lr, lambda, lrDecayIter, lrDecay, gradThreshold);
         optim.momentum = momentum;
-    end
-
-    function optim = deleteGrad(optim, nn, options)
-        % call super class method
-        deleteGrad@nnOptimizer(optim, nn, options);
-        % delete all gradients
-        for i=1:length(nn)
-            layer_i = nn.layers{i};
-            % Reset moment vectors.
-            names = layer_i.getLearnableParamNames();
-            for j=1:length(names)
-                layer_i.backprop.vel.(names{j}) = 0;
-            end
-        end
     end
 
     function s = print(optim)
@@ -85,6 +71,11 @@ methods (Access=protected)
 
         % Update weight.
         layer.(name) = layer.(name) + gradUpdate;
+    end
+
+    function optim = deleteLayerGrad(optim, layer, name, options)
+        % Delete additional gradient information.
+        layer.backprop.vel.(name) = 0;
     end
 end
 

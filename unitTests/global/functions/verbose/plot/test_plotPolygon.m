@@ -63,7 +63,7 @@ try
     plotPolygon(V);
 
     % test points
-    assert(isequal(V, [ax.Children(1).XData;ax.Children(1).YData]));
+    assert(isequal(V, readVerticesFromFigure(ax.Children(1))));
     % test color
     assert(isequal(colorOrder(1,:), ax.Children(1).Color));
 
@@ -89,18 +89,18 @@ try
     
     % test convHull
     plotPolygon(V, 'ConvHull',true);
-    assert(isequal([1 5 3 1; -2 5 4 -2], [ax.Children(1).XData;ax.Children(1).YData]));
+    assert(isequal([1 5 3 1; -2 5 4 -2], readVerticesFromFigure(ax.Children(1))));
 
     % test XPos,YPos,ZPos
     plotPolygon(V(1,:),'XPos',2);
-    assert(isequal([2 2 2 2 2; V(1,:)], [ax.Children(1).XData;ax.Children(1).YData]));
+    assert(isequal([2 2 2 2 2; V(1,:)], readVerticesFromFigure(ax.Children(1))));
     plotPolygon(V(1,:),'YPos',3);
-    assert(isequal([V(1,:); 3 3 3 3 3], [ax.Children(1).XData;ax.Children(1).YData]));
+    assert(isequal([V(1,:); 3 3 3 3 3], readVerticesFromFigure(ax.Children(1))));
     plotPolygon(V,'ZPos',4);
-    assert(isequal([V; 4 4 4 4 4], [ax.Children(1).XData;ax.Children(1).YData;ax.Children(1).ZData]));
+    assert(isequal([V; 4 4 4 4 4], readVerticesFromFigure(ax.Children(1))));
     % no y given
     plotPolygon(V(1,:),'ZPos',1);
-    assert(isequal([V(1,:); 0 0 0 0 0; 1 1 1 1 1], [ax.Children(1).XData;ax.Children(1).YData;ax.Children(1).ZData]));
+    assert(isequal([V(1,:); 0 0 0 0 0; 1 1 1 1 1], readVerticesFromFigure(ax.Children(1))));
 
     % check single point
     V = [1;2];
@@ -108,7 +108,7 @@ try
     % should still show line in legend
     legendEntry = ax.Children(1);
     assert(isequal(legendEntry.LineStyle, '-'))
-    assert(isequal(legendEntry.Color, [0 0.447000000000000 0.741000000000000]))
+    assert(isequal(legendEntry.Color, CORAcolor('MATLAB:color1')))
 
     close;
 

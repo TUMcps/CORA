@@ -121,7 +121,7 @@ figure; hold on; box on;
 useCORAcolors("CORA:contDynamics");
 
 % plot reachable set
-plotOverTime(R_set,1,'Unify',true);
+plotOverTime(R_set,1);
 
 % plot specification
 spec = specification(interval([0; x0], [0.1; x0]));

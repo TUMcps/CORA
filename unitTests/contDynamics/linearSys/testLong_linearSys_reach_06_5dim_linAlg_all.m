@@ -56,10 +56,10 @@ end
 
 % simulation
 simOpt.points = 5;
-simRes = simulateRandom(fiveDimSys, params, simOpt);
+traj = simulateRandom(fiveDimSys, params, simOpt);
 
 % verify that end points of simulation are contain in reachable sets
-finalPoints = cell2mat(arrayfun(@(s) s.x{1}(end,:)',simRes,'UniformOutput',false)');
+finalPoints = cell2mat(arrayfun(@(s) s.x(:,end),traj,'UniformOutput',false)');
 for i=1:numel(Rs)
     finalSet = Rs{i}.timePoint.set{end};
     assertLoop(all(contains(finalSet,finalPoints,'exact',1e-8)), i);

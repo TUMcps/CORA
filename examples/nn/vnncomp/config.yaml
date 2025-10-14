@@ -1,0 +1,8 @@
+name: CORA
+ami: ami-05865edb0dba554ff
+scripts_dir: .
+manual_installation_step: False
+run_installation_script_as_root: False
+run_post_installation_script_as_root: False
+run_toolkit_as_root: False
+description: https://cora.in.tum.de/

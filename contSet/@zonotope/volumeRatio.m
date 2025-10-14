@@ -14,7 +14,7 @@ function ratio = volumeRatio(Z,P,dims)
 %    ratio - approximated normalized volume ratio
 %
 % Example:
-%    Z = zonotope([1;0],rand(2,5));
+%    Z = zonotope(eye(2,1), [ 0.254 0.402 0.386 0.167 0.095 ; 0.324 0.406 0.610 0.188 0.323 ]);
 %    P = polytope(Z);
 %    ratio = volumeRatio(Z,P,1)
 %

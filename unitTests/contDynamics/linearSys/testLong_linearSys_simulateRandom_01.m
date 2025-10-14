@@ -98,7 +98,7 @@ for s=1:length(sys)
             rng(seed);
 
             try
-                simRes = simulateRandom(sys{s}, params{p}, simOpt{o});           
+                traj = simulateRandom(sys{s}, params{p}, simOpt{o});           
             catch ME
                 % run-time error
                 assertLoop(false,ME.message,[],s,p,o);

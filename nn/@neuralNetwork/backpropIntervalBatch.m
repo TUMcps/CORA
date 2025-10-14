@@ -11,6 +11,7 @@ function [gl, gu] = backpropIntervalBatch(nn, gl, gu, options, varargin)
 %    gu - gradient of upper bounds
 %    options - training parameters
 %    idxLayer - indices of layers that should be evaluated
+%    updateWeights - boolean, if gradient should be stored
 %
 % Outputs:
 %    c, G - zonotope gradient w.r.t the input
@@ -28,17 +29,15 @@ function [gl, gu] = backpropIntervalBatch(nn, gl, gu, options, varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-[idxLayer] = setDefaultValues({1:length(nn.layers)}, varargin);
+[idxLayer,updateWeights] = setDefaultValues({1:length(nn.layers),true}, varargin);
 
 for i = flip(idxLayer)
     layeri = nn.layers{i};
     % Retrieve stored input
-    if options.nn.train.backprop
-        input = layeri.backprop.store.input;
-        l = input.inf;
-        u = input.sup;
-    end
-    [gl, gu] = layeri.backpropIntervalBatch(l, u, gl, gu, options);
+    input = layeri.backprop.store.input;
+    l = input.inf;
+    u = input.sup;
+    [gl, gu] = layeri.backpropIntervalBatch(l, u, gl, gu, options, updateWeights);
 end
 
 end

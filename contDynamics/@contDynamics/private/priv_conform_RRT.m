@@ -1,4 +1,4 @@
-function [params,R,simRes] = priv_conform_RRT(sys,params,options)
+function [params,R,traj] = priv_conform_RRT(sys,params,options)
 % priv_conform_RRT - synthesizes a conformant white-box model using rapidly 
 %   exploring random trees (RRTs), see [1]. By boxing the reachable sets, 
 %   one can determine the dimension for which the behavior is not reachset 
@@ -20,7 +20,7 @@ function [params,R,simRes] = priv_conform_RRT(sys,params,options)
 % Outputs:
 %    params - synthesized parameters ensuring reachset conformance
 %    R - reachSet object (only time steps for which measurments exist)
-%    simRes - states of the rapidly exploring random tree
+%    traj - states of the rapidly exploring random tree
 %
 % Example:
 %    -
@@ -52,7 +52,7 @@ res = false;
 % As long as reachset conformance has not yet been established
 while ~res
     % check reachset conformance and return failed dimension
-    [res, R, simRes, failedDim] = priv_isconform_RRT(sys, params, options);
+    [res, R, traj, failedDim] = priv_isconform_RRT(sys, params, options);
     %% breach of infimum
     if ~isempty(failedDim.inf)
         % initilaize deltaU

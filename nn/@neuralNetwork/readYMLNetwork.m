@@ -38,8 +38,8 @@ while ~finished
     text = text(ind(1)+2:end);
     ind = strfind(text,',');
     if ~isempty(ind)
-        temp = strtrim(text(1:ind-1));
-        text = text(ind+1:end);
+        temp = strtrim(text(1:ind(1)-1));
+        text = text(ind(1)+1:end);
     else
         temp = strtrim(text(1:end-1));
         finished = true;

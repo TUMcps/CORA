@@ -46,9 +46,9 @@ params.tFinal = 2;
 % takes 1 second to hit guard
 assert(withinTol(t(end),1));
 % hits guard at x = [0.5;1]
-assert(compareMatrices(x(end,:)',[0.5;1]));
+assert(compareMatrices(x(:,end),[0.5;1]));
 % all points must be in invariant
-assert(all(contains(inv,x')));
+assert(all(contains(inv,x)));
 % next location must be 3 (since second transition hit)
 assert(nextLoc == 3);
 % point after reset function

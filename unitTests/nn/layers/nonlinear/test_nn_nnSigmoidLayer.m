@@ -25,6 +25,7 @@ function res = test_nn_nnSigmoidLayer()
 
 % init layer
 layer = nnSigmoidLayer();
+assert(~isempty(layer.name))
 
 % test values
 assert(layer.f(0) == 0.5);

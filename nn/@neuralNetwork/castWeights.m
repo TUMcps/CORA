@@ -23,18 +23,22 @@ function castWeights(nn,x,varargin)
 
 % Authors:       Lukas Koller
 % Written:       04-December-2023
-% Last update:   ---
+% Last update:   18-August-2025 (enumerate layers)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% validate parameters
-[idxLayer] = setDefaultValues({1:length(nn.layers)}, varargin);
+
+% Enumerate all layers.
+[layers,~] = nn.enumerateLayers();
+
+% Validate parameters.
+[idxLayer] = setDefaultValues({1:length(layers)}, varargin);
    
-for i = idxLayer
-    layeri = nn.layers{i};
+for i=idxLayer
+    layeri = layers{i};
     % move all learnable parameters to gpu
-    names = layeri.getLearnableParamNames();
+    names = layeri.getParamNames();
     for j=1:length(names)
         % cast learnable weights
         layeri.(names{j}) = cast(layeri.(names{j}),'like',x);

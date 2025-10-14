@@ -42,7 +42,7 @@ options_reach.zonotopeOrder = 100;
 
 % Conformance Settings
 options = options_reach;
-options.cs.robustnessMargin = 1e-9;
+options.cs.robustness = 1e-9;
 options.cs.cost = 'interval';
 options.cs.verbose = false;
 options_testS.p_extr = 0.2; % probability of extreme points
@@ -63,7 +63,7 @@ end
 params_true.tFinal = sys.dt * n_k - sys.dt;
 
 % Simulation
-params_true.testSuite = createTestSuite(sys, ...
+testSuite = createTestSuite(sys, ...
     params_true, n_k, n_m, n_s, options_testS);
 
 % Initial Estimates of the Disturbance Sets
@@ -72,6 +72,7 @@ c_U = zeros(size(center(params_true.U)));
 params_id_init = params_true;
 params_id_init.R0 = zonotope([c_R0 eye(sys.nrOfDims)]);
 params_id_init.U = zonotope([c_U eye(sys.nrOfInputs)]);
+params_id_init.testSuite = testSuite;
 
 %% Conformance Identification ---------------------------------------------
 num_id = length(constraints);
@@ -107,12 +108,12 @@ if n_m_val ~= 0
         n_s, options);
 end
 % combine validation and trainings test cases
-testSuite{1} = combineTestCases(params_true.testSuite{1}, testSuite_val{1});
-plot_settings.s_val = size(params_true.testSuite{1}.y,3) + 1; 
+testSuite_all = [testSuite; testSuite_val];
+plot_settings.s_val = size(testSuite(1).y,3)*length(testSuite) + 1; 
     % (setting s_val leads to different color for validation test cases)
 
 % run validation and plotting
-validateReach(testSuite{1}, configs, check_contain, plot_settings);
+validateReach(testSuite_all, configs, check_contain, plot_settings);
 
 % example completed
 completed = true;

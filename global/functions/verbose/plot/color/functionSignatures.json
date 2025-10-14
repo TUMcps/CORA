@@ -14,7 +14,7 @@
   {
      "inputs":
      [
-        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:default','CORA:manual','CORA:manual-result'}"], "purpose":"ID of CORA color map"}
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:default','MATLAB:default','CORA:manual','CORA:manual-result'}"], "purpose":"ID of CORA color map"}
      ]
   },
   
@@ -32,7 +32,17 @@
   {
      "inputs":
      [
-        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:initialSet','CORA:finalSet', 'CORA:simulations','CORA:unsafe','CORA:unsafeLight','CORA:safe','CORA:invariant','CORA:highlight1','CORA:highlight2','CORA:next','CORA:color1','CORA:blue','CORA:color2','CORA:red','CORA:color3','CORA:yellow','CORA:color4','CORA:purple','CORA:color5','CORA:green','CORA:color6','CORA:light-blue','CORA:color7','CORA:dark-red'}"], "purpose":"ID of CORA color"}
+        {"name":"identifier", "kind":"required", "type":["char", "choices={'CORA:initialSet','CORA:finalSet', 'CORA:simulations','CORA:unsafe','CORA:unsafeLight','CORA:safe','CORA:invariant','CORA:highlight1','CORA:highlight2','CORA:next','CORA:color1','CORA:blue','CORA:color2','CORA:red','CORA:color3','CORA:yellow','CORA:color4','CORA:purple','CORA:color5','CORA:green','CORA:color6','CORA:light-blue','CORA:color7','CORA:dark-red','MATLAB:color1','MATLAB:blue','MATLAB:color2','MATLAB:red','MATLAB:color3','MATLAB:yellow','MATLAB:color4','MATLAB:purple','MATLAB:color5','MATLAB:green','MATLAB:color6','MATLAB:light-blue','MATLAB:color7','MATLAB:dark-red'}"], "purpose":"ID of CORA color"}
+     ]
+  },
+  
+  "colorvariant":
+  {
+     "inputs":
+     [
+        {"name":"variant", "kind":"required", "type":["char", "choices={'light','dark','none'}"], "purpose":"color variant"},
+        {"name":"color", "kind":"required", "type":"numeric", "purpose":"rbg color triplet"},
+        {"name":"alpha", "kind":"ordered", "type":"numeric", "purpose":"factor for lightening/darkening"}
      ]
   }
 }

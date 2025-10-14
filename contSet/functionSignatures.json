@@ -35,6 +35,7 @@
         {"name":"XPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on x-axis"},
         {"name":"YPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on y-axis"},
         {"name":"ZPos", "kind":"namevalue", "type":["numeric"],"purpose":"position on z-axis"},
+        {"name":"Filled", "kind":"namevalue", "type":["logical"],"purpose":"Fill plotted set"},
          
         {"name":"Splits", "kind":"namevalue", "type":["numeric"],"purpose":"Splits (only for polyZonotope/conZonotope/levelSet)"},
         {"name":"PlotMethod", "kind":"namevalue", "type":["char","choices={'outer','inner'}"],"purpose":"plotting method (only for levelSets)"}

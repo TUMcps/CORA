@@ -84,14 +84,14 @@ R = reach(HA,params,options);
 params.x0 = center(params.R0);
 params = rmfield(params,'R0');
 
-[t,x] = simulate(HA,params); 
+[t,x,loc_] = simulate(HA,params); 
  
 % extract hitting times and states; remove artificial breaks due to guard
 % detection
-tHit_sim = cellfun(@(x) x(1),t(2:end),'UniformOutput',true);
-xHit_sim = cell2mat(cellfun(@(y) y(1,:),x(2:end),'UniformOutput',false));
-tHit_sim = tHit_sim(xHit_sim(:,1) < 0.1);
-xHit_sim = xHit_sim(xHit_sim(:,1) < 0.1,:);
+tHit_sim = t(diff(t) < 1e-6);
+xHit_sim = x(:,[false diff(t) < 1e-6]);
+tHit_sim = tHit_sim(xHit_sim(1,:) < 0.1);
+xHit_sim = xHit_sim(:,xHit_sim(1,:) < 0.1);
 hitCounter = length(tHit_sim);
 
 
@@ -112,8 +112,8 @@ for iLoc = 2:hitCounter
 end
 
 % compare exact values with simulation results
-res_tHit = all(withinTol(tHit,tHit_sim,1e-10));
-res_xHit = all(all(withinTol(xHit,xHit_sim,1e-10)));
+res_tHit = all(withinTol(tHit',tHit_sim,1e-10));
+res_xHit = all(all(withinTol(xHit',xHit_sim,1e-10)));
 res_sim = res_tHit && res_xHit;
 
 

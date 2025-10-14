@@ -112,13 +112,13 @@ descVideo = "CORA enables the formal verification of neural networks, both in op
 %% 2.a Recording Reachable Set and Simulations (plot)
 
 dims = 1:2;
-recordReachableSet(vidObj,fig,'ReachSet',R,'SimResult',simRes,'Dimensions',dims, 'Specification', spec)
+recordReachableSet(vidObj,fig,'ReachSet',R,'Trajectory',traj,'Dimensions',dims, 'Specification', spec)
 
 %% 2.a Recording Reachable Set and Simulations (plotOverTime)
 
 dims = 1;
 recordReachableSet(vidObj,fig, ...
-    'ReachSet',R,'SimResult',simRes,'Dimensions',dims, ...
+    'ReachSet',R,'Trajectory',traj,'Dimensions',dims, ...
     'Title', titleVideo,'Description', descVideo)
 
 %% 2.a Recording Reachable Set and Simulations (plot multiple reachable sets)
@@ -128,7 +128,7 @@ recordReachableSet(vidObj,fig, ...
     'ReachSets',{ ...
         project(R_distances,1),'Distance',CORAcolor('CORA:safe'); ...
         project(R_distances,2),'Safe distance',CORAcolor('CORA:unsafe') ...
-    },'SimResult',simResDistances,'Dimensions', dims);
+    },'Trajectory',trajDistances,'Dimensions', dims);
 
 %% 2.b Animate Sets as Needed
 

@@ -76,7 +76,7 @@ for i = 1:size(points,2)
     [~,x] = simulate(sysInv,simOpts);
 
     % check if final point is inside initial set
-    p = x(end,:)';
+    p = x(:,end);
     points_(:,i) = p;
 
     assert(contains(params.R0,p))

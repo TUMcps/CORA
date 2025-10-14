@@ -46,9 +46,11 @@ methods
     % constructor
     function optim = nnAdamOptimizer(varargin)
         % parse input
-        narginchk(0,8)
-        [lr, beta1, beta2, epsilon, lambda, amsgrad, lrDecayIter, lrDecay] ...
-            = setDefaultValues({0.001, 0.9, 0.999, 1e-8, 0, false, [], 1}, varargin);
+        narginchk(0,9)
+        [lr, beta1, beta2, epsilon, lambda, amsgrad, ...
+            lrDecayIter, lrDecay, gradThreshold] ...
+            = setDefaultValues({0.001, 0.9, 0.999, 1e-8, 0, false, ...
+                [], 1, 0}, varargin);
         inputArgsCheck({ ...
             {beta1, 'att', 'numeric', {'scalar', 'nonnegative'}}; ...
             {beta2, 'att', 'numeric', {'scalar', 'nonnegative'}}; ...
@@ -57,35 +59,17 @@ methods
             {amsgrad, 'att', 'logical'}; ...
         })
 
-        optim@nnOptimizer(lr, lambda, lrDecayIter, lrDecay);
+        optim@nnOptimizer(lr, lambda, lrDecayIter, lrDecay, gradThreshold);
         optim.beta1 = beta1;
         optim.beta2 = beta2;
         optim.epsilon = epsilon;
         optim.amsgrad = amsgrad;
     end
 
-    function optim = deleteGrad(optim, nn, options)
-        % call super class method
-        deleteGrad@nnOptimizer(optim, nn, options);
-        % delete all gradients
-        for i=1:length(nn)
-            layeri = nn.layers{i};
-            % Reset moment estimates.
-            names = layeri.getLearnableParamNames();
-            for j=1:length(names)
-                layeri.backprop.mt.(names{j}) = 0;
-                layeri.backprop.vt.(names{j}) = 0;
-                if optim.amsgrad
-                    layeri.backprop.vtMax.(names{j}) = 0;
-                end
-            end
-        end
-    end
-
     function s = print(optim)
         s = sprintf(['AdamOptimizer, Learning Rate: %.2e, Beta1: %.2e, '...
-            'Beta2: %.2e, Epsilon: %.2e, Lambda: %.2e'], ...
-                optim.lr,optim.beta1,optim.beta2,optim.epsilon,optim.lambda);
+            'Beta2: %.2e, Epsilon: %.2e, Lambda: %.2e, L2-Grad norm threshold: %.2e'], ...
+                optim.lr,optim.beta1,optim.beta2,optim.epsilon,optim.lambda,optim.gradThreshold);
     end
 end
 
@@ -118,6 +102,15 @@ methods (Access=protected)
 
         % update weight
         layer.(name) = layer.(name) - stepSize*(mt./(sqrtVt + optim.epsilon));
+    end
+
+    function optim = deleteLayerGrad(optim, layer, name, options)
+        % Delete additional gradient information.
+        layer.backprop.mt.(name) = 0;
+        layer.backprop.vt.(name) = 0;
+        if optim.amsgrad
+            layer.backprop.vtMax.(name) = 0;
+        end
     end
 end
 

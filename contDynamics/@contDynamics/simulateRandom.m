@@ -1,4 +1,4 @@
-function simRes = simulateRandom(sys, params, varargin)
+function traj = simulateRandom(sys, params, varargin)
 % simulateRandom - performs several random simulation of the system. It 
 %    can be set how many simulations should be performed, what percentage
 %    of initial states should start at vertices of the initial set, what 
@@ -34,7 +34,7 @@ function simRes = simulateRandom(sys, params, varargin)
 %           .R:          object of class reachSet storing the computed reachable set
 %
 % Outputs:
-%    simRes - object of class simResult storing time and states of the 
+%    traj - object of class trajectory storing time and states of the 
 %             simulated trajectories
 %
 % Other m-files required: none
@@ -59,13 +59,13 @@ options = setDefaultValues({struct()},varargin);
 % call private simulation function based on type
 switch options.type
     case 'standard'
-        simRes = priv_simulateStandard(sys,params,options);
+        traj = priv_simulateStandard(sys,params,options);
     case 'gaussian'
-        simRes = priv_simulateGaussian(sys,params,options);
+        traj = priv_simulateGaussian(sys,params,options);
     case 'rrt'
-        simRes = priv_simulateRRT(sys,params,options);
+        traj = priv_simulateRRT(sys,params,options);
     case 'constrained'
-        simRes = priv_simulateConstrainedRandom(sys,params,options);
+        traj = priv_simulateConstrainedRandom(sys,params,options);
 end
 
 % ------------------------------ END OF CODE ------------------------------

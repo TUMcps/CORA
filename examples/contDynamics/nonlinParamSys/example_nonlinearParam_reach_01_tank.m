@@ -75,7 +75,7 @@ disp(['computation time of reachable set with uncertain parameters: ',num2str(tC
 simOpt.points = 10;
 
 % random simulation
-simRes = simulateRandom(tank,params,simOpt);
+traj = simulateRandom(tank,params,simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -97,7 +97,7 @@ for i = 1:length(dims)
     plot(RcontParam.R0,projDims,'DisplayName','Initial set');
   
     % plot simulation results
-    plot(simRes,projDims,'DisplayName','Simulations');
+    plot(traj,projDims,'DisplayName','Simulations');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);

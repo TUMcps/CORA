@@ -14,7 +14,7 @@ function S=dominantDirections(Z,varargin)
 %    S - matrix containing the dominant directions as column vectors
 %
 % Example:
-%    Z = zonotope([0;0],-1+2*rand(2,20));
+%    Z = zonotope(zeros(2,1), [ -0.892 -0.097 0.579 0.065 0.743 0.300 -0.848 -0.172 -0.472 0.990 0.562 0.985 -0.152 -0.003 -0.287 0.182 -0.612 0.498 0.893 0.118 ; 0.610 -0.235 -0.271 0.423 -0.343 0.950 0.174 -0.382 0.518 -0.627 -0.608 0.605 0.458 0.618 -0.854 0.820 -0.135 -0.922 0.527 -0.632 ]);
 %    S = dominantDirections(Z);
 %
 % Other m-files required: none

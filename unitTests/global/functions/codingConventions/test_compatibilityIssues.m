@@ -29,14 +29,20 @@ issues = codeIssues(CORAROOT);
 issues = issues.Issues;
 fprintf('\n\n')
 
+% reduce severity for certain problems as the analyzer is doesn't care
+% about 'isMATLABReleaseOlderThan'
+issues{contains(issues.Description,'dual-simplex-legacy'),2} = matlab.codeanalysis.IssueSeverity.warning;
+
 % categorize issues
 errorIssues = issues(issues.Severity == matlab.codeanalysis.IssueSeverity.error,:);
 warningIssues = issues(issues.Severity == matlab.codeanalysis.IssueSeverity.warning,:);
 infoIssues = issues(issues.Severity == matlab.codeanalysis.IssueSeverity.info,:);
 
 % print fatal issues
-disp('Urgent issues:')
-CORAtable.printTable(errorIssues,'single');
+if height(errorIssues) > 0
+    disp('Urgent issues:')
+    CORAtable.printTable(errorIssues,'single');
+end
 fprintf('%i urgent issues found. %i warnings. %i infos. Open <a href="matlab:codeCompatibilityReport">Code Compatibility Analyzer</a> to see all issues.\n', height(errorIssues),height(warningIssues),height(infoIssues))
 
 % get results

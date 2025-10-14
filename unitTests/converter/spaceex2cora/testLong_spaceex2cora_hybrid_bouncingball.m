@@ -66,16 +66,14 @@ params.startLoc = 1;
 
 %% Compute error between the simulation of the two files
 
-% Note: the number of the channels in simResOriginal exceeds the number of
-% channels in simResConverted by one (the first cell is the different one).
+% Note: the number of the channels in trajOriginal exceeds the number of
+% channels in trajConverted by one (the first cell is the different one).
 % Therefore, we avoid the first cell and compare the rest of the cells. 
 
-for cell = 1:length(x)
-    diff = x{cell} - x_SX{cell};
-    error = vecnorm(diff); %has two values: one for each channel
-    
-    assertLoop(error <= 1e-5,cell) 
-end
+diff = x - x_SX;
+error = vecnorm(diff); %has two values: one for each channel
+
+assert(all(error <= 1e-5))
 
 disp('Successful Conversion: error = ' + string(sum(error)));
 res = true;

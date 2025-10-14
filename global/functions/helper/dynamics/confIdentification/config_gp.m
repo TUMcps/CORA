@@ -31,51 +31,55 @@ function gp = config_gp(gp, params, options, type)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-gp.runcontrol.parallel.auto = options.approx.gp_parallel;
+gp.runcontrol.parallel.auto = options.id.gp_parallel;
 
 % trainings and validation data
-gp.userdata.xtrain = options.approx.xtrain;
-gp.userdata.ytrain = options.approx.ytrain;
-gp.userdata.xval = options.approx.xval;
-gp.userdata.yval = options.approx.yval; 
+gp.userdata.xtrain = options.id.xtrain;
+gp.userdata.ytrain = options.id.ytrain;
+gp.userdata.xval = options.id.xval;
+gp.userdata.yval = options.id.yval; 
 
 % set initial population
-if isfield(options.approx, "gp_pop_pre")
-    gp.userdata.pop_pre = options.approx.gp_pop_pre;
+if isfield(options.id, "gp_pop_pre")
+    gp.userdata.pop_pre = options.id.gp_pop_pre;
 end
 
 % set random seed
-if isfield(options.approx, "seed")
-    gp.userdata.seed = options.approx.gp_seed;
+if isfield(options.id, "seed")
+    gp.userdata.seed = options.id.gp_seed;
 end
 
 % set identification settings depending on the GP method
-if type == "blackGP"
+if type == "gp"
+    % normal genetic programming
     gp.fitness.fitfun = @regressmulti_fitfun;
     gp.userdata.user_fcn = @regressmulti_fitfun_validate;
-    gp.runcontrol.num_gen = options.approx.gp_num_gen;
-    gp.runcontrol.pop_size = options.approx.gp_pop_size;
-    gp.runcontrol.runs = options.approx.gp_runs;
-elseif type == "blackCGP"
+    gp.runcontrol.num_gen = options.id.gp_num_gen;
+    gp.runcontrol.pop_size = options.id.gp_pop_size;
+    gp.runcontrol.runs = options.id.gp_runs;
+elseif type == "cgp"
+    % conformation genetic programming
     gp.fitness.fitfun = @regressmulti_fitfunConf;
     gp.userdata.user_fcn = @regressmulti_fitfunConf_validate;
-    gp.runcontrol.num_gen = options.approx.cgp_num_gen;
-    gp.runcontrol.pop_size = options.approx.cgp_pop_size_base^size(gp.userdata.ytrain,2);
-    gp.runcontrol.runs = options.approx.gp_runs;
-    if isfield(options.approx, "cgp_conf_value")
-        gp.fitness.conf_value = options.approx.cgp_conf_value;
+    gp.runcontrol.num_gen = options.id.cgp_num_gen;
+    gp.runcontrol.pop_size = options.id.cgp_pop_size_base^size(gp.userdata.ytrain,2);
+    gp.runcontrol.runs = options.id.gp_runs;
+    if isfield(options.id, "cgp_conf_value")
+        gp.fitness.conf_value = options.id.cgp_conf_value;
     end
     gp.userdata.options_conf = rmiffield(options,{'approx','linAlg', 'R0',...
         'U', 'tFinal', 'testSuite', 'testSuite_train', 'testSuite_val', ...
         'tStart', 'errorOrder'});
+    gp.userdata.params_conf = params;
     gp.userdata.options_conf.verbose = false; % no display output from derivatives-function
-    gp.userdata.params_conf = rmiffield(params,{'testSuite_train', 'testSuite_val'});
-    gp.userdata.p = options.approx.p;
-    gp.userdata.dt = params.testSuite{1}.sampleTime;
-    gp.userdata.n_m_conf = options.approx.cgp_n_m_conf;
-    if isfield(options.approx, 'cgp_file_pop_pre')
+    gp.userdata.p = options.id.p;
+    gp.userdata.dt = options.id.testSuite_val(1).dt;
+    gp.userdata.n_m_conf = options.id.cgp_n_m_conf;
+    if isfield(options.id, 'cgp_file_pop_pre')
+        % create initial population from the best individuals of previous
+        % population
         [gp.userdata.pop_pre, gp.userdata.T_pre] = aux_create_pop_pre(...
-            gp.runcontrol.pop_size, size(gp.userdata.ytrain,2), options.approx.cgp_file_pop_pre);
+            gp.runcontrol.pop_size, size(gp.userdata.ytrain,2), options.id.cgp_file_pop_pre);
     end
 end
 
@@ -93,8 +97,8 @@ gp.fitness.terminate = true;
 gp.fitness.terminate_value = 0.001;
 
 %multigene
-gp.genes.max_genes = options.approx.gp_max_genes;
-gp.treedef.max_depth = options.approx.gp_max_depth; 
+gp.genes.max_genes = options.id.gp_max_genes;
+gp.treedef.max_depth = options.id.gp_max_depth; 
 
 %maximum depth of sub-trees created by mutation operator
 gp.treedef.max_mutate_depth = 3;
@@ -103,15 +107,15 @@ gp.treedef.max_mutate_depth = 3;
 gp.nodes.const.p_ERC = 0.05;
 
 %give known variables aliases (this can include basic HTML markup)
-dim_y = size(params.testSuite{1}.y, 2);
+dim_y = size(options.id.testSuite_val(1).y, 1);
 i_y = 1;
-while i_y <= dim_y*options.approx.p
+while i_y <= dim_y*options.id.p
     gp.nodes.inputs.names{i_y} = sprintf('y(%d,1)',i_y);
     i_y = i_y +1;
 end
 i_u = 1;
-while i_u <= dim_y*(options.approx.p+1)
-    gp.nodes.inputs.names{dim_y*options.approx.p+i_u} = sprintf('u(%d,1)',i_u);
+while i_u <= dim_y*(options.id.p+1)
+    gp.nodes.inputs.names{dim_y*options.id.p+i_u} = sprintf('u(%d,1)',i_u);
     i_u = i_u +1;
 end
 
@@ -119,7 +123,7 @@ end
 gp.userdata.name = type;                 
 
 %define building block function nodes
-gp.nodes.functions.name = options.approx.gp_func_names;
+gp.nodes.functions.name = options.id.gp_func_names;
 
 end
 
@@ -138,6 +142,7 @@ for i_y = 1:n_y
     load(file_approx_iy, "gp", "T");
 
     T_pre = T_pre + T;
+    % sort according to the fitness values
     [~,sortIndex] = sort(gp.fitness.values);
 
     pop = repmat(gp.pop(sortIndex(1)), num_ind^(n_y-i_y),1);
@@ -156,6 +161,7 @@ for i_y = 1:n_y
             n_p = n_p + 1;
         end
     end
+    % create new population
     pop_pre = [pop_pre repmat(pop,num_ind^(i_y-1),1)];
 end
 end

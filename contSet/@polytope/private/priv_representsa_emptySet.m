@@ -111,13 +111,6 @@ end
 
 % solve the dual problem using linear programming
 
-% set options for MATLAB linprog
-persistent options
-if isempty(options)
-    options = optimoptions('linprog','display','off', ...
-                       'OptimalityTolerance',1e-10);
-end
-
 problem.f = b';
 problem.Aineq = [-eye(nrConIneq);A';-A'];
 problem.bineq = zeros(nrConIneq+2*n,1);
@@ -125,7 +118,6 @@ problem.Aeq = [];
 problem.beq = [];
 problem.lb = [];
 problem.ub = [];
-problem.options = options;
 
 % solve linear program (all inequalities)
 [x,~,exitflag] = CORAlinprog(problem);

@@ -91,39 +91,40 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
     end
 
     % sensitivity
-    function S = evaluateSensitivity(obj, S, x, options)
+    function S = evaluateSensitivity(obj, S, options)
         [scale,offset] = obj.aux_getScaleAndOffset();
         S = scale(:)' .* S;
+
+        if options.nn.store_sensitivity
+            % Store the gradient (used for the sensitivity computation).
+            obj.sensitivity = S;
+        end
     end
 
     % zonotope/polyZonotope
-    function [c, G, GI, E, id, id_, ind, ind_] = evaluatePolyZonotope(obj, c, G, GI, E, id, id_, ind, ind_, optionss)
-        c = obj.scale * c + obj.offset;
-        G = obj.scale * G;
-        GI = obj.scale * GI;
+    function [c, G, GI, E, id, id_, ind, ind_] = evaluatePolyZonotope(obj, c, G, GI, E, id, id_, ind, ind_, options)
+        [scale,offset] = obj.aux_getScaleAndOffset();
+        c = scale(:) .* c + offset;
+        G = scale(:) .* G;
+        GI = scale(:) .* GI;
     end
 
     % interval 
     function bounds = evaluateInterval(obj, bounds, options)
-        l = obj.scale.*bounds.inf + obj.offset;
-        u = obj.scale.*bounds.sup + obj.offset;
-        bounds = interval(l,u);
+        [scale,offset] = obj.aux_getScaleAndOffset();
+        l_ = scale.*bounds.inf + offset;
+        u_ = scale.*bounds.sup + offset;
+        bounds = interval(min(l_,u_),max(l_,u_));
     end
 
     % zonotope batch (for training)
     function [c, G] = evaluateZonotopeBatch(obj, c, G, options)
         [scale,offset] = obj.aux_getScaleAndOffset();
-        if options.nn.interval_center
-            % Flip bounds in case the scale is negative.
-            mask = [(scale(:) < 0) ~(scale(:) < 0)];
-            c_ = permute(c,[3 1 2]);
-            c = permute(cat(3,c_(:,mask),c_(:,~mask)),[2 3 1]);
-        end
         % Add the offset.
         c = scale(:).*c + offset(:);
         if options.nn.interval_center
             % Flip bounds in case the scale is negative.
-            c = sort(c,2);
+            c = [min(c,[],2) max(c,[],2)];
         end
         % Scale the generators.
         G = scale(:).*G;
@@ -131,32 +132,37 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
 
     % taylm
     function r = evaluateTaylm(obj, input, options)
-        r = obj.scale * input + obj.offset;
+        [scale,offset] = obj.aux_getScaleAndOffset();
+        r = scale * input + offset;
     end
 
     % conZonotope
     function [c, G, C, d, l, u] = evaluateConZonotope(obj, c, G, C, d, l, u, options)
-        c = obj.scale * c + obj.offset;
-        G = obj.scale * G;
+        [scale,offset] = obj.aux_getScaleAndOffset();
+        c = scale * c + offset;
+        G = scale * G;
     end
 
     % backprop ------------------------------------------------------------
 
     % numeric
-    function grad_in = backpropNumeric(obj, input, grad_out, options)
-        grad_in = obj.scale .* grad_out;
+    function grad_in = backpropNumeric(obj, input, grad_out, options, updateWeights)
+        [scale,offset] = obj.aux_getScaleAndOffset();
+        grad_in = scale .* grad_out;
     end
 
     % interval batch
-    function [gl, gu] = backpropIntervalBatch(obj, l, u, gl, gu, options)
-        gl = obj.scale.*gl;
-        gu = obj.scale.*gu;
+    function [gl, gu] = backpropIntervalBatch(obj, l, u, gl, gu, options, updateWeights)
+        [scale,offset] = obj.aux_getScaleAndOffset();
+        gl = scale.*gl;
+        gu = scale.*gu;
     end
-
+    
     % zonotope batch
-    function [gc, gG] = backpropZonotopeBatch(obj, c, G, gc, gG, options)
-        gc = obj.scale.*gc;
-        gG = obj.scale.*gG;
+    function [gc, gG] = backpropZonotopeBatch(obj, c, G, gc, gG, options, updateWeights)
+        [scale,offset] = obj.aux_getScaleAndOffset();
+        gc = scale.*gc;
+        gG = scale.*gG;
     end
 end
 
@@ -173,10 +179,53 @@ end
 
 % protected methods
 methods (Access = protected)
+
+    % Pad scale or offset channel-wise.
+    function p = aux_getPaddedParameter(obj, p, varargin)
+        [inImgSize] = setDefaultValues({obj.inputSize}, varargin);
+        % Ensure the image size has at least 3 dimensions.
+        ndims = length(inImgSize);
+        if ndims < 3
+            inImgSize = [inImgSize ones(3 - ndims)];
+        end
+
+        % Compute number of spacial dimensions in the feature map.
+        spacDim = prod(inImgSize(1:2));
+        % Obtain number of output channels.
+        out_c = inImgSize(3);
+
+        if numel(p) < spacDim*out_c
+            if isempty(p)
+                p = zeros(out_c,1,'like',p);
+            elseif isscalar(p)
+                p = repmat(p(:),[out_c 1]);
+            end
+    
+            % Expand the parameter vector to output size.
+            p = repelem(p(:), spacDim, 1);
+        else
+            p = p(:);
+        end
+    end
+
     function [scale,offset] = aux_getScaleAndOffset(obj)
-        % read out scale and offsets as vectors
-        scale = obj.scale(:);
-        offset = obj.offset(:);
+        if isfield(obj.backprop.store,'scale') ...
+                && isfield(obj.backprop.store,'offset')
+            % Return stored parameters.
+            scale = obj.backprop.store.scale;
+            offset = obj.backprop.store.offset;
+        else
+            % Obtain input size.
+            inImgSize = obj.inputSize;
+            % Pad scale and offset to match input size; i.e., channel-wise
+            % scale and offset.
+            scale = aux_getPaddedParameter(obj, obj.scale, inImgSize);
+            offset = aux_getPaddedParameter(obj, obj.offset, inImgSize);
+            % Store the parameters.
+            obj.backprop.store.scale = scale;
+            obj.backprop.store.offset = offset;
+        end
+
     end
 end
 

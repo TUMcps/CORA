@@ -90,7 +90,7 @@ spec = add(spec,spec3);
 
 % Simulation --------------------------------------------------------------
 
-simRes = simulateRandom(HA,params); 
+traj = simulateRandom(HA,params); 
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -116,13 +116,13 @@ set(h,'FaceColor',colorblind('gray'));
 useCORAcolors('CORA:contDynamics')
 
 % plot reachable set
-plot(R,[1,2],'Unify',true,'UnifyTotalSets',5);
+plot(R,[1,2]);
 
 % plot initial set
 plot(R(1).R0,[1,2]);
 
 % plot simulation
-plot(simRes,[1,2]);
+plot(traj,[1,2]);
 
 % plot space station
 plot(specification(spaceStation,'unsafeSet'),[1,2]);

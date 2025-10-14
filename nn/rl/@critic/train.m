@@ -68,7 +68,7 @@ else
     [yPredBatchC,yPredBatchG] = obj.nn.evaluateZonotopeBatch_(cBatch,GBatch,options.rl.critic,obj.idxLayer);
     [loss,gradOutC,gradOutG] = aux_computeLoss(targetBatch,yPredBatchC,yPredBatchG,options);
     gradOutG = options.rl.critic.nn.train.eta * gradOutG;
-    obj.nn.backpropZonotopeBatch_(gradOutC,gradOutG,options.rl.critic,obj.idxLayer);
+    obj.nn.backpropZonotopeBatch_(gradOutC,gradOutG,options.rl.critic,obj.idxLayer,true);
 end
 
 obj.optim = obj.optim.step(obj.nn,options.rl.critic,obj.idxLayer);

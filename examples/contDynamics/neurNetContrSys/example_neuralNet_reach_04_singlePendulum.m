@@ -79,7 +79,7 @@ specUnsafe = specification(safeSet * 0.5 + 1, 'unsafeSet', spec.time);
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, true);
+[res, R, traj] = verify(sys, spec, params, options, true);
 tTotal = toc(t);
 disp(['Result: ' res])
 
@@ -99,7 +99,7 @@ updateColorIndex(); % don't plot initial set
 % plotOverTime(R(1).R0, 1, 'DisplayName', 'Initial set');
 
 % plot simulations
-plotOverTime(simRes, 1, 'DisplayName', 'Simulations');
+plotOverTime(traj, 1, 'DisplayName', 'Simulations');
 
 % labels and legend
 xlabel('time');

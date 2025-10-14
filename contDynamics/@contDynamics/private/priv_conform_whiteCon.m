@@ -1,4 +1,4 @@
-function con = priv_conform_whiteCon(sys,testSuite,p_GO,G_X0,G_U,options_cs,union_y_a)
+function con = priv_conform_whiteCon(sys,testSuite,p_GO,G_X0,G_U,options_cs,union_y_a,n_c)
 % priv_conform_whiteCon - formulate reachset conformance constraints as linear
 %    constraints
 %
@@ -29,8 +29,8 @@ function con = priv_conform_whiteCon(sys,testSuite,p_GO,G_X0,G_U,options_cs,unio
 %     G_X0 - generators of the initial state set
 %     G_U - generators of the disturbance set    
 %     options_cs - conformance synthesis specifications
-%     union_y_a - n_m x 1 cell array with n_k x n_y x n_s output arrays
-%                 with union_y_a{m} = testSuite{m}.y - y_nom
+%     union_y_a - n_m x 1 cell array with dim_y x n_k x n_s output arrays
+%                 with union_y_a{m} = testSuite(m).y - y_nom
 %           
 % Outputs:
 %     con - struct with equality and inequality constraints, with fields
@@ -57,18 +57,15 @@ function con = priv_conform_whiteCon(sys,testSuite,p_GO,G_X0,G_U,options_cs,unio
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-Q_ineq = [];
-
 if strcmp(options_cs.constraints,"half")
     A_eq = []; b_eq = [];
-    [A_ineq,b_ineq] = aux_halfspaceConstraints(sys,testSuite,p_GO,G_X0,G_U,union_y_a);
+    [A_ineq,b_ineq] = aux_halfspaceConstraints(sys,testSuite,p_GO,G_X0,G_U,union_y_a,n_c);
 elseif strcmp(options_cs.constraints,"gen")
-    [A_eq,b_eq,A_ineq,b_ineq] = aux_generatorConstraints(testSuite,p_GO,G_X0,G_U,options_cs.n_c);
+    [A_eq,b_eq,A_ineq,b_ineq] = aux_generatorConstraints(sys,testSuite,p_GO,G_X0,G_U,n_c);
 end
 
 con.A_eq = A_eq;
 con.b_eq = b_eq;
-con.Q_ineq = Q_ineq;
 con.A_ineq = A_ineq;
 con.b_ineq = b_ineq;
 
@@ -77,22 +74,34 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [A_ineq,b_ineq] = aux_halfspaceConstraints(sys, testSuite, ...
-    p_GO, G_X0, G_U, union_y_a)
+function [A_ineq,b_ineq] = aux_halfspaceConstraints(sys,testSuite, ...
+    p_GO, G_X0, G_U, union_y_a,n_c)
 
 A_ineq = []; b_ineq = [];
 
-for m = 1:length(testSuite)      
-    % y_m = testSuite{m}.y;
-    n_k = size(p_GO{m}.y, 2); % number of timesteps
+for m = 1 : length(testSuite)
+    % y_m = testSuite(m).y;
+    if isa(sys, 'linearARX') || isa(sys, 'linearSysDT')
+        % do only one iteration for linear systems
+        p_GO_m = p_GO;
+        union_y_a_m = union_y_a;
+        n_k = size(union_y_a,2);
+        if m > 1
+            continue
+        end
+    else
+        p_GO_m = p_GO{m};
+        union_y_a_m = union_y_a{m};
+        n_k = testSuite(m).n_k;
+    end
 
     % compute halfspace contraints for each time step
     for k=1:n_k
 
         % Compute the generators of the reachable output set
-        G_Yk = p_GO{m}.C{k}*G_X0;
+        G_Yk = p_GO_m.C{k}*G_X0;
         for j = 1:k
-            G_Yk = [G_Yk p_GO{m}.D{k,j}*G_U];
+            G_Yk = [G_Yk p_GO_m.D{k,j}*G_U];
         end
 
         % Compute halfspace normal matrix N_k
@@ -109,111 +118,109 @@ for m = 1:length(testSuite)
         sum_D_Gu_abs = 0;
         for j=1:k
             % Compute sum_j Dj
-            sum_D = sum_D + p_GO{m}.D{k,j};
+            sum_D = sum_D + p_GO_m.D{k,j};
 
             % Compute sum_j |Nk Dj G_u|
-            sum_D_Gu_abs = sum_D_Gu_abs + abs(Nk*p_GO{m}.D{k,j}*G_U);
+            sum_D_Gu_abs = sum_D_Gu_abs + abs(Nk*p_GO_m.D{k,j}*G_U);
         end
         % Distance matrix from the uncertain initial state and inputs
 
-        if isa(sys, 'linearSysDT') || isa(sys, 'linearARX')
-            A_ineqk = [abs(Nk*p_GO{m}.C{k}*G_X0), sum_D_Gu_abs, Nk_c*p_GO{m}.C{k}, Nk*sum_D];
+        if n_c > 0
+            A_ineqk = [abs(Nk*p_GO_m.C{k}*G_X0), sum_D_Gu_abs, Nk_c*p_GO_m.C{k}, Nk*sum_D];
         else
-            A_ineqk = [abs(Nk*p_GO{m}.C{k}*G_X0), sum_D_Gu_abs];
+            A_ineqk = [abs(Nk*p_GO_m.C{k}*G_X0), sum_D_Gu_abs];
         end
         A_ineq(end+1:end+size(Nk,1),:) = -A_ineqk;
 
         % compute the linear summand d
-        union_y_ak = permute(union_y_a{m}(k,:,:),[2 3 1]);
+        union_y_ak = permute(union_y_a_m(:,k,:),[1 3 2]);
         b_ineqk = max(Nk_c*union_y_ak,[],2);
         b_ineq(end+1:end+size(Nk,1),1) = -b_ineqk;
     end
 end
-
 end
 
-function [A_eq,b_eq,A_ineq,b_ineq] = aux_generatorConstraints(testSuite,p_GO,G_X0,G_U,n_c)
+function [A_eq,b_eq,A_ineq,b_ineq] = aux_generatorConstraints(sys,testSuite,p_GO,G_X0,G_U,n_c)
 
-    b_eq = [];
+b_eq = [];
 
-    eta_U = size(G_U,2);
-    eta_X0 = size(G_X0,2);
-    n_a = eta_X0 + eta_U; % number of scaling factors
-    n_y = size(p_GO{1}.C{1},1);
-    n_x = size(p_GO{1}.C{1},2);
-    n_u = size(p_GO{1}.u,1);
-    I_aX0 = [eye(eta_X0), zeros(eta_X0,eta_U)];
-    I_aU = [zeros(eta_U,eta_X0), eye(eta_U)];
+eta_U = size(G_U,2);
+eta_X0 = size(G_X0,2);
+n_a = eta_X0 + eta_U; % number of scaling factors
+I_aX0 = [eye(eta_X0), zeros(eta_X0,eta_U)];
+I_aU = [zeros(eta_U,eta_X0), eye(eta_U)];
 
-    Q_b = sparse([]);
-    Q_c = sparse([]);
-    R_a = sparse([]);
+Q_b = sparse([]);
+Q_c = sparse([]);
+R_a = sparse([]);
 
-    for m = 1:length(testSuite)
-        y_m = testSuite{m}.y;
-        n_k = size(p_GO{m}.y, 2); % number of timesteps
-
-        R_as = zeros(n_k * eta_X0 + sum(1:n_k)*eta_U, eta_X0 + eta_U);
-        Q_bs = [];
-        Q_cs = zeros(n_k*n_y, n_x+n_u);
-        I_ak = ([I_aX0; zeros(n_k*eta_U, eta_X0+eta_U)]);
-        for k=1:n_k
-
-            % matrices for equality constraints
-            % Compute the generators of the reachable output set
-            G_Yk = zeros(n_y,eta_X0+k*eta_U);
-            G_Yk(:,1:eta_X0) = p_GO{m}.C{k}*G_X0;
-            sum_D = 0;
-            for j = 1:k
-                % Compute sum_j Dj
-                if n_c > 0
-                    sum_D = sum_D + p_GO{m}.D{k,j};
-                end
-
-                G_Yk(:,eta_X0+(j-1)*eta_U+1:eta_X0+j*eta_U) = p_GO{m}.D{k,j}*G_U;
-            end
-            Q_bs = blkdiag(Q_bs, G_Yk);
-            if n_c > 0
-                Q_cs((k-1)*n_y+1:k*n_y,:) = [p_GO{m}.C{k} sum_D];
-            end
-
-            % matrices for inequality constraints
-            I_ak(eta_X0+(k-1)*eta_U+1:eta_X0+k*eta_U,:) = I_aU;
-            R_as((k-1)*eta_X0 + sum(1:k-1)*eta_U+1:k*eta_X0 + sum(1:k)*eta_U,:) = I_ak(1:eta_X0+k*eta_U,:);
-        end
-
-        % equality constraints Ax = b
-        if iscell(y_m)
-            n_s = length(y_m); % number of tests
-            for s = 1:n_s
-                Q_b = blkdiag(Q_b, sparse(Q_bs)); % copy for each sample
-                b_eq = [b_eq; reshape(p_GO{m}.y-y_m{s}',[],1)];
-            end
-        else
-            n_s = size(y_m,3);
-            Q_b = blkdiag(Q_b, sparse(kron(eye(n_s),Q_bs))); % copy for each sample
-            b_eq = [b_eq; reshape(p_GO{m}.y-permute(y_m,[2,1,3]),[],1)];
-        end
-        if n_c > 0
-            Q_c = [Q_c; sparse(-repmat(Q_cs, n_s, 1))];
-        end
-
-        % inequality constraints Ax <= b
-        R_a = [R_a; sparse(-repmat(R_as, n_s, 1))];
+for m = 1:length(testSuite)
+    if isa(sys, 'linearARX') || isa(sys, 'linearSysDT')
+        p_GO_m = p_GO; % same GO parameters for all trajectories
+        y_p_GO_m = p_GO_m.y(:,:,m);
+    else
+        p_GO_m = p_GO{m};
+        y_p_GO_m = p_GO_m.y;
     end
-    R_c = sparse(size(R_a,1), n_c);
-    R_b = speye(size(R_a,1));
+    n_y = size(p_GO_m.C{1},1);
+    n_x = size(p_GO_m.C{1},2);
+    n_u = size(p_GO_m.u,1);
+    y_m = testSuite(m).y;
+    n_k = size(y_m, 2); % number of timesteps
 
-    A_ineq = [R_a R_c R_b; R_a R_c -R_b];
-    b_ineq = sparse(size(A_ineq, 1),1);
+    R_as = zeros(n_k * eta_X0 + sum(1:n_k)*eta_U, eta_X0 + eta_U);
+    Q_bs = [];
+    Q_cs = zeros(n_k*n_y, n_x+n_u);
+    I_ak = ([I_aX0; zeros(n_k*eta_U, eta_X0+eta_U)]);
+    for k=1:n_k
 
-    A_eq = [sparse(size(Q_b,1), n_a) Q_c Q_b];
+        % matrices for equality constraints
+        % Compute the generators of the reachable output set
+        G_Yk = zeros(n_y,eta_X0+k*eta_U);
+        G_Yk(:,1:eta_X0) = p_GO_m.C{k}*G_X0;
+        sum_D = 0;
+        for j = 1:k
+            % Compute sum_j Dj
+            if n_c > 0
+                sum_D = sum_D + p_GO_m.D{k,j};
+            end
 
-    % remove rows which correspond to NaN values due to missing
-    % measurements in some test cases
-    i_nan = isnan(b_eq); 
-    b_eq(i_nan) = [];
-    A_eq(i_nan,:) = [];
+            G_Yk(:,eta_X0+(j-1)*eta_U+1:eta_X0+j*eta_U) = p_GO_m.D{k,j}*G_U;
+        end
+        Q_bs = blkdiag(Q_bs, G_Yk);
+        if n_c > 0
+            Q_cs((k-1)*n_y+1:k*n_y,:) = [p_GO_m.C{k} sum_D];
+        end
+
+        % matrices for inequality constraints
+        I_ak(eta_X0+(k-1)*eta_U+1:eta_X0+k*eta_U,:) = I_aU;
+        R_as((k-1)*eta_X0 + sum(1:k-1)*eta_U+1:k*eta_X0 + sum(1:k)*eta_U,:) = I_ak(1:eta_X0+k*eta_U,:);
+    end
+
+    % equality constraints Ax = b
+    n_s = size(y_m,3);
+    Q_b = blkdiag(Q_b, sparse(kron(eye(n_s),Q_bs))); % copy for each sample
+    b_eq = [b_eq; reshape(y_p_GO_m(:,1:size(y_m,2))-y_m,[],1)];
+    if n_c > 0
+        Q_c = [Q_c; sparse(-repmat(Q_cs, n_s, 1))];
+    end
+
+    % inequality constraints Ax <= b
+    R_a = [R_a; sparse(-repmat(R_as, n_s, 1))];
+end
+R_c = sparse(size(R_a,1), n_c);
+R_b = speye(size(R_a,1));
+
+A_ineq = [R_a R_c R_b; R_a R_c -R_b];
+b_ineq = sparse(size(A_ineq, 1),1);
+
+A_eq = [sparse(size(Q_b,1), n_a) Q_c Q_b];
+
+% remove rows which correspond to NaN values due to missing
+% measurements in some test cases
+i_nan = isnan(b_eq);
+b_eq(i_nan) = [];
+A_eq(i_nan,:) = [];
 
 end
 

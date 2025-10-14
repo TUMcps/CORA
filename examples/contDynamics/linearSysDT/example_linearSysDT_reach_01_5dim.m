@@ -66,7 +66,7 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 25;
-simRes = simulateRandom(fiveDimSys, params, simOpt);
+traj = simulateRandom(fiveDimSys, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -87,7 +87,7 @@ for k = 1:length(dims)
     plot(R.timePoint.set{1},projDims);
     
     % plot simulation results
-    plot(simRes,projDims,'Traj','y','Marker','.');
+    plot(traj,projDims,'Traj','y','Marker','.');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);

@@ -47,8 +47,8 @@ try
     end
     f = eval(func + "]");
     sys_approx = nonlinearARX("NARX_gpcTrain_"+string(id_curr),f,...
-        gp.userdata.dt,size(params_id_init.testSuite{1}.y,2), ...
-        size(params_id_init.testSuite{1}.u,2), gp.userdata.p);
+        gp.userdata.dt,size(params_id_init.testSuite(1).y,1), ...
+        size(params_id_init.testSuite(1).u,1), gp.userdata.p);
 
     % compute conformance cost
     timerVal = tic;
@@ -60,7 +60,7 @@ try
         params_id_init.testSuite = testSuite(n_m*i+1:n_m*(i+1));
         for j=1:n_m
             % maximum distance between measurements of the same test case
-            meas_dist(i+1) = meas_dist(i+1) + sum(max(abs(diff(params_id_init.testSuite{j}.y,3)),[],3),'all');
+            meas_dist(i+1) = meas_dist(i+1) + sum(max(abs(diff(params_id_init.testSuite(j).y,3)),[],3),'all');
         end
         [~, results] = conform(sys_approx,params_id_init,options);
         fval = fval + results.fval/meas_dist(i+1);

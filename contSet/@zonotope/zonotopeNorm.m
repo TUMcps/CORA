@@ -19,7 +19,7 @@ function [res, minimizer] = zonotopeNorm(Z,p)
 %    G = [[2 3 0];[2 0 3]];
 %    Z = zonotope(c, G);
 %    
-%    p = rand([2 1]);
+%    p = [ 0.693 ; 0.824 ];
 %
 %    % Set of points that have the same distance to the origin as p, with
 %    % respect to the zonotope norm of Z    

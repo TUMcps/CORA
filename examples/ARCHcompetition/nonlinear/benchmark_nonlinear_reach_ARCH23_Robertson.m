@@ -94,7 +94,7 @@ for i=1:nrSys
     Rwidth{i} = reachSet([],timeInt);
 
     % plot
-    plotOverTime(Rwidth{i},1,'FaceColor',colors{i},'Unify',true);
+    plotOverTime(Rwidth{i},1,'FaceColor',colors{i});
 
     % flush queue
     pause(0.2);

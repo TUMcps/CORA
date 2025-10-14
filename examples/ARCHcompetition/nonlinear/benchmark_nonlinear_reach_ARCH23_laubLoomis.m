@@ -97,7 +97,7 @@ figure; hold on; box on;
 
 % plot results over time
 for k = 1:length(R)
-    plotOverTime(R{k},4,'FaceColor',colors{k},'Unify',true);
+    plotOverTime(R{k},4,'FaceColor',colors{k});
 end
 
 % specs

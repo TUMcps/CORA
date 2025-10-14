@@ -93,8 +93,8 @@ plot(zonotope(Rsubset),[1,2],'FaceColor',CORAcolor("CORA:highlight1"));
 % visualization of the simulation results
 plot(paramSim.x0(1),paramSim.x0(2),'Color',CORAcolor("CORA:highlight1"),...
      'MarkerSize',20,'Marker','.');
-plot(x(1,1),x(1,2),'.','Color', CORAcolor('CORA:simulations'));
-plot(x(end,1),x(end,2),'.','MarkerSize',30,'Color', CORAcolor('CORA:simulations'));
+plot(x(1,1),x(2,1),'.','Color', CORAcolor('CORA:simulations'));
+plot(x(1,end),x(2,end),'.','MarkerSize',30,'Color', CORAcolor('CORA:simulations'));
 
 % formatting
 xlim([-1.5,1.5]);
@@ -165,9 +165,9 @@ plot(R.R0,[1,2]);
 plot(Rfin,[1,2],'FaceColor',CORAcolor("CORA:finalSet"),'Splits',10);
 
 % visualize falsifying trajectory
-plot(xTraj(:,1),xTraj(:,2),'Color', CORAcolor('CORA:simulations'));
-plot(xTraj(1,1),xTraj(1,2),'.','MarkerSize',15,'Color', CORAcolor('CORA:simulations'));
-plot(xTraj(end,1),xTraj(end,2),'.','MarkerSize',15,'Color', CORAcolor('CORA:simulations'));
+plot(xTraj(1,:),xTraj(2,:),'Color', CORAcolor('CORA:simulations'));
+plot(xTraj(1,1),xTraj(2,1),'.','MarkerSize',15,'Color', CORAcolor('CORA:simulations'));
+plot(xTraj(1,end),xTraj(2,end),'.','MarkerSize',15,'Color', CORAcolor('CORA:simulations'));
 
 % formatting
 set(gcf,'Position',[855 434 560 375]);

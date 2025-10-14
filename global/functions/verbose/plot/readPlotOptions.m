@@ -10,7 +10,7 @@ function NVpairs = readPlotOptions(plotOptions,varargin)
 % Inputs:
 %    plotOptions - LineSpecification options + Name-Value pairs
 %    purpose - information about plot, admissible values:
-%                   'simResult' - simulation results
+%                   'trajectory' - simulation results
 %                   'reachSet' - reachability results
 %                   'initialSet' - reachability results
 %                   'polygon' - internal polygon class
@@ -43,6 +43,7 @@ function NVpairs = readPlotOptions(plotOptions,varargin)
 %                24-March-2023 (TL, defaultPlotColor)
 %                04-October-2023 (TL, aux_correctColorToNumeric)
 %                07-February-2025 (TL, deal with alpha values)
+%                11-September-2025 (TL, updates CORA_PLOT_FILLED macro)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -50,8 +51,15 @@ function NVpairs = readPlotOptions(plotOptions,varargin)
 % input argument validation
 purpose = setDefaultValues({'none'},varargin);
 
+% check if already validated
+[NVpairs,validated] = readNameValuePair(plotOptions,'NVPAIRS_VALIDATED');
+if ~isempty(validated) && validated
+    % exit without further processing
+    return;
+end
+
 % check input arguments
-inputArgsCheck({{purpose,'str',{'simResult','reachSet', 'initialSet', ...
+inputArgsCheck({{purpose,'str',{'trajectory','reachSet', 'initialSet', ...
         'polygon', 'spec:safeSet','spec:unsafeSet', 'spec:invariant', ...
         'mesh','surf','contour','fill','none'}}});
 
@@ -143,6 +151,15 @@ for i=1:length(cats)
     end
 end
 
+% convert char hex color to dec due to 'fill'
+plotOptions = aux_correctColorToNumeric(plotOptions, 'FaceColor');
+plotOptions = aux_correctColorToNumeric(plotOptions, 'EdgeColor');
+plotOptions = aux_correctColorToNumeric(plotOptions, 'Color');
+% also any additional color values in NVpairs
+NVpairs = aux_correctColorToNumeric(NVpairs, 'FaceColor');
+NVpairs = aux_correctColorToNumeric(NVpairs, 'EdgeColor');
+NVpairs = aux_correctColorToNumeric(NVpairs, 'Color');
+
 % distribute 'Color' to 'EdgeColor' and 'FaceColor', overwrite if necessary
 [plotOptions,edgecolor] = readNameValuePair(plotOptions,'EdgeColor');
 [plotOptions,facecolor] = readNameValuePair(plotOptions,'FaceColor');
@@ -150,10 +167,6 @@ end
 [plotOptions,filled] = readNameValuePair(plotOptions,'Filled');
 [NVpairs,color] = readNameValuePair(NVpairs,'Color');
 
-% print warning if filled given
-if ~isempty(filled)
-    CORAwarning('CORA:plot',"Name-value pair 'Filled'-true|false is deprecated.");
-end
 % note: filled is overruled if 'FaceColor' is provided
 if strcmp(facecolor, 'default')
     facecolor = defaultPlotColor();
@@ -220,7 +233,7 @@ switch purpose
             NVpairs = [NVpairs, 'FaceColor', defaultPlotColor()];
         end
     
-    case 'simResult'
+    case 'trajectory'
         % just color
         if ~isempty(color)
             NVpairs = [NVpairs, 'Color', color];
@@ -351,25 +364,38 @@ switch purpose
             end
             % warning if filled is false
             aux_filledWarning(filled,facecolor);
-        else
+        else % no FaceColor explicitly given
             % only color: 'EdgeColor' > 'Color' > default color
-            usedColor = defaultPlotColor();
+            usedEdgeColor = defaultPlotColor();
             if ~isempty(edgecolor)
-                usedColor = edgecolor;
+                usedEdgeColor = edgecolor;
             elseif ~isempty(color)
-                usedColor = color;
+                usedEdgeColor = color;
             end
+            
             % 'Filled', true... but no facecolor -> use same as for edge
-            if ~isempty(filled) && filled
-                NVpairs = [NVpairs, 'FaceColor', usedColor];
-                NVpairs = [NVpairs, 'EdgeColor', usedColor];
+            if ~strcmp(facecolor,'none') && (CORA_PLOT_FILLED && isempty(filled)) || (~isempty(filled) && filled)
+                % filling but with no FaceColor explicitly given.
+                usedFaceColor = defaultPlotColor();
+                if ~isempty(usedEdgeColor) && ~strcmp(usedEdgeColor,'none')
+                    usedFaceColor = usedEdgeColor;
+                elseif ~isempty(edgecolor) && ~strcmp(edgecolor,'none')
+                    usedFaceColor = edgecolor;
+                elseif ~isempty(color) && ~strcmp(edgecolor,'none')
+                    usedFaceColor = color;
+                end
+
+                % use same color for face color, just with less opacity
+                [~,alpha] = colorvariant('light',usedFaceColor);
+                NVpairs = [NVpairs, 'FaceColor', usedFaceColor,'FaceAlpha',alpha];
+                NVpairs = [NVpairs, 'EdgeColor', usedEdgeColor];
             else
-                NVpairs = [NVpairs, 'Color', usedColor];
+                NVpairs = [NVpairs, 'Color', usedEdgeColor];
             end
         end
 end
 
-% convert char hex color to dec due to 'fill'
+% convert char hex color to dec due to 'fill' (again)
 NVpairs = aux_correctColorToNumeric(NVpairs, 'FaceColor');
 NVpairs = aux_correctColorToNumeric(NVpairs, 'EdgeColor');
 NVpairs = aux_correctColorToNumeric(NVpairs, 'Color');

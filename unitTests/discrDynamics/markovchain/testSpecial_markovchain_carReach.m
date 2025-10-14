@@ -106,7 +106,7 @@ for iInput = 1:totalNrOfInputs
                     %simulate HA
                     [~,x] = simulate(HA,params); 
                     %get final state
-                    finalState = x{end}(end,:);
+                    finalState = x(:,end);
                     %store result for time intervals
                     finalStateMat.OT(end+1,:) = finalState;
                 end

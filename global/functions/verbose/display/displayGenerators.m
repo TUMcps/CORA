@@ -13,7 +13,7 @@ function displayGenerators(G,maxGens,varName)
 %    (to console)
 %
 % Example: 
-%    Z = zonotope(rand(2,50));
+%    Z = zonotope([ 0.444 ; 0.756 ], [ 0.603 0.114 0.849 0.466 0.630 0.580 0.600 0.035 0.408 0.460 0.551 0.701 0.052 0.460 ; 0.783 0.979 0.051 0.326 0.230 0.603 0.448 0.514 0.108 0.451 0.805 0.872 0.220 0.959 ]);
 %    G = generators(Z);
 %    displayGenerators(G,10,'G');
 %

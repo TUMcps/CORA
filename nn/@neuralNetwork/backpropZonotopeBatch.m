@@ -36,12 +36,12 @@ function [gc,gG] = backpropZonotopeBatch(nn,gc,gG,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % validate parameters
-[options, idxLayer] = setDefaultValues( ...
-    {struct, 1:length(nn.layers)}, varargin);
+[options, idxLayer, updateWeights] = setDefaultValues( ...
+    {struct, 1:length(nn.layers), true}, varargin);
 % Set default evaluation parameters.
 options = nnHelper.validateNNoptions(options,true);
 % backpropagte gradients through the network.
-[gc,gG] = nn.backpropZonotopeBatch_(gc,gG,options,idxLayer);
+[gc,gG] = nn.backpropZonotopeBatch_(gc,gG,options,idxLayer,updateWeights);
 
 end
 

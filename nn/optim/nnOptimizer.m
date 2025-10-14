@@ -32,27 +32,33 @@ properties
     timestep,
     lambda, % weight decay
     lrDecayIter, lrDecay
+    gradThreshold % threshold for L2 clipping
 end
 
 methods
     % constructor
-    function optim = nnOptimizer(lr, lambda, lrDecayIter, lrDecay)
+    function optim = nnOptimizer(lr, lambda, lrDecayIter, lrDecay, gradThreshold)
         inputArgsCheck({ ...
             {lr, 'att', 'numeric', {'scalar', 'nonnegative'}}; ...
             {lambda, 'att', 'numeric', {'scalar', 'nonnegative'}}; ...
             {lrDecayIter, 'att', 'numeric'}; ...
-            {lrDecay, 'att', 'numeric', {'scalar', 'nonnegative'}}...
+            {lrDecay, 'att', 'numeric', {'scalar', 'nonnegative'}};...
+            {gradThreshold, 'att', 'numeric', {'scalar', 'nonnegative'}}...
         })
         optim.lr = lr;
         optim.lambda = lambda;
         optim.lrDecayIter = lrDecayIter;
         optim.lrDecay = lrDecay;
+        optim.gradThreshold = gradThreshold;
         % initialize timestep
         optim.timestep = 0;
     end
 
     function optim = step(optim, nn, options, varargin)
-        [idxLayer] = setDefaultValues({1:length(nn)}, varargin);
+        % Enumerate all layers.
+        [layers,~] = nn.enumerateLayers();
+        % Parse parameters.
+        [idxLayer] = setDefaultValues({1:length(layers)}, varargin);
         % Increment timestep.
         optim.timestep = optim.timestep + 1;
         % Decrease learning rate.
@@ -61,36 +67,57 @@ methods
         end
         
         % Updates all learnable parameters.
-        for i=1:length(nn)
-            layer_i = nn.layers{i};
-            names = layer_i.getLearnableParamNames();
+        for i=idxLayer
+            % Obtain the i-th layer.
+            layeri = layers{i};
+            % Obtain the learnable parameters.
+            names = layeri.getLearnableParamNames();
             for j=1:length(names)
+                % Obtain the next parameter name.
                 name = names{j};
                 if optim.lambda ~= 0
                     % Apply weight decay.
-                    layer_i.backprop.grad.(name) = ...
-                        layer_i.backprop.grad.(name) + optim.lambda*layer_i.(name);
+                    layeri.backprop.grad.(name) = ...
+                        layeri.backprop.grad.(name) + optim.lambda*layeri.(name);
                 end
-                optim.updateParam(layer_i, name);
+                if optim.gradThreshold > 0
+                    % Compute norm of gradient.
+                    gradNorm = sqrt(sum(layeri.backprop.grad.(name).^2,'all'));
+                    % Scale the gradient.
+                    if gradNorm >= optim.gradThreshold
+                        gradScale = optim.gradThreshold./gradNorm;
+                        layeri.backprop.grad.(name) = ...
+                            gradScale.*layeri.backprop.grad.(name);  
+                    end
+                end
+                optim.updateParam(layeri, name);
                 % Clear gradient.
-                layer_i.backprop.grad.(name) = 0;
+                layeri.backprop.grad.(name) = 0;
             end
         end
     end
 
     function optim = deleteGrad(optim, nn, options, varargin)
-        [idxLayer] = setDefaultValues({1:length(nn)}, varargin);
-        % reset timestep
+        % Enumerate all layers.
+        [layers,~] = nn.enumerateLayers();
+        % Parse parameters.
+        [idxLayer] = setDefaultValues({1:length(layers)}, varargin);
+        % Reset timestep.
         optim.timestep = 0;
-        % delete gradients
+        % Delete gradients.
         for i=idxLayer
-            layeri = nn.layers{i};
+            layeri = layers{i};
             % Reset backpropagation storage.
             layeri.backprop.store = struct;
             % Reset gradients.
             names = layeri.getLearnableParamNames();
             for j=1:length(names)
-                layeri.backprop.grad.(names{j}) = 0;
+                % Obtain the j-th name.
+                namej = names{j};
+                % Delete the stored gradient.
+                layeri.backprop.grad.(namej) = 0;
+                % Delete additional gradient information, e.g., momentum.
+                optim.deleteLayerGrad(layeri,namej);
             end
         end
     end
@@ -101,7 +128,8 @@ methods
 end
 
 methods  (Access=protected, Abstract)
-    optim = updateParam(optim, nnLayer, name, options)
+    optim = updateParam(optim, layeri, name, options)
+    optim = deleteLayerGrad(optim, layeri, name, options)
 end
 
 end

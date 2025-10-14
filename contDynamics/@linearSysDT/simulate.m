@@ -39,7 +39,7 @@ function [t,x,ind,y] = simulate(linsysDT,params,varargin)
 %
 %    [t,x] = simulate(linsysDT,params);
 %
-%    plot(x(:,1),x(:,2),'.k','MarkerSize',20);
+%    plot(x(1,:),x(2,:),'.k','MarkerSize',20);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -52,6 +52,7 @@ function [t,x,ind,y] = simulate(linsysDT,params,varargin)
 % Last update:   24-March-2020 (NK)
 %                08-May-2020 (MW, update interface)
 %                12-January-2021 (MA, disturbance input added)
+%                28-August-2025 (LL, transpose t, x, and y)
 % Last revision: 16-November-2021 (MW, simplify loop, rewrite handling of params.u|w|v, integrate output)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -66,7 +67,7 @@ ind = [];
 y = [];
 
 % compute time vector and number of steps
-t = (params.tStart:linsysDT.dt:params.tFinal)';
+t = params.tStart:linsysDT.dt:params.tFinal;
 steps = length(t)-1;
 
 % check end of time vector
@@ -79,8 +80,8 @@ end
 params = aux_uwv(linsysDT,params,steps);
 
 % initial state
-x = zeros(steps+1,linsysDT.nrOfDims);
-x(1,:) = params.x0';
+x = zeros(linsysDT.nrOfDims,steps+1);
+x(:, 1) = params.x0;
 
 % computation of output set desired / possible
 comp_y = nargout == 4 && ~isempty(linsysDT.C);
@@ -88,38 +89,38 @@ comp_y = nargout == 4 && ~isempty(linsysDT.C);
 if ~iscell(linsysDT.A)
     % initial output
     if comp_y
-    	y = zeros(steps+1,linsysDT.nrOfOutputs);
-        y(1,:) = linsysDT.C * x(1,:)' + linsysDT.D * params.u(:,1) + linsysDT.k + linsysDT.F * params.v(:,1);
+    	y = zeros(linsysDT.nrOfOutputs,steps+1);
+        y(:,1) = linsysDT.C * x(:,1) + linsysDT.D * params.u(:,1) + linsysDT.k + linsysDT.F * params.v(:,1);
     end
 
     % loop over all time steps
     for i = 1:steps
 
         % compute successor state
-        temp = linsysDT.A * x(i,:)' + linsysDT.B * params.u(:,i) + linsysDT.c + linsysDT.E * params.w(:,i);
-        x(i+1,:) = temp';
+        temp = linsysDT.A * x(:,i) + linsysDT.B * params.u(:,i) + linsysDT.c + linsysDT.E * params.w(:,i);
+        x(:,i+1) = temp';
 
         % compute output
         if comp_y
-            y(i+1,:) = linsysDT.C * x(i+1,:)' + linsysDT.D * params.u(:,i+1) + linsysDT.k + linsysDT.F * params.v(:,i+1);
+            y(:,i+1) = linsysDT.C * x(:,i+1) + linsysDT.D * params.u(:,i+1) + linsysDT.k + linsysDT.F * params.v(:,i+1);
         end
     end
 else
     if comp_y
-    	y = zeros(steps+1,linsysDT.nrOfOutputs);
-        y(1,:) = linsysDT.C{1} * x(1,:)' + linsysDT.D{1} * params.u(:,1) + linsysDT.k + linsysDT.F * params.v(:,1);
+    	y = zeros(linsysDT.nrOfOutputs,steps+1);
+        y(:,1) = linsysDT.C{1} * x(:,1) + linsysDT.D{1} * params.u(:,1) + linsysDT.k + linsysDT.F * params.v(:,1);
     end
 
     % loop over all time steps
     for i = 1:steps
 
         % compute successor state
-        temp = linsysDT.A{i} * x(i,:)' + linsysDT.B{i} * params.u(:,i) + linsysDT.c + linsysDT.E * params.w(:,i);
-        x(i+1,:) = temp';
+        temp = linsysDT.A{i} * x(:,i) + linsysDT.B{i} * params.u(:,i) + linsysDT.c + linsysDT.E * params.w(:,i);
+        x(:,i+1) = temp';
 
         % compute output
         if comp_y
-            y(i+1,:) = linsysDT.C{i+1} * x(i+1,:)' + linsysDT.D{i+1} * params.u(:,i+1) + linsysDT.k + linsysDT.F * params.v(:,i+1);
+            y(:,i+1) = linsysDT.C{i+1} * x(:,i+1) + linsysDT.D{i+1} * params.u(:,i+1) + linsysDT.k + linsysDT.F * params.v(:,i+1);
         end
     end
 end

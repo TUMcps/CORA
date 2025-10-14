@@ -43,12 +43,7 @@ path = [CORAROOT filesep 'models' filesep 'testCases' filesep 'pedestrians'];
 load([path filesep 'Pellegrini2009Test'],'Pellegrini2009Test');
 
 %% Conformance settings
-params.testSuite = cell(length(Pellegrini2009Test),1);
-for m=1:length(Pellegrini2009Test)
-    % add nominal inputs equal to zeros to each test case since minimal input
-    % dimension for linearSysDT is 1
-    params.testSuite{m} = set_u(Pellegrini2009Test{m}, zeros(size(Pellegrini2009Test{m}.y,1),1));
-end
+params.testSuite = Pellegrini2009Test;
 options.cs.cost = 'interval';
 options.cs.constraints = 'half';
 options.zonotopeOrder = 200;
@@ -58,7 +53,7 @@ options.zonotopeOrder = 200;
 % create pedestrian model (see Lecture "Formal Methods for Cyber-Physical
 % Systems - Conformance Checking")
 % sample time
-dt = Pellegrini2009Test{1}.sampleTime;
+dt = Pellegrini2009Test(1).dt;
 % discrete time system matrix from continuous system matrix Ac
 Ac = [0 0 1 0; 0 0 0 1; 0 0 0 0; 0 0 0 0];
 A = expm(Ac*dt);
@@ -91,7 +86,7 @@ params_interval = conform(pedestrian,params,options);
 %% Perform conformance check on obtained parameters (result should be true)
 Vorig = params_interval.V;
 params_interval.V = enlarge(Vorig,1.001); % slightly enlarge V for numerical robustness
-params_interval.testSuite = Pellegrini2009Test; %isconform can not (yet) deal with the combined testcase
+params_interval.testSuite = Pellegrini2009Test; %isconform cannot (yet) deal with the combined testcase
 options_isconf = rmfield(options, 'cs');
 assert(isconform(pedestrian,params_interval,options_isconf));
 

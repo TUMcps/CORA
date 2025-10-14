@@ -10,7 +10,7 @@ function val = robustness(obj,varargin)
 % Inputs:
 %    obj - logic formula (class stl)
 %    R - reachable set (class reachSet)
-%    sim - simulated traces (class simResult)
+%    traj - simulated trajectories (class trajectory)
 %    x - states of the trace (dimensions: [m,n])
 %    t - times of the trace (dimensions: [m,1])
 %
@@ -54,12 +54,12 @@ function val = robustness(obj,varargin)
     elseif isa(varargin{1},'reachSet')
         R = varargin{1};
         type = 'reachSet';
-    elseif isa(varargin{1},'simResult')
+    elseif isa(varargin{1},'trajectory')
         sim = varargin{1};
-        type = 'simResult';
+        type = 'trajectory';
     else
         throw(CORAerror('CORA:wrongValue', "second", ...
-                 'must by of class "reachSet" or "simResult".'));
+                 'must by of class "reachSet" or "trajectory".'));
     end
 
     % bring temporal logic formula to correct format and extract predicates
@@ -71,7 +71,7 @@ function val = robustness(obj,varargin)
     elseif strcmp(type,'reachSet')
         [r_pred,t,phi] = aux_robustnessReachSet(R,phi,sets,pred);
     else
-        val = aux_robustnessSimResult(sim,phi,sets);
+        val = aux_robustnessTrajectory(sim,phi,sets);
         return;
     end
     
@@ -288,14 +288,14 @@ function [r,t,eq] = aux_robustnessReachSet(R,eq,sets,pred)
     end
 end
 
-function val = aux_robustnessSimResult(sim,phi,sets)
+function val = aux_robustnessTrajectory(traj,phi,sets)
 % compute robustness for a set of traces (= minimum over all traces)
 
     val = inf;
 
-    for i = 1:length(sim)
-        for j = 1:length(sim(i,1))
-            [r_pred,t] = aux_robustnessTrace(sim(i,1).x{j},sim(i,1).t{j},sets);
+    for i = 1:length(traj)
+        for j = 1:size(traj(i).x,3)
+            [r_pred,t] = aux_robustnessTrace(traj(i).x(:,:,j)',traj(i).t',sets);
             r = aux_robustnessTemporalLogic(phi,r_pred,t);
             val = min(val,r(1));
         end

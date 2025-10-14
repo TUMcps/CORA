@@ -280,12 +280,10 @@ N1 = size(Gext1, 2);
 N2 = size(Gext2, 2);
 N3 = size(Gext3, 2);
 
-n = length(ind);
 M = N1 * N2;
 
 Equad = zeros(size(E1, 1), M);
 Ecub = zeros(size(Equad, 1), size(Equad, 2)*N3);
-Gcub = zeros(n, size(Equad, 2)*N3);
 
 % create the exponent matrix that corresponds to the quadratic map
 counter = 1;
@@ -300,24 +298,14 @@ for j = 1:N3
     Ecub(:, (j - 1)*M+1:j*M) = Equad + Eext3(:, j) * ones(1, M);
 end
 
-% loop over all dimensions
-for i = 1:length(ind)
-
-    % loop over all quadratic matrices: \sum_k (pZ' T_k pZ) * pZ_k
-    for k = 1:length(ind{i})
-
-        % quadratic evaluation
-        quadMat = Gext1' * T{i, ind{i}(k)} * Gext2;
-        quadVec = reshape(quadMat, 1, []);
-
-
-        % cubic generator matrix: loop over all generators
-        for j = 1:N3
-            Gcub(i, (j - 1)*M+1:j*M) = Gcub(i, (j - 1)*M+1:j*M) + ...
-                quadVec * Gext3(ind{i}(k), j);
-        end
-    end
-end
+% compute generators using zonotope/cubMap
+Zcub = cubMap( ...
+    zonotope(Gext1), ...
+    zonotope(Gext2), ...
+    zonotope(Gext3), ...
+    T, ind ...
+);
+Gcub = [Zcub.c,Zcub.G];
 
 % add up all generators that belong to identical exponents
 [ExpNew, Gnew] = removeRedundantExponents(Ecub, Gcub);

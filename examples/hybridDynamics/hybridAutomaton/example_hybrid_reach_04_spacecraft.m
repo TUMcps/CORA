@@ -71,7 +71,7 @@ disp(['computation time: ',num2str(tComp)]);
 
 % Simulation --------------------------------------------------------------
 
-simRes = simulateRandom(HA,params); 
+traj = simulateRandom(HA,params); 
 
 
 % Visualization -----------------------------------------------------------
@@ -96,7 +96,7 @@ plot(R);
 plot(params.R0,[1,2],'k','FaceColor','w');
 
 % plot simulation
-plot(simRes,[1,2]);
+plot(traj,[1,2]);
 
 % plot guard set
 plot(x,y,'k');
@@ -125,13 +125,10 @@ R2 = find(R,'location',2);
 plot(R2,[3,4]);
 
 % plot simulation for location 2
-for i = 1:length(simRes)
-    for j=1:length(simRes(i).loc)
-        if simRes(i).loc(j) == 2
-            x = simRes(i).x{j};
-            plot(x(:,3),x(:,4),'Color',colorblind('y'));
-        end
-    end
+for i = 1:length(traj)
+    idx = traj(i).loc == 2;
+    x = traj(i).x(:,idx);
+    plot(x(3,:),x(4,:),'Color',colorblind('y'));
 end
 
 % formatting

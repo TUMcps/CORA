@@ -1,15 +1,15 @@
-function res = contains(R,simRes,varargin)
+function res = contains(R,traj,varargin)
 % contains - checks if reachable set contains all simulated
 %    points of a set of system trajectory; not for hybrid systems
 %
 % Syntax:
-%    res = contains(R,simRes)
-%    res = contains(R,simRes,type)
-%    res = contains(R,simRes,type,tol)
+%    res = contains(R,traj)
+%    res = contains(R,traj,type)
+%    res = contains(R,traj,type,tol)
 %
 % Inputs:
 %    R - object of class reachSet
-%    simRes - object of class simRes
+%    traj - object of class trajectory
 %    type - (optional) 'exact' or 'approx'
 %    tol - (optional) tolerance
 %
@@ -26,6 +26,7 @@ function res = contains(R,simRes,varargin)
 % Written:       16-February-2021
 % Last update:   28-April-2023 (MW, bug fix for only time-point reachable sets, speed up)
 %                16-May-2023 (MW, extend to hybrid systems)
+%                24-September-2025 (LL, use new trajectory object)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -35,15 +36,15 @@ function res = contains(R,simRes,varargin)
 
 % check input arguments
 inputArgsCheck({{R,'att','reachSet'};
-                {simRes,'att','simResult'};
+                {traj,'att','trajectory'};
                 {type,'str',{'exact','approx'}}; ...
                 {tol,'att','numeric',{'nonnegative','scalar'}}});
 
 % total number of points: put all points of all trajectories into one big
 % list so that contains does not convert the same set into polytopes
 % multiple times (costly!)
-nrPoints = sum(arrayfun(@(x) sum(cellfun(@length,x.t,'UniformOutput',true)),...
-    simRes,'UniformOutput',true));
+nrPoints = sum(arrayfun(@(x) sum(length(x.t)),...
+    traj,'UniformOutput',true));
 
 % logical indexing
 ptsContained = false(nrPoints,1);
@@ -78,8 +79,8 @@ for i=1:size(allLoc,2)
         % loop over reachable sets
         for k=1:length(sets)
             % for each reachable set, find corresponding simulation points
-            % in the entire simResult object
-            [pts,ptsChecked_] = aux_findPointsInInterval(simRes,nrPoints,time{k},iLoc,tol);
+            % in the entire trajectory object
+            [pts,ptsChecked_] = aux_findPointsInInterval(traj,nrPoints,time{k},iLoc,tol);
         
             % potential improvement: skip points which were already checked
             % and found to be contained
@@ -118,51 +119,55 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [pts,ptsChecked] = aux_findPointsInInterval(simRes,nrPoints,time,loc,tol)
+function [pts,ptsChecked] = aux_findPointsInInterval(traj,nrPoints,time,loc,tol)
 
 % check whether time interval or time point given
 ti = isa(time,'interval');
 
 % init points and logical value for contained points
-pts = zeros(size(simRes(1).x{1},2),0);
+pts = zeros(size(traj(1).x,1),0);
 ptsChecked = false(nrPoints,1);
 
 % index for full list
 startIdx = 1;
 
 % loop over all individual trajectories
-for r=1:length(simRes)
+for r=1:length(traj)
 
-    % loop over all individual parts
-    for part=1:length(simRes(r).t)
+    % number of points in this trajectory
+    nrPointsPart = length(traj(r).t);
 
-        % number of points in this part
-        nrPointsPart = length(simRes(r).t{part});
+    % find indizes for matching locations
+    if isempty(traj(r).loc)
+        locIdx = true(1,size(traj(r).t,2));
+    else
+        locIdx = all(traj(r).loc == loc, 1);
+    end
+    if any(locIdx)
 
-        % skip non-matching locations
-        if all(size(simRes(r).loc(part,:)') == size(loc)) ...
-                && all(simRes(r).loc(part,:)' == loc)
-
-            % check which points match the correct time
-            if ti
-                % time points have to be contained in time interval
-                tempIdx = contains(time,simRes(r).t{part}','exact',tol);
-            else
-                % time points have to be within tolerance of given time point
-                tempIdx = withinTol(time,simRes(r).t{part}',tol);
-            end
-            % append checked points
-            ptsChecked(startIdx:startIdx+nrPointsPart-1) = tempIdx';
-        
-            % append corresponding state vectors
-            pts = [pts simRes(r).x{part}(tempIdx,:)'];
-            
+        % check which points match the correct time
+        if ti
+            % time points have to be contained in time interval
+            tempIdx = contains(time,traj(r).t,'exact',tol);
+        else
+            % time points have to be within tolerance of given time point
+            tempIdx = withinTol(time,traj(r).t,tol);
         end
 
-        % shift start index
-        startIdx = startIdx + nrPointsPart;
+        % indizes where locataion and time correct
+        tempIdx = locIdx & tempIdx;
+
+        % append checked points
+        ptsChecked(startIdx:startIdx+nrPointsPart-1) = tempIdx';
+
+        % append corresponding state vectors
+        pts = [pts traj(r).x(:,tempIdx)];
 
     end
+
+    % shift start index
+    startIdx = startIdx + nrPointsPart;
+
 end
 
 end

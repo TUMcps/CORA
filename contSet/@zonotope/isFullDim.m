@@ -37,6 +37,7 @@ function [res, subspace] = isFullDim(Z,varargin)
 % Last update:   12-March-2021 (MW, add empty case)
 %                04-February-2024 (AK, add subspace computation)
 %                17-May-2024 (TL, added tol)
+%                28-August-2025 (TL, bug fix 2025a, single generator)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -63,7 +64,13 @@ if ~representsa_(Z,'emptySet',eps)
     
         [U,Sigma, ~] = svd(Z.G);
     
-        s = diag(Sigma);
+        % read out main diagonal
+        if size(Z.G,2) > 1
+            s = diag(Sigma);
+        else
+            % bug fix for single generator (?)
+            s = Sigma;
+        end
         r = sum(s>tol);
     
         res = Zdim == r;

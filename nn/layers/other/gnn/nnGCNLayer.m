@@ -108,7 +108,7 @@ methods (Access = {?nnLayer, ?neuralNetwork})
             X = polyZonotope(c, G, GI, E, id);
 
             % calculate the output from mQuadMap(MP,X)
-            Y = obj.aux_mQuadMap_gcn(MP, X, nrNodes, nrNodes, nrFeat);
+            Y = matMap(MP, X, nrNodes, nrNodes, nrFeat);
 
             % extract properties
             c = Y.c;
@@ -224,8 +224,8 @@ methods (Access = protected)
                 A = polyZonotope(A.c,A.G,A.GI,[A.E;zeros(p_diff,size(A.E,1))]);
     
                 % 6. compute message passing
-                DA = obj.aux_mQuadMap_gcn(D_invsqrt,A,numNodes,numNodes,numNodes);
-                DAD = obj.aux_mQuadMap_gcn(DA,D_invsqrt,numNodes,numNodes,numNodes);
+                DA = matMap(D_invsqrt,A,numNodes,numNodes,numNodes);
+                DAD = matMap(DA,D_invsqrt,numNodes,numNodes,numNodes);
     
                 % fix ids
                 DAD = DAD.replaceId(maxId + DAD.id);
@@ -239,51 +239,6 @@ methods (Access = protected)
 
         DAD_saved = nnGCNLayer.message_passing;
         DAD_saved.val = DAD;
-    end
-
-     function PZ = aux_mQuadMap_gcn(obj, PZ1, PZ2, n, k, m)
-        % compute quadratic map of uncertain matrices
-        % correctly considers ids of given polynomial zonotopes
-
-        % transform given sets to polynomial matrix zonotopes
-
-        % init
-        c1 = PZ1.c; G1 = PZ1.G; h1 = size(G1,2);
-        c2 = PZ2.c; G2 = PZ2.G; h2 = size(G2,2);
-
-        % reshape to respective matric
-        c1 = reshape(c1,n,k); G1 = reshape(G1,n,k,h1,1);
-        c2 = reshape(c2,k,m); G2 = reshape(G2,k,m,1,h2);
-
-        % compute respective matrix multiplications
-        c1c2 = c1 * c2;
-        G1c2 = pagemtimes(G1, c2);
-        c1G2 = pagemtimes(c1, G2);
-        G1G2 = pagemtimes(G1, G2);
-
-        % reshape back to vector
-        c1c2 = reshape(c1c2,n*m,[]);
-        G1c2 = reshape(G1c2,n*m,[]);
-        c1G2 = reshape(c1G2,n*m,[]);
-        G1G2 = reshape(G1G2,n*m,[]);
-
-        % compute output generator matrix
-        G = [G1c2, c1G2, G1G2];
-
-        % compute output exponent matrix
-        id1 = PZ1.id; id2 = PZ2.id;
-        id = unique([id1;id2]);
-        % extend exponent matrices
-        E1 = (id1' == id) * PZ1.E;
-        E2 = (id2' == id) * PZ2.E;
-        E = [E1, E2];
-        if ~isempty(PZ1.E) && ~isempty(PZ2.E)
-            % sum each column of E1 to E2 and concatenate
-            E = [E, reshape(E1 + reshape(E2,[],1,h2),[],h1*h2)];
-        end
-
-        % init resulting polynomial zonotope
-        PZ = polyZonotope(c1c2, G, [], E, id);
     end
 
 end

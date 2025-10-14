@@ -38,6 +38,7 @@ function res = rdivide(numerator, denominator)
 % Written:       07-February-2016
 % Last update:   13-March-2016 (speed improvement)
 %                05-May-2020 (MW, added error message)
+%                06-October-2025 (TL, bugfix, broadcasting)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -46,7 +47,9 @@ function res = rdivide(numerator, denominator)
 if isa(numerator, 'interval') && ~isa(denominator, 'interval')
     
     % a matrix of scalars or a scalar
-    if isequal(size(denominator),size(numerator)) || isequal(size(denominator),[1, 1])
+    if isequal(size(denominator),size(numerator)) || ...
+            isequal(size(denominator),[1, 1]) || ...
+            nnz(size(numerator) ~= size(denominator)) == 1
 
         % needs to preserve the shape of an input
         res = numerator;
@@ -116,7 +119,8 @@ elseif isa(numerator, 'interval') && isa(denominator, 'interval')
     
     if isequal(size(numerator), size(denominator)) || ...
             isequal(size(numerator), [1, 1]) || ...
-            isequal(size(denominator), [1, 1])
+            isequal(size(denominator), [1, 1]) || ...
+            nnz(size(numerator) ~= size(denominator)) == 1
         y = 1 ./ denominator;
         res = numerator .* y;
     else

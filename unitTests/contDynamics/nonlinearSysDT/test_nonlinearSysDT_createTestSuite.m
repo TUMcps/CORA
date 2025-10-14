@@ -1,6 +1,6 @@
 function res = test_nonlinearSysDT_createTestSuite
-% test_nonlinearSysDT_createTestSuite - unit test for creating
-%   test suites for given system dynamics
+% test_nonlinearSysDT_createTestSuite test for creating
+%   trajectories for nonlinearSysDT
 %
 % Syntax:
 %    res = test_nonlinearSysDT_createTestSuite
@@ -13,54 +13,46 @@ function res = test_nonlinearSysDT_createTestSuite
 %
 
 % Authors:       Laura Luetzow
-% Written:       01-March-2024
+% Written:       28-August-2025
 % Last update:   ---
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% Parameters --------------------------------------------------------------
-params.R0 = zonotope([-0.15;-45],diag([0.005;3]));
-params.U = zonotope(zeros(2,1),diag([0.1;2]));
-rng('default')
-
-% System Dynamics ---------------------------------------------------------
-
-dt = 0.15;
-fun = @(x,u) cstrDiscr(x,u,dt);
-sys = nonlinearSysDT('stirredTankReactor',fun,0.015);
-
-% create test suite with no specification
-n_k = 100;
+n_k = 10;
 n_m = 5;
-n_s = 20;
-T = createTestSuite(sys, params, n_k, n_m, n_s);
+n_s = 2;
 
-% create test suite using the default parameter set
-options.p_extr = 0.7;
-options.inputFactor = [3 5];
-for curve = ["rand", "randn", "bezier", "sinWave", "sigmoid"]
-    options.inputCurve = curve;
-    T = createTestSuite(sys, params, n_k, n_m, n_s, options);
+% define system
+dynamics = "lorenz";
+[sys, params.R0, params.U] = loadDynamics(dynamics);
+
+% create trajectories and check dimensions
+traj = createTestSuite(sys, params, n_k, n_m, n_s);
+assert(length(traj) == n_m && traj(1).n_k == n_k && traj(1).n_s == n_s)
+
+for inputCurve = ["rand", "randn", "bezier", "sigmoid","sinWave"]
+    % specify options
+    options.p_extr = 0.3;
+    options.inputCurve = inputCurve;
+    options.stateSet = 10*interval(-ones(sys.nrOfDims,1),...
+        ones(sys.nrOfDims,1));
+
+    % create trajectories and check dimensions
+    traj = createTestSuite(sys, params, n_k, n_m, n_s, options);
+    assert(length(traj) == n_m && traj(1).n_k == n_k && traj(1).n_s == n_s)
+
+    % specify more options
+    options2.inputCurve = inputCurve;
+    options2.inputSet = interval([-100; 1; 0.5; 0; 1; 1],...
+        [-1; 100; 1; 0.5; 2; 2]);
+
+    % create trajectories and check dimensions
+    traj = createTestSuite(sys, params, n_k, n_m, n_s, options);
+    assert(length(traj) == n_m && traj(1).n_k == n_k && traj(1).n_s == n_s)
 end
 
-% create test suite for given parameters
-options.inputCurve = "bezier";
-options.inputParameters = [[2*sys.dt;0;n_k*sys.dt;8;8], [1*sys.dt;-1;7*sys.dt;-8;-8]];
-T = createTestSuite(sys, params, n_k, n_m, n_s, options);
-
-% create test suite a given parameter set
-options = rmfield(options, 'inputParameters');
-options.inputCurve = "bezier";
-options.stateSet = zonotope([3;3], 10*eye(2));
-options.inputSet = zonotope([2*sys.dt;0;n_k*sys.dt;8;8], diag([3*sys.dt, 1, 3*sys.dt, 10, 10]));
-T = createTestSuite(sys, params, n_k, n_m, n_s, options);
-
-% compute deviation between measurement trajectories and nominal output
-% trajectories for test case m=1
-T{1}=T{1}.compute_ya(sys);
-
+% combine results
 res = true;
-end
 
 % ------------------------------ END OF CODE ------------------------------

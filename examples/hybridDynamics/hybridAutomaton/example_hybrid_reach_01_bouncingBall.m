@@ -82,7 +82,7 @@ disp(['Computation time for reachable set: ',num2str(tComp),' s']);
 
 % Simulation --------------------------------------------------------------
 
-simRes = simulateRandom(HA,params); 
+traj = simulateRandom(HA,params); 
 
 
 % Visualization -----------------------------------------------------------
@@ -97,7 +97,7 @@ plotOverTime(R,[1],'DisplayName','Reachable set');
 plotOverTime(R(1).R0,[1],'HandleVisibility','off');
 
 % plot simulated trajectories
-plotOverTime(simRes,[1],'DisplayName','Simulations');
+plotOverTime(traj,[1],'DisplayName','Simulations');
 
 res = true;
 

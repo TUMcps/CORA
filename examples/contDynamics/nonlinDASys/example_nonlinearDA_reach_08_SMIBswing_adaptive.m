@@ -112,6 +112,7 @@ params.u = center(params.U);
 t = cell(runs,1); x = cell(runs,1);
 
 % loop over all simulated trajectories
+traj(runs,1) = trajectory();
 for r = 1:runs
     
     if r<=10
@@ -127,15 +128,13 @@ for r = 1:runs
         params.tStart = tswitch(i);
         params.tFinal = tswitch(i+1);
         [t_new,x_new] = simulate(syshandles{i},params);
-        t{r} = [t{r}; t_new]; x{r} = [x{r}; x_new];
-        xFinal = x{r}(end,:)';
+        t{r} = [t{r} t_new]; x{r} = [x{r} x_new];
+        xFinal = x{r}(:,end);
         params.x0 = xFinal(1:dim_x);
         params.y0 = xFinal(dim_x+1:dim_x+dim_y).';
     end
+    traj(r) = trajectory([],x{r},[],t{r});
 end
-
-% write to simResult object
-simRes = simResult(x,t);
 
 
 % Visualization -----------------------------------------------------------
@@ -151,7 +150,7 @@ plot(R,dim_x,'DisplayName','Reachable set');
 plot(R(1).R0,dim_x,'DisplayName','Initial set');
 
 % plot simulation results
-plot(simRes,dim_x,'DisplayName','Simulations');
+plot(traj,dim_x,'DisplayName','Simulations');
 
 % axis labels
 xlabel('$x_1$','interpreter','latex');

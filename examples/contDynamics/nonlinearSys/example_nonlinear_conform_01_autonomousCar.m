@@ -78,16 +78,18 @@ options.stretchFac = 2;
 options.convertFromAbstractState = @init_MB_BMW; % handle to mFile to convert abstract states to full states (requires assumptions)
 options.convertToAbstractState = @MB_to_ST; % handle to mFile to convert full states to abstract states
 path = [CORAROOT filesep 'models' filesep 'CORA' filesep 'contDynamics' filesep 'nonlinearSys' filesep 'data'];
-options.preComputedRRT = [path filesep 'simResRRT_noAdditionalInformation_27June2023'];
+options.preComputedRRT = [path filesep 'trajRRT_noAdditionalInformation_27June2023'];
 
 %% System dynamics
-vehModelACC2012 = nonlinearSys(ACC2012Test{1}.model,7,17); % abstract model
+vehModelACC2012 = nonlinearSys(ACC2012Test(1).model,7,17); % abstract model
 CommonRoadMB2 = nonlinearSys(@vehicleDynamics_MB_controlled_BMW,29,10); % reference model
 options.refModel = CommonRoadMB2; 
     
 %% Conformance checking
 timerVal = tic;
-[res, R, simRes] = conform(vehModelACC2012,params,options,confAlg); % RRT results should also be returned
+[params, res] = conform(vehModelACC2012,params,options,confAlg); % RRT results should also be returned
+R = results.R;
+traj = results.traj;
 tComp = toc(timerVal);
 
 if res
@@ -117,7 +119,7 @@ for iCase = 1:length(params.testSuite)
         plot(R{iCase},projDim,'DisplayName','Reachable set');
 
         % plot simulation results      
-        plot(simRes{iCase},projDim,'ko','LineStyle','none','DisplayName','Simulations');
+        plot(traj(iCase),projDim,'ko','LineStyle','none','DisplayName','Simulations');
         
         % plot initial set
         plot(R{iCase}(1).R0,projDim, 'DisplayName','Initial set');

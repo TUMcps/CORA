@@ -44,15 +44,11 @@ locCurr = params.startLoc;      % current location
 xInter = params.x0;             % intermediate state at transitions
 
 % init output arguments
-t = {}; x = {}; loc = [];
-cnt = 0;
+t = []; x = []; loc = [];
 
 % iteratively simulate for each location separately
 while tInter < params.tFinal && ...
       ~isempty(locCurr) && ~priv_isFinalLocation(locCurr,params.finalLoc)
-
-    % increment counter
-    cnt = cnt + 1;
 
     % choose input
     params.u = params.uLoc{locCurr};
@@ -69,12 +65,17 @@ while tInter < params.tFinal && ...
     % update time
     tInter = tNew(end);
 
-    % concatenate to one full trajectory via cell-arrays (we cannot splice
-    % the individual parts into one large sequence since the number of
-    % states can vary across locations)
-    t{cnt,1} = tNew;
-    x{cnt,1} = xNew;
-    loc(cnt,1) = params.loc;
+    % concatenate to one full trajectory
+    t = [t tNew];
+    if size(x,1) < size(xNew,1)
+        % old location has fewer states: fill with NaN
+        x = [x; NaN(size(xNew,1)-size(x,1), size(x,2))];
+    elseif size(x,1) > size(xNew,1)
+        % new location has fewer states: fill with NaN
+        xNew = [xNew; NaN(size(x,1)-size(xNew,1), size(xNew,2))];
+    end
+    x = [x xNew];
+    loc = [loc repmat(params.loc, 1, length(tNew))];
 end
 end
 
@@ -89,7 +90,8 @@ function [x,t,loc] = aux_simulateTimeVaryingInput(HA,params)
     steps = size(params.uLoc{1},2);
     dt = params.tFinal/steps;
     uLoc = params.uLoc;
-    t = {}; x = {}; loc = [];
+    params = rmfield(params,'uLoc');
+    t = []; x = []; loc = [];
 
     % loop over all input changes
     for i = 1:steps
@@ -97,20 +99,29 @@ function [x,t,loc] = aux_simulateTimeVaryingInput(HA,params)
         % update simulate setting for current step
         params.tFinal = params.tStart + dt;
 
-        for j = 1:length(params.uLoc)
+        for j = 1:length(uLoc)
             params.u{j} = uLoc{j}(:,i);
         end
 
         % simulate the system
-        [t_,x_,loc_] = simulate(HA,params);
+        [tNew,xNew,locNew] = simulate(HA,params);
 
-        % store the simulation results
-        t = [t;t_]; x = [x;x_]; loc = [loc;loc_];
+        % concatenate to one full trajectory
+        t = [t tNew];
+        if size(x,1) < size(xNew,1)
+            % old location has fewer states: fill with NaN
+            x = [x; NaN(size(xNew,1)-size(x,1), size(x,2))];
+        elseif size(x,1) > size(xNew,1)
+            % new location has fewer states: fill with NaN
+            xNew = [xNew; NaN(size(x,1)-size(xNew,1), size(xNew,2))];
+        end
+        x = [x xNew];
+        loc = [loc repmat(locNew, 1, length(tNew))];
 
         % update simulation settings
         params.tStart = params.tFinal;
-        params.x0 = x{end}(end,:)';
-        params.startLoc = loc(end);
+        params.x0 = x(:,end);
+        params.startLoc = loc(:,end);
     end
 end
 

@@ -48,10 +48,11 @@ function p_GO = computeGO(linsysDT,x0,u_ref,n_k)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% initialize nominal signals
 if ~isempty(x0) && ~isempty(u_ref)
     n_s = size(u_ref,3);
-    x_ref = zeros(linsysDT.nrOfDims, n_k+1,n_s);
-    y_ref = zeros(linsysDT.nrOfOutputs, n_k,n_s);
+    x_ref = NaN(linsysDT.nrOfDims, n_k+1,n_s);
+    y_ref = NaN(linsysDT.nrOfOutputs, n_k,n_s);
     if isa(x0, 'contSet')
         x0 = center(x0);
     end
@@ -63,6 +64,8 @@ end
 if ~isempty(u_ref)
     n_k = min(size(u_ref,2),n_k);
 end
+
+% initialize matrices
 p_GO.A = cell(n_k,1);
 p_GO.B = cell(n_k,n_k-1);
 p_GO.F = cell(n_k,n_k-1);
@@ -97,6 +100,7 @@ if iscell(linsysDT.A)
             p_GO.D{k,j} = CA_prod * linsysDT.B{j};
             p_GO.E{k,j} = CA_prod * [eye(linsysDT.nrOfDims) zeros(linsysDT.nrOfDims, linsysDT.nrOfOutputs)];
         end
+        % save matrices of the GO model for time step k
         p_GO.A{k} = linsysDT.A{k} * A_prod;
         p_GO.B{k,k} = linsysDT.B{k};
         p_GO.F{k,k} = [eye(linsysDT.nrOfDims) zeros(linsysDT.nrOfDims, linsysDT.nrOfOutputs)]; % L = [L_x; L_y]
@@ -115,7 +119,7 @@ else
             y_ref(:,k,:) = pagemtimes(linsysDT.C,x_ref(:,k,:)) + pagemtimes(linsysDT.D,u_ref(:,k,:));
         end
 
-        % alternative computation
+        % compute matrices for GO model
         if k>1
             p_GO.A{k} = linsysDT.A * p_GO.A{k-1};
             p_GO.C{k} = linsysDT.C * p_GO.A{k-1};
@@ -133,6 +137,7 @@ else
     end
 end
 
+% save nominal signals
 p_GO.x = x_ref;
 p_GO.y = y_ref;
 p_GO.u = u_ref;

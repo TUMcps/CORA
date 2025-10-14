@@ -87,8 +87,8 @@ for k = 1: length(R_exact.timePoint.set)
     assertLoop(isequal(reduce(Yk_exact,'girard',2),reduce(Yk_gen,'girard',2),1e-3),k)
 
     for i = 1:sim_points
-        assertLoop(contains(Yk_exact, y_sim{i}(k,:)', 'exact', tol_contains),k,i)
-        assertLoop(contains(Yk_gen, y_sim{i}(k,:)', 'exact', tol_contains),k,i)
+        assertLoop(contains(Yk_exact, y_sim{i}(:,k), 'exact', tol_contains),k,i)
+        assertLoop(contains(Yk_gen, y_sim{i}(:,k), 'exact', tol_contains),k,i)
     end
 end
 

@@ -61,7 +61,7 @@ methods
     function nlnARX = nonlinearARX(varargin)
         
         % 0. check number of input arguments
-        assertNarginConstructor(2:6,nargin);
+        assertNarginConstructor(0:6,nargin);
 
         % 1. copy constructor: not allowed due to obj@contDynamics below
 %         if nargin == 1 && isa(varargin{1},'nonlinearARX')
@@ -78,7 +78,7 @@ methods
         name = char(name);
 
         % 5a. instantiate parent class
-        nlnARX@contDynamics(name,0,dim_u,dim_y);
+        nlnARX@contDynamics(name,n_p*dim_y,dim_u,dim_y);
 
         % 5b. assign object properties
         nlnARX.dt = dt;
@@ -211,6 +211,7 @@ methods
         end
         idz_unew = dim_u_old + 1: dim_u_new;
 
+        % create and save the augmented dynamics 
         nlnARX.mFile = @(y,u) nlnARX.mFile(y,u(idz_u_old)) + u(idz_unew);
         nlnARX.nrOfInputs = dim_u_new;
     end
@@ -220,6 +221,9 @@ methods (Access = protected)
     [printOrder] = getPrintSystemInfo(S)
 end
 
+methods (Static = true)
+    sys = identify(varargin)
+end
 end
 
 
@@ -228,7 +232,7 @@ end
 function [name,fun,dt,dim_y,dim_u,n_p] = aux_parseInputArgs(varargin)
 
     def_name = 'nonlinearARX';
-    fun = @()[]; dt = 0; dim_y = []; dim_u = []; n_p = [];
+    fun = @()[]; dt = 1; dim_y = 0; dim_u = 0; n_p = 0;
 
     % no input arguments
     if nargin == 0

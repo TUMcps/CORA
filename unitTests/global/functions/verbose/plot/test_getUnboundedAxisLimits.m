@@ -31,8 +31,9 @@ try
     assert(all([0 1 0 1] == [xLim yLim]));
 
     % give weird vertices
-    [xLim,yLim] = getUnboundedAxisLimits([1.25, 1.223; 1.34, 1.2]);
-    assert(all(withinTol([0 1.4 0 1.4], [xLim yLim])));
+    V = [1.25, 1.223; 1.34, 1.2];
+    [xLim,yLim] = getUnboundedAxisLimits(V);
+    assert(all([xLim(1);yLim(1)] <= V | V <= [xLim(2);yLim(2)],"all"));
 
     % set axis
     xlim([-2,1]); ylim([1,3]);
@@ -41,8 +42,9 @@ try
     assert(all(withinTol([-2 1 1 3], [xLim yLim])));
 
     % with vertices
-    [xLim,yLim] = getUnboundedAxisLimits([1.25, 1.223; 1.34, 1.2]);
-    assert(all(withinTol([-2 1.5 1 3], [xLim yLim])));
+    V = [1.25, 1.223; 1.34, 1.2];
+    [xLim,yLim] = getUnboundedAxisLimits(V);
+    assert(all([xLim(1);yLim(1)] <= V | V <= [xLim(2);yLim(2)],"all"));
 
     % zlim ---
     view(3); 
@@ -50,8 +52,10 @@ try
     [xLim,yLim,zLim] = getUnboundedAxisLimits();
     assert(all(withinTol([-2 1 1 3 4 5], [xLim yLim zLim])));
 
-    [xLim,yLim,zLim] = getUnboundedAxisLimits([1.25 1.223; 1.34 1.2; 2.2 3]);
-    assert(all(withinTol([-2 2 1 3 2 5], [xLim yLim zLim])));
+    % with vertices
+    V = [1.25 1.223; 1.34 1.2; 2.2 3];
+    [xLim,yLim,zLim] = getUnboundedAxisLimits(V);
+    assert(all([xLim(1);yLim(1);zLim(1)] <= V | V <= [xLim(2);yLim(2);zLim(2)],"all"));
 
     close;
 

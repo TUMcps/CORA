@@ -47,7 +47,8 @@ methods
     % constructor
     function obj = nnLinearLayer(W, varargin)
         % parse input
-        [b, name] = setDefaultValues({0, []}, varargin);
+        [b, name, areParamsLearnable] = ...
+            setDefaultValues({0, [], true}, varargin);
         inputArgsCheck({ ...
             {W, 'att', {'numeric', 'gpuArray'}}; ...
             {b, 'att', {'numeric', 'gpuArray'}}; ...
@@ -67,7 +68,7 @@ methods
         end
 
         % call super class constructor
-        obj@nnLayer(name)
+        obj@nnLayer(name,areParamsLearnable)
 
         obj.W = double(W);
         obj.b = double(b);
@@ -113,11 +114,15 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
     end
 
     % sensitivity
-    function S = evaluateSensitivity(obj, S, x, options)
-        % S = S * obj.W;
-        % use pagemtimes to compute sensitivity simultaneously for an
+    function S = evaluateSensitivity(obj, S, options)
+        % Use pagemtimes to compute sensitivity simultaneously for an
         % entire batch.
         S = pagemtimes(S,obj.W);
+
+        if options.nn.store_sensitivity
+            % Store the gradient (used for the sensitivity computation).
+            obj.sensitivity = S;
+        end
     end
 
     % zonotope/polyZonotope
@@ -136,13 +141,17 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
     function [c, G] = evaluateZonotopeBatch(obj, c, G, options)
         [n,~,batchSize] = size(G);
         if options.nn.interval_center
+            % The center consits of a lower and an upper bound; propagte
+            % the center as an interval.
             cl = reshape(c(:,1,:),[n batchSize]);
             cu = reshape(c(:,2,:),[n batchSize]);
-            c = obj.evaluateInterval(interval(cl,cu));
+            c = obj.evaluateInterval(interval(min(cl,cu),max(cl,cu)));
+            % Combine the center bounds.
             c = permute(cat(3,c.inf,c.sup),[1 3 2]);
         else
             c = obj.W*c + obj.b;
         end
+        % Propagate the generator matrix.
         G = pagemtimes(obj.W,G);
     end
 
@@ -159,22 +168,27 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
 
     % backprop ------------------------------------------------------------
 
-    function grad_in = backpropNumeric(obj, input, grad_out, options)
-        % update weights and bias
-        obj.updateGrad('W', grad_out * input', options);
-        obj.updateGrad('b', sum(grad_out, 2), options);
+    function grad_in = backpropNumeric(obj, input, grad_out, options, updateWeights)
+        if updateWeights
+            % update weights and bias
+            obj.updateGrad('W', grad_out * input', options);
+            obj.updateGrad('b', sum(grad_out, 2), options);
+        end
         % backprop gradient
         grad_in = obj.W' * grad_out;
     end
 
-    function [gl, gu] = backpropIntervalBatch(obj, l, u, gl, gu, options)
+    function [gl, gu] = backpropIntervalBatch(obj, l, u, gl, gu, options, updateWeights)
         % see Gowal et al. 2019
         mu = (u + l)/2;
         r = (u - l)/2;
 
-        % update weights and bias
-        obj.updateGrad('W', (gu + gl)*mu' + (gu - gl)*r'.*sign(obj.W), options);
-        obj.updateGrad('b', sum(gu + gl, 2), options);
+        if updateWeights
+            % update weights and bias
+            obj.updateGrad('W', (gu + gl)*mu' ...
+                + (gu - gl)*r'.*sign(obj.W), options);
+            obj.updateGrad('b', sum(gu + gl, 2), options);
+        end
 
         % backprop gradient
         dmu = obj.W' * (gu + gl)/2;
@@ -183,99 +197,67 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
         gu = dmu + dr;
     end
 
-    function [gc, gG] = backpropZonotopeBatch(obj, c, G, gc, gG, options)
+    function [gc, gG] = backpropZonotopeBatch(obj, c, G, gc, gG, options, updateWeights)
         [n,numGen,batchSize] = size(G);
         % obtain indices of active generators
-        genIds = obj.backprop.store.genIds;
+        genIds = obj.genIds;
+
+        if options.nn.interval_center
+            % Compute gradient of the interval center.
+            cl = reshape(c(:,1,:),[n batchSize]);
+            cu = reshape(c(:,2,:),[n batchSize]);
+            gl = reshape(gc(:,1,:),[size(gc,1) batchSize]);
+            gu = reshape(gc(:,2,:),[size(gc,1) batchSize]);
+            % Compute the out going gradient of the center.
+            [gl, gu] = backpropIntervalBatch(obj, cl, cu, gl, gu, ...
+                options, updateWeights);
+            % Construct the out going interval center gradient.
+            gc = permute(cat(3,gl,gu),[1 3 2]);
+            % The center term and bias updated are already applied.
+            centerTerm = 0;
+            biasUpdate = 0;
+        else
+            % Compute outer product between centers.
+            centerTerm = gc*c';
+            % Compute bias update.
+            biasUpdate = sum(gc,2);
+            % Compute the outgoing gradient of the center.
+            gc = obj.W'*gc;
+        end
 
         if strcmp(options.nn.train.zonotope_weight_update,'center')
-            % use the center to update the weights and biases
-            weightsUpdate = gc*c';
-            biasUpdate = sum(gc,2);
-        elseif strcmp(options.nn.train.zonotope_weight_update,'sample')
-            % sample random point factors
-            beta = 2*rand(numGen,1,batchSize,'like',c) - 1;
-            % compute gradient samples
-            grads = gc + reshape(pagemtimes(gG,beta),size(c));
-            % compute input samples
-            inputs = inc + reshape(pagemtimes(G,beta),size(c));
-            % Compute weights and bias update
-            weightsUpdate = grads*inputs';
-            biasUpdate = sum(grads,2);
-        elseif strcmp(options.nn.train.zonotope_weight_update,'extreme')
-            numSamples = 1;
-            % sample a point that has only factors {-1,1}
-            beta = randi([-1,1],numGen,numSamples,batchSize,'like',c);
-            % compute gradient samples
-            grads = permute(repmat(gc,1,1,numSamples),[1 3 2]) + ...
-                pagemtimes(gG,beta);
-            % compute input samples
-            inputs = permute(repmat(c,1,1,numSamples),[1 3 2]) + ...
-                pagemtimes(G,beta);
-            % Compute weights and bias update
-            weightsUpdate = squeeze(mean(pagemtimes(grads,'none',...
-                inputs,'transpose'),3));
-            biasUpdate = squeeze(sum(mean(grads,2),3));
-        elseif strcmp(options.nn.train.zonotope_weight_update,'outer_product')
-            % compute outer product of gradient and input zonotope
-            % (1) outer product between centers
-            centerTerm = gc*c';
-            % (2) outer product between generator matrices
-            gensTerm = 1/3*sum(pagemtimes(gG(:,genIds,:),'none', ...
-                G(:,genIds,:),'transpose'),3);
-            % Compute weights and bias update
-            weightsUpdate = centerTerm + gensTerm; 
-            biasUpdate = sum(gc,2);
+            % Use the center to update the weights and biases. There is no
+            % generator term.
+            gensTerm = 0;
         elseif strcmp(options.nn.train.zonotope_weight_update,'sum')
-            % compute outer product of gradient and input zonotope
-            if options.nn.interval_center
-                % (1) outer product between centers
-                cl = reshape(c(:,1,:),[n batchSize]);
-                cu = reshape(c(:,2,:),[n batchSize]);
-                gl = reshape(gc(:,1,:),[size(gc,1) batchSize]);
-                gu = reshape(gc(:,2,:),[size(gc,1) batchSize]);
-                [gl, gu] = backpropIntervalBatch(obj, cl, cu, gl, gu, options);
-                gc = permute(cat(3,gl,gu),[1 3 2]);
-                % (2) outer product between generator matrices
-                gensTerm = sum(pagemtimes(gG(:,genIds,:),'none', ...
-                    G(:,genIds,:),'transpose'),3);
-                % Compute weights and bias update
-                weightsUpdate = gensTerm;
-                biasUpdate = 0;
-            else
-                % (1) outer product between centers
-                centerTerm = gc*c';
-                % (2) outer product between generator matrices
-                gensTerm = sum(pagemtimes(gG(:,genIds,:),'none', ...
-                    G(:,genIds,:),'transpose'),3);
-                % Compute weights and bias update
-                weightsUpdate = centerTerm + gensTerm; 
-                biasUpdate = sum(gc,2);
-            end
+            % Compute the outer product between generator matrices.
+            gensTerm = sum(pagemtimes(gG(:,genIds,:),'none', ...
+                G(:,genIds,:),'transpose'),3);
         else
-            throw(CORAerror('CORA:wrongFieldValue','options.nn.train.zonotope_weight_update',...
-               "Only supported values are 'center' and 'extreme'!"));
+            throw(CORAerror('CORA:wrongFieldValue', ...
+                'options.nn.train.zonotope_weight_update',...
+               "Only supported values are 'center' and 'sum'!"));
         end
-        % update weights and bias
-        obj.updateGrad('W', weightsUpdate, options);
-        obj.updateGrad('b', biasUpdate, options);
 
-        % linear map of the out-going gradient
-        if ~options.nn.interval_center
-    	    gc = obj.W'*gc;
+        if updateWeights
+            % Compute weights and bias update.
+            weightsUpdate = centerTerm + gensTerm; 
+            % Update weights and bias.
+            obj.updateGrad('W', weightsUpdate, options);
+            obj.updateGrad('b', biasUpdate, options);
         end
+
+        % Apply the linear map of the out-going gradient of the generator
+        % matrix.
         gG = pagemtimes(obj.W',gG);
-
-        % Clear backprop storage.
-        clear 'obj.backprop.store';
     end
 end
 
 % Auxiliary functions -----------------------------------------------------
 
 methods
-    function names = getLearnableParamNames(obj)
-        % list of learnable properties
+    function names = getParamNames(obj)
+        % List parameters.
         names = {'W', 'b'};
     end
 

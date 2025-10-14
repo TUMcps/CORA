@@ -116,16 +116,16 @@ options.p_conf = 0.999; % probability that sample of normal distribution within 
 options.type = 'gaussian';
 
 % simulate result assuming Gaussian distributions
-simRes = simulateRandom(pedestrian, params, options);
+traj = simulateRandom(pedestrian, params, options);
 
 %% obtain output values
-for i=1:length(simRes.t{1})
+for i=1:length(traj.t)
     % create measurement noise
     v = randPoint(params.V,'gaussian',options.p_conf);
     % obtain output value
-    params.y(:,i) = C*simRes.x{1}(i,:)' + v;
+    params.y(:,i) = C*traj.x(:,i) + v;
 end
 
-save([savepath '/' 'pedestrianModel_new'], 'pedestrian', 'params', 'options', 'simRes');
+save([savepath '/' 'pedestrianModel_new'], 'pedestrian', 'params', 'options', 'traj');
 
 % ------------------------------ END OF CODE ------------------------------

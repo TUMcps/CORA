@@ -44,14 +44,22 @@ assert(isSolverInstalled('mosek','sdpt3','gurobi','sedumi'),'SDP solver supporte
 % no check for MIP required as YALMIP 
 
 % check if CORA is on the path
-assert(contains(p,[filesep 'contDynamics' filesep]),'CORA is not on the Matlab path.'); 
-assert(contains(p,[filesep 'contSet' filesep]),'CORA is not on the Matlab path.'); 
-assert(contains(p,[filesep 'hybridDynamics' filesep]),'CORA is not on the Matlab path.');
+if exist(sprintf('%s/contDynamics',CORAROOT),'dir')
+  assert(contains(p,[filesep 'contDynamics' filesep]),'CORA is not on the Matlab path.'); 
+end
+if exist(sprintf('%s/contSet',CORAROOT),'dir')
+  assert(contains(p,[filesep 'contSet' filesep]),'CORA is not on the Matlab path.'); 
+end
+if exist(sprintf('%s/hybridDynamics',CORAROOT),'dir')
+  assert(contains(p,[filesep 'hybridDynamics' filesep]),'CORA is not on the Matlab path.'); 
+end
 
 % check correct download of git lfs files
-assert(test_gitlfs, [ ...
-    'You seem to have cloned CORA using git but did not use git lfs (large file storage), which is used to synch larger data files.' newline ...
-    'Please i) install git lfs (https://git-lfs.com/) and ii) run ''git lfs pull'' to ensure all data files are downloaded correctly.'])
+if isfile(sprintf('%s/models/Cora/gitlfs.mat',CORAROOT))
+    assert(test_gitlfs, [ ...
+        'You seem to have cloned CORA using git but did not use git lfs (large file storage), which is used to synch larger data files.' newline ...
+        'Please i) install git lfs (https://git-lfs.com/) and ii) run ''git lfs pull'' to ensure all data files are downloaded correctly.'])
+end
 
 res = true;
 

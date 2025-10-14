@@ -1,4 +1,4 @@
-function simRes = simulateRandom(HA,params,varargin)
+function traj = simulateRandom(HA,params,varargin)
 % simulateRandom - simulates a hybrid automaton for random initial points
 %    and random inputs
 %
@@ -16,7 +16,7 @@ function simRes = simulateRandom(HA,params,varargin)
 %       .nrConstInp - number of piecewise constant inputs
 %
 % Outputs:
-%    simRes - simResult object storing simulation results
+%    traj - trajectory object storing simulation results
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -62,7 +62,7 @@ time = linspace(params.tStart,params.tFinal,options.nrConstInp+1);
 startLoc = params.startLoc;
 
 % initialization
-simRes = [];
+traj(options.points,1) = trajectory();
 
 % simulate the hybrid automaton
 for i = 1:options.points
@@ -95,19 +95,19 @@ for i = 1:options.points
         [tTemp,xTemp,locTemp] = simulate(HA,optsSim);
         
         % concatenate to one full trajectory
-        t = [t; tTemp];
-        x = [x; xTemp];
-        loc = [loc; locTemp];
+        t = [t tTemp];
+        x = [x xTemp];
+        loc = [loc locTemp];
         
         % update location and initial point
-        points(:,i) = xTemp{end}(end,:)';
+        points(:,i) = xTemp(:,end);
         locCur = locTemp(end);
         optsSim = [];
         counter = counter + 1;
     end
 
-    % init simRes object for trajectory
-    simRes = [simRes;simResult(x,t,loc)];
+    % construct trajectory object
+    traj(i) = trajectory([],x,[],t,[],loc);
 
 end
 

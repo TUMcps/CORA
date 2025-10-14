@@ -25,15 +25,16 @@ function example_manual_conform()
 % ------------------------------ BEGIN CODE -------------------------------
 
 %% Parameters
+dt = 1; 
 params.tFinal = 5; % final time
 params.R0 = zonotope(zeros(2,1),eye(2)); % initial set
 params.V = zonotope([0,1]); % sensor noise set
 params.W = [-6; 1]*zonotope([0,1]); % disturbance set
-y = [0.79; 5.00; 4.35; 1.86; -0.11; -1.13]; % measurement vector
-delta = [0.1; 0.2; 0.1; 0; -0.1; -0.2]; % deviation of measurement vector
-params.testSuite{1} = testCase(y, zeros(6,2), [1,1], 1); % test case 1
-params.testSuite{2} = testCase(y + delta, zeros(6,2), [1,1], 1); % test case 2
-params.testSuite{3} = testCase(y - delta, zeros(6,2), [1,1], 1); % test case 3
+y = [0.79 5.00 4.35 1.86 -0.11 -1.13]; %measurement vector
+delta = [0.1 0.2 0.1 0 -0.1 -0.2]; %deviation of measurement vector
+params.testSuite = [trajectory(zeros(2,6), [1;1], y, [], dt); %test case 1
+    trajectory(zeros(2,6), [1;1], y + delta, [], dt); %test case 2
+    trajectory(zeros(2,6), [1;1], y - delta, [], dt)];
 
 %% Algorithmic Settings
 options.norm = 'interval'; % interval norm
@@ -62,8 +63,8 @@ useCORAcolors("CORA:contDynamics")
 plotOverTime(R,1,'LineWidth',2);
 updateColorIndex; % no initial set
 % plot unified test cases
-for iStep = 1:size(unifiedOutputs{1},1)
-    plot(iStep-1, squeeze(unifiedOutputs{1}(iStep,1,:)),'k','Marker','.','LineStyle', 'none');
+for iStep = 1:size(unifiedOutputs,2)
+    plot(iStep-1, squeeze(unifiedOutputs(1,iStep,:)),'k','Marker','.','LineStyle', 'none');
 end
 
 % ------------------------------ END OF CODE ------------------------------

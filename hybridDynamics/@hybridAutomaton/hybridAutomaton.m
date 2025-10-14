@@ -118,6 +118,12 @@ methods
     end
 end
 
+% static methods ----------------------------------------------------------
+
+methods (Static = true)
+    HA = identify(varargin)       % identifies a hybrid automaton from data
+end
+
 end
 
 

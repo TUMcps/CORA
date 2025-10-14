@@ -522,10 +522,10 @@ if Simulation
     % for Hybrid system the location was also inserted
     if ~strcmp(currentOption, 'Hybrid System')
         fprintf(id, '\n[t,x] = simulate(%s, paramsSim);\n', Sys);
-        fprintf(id, 'simRes = simResult({x},{t});\n\n');
+        fprintf(id, 'traj = trajectory([],x,[],t);\n\n');
     else
         fprintf(id, '\n[t,x,loc] = simulate(%s, paramsSim);\n', Sys);
-        fprintf(id, 'simRes = simResult(x,t,loc);\n\n');
+        fprintf(id, 'traj = trajectory([],x,[],t,[],loc);\n\n');
     end
     
 elseif Random_Simulation
@@ -540,7 +540,7 @@ elseif Random_Simulation
     fprintf(id, 'simOpt.fracInpVert = %s;\n', simOpt_fracInpVert_random);
     fprintf(id, 'simOpt.nrConstInp = %s;\n', simOpt_nrConstInp_random);
     
-    fprintf(id, '\nsimRes = simulateRandom(%s, params, simOpt);\n\n', Sys);
+    fprintf(id, '\ntraj = simulateRandom(%s, params, simOpt);\n\n', Sys);
     
 elseif Simulate_RRT
     
@@ -558,7 +558,7 @@ elseif Simulate_RRT
     end
     
     fprintf(id, 'simOpt.stretchFac = %s;\n', simOpt_stretchFac_RRT);
-    fprintf(id, '\nsimRes = simulateRandom(%s, reachSet, params, simOpt, ''rrt'');\n\n', Sys);
+    fprintf(id, '\ntraj = simulateRandom(%s, reachSet, params, simOpt, ''rrt'');\n\n', Sys);
 end
 
 % ... write the fifth section which is the plotting settings
@@ -649,13 +649,13 @@ if simulation_plot
     fprintf(id, '\n    %% plot simulation results');
     fprintf(id, '\n    if length(projDims) == 1\n');
     if strcmp(color_simulation, 'gray')
-        fprintf(id, '        plotOverTime(simRes, projDims, ''%s'', ''color'', %s);\n',line_simulation, gray_color); 
+        fprintf(id, '        plotOverTime(traj, projDims, ''%s'', ''color'', %s);\n',line_simulation, gray_color); 
         fprintf(id, '    else\n');
-        fprintf(id, '        plot(simRes, projDims, ''%s'', ''color'', %s);\n',line_simulation, gray_color); 
+        fprintf(id, '        plot(traj, projDims, ''%s'', ''color'', %s);\n',line_simulation, gray_color); 
     else
-        fprintf(id, '        plotOverTime(simRes, projDims, ''%s'', ''color'', ''%s'');\n',line_simulation, color_simulation); 
+        fprintf(id, '        plotOverTime(traj, projDims, ''%s'', ''color'', ''%s'');\n',line_simulation, color_simulation); 
         fprintf(id, '    else\n');
-        fprintf(id, '        plot(simRes,projDims, ''%s'', ''color'', ''%s'');\n',line_simulation, color_simulation);  
+        fprintf(id, '        plot(traj,projDims, ''%s'', ''color'', ''%s'');\n',line_simulation, color_simulation);  
     end
     fprintf(id, '    end\n');
 end

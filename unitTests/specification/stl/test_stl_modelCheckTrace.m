@@ -106,8 +106,8 @@ function res = test_stl_modelCheckTrace()
     
         t = 0:0.01:1;
         [~,ind] = unique(t_);
-        x = [interp1(t_(ind),x_(ind,1),t,'linear','extrap'); ...
-             interp1(t_(ind),x_(ind,2),t,'linear','extrap')]';
+        x = [interp1(t_(1,ind),x_(1,ind),t,'linear','extrap'); ...
+             interp1(t_(1,ind),x_(2,ind),t,'linear','extrap')]';
         
         % generate random STL formula
         dom = interval(min(x,[],1)',max(x,[],1)');

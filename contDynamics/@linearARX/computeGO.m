@@ -104,13 +104,14 @@ for k = n_p:n_k-1
     C{k+1} = E * A{k+1};
 
     for i=0:k
-        % j= 0:
+        % j = 0:
         if k-i <= n_p
             B{k+1,i+1} = B_ext{k-i+1};
         else
             B{k+1,i+1} = zeros(size(B_ext{n_p+1}));
         end
-
+        
+        % j > 0:
         for j = 1 : k-n_p
             if k-i-j >= 0 && k-i-j <= n_p
                 B{k+1,i+1} = B{k+1,i+1} + A_ext_powerk{j+1} * B_ext{k-i-j+1};
@@ -120,20 +121,21 @@ for k = n_p:n_k-1
     end
 end
 
+% initial time steps
 for k = 0:n_p-1
     C{k+1} = [zeros(n_y,k*n_y) eye(n_y) zeros(n_y,(n_p-k-1)*n_y)];
     [D{k+1,1:k+1}] = deal(zeros(n_y, n_u));
 end
 
-
+% save nominal signals in p_GO
 p_GO.x = zeros(n_p*n_y, n_k);
 for i = 1:n_p
     p_GO.x((i-1)*n_y+1:i*n_y,n_p:end) = y_ref(:,i:end-n_p+i);
 end
-%p_GO.x = [zeros(n_p*n_y, n_p) reshape(y_ref, n_p*n_y,[])];
 p_GO.y = y_ref;
 p_GO.u = u_ref;
 
+% save matrices of GO model in p_GO
 p_GO.A = A;
 p_GO.B = B;
 p_GO.F = 0;

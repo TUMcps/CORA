@@ -139,7 +139,7 @@ HA = hybridAutomaton('vanDerPol_hybrid',loc);
 
 % simOptions.points = 20;
 % simOptions.fracVert = 0.5;
-% simRes = simulateRandom(sys,params,simOptions);
+% traj = simulateRandom(sys,params,simOptions);
 
 res = false(length(R0),1);
 timerVal = tic;
@@ -179,20 +179,20 @@ for i=1:length(projDim)
     ylim([-4.05,4.05]);
     
     % reachable set
-    plot(R,projDim{i},'FaceColor',colorblind('b'));
+    plot(R,projDim{i});
     % last set
     plot(R(end).timePoint.set{end},projDim{i},'EdgeColor','k');
     % simulation
-%     plot(simRes,projDim{i});
+%     plot(traj,projDim{i});
     
     % artificial guard sets
 %     plot(guard,projDim{i},'k');
 
     % specs
     if i == 1
-        plot(polytope([],[],P1.A,P1.b),projDim{i},'r--');
+        plot(specification(polytope([],[],P1.A,P1.b),'unsafeSet'),projDim{i});
     elseif i == 2
-        plot(polytope([],[],P2.A,P2.b),projDim{i},'r--');
+        plot(specification(polytope([],[],P2.A,P2.b),'unsafeSet'),projDim{i});
     end
     
     % formatting

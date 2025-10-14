@@ -61,7 +61,7 @@ options.rl.actor.nn.train.optim = nnAdamOptimizer(1e-4,.9,.999,1e-8,0);
 options.rl.actor.nn.train.method = 'point';
 options.rl.actor.nn.train.eta = .1;
 options.rl.actor.nn.train.omega = 0;
-options.rl.actor.nn.train.zonotope_weight_update = 'outer_product';
+options.rl.actor.nn.train.zonotope_weight_update = 'sum';
 options.rl.actor.nn.train.backprop = true;
 options.rl.actor.nn.train.advOps.numSamples = 200;
 options.rl.actor.nn.train.advOps.alpha = 4;
@@ -73,7 +73,7 @@ options.rl.critic.nn.poly_method = 'bounds';
 options.rl.critic.nn.train.optim = nnAdamOptimizer(1e-3,.9,.999,1e-8,1e-2);
 options.rl.critic.nn.train.method = 'point';
 options.rl.critic.nn.train.eta = .01;
-options.rl.critic.nn.train.zonotope_weight_update = 'outer_product';
+options.rl.critic.nn.train.zonotope_weight_update = 'sum';
 options.rl.critic.nn.train.backprop = true;
 
 % Env settings

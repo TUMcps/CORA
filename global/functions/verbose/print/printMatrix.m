@@ -138,7 +138,7 @@ if numel(size(M)) > 2
     fprintf(fid,'reshape(');
     printMatrix(fid,reshape(M,1,[]),accuracy,true,false);
     % compact size in reshape call
-    fprintf(fid,', [%s])',strrep(num2str(size(M)),'  ',','));
+    fprintf(fid,', [%s])',strrep(num2str(size(M)),'   ',','));
     if clearLine
         fprintf(fid,'\n');
     end

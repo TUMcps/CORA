@@ -72,7 +72,7 @@ disp(['computation time of reachable set with remainder added to system matrix: 
 simOpt.points = 60;
 params = rmfield(params,'paramInt');
 
-simRes = simulateRandom(tank, params, simOpt);
+traj = simulateRandom(tank, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -101,7 +101,7 @@ for plotRun=1:3
     plot(R_param.R0,projectedDims);
   
     %plot simulation results      
-    plot(simRes,projectedDims);
+    plot(traj,projectedDims);
 
     %label plot
     xlabel(['x_{',num2str(projectedDims(1)),'}']);

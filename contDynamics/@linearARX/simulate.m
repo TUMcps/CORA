@@ -35,7 +35,7 @@ function [t,ind1,ind2,y] = simulate(linARX,params,varargin)
 %
 %    [t,~,~,y] = simulate(linARX,params);
 %
-%    plot(y(:,1),y(:,2),'.k','MarkerSize',20);
+%    plot(y(1,:),y(2,:),'.k','MarkerSize',20);
 %
 % Reference:
 %   [1] L. Luetzow, M. Althoff. "Reachability Analysis of ARMAX Models", in
@@ -50,7 +50,7 @@ function [t,ind1,ind2,y] = simulate(linARX,params,varargin)
 
 % Authors:       Laura Luetzow
 % Written:       02-February-2023
-% Last update:   ---
+% Last update:   28-August-2025 (LL, transpose t and y)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -66,7 +66,7 @@ ind2 = [];
 
 % compute time vector and number of steps
 p = linARX.n_p;
-t = (params.tStart:linARX.dt:params.tFinal)';
+t = params.tStart:linARX.dt:params.tFinal;
 
 % check u, w, and v; extend fixed vector to matrices for loop below
 params = aux_uwv(linARX,params,length(t)-1);
@@ -92,8 +92,11 @@ else % simulate outputs with time-varying parametrization
     while k<=length(t)-1
         k_plus = k + p - 1;
         if ~isfield(linARX, "A_tilde") || length(linARX.A_tilde) < k+1 || isempty(linARX.A_tilde(k+1))
+            % copmute tyime-varying parameters
             computeTVP(linARX,k, 0:k_plus);
         end
+
+        % compute output at time step k
         y_add = linARX.A_tilde{k+1} * y_init;
         for i = 0:k_plus
             if k_plus -i <= length(t)-1
@@ -101,11 +104,12 @@ else % simulate outputs with time-varying parametrization
             end
         end
         y(:, k+1:k_plus+1) = reshape(y_add,linARX.nrOfOutputs,[]);
+
+        % increment time step k by p
         k = k+p;
     end
     y = y(:, 1:length(t));
 end
-y=y';
 end
 
 

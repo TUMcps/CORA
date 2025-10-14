@@ -79,7 +79,7 @@ sys = neurNetContrSys(sys, nn, dt);
 % Run ---------------------------------------------------------
 
 % compute simulations
-simRes = simulateRandom(sys, params);
+traj = simulateRandom(sys, params);
 
 % compute reachable set
 R = reach(sys, params, options);
@@ -88,7 +88,7 @@ R = reach(sys, params, options);
 % figure; hold on;
 % rs = plot(R, [1, 2], 'FaceColor', [.8, .8, .8], 'EdgeColor', 'none');
 % is = plot(params.R0, [1, 2], 'FaceColor', 'w', 'EdgeColor', 'k');
-% ss = plot(simRes, [1, 2], 'k');
+% ss = plot(traj, [1, 2], 'k');
 
 res = true;
 

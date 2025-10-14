@@ -81,7 +81,7 @@ for r=1:length(R0)
     rng(seed);
 
     try
-        simRes = simulateRandom(sys, params);
+        traj = simulateRandom(sys, params);
         res(r,1) = true;
     catch ME
         % run-time error

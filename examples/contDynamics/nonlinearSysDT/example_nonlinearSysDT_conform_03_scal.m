@@ -51,7 +51,7 @@ switch modus
     case "N_s"
         N_s_vec = [1 10 100];
     case "N_k"
-        N_k_vec = [4 20 40];
+        N_k_vec = [4  20 40];
     case "N_n"
         N_n_vec = [3 6 9 100];
 end
@@ -65,7 +65,7 @@ options_reach.tensorOrderOutput = 2;
 % Conformance Settings
 options = options_reach;
 options.cs.cost = 'interval';
-options.cs.robustnessMargin = 1e-9;
+options.cs.robustness = 1e-9;
 constraints = {'half','gen'};
 
 % Setup Table for Saving the Results
@@ -91,8 +91,8 @@ for N_m = N_m_vec
                 params_true.tFinal = sys.dt * N_k - sys.dt;
 
                 % Simulation 
-                params_true.testSuite = aux_create_testSuite(sys, ...
-                    params_true, N_m, N_s, N_k);
+                params_true.testSuite = createTestSuite(sys, ...
+                    params_true, N_k, N_m, N_s);
 
                 % Initial Estimates of the Disturbance Sets
                 params_id_init = params_true;

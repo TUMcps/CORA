@@ -49,7 +49,9 @@ if size(V,2) > 1 && ~any(isnan(V),"all")
     % close single region
     V = [V,V(:,1)];
 else
-    % close each region in plotPolygon
+    % close each region in plotPolygon (do not add option 'CloseRegions' a
+    % second time if it already exist -> causes problems later otherwise)
+    [NVpairsPlot,~] = readNameValuePair(NVpairsPlot,'CloseRegions');
     NVpairsPlot = [NVpairsPlot,{'CloseRegions',true}];
 end
 

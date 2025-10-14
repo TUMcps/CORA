@@ -140,7 +140,7 @@ else                                                    % array of points
     for j=1:size(S,2)
     
         % evaluate nonlinear function
-        val = ls.funHan(S);
+        val = ls.funHan(S(:,j));
         
          % multiple inequality constraints or not
         if ~iscell(ls.compOp)

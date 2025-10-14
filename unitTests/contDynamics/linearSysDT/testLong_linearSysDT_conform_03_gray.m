@@ -30,7 +30,7 @@ function res = testLong_linearSysDT_conform_03_gray
 % ------------------------------ BEGIN CODE -------------------------------
 
 rng('default')
-methods_gray = ["graySim","graySeq", "grayLS"];
+methods = ["white", "graySim","graySeq", "grayLS"];
 
 % define state space system 
 dt = 0.1;
@@ -88,13 +88,34 @@ params_gray.testSuite = createTestSuite(sys, params_true, n_k, n_m, ...
 
 % approximate the dynamics using different methods
 options_isconform = rmfield(options, ["tensorOrder", "tensorOrderOutput", "errorOrder", "cs"]);
-for i = 1:length(methods_gray)
-    [params_conform, ~] = conform(sys,params_gray,options,methods_gray(i));
+options_isconform.postProcessingOrder = 200;
+for i = 1:length(methods)
+    [params_conform, results] = conform(sys,params_gray,options,methods(i));
+    sys_id = results.sys;
 
     % Check conformance of obtained model
     confAlg = 'BF';
-    params_conform.U = enlarge(params_conform.U,1.001); % slightly enlarge V for numerical robustness
-    assert(isconform(sys,params_conform,options_isconform,confAlg));
+    % params_conform.U = enlarge(params_conform.U,1.001); % slightly enlarge U for numerical robustness
+    % params_conform.R0 = enlarge(params_conform.R0,1.001); % slightly enlarge R0 for numerical robustness
+    params_conform.U = params_conform.U + 0.001*zonotope(zeros(2,1),eye(2)); % slightly enlarge U for numerical robustness
+    params_conform.R0 = params_conform.R0 + 0.001*zonotope(zeros(2,1),eye(2)); % slightly enlarge R0 for numerical robustness
+    
+    % check containment in reachable set
+    params_reach = params_conform;
+    res = true;
+    for j = 1:length(params_gray.testSuite)
+        params_reach.R0 = params_conform.R0 + params_gray.testSuite(j).x(:,1);
+        params_reach.u = params_gray.testSuite(j).u;
+
+        R = reach(sys_id,params_reach,options);
+        for k=1:length(R.timePoint.set)
+            res = res & contains(R.timePoint.set{k},params_gray.testSuite(j).y(:,k));
+        end
+    end
+    assert(res)
+
+    % check via conformance checking
+    assert(isconform(sys_id,params_conform,options_isconform,confAlg));
 end
 
 % example completed

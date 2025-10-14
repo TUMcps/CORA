@@ -55,12 +55,12 @@ R = reach(linsys,params,options);
 
 % number of initial points
 simOpt.points = 5;
-simRes = simulateRandom(linsys,params,simOpt); 
+traj = simulateRandom(linsys,params,simOpt); 
 
 
 % Numerical check ---------------------------------------------------------
 
-assert(contains(R,simRes));
+assert(contains(R,traj));
 
 
 % test completed

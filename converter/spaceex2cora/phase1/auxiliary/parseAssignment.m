@@ -44,6 +44,10 @@ str = replaceImagVarnames(str);
 % if char array was passed, transform to string
 str = string(str);
 
+% flatten redundant parentheses
+str = splitByAmpersand(str);
+
+
 % split into single equations at '&' signs
 equations = strsplit(str,"&");
 

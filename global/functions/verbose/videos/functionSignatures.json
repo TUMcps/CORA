@@ -26,8 +26,8 @@
         {"name":"vidObj", "kind":"required", "type":["VideoWriter"], "purpose":"VideoWriter"},
         {"name":"fig", "kind":"required", "type":["matlab.ui.Figure"], "purpose":"figure handle"},
         {"name":"ReachSet", "kind":"namevalue", "type":["reachSet"],"purpose":"Reachable set"},
-        {"name":"SimResult", "kind":"namevalue", "type":["simResult"],"purpose":"Simulations"},
-        {"name":"RefTrajectory", "kind":"namevalue", "type":["simResult"],"purpose":"Reference trajectory"},
+        {"name":"Trajectory", "kind":"namevalue", "type":["trajectory"],"purpose":"Simulations"},
+        {"name":"RefTrajectory", "kind":"namevalue", "type":["trajectory"],"purpose":"Reference trajectory"},
         {"name":"Dimensions", "kind":"namevalue", "type":["numeric"],"purpose":"Dimensions to plot"},
         {"name":"RefDimensions", "kind":"namevalue", "type":["numeric"],"purpose":"Dimensions to plot reference trajectory"},
         {"name":"Specification", "kind":"namevalue", "type":["specification"],"purpose":"Specification"},
@@ -36,7 +36,7 @@
         {"name":"TotalDuration", "kind":"namevalue", "type":["numeric"],"purpose":"Total duration of video"},
         {"name":"FreezeDuration", "kind":"namevalue", "type":["numeric"],"purpose":"duration of freezed animation"},
         {"name":"ReachSets", "kind":"namevalue", "type":["cell"],"purpose":"Multiple reachable set including name and color"},
-        {"name":"PlotMethodSimResult", "kind":"namevalue", "type":["char", "choices={'time', 'percent', 'all'}"],"purpose":"Method to plot simulations"}
+        {"name":"PlotMethodTrajectory", "kind":"namevalue", "type":["char", "choices={'time', 'percent', 'all'}"],"purpose":"Method to plot simulations"}
      ]
   },
 

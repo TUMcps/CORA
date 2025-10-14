@@ -59,7 +59,7 @@ params.x0 = center(params.R0);
 % compare simulation and reach results
 res = true;
 for k=1:n_k
-    assertLoop(sum(abs(center(R.timePoint.set{k})-y(k,:)'))<=1e-6,k)
+    assertLoop(sum(abs(center(R.timePoint.set{k})-y(:,k)))<=1e-6,k)
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -91,7 +91,7 @@ spec = add(spec,spec3);
 % Simulation --------------------------------------------------------------
 
 % random simulation
-simRes = simulateRandom(HA,params); 
+traj = simulateRandom(HA,params); 
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -123,7 +123,7 @@ plot(R,[1,2]);
 plot(R(1).R0,[1,2]);
 
 % plot simulation
-plot(simRes,[1,2]);
+plot(traj,[1,2]);
 
 % plot space station
 plot(specification(spaceStation),[1,2]);

@@ -33,7 +33,8 @@ function [c,G] = evaluateZonotopeBatch(nn,c,G,varargin)
 
 % validate parameters
 [options, idxLayer] = setDefaultValues( ...
-    {struct, 1:length(nn.layers)}, varargin);
+    {struct('nn',struct('poly_method','bounds')), ...
+        1:length(nn.layers)}, varargin);
 % Set default evaluation parameters.
 options = nnHelper.validateNNoptions(options);
 % Propagate sets forward through the network.

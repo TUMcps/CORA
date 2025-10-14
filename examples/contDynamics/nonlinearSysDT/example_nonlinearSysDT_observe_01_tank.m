@@ -26,7 +26,7 @@ function completed = example_nonlinearSysDT_observe_01_tank()
 
 
 %% Load tank model
-load tankModel_nonlin_dim30 tank params options simRes
+load tankModel_nonlin_dim30 tank params options traj
 
 % Set of evaluated estimators
 Estimator = {
@@ -67,7 +67,7 @@ for iEst = 1:length(Estimator)
             % plot initial set
             plotOverTime(estSet.R0,n);
             % plot simulation
-            plotOverTime(simRes,n);
+            plotOverTime(traj,n);
 
             % label plot
             title(estName);

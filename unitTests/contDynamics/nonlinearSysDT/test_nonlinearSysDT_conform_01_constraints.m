@@ -45,7 +45,7 @@ params_true.testSuite = createTestSuite(sys, params_true, n_k, n_m, n_s);
 
 % General Options
 options = options_reach;
-options.cs.robustnessMargin = 1e-9;
+options.cs.robustness = 1e-9;
 options.cs.verbose = false;
 options.cs.cost = cost_norm;
 

@@ -212,7 +212,7 @@ end
 
 if ~gp.runcontrol.quiet
     disp(['GPTIPS run complete in ' gp.info.runTime] );
-    disp(['Best fitness acheived: ' num2str(gp.results.best.fitness)]);
+    disp(['Best fitness achieved: ' num2str(gp.results.best.fitness)]);
     disp('-----------------------------------------------------------');
 end
 

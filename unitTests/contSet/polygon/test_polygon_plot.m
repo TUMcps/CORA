@@ -56,9 +56,15 @@ colorOrder = ax.ColorOrder;
 plot(pgon,[1,2]);
 V = fliplr([x';y']); % somehow get flipped
 % check points
-assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
+assert(compareMatrices(V, readVerticesFromFigure(ax.Children(1)),1e-4,'equal',true));
 % test color
-assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+% test color
+    if CORA_PLOT_FILLED
+        assert(isequal(colorOrder(1,:), ax.Children(1).EdgeColor));
+        assert(isequal(colorOrder(1,:), ax.Children(1).FaceColor));
+    else
+        assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+    end
 
 % test multiple regions ---
 
@@ -72,8 +78,8 @@ V_true = [ ...
 ];
 
 % plot 
-plot(pgon,[1,2])
-assert(all(V_true == [ax.Children(1).XData;ax.Children(1).YData] | isnan(V_true),'all'));
+plot(pgon,[1,2],'Filled',false)
+assert(all(V_true == readVerticesFromFigure(ax.Children(1)) | isnan(V_true),'all'));
 
 % plot with face color (is plotted in multiple regions)
 plot(pgon,[1,2],'FaceColor','r')
@@ -88,7 +94,7 @@ I2 = interval([-1;-1],[1;1]);
 pgon = subtract(polygon(I1),polygon(I2));
 
 % plot
-plot(pgon);
+plot(pgon,1:2,'Filled',false);
 V = [ax.Children(1).XData;ax.Children(1).YData];
 V_true = [ NaN -3 -3 2 2 -3 NaN -1 1 1 -1 -1 ; NaN -2 3 3 -2 -2 NaN -1 -1 1 1 -1 ];
 assert(all((V == V_true) | isnan(V_true), 'all'))
@@ -98,6 +104,16 @@ plot(pgon,1:2,'FaceColor','b');
 V = [ax.Children(1).XData,ax.Children(1).YData];
 V_true = [ -3 -2 ; -3 3 ; 2 3 ; 2 -2 ; 1 -1 ; 1 1 ; -1 1 ; -1 -1 ; 1 -1 ; 2 -2 ];
 assert(all((V == V_true), 'all'))
+
+% test multiple regions with holes ---
+
+pgon1 = polygon([0 0 2 2],[0 2 2 0]);
+pgon2 = polygon([0.5 0.5 1 1],[0.5 1 1 0.5]);
+pgon3 = polygon([0 0 2 2],[0 2 2 0]) + [3;4];
+
+pgon = subtract(pgon1,pgon2) | pgon3;
+
+plot(pgon,[1,2],'FaceColor','r');
 
 close
 

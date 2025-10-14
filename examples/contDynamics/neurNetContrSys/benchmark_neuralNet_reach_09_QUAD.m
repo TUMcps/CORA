@@ -79,7 +79,7 @@ spec = specification(goalSet, 'safeSet', interval(params.tFinal));
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, true);
+[res, R, traj] = verify(sys, spec, params, options, true);
 tTotal = toc(t);
 disp(['Result: ' res])
 
@@ -100,7 +100,7 @@ plotOverTime(R, 3, 'DisplayName', 'Reachable set');
 plotOverTime(R(1).R0, 3, 'DisplayName', 'Initial set');
 
 % plot simulation
-plotOverTime(simRes, 3, 'DisplayName', 'Simulations');
+plotOverTime(traj, 3, 'DisplayName', 'Simulations');
 
 % labels and legend
 xlabel('time'); ylabel('altitude');

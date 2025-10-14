@@ -35,6 +35,6 @@ inputArgsCheck({{n,'att','numeric',{'scalar','nonnegative'}}});
 % init levelSet
 vars = sym('x',[n,1]);
 eq = 0*vars - 1;
-ls = levelSet(eq,vars,{"<="});
+ls = levelSet(eq,vars,"<=");
 
 % ------------------------------ END OF CODE ------------------------------

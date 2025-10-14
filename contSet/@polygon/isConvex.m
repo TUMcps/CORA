@@ -25,7 +25,7 @@ function res = isConvex(pgon)
 
 % polygon is convex if its convex hull has the same number of
 % vertices as the polygon itself already has
-res = size(vertices_(convHull(pgon)),1) == size(vertices_(pgon),1);
+res = size(vertices_(convHull(pgon)),2) == size(vertices_(pgon),2);
 
 end
 

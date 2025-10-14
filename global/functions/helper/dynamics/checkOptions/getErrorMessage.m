@@ -68,8 +68,8 @@ switch id
         msg = 'has to be an object of class reachSet';
     case 'isapolytope'
         msg = 'has to be an object of class polytope';
-    case 'istestCase'
-        msg = 'has to be an object of class testCase';
+    case 'istrajectory'
+        msg = 'has to be an object of class trajectory';
 
     % absolute comparisons
     case 'gtzero'
@@ -115,8 +115,8 @@ switch id
             'memberguardIntersect','memberenclose','membertype',...
             'membernorm','memberconfAlgSynth','memberconfAlgSynthDyn',...
             'memberconfAlgCheck','memberreachAlg','memberarmaxAlg',...
-            'memberY0','memberR0conf','membercs.cost','membercs.constraints',...
-            'membercs.method'}
+            'memberidAlg','memberY0','memberR0conf','membercs.cost',...
+            'membercs.constraints','membercs.recMethod'}
         msg = ['has to match one of the following:\n      ' ...
             strjoin(getMembers(erase(id,'member')),', ')];
 
@@ -141,8 +141,6 @@ switch id
         msg = 'has to be greater than params.tStart';
     case 'idx1eqtStart'
         msg = 'has to be equal to params.tStart in the first index';
-    case 'intsteps'
-        msg = 'has to divide the time horizon into an integer number steps';
     case 'letaylorTerms'
         msg = 'has to be less or equal to options.taylorTerms';
     case 'lecomp'
@@ -155,7 +153,11 @@ switch id
         msg = 'has to be equal to the number of time steps';
     case 'equ'
         msg = 'has to be equal to the length of the time-varying input vector';
-
+    
+    % parameters get changed
+    case 'change_intsteps'
+        msg = 'has to divide the time horizon into an integer number steps';
+    
     otherwise
         % unknown id
         msg = '';

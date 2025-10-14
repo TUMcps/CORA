@@ -90,15 +90,15 @@ end
 
 %random simulations
 simOpt.points = 60;
-simRes = simulateRandom(drumSys, params, simOpt);
+traj = simulateRandom(drumSys, params, simOpt);
 
 % obtain level from states
-level = cell(length(simRes),1);
-for iRun = 1:length(simRes)
-    level{iRun} = -4.7523e-04*simRes(iRun).x{1}(:,1) + ...
-        6.8027e+01*simRes(iRun).x{1}(:,2) + ...
-        6.8027e+01*simRes(iRun).x{1}(:,4) + ...
-        1.9778e+04*simRes(iRun).x{1}(:,3) - 1.4778e3;
+level = cell(length(traj),1);
+for iRun = 1:length(traj)
+    level{iRun} = -4.7523e-04*traj(iRun).x(1,:) + ...
+        6.8027e+01*traj(iRun).x(2,:) + ...
+        6.8027e+01*traj(iRun).x(4,:) + ...
+        1.9778e+04*traj(iRun).x(3,:) - 1.4778e3;
 end 
 
 
@@ -114,8 +114,8 @@ for i=1:length(RcontY)
     plot(ZprojY,[1 2],'FaceColor',CORAcolor('CORA:reachSet'));
 end
 plot(R0Level,[2 4],'k','FaceColor',CORAcolor("CORA:initialSet"));
-for i=1:length(simRes)
-    plot(simRes(i).x{1}(:,7)*4.75e-6,level{i},'Color',CORAcolor("CORA:simulations"));
+for i=1:length(traj)
+    plot(traj(i).x(7,:)*4.75e-6,level{i},'Color',CORAcolor("CORA:simulations"));
 end
 
 % Pressure vs level
@@ -126,8 +126,8 @@ for i=1:length(RcontY)
     plot(ZprojY,[1 2],'FaceColor',CORAcolor('CORA:reachSet'));
 end
 plot(R0Level,[1 4],'k','FaceColor',CORAcolor("CORA:initialSet"));
-for i=1:length(simRes)
-    plot(simRes(i).x{1}(:,1)*1e-5,level{i},'Color',CORAcolor("CORA:simulations"));
+for i=1:length(traj)
+    plot(traj(i).x(1,:)*1e-5,level{i},'Color',CORAcolor("CORA:simulations"));
 end
 
 % Power demand vs Pressure
@@ -138,8 +138,8 @@ for i=1:length(RcontY)
     plot(ZprojY,[1 2],'FaceColor',CORAcolor('CORA:reachSet'));
 end
 plot(R0Level,[2 1],'k','FaceColor',CORAcolor("CORA:initialSet"));
-for i=1:length(simRes)
-    plot(simRes(i).x{1}(:,7)*4.75e-6,simRes(i).x{1}(:,1)*1e-5,...
+for i=1:length(traj)
+    plot(traj(i).x(7,:)*4.75e-6,traj(i).x(1,:)*1e-5,...
        'Color',CORAcolor("CORA:simulations"));
 end
 
@@ -148,8 +148,8 @@ subplot(2,2,4); hold on;
 projDims=[3 4];
 plot(Rcont,projDims,'FaceColor',CORAcolor('CORA:reachSet'));
 plot(params.R0,projDims,'k','FaceColor',CORAcolor("CORA:initialSet"));
-for i=1:length(simRes)
-    plot(simRes(i).x{1}(:,projDims(1)),simRes(i).x{1}(:,projDims(2)),...
+for i=1:length(traj)
+    plot(traj(i).x(projDims(1),:),traj(i).x(projDims(2),:),...
         'Color',CORAcolor("CORA:simulations"));
 end
 xlabel("x_" + projDims(1)); ylabel("x_" + projDims(2));

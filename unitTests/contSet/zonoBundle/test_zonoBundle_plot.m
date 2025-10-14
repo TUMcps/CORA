@@ -64,9 +64,14 @@ try
      1, -1, -3, -3, -1, 1, 1 ; ...
     ];
     % check points
-    assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
+    assert(compareMatrices(V, readVerticesFromFigure(ax.Children(1)),1e-4,'equal',true));
     % test color
-    assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+    if CORA_PLOT_FILLED
+        assert(isequal(colorOrder(1,:), ax.Children(1).EdgeColor));
+        assert(isequal(colorOrder(1,:), ax.Children(1).FaceColor));
+    else
+        assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+    end
 
     % check barely intersecting sets
     Z{1} = zonotope([1;1],[1 0; 0 1]);
@@ -78,7 +83,7 @@ try
         2 1 2
         2 2 2
     ];
-    assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'equal',true));
+    assert(compareMatrices(V, readVerticesFromFigure(ax.Children(1)),1e-4,'equal',true));
         
     % close figure
     close;

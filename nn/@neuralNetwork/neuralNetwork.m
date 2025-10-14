@@ -12,7 +12,7 @@ classdef neuralNetwork < handle
 %
 % Example:
 %    layers = cell(2, 1);
-%    W = rand(1,10); b = rand(1,1);
+%    W = [ -0.928, 1.244, -0.589, 1.491, -0.806, -1.113, 0.957, -1.363, 0.681, 0.438 ]; b = -0.143;
 %    layers{1} = nnLinearLayer(W, b);
 %    layers{2} = nnSigmoidLayer();
 %    nn = neuralNetwork(layers);
@@ -97,7 +97,7 @@ methods
 
     % verify --------------------------------------------------------------
     
-    [res, x_, y_] = verify(nn, x, r, A, b, safeSet, options, timeout, verbose)
+    [res, x_, y_] = verify(nn, x, r, A, b, safeSet, varargin)
 
     % reduce --------------------------------------------------------------
     
@@ -109,17 +109,19 @@ methods
 
     castWeights(nn, varargin)
 
+    normWeights(nn, options, varargin)
+
     [loss,trainTime] = train(nn, trainX, trainY, valX, valY, options, verbose)
 
     [grad_in] = backprop(nn, grad_out, options, varargin)
 
     [l, u] = backpropIntervalBatch(nn, l, u, options, varargin)
 
-    numGen = prepareForZonoBatchEval(nn, x, varargin)
+    [numGen,nn] = prepareForZonoBatchEval(nn, x, varargin)
     [c, G] = evaluateZonotopeBatch(nn, c, G, varargin)
     [c, G] = evaluateZonotopeBatch_(nn, c, G, options, idxLayer)
     [gc, gG] = backpropZonotopeBatch(nn, gc, gG, varargin)
-    [gc, gG] = backpropZonotopeBatch_(nn, gc, gG, options, idxLayer)
+    [gc, gG] = backpropZonotopeBatch_(nn, gc, gG, options, idxLayer, updateWeights)
 
     % explain -------------------------------------------------------------
 
@@ -138,6 +140,7 @@ methods
     pattern = getOrderPattern(obj)
     numNeurons = getNumNeurons(obj)
     nn_normal = getNormalForm(obj)
+    [layersEnum,ancIdx,predIdx,succIdx] = enumerateLayers(obj)
     neuronOrder = getInputNeuronOrder(obj,method,x,inputSize)
     gnn_red = reduceGNNForNode(obj,G,n0)
 

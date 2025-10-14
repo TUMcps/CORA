@@ -106,7 +106,7 @@ params_init.tFinal = (p-1)*dt;
 % estimate the initial state from the measurements y(1),..., y(p) ---------
 % parameters for estimating X0
 params_lin_estX.u = params_init.u;
-params_lin_estX.y = y_init';
+params_lin_estX.y = y_init;
 params_lin_estX.V = V;
 params_lin_estX.W = W;
 
@@ -120,7 +120,7 @@ X0_est = X{end};
 % parameters for linearARX
 params_ARX_sim.tStart = tStart;
 params_ARX_sim.tFinal = tFinal;
-params_ARX_sim.y0 = y_init';
+params_ARX_sim.y0 = y_init;
 
 % simulate initial point
 y_sim = cell(num_samples,1);
@@ -165,7 +165,7 @@ R_linDT = [cell(p-1,1); R_linDT.timePoint.set];
 % reachability parameters for linearARX
 params_ARX_reach.tStart = tStart;
 params_ARX_reach.tFinal = tFinal;
-params_ARX_reach.y0 = y_init';
+params_ARX_reach.y0 = y_init;
 params_ARX_reach.U = zonotope(cartProd(U, cartProd(W,V)));
 params_ARX_reach.u = [u; zeros(dim_x+dim_y, size(u,2))];
 
@@ -266,13 +266,12 @@ if (isempty(params.W.G) || sum(abs(params.W.G), 'all') == 0) && ...
         X{i+1,1} = sys.A*X{i,1} + sys.B*u(:,1);
     end
 else
-    % predict X1
+    % compute X1
     X1 = sys.A*X{1} + sys.B*u(:,1) + params.W;
 
     params.R0 = X1;
     params.uTransVec = u(:,2:end);
     params.y = params.y(:,2:end);
-
     for i = 1:size(params.y,2)
         params.y(:,i) = params.y(:,i) - sys.D * params.uTransVec(:,i);
     end
@@ -280,6 +279,7 @@ else
     D_new = zeros(size(sys.C,1), size(sys.B, 2));
     sys = linearSysDT(sys.A, sys.B, [], sys.C, D_new, sys.dt);
 
+    % compute reachable state set X for each time step k
     for k = 1:p-1
         X{k+1,1} = sys.A^(k)*X{1};
         for i_sum=0:k-1
@@ -332,7 +332,7 @@ num_samples = length(y); % number of sample points
 msize = min(max(1, 100/num_samples), 4); % marker size
 
 % create plot for each timestep
-for k = 1:size(t,1)
+for k = 1:length(t)
     % create figure
     if mod(k,num_row * num_col) == 1
         figure('units','normalized','outerposition',[0 0 1 1])
@@ -348,10 +348,10 @@ for k = 1:size(t,1)
     for i_sample = 1:num_samples
         y_i = y{i_sample};
         if i_sample > 1
-            plot(y_i(k, dims(1)),y_i(k, dims(2)),marker,'Color', ...
+            plot(y_i(dims(1),k),y_i(dims(2),k),marker,'Color', ...
                 col, 'MarkerSize', msize, 'HandleVisibility','off','LineWidth',1);
         else
-            plot(y_i(k, dims(1)),y_i(k, dims(2)),marker,'Color', ...
+            plot(y_i(dims(1),k),y_i(dims(2),k),marker,'Color', ...
                 col, 'MarkerSize', msize, 'DisplayName',"Samples",'LineWidth',1);
         end
     end
@@ -400,12 +400,13 @@ for k=1:length(R)
             'Color', col, 'DisplayName',name,'LineWidth',1);
         for i_sample = 1:min(num_samples,500)
             y_i = y{1};
-            if ~all(withinTol(R{k}.c,y_i(k,:)',tol_equal))
+            if ~all(withinTol(R{k}.c,y_i(:,k),tol_equal))
                 CORAwarning('CORA:examples',"Sample not equal to the computed result.");
             end
         end
         
-    else % real reachable set
+    else 
+        % reachable set is not a point
         if name == "ARX-DP"
             lw = 2;
             xl = xlim;
@@ -419,9 +420,10 @@ for k=1:length(R)
             xlim(xl);
             ylim(yl);
         end
+        % check containment for all measurements y
         for i_sample = 1:min(num_samples,500)
             y_i = y{i_sample};
-            if ~contains(R{k}, y_i(k,:)', 'exact', tol_contains)
+            if ~contains(R{k}, y_i(:,k), 'exact', tol_contains)
                 CORAwarning('CORA:examples',"Sample not contained in reachable set!");
             end
         end
@@ -453,6 +455,8 @@ for k=k_save
     if length(ticks) > 5
         ticks(1:2:length(ticks)) = {""};
     end
+
+    % set tick labels
     xticklabels(ticks);
     xtickangle(0);
     ticks = num2cell(yticks());

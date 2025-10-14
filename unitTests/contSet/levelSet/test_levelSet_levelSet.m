@@ -56,7 +56,7 @@ ls = levelSet(eq,[a;b;y],'==');
 assertThrowsAs(@levelSet,'symbolic:sym:matlabFunction:FreeVariable',eq,a,'<=');
 
 % wrong number of comparison operators
-assertThrowsAs(@levelSet,'symbolic:validators:MustBeMathScalar',[eq1;eq2],[a;b],'==');
+assertThrowsAs(@levelSet,'CORA:wrongValue',[eq1;eq2;eq3],[a;b;x],{'==';'<='});
 
 
 % test completed

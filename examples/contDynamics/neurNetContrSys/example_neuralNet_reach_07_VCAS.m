@@ -135,11 +135,11 @@ numSims = 10;
 adv = ones(10, 1) * adv_init;
 
 timerVal = tic;
-simRes = [];
+traj(numSims,1) = trajectory();
 time = 1:tFinal;
 for j = 1:numSims
     x = R0.randPoint(1);
-    xs = x';
+    xs = x;
 
     for i = time
         % evaluate network
@@ -163,9 +163,9 @@ for j = 1:numSims
         x = x + dx(x, u_j);
 
         % store
-        xs = [xs; x'];
+        xs = [xs x];
     end
-    simRes = [simRes; simResult({xs}, {[0 time]'})];
+    traj(j) = trajectory([],xs,[],[0 time]);
 end
 tSim = toc(timerVal);
 disp(['Time to compute random simulations: ', num2str(tSim)]);
@@ -173,7 +173,7 @@ disp(['Time to compute random simulations: ', num2str(tSim)]);
 % Check Violation -----------------------------------------------------
 
 timerVal = tic;
-isVio = ~check(spec, simRes);
+isVio = ~check(spec, traj);
 tVio = toc(timerVal);
 disp(['Time to check violation in simulations: ', num2str(tVio)]);
 
@@ -279,8 +279,8 @@ end
 
 % plot simulation
 NVpairs = {'.k','DisplayName','Simulations'};
-for i=1:length(simRes)
-    scatter(-25:-15, simRes(i).x{1}(:, 1)',NVpairs{:});
+for i=1:length(traj)
+    scatter(-25:-15, traj(i).x(1,:, 1),NVpairs{:});
     if i==1
         NVpairs = [NVpairs,{'HandleVisibility','off'}];
     end

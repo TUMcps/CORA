@@ -74,16 +74,14 @@ options.cs.constraints = 'half';
 %% Create test case
 % simulate system
 simOpt.points = 1;
-simRes = simulateRandom(pedestrian,params,simOpt);
+traj = simulateRandom(pedestrian,params,simOpt);
 % construct input vector
 uVec = zeros(maxNrOfTimeSteps+1,6);
-% save in test case
-sanityCheck{1} = testCase(simRes.y{1}, uVec, simRes.x{1}, dt);
-
+traj = trajectory(uVec, traj.x, traj.y, [], dt);
 
 %% Conformance synthesis (default: interval norm)
 options.zonotopeOrder = 200;
-params.testSuite = sanityCheck;
+params.testSuite = traj;
 
 % add uncertainty templates
 W_guess = zonotope(rand(4,10)); % disturbance 
@@ -106,10 +104,10 @@ assert((max(rad(interval(params_new.U))) < accuracy));% U
 
 % check whether the measurements can be reconstructed from the
 % identification restults
-params_new.R0 = params_new.R0 + simRes.x{1}(1,:)'; 
+params_new.R0 = params_new.R0 + traj.x(:,1,1); 
 params_new = rmfield(params_new, 'testSuite');
-simRes_new = simulateRandom(pedestrian,params_new,simOpt);
-assert((max(abs(simRes_new.y{1} - simRes.y{1}),[],'all') < accuracy));
+traj_new = simulateRandom(pedestrian,params_new,simOpt);
+assert((max(abs(traj_new.y - traj.y),[],'all') < accuracy));
 
 % overall result
 res = all(resPartial);

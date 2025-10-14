@@ -21,6 +21,7 @@ function obj = readNNetNetwork(file_path, actFun)
 % Written:       12-November-2021
 % Last update:   30-March-2022
 %                30-November-2022 (removed neuralNetworkOld)
+%                28-August-2025 (TL, bug fix 2025a, range operator (:) only allows scalar)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -39,21 +40,21 @@ lines = strsplit(text,'\n');
 lines = lines(~cellfun(@(x) startsWith(x,'//'),lines));
 
 % get number of layers
-ind = find(lines{1} == ',');
-nrLayers = str2double(lines{1}(1:ind));
+ind = find(lines{2} == ',');
+nrLayers = numel(ind)-1;
 
 % get number of inputs
 ind = find(lines{2} == ',');
-nrInputs = str2double(lines{2}(1:ind));
+nrInputs = str2double(lines{2}(1:(ind(1)-1)));
 
 % get number of neurons in each layer
 nrNeurons = zeros(nrLayers,1);
-text = strtrim(lines{2}(ind+1:end));
+text = strtrim(lines{2}(ind(1)+1:end));
 
 for i = 1:nrLayers
     ind = find(text == ',');
-    nrNeurons(i) = str2double(text(1:ind-1));
-    text = strtrim(text(ind+1:end));
+    nrNeurons(i) = str2double(text(1:ind(1)-1));
+    text = strtrim(text(ind(1)+1:end));
 end
 
 % loop over all layers and read the weights and biases

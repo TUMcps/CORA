@@ -97,15 +97,18 @@ if method == "CH"
     D = [D zeros(dim_y,size(E_x,2)) E_y];
     dim_u = size(B,2);
 
-    % transform to ARX model
     tol = 1e4*eps;
+
+    % transform to ARX model
     A_poly = poly(A);
     A_poly(abs(A_poly)<tol) = 0;
     p = size(A_poly,2) - 1;
 
+    % initialize ARX matrices A_bar and B_bar
     A_bar = cell(p,1);
     B_bar = cell(p+1,1);
 
+    % compute A_bar and B_bar
     CABs = {D};
     for i = 1:p
         A_bar{i} = -A_poly(i+1)*eye(dim_y);
@@ -134,9 +137,11 @@ else
             "System is not observable.\n"));
     end
 
+    % create symbolic matrix M_sym
     syms M_sym [dim_x dim_y]
 
     for k=1:10
+        % solve for M_sym
         M_sol = solve((A+M_sym*C)^k == zeros(dim_x), M_sym);
         M_names = fieldnames(M_sol);
         if (dim_x+dim_y>2 && all(size(M_sol.(M_names{1,1})) == [1,1])) || ...
@@ -144,6 +149,8 @@ else
             break
         end
     end
+
+    % compute M from M_sol
     M = zeros(dim_x, dim_y);
     if dim_x > 1
         for i_x=1:dim_x
@@ -158,7 +165,9 @@ else
     else
         M(1, 1) = double(M_sol);
     end
-    p = k;
+    p = k; 
+    
+    % check accuracy
     if sum(abs((A+M*C)^k), 'all') > 1e-5
         CORAwarning('CORA:contDynamics',"Low Accuracy of Transformation matrix M.")
     end

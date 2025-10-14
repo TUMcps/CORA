@@ -45,6 +45,8 @@ switch field % TODO sort and categorize
         checks = aux_getChecksOptions_armaxAlg(checks,sys,func,params,options);
     case 'linAlg'
         checks = aux_getChecksOptions_linAlg(checks,sys,func,params,options);
+    case 'idAlg'
+        checks = aux_getChecksOptions_idAlg(checks,sys,func,params,options);
     case 'alg'
         checks = aux_getChecksOptions_alg(checks,sys,func,params,options);
         % taylor
@@ -147,7 +149,7 @@ switch field % TODO sort and categorize
         checks = aux_getChecksOptions_lagrangeRem_eps(checks,sys,func,params,options);
         % ---
     case 'approxDepOnly'
-        checks = aux_getChecksOptions_approxDepOnly(checks,sys,func,params,options);
+        checks = aux_getChecksOptions_idDepOnly(checks,sys,func,params,options);
     case 'linearizationPoint'
         checks = aux_getChecksOptions_linearizationPoint(checks,sys,func,params,options);
     case 'intermediateOrder'
@@ -161,7 +163,7 @@ switch field % TODO sort and categorize
         checks = aux_getChecksOptions_polyZono_restructureTechnique(checks,sys,func,params,options);
         % ---
     case 'timeStepInner'
-        checks = aux_getChecksOptions_timeStepInner(checks,sys,func,params,options);
+        checks = aux_getChecksOptions_timeStepInner(charecks,sys,func,params,options);
     case 'contractor'
         checks = aux_getChecksOptions_contractor(checks,sys,func,params,options);
     case 'iter'
@@ -176,7 +178,7 @@ switch field % TODO sort and categorize
         checks = aux_getChecksOptions_inpChanges(checks,sys,func,params,options);
     case 'approxErr'
         % ---
-        checks = aux_getChecksOptions_approxErr(checks,sys,func,params,options);
+        checks = aux_getChecksOptions_idErr(checks,sys,func,params,options);
     case 'prevErrScale'
         checks = aux_getChecksOptions_prevErrScale(checks,sys,func,params,options);
     case 'prevErr'
@@ -189,84 +191,81 @@ switch field % TODO sort and categorize
         checks = aux_getChecksOptions_timeStepDivider(checks,sys,func,params,options);
     case 'postProcessingOrder'
         checks = aux_getChecksOptions_postProcessingOrder(checks,sys,func,params,options);
-    %for conform_white:
+    %for conform:
     case 'cs.cost'
         checks = aux_getChecksOptions_cs_cost(checks,sys,func,params,options);
     case 'cs.constraints'
         checks = aux_getChecksOptions_cs_constraints(checks,sys,func,params,options);
-        % p
-    case 'cs.set_p'
-        checks = aux_getChecksOptions_cs_set_p(checks,sys,func,params,options);
-    case 'cs.p0'
-        checks = aux_getChecksOptions_cs_p0(checks,sys,func,params,options);
-    case 'cs.P'
-        checks = aux_getChecksOptions_cs_P(checks,sys,func,params,options);
-        % a
+        % scaling factors alpha
     case 'cs.a_min'
         checks = aux_getChecksOptions_cs_a_min(checks,sys,func,params,options);
     case 'cs.a_max'
         checks = aux_getChecksOptions_cs_a_max(checks,sys,func,params,options);
-        % ---
+        % parameters
+    case 'cs.set_p'
+        checks = aux_getChecksOptions_cs_set_p(checks,sys,func,params,options);
+    case 'cs.p0'
+        checks = aux_getChecksOptions_cs_p0(checks,sys,func,params,options);
     case 'cs.cp_lim'
         checks = aux_getChecksOptions_cs_cp_lim(checks,sys,func,params,options);
+        % optimization
+    case 'cs.P'
+        checks = aux_getChecksOptions_cs_P(checks,sys,func,params,options);
     case 'cs.verbose'
         checks = aux_getChecksOptions_cs_verbose(checks,sys,func,params,options);
     case 'cs.w'
         checks = aux_getChecksOptions_cs_w(checks,sys,func,params,options);
-    case 'cs.robustnessMargin'
-        checks = aux_getChecksOptions_cs_robustnessMargin(checks,sys,func,params,options);
-    case 'cs.derivRecomputation'
-        checks = aux_getChecksOptions_cs_derivRecomputation(checks,sys,func,params,options);
+    case 'cs.robustness'
+        checks = aux_getChecksOptions_cs_robustness(checks,sys,func,params,options);
+    case 'cs.updateDeriv'
+        checks = aux_getChecksOptions_cs_updateDeriv(checks,sys,func,params,options);
     case 'cs.timeout'
         checks = aux_getChecksOptions_cs_timeout(checks,sys,func,params,options);
-        % approx
-    case 'approx.p'
-        checks = aux_getChecksOptions_approx_p(checks,sys,func,params,options);
-    case 'approx.verbose'
-        checks = aux_getChecksOptions_approx_verbose(checks,sys,func,params,options);
-    case 'approx.filename'
-        checks = aux_getChecksOptions_approx_filename(checks,sys,func,params,options);
-    case 'approx.save_res'
-        checks = aux_getChecksOptions_approx_save_res(checks,sys,func,params,options);
-        % approx.nn
-    case 'approx.nn_lr'
-        checks = aux_getChecksOptions_approx_nn_lr(checks,sys,func,params,options);
-    case 'approx.nn_lrSchedule'
-        checks = aux_getChecksOptions_approx_nn_lrSchedule(checks,sys,func,params,options);
-    case 'approx.nn_lrDropPeriod'
-        checks = aux_getChecksOptions_approx_nn_lrDropPeriod(checks,sys,func,params,options);
-    case 'approx.nn_lrDropFactor'
-        checks = aux_getChecksOptions_approx_nn_lrDropFactor(checks,sys,func,params,options);
-    case 'approx.nn_act'
-        checks = aux_getChecksOptions_approx_nn_act(checks,sys,func,params,options); 
-    case 'approx.nn_bs'
-        checks = aux_getChecksOptions_approx_nn_bs(checks,sys,func,params,options);  
-    case 'approx.nn_neurons'
-        checks = aux_getChecksOptions_approx_nn_neurons(checks,sys,func,params,options);
-    case 'approx.nn_epochs'
-        checks = aux_getChecksOptions_approx_nn_epochs(checks,sys,func,params,options);
-        % approx.gp
-    case 'approx.gp_parallel'
-        checks = aux_getChecksOptions_approx_gp_parallel(checks,sys,func,params,options);
-    case 'approx.gp_runs'
-        checks = aux_getChecksOptions_approx_gp_runs(checks,sys,func,params,options);
-    case 'approx.gp_num_gen'
-        checks = aux_getChecksOptions_approx_gp_num_gen(checks,sys,func,params,options);
-    case 'approx.gp_max_genes'
-        checks = aux_getChecksOptions_approx_gp_max_genes(checks,sys,func,params,options);
-    case 'approx.gp_max_depth'
-        checks = aux_getChecksOptions_approx_gp_max_depth(checks,sys,func,params,options);
-    case 'approx.gp_func_names'
-        checks = aux_getChecksOptions_approx_gp_func_names(checks,sys,func,params,options);
-    case 'approx.gp_pop_size'
-        checks = aux_getChecksOptions_approx_gp_pop_size(checks,sys,func,params,options);
-        % approx.cgp
-    case 'approx.cgp_num_gen'
-        checks = aux_getChecksOptions_approx_cgp_num_gen(checks,sys,func,params,options);
-    case 'approx.cgp_n_m_conf'
-        checks = aux_getChecksOptions_approx_cgp_n_m_conf(checks,sys,func,params,options);
-    case 'approx.cgp_pop_size_base'
-        checks = aux_getChecksOptions_approx_cgp_pop_size_base(checks,sys,func,params,options);
+    case 'cs.recMethod'
+        checks = aux_getChecksOptions_cs_recMethod(checks,sys,func,params,options);
+    case 'cs.batchSize'
+        checks = aux_getChecksOptions_cs_batchSize(checks,sys,func,params,options);
+    case 'cs.numCluster'
+        checks = aux_getChecksOptions_cs_numCluster(checks,sys,func,params,options);
+    case 'cs.numPoints'
+        checks = aux_getChecksOptions_cs_numPoints(checks,sys,func,params,options);
+    case 'cs.forgetting'
+        checks = aux_getChecksOptions_cs_forgetting(checks,sys,func,params,options);
+    case 'cs.forgettingCost'
+        checks = aux_getChecksOptions_cs_forgettingCost(checks,sys,func,params,options);
+    % identification
+    case 'id.testSuite_val'
+        checks = aux_getChecksOptions_id_testSuite_val(checks,sys,func,params,options);
+    case 'id.p'
+        checks = aux_getChecksOptions_id_p(checks,sys,func,params,options);
+    case 'id.verbose'
+        checks = aux_getChecksOptions_id_verbose(checks,sys,func,params,options);
+    case 'id.filename'
+        checks = aux_getChecksOptions_id_filename(checks,sys,func,params,options);
+    case 'id.save_res'
+        checks = aux_getChecksOptions_id_save_res(checks,sys,func,params,options);
+        % genetic programming
+    case 'id.gp_parallel'
+        checks = aux_getChecksOptions_id_gp_parallel(checks,sys,func,params,options);
+    case 'id.gp_runs'
+        checks = aux_getChecksOptions_id_gp_runs(checks,sys,func,params,options);
+    case 'id.gp_num_gen'
+        checks = aux_getChecksOptions_id_gp_num_gen(checks,sys,func,params,options);
+    case 'id.gp_max_genes'
+        checks = aux_getChecksOptions_id_gp_max_genes(checks,sys,func,params,options);
+    case 'id.gp_max_depth'
+        checks = aux_getChecksOptions_id_gp_max_depth(checks,sys,func,params,options);
+    case 'id.gp_func_names'
+        checks = aux_getChecksOptions_id_gp_func_names(checks,sys,func,params,options);
+    case 'id.gp_pop_size'
+        checks = aux_getChecksOptions_id_gp_pop_size(checks,sys,func,params,options);
+        % conformant genetic programming
+    case 'id.cgp_num_gen'
+        checks = aux_getChecksOptions_id_cgp_num_gen(checks,sys,func,params,options);
+    case 'id.cgp_n_m_conf'
+        checks = aux_getChecksOptions_id_cgp_n_m_conf(checks,sys,func,params,options);
+    case 'id.cgp_pop_size_base'
+        checks = aux_getChecksOptions_id_cgp_pop_size_base(checks,sys,func,params,options);
     otherwise
         CORAwarning('CORA:contDynamics','Unknown options.%s', field); return;
 end
@@ -348,7 +347,7 @@ function checks = aux_getChecksOptions_timeStep(checks,sys,func,params,options)
     else
         checks(end+1) = add2checks(@isscalar, 'isscalar');
         checks(end+1) = add2checks(@(val)val>0, 'gezero');
-        checks(end+1) = add2checks(@(val)abs((params.tFinal-params.tStart)/val - round((params.tFinal-params.tStart)/val))<1e-9, 'intsteps');
+        checks(end+1) = add2checks(@(val)abs((params.tFinal-params.tStart)/val - round((params.tFinal-params.tStart)/val))<1e-9, 'change_intsteps');
         checks(end+1) = add2checks(@(val)c_inputTraj(val,sys,params,options), '');
     end
 end
@@ -624,7 +623,7 @@ function checks = aux_getChecksOptions_lagrangeRem_eps(checks,sys,func,params,op
 end
 
 % approxDepOnly
-function checks = aux_getChecksOptions_approxDepOnly(checks,sys,func,params,options)
+function checks = aux_getChecksOptions_idDepOnly(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@islogical, 'islogical');
 end
@@ -687,7 +686,7 @@ end
 function checks = aux_getChecksOptions_timeStepInner(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
-    checks(end+1) = add2checks(@(val)abs(rem(params.tFinal,val))<eps, 'intsteps');
+    checks(end+1) = add2checks(@(val)abs(rem(params.tFinal,val))<eps, 'change_intsteps');
 end
 
 % contractor
@@ -734,7 +733,7 @@ function checks = aux_getChecksOptions_inpChanges(checks,sys,func,params,options
 end
 
 % approxErr
-function checks = aux_getChecksOptions_approxErr(checks,sys,func,params,options)
+function checks = aux_getChecksOptions_idErr(checks,sys,func,params,options)
     checks(end+1) = add2checks(@islogical, 'islogical');
 end
 
@@ -777,6 +776,12 @@ end
 function checks = aux_getChecksOptions_armaxAlg(checks,sys,func,params,options)
     checks(end+1) = add2checks(@ischar, 'ischar');
     checks(end+1) = add2checks(@(val)any(ismember(getMembers('armaxAlg'),val)), 'memberarmaxAlg');
+end
+
+% idAlg
+function checks = aux_getChecksOptions_idAlg(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@ischar, 'ischar');
+    checks(end+1) = add2checks(@(val)any(ismember(getMembers('idAlg'),val)), 'memberidAlg');
 end
 
 % cs.cost
@@ -824,14 +829,14 @@ function checks = aux_getChecksOptions_cs_verbose(checks,sys,func,params,options
     checks(end+1) = add2checks(@islogical, 'islogical');
 end
 
-% cs.robustnessMargin
-function checks = aux_getChecksOptions_cs_robustnessMargin(checks,sys,func,params,options)
+% cs.robustness
+function checks = aux_getChecksOptions_cs_robustness(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gezero');
 end
 
-% cs.derivRecomputation
-function checks = aux_getChecksOptions_cs_derivRecomputation(checks,sys,func,params,options)    
+% cs.updateDeriv
+function checks = aux_getChecksOptions_cs_updateDeriv(checks,sys,func,params,options)    
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@islogical, 'islogical');
 end
@@ -852,153 +857,196 @@ function checks = aux_getChecksOptions_cs_timeout(checks,sys,func,params,options
     checks(end+1) = add2checks(@(val)ge(val,0), 'gezero');
 end
 
-% approx.p
-function checks = aux_getChecksOptions_approx_p(checks,sys,func,params,options)
+% cs.recMethod
+function checks = aux_getChecksOptions_cs_recMethod(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@(val)any(ismember(getMembers('cs.recMethod'),val)), 'membercs.recMethod');
+end
+
+% cs.batchSize
+function checks = aux_getChecksOptions_cs_batchSize(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
+    checks(end+1) = add2checks(@(val)ge(val,1), 'geone');
+end
+
+% cs.numPoints
+function checks = aux_getChecksOptions_cs_numPoints(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
+    checks(end+1) = add2checks(@(val)ge(val,1), 'geone');
+end
+
+% cs.numCluster
+function checks = aux_getChecksOptions_cs_numCluster(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
+    checks(end+1) = add2checks(@(val)ge(val,1), 'geone');
+end
+
+% cs.forgetting
+function checks = aux_getChecksOptions_cs_forgetting(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@isnumeric, 'isnumeric');
+    checks(end+1) = add2checks(@(val)ge(val,0), 'gtzero');
+    checks(end+1) = add2checks(@(val)le(val,1), 'leone');
+end
+
+% cs.forgettingCost
+function checks = aux_getChecksOptions_cs_forgettingCost(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@isnumeric, 'isnumeric');
+    checks(end+1) = add2checks(@(val)ge(val,0), 'gtzero');
+    checks(end+1) = add2checks(@(val)le(val,1), 'leone');
+end
+
+
+% id.testSuite_val
+function checks = aux_getChecksOptions_id_testSuite_val(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@(val)isa(val,'trajectory'), 'istrajectory');
+end
+
+% id.p
+function checks = aux_getChecksOptions_id_p(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gezero');
 end
 
-% approx.verbose
-function checks = aux_getChecksOptions_approx_verbose(checks,sys,func,params,options)
+% id.verbose
+function checks = aux_getChecksOptions_id_verbose(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@islogical, 'islogical');
 end
 
-% approx.filename
-function checks = aux_getChecksOptions_approx_filename(checks,sys,func,params,options)
+% id.filename
+function checks = aux_getChecksOptions_id_filename(checks,sys,func,params,options)
     checks(end+1) = add2checks(@ischar, 'ischar');
 end
 
-% approx.save_res
-function checks = aux_getChecksOptions_approx_save_res(checks,sys,func,params,options)
+% id.save_res
+function checks = aux_getChecksOptions_id_save_res(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@islogical, 'islogical');
 end
 
-% approx.nn_lr
-function checks = aux_getChecksOptions_approx_nn_lr(checks,sys,func,params,options)
+% id.nn_lr
+function checks = aux_getChecksOptions_id_nn_lr(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gtzero');
 end
 
-% approx.nn_lrSchedule
-function checks = aux_getChecksOptions_approx_nn_lrSchedule(checks,sys,func,params,options)
-    checks(end+1) = add2checks(@(val)any(ismember(getMembers('approx.nn_lrSchedule'),val)), 'memberapprox.nn_lrSchedule');
+% id.nn_lrSchedule
+function checks = aux_getChecksOptions_id_nn_lrSchedule(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@(val)any(ismember(getMembers('id.nn_lrSchedule'),val)), 'memberid.nn_lrSchedule');
 end
 
-% approx.nn_lrDropPeriod
-function checks = aux_getChecksOptions_approx_nn_lrDropPeriod(checks,sys,func,params,options)
+% id.nn_lrDropPeriod
+function checks = aux_getChecksOptions_id_nn_lrDropPeriod(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gtzero');
 end
 
-% approx.nn_lrDropFactor
-function checks = aux_getChecksOptions_approx_nn_lrDropFactor(checks,sys,func,params,options)
+% id.nn_lrDropFactor
+function checks = aux_getChecksOptions_id_nn_lrDropFactor(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gezero');
     checks(end+1) = add2checks(@(val)le(val,1), 'leone');
 end
 
-% approx.nn_act
-function checks = aux_getChecksOptions_approx_nn_act(checks,sys,func,params,options)
-    checks(end+1) = add2checks(@(val)any(ismember(getMembers('approx.nn_act'),val)), 'memberapprox.nn_act');
+% id.nn_act
+function checks = aux_getChecksOptions_id_nn_act(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@(val)any(ismember(getMembers('id.nn_act'),val)), 'memberid.nn_act');
 end
 
-% approx.nn_bs'
-function checks = aux_getChecksOptions_approx_nn_bs(checks,sys,func,params,options)
+% id.nn_bs'
+function checks = aux_getChecksOptions_id_nn_bs(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gtzero');
 end
 
-% approx.nn_neurons
-function checks = aux_getChecksOptions_approx_nn_neurons(checks,sys,func,params,options)
+% id.nn_neurons
+function checks = aux_getChecksOptions_id_nn_neurons(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
 end
 
-% approx.nn_epochs
-function checks = aux_getChecksOptions_approx_nn_epochs(checks,sys,func,params,options)
+% id.nn_epochs
+function checks = aux_getChecksOptions_id_nn_epochs(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gtzero');
 end
 
-% approx.gp_parallel
-function checks = aux_getChecksOptions_approx_gp_parallel(checks,sys,func,params,options)
+% id.gp_parallel
+function checks = aux_getChecksOptions_id_gp_parallel(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@islogical, 'islogical');
 end
  
-% approx.gp_runs
-function checks = aux_getChecksOptions_approx_gp_runs(checks,sys,func,params,options)
+% id.gp_runs
+function checks = aux_getChecksOptions_id_gp_runs(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gtzero');
 end
 
-% approx.gp_num_gen
-function checks = aux_getChecksOptions_approx_gp_num_gen(checks,sys,func,params,options)
+% id.gp_num_gen
+function checks = aux_getChecksOptions_id_gp_num_gen(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gtzero');
 end
 
-% approx.gp_max_genes
-function checks = aux_getChecksOptions_approx_gp_max_genes(checks,sys,func,params,options)
+% id.gp_max_genes
+function checks = aux_getChecksOptions_id_gp_max_genes(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gtzero');
 end
 
-% approx.gp_max_depth
-function checks = aux_getChecksOptions_approx_gp_max_depth(checks,sys,func,params,options)
+% id.gp_max_depth
+function checks = aux_getChecksOptions_id_gp_max_depth(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gtzero');
 end
 
-% approx.gp_func_names
-function checks = aux_getChecksOptions_approx_gp_func_names(checks,sys,func,params,options)
+% id.gp_func_names
+function checks = aux_getChecksOptions_id_gp_func_names(checks,sys,func,params,options)
     add2checks(@iscell, 'iscell');
 end
 
-% approx.cgp_num_gen
-function checks = aux_getChecksOptions_approx_cgp_num_gen(checks,sys,func,params,options)
+% id.cgp_num_gen
+function checks = aux_getChecksOptions_id_cgp_num_gen(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gtzero');
 end
 
-% approx.gp_pop_size
-function checks = aux_getChecksOptions_approx_gp_pop_size(checks,sys,func,params,options)
+% id.gp_pop_size
+function checks = aux_getChecksOptions_id_gp_pop_size(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gtzero');
 end
 
-% approx.cgp_n_m_conf
-function checks = aux_getChecksOptions_approx_cgp_n_m_conf(checks,sys,func,params,options)
+% id.cgp_n_m_conf
+function checks = aux_getChecksOptions_id_cgp_n_m_conf(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gtzero');
 end
 
-% approx.cgp_pop_size_base
-function checks = aux_getChecksOptions_approx_cgp_pop_size_base(checks,sys,func,params,options)
+% id.cgp_pop_size_base
+function checks = aux_getChecksOptions_id_cgp_pop_size_base(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');

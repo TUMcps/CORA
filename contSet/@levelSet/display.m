@@ -48,7 +48,7 @@ numSets = length(ls.eq);
 
 if numSets == 1
     disp("  f(" + varsPrintStr + "): " ...
-        + string(ls.eq) + " " + ls.compOp + " 0" + newline);
+        + string(vpa(ls.eq,3)) + " " + ls.compOp + " 0" + newline);
 else
     % loop over all level sets
     for i=1:numSets

@@ -17,13 +17,14 @@ function res = priv_simulateGaussian(sys,params,options)
 %    options - model parameters and settings for random simulation
 %
 % Outputs:
-%    res - object of class simResult storing time and states of the 
+%    res - object of class trajectory storing time and states of the 
 %          simulated trajectories.
 
 % Authors:       Matthias Althoff, Mark Wetzlinger
 % Written:       19-November-2020
 % Last update:   04-January-2021
 %                10-November-2021 (MW, adapt to updated input handling)
+%                08-August-2025 (LL, create trajectory object)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -34,29 +35,30 @@ tracking = isfield(params,'uTransVec');
 % output equation only handled for linear systems
 comp_y = (isa(sys,'linearSys') || isa(sys,'linearSysDT')) && ~isempty(sys.C);
 
-% location for contDynamics always zero
-loc = 0;
+% location for contDynamics is set to []
+loc = [];
 
-% init array of simResult objects
-res(options.points,1) = simResult();
+% init array of trajectory objects
+res(options.points,1) = trajectory();
 
 % loop over all starting points in X0
 for r = 1:options.points
     
     % start of trajectory
     t = 0; % dummy, will be overwritten
+    u = zeros(sys.nrOfInputs,1);
     params.x0 = randPoint(params.R0,1,'gaussian',options.p_conf);
-    x = params.x0';
+    x = params.x0;
     if comp_y
-        y = zeros(1,sys.nrOfOutputs);
+        y = zeros(sys.nrOfOutputs,1);
     end
     
     % loop over number of constant inputs per partial simulation
-    for block = 1:length(options.nrConstInp)
+    for block = 1:max(length(options.nrConstInp)-1,1)
         
         % update initial state
         if block > 1
-            params.x0 = xTemp(end,:)';
+            params.x0 = xTemp(:,end);
         end
         
         % update input
@@ -102,10 +104,11 @@ for r = 1:options.points
             [tTemp,xTemp] = simulate(sys,params);
         end
 
-        t(end:end+length(tTemp)-1,1) = tTemp;
-        x(end:end+length(tTemp)-1,:) = xTemp;
+        t(1,end:end+length(tTemp)-1) = tTemp;
+        u(:,end:end+length(tTemp)-1) = repmat(params.u(:,1), 1, length(tTemp));
+        x(:,end:end+length(tTemp)-1) = xTemp;
         if comp_y
-            y(end:end+length(tTemp)-1,:) = yTemp;
+            y(:,end:end+length(tTemp)-1) = yTemp;
         end
         
     end
@@ -113,13 +116,13 @@ for r = 1:options.points
     if comp_y
         % final point of output trajectory uses different input and sensor noise
         ylast = aux_outputTrajectoryEnd(sys,params,x);
-        y(end,:) = ylast';
+        y(:,end) = ylast;
 
-        % append simResult object for r-th trajectory
-        res(r,1) = simResult({x},{t},loc,{y});
+        % append trajectory object for r-th trajectory
+        res(r,1) = trajectory(u,x,y,t,[],loc);
     else
-        % append simResult object for r-th trajectory
-        res(r,1) = simResult({x},{t});
+        % append trajectory object for r-th trajectory
+        res(r,1) = trajectory(u,x,[],t);
     end
 
 end
@@ -136,7 +139,7 @@ function ylast = aux_outputTrajectoryEnd(obj,params,xtraj)
     end
     ulast = randPoint(params.U) + params.uTrans;
     vlast = randPoint(params.V);
-    ylast = obj.C*xtraj(end,:)' + obj.D*ulast + obj.k + vlast;
+    ylast = obj.C*xtraj(:,end) + obj.D*ulast + obj.k + vlast;
 
 end
 

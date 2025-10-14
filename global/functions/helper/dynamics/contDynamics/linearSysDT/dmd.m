@@ -36,8 +36,8 @@ function [A,B,c] = dmd(X,dt,varargin)
 %    params.U = interval(-0.1,0.1);
 %    params.tFinal = 1;
 %    options.points = 1;
-%    simRes = simulateRandom(sys,params,options);
-%    X = simRes.x{1}';
+%    traj = simulateRandom(sys,params,options);
+%    X = traj.x;
 %
 %    % use dynamic mode decomposition to estimate the matrix A from data
 %    A_ = dmd(X)

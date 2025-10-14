@@ -58,9 +58,14 @@ try
      0.40000, 0.53247, 0.61993, 0.66619, 0.67507, 0.65037, 0.59592, 0.51553, 0.41302, 0.29220, 0.15688, 0.01088, -0.14199, -0.29791, -0.45307, -0.60366, -0.74585, -0.87583, -0.98980, -1.08392, -1.15440, -1.19741, -1.20913, -1.18577, -1.12349, -1.01849, -0.45863, -0.57264, -0.64316, -0.67401, -0.66900, -0.63195, -0.56667, -0.47697, -0.36667, -0.23959, -0.09954, 0.04966, 0.20421, 0.36028, 0.51407, 0.66175, 0.79952, 0.92355, 1.03004, 1.11516, 1.17511, 1.20606, 1.20421, 1.16574, 1.08683, 0.96367, 0.40000 ; ...
     ];
     % check points
-    assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'subset',true));
+    assert(compareMatrices(V, readVerticesFromFigure(ax.Children(1)),1e-4,'subset',true));
     % test color
-    assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+    if CORA_PLOT_FILLED
+        assert(isequal(colorOrder(1,:), ax.Children(1).EdgeColor));
+        assert(isequal(colorOrder(1,:), ax.Children(1).FaceColor));
+    else
+        assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+    end
     
     % close figure
     close

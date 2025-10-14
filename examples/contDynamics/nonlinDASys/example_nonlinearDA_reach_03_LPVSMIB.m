@@ -142,9 +142,9 @@ for r=1:runs
         params.tStart = tswitch(i);
         params.tFinal = tswitch(i+1);
         [t_new,x_new] = simulate(syshandles{i},params,options);
-        t{r} = [t{r}; t_new]; x{r} = [x{r}; x_new];
+        t{r} = [t{r} t_new]; x{r} = [x{r} x_new];
         % update for new mode
-        xFinal = x{r}(end,:)';
+        xFinal = x{r}(:,end);
         params.x0 = xFinal(1:dim_x);
     end
 end
@@ -178,7 +178,7 @@ plot(R(1).R0,projDims);
 
 % plot simulation results
 for r=1:runs
-    plot(x{r}(:,projDims(1)),x{r}(:,projDims(2)),'Color',CORAcolor("CORA:simulations"));
+    plot(x{r}(projDims(1),:),x{r}(projDims(2),:),'Color',CORAcolor("CORA:simulations"));
 end
 
 % example completed

@@ -89,8 +89,7 @@ params.v = randPoint(V,dt_steps+1);
 
 % simulate the linear ARX system with normal parametrization
 params.u = [params.u; params.w zeros(dim_x,1); params.v];
-start_idx = sys_ARX.n_p + 1;
-params.y0 = y_linDT(1:start_idx-1,:)';
+params.y0 = y_linDT(:,1:sys_ARX.n_p);
 [t_ARX,~,~,y_ARX] = simulate(sys_ARX,params);
 
 % simulate the linear ARX system with time-varying parametrization

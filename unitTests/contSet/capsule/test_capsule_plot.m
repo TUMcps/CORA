@@ -67,9 +67,14 @@ try
     ];
 
     % check points
-    assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-5,'subset',true));
+    assert(compareMatrices(V, readVerticesFromFigure(ax.Children(1)),1e-5,'subset',true));
     % test color
-    assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+    if CORA_PLOT_FILLED
+        assert(isequal(colorOrder(1,:), ax.Children(1).EdgeColor));
+        assert(isequal(colorOrder(1,:), ax.Children(1).FaceColor));
+    else
+        assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+    end
 
     % close figure
     close;

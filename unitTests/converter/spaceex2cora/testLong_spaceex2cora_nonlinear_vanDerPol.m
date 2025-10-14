@@ -34,14 +34,14 @@ params.x0 = randPoint(R0);
 params.tFinal = 6.74;
 
 % Simulating the original system
-[simResOriginal.t, simResOriginal.x] = simulate(vanDerPolSys, params);
+[t_Original, x_Original] = simulate(vanDerPolSys, params);
                              
 % Simulating the converted system
-[simResSX.t, simResSX.x] = simulate(vanDerPolSys_SX, params);
+[t_SX, x_SX] = simulate(vanDerPolSys_SX, params);
 
 %% Compute error between the simulation of the two files
 
-diff = simResOriginal.x - simResSX.x;
+diff = x_Original - x_SX;
 error = sqrt(sum(diff.^2,2));
 
 assert(all(error <= 1e-5))

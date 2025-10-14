@@ -74,7 +74,7 @@ paramsSim.startLoc = params.startLoc;
 % obtain random simulation results
 N = 10;
 simPoints = cell(N,1);
-simRes = [];
+traj(2*N,1) = trajectory();
 
 for i = 1:N
     
@@ -91,8 +91,8 @@ for i = 1:N
     [t,x,loc] = simulate(HA,paramsSim); 
     
     % store results
-    simPoints{i} = x{end}(end,:)';
-    simRes = add(simRes,simResult(x,t,loc)); 
+    simPoints{i} = x(:,end);
+    traj(i) = trajectory([],x,[],t,[],loc); 
 end
 
 
@@ -141,7 +141,7 @@ for i = 1:N
     [t,x,loc] = simulate(HA,paramsSim); 
     
     % store resulets
-    simRes = add(simRes,simResult(x,t,loc));
+    traj(N+i) = trajectory([],x,[],t,[],loc); 
 end
 
 
@@ -166,7 +166,7 @@ plot(R,[1,3]);
 plot(R(1).R0,[1,3])
 
 % plot simulation
-plot(simRes,[1,3]);
+plot(traj,[1,3]);
 
 % guard set
 plot(specification(interval([0.03; -10], [0.03; 90])));

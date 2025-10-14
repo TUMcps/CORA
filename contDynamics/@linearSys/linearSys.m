@@ -124,6 +124,7 @@ end
 
 methods (Static = true)
     linsys = generateRandom(varargin) % generates random linear system
+    linsys = identify(varargin)       % identifies linear system from data
 end
 
 methods (Access = protected)

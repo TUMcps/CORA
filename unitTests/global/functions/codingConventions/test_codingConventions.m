@@ -469,7 +469,7 @@ for i=1:length(files)
 
         % check warning(...) -> CORAwarning(...)
         probCall = 'warning(';
-        allowedCalls = {'CORAwarning(','warning(''on''','warning(''off''','warning()','warning(w)','warning(warOrig)'};
+        allowedCalls = {'CORAwarning(','warning(''on''','warning(''off''','warning()','warning(w)','warning(warOrig)','escapewarning('};
         if ~ismember(filename,{'CORAwarning',mfilename}) && ...
                 ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
             issues{end+1} = "Please replace warning(...) calls with CORAwarning(id, ...)";

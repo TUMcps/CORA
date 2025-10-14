@@ -72,7 +72,7 @@ simOptions.tFinal = params.tFinal;
 % obtain random simulation results
 N = 10;
 simPoints = cell(N,1);
-simRes = [];
+traj(N,1) = trajectory();
 
 for i = 1:N
     
@@ -89,8 +89,8 @@ for i = 1:N
     [t,x,loc] = simulate(HA,simOptions); 
     
     % store results
-    simPoints{i} = x{end}(end,:)';
-    simRes = add(simRes,simResult(x,t,loc)); 
+    simPoints{i} = x(:,end);
+    traj(i) = trajectory([],x,[],t,[],loc); 
 end
 
 % compute reachable set
@@ -131,7 +131,7 @@ for i = 1:N
     [t,x,loc] = simulate(HA,simOptions); 
     
     % store resulets
-    simRes = add(simRes,simResult(x,t,loc));
+    traj = [traj;trajectory([],x,[],t,[],loc)]; 
 end
 
 % compute reachable set
@@ -161,7 +161,7 @@ for i = 1:length(dims)
     updateColorIndex
 
     % plot simulation results
-    plot(simRes,projDim);
+    plot(traj,projDim);
 
     plot([-0.03 -0.03],[-40,100],'--r','DisplayName','Guard set')
     plot([0.03 0.03],[-40,100],'--r','HandleVisibility','off')

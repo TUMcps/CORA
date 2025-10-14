@@ -133,7 +133,7 @@ function res = aux_recursive(obj,x,t,vars)
         ind = find(t >= obj.from | withinTol(t,obj.from));
 
         if ~isempty(ind)
-            res = inner(ind:end);
+            res = inner(ind(1):end);
             res = [res; false*zeros(length(t)-length(res),1)];
         else
             res = false*zeros(size(t));

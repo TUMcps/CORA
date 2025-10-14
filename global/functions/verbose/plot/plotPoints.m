@@ -54,8 +54,9 @@ end
 function [points,dims,NVpairs] = aux_parseInputArgs(points,varargin)
     % set default values
     dims = setDefaultValues({[1,2]},varargin);
-    NVpairs = readPlotOptions(varargin(2:end));
+    NVpairs = readPlotOptions([varargin(2:end),{'Filled',false}]);
     NVpairs = ['LineStyle','none','Marker','.',NVpairs];
+    NVpairs = [NVpairs,'NVPAIRS_VALIDATED',true];
 end
 
 function aux_checkInputArgs(points,dims,NVpairs)

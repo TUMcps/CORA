@@ -7,7 +7,7 @@ function useCORAcolors(identifier, varargin)
 % Inputs:
 %    identifier - name of CORA colormap, one of:
 %       - 'CORA:default'             - matlab default color order
-%       - 'CORA:contDynamics'        - plot reachSet, initialSet, simRes 
+%       - 'CORA:contDynamics'        - plot reachSet, initialSet, traj 
 %       - 'CORA:manual'              - CORA manual: default colors
 %       - 'CORA:manual-result'       - CORA manual: colors for result plots
 %    varargin - depends on identifier, see below
@@ -23,19 +23,19 @@ function useCORAcolors(identifier, varargin)
 
 % Authors:       Tobias Ladner
 % Written:       01-March-2023
-% Last update:   ---
+% Last update:   27-August-2025 (TL, added matlab default colors)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 narginchk(1,Inf);
 inputArgsCheck({{identifier, 'str', ...
-    {'CORA:default','CORA:contDynamics','CORA:manual','CORA:manual-result'}}})
+    {'CORA:default','MATLAB:default','CORA:contDynamics','CORA:manual','CORA:manual-result'}}})
 
 colors = [];
 switch identifier
     case 'CORA:default'
-        colors = [ % matlab default colors
+        colors = [ % cora default colors (differ from matlab since R2025a)
             CORAcolor('CORA:color1')
             CORAcolor('CORA:color2')
             CORAcolor('CORA:color3')
@@ -43,6 +43,16 @@ switch identifier
             CORAcolor('CORA:color5')
             CORAcolor('CORA:color6')
             CORAcolor('CORA:color7')
+        ];
+    case 'MATLAB:default'
+        colors = [ % matlab default colors
+            CORAcolor('MATLAB:color1')
+            CORAcolor('MATLAB:color2')
+            CORAcolor('MATLAB:color3')
+            CORAcolor('MATLAB:color4')
+            CORAcolor('MATLAB:color5')
+            CORAcolor('MATLAB:color6')
+            CORAcolor('MATLAB:color7')
         ];
     case 'CORA:contDynamics'
         % varargin - {numColors}

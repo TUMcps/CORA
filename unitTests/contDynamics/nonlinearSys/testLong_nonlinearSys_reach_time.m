@@ -62,7 +62,7 @@ Rset = reach(vehicle, params, options);
 simOpt.points = 20;
 simOpt.fracVert = 0.5;
 simOpt.fracInpVert = 1;
-simRes = simulateRandom(vehicle,params,simOpt);
+traj = simulateRandom(vehicle,params,simOpt);
 
 
 % Numerical Evaluation ----------------------------------------------------
@@ -72,7 +72,7 @@ R = Rset.timeInterval.set{end};
 R = reduce(R,'girard',1);
 P = polytope(R);
 
-simEndPoints = reshape(cell2mat(arrayfun(@(s) s.x{1}(end,:)', simRes, 'UniformOutput', false)),8,[]);
+simEndPoints = reshape(cell2mat(arrayfun(@(s) s.x(:,end), traj, 'UniformOutput', false)),8,[]);
 res = all(contains(P,simEndPoints));
 
 % plot the result
@@ -81,10 +81,8 @@ res = all(contains(P,simEndPoints));
 %     figure
 %     plot(Rset{end}{1}.set,[counter,counter+1],'r');
 %     hold on
-%     for i = 1:length(simRes.x)
-%        temp = simRes.x{i}(end,:);
-%        plot(temp(counter),temp(counter+1),'.k');
-%     end
+%     temp = traj.x(:,end);
+%     plot(temp(counter),temp(counter+1),'.k');
 %     counter = counter + 2;
 % end
 

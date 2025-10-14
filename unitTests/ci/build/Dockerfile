@@ -3,7 +3,7 @@
 
 # To specify which MATLAB release to install in the container, edit the value of the MATLAB_RELEASE argument.
 # Use lower case to specify the release, for example: ARG MATLAB_RELEASE=r2023b
-ARG MATLAB_RELEASE=2024b
+ARG MATLAB_RELEASE=2025a
 
 # Specify the extra products to install into the image. These products can either be toolboxes or support packages.
 ARG ADDITIONAL_PRODUCTS="Symbolic_Math_Toolbox Optimization_Toolbox Statistics_and_Machine_Learning_Toolbox Deep_Learning_Toolbox Deep_Learning_Toolbox_Converter_for_ONNX_Model_Format Parallel_Computing_Toolbox"
@@ -89,13 +89,13 @@ RUN unzip zip -d MultiPrecisionToolbox
 # install required libraries
 # - gmplib
 RUN sudo apt-get update && sudo apt-get install -y lzip m4
-RUN wget "https://gmplib.org/download/gmp/gmp-6.2.1.tar.lz"
-RUN tar --lzip -xvf gmp-6.2.1.tar.lz
-RUN cd gmp-6.2.1 && ./configure && make && make check && sudo make install
+RUN wget "https://gmplib.org/download/gmp/gmp-6.3.0.tar.lz"
+RUN tar --lzip -xvf gmp-6.3.0.tar.lz
+RUN cd gmp-6.3.0 && ./configure && make && make check && sudo make install
 # - mpfrlib
-RUN wget "https://www.mpfr.org/mpfr-4.2.1/mpfr-4.2.1.zip"
-RUN unzip mpfr-4.2.1
-RUN cd mpfr-4.2.1 && ./configure && make && make check && sudo make install
+RUN wget "https://www.mpfr.org/mpfr-4.2.2/mpfr-4.2.2.zip"
+RUN unzip mpfr-4.2.2
+RUN cd mpfr-4.2.2 && ./configure && make && make check && sudo make install
 # \!/ Then, in Matlab, run
 #     cd /home/matlab/toolboxes/MultiPrecisionToolbox/@mp/private
 #     mp_compile_all

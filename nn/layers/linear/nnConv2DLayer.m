@@ -51,22 +51,13 @@ methods
     function obj = nnConv2DLayer(varargin)
         
         % 1. parse input arguments: varargin -> vars
-        narginchk(0,6)
-        [W, b, padding, stride, dilation, name] = aux_parseInputArgs(varargin{:});
+        narginchk(0,7)
+        % validate input
+        [W, b, padding, stride, dilation, name] = ...
+            setDefaultValues({1, 0, [0 0 0 0], [1 1], [1 1], []}, varargin);
         
         % 2. check correctness of input arguments
         aux_checkInputArgs(W, b, padding, stride, dilation, name)
-
-        % validate input
-        [W, b, padding, stride, dilation, name] = setDefaultValues( ...
-            {1, 0, [0 0 0 0], [1 1], [1 1], []}, varargin);
-        inputArgsCheck({ ...
-            {W, 'att', {'numeric', 'gpuArray'}}, ...
-            {b, 'att', {'numeric', 'gpuArray'}}, ...
-            {padding, 'att', 'numeric'}, ...
-            {stride, 'att', 'numeric'}, ...
-            {dilation, 'att', 'numeric'}, ...
-        })
 
         % 3. call super class constructor
         obj@nnLayer(name)
@@ -110,17 +101,18 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
     % numeric
     function r = evaluateNumeric(obj, input, options)
         obj.checkInputSize()
-        [r,Wff] = obj.conv2d(input,'sparseIdx');
-
+        [r,Wff] = obj.conv2d(input,options,'sparseIdx');
     end
 
     % numeric
     function bounds = evaluateInterval(obj, bounds, options)
         obj.checkInputSize()
         % IBP (see Gowal et al. 2018)
-        [mu,~] = obj.conv2d((bounds.sup + bounds.inf)/2,'sparseIdx');
+        [mu,~] = obj.conv2d((bounds.sup + bounds.inf)/2,options, ...
+            'sparseIdx');
         % r = pagemtimes(abs(Wff),(bounds.sup - bounds.inf)/2);
-        [r,~] = obj.conv2d((bounds.sup - bounds.inf)/2,'sparseIdx',abs(obj.W),[]);
+        [r,~] = obj.conv2d((bounds.sup - bounds.inf)/2,options, ...
+            'sparseIdx',abs(obj.W),[]);
 
         l = mu - r;
         u = mu + r;
@@ -128,8 +120,18 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
     end
 
     % sensitivity
-    function S = evaluateSensitivity(obj, S, x, options)
+    function S = evaluateSensitivity(obj, S, options)
         obj.checkInputSize()
+        % Obtain the stored input.
+        x = obj.backprop.store.input;
+
+        % Use deep learning tool box.
+        [vK,vk,batchSize] = size(S);
+        S = permute(S,[2 1 3]);
+        S = reshape(S,[vk vK*batchSize]);
+        S = obj.transconv2d(S,options,'sparseIdx',obj.W,[]);
+        S = reshape(S,[size(x,1) vK batchSize]);
+        S = permute(S,[2 1 3]);
 
         % % compute weight and bias
         % Wff = obj.aux_conv2Mat();
@@ -137,14 +139,12 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
         % 
         % % simulate using linear layer
         % linl = nnLinearLayer(Wff, bias);
-        % Stmp = linl.evaluateSensitivity(S, x, options);
+        % S = linl.evaluateSensitivity(S, x, options);
 
-        [vK,vk,batchSize] = size(S);
-        S = permute(S,[2 1 3]);
-        S = reshape(S,[vk vK*batchSize]);
-        S = obj.transconv2d(S,'sparseIdx',obj.W,[]);
-        S = reshape(S,[size(x,1) vK batchSize]);
-        S = permute(S,[2 1 3]);
+        if options.nn.store_sensitivity
+            % Store the gradient (used for the sensitivity computation).
+            obj.sensitivity = S;
+        end
     end
 
     % zonotope/polyZonotope
@@ -165,18 +165,18 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
         obj.checkInputSize()
 
         if options.nn.interval_center
-            [n,~,batchSize] = size(G);
+            [n,~,batchSize] = size(c);
             % Extract upper and lower bound.
             cl = reshape(c(:,1,:),[n batchSize]);
             cu = reshape(c(:,2,:),[n batchSize]);
             % Evaluate bounds.
-            c = obj.evaluateInterval(interval(cl,cu));
+            c = obj.evaluateInterval(interval(cl,cu),options);
             c = permute(cat(3,c.inf,c.sup),[1 3 2]);
             % Evaluate generators.
             c0 = zeros([n batchSize],'like',G);
-            [~,G,Wff] = obj.conv2dZonotope(c0,G,'sparseIdx');
+            [~,G,Wff] = obj.conv2dZonotope(c0,G,options,'sparseIdx');
         else
-            [c,G,Wff] = obj.conv2dZonotope(c,G,'sparseIdx');
+            [c,G,Wff] = obj.conv2dZonotope(c,G,options,'sparseIdx');
         end
 
         % if options.nn.train.backprop
@@ -212,56 +212,60 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
 
     % backprop ------------------------------------------------------------
 
-    function grad_in = backpropNumeric(obj, input, grad_out, options)        
-        % Compute weight update.
-        dW = convForWeigthsUpdate(obj,grad_out,input);
-
-        % Compute size of gradient.
-        [out_h,out_w,out_c] = obj.aux_computeOutputSize();
-        [~,batchSize] = size(input);
-
-        % Compute bias update.
-        db = squeeze(sum(reshape(grad_out, ...
+    function grad_in = backpropNumeric(obj, input, grad_out, options, updateWeights)   
+        if updateWeights
+            % Compute weight update.
+            dW = convForWeigthsUpdate(obj,grad_out,input,options);
+    
+            % Compute size of gradient.
+            [out_h,out_w,out_c] = obj.aux_computeOutputSize();
+            [~,batchSize] = size(input);
+    
+            % Compute bias update.
+            db = squeeze(sum(reshape(grad_out, ...
             [out_h out_w out_c batchSize]),[1 2 4]));
 
-        % Update weights and bias.
-        updateGrad(obj, 'W', dW, options);
-        updateGrad(obj, 'b', db, options);
+            % Update weights and bias.
+            updateGrad(obj, 'W', dW, options);
+            updateGrad(obj, 'b', db, options);
+        end
 
         % The backproped gradient is computed by (full) convolving the 
         % outgoing gradient with the filters rotated by 180 degrees, which 
         % is the same as the transposed convolution.        
-        grad_in = obj.transconv2d(grad_out,'sparseIdx',obj.W,[]);
+        grad_in = obj.transconv2d(grad_out,options,'sparseIdx',obj.W,[]);
     end
 
-    function [gl, gu] = backpropIntervalBatch(obj, l, u, gl, gu, options)
-        % See (Gowal et al. 2019)
-        mu = (u + l)/2;
-        r = (u - l)/2;
+    function [gl, gu] = backpropIntervalBatch(obj, l, u, gl, gu, options, updateWeights)
+        if updateWeights
+            % See (Gowal et al. 2019)
+            mu = (u + l)/2;
+            r = (u - l)/2;
+    
+            % Compute weight update.
+            dWmu = convForWeigthsUpdate(obj,gu + gl,mu,options);
+            dWr = convForWeigthsUpdate(obj,gu - gl,r,options) .* sign(obj.W);
+    
+            % Compute size of gradient.
+            [out_h,out_w,out_c] = obj.aux_computeOutputSize();
+            [~,batchSize] = size(l);
+    
+            % Compute bias update.
+            db = squeeze(sum(reshape(gl,[out_h out_w out_c batchSize]),[1 2 4]));
 
-        % Compute weight update.
-        dWmu = convForWeigthsUpdate(obj,gu + gl,mu);
-        dWr = convForWeigthsUpdate(obj,gu - gl,r) .* sign(obj.W);
-
-        % Compute size of gradient.
-        [out_h,out_w,out_c] = obj.aux_computeOutputSize();
-        [~,batchSize] = size(l);
-
-        % Compute bias update.
-        db = squeeze(sum(reshape(gl,[out_h out_w out_c batchSize]),[1 2 4]));
-
-        % Update weights and bias.
-        updateGrad(obj, 'W', dWmu + dWr, options);
-        updateGrad(obj, 'b', db, options);
+            % Update weights and bias.
+            updateGrad(obj, 'W', dWmu + dWr, options);
+            updateGrad(obj, 'b', db, options);
+        end
 
         % Use transposed convolutions to backprop gradients.
-        dmu = obj.transconv2d((gu + gl)/2,'sparseIdx',obj.W,[]);
-        dr = obj.transconv2d((gu - gl)/2,'sparseIdx',abs(obj.W),[]) ;
+        dmu = obj.transconv2d((gu + gl)/2,options,'sparseIdx',obj.W,[]);
+        dr = obj.transconv2d((gu - gl)/2,options,'sparseIdx',abs(obj.W),[]) ;
         gl = dmu - dr;
         gu = dmu + dr;
     end
 
-    function [gc, gG] = backpropZonotopeBatch(obj, c, G, gc, gG, options)
+    function [gc, gG] = backpropZonotopeBatch(obj, c, G, gc, gG, options, updateWeights)
         in_h = obj.inputSize(1);
         in_w = obj.inputSize(2);
         in_c = obj.inputSize(3);
@@ -294,73 +298,55 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
             % Extract gradient for the bounds.
             gl = reshape(gc(:,1,:),[nGrad batchSize]);
             gu = reshape(gc(:,2,:),[nGrad batchSize]);
-            [gl, gu] = backpropIntervalBatch(obj, cl, cu, gl, gu, options);
-            gc = permute(cat(3,gl,gu),[1 3 2]);
-            % % c = zeros(size(c.inf),'like',c.inf);
-            % % gc = zeros(size(gc.inf),'like',gc.inf);
-            % 
-            % % Only using options.nn.train.zonotope_weight_update = 'sum'
-            % % We move the generators to the batch. This is in order to do a
-            % % convolution of the input with the outgoing gradient.
-            % inputLin = reshape(G,nIn,[]);
-            % inputLinPerm = reshape(permute(reshape(inputLin, ...
-            %     [in_h in_w in_c q*batchSize]),[1 2 4 3]),[],in_c);
-            % % Similarly, we move the generator of the outgoing gradient to the
-            % % batch as well.
-            % gradOutPermImg = permute(reshape(...
-            %     reshape(gG,nGrad,[]),...
-            %         [out_h out_w out_c q*batchSize]),[1 2 4 3]);
-            % % To compute the weight update, the input is convolved with the
-            % % outgoing gradient.
-            % dW = obj.conv2d(inputLinPerm,'dWSparseIdx',gradOutPermImg,[],...
-            %     [in_h in_w q*batchSize],obj.dilation,obj.padding,obj.stride);
-            % [f_h, f_w] = obj.aux_getFilterSize();
-            % weightsUpdate = permute(reshape(dW,[f_h f_w out_c in_c] + [crop 0 0]),[1 2 4 3]);
-            % weightsUpdate = weightsUpdate(1:end-crop(1),1:end-crop(2),:,:);
-            % % weightsUpdate = permute(reshape(dW,[f_h f_w out_c in_c]),[1 2 4 3]);
-            % 
-            % % % compute outer product of gradient and input zonotope
-            % % genIds = obj.backprop.store.genIds;
-            % % centerTerm = gc * c';
-            % % gensTerm = 1/3*sum(pagemtimes(gG(:,genIds,:),'none', ...
-            % %     G(:,genIds,:),'transpose'),3);
-            % % 
-            % % dW = reshape(accumarray( ...
-            % %     reshape(obj.backprop.store.('sparseIdx'),[],1), ...
-            % %     reshape(centerTerm + gensTerm,[],1)),[1 + f_h*f_w in_c out_c]);
-            % % weightsUpdate = reshape(dW(2:end,:,:),[f_h f_w in_c out_c] + [crop 0 0]);
-            % % weightsUpdate = weightsUpdate(1:end-crop(1),1:end-crop(2),:,:);
-            % 
-            % updateGrad(obj, 'W', weightsUpdate, options);
-            % 
-            % % The backproped gradient is computed by (full) convolving the 
-            % % outgoing gradient with the filters rotated by 180 degrees, which 
-            % % is the same as the transposed convolution.  
-            c0 = zeros([nGrad batchSize],'like',gG);  
-            [~,gG] = obj.transconv2dZonotope(c0,gG,'sparseIdx',obj.W,[]);
+
+            % Backprop center interval; the bias update is handled is done
+            % in backpropIntervalBatch.
+            [gl_, gu_] = backpropIntervalBatch(obj, cl, cu, gl, gu, options, updateWeights);
+            gc_ = permute(cat(3,gl_,gu_),[1 3 2]);
+
+            % The backproped gradient is computed by (full) convolving the 
+            % outgoing gradient with the filters rotated by 180 degrees, which 
+            % is the same as the transposed convolution.    
+            [~,gG_] = obj.transconv2dZonotope(gl,gG,options,'sparseIdx',obj.W,[]);
         else
+            if updateWeights
+                % Compute bias update.
+                biasUpdate = squeeze(sum(reshape(gc, ...
+                    [out_h out_w out_c batchSize]),[1 2 4]));
+                updateGrad(obj, 'b', biasUpdate, options);
+            end
+            % Backprop the center.
+            gc_ = backpropNumeric(obj, c, gc, options, updateWeights);
+
+            % The backproped gradient is computed by (full) convolving the 
+            % outgoing gradient with the filters rotated by 180 degrees, which 
+            % is the same as the transposed convolution.    
+            [~,gG_] = obj.transconv2dZonotope(gc,gG,options,'sparseIdx',obj.W,[]);
+        end
+
+        if updateWeights
             % Only using options.nn.train.zonotope_weight_update = 'sum'
             % We move the generators to the batch. This is in order to do a
             % convolution of the input with the outgoing gradient.
-            inputLin = reshape(cat(2,permute(c,[1 3 2]),G),nIn,[]); % 1/3*
-            inputLinPerm = reshape(permute(reshape(inputLin, ...
-                [in_h in_w in_c (q+1)*batchSize]),[1 2 4 3]),[],in_c);
+            inputLinPerm = reshape(permute(reshape(G, ...
+                [in_h in_w in_c q*batchSize]),[1 2 4 3]),[],in_c);
             % Similarly, we move the generator of the outgoing gradient to the
             % batch as well.
-            gradOutPermImg = permute(reshape(...
-                reshape(cat(2,permute(gc,[1 3 2]),gG),nGrad,[]),...
-                    [out_h out_w out_c (q+1)*batchSize]),[1 2 4 3]);
+            gradOutPermImg = permute(reshape(gG,...
+                    [out_h out_w out_c q*batchSize]),[1 2 4 3]);
             % To compute the weight update, the input is convolved with the
             % outgoing gradient.
-            dW = obj.conv2d(inputLinPerm,'dWSparseIdx',gradOutPermImg,[],...
-                [in_h in_w (q+1)*batchSize],obj.dilation,obj.padding,obj.stride);
+            dW = obj.conv2d(inputLinPerm,options,'dWSparseIdx', ...
+                gradOutPermImg,[],[in_h in_w q*batchSize], ...
+                obj.dilation,obj.padding,obj.stride);
             [f_h, f_w] = obj.aux_getFilterSize();
-            weightsUpdate = permute(reshape(dW,[f_h f_w out_c in_c] + [crop 0 0]),[1 2 4 3]);
+            weightsUpdate = permute(reshape(dW,[f_h f_w out_c in_c] ...
+                + [crop 0 0]),[1 2 4 3]);
             weightsUpdate = weightsUpdate(1:end-crop(1),1:end-crop(2),:,:);
             % weightsUpdate = permute(reshape(dW,[f_h f_w out_c in_c]),[1 2 4 3]);
     
             % % compute outer product of gradient and input zonotope
-            % genIds = obj.backprop.store.genIds;
+            % genIds = obj.genIds;
             % centerTerm = gc * c';
             % gensTerm = 1/3*sum(pagemtimes(gG(:,genIds,:),'none', ...
             %     G(:,genIds,:),'transpose'),3);
@@ -370,19 +356,13 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
             %     reshape(centerTerm + gensTerm,[],1)),[1 + f_h*f_w in_c out_c]);
             % weightsUpdate = reshape(dW(2:end,:,:),[f_h f_w in_c out_c] + [crop 0 0]);
             % weightsUpdate = weightsUpdate(1:end-crop(1),1:end-crop(2),:,:);
-    
-            % Compute bias update.
-            biasUpdate = squeeze(sum(reshape(gc, ...
-                [out_h out_w out_c batchSize]),[1 2 4]));
-            
+        
             updateGrad(obj, 'W', weightsUpdate, options);
-            updateGrad(obj, 'b', biasUpdate, options);
-    
-            % The backproped gradient is computed by (full) convolving the 
-            % outgoing gradient with the filters rotated by 180 degrees, which 
-            % is the same as the transposed convolution.    
-            [gc,gG] = obj.transconv2dZonotope(gc,gG,'sparseIdx',obj.W,[]);
         end
+        
+        % Set incoming center gradient.
+        gc = gc_;
+        gG = gG_;
     end
 end
 
@@ -401,54 +381,55 @@ methods
         layer = nnLinearLayer(Wff, bias, sprintf("%s_linear", obj.name));
     end
 
-    function names = getLearnableParamNames(obj)
-        % list of learnable properties
+    function names = getParamNames(obj)
+        % List parameters.
         names = {'W', 'b'};
     end
 end
 
 methods (Access = protected)
 
-    function [r,Wff] = conv2d(obj,input,varargin)
+    function [r,Wff] = conv2d(obj,input,options,varargin)
         [store, Filter, b, inImgSize, stride, padding, dilation] = ...
             setDefaultValues({'', obj.W, obj.b, obj.inputSize, ...
                 obj.stride, obj.padding, obj.dilation}, varargin);
-
-        [~,batchSize] = size(input);
-
-        % padding [left,top,right,bottom]
-        pad_l = padding(1);
-        pad_t = padding(2);
-        pad_r = padding(3);
-        pad_b = padding(4);
-
-        inputImg = dlarray(reshape(input,[inImgSize batchSize]),'SSCB');
-        if isempty(b)
-            b = 0;
+        
+        if options.nn.use_dlconv
+            [~,batchSize] = size(input);
+    
+            % padding [left,top,right,bottom]
+            pad_l = padding(1);
+            pad_t = padding(2);
+            pad_r = padding(3);
+            pad_b = padding(4);
+    
+            inputImg = dlarray(reshape(input,[inImgSize batchSize]),'SSCB');
+            if isempty(b)
+                b = 0;
+            end
+            rImg = dlconv(inputImg,Filter,b, ...
+                Stride=stride,DilationFactor=dilation,...
+                    Padding=[pad_t pad_l; pad_b pad_r]);
+            r = reshape(extractdata(rImg),[],batchSize);
+    
+            Wff = [];
+        else
+            % compute weight and bias
+            bias = obj.aux_getPaddedBias(varargin{:});
+    
+            if length(varargin) >= 3
+                varargin = varargin([1:2,4:end]);
+            end
+    
+            % compute weight matrix
+            Wff = obj.aux_conv2Mat(varargin{:});
+            r = Wff * input + bias;
+            % r = Wff * sparse(double(input));
+            % r = single(full(r)) + bias;
         end
-        rImg = dlconv(inputImg,Filter,b, ...
-            Stride=stride,DilationFactor=dilation,...
-                Padding=[pad_t pad_l; pad_b pad_r]);
-        r = reshape(extractdata(rImg),[],batchSize);
-
-        Wff = [];
-
-        % % compute weight and bias
-        % bias = obj.aux_getPaddedBias(varargin{:});
-        % 
-        % if length(varargin) >= 3
-        %     varargin = varargin([1:2,4:end]);
-        % end
-        % 
-        % % compute weight matrix
-        % Wff = obj.aux_conv2Mat(varargin{:});
-        % r = Wff * input + bias;
-        % % r = Wff * sparse(double(input));
-        % % r = single(full(r)) + bias;
-
     end
 
-    function [c,G,Wff] = conv2dZonotope(obj,c,G,varargin)
+    function [c,G,Wff] = conv2dZonotope(obj,c,G,options,varargin)
         [store, Filter, b, inImgSize, stride, padding, dilation] = ...
             setDefaultValues({'', obj.W, obj.b, obj.inputSize, ...
                 obj.stride, obj.padding, obj.dilation}, varargin);
@@ -457,91 +438,81 @@ methods (Access = protected)
         [n,q,batchSize] = size(G);
         inputLin = reshape(cat(2,permute(c,[1 3 2]),G),n,(q+1)*batchSize);
 
-        [rLin,Wff] = obj.conv2d(inputLin,varargin{:});
+        [rLin,Wff] = obj.conv2d(inputLin,options,store,Filter,[],inImgSize, ...
+            stride,padding,dilation);
         r = reshape(rLin,[],q+1,batchSize);
 
-        c = reshape(r(:,1,:),[size(r,1) batchSize]);
-        G = r(:,2:end,:);
+        % Compute bias vector.
+        bias = obj.aux_getPaddedBias(varargin{:});
 
-        % % compute weight and bias
-        % bias = obj.aux_getPaddedBias(varargin{:});
-        % 
-        % if length(varargin) >= 3
-        %     varargin = varargin([1:2,4:end]);
-        % end
-        % 
-        % % compute weight matrix
-        % Wff = obj.aux_conv2Mat(varargin{:});
-        % c = Wff*c + bias;
-        % G = pagemtimes(Wff,G);
+        c = reshape(r(:,1,:),[size(r,1) batchSize]) + bias;
+        G = r(:,2:end,:);
     end
 
-    function r = transconv2d(obj,input,varargin)
+    function r = transconv2d(obj,input,options,varargin)
         [store, Filter, b, inImgSize, stride, padding, dilation] = ...
             setDefaultValues({'', obj.W, obj.b, obj.inputSize, ... 
                 obj.stride, obj.padding, obj.dilation}, varargin);
 
-        [~,batchSize] = size(input);
-
-        % padding [left,top,right,bottom]
-        pad_l = padding(1);
-        pad_t = padding(2);
-        pad_r = padding(3);
-        pad_b = padding(4);
-
-        % Compute size of gradient.
-        [out_h,out_w,out_c] = obj.aux_computeOutputSize(Filter,inImgSize,stride,...
-            padding, dilation);
-
-        inputImg = dlarray(reshape(input,[out_h out_w out_c batchSize]),'SSCB');
-        if isempty(b)
-            b = 0;
+        if options.nn.use_dlconv
+            [~,batchSize] = size(input);
+    
+            % padding [left,top,right,bottom]
+            pad_l = padding(1);
+            pad_t = padding(2);
+            pad_r = padding(3);
+            pad_b = padding(4);
+    
+            % Compute size of gradient.
+            [out_h,out_w,out_c] = obj.aux_computeOutputSize(Filter,inImgSize,stride,...
+                padding, dilation);
+    
+            inputImg = dlarray(reshape(input,[out_h out_w out_c batchSize]),'SSCB');
+            if isempty(b)
+                b = 0;
+            end
+            rImg = dltranspconv(inputImg,Filter,b, ...
+                Stride=stride,DilationFactor=dilation,...
+                    Cropping=[pad_t pad_l; pad_b pad_r]);
+    
+            in_w = inImgSize(2);
+            in_c = inImgSize(3);
+            % compute cropped pixels and insert zeros bottom and right
+            crop = obj.computeCrop();
+            rImg = [rImg zeros([size(rImg,1) crop(2) in_c batchSize],'like',rImg);
+                zeros([crop(1) in_w in_c batchSize],'like',rImg)];
+            r = reshape(extractdata(rImg),[],batchSize);
+        else
+            if length(varargin) >= 3
+                varargin = varargin([1,4:end]);
+            end
+    
+            % compute weight matrix
+            Wfft = obj.aux_conv2Mat(varargin{:})';
+            r = Wfft * input;
+            % r = Wfft * sparse(double(input));
+            % r = single(full(r)); % + bias;
         end
-        rImg = dltranspconv(inputImg,Filter,b, ...
-            Stride=stride,DilationFactor=dilation,...
-                Cropping=[pad_t pad_l; pad_b pad_r]);
 
-        in_w = inImgSize(2);
-        in_c = inImgSize(3);
-        % compute cropped pixels and insert zeros bottom and right
-        crop = obj.computeCrop();
-        rImg = [rImg zeros([size(rImg,1) crop(2) in_c batchSize],'like',rImg);
-            zeros([crop(1) in_w in_c batchSize],'like',rImg)];
-        r = reshape(extractdata(rImg),[],batchSize);
-
-        % if length(varargin) >= 3
-        %     varargin = varargin([1,4:end]);
-        % end
-        % 
-        % % compute weight matrix
-        % Wfft = obj.aux_conv2Mat(varargin{:})';
-        % r = Wfft * input;
-        % % r = Wfft * sparse(double(input));
-        % % r = single(full(r)); % + bias;
     end
 
-    function [c,G] = transconv2dZonotope(obj,c,G,varargin)
+    function [c,G] = transconv2dZonotope(obj,c,G,options,varargin)
         [store, Filter, b, inImgSize, stride, padding, dilation] = ...
             setDefaultValues({'', obj.inputSize, obj.W, obj.b, ...
                 obj.stride, obj.padding, obj.dilation}, varargin);
 
         % Put generators into batch and do regular convolution.
         [n,q,batchSize] = size(G);
-        inputLin = reshape(cat(2,permute(c,[1 3 2]),G),n,[]);
+        inputLin = reshape(cat(2,permute(c,[1 3 2]),G),n,(q+1)*batchSize);
 
-        rLin = obj.transconv2d(inputLin,varargin{:});
+        rLin = obj.transconv2d(inputLin,options,varargin{:});
         r = reshape(rLin,[],q+1,batchSize);
 
-        c = squeeze(r(:,1,:));
-        G = r(:,2:end,:);
+        % Compute bias vector.
+        bias = 0; % obj.aux_getPaddedBias(varargin{:});
 
-        % if length(varargin) >= 3
-        %     varargin = varargin([1,4:end]);
-        % end
-        % 
-        % Wfft = obj.aux_conv2Mat(varargin{:})';
-        % c = Wfft*c;
-        % G = pagemtimes(Wfft,G);
+        c = reshape(r(:,1,:),[size(r,1) batchSize]) + bias;
+        G = r(:,2:end,:);
     end
 
     function crop = computeCrop(obj)
@@ -565,7 +536,7 @@ methods (Access = protected)
             - ([out_h out_w] - 1).*obj.stride;
     end
 
-    function dW = convForWeigthsUpdate(obj,grad_out,input)
+    function dW = convForWeigthsUpdate(obj,grad_out,input,options)
         [~,batchSize] = size(input);
         in_h = obj.inputSize(1);
         in_w = obj.inputSize(2);
@@ -603,8 +574,8 @@ methods (Access = protected)
         gradOutPermImg = permute(reshape(grad_out, ...
             [out_h out_w out_c batchSize]),[1 2 4 3]);
         % Compute weight update.
-        dW = obj.conv2d(inputPerm,'dWSparseIdx',gradOutPermImg,[],...
-            [in_h in_w batchSize],obj.dilation,obj.padding,obj.stride);
+        dW = obj.conv2d(inputPerm,options,'dWSparseIdx',gradOutPermImg, ...
+            [],[in_h in_w batchSize],obj.dilation,obj.padding,obj.stride);
         % Reshape and crop to size.
         [f_h, f_w] = obj.aux_getFilterSize();
         dW = permute(reshape(dW,[f_h f_w out_c in_c] + [crop 0 0]),[1 2 4 3]);
@@ -877,12 +848,6 @@ end
 
 
 % Auxiliary functions -----------------------------------------------------
-
-function [W, b, padding, stride, dilation, name] = aux_parseInputArgs(varargin)
-    % validate input
-    [W, b, padding, stride, dilation, name] = setDefaultValues( ...
-        {1, 0, [0 0 0 0], [1 1], [1 1], []}, varargin);
-end
 
 function aux_checkInputArgs(W, b, padding, stride, dilation, name)
     % check input types

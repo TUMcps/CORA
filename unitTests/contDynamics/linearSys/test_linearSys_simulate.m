@@ -147,6 +147,9 @@ for j = 1:length(list)
     params.w = w_sys;
     params.v = v_sys;
     simulate(sys,params);
+    [t,x,ind,y] = simulate(sys,params);
+    assert(size(t,2) == size(x,2))
+    assert(size(t,2) == size(y,2))
     params = rmfield(params,'u');
     params = rmfield(params,'w');
     params = rmfield(params,'v');

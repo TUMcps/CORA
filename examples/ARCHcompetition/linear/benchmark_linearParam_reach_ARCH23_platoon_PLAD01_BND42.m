@@ -126,7 +126,7 @@ simOpt.fracInpVert = 1;
 
 % initial points
 points = cell(runs,1);
-simRes = cell(4*runs,1);
+traj(2*2*length(points),1) = trajectory();
 
 for i = 1:runs
     points{i} = randPoint(R0); 
@@ -148,8 +148,8 @@ for i = 1:2
     for j = 1:length(points)
         params.R0 = zonotope(points{j});
         temp = simulateRandom(linSys_c, params, simOpt);
-        points{j} = temp.x{1}(end,:)';
-        simRes{counter} = temp;
+        points{j} = temp.x(:,end);
+        traj(counter) = temp;
         counter = counter + 1;
     end
     
@@ -161,8 +161,8 @@ for i = 1:2
     for j = 1:length(points)
         params.R0 = zonotope(points{j});
         temp = simulateRandom(linSys_n, params, simOpt);
-        points{j} = temp.x{1}(end,:)';
-        simRes{counter} = temp;
+        points{j} = temp.x(:,end);
+        traj(counter) = temp;
         counter = counter + 1;
     end
 end
@@ -192,10 +192,8 @@ for i = 1:size(R,1)
 end
 
 % plot simulation results
-for i = 1:length(simRes)
-    for j = 1:length(simRes{i}.t)
-        plot(simRes{i}.t{j},simRes{i}.x{j}(:,1),'Color',CORAcolor("CORA:simulations"));
-    end
+for i = 1:length(traj)
+    plot(traj(i).t,traj(i).x(1,:),'Color',CORAcolor("CORA:simulations"));
 end
 
 xlabel('t');

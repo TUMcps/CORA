@@ -131,16 +131,30 @@ methods
     % update system dynamics for the new augmented input [u; w] where w is
     % the process noise acting on all states 
     function syslinDT = augment_u_with_w(syslinDT)
-        syslinDT = linearSysDT(syslinDT.name,syslinDT.A, [syslinDT.B eye(syslinDT.nrOfDims)], [], ...
-            syslinDT.C, [syslinDT.D, zeros(syslinDT.nrOfOutputs, syslinDT.nrOfDims)], syslinDT.dt);
+        if ~isempty(syslinDT.E)
+            E = syslinDT.E;
+        else
+            E = eye(syslinDT.nrOfDims);
+        end
+        syslinDT = linearSysDT(syslinDT.name,syslinDT.A, [syslinDT.B E], [], ...
+            syslinDT.C, [syslinDT.D, zeros(syslinDT.nrOfOutputs, size(E,2))], [],[],syslinDT.F, syslinDT.dt);
     end
 
     % update system dynamics for the new augmented input [u; v] where v is
     % the measurement noise acting on all outputs 
     function syslinDT = augment_u_with_v(syslinDT)
-        syslinDT = linearSysDT(syslinDT.A, [syslinDT.B zeros(syslinDT.nrOfDims, syslinDT.nrOfOutputs)], [], ...
-            syslinDT.C, [syslinDT.D, eye(syslinDT.nrOfOutputs)], syslinDT.dt);
+        if ~isempty(syslinDT.E)
+            F = syslinDT.F;
+        else
+            F = eye(syslinDT.nrOfOutputs);
+        end
+        syslinDT = linearSysDT(syslinDT.A, [syslinDT.B zeros(syslinDT.nrOfDims, size(F,2))], [], ...
+            syslinDT.C, [syslinDT.D, F], [], syslinDT.E, [], syslinDT.dt);
     end
+end
+
+methods (Static = true)
+    linsys = identify(varargin)       % identifies linear system from data
 end
 
 methods (Access = protected)

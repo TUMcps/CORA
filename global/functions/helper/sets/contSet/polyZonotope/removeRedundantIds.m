@@ -32,7 +32,7 @@ function [E_unique,id_unique] = removeRedundantIds(E,id)
 
     % check if exponent matrix is empty
     if isempty(E)
-        E_unique = [];
+        E_unique = zeros(numel(id_unique),0);
         return;
     end
     

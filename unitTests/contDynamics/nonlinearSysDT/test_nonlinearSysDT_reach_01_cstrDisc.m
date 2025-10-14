@@ -60,11 +60,11 @@ R = reach(sysDisc,params,options);
 simOpt.points = 50;
 simOpt.nrConstInp = 1;
 
-simRes = simulateRandom(sysDisc, params, simOpt);
+traj = simulateRandom(sysDisc, params, simOpt);
 
 
 % Verification ------------------------------------------------------------
 
-assert(contains(R,simRes));
+assert(contains(R,traj));
 
 % ------------------------------ END OF CODE ------------------------------

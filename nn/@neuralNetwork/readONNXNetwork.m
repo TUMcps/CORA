@@ -25,12 +25,13 @@ function obj = readONNXNetwork(file_path, varargin)
 %
 % See also: -
 
-% Authors:       Tobias Ladner
+% Authors:       Tobias Ladner, Lukas Koller
 % Written:       30-March-2022
 % Last update:   07-June-2022 (specify in- & outputDataFormats)
 %                30-November-2022 (removed neuralNetworkOld)
 %                13-February-2023 (simplified function)
 %                21-October-2024 (clean up DLT function call)
+%                25-June-2025 (LK, use digraph for parsing composite layers)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -58,7 +59,7 @@ end
 
 % try to read ONNX network using dltoolbox
 try
-    dltoolbox_net = aux_readONNXviaDLT(file_path,inputDataFormats,outputDataFormats,targetNetwork);
+    dlt_net = aux_readONNXviaDLT(file_path,inputDataFormats,outputDataFormats,targetNetwork);
 
 catch ME
     if strcmp(ME.identifier, 'MATLAB:javachk:thisFeatureNotAvailable') && ...
@@ -70,7 +71,7 @@ catch ME
         aux_removeIndentCodeLines(ME);
 
         % re-read network
-        dltoolbox_net = aux_readONNXviaDLT(file_path,inputDataFormats,outputDataFormats,targetNetwork);
+        dlt_net = aux_readONNXviaDLT(file_path,inputDataFormats,outputDataFormats,targetNetwork);
 
     else
         rethrow(ME)
@@ -80,22 +81,21 @@ end
 if containsCompositeLayers
     % Combine multiple layers into blocks to realize residual connections and
     % parallel computing paths.
-    layers = aux_groupCompositeLayers(dltoolbox_net.Layers,dltoolbox_net.Connections);
+    layers = aux_groupCompositeLayers(dlt_net.Layers,dlt_net.Connections);
 else
-    layers = num2cell(dltoolbox_net.Layers);
+    layers = num2cell(dlt_net.Layers);
 end
 
 % convert DLT network to CORA network
-% obj = neuralNetwork.convertDLToolboxNetwork(dltoolbox_net.Layers, verbose);
+% obj = neuralNetwork.convertDLToolboxNetwork(dlt_net.Layers, verbose);
 obj = neuralNetwork.convertDLToolboxNetwork(layers, verbose);
-
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function dltoolbox_net = aux_readONNXviaDLT(file_path,inputDataFormats,outputDataFormats,targetNetwork)
+function dlt_net = aux_readONNXviaDLT(file_path,inputDataFormats,outputDataFormats,targetNetwork)
     % read ONNX network via DLT
 
     % build name-value pairs
@@ -124,9 +124,9 @@ function dltoolbox_net = aux_readONNXviaDLT(file_path,inputDataFormats,outputDat
     % load network
     if isMATLABReleaseOlderThan('R2023b')
         % legacy
-        dltoolbox_net = importONNXNetwork(file_path, NVpairs{:}, 'TargetNetwork', targetNetwork);
+        dlt_net = importONNXNetwork(file_path, NVpairs{:}, 'TargetNetwork', targetNetwork);
     else
-        dltoolbox_net = importNetworkFromONNX(file_path, NVpairs{:});
+        dlt_net = importNetworkFromONNX(file_path, NVpairs{:});
     end
 end
 
@@ -160,82 +160,147 @@ function aux_removeIndentCodeLines(ME)
 end
 
 function layers = aux_groupCompositeLayers(layerslist, connections)
-    % Find initial layer.
-    layer0 = aux_findLayerByName(layerslist,connections(1,:).Source{1});
-    layers = {layer0};
-    for i=1:height(connections)
-        % Find source and destination layer.
-        % layerSrc = aux_findLayerByName(layerslist,connections(i,:).Source{1});
-        layerDest = aux_findLayerByName(layerslist,connections(i,:).Destination{1});
-        % Check if the next layer aggreates multiple paths.
-        isAggrLayer = ~strcmp(layerDest.Name,connections(i,:).Destination{1});
-        % Find source layer within the current list of layers.
-        for j=length(layers):-1:1 % Speed up computations by searching from the back.
-            % Obtain paths from the j-th step.
-            layerj = layers{j};
-            if iscell(layerj)
-                % Iterate over the current paths to try and find the source.
-                for k=1:length(layerj)
-                    % Extract layer from the j-th step and k-th path.
-                    layerjk = layerj{k};
-                    for l=length(layerjk):-1:1
-                        if strcmp(layerjk(l).Name,connections(i,:).Source{1})
-                            % Append in computation path.
-                            if isAggrLayer
-                                % Add at the end.
-                                layers{j+1} = layerDest;
-                            else
-                                layers{j}{k} = [layerjk layerDest];
-                            end
-                            break;
-                        end
-                    end
-                end
-            else
-                % Compare the names.
-                if strcmp(layerj.Name,connections(i,:).Source{1})
-                    % Found source layer; append the destination.
-                    if j+1 > length(layers)
-                        % Add at the end.
-                        layers{j+1} = layerDest;
-                    else
-                        if isAggrLayer
-                            % There is a residual connection.
-                            layers{j+1} = {layers{j+1}; []};
-                            layers{j+2} = layerDest;
-                        else
-                            % There is a new computation path.
-                            layers{j+1} = {layers{j+1}; layerDest};
-                        end
-                    end
-                    break;
-                elseif startsWith(layerj.Name,connections(i,:).Source{1})
-                    % Combine computation paths.
-                    % TODO
-                    break;
-                end
-            end
-            
-            % if iscell(layerj)
-            %     % For now we do not supported nested residual connections.
-            %     continue;
-            % end
-        end
-    end    
+    % We use a digraph as a utility to convert the table of connections to
+    % a nested cell array.
+
+    % Build weights; we encode the order of inputs through weights in the
+    % digraph.
+    ts = regexp(connections.Destination, '/in(\d+)', 'tokens');
+    weights = ones(length(ts), 1);
+    % Logical index for non-empty tokens
+    nonEmptyIdx = ~cellfun(@isempty, ts);
+    weights(nonEmptyIdx) = cellfun(@(x) str2double(x{1}{1}), ts(nonEmptyIdx));
+
+    % Strip the names. 
+    srcs = cellfun(@(src) cell2mat(src), ...
+        regexp(connections.Source,'^[^/]+','match'), ...
+            'UniformOutput',false);
+    dests = cellfun(@(dest) cell2mat(dest), ...
+        regexp(connections.Destination,'^[^/]+','match'), ...
+            'UniformOutput',false);
+
+    % Convert to digraph.
+    nodesTable = table({layerslist.Name}','VariableNames', {'Name'});
+    G = digraph(srcs,dests,weights,nodesTable);
+        
+    % Sort the nodes topologically to find the final node.
+    N = toposort(G);
+    % Find the final node.
+    nK = N(end);
+
+    % % Visualization for debugging.
+    % figure; 
+    % plot(G,'EdgeLabel', G.Edges.Weight, ...
+    %     'NodeLabel', cellfun(@(name) findnode(G,name),G.Nodes.Name));
+
+    % Use a reverse depth-first traversal to construct a nested cell array.
+    [layers,~] = aux_buildNestedCellArray(num2cell(layerslist), ...
+        G,nK,[]);
 end
 
-function layer = aux_findLayerByName(layers, destName)
-    idx = regexp(destName,'/*','once');
-    if ~isempty(idx)
-        destName(idx:end) = [];
-    end
-    layer = [];
-    for i=1:length(layers)
-        % if startsWith(destName,layers(i).Name)
-        if strcmp(destName,layers(i).Name) ... || regexp(destName,[layers(i).Name '/*'])
-            layer = layers(i);
+function [layers,G,ni,currEdgeIdx] = aux_buildNestedCellArray(dltLayers,G, ...
+    nK,currEdgeIdx)
+    % We use a reverse depth-first traversal to construct a nested cell
+    % array. We have to reverse the traversal to avoid not creating nested 
+    % cells. 
+
+    % Initialize the cell array.
+    layers = {};
+    % Initialize with last node.
+    ni = nK;
+    % Count the number of loop iteration to prevent an infinite loop.
+    iter = 1;
+    % Traverse the graph and build the nested cell array.
+    while iter < height(G.Nodes)
+
+        if ~isempty(currEdgeIdx)
+            % Mark the current edge as visited by setting the weight to 0.
+            G.Edges.Weight(currEdgeIdx) = 0;
+            
+            % % Visualization for debugging.
+            % plot(G,'EdgeLabel', G.Edges.Weight, ...
+            %     'NodeLabel', cellfun(@(name) findnode(G,name),G.Nodes.Name));
+        end
+
+        % Obtain the successors.
+        outEdgeIdx = outedges(G,ni);
+
+        if length(outEdgeIdx) > 1 
+            % There are multiple computation paths starting at this node; 
+            % we reached a forking node.
+            if ~isempty(setdiff(outEdgeIdx,currEdgeIdx)) % any(G.Edges.Weight(outEdgeIdx) > 0)
+                % There are still outgoing computation paths that have 
+                % not been visited. We break out of the current 
+                % computation path.
+                break;
+            end
+        end
+
+        % Prepend the current layer.
+        layers = [dltLayers(ni) layers];
+
+        % Obtain all incoming edges.
+        inEdgeIdx = inedges(G,ni);
+
+        if isempty(inEdgeIdx)
+            % There are no incoming edges; we have reached the input node.
             break;
         end
+
+        if length(inEdgeIdx) > 1
+            % There are multiple computation paths merging in the current
+            % node. We have to construct the layer cell arrays for each
+            % computation path.
+            layersPreds = {};
+
+            % Find the weight of the edges, which encode the order 
+            % (required for concatenation).
+            ws = G.Edges.Weight(inEdgeIdx)';
+            % Sort the predecessors based on the edge weight.
+            [~,predIdx] = sort(ws,'ascend');
+
+            % Store edges of each computation path.
+            currEdgeIdx = [];
+
+            % Create a new computation path for each predecessor.
+            for j=predIdx
+                % Mark the edge as visited by setting the weight to 0.
+                G.Edges.Weight(inEdgeIdx(j)) = 0;
+                % Obtain the start of the j-th predecessor edge.
+                predj = findnode(G,G.Edges.EndNodes{inEdgeIdx(j),1});
+                % Check if the computation path is just a residual
+                % connection (has multiple outedges).
+                isResidualConn = length(outedges(G,predj)) > 1;
+                if isResidualConn
+                    % Prepend the empty cell for the j-th computation path.
+                    layersPreds = [layersPreds; {{}}];
+                    % Append the residual edge.
+                    currEdgeIdx = [currEdgeIdx inEdgeIdx(j)];
+                    % Update the current node.
+                    nij = predj;
+                else
+                    % Compute the layers of the j-th computation path.
+                    [layersj,G,nij,currEdgeIdxj] = ...
+                        aux_buildNestedCellArray(dltLayers,G,predj,[]);
+                    % Prepend the layers of the j-th computation path.
+                    layersPreds = [layersPreds; {layersj}];
+                    % Append final node.
+                    currEdgeIdx = [currEdgeIdx currEdgeIdxj];
+                end
+            end
+            % Traversed all computation paths; prepend the layers.
+            layers = [{layersPreds} layers];
+            % Update the current node.
+            ni = nij;
+        else
+            % There is only a single incoming edge; move to the only 
+            % predecessor.
+            currEdgeIdx = inEdgeIdx(1);
+            ni = findnode(G,G.Edges.EndNodes{inEdgeIdx(1),1});
+        end
+
+        % Increment iteration counter.
+        iter = iter + 1;
     end
 end
 

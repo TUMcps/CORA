@@ -3,12 +3,12 @@ classdef nnVisualizationLayer < nnLayer
 % a network.
 %
 % Syntax:
-%    obj = nnVisualizationLayer(id, neuronIds, name)
+%    obj = nnVisualizationLayer(id, visNeuronIds, name)
 %
 % Inputs:
 %    name - name of the layer, defaults to type
 %    id - identification number for layer
-%    neuronIds - (optional) array of ids of neurons to visualize; default: [1 2]
+%    visNeuronIds - (optional) array of ids of neurons to visualize; default: [1 2]
 %
 % Outputs:
 %    obj - generated object
@@ -31,7 +31,7 @@ properties (Constant)
 end
 
 properties
-    id, neuronIds,
+    id, visNeuronIds,
     % store function handles to plotting functions
     visualizeNeuronsPolyZonotope,
     visualizeNeuronsNumeric
@@ -39,7 +39,7 @@ end
 
 methods
     % constructor
-    function obj = nnVisualizationLayer(id, neuronIds, name)
+    function obj = nnVisualizationLayer(id, visNeuronIds, name)
         if nargin < 3
             name = [];
         end
@@ -47,12 +47,12 @@ methods
         obj@nnLayer(name)
 
         if nargin < 2
-            neuronIds = [1; 2];
+            visNeuronIds = [1; 2];
         end
 
         obj.name = name;
         obj.id = id;
-        obj.neuronIds = neuronIds;
+        obj.visNeuronIds = visNeuronIds;
         % set plotting function handles
         obj.visualizeNeuronsNumeric = @obj.visualizeNeuronsNumericDefault;
         obj.visualizeNeuronsPolyZonotope = @obj.visualizeNeuronsPolyZonotopeDefault;
@@ -92,8 +92,8 @@ methods
             f = figure(fid);
             hold on;
             title(obj.name, 'Interpreter', 'none')
-            xlabel(['Neuron ', num2str(obj.neuronIds(1))])
-            ylabel(['Neuron ', num2str(obj.neuronIds(2))])
+            xlabel(['Neuron ', num2str(obj.visNeuronIds(1))])
+            ylabel(['Neuron ', num2str(obj.visNeuronIds(2))])
             legend();
         else
             % return existing figure
@@ -120,13 +120,13 @@ methods (Access = {?nnLayer, ?neuralNetwork})
     % numeric 
     function input = evaluateNumeric(obj, input, options)
         % visualize neurons
-        obj.visualizeNeuronsNumeric(input(obj.neuronIds, :));
+        obj.visualizeNeuronsNumeric(input(obj.visNeuronIds, :));
     end
 
     % interval
     function input = evaluateInterval(obj, input, options)
         % visualize neurons
-        obj.visualizeSet(input(obj.neuronIds, :));
+        obj.visualizeSet(input(obj.visNeuronIds, :));
     end
 
     % sensitivity
@@ -138,7 +138,7 @@ methods (Access = {?nnLayer, ?neuralNetwork})
     function [c, G, GI, E, id, id_, ind, ind_] = evaluatePolyZonotope(obj, c, G, GI, E, id, id_, ind, ind_, options)
         % visualize neurons
         pZ = polyZonotope(c, G, GI, E, id);
-        pZ = project(pZ, obj.neuronIds);
+        pZ = project(pZ, obj.visNeuronIds);
         obj.visualizeSet(pZ);
     end
 end

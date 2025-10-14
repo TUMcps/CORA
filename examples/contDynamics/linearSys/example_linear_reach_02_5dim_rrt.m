@@ -67,7 +67,7 @@ simOpt.type = 'rrt';
 simOpt.R = R;
 
 % simulate using Rapidly Exploring Random Trees
-simRes = simulateRandom(fiveDimSys,params,simOpt);
+traj = simulateRandom(fiveDimSys,params,simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -89,7 +89,7 @@ for k = 1:length(dims)
     plot(R.R0,projDims,'DisplayName', 'Initial set');
     
     % plot simulation results
-    plot(simRes,projDims, 'DisplayName', 'Simulations');
+    plot(traj,projDims, 'DisplayName', 'Simulations');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);

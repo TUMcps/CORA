@@ -13,8 +13,8 @@ function newObj = subsref(matZ, S)
 %    newObj - matZonotope object 
 %
 % Example: 
-%    C = rand(3);
-%    G{1} = rand(3);
+%    C = [ -0.537 -1.980 0.849 ; 0.329 -1.867 0.405 ; 1.054 -1.832 -0.702 ];
+%    G{1} = [ 1.499 -1.019 -0.601 ; 0.138 -1.385 -1.172 ; -1.587 0.955 -0.577 ];
 %    matZ = matZonotope(C,G);
 %    matZ(1,2)
 %

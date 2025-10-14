@@ -21,6 +21,7 @@ function CORAwarning(identifier, varargin)
 % Authors:       Tobias Ladner
 % Written:       17-April-2024
 % Last update:   07-October-2024 (MW, add CORA:interface)
+%                17-September-2025 (TL, made call stack less verbose)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -30,7 +31,9 @@ narginchk(2,Inf);
 aux_checkIdentifier(identifier)
 
 % check if CORA warning should be shown (global/specific)
-if ~CORA_WARNINGS_ENABLED || ~CORA_WARNINGS_ENABLED(identifier)
+warnState = warning();
+if (strcmp(warnState(1).identifier,'all') && strcmp(warnState(1).state,'off')) ...
+    || ~CORA_WARNINGS_ENABLED || ~CORA_WARNINGS_ENABLED(identifier)
     % do not show warning
     return
 end
@@ -71,8 +74,24 @@ switch identifier
         desc = sprintf(desc,varargin{2:end});
 end
 
-% show warning (the \b's erase the default 'Warning:' text)
-warning('\b\b\b\b\b\b\b\b\b<strong>CORA warning:</strong> %s', desc);
+% show warning (do not use warning to avoid showing full stack trace all the time)
+
+% read out stacktrace
+stacktrace = evalc('dbstack');
+% remove CORAwarning line and split remaining lines
+stacktrace = split(stacktrace,newline);
+stacktrace = stacktrace(2:end);
+if numel(stacktrace) == 1 && isempty(stacktrace{1})
+    % directly running in command window does not have a stack trace
+    stacktrace{1} = 'Run from Command Window';
+end
+% join and escape full stack trace
+fullstack = strjoin(stacktrace,'\n ');
+fullstack = escapewarning(fullstack);
+
+% show warning
+fprintf('[\b<strong>CORA warning:</strong> %s\n %s (<a href="matlab:fprintf(descapewarning(''Full call stack:\\n %s\\n''))">show full call stack</a>).]\b\n', ...
+    desc, stacktrace{1}, fullstack)
 
 end
 

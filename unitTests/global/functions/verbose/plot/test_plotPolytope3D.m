@@ -25,6 +25,7 @@ function res = test_plotPolytope3D
 
 I = interval([-1; -2; 1], [3; 1; 4]);
 V = vertices(I);
+tol = 1e-12;
 
 try
     % test if plotting works ----------------------------------------------
@@ -49,69 +50,47 @@ try
     % plot vertices
     plotPolytope3D(V);
 
-    % check if all facets were plotted
+    % check if all facets were plotted in 1 handle
     children = allchild(ax);
-    assert(numel(children) == 6 + 1);% +1 due to nan
+    assert(numel(children) == 1);
 
     % check correct plotting of facets 
-    i = 1; % facet 1
-    V_facet = [ ...
-        -1.000, -1.000, -1.000, -1.000, -1.000; ...
-        -2.000, 1.000, 1.000, -2.000, -2.000; ...
-        1.000, 1.000, 4.000, 4.000, 1.000; ...
-        ];
-    assert(compareMatrices(V_facet, [children(i).XData; children(i).YData; children(i).ZData], 1e-4, 'equal', true));
-    i = 2; % facet 2
-    V_facet = [ ...
-        3.000, 3.000, 3.000, 3.000, 3.000; ...
-        -2.000, 1.000, 1.000, -2.000, -2.000; ...
-        1.000, 1.000, 4.000, 4.000, 1.000; ...
-        ];
-    assert(compareMatrices(V_facet, [children(i).XData; children(i).YData; children(i).ZData], 1e-4, 'equal', true));
-    i = 3; % facet 3
-    V_facet = [ ...
-        -1.000, 3.000, 3.000, -1.000, -1.000; ...
-        1.000, 1.000, 1.000, 1.000, 1.000; ...
-        1.000, 1.000, 4.000, 4.000, 1.000; ...
-        ];
-    assert(compareMatrices(V_facet, [children(i).XData; children(i).YData; children(i).ZData], 1e-4, 'equal', true));
-    i = 4; % facet 4
-    V_facet = [ ...
-        -1.000, 3.000, 3.000, -1.000, -1.000; ...
-        -2.000, -2.000, -2.000, -2.000, -2.000; ...
-        1.000, 1.000, 4.000, 4.000, 1.000; ...
-        ];
-    assert(compareMatrices(V_facet, [children(i).XData; children(i).YData; children(i).ZData], 1e-4, 'equal', true));
-    i = 5; % facet 4
-    V_facet = [ ...
-        -1.000, 3.000, 3.000, -1.000, -1.000; ...
-        -2.000, -2.000, 1.000, 1.000, -2.000; ...
-        4.000, 4.000, 4.000, 4.000, 4.000; ...
-        ];
-    assert(compareMatrices(V_facet, [children(i).XData; children(i).YData; children(i).ZData], 1e-4, 'equal', true));
-    i = 6; % facet 6
-    V_facet = [ ...
-        -1.000, 3.000, 3.000, -1.000, -1.000; ...
-        -2.000, -2.000, 1.000, 1.000, -2.000; ...
-        1.000, 1.000, 1.000, 1.000, 1.000; ...
-        ];
-    assert(compareMatrices(V_facet, [children(i).XData; children(i).YData; children(i).ZData], 1e-4, 'equal', true));
-    i = 7; % last child should be nan, used to delete previous plots as hold off
-    assert(all(isnan([children(i).XData; children(i).YData; children(i).ZData])));
-
+    V_facets = [ ...
+     -1, 3, 3, -1, -1, NaN, -1, 3, 3, -1, -1, NaN, -1, 3, 3, -1, -1, NaN, -1, 3, 3, -1, -1, NaN, 3, 3, 3, 3, 3, NaN, -1, -1, -1, -1, -1, NaN ; ...
+     -2, -2, 1, 1, -2, NaN, -2, -2, 1, 1, -2, NaN, -2, -2, -2, -2, -2, NaN, 1, 1, 1, 1, 1, NaN, -2, 1, 1, -2, -2, NaN, -2, 1, 1, -2, -2, NaN ; ...
+     1, 1, 1, 1, 1, NaN, 4, 4, 4, 4, 4, NaN, 1, 1, 4, 4, 1, NaN, 1, 1, 4, 4, 1, NaN, 1, 1, 4, 4, 1, NaN, 1, 1, 4, 4, 1, NaN ; ...
+     ];
+     % check points
+    assert(all(withinTol(V_facets, [ax.Children(1).XData;ax.Children(1).YData;ax.Children(1).ZData]) | isnan(V_facets),"all"));
+    
     % test color
     assert(isequal(colorOrder(1, :), ax.Children(1).Color));
 
     % replot and check if previous plot was deleted and color order is ok
     plotPolytope3D(V);
     children = allchild(ax);
-    assert(numel(children) == 6 + 1);% +1 due to nan
+    assert(numel(children) == 1);
     assert(isequal(colorOrder(1, :), ax.Children(1).Color));
 
     % check specified color
     plotPolytope3D(V, 'r');
-    assert(isequal([1, 0, 0], ax.Children(1).Color));
+    % test color
+    if CORA_PLOT_FILLED
+        assert(isequal([1, 0, 0], ax.Children(1).EdgeColor));
+        assert(isequal([1, 0, 0], ax.Children(1).FaceColor));
+    else
+        assert(isequal([1, 0, 0], ax.Children(1).Color));
+    end
 
+    % check face color
+    plotPolytope3D(V, 'FaceColor','r','FaceAlpha',0.1);
+    V_facets = { [ -1 3 3 -1 ; -2 -2 1 1 ; 1 1 1 1 ] [ -1 3 3 -1 ; -2 -2 1 1 ; 4 4 4 4 ] [ -1 3 3 -1 ; -2 -2 -2 -2 ; 1 1 4 4 ] [ -1 3 3 -1 ; 1 1 1 1 ; 1 1 4 4 ] [ 3 3 3 3 ; -2 1 1 -2 ; 1 1 4 4 ] [ -1 -1 -1 -1 ; -2 1 1 -2 ; 1 1 4 4 ] };
+    assert(isequal([1, 0, 0], ax.Children(1).FaceColor));
+    % check faces
+    children = allchild(ax);
+    V_facets_plotted = arrayfun(@(facet) [facet.XData'; facet.YData'; facet.ZData'], children(end:-1:1), 'UniformOutput', false)';
+    % when plotting with face color, it's not important to close the regions
+    assert(all(arrayfun(@(i) compareMatrices(V_facets{i},V_facets_plotted{i},tol,'subset'), 1:numel(V_facets))))
     close;
 
 catch ME

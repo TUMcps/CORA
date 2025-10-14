@@ -37,11 +37,11 @@ fk_vec = 1;
 fn_vec = 1; 
 p_vec = 1;
 if varying_param == "f_k"
-    fk_vec = 1:1000:4001;
+    fk_vec = 1:1000:2001;
 elseif varying_param == "f_n"
-    fn_vec = 1:500:2001;
+    fn_vec = 1:5:11;
 elseif varying_param == "p"
-    p_vec = 1:75:301;
+    p_vec = 1:75:151;
 end
 
 % time horizon
@@ -142,6 +142,8 @@ fontsize(gca,"scale", 1.1);
 fontname(gca,"times");
 axis = gca;
 axis.LineWidth = 1;
+
+% plot results
 plot(vec, cell2mat(T(1,2:end)), 'DisplayName', 'Proposition 3','LineWidth',1, ...
     'LineStyle', lines(1), 'Color', col(4,:), 'Marker', '*');
 plot(vec, cell2mat(T(2,2:end)), 'DisplayName', 'Theorem 2','LineWidth',1, ...
@@ -151,6 +153,8 @@ plot(vec, cell2mat(T(3,2:end)), 'DisplayName', 'Theorem 3','LineWidth',1.5, ...
 xlabel(varying_param);
 ylabel("Time [s]");
 lg = legend('Location', 'northwest');
+
+% save figure as pdf
 if ~(isempty(path_fig) || path_fig == "")
     exportgraphics(gca,path_fig+sprintf('compTimes_%s.pdf',varying_param),'ContentType','vector');
 end

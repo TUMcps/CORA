@@ -26,8 +26,8 @@ function updateColorIndex(oldColorIndex)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+ax = gca();
 if nargin < 1
-    ax = gca();
     oldColorIndex = ax.ColorOrderIndex;
 end
 
@@ -37,14 +37,14 @@ if ishold
         set(gca(), 'ColorOrderIndex', 1)
 
     else
+        % set new color index
+        newColorOrderIndex = mod(oldColorIndex, size(ax.ColorOrder,1))+1;
+        if newColorOrderIndex < 1
+            newColorOrderIndex = 1;
+        end
+
         % reset to old index
-        set(gca(), 'ColorOrderIndex', oldColorIndex)
-    
-        % update index with empty, invisible plot
-        han = plot(nan, nan);
-    
-        % delete invisble plot again
-        delete(han);
+        set(gca(), 'ColorOrderIndex', newColorOrderIndex)
     end
 else
     % for 'hold off', color index is always 2 after plotting anything

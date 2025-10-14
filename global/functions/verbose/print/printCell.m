@@ -76,8 +76,8 @@ for iRow=1:numRows
         elseif isa(value,'contDynamics')
             % always print compactly (as no longer one-liner)
             printSystem(fid,value,accuracy,true,false);
-        elseif isa(value,'simResult')
-            printSimResult(fid,value,accuracy,doCompact,false);
+        elseif isa(value,'trajectory')
+            printTrajectory(fid,value,accuracy,doCompact,false);
         else
             % print as string and hope for the best
             fprintf(fid,"%s",value);

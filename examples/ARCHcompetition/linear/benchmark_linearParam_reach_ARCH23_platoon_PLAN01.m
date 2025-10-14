@@ -131,7 +131,7 @@ params.tFinal = params.tFinal + tadd;
 simOpt.points = 10;
 
 % random simulation
-simRes = simulateRandom(linsys, params, simOpt);
+traj = simulateRandom(linsys, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -141,14 +141,14 @@ figure; hold on; box on;
 useCORAcolors('CORA:contDynamics');
 
 % plot reachable set over time (part 1)
-plotOverTime(R,1,'Unify',true);
+plotOverTime(R,1);
 
 RcontInvOverTime = cartProd(interval(params.tFinal-options.timeStep),...
     interval(project(RcontInv{i},1)));
 plot(RcontInvOverTime,1,'FaceColor',CORAcolor("CORA:reachSet"));
 
 % plot simulation results
-plotOverTime(simRes,1);
+plotOverTime(traj,1);
 % formatting
 xlabel('$t$','interpreter','latex');
 ylabel('$x_1$','interpreter','latex');

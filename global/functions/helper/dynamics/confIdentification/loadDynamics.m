@@ -73,12 +73,13 @@ switch dynamics
         dt = 0.01;
         sys = linearSysDT(A,B,[],C,D, dt);
 
-        % create uncertainty sets
+        % construct uncertainty sets
         dim_x = length(sys.A);
         dim_u = 2;
         dim_v = 2;
         switch type
-            case "rand" % ---
+            case "rand" 
+                % random uncertainty sets
                 c_R0 = [-0.76; -9.68; 0.21; -5.42];
                 c_U = [-0.16; -8.93];
                 c_V = [1.48; -7.06];
@@ -90,14 +91,16 @@ switch dynamics
                     -0.28   -0.11];
                 G_V = [-0.08    0.01
                     -0.00   -0.03];
-            case "diag" % ---
+            case "diag" 
+                % diagonal uncertainty sets
                 c_R0 = 0.1*[-0.76; -9.68; 0.21; -5.42];
                 c_U = 0.1*[-0.16; -8.93];
                 c_V = 0.1*[1.48; -7.06];
                 G_R0 = diag([0.22 0.13 0.10 0.06]);
                 G_U = diag([0.07 0.25]);
                 G_V = diag([0.08 0.01]);
-            case "standard" % ---
+            case "standard" 
+                % standard uncertainty sets
                 c_R0 = zeros(dim_x,1);
                 G_R0 = [];
                 c_U = 0.1+zeros(dim_u,1);
@@ -128,24 +131,27 @@ switch dynamics
         dt = 0.01;
         sys = linearARX(A, B, dt);
 
-        % create uncertainty sets
+        % construct uncertainty sets
         dim_x = 4;
         dim_u = 2;
         dim_v = 2;
         switch type
-            case "rand" % ---
+            case "rand" 
+                % random uncertainty sets
                 c_U = [-0.16; -8.93];
                 c_V = [1.48; -7.06];
                 G_U = [0.07   -0.25
                     -0.28   -0.11];
                 G_V = [-0.08    0.01
                     -0.00   -0.03];
-            case "diag" % ---
+            case "diag" 
+                % diagonal uncertainty sets
                 c_U = 0.1*[-0.16; -8.93];
                 c_V = 0.1*[1.48; -7.06];
                 G_U = diag([0.07 0.25]);
                 G_V = diag([0.08 0.01]);
-            case "standard" % ---
+            case "standard" 
+                % standard uncertainty sets
                 c_U = 0.1+zeros(dim_u,1);
                 G_U = 0.2*diag(ones(dim_u,1));
                 c_V =  -0.05+zeros(dim_v,1);
@@ -169,8 +175,10 @@ switch dynamics
         out_fun = @(x,u) x(1:dim_y);
         sys = nonlinearSysDT('lorenz', fun, dt, dim_x, dim_u, out_fun, dim_y);
 
+        % construct uncertainty sets
         switch type 
-            case "rand" % ---
+            case "rand" 
+                % random uncertainty sets
                 c_R0 = [6.01; 9.36; -3.73];
                 c_U = [7.56; -8.03; -1.57];
                 G_R0 = [-0.11   -0.11    0.04
@@ -179,12 +187,14 @@ switch dynamics
                 G_U = [0.06   -0.02    0.04
                     -0.04    0.08   -0.09
                     -0.07    0.20   -0.10];
-            case "diag" % ---
+            case "diag" 
+                % diagonal uncertainty sets
                 c_R0 = 0.1*[6.01; 9.36; -3.73];
                 c_U = 0.1*[7.56; -8.03; -1.57];
                 G_R0 = 0.03*diag([0.11   0.11    0.24]);
                 G_U = diag([0.06   -0.02    0.04]);
-            case "standard" % ---
+            case "standard" 
+                % standard uncertainty sets
                 c_U = [0.5;0.1;-0.2];
                 c_R0 = [2; -1; 4];
                 G_U =  diag([0.1;2;0.2]);
@@ -209,20 +219,24 @@ switch dynamics
         out_fun = @(x,u) x(1:dim_y);
         sys = nonlinearSysDT('lorenz', fun, dt, dim_x, dim_u, out_fun, dim_y);
 
+        % construct uncertainty sets
         switch type 
-            case "rand" % ---
+            case "rand" 
+                % random uncertainty sets
                 c_R0 = [6.01; 9.36];
                 c_U = [7.56; -8.03];
                 G_R0 = [-0.11   -0.11
                     -0.07    0.08];
                 G_U = [0.06   -0.02
                     -0.04    0.08];
-            case "diag" % ---
+            case "diag"
+                % diagonal uncertainty sets
                 c_R0 = 0.1*[6.01; 9.36];
                 c_U = 0.1*[7.56; -8.03];
                 G_R0 = 0.03*diag([0.11   0.11]);
                 G_U = diag([0.06   -0.02]);
-            case "standard" % ---
+            case "standard" 
+                % standard uncertainty sets
                 c_U = [0.5;0.1];
                 c_R0 = [2; -1];
                 G_U =  diag([0.1;2]);
@@ -248,19 +262,20 @@ switch dynamics
         p_dim = 2;
         sys = nonlinearARX(dynamics,f,dt,dim_y, dim_u, p_dim);
 
-        % initilization
+        % construct uncertainty sets
         R0 = zonotope(zeros(dim_y*p_dim,1));
-
-        % input
         switch type
-            case "rand" % ---
+            case "rand"
+                % random uncertainty sets
                 c_U = [-1.66; 4.41];
                 G_U = [-0.1   0.13
                     0.25   -0.09];
-            case "diag" % ---
+            case "diag" 
+                % diagonal uncertainty sets
                 c_U = 0.1*[-1.66; 4.41];
                 G_U = 0.7*diag([0.1   0.13]);
-            case "standard" % ---
+            case "standard" 
+                % standard uncertainty sets
                 c_U = [0;0.05];
                 G_U =  0.2*eye(2);
         end
@@ -281,19 +296,20 @@ switch dynamics
         p_dim = 1;
         sys = nonlinearARX(dynamics,f,dt,dim_y, dim_u, p_dim);
 
-        % initilization
+        % construct uncertainty sets
         R0 = zonotope(zeros(dim_y*p_dim,1));
-
-        % input
         switch type
-            case "rand" % ---
+            case "rand" 
+                % random uncertainty sets
                 c_U = [-1.66; 4.41];
                 G_U = [-0.1   0.13
                     0.25   -0.09];
-            case "diag" % ---
+            case "diag" 
+                % diagonal uncertainty sets
                 c_U = 0.1*[-1.66; 4.41];
                 G_U = 0.7*diag([0.1   0.13]);
-            case "standard" % ---
+            case "standard" 
+                % standard uncertainty sets
                 c_U = [0;0.05];
                 G_U =  0.2*eye(2);
         end
@@ -305,14 +321,16 @@ switch dynamics
         p_true = []; % no parameters defined
         fun = @(x,u) x + dt*DOTBicycleDynamics_SRX_velEq(x,u);
         dim_x = 6;
-        dim_u = 8;
-        out_fun = @(x,u) [x(4); x(5)] + [u(7); u(8)];
+        dim_u = 4;
+        out_fun = @(x,u) [x(4); x(5)] + [u(3); u(4)];
         dim_y = 2;
         sys = nonlinearSysDT('bicycle', fun, dt, dim_x, dim_u, out_fun, dim_y);
 
-        if nargin > 1 && type == "rand" % ---
+        % construct uncertainty sets
+        if nargin > 1 && type == "rand" 
+            % random uncertainty sets
             c_R0 = [1.86; 3.46; 3.97; 5.39; 4.19; 6.85];
-            c_W = [2.04; 8.78; 0.27; 6.70; 4.17; 5.59];
+            c_W = [2.04; 8.78];
             c_V = [-0.02; 0.06];
             G_R0 = 0.01*[1.78 -1.37  0.79  0.60 -1.17 -1.4800
                 1.77 -0.29  0.93 -0.54 -0.69  0.26
@@ -320,15 +338,16 @@ switch dynamics
                 -1.05  0.07  1.80  0.61 -1.48  0.20
                 -0.42  0.45  0.59 -1.04 -0.56  0.43
                 1.40 -0.32 -0.64 -0.35 -0.03 -1.27];
-            G_W = 0.01*diag([0.55 0.17 -0.19 0.58 -0.85 0.81]);
-            G_W(1,2) = 0.2; G_W(2,5) = 1; G_W(6,1) = -0.5;
+            G_W = 0.01*diag([0.55 0.17]);
+            G_W(1,2) = 0.2; 
             G_V = 0.002*eye(dim_y);
-        else % ---
+        else 
+            % diagonal or standard uncertainty sets
             c_R0 = [1.2;0.5; 0; 0; 0; 0];
-            c_W = zeros(dim_x,1);
+            c_W = zeros(dim_u-dim_y,1);
             c_V = zeros(dim_y,1);
             G_R0 = eye(6);
-            G_W = eye(dim_x);
+            G_W = eye(dim_u-dim_y);
             G_V = eye(dim_y);
         end
         R0 = zonotope([c_R0,G_R0]);
@@ -366,6 +385,7 @@ switch dynamics
         dim_y = 2;
         sys = nonlinearSysDT('cstrDiscr', fun, dt, dim_x, dim_u, out_fun, dim_y);
         
+        % construct uncertainty sets
         if type ~= "standard"
             throw(CORAerror('CORA:specialError',"Only standard uncertainty sets defined."))
         end
@@ -391,6 +411,7 @@ switch dynamics
         dim_y = 2;
         sys = nonlinearSysDT('tank6', fun, dt, dim_x, dim_u, out_fun, dim_y);
         
+        % construct uncertainty sets
         if type ~= "standard"
             throw(CORAerror('CORA:specialError',"Only standard uncertainty sets defined."))
         end
@@ -416,6 +437,7 @@ switch dynamics
         out_fun = @(x,u) x(1:dim_y) + u(1:dim_y);
         sys = nonlinearSysDT('tank30', fun, dt, dim_x, dim_u, out_fun, dim_y);
         
+        % construct uncertainty sets
         if type ~= "standard"
             throw(CORAerror('CORA:specialError',"Only standard uncertainty sets defined."))
         end
@@ -435,6 +457,7 @@ switch dynamics
         out_fun = @(x,u) x(1:dim_y) + u(1:dim_y);
         sys = nonlinearSysDT('tank60', fun, dt, dim_x, dim_u, out_fun, dim_y);
         
+        % construct uncertainty sets
         if type ~= "standard"
             throw(CORAerror('CORA:specialError',"Only standard uncertainty sets defined."))
         end

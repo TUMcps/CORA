@@ -1,8 +1,8 @@
-function simRes = priv_simulateRRT(sys,params,options)
+function traj = priv_simulateRRT(sys,params,options)
 % priv_simulateRRT - simulates a system using rapidly exploring random trees
 %
 % Syntax:
-%    simRes = priv_simulateRRT(sys,params,options)
+%    traj = priv_simulateRRT(sys,params,options)
 %
 % Inputs:
 %    sys - contDynamics object
@@ -14,9 +14,11 @@ function simRes = priv_simulateRRT(sys,params,options)
 %                    corresponding sets (0 or 1)
 %       .stretchFac: stretching factor for enlarging the reachable sets 
 %                    during execution of the algorithm (scalar > 1).
+%       .R:          object of class reachSet that stores the reachable set
+%                    for the corresponding reachability problem.
 %
 % Outputs:
-%    simRes - object of class simResult storing time and states of the
+%    traj - object of class trajectory storing time and states of the
 %             simulated trajectories
 %
 % Other m-files required: none
@@ -30,12 +32,18 @@ function simRes = priv_simulateRRT(sys,params,options)
 % Last update:   23-September-2016
 %                23-November-2022 (MW, update syntax)
 %                16-June-2023 (MA, time interval solution no longer required + only final states are stored)
+%                08-August-2025 (LL, create trajectory object)
+%                09-September-2025 (MP, add support for system output trajectory)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % read out reachable set
 R = options.R;
+
+% output equation only for linearSys and linearSysDT currently
+comp_y = ((isa(sys,'linearSys') || isa(sys,'linearSysDT')) && ~isempty(sys.C)) ...
+    || (isa(sys,'nonlinearSysDT') && ~isempty(sys.out_mFile));
 
 % obtain set of uncertain inputs 
 if isfield(params,'uTransVec')
@@ -48,9 +56,13 @@ end
 V_input = vertices(U);
 nrOfExtrInputs = length(V_input(1,:));
 
-% initialize simulation results
-x = cell(options.points,1);
-t = cell(options.points,1);
+% initialize trajectories
+u = [];
+x = [];
+t = [];
+if comp_y
+    y = [];
+end
 
 % init obtained states from the RRT
 if options.vertSamp
@@ -73,6 +85,7 @@ end
 nrSteps = length(R.timePoint.set) - 1;
 
 % loop over all time steps
+traj(options.points,1) = trajectory();
 for iStep = 1:nrSteps
     
     % display current step (execution rather slow...)
@@ -101,13 +114,22 @@ for iStep = 1:nrSteps
         end
 
         % nearest neighbor and selected state
-        ind = aux_nearestNeighbor(x_sample,X,normMatrix);
+        ind0 = aux_nearestNeighbor(x_sample,X,normMatrix);
         if ~conformanceChecking
-            params.x0 = X(:,ind);
+            params.x0 = X(:,ind0);
         else
-            params.x0 = Xfull(:,ind);
+            params.x0 = Xfull(:,ind0);
         end
-        
+        if iStep ~= 1
+            % store the previous inputs and states for the selected sample
+            u_old = u{ind0,iStep-1};
+            x_old = x{ind0,iStep-1};
+            t_old = t{ind0,iStep-1};
+            if comp_y
+                y_old = y{ind0,iStep-1};
+            end
+        end
+
         % update set of uncertain inputs when tracking
         if isfield(params,'uTransVec')
             U = params.uTransVec(:,iStep) + params.U;
@@ -117,10 +139,17 @@ for iStep = 1:nrSteps
         % simulate model to find out best input
         for iInput = 1:nrOfExtrInputs
             % set input
-            params.u = V_input(:,iInput);
+            u_traj{iInput} = V_input(:,iInput);
+            params.u = u_traj{iInput};
             % simulate
-            [t_traj{iInput},x_traj{iInput}] = simulate(sys,params);   
-            x_final = x_traj{iInput}(end,:); 
+
+            if comp_y
+                [t_traj{iInput},x_traj{iInput},~,y_traj{iInput}] = simulate(sys,params,options);
+            else
+                [t_traj{iInput},x_traj{iInput}] = simulate(sys,params);
+            end
+            x_final = x_traj{iInput}(:,end);
+
             % reduce to abstract state for conformance checking
             if conformanceChecking
                 % save result
@@ -141,28 +170,35 @@ for iStep = 1:nrSteps
         
         % store initial values
         if iStep == 1
-            x{iSample} = x_traj{ind}(1,:);
-            t{iSample} = t_traj{ind}(1);
+            u_old = [];
+            x_old = x_traj{ind}(:,1);
+            t_old = t_traj{ind}(1);
+            if comp_y
+                y_old = y_traj{ind}(:,1);
+            end
         end
 
         % store trajectories
-        x{iSample} = [x{iSample}; x_traj{ind}(end,:)];
-        t{iSample} = [t{iSample}; t_traj{ind}(end)];
+        u{iSample,iStep} = [u_old u_traj{ind}];
+        x{iSample,iStep} = [x_old x_traj{ind}(:,end)];
+        t{iSample,iStep} = [t_old t_traj{ind}(end)];
+        if comp_y
+            y{iSample,iStep} = [y_old y_traj{ind}(:,end)];
+        else
+            y{iSample,iStep} = [];
+        end
+        if iStep == nrSteps
+            % only return the final trajectories
+            traj(iSample) = trajectory(u{iSample,iStep},x{iSample,iStep},y{iSample,iStep},t{iSample,iStep});
+        end
     end
-    
+
     % update X
     X = X_new;
     if conformanceChecking
         Xfull = X_newFull;
     end
 end
-
-% store computed simulations in the same format as for other simulation types
-simRes(options.points,1) = simResult();
-for iSample = 1:options.points
-    simRes(iSample, 1) = simResult(x(iSample),t(iSample));
-end
-
 end
 
 

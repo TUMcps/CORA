@@ -38,6 +38,7 @@ function [t,z,ind] = simulate(nlnsysDA,params,varargin)
 % Last update:   12-March-2008
 %                19-August-2016
 %                08-May-2020 (MW, update interface)
+%                28-August-2025 (LL, transpose t and z)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -72,6 +73,11 @@ else
     z0 = [params.x0;y0];
 end
 
+% set tStart
+if ~isfield(params,'tStart')
+    params.tStart = 0;
+end
+
 try
     [t,z,~,~,ind] = ode15s(getfcn(nlnsysDA,params),...
         [params.tStart,params.tFinal],z0,options);
@@ -82,5 +88,7 @@ catch
     %[t,z] = ode23tb(getfcn(nlnsysDA,params),[params.tStart,params.tFinal],z0,options);
     ind=[];
 end
+t = t';
+z = z';
 
 % ------------------------------ END OF CODE ------------------------------

@@ -64,7 +64,7 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 simOpt.points = 25;
 simOpt.timeStep = options.timeStep;
 
-simRes = simulateRandom(fiveDimSys, params, simOpt);
+traj = simulateRandom(fiveDimSys, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -113,7 +113,7 @@ for k = 1:length(dims)
     plot(zonotope(params.R0,3),projDims,'k','FaceColor','w','ZPos',5,'DisplayName','Initial set');
     
     % plot simulation results
-    plot(simRes,projDims,'k','DisplayName','Simulations');
+    plot(traj,projDims,'k','DisplayName','Simulations');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);

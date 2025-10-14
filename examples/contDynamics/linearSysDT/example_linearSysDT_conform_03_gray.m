@@ -115,8 +115,7 @@ params.testSuite = createTestSuite(sys, params, n_k, n_m, ...
 sys_gray = results.sys; 
 
 % compute output deviation y_a
-testCase_ya = params.testSuite{1}.compute_ya(sys_gray);
-y_a = testCase_ya.y_a;
+y_a = params.testSuite(1).computeOutputDev(sys_gray);
 
 %% Compute reachable set using obtained parameters
 options.zonotopeOrder = inf;
@@ -128,26 +127,26 @@ R_gray = reach(sys_gray, params_gray, options);
 % select projections
 dims = {[1 2]};
 
-for k = 1:length(dims)
-    % create separate plot for each time step
+for i = 1:length(dims)
+    % create separate plot for each dimension
     figure;
 
-    for iStep = 1:min(length(R_gray.timePoint.time),6)
+    for k = 1:min(length(R_gray.timePoint.time),6)
     
-        subplot(3,2,iStep); hold on; box on
-        projDims = dims{k};
+        subplot(3,2,k); hold on; box on
+        projDims = dims{i};
 
         % plot reachable set
-        plot(R_gray.timePoint.set{iStep},projDims, 'Color','r');
+        plot(R_gray.timePoint.set{k},projDims, 'Color','r');
         
         % plot unified outputs
-        plot(squeeze(y_a(iStep,projDims(1),:)),...
-            squeeze(y_a(iStep,projDims(2),:)),'Marker','.','LineStyle', 'none');
+        plot(squeeze(y_a(projDims(1),k,:)),...
+            squeeze(y_a(projDims(2),k,:)),'Marker','.','LineStyle', 'none');
 
         % label plot
         xlabel(['x_{',num2str(projDims(1)),'}']);
         ylabel(['x_{',num2str(projDims(2)),'}']);
-        title(['Time step ',num2str(iStep)]);
+        title(['Time step ',num2str(k)]);
     end
 end
 
@@ -162,45 +161,6 @@ end
 function [sys,params] = aux_set_p(p, params, dims, dt)
 [A, B, C, D] = getMatricesFromP_twoDimExample(p,dims);
 sys = linearSysDT(A,B,[],C,D,[],dt);
-end
-
-function synthesizedTests = aux_createTestCases(sys, params)
-params = rmfield(params, 'getMatricesFromP');
-    % because the system has no imaginary eigenvalues, the extreme cases
-    % suffice to reproduce the actual uncertainties
-    % combine zonotopes for R0, W, and V in a single zonotope
-    
-    % obtain dimensions of x, w, v
-    dim_x = dim(params.R0);
-    dim_u = size(sys.B,2);
-    dim_w = dim(params.W);
-    dim_v = dim(params.V);
-    % Cartesian product of initial set, disturbance set, and measurement
-    % uncertainty
-    S_tmp = cartProd(params.R0, params.W);
-    S = cartProd(S_tmp, params.V);
-    % compute vertices of combined zonotope
-    Vmat = vertices(S);
-    % nr of tests 
-    nrOfTests = size(Vmat,2);
-    % init result
-    synthesizedTests = cell(nrOfTests,1);
-    % maximum number of timeSteps
-    maxNrOfTimeSteps = ceil(params.tFinal/sys.dt); 
-    % loop over each vertex
-    for i = 1:nrOfTests
-        % overwrite parameters
-        params.R0 = zonotope(Vmat(1:dim_x,i)); % initial state
-        params.W = zonotope(Vmat(dim_x+1:dim_x+dim_w,i)); % disturbance 
-        params.V = zonotope(Vmat(dim_x+dim_w+1:dim_x+dim_w+dim_v,i)); % measurement uncertainty  
-        % simulate system
-        simOpt.points = 1;
-        simRes = simulateRandom(sys, params, simOpt);
-        % construct input vector
-        uVec = zeros(maxNrOfTimeSteps+1,dim_u);
-        % save in test case
-        synthesizedTests{i} = testCase(simRes.y{1}, uVec, simRes.x{1}, sys.dt);
-    end
 end
 
 % ------------------------------ END OF CODE ------------------------------

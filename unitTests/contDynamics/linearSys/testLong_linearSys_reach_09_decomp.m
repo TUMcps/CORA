@@ -49,11 +49,11 @@ R = reach(fiveDimSys, params, options);
 
 % simulation
 simOpt.points = 20;
-simRes = simulateRandom(fiveDimSys, params, simOpt);
+traj = simulateRandom(fiveDimSys, params, simOpt);
 
 % verify that simulation end points are contained in reachable set
 finalSet = R.timePoint.set{end};
-finalPoints = cell2mat(arrayfun(@(s) s.x{1}(end,:)',simRes,'UniformOutput',false)');
+finalPoints = cell2mat(arrayfun(@(s) s.x(:,end),traj,'UniformOutput',false)');
 assert(all(contains(finalSet,finalPoints,'exact',1e-8)));
 
 
@@ -62,11 +62,11 @@ R = reach(fiveDimSys_outputs, params, options);
 
 % simulation
 simOpt.points = 20;
-simRes = simulateRandom(fiveDimSys_outputs, params, simOpt);
+traj = simulateRandom(fiveDimSys_outputs, params, simOpt);
 
 % verify that simulation end points are contained in reachable set
 finalSet = R.timePoint.set{end};
-finalPoints = cell2mat(arrayfun(@(s) s.y{1}(end,:)',simRes,'UniformOutput',false)');
+finalPoints = cell2mat(arrayfun(@(s) s.y(:,end),traj,'UniformOutput',false)');
 assert(all(contains(finalSet,finalPoints,'exact',1e-8)));
 
 

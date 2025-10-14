@@ -24,6 +24,7 @@ function failedChecks = checkDynParameter(field,sys,func,params,options,listname
 % Authors:       Tobias Ladner
 % Written:       05-October-2023
 % Last update:   09-October-2023 (TL, split options/params)
+%                17-September-2025 (MP, Enable checks to change a parameter)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -47,15 +48,15 @@ switch listname
 
 end
 
-% 3. check parameters
-failedChecks = aux_checkParams(listname,field,sys,params,options,checks);
+% 3. check & adapt parameters
+[failedChecks, options] = aux_checkParams(listname,field,sys,params,options,checks);
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function failedChecks = aux_checkParams(listname,field,sys,params,options,checks)
+function [failedChecks, options] = aux_checkParams(listname,field,sys,params,options,checks)
 
 % init indices for which a check has failed (note: the '[]' is crucial for
 % the concatenation later on!)
@@ -91,6 +92,10 @@ for i=1:length(checks)
     if isempty(errmsgid) 
         % c_* validation functions return also msg
         [rescheck,msg] = checks(i).checkfun(val);
+    elseif contains(errmsgid,"change_")
+        % a check which triggers a parameter change was triggered
+        % change parameter according to ID
+        options = changeDynParameter(errmsgid,params,options);
     else 
         % standard case
         rescheck = checks(i).checkfun(val);

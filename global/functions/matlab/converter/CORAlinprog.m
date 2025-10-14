@@ -49,6 +49,7 @@ function [x,fval,exitflag,output,lambda] = CORAlinprog(problem)
 %                09-October-2024 (TL, compatibility >=R2024a)
 %                29-October-2024 (TL, problem fields should be doubles)
 %                30-May-2026 (MP, Included new option with higher precision)
+%                27-August-2025 (TL, compatibility >=R2025a)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -151,26 +152,27 @@ else
         end
         options = [options {optionsDualSimplexDefault}];
 
-        % matlab updated the 'dual-simplex' algorithm in R2024a ('dual-simplex-highs').
-        % However, the old algorithm provides solutions in some situations when the new one does not (exitflag=0)..
-        % We add the old algorithm here as fallback option.
-        if ~isMATLABReleaseOlderThan('R2024a')
-            persistent optionsDualSimplexLegacy
-            if isempty(optionsDualSimplexLegacy)
-                w = warning; warning off; % don't show legacy warning
-                optionsDualSimplexLegacy = optimoptions('linprog','Algorithm','dual-simplex-legacy','display','off');
-                warning(w);
-            end
-            options = [options {optionsDualSimplexLegacy}];
-
-            % final set of options with lower tolerances in case of very small
+        if ~isMATLABReleaseOlderThan('R2024a') && isMATLABReleaseOlderThan('R2025a')
+            % set of options with lower tolerances in case of very small
             % values occuring in the LP
             % Contained within this 'if' block since it leads to problems
             % with old matlab versions
             optionsHighTol = optimoptions('linprog','Algorithm','dual-simplex','display','off','ConstraintTolerance',1e-10,'OptimalityTolerance',1e-10);
             options = [options {optionsHighTol}];
+            
+            % matlab updated the 'dual-simplex' algorithm in R2024a ('dual-simplex-highs').
+            % However, the old algorithm provides solutions in some situations when the new one does not (exitflag=0)..
+            % We add the old algorithm here as fallback option.
+            if isMATLABReleaseOlderThan('R2025a') % only available until <R2025a...
+                persistent optionsDualSimplexLegacy
+                if isempty(optionsDualSimplexLegacy)
+                    w = warning; warning off; % don't show legacy warning
+                    optionsDualSimplexLegacy = optimoptions('linprog','Algorithm','dual-simplex-legacy','display','off');
+                    warning(w);
+                end
+                options = [options {optionsDualSimplexLegacy}];
+            end
         end
-
     end
 
     % test all options
@@ -191,9 +193,37 @@ else
             [x,fval,exitflag,output,lambda] = aux_MATLABlinprog(problem,algorithm);
         end
 
+        if  ~isMATLABReleaseOlderThan('R2025a') && exitflag == -2 && startsWith(algorithm,'dual-simplex')
+            % TL: this sometimes happens since R2025a, I contacted the support
+            % and they told me they are working on it... in the meantime, we
+            % should try the interior point method ...
+            algorithm = 'interior-point';
+            vargoutIP = cell(1,5);
+            [vargoutIP{:}] = aux_MATLABlinprog(problem,algorithm);
+            if vargoutIP{3} > 0
+                % overwrite results if a solution is found
+                [x,fval,exitflag,output,lambda] = vargoutIP{:};
+            else
+                % also try legacy
+                algorithm = 'interior-point-legacy';
+                vargoutIPL = cell(1,5);
+                [vargoutIPL{:}] = aux_MATLABlinprog(problem,algorithm);
+                if vargoutIPL{3} > 0
+                    % overwrite results if a solution is found
+                    [x,fval,exitflag,output,lambda] = vargoutIPL{:};
+                end
+            end
+        end
+
         if exitflag > 0
             % some solution is found, don't test other options
             break;
+        end
+
+        if exitflag == -3
+            % problem is unbounded, we assume there are no false-positives
+            % here and exit
+            break
         end
     end
 end
@@ -234,6 +264,16 @@ catch ME
 
        % re-call linprog
        [x,fval,exitflag,output,lambda] = linprog(problem);
+    elseif strcmp(ME.identifier,'optim:linprog:UnknownError') && startsWith(algorithm,'dual-simplex')
+        % TL: this sometimes happens since R2025a, I contacted the support
+        % and they told me they are working on it... in the meantime, we
+        % should try the interior point method.
+        try
+            algorithm = 'interior-point';
+            [x,fval,exitflag,output,lambda] = aux_MATLABlinprog(problem,algorithm);
+        catch
+           rethrow(ME) 
+        end
     else
         % rethrow all other exceptions
         rethrow(ME)

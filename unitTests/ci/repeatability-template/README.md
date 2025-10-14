@@ -36,7 +36,7 @@ To run the repeatability package, please follow these steps:
 - `./`                      : base path                             
   - `./code`                : path to code                          
     - `./cora`              : path to [CORA](https://cora.in.tum.de/)
-    - `./scripts`           : path to auxiliary scripts                 
+    - `./scripts`           : path to auxiliary Matlab scripts                 
     - `./main.m`            : **main Matlab script**
   - `./data`                : path to data                  
   - `./results/<evalname>`  : path to results (created after execution)
@@ -47,7 +47,7 @@ To run the repeatability package, please follow these steps:
   - `./license.lic`         : place [license file](#option-2-license-file) here
   - `./README.md`           : read me file (this file)
   - `./run.sh`              : **main script** to run [from command line using Docker](#run-from-command-line-recommended)
-  - `./settings.sh`         : settings for scripts
+  - `./settings.sh`         : settings for bash scripts
   - `./screen.sh`           : script to run `run.sh` [within a linux screen](#run-from-command-line-recommended)
 
 ## Step 1: Installation
@@ -78,7 +78,7 @@ Download a license file `license.lic` to run the code:
 	1. "Activate a Computer"
 	(...may differ depending on how your licensing is set up).
 2. Choose:
-	- Release: `R2024b`❗
+	- Release: `R2025a`❗
 	- Operating System: `Linux`
 	- Host ID: `0242AC11000a` (= Default MAC of Docker container)
 	- Computer Login Name: `matlab`

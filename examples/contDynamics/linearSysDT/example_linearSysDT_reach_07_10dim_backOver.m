@@ -109,7 +109,7 @@ params.R0 = R.timePoint.set{end};
 simOpt.points = 25;
 simOpt.type = 'constrained';
 simOpt.R = R;
-simRes = simulateRandom(sys, params, simOpt);
+traj = simulateRandom(sys, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -130,7 +130,7 @@ for k = 1:length(dims)
     plot(R.R0,projDims);
     
     % plot simulation results
-    plot(simRes,projDims,'Marker','.');
+    plot(traj,projDims,'Marker','.');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);

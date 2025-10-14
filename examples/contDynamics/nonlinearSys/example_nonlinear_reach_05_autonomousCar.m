@@ -74,7 +74,7 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % simulation settings
 simOpt.points = 10;
 % random simulation
-simRes = simulateRandom(vehicle, params, simOpt);
+traj = simulateRandom(vehicle, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -95,7 +95,7 @@ for k = 1:length(dims)
     plot(R(1).R0,projDim, 'DisplayName','Initial set');
     
     % plot simulation results      
-    plot(simRes,projDim,'DisplayName','Simulations');
+    plot(traj,projDim,'DisplayName','Simulations');
     
     % plot reference trajectory
     plot(params.u(projRef(1),:),params.u(projRef(2),:),'r', ...

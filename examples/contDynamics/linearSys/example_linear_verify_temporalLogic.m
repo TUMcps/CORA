@@ -91,7 +91,7 @@ else
 
     [t,x] = simulate(sysDT,simOpts);
 
-    plot(t,x(:,151),'k');
+    plot(t,x(151,:),'k');
 end
 
 % plot specifcation

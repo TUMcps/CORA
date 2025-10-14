@@ -33,7 +33,7 @@ function [tVec,ind1,ind2,y] = simulate(nlnARX,params,varargin)
 %
 %    [t,~,~,y] = simulate(nlnARX,params);
 %
-%    plot(y(:,2),y(:,3),'.k','MarkerSize',20);
+%    plot(y(2,:),y(3,:),'.k','MarkerSize',20);
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -43,7 +43,7 @@ function [tVec,ind1,ind2,y] = simulate(nlnARX,params,varargin)
 
 % Authors:       Laura Luetzow
 % Written:       05-May-2023
-% Last update:   ---
+% Last update:   28-August-2025 (LL, transpose t and y)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -57,7 +57,7 @@ if ~isfield(params,'tStart')
 	params.tStart = 0; 
 end
 
-tVec = (params.tStart:nlnARX.dt:params.tFinal)';
+tVec = params.tStart:nlnARX.dt:params.tFinal;
 
 % consider changing inputs
 change = false;
@@ -88,6 +88,5 @@ for k = size(params.y0,2):length(tVec)-1
 
     y(:, k+1) = nlnARX.mFile(x_prev,u_prev);
 end
-y=y';
 
 % ------------------------------ END OF CODE ------------------------------

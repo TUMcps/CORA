@@ -154,6 +154,10 @@ methods
     
 end
 
+methods (Static = true)
+    linsys = identify(varargin)       % identifies linear system from data
+end
+
 methods (Access = protected)
     [printOrder] = getPrintSystemInfo(S)
 end

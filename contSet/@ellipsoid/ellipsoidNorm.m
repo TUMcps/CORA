@@ -18,7 +18,7 @@ function res = ellipsoidNorm(E,p)
 %    Q = diag([3 2]);
 %    E = ellipsoid(Q, q);
 %    
-%    p = rand([2 1]);
+%    p = [ 0.369 ; 0.685 ];
 %    
 %    d = ellipsoidNorm(E, p);
 %

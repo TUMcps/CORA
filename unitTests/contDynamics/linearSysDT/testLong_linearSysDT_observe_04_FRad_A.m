@@ -32,7 +32,7 @@ res = true;
 
 
 %% Load side slip model
-load slipEstimationModel_4D params options vehicle simRes
+load slipEstimationModel_4D params options vehicle traj
 
 % set approach
 options.alg = 'FRad-A';
@@ -55,7 +55,7 @@ for iSet = 1:timeSteps
     % check if slightly bloated versions enclose each other
     assert(isequal(IH,IH_alternative,1+accuracy));
     % check if simulation is enclosed
-    assert(contains(IH,simRes.x{1}(iSet,:)'));
+    assert(contains(IH,traj.x(:,iSet)));
 end
 
 
@@ -70,7 +70,7 @@ end
 %     % plot estimated sets over time
 %     h = plotOverTime(estSet,iDim,'FaceColor',[.6 .6 .6],'EdgeColor','none');
 %     % plot true state
-%     p = plot(t(1:length(simRes.x{1}(:,iDim))),simRes.x{1}(:,iDim),'k.');
+%     p = plot(t(1:length(traj.x(iDim,:))),traj.x(iDim,:),'k.');
 %     legend([h(end),p(end)],'Set of possible states','True state');
 %     % axes labels
 %     xlabel('t');

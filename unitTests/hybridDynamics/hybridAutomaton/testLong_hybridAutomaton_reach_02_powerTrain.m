@@ -69,6 +69,7 @@ simOptions.startLoc = 3;
 % obtain random simulation results
 N = 10;
 simPoints = cell(N,1);
+traj1(N,1) = trajectory();
 
 for i = 1:N
     
@@ -85,13 +86,9 @@ for i = 1:N
     [t,x,locID] = simulate(HA,simOptions); 
     
     % store results
-    simPoints{i} = x{end}(end,:)';
+    simPoints{i} = x(:,end);
     
-    if i == 1
-        simRes1 = simResult(x,t,locID); 
-    else
-        simRes1 = add(simRes1,simResult(x,t,locID)); 
-    end
+    traj1(i) = trajectory([],x,[],t,[],locID); 
 end
 
 
@@ -110,6 +107,7 @@ params.tFinal = 2;
 simOptions.tStart = params.tStart;
 simOptions.tFinal = params.tFinal;
 
+traj2(N,1) = trajectory();
 % obtain random simulation results
 for i = 1:N
     
@@ -119,16 +117,16 @@ for i = 1:N
     % simulate hybrid automaton
     [t,x,locID] = simulate(HA,simOptions); 
     
-    % store resulets
-    if i == 1
-        simRes2 = simResult(x,t,locID); 
-    else
-        simRes2 = add(simRes2,simResult(x,t,locID)); 
-    end
+    % store resulets    
+    traj2(i) = trajectory([],x,[],t,[],locID); 
 end
 
 % extract the states at the intersection with the guard set (before jump)
-[~,xHit] = extractHits(simRes2,3);
+xHit = {};
+for i=1:length(traj2)
+    [~,xHit_i] = extractHits(traj2(i),3);
+    xHit = [xHit; xHit_i];
+end
 points = reshape(cell2mat(xHit),HA.nrOfDims(1),[]);
 % project for verification
 points = points(2:end,:);

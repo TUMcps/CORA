@@ -13,7 +13,8 @@ function completed = example_nonlinearARX_conform_03_black
 %    completed - true/false 
 %
 % References:
-%    [1] ???
+%    [1] L. Luetzow and M. Althoff, "Reachset-Conformant System
+%        Identification," arXiv, 2025. 
 
 % Authors:       Laura Luetzow
 % Written:       03-June-2024
@@ -34,7 +35,7 @@ cost_norm = "interval";
 constraints = "half";
 
 % identification approach
-methodsGray = ["blackGP","blackCGP"];
+algorithm = {'gp','cgp'};
 
 % Set random number stream
 rng(2)
@@ -52,12 +53,36 @@ n_m_val = 5;
 n_s_val = 10;
 n_k_val = 4;
 
+% Load System Dynamics 
+[sys, params_true.R0, params_true.U, p_true] = loadDynamics(dynamics,"rand");
+params_true.tFinal = sys.dt * n_k - sys.dt; 
+
 % Reachability Settings  
 options_reach.zonotopeOrder = 100;
 options_reach.tensorOrder = 2;
 options_reach.errorOrder = 1;
 options_reach.tensorOrderOutput = 2;
 options_reach.verbose = false;
+
+% Identification Options
+options = options_reach;
+options.cs.robustness = 1e-9;
+options.cs.verbose = false;
+options.cs.cost = cost_norm;
+options.cs.constraints = constraints;
+
+% Black-box approximation options
+options.id.gp_parallel = true;
+options.id.gp_pop_size = 50;
+options.id.gp_num_gen = 30;
+options.id.gp_func_names = {'times','plus', 'square'};
+options.id.gp_max_genes = 2;
+options.id.gp_max_depth = 2;
+options.id.gp_parallel = false;
+options.id.cgp_num_gen = 5;
+options.id.cgp_pop_size_base = 5;
+options.id.save_res = false;
+options.id.p = sys.n_p;
 
 % testSuite settings
 options_testS.p_extr = 0.3;
@@ -66,42 +91,18 @@ options_testS.p_extr = 0.3;
 plot_settings.plot_Yp = false; 
 plot_settings.dims = [1 2]; 
 
-% Load System Dynamics 
-[sys, params_true.R0, params_true.U, p_true] = loadDynamics(dynamics,"rand");
-params_true.tFinal = sys.dt * n_k - sys.dt;
-
 % Create identification data 
 params_true.testSuite = createTestSuite(sys, params_true, n_k, n_m, ...
     n_s, options_testS);
-params_true.testSuite_train = createTestSuite(sys, params_true, ...
+options.id.testSuite_id = createTestSuite(sys, params_true, ...
     n_k_train, n_m_train, n_s_train);
-params_true.testSuite_val = createTestSuite(sys, params_true, ...
+options.id.testSuite_val = createTestSuite(sys, params_true, ...
     n_k_val, n_m_val, n_s_val);
 
 %% Conformance Identification ---------------------------------------------
 
-% Identification Options
-options = options_reach;
-options.cs.robustnessMargin = 1e-9;
-options.cs.verbose = false;
-options.cs.cost = cost_norm;
-options.cs.constraints = constraints;
-
-% Black-box approximation options
-options.approx.gp_parallel = true;
-options.approx.gp_pop_size = 50;
-options.approx.gp_num_gen = 30;
-options.approx.gp_func_names = {'times','plus', 'square'};
-options.approx.gp_max_genes = 2;
-options.approx.gp_max_depth = 2;
-options.approx.gp_parallel = false;
-options.approx.cgp_num_gen = 5;
-options.approx.cgp_pop_size_base = 5;
-options.approx.save_res = false;
-options.approx.p = sys.n_p;
-
 % Create struct for saving the identification results for each system
-configs = cell(length(methodsGray) + 1,1);
+configs = cell(length(algorithm) + 1,1);
 configs{1}.sys = sys;
 configs{1}.params = rmfield(params_true,'testSuite');
 configs{1}.options = options_reach;
@@ -117,15 +118,15 @@ params_id_init.U = zonotope([c_U eye(size(c_U,1)) ones(size(c_U))]);
 
 % Identification ------------------------------------------------------
 
-for i = 1:length(methodsGray)
-    type = methodsGray(i);
-    fprintf("Identification with method %s \n", type);
+for i = 1:length(algorithm)
+    options.idAlg = algorithm{i};
+    fprintf("Identification with algorithm %s \n", algorithm{i});
     timerVal = tic;
-    [configs{i+1}.params, results] = conform(sys,params_id_init,options,type);
+    [configs{i+1}.params, results] = conform(sys,params_id_init,options,'black');
     Ts = toc(timerVal);
     configs{i+1}.sys = results.sys;
     configs{i+1}.options = options_reach;
-    configs{i+1}.name = type;
+    configs{i+1}.name = algorithm{i};
 
     fprintf("Identification time: %.4f\n", Ts);
 end
@@ -137,13 +138,13 @@ end
 num_out = 0;
 num_in = 0;
 check_contain = 1;
-methods = ["true" methodsGray];
+methods = ["true" algorithm];
 for m=1:length(params_true.testSuite)
-    [~, eval] = validateReach(params_true.testSuite{m}, configs, check_contain);
+    [~, eval] = validateReach(params_true.testSuite(m), configs, check_contain);
     num_out = num_out + eval.num_out;
     num_in = num_in + eval.num_in;
 end
-num_all = length(params_true.testSuite)*n_k_val*size(params_true.testSuite{1}.y,3);
+num_all = length(params_true.testSuite)*n_k_val*size(params_true.testSuite(1).y,3);
 fprintf("IDENTIFICATION DATA: \n");
 for i = 1:length(configs)
     p_contained = 100-(num_out(i)/(num_out(i)+num_in(i)))*100;
@@ -165,11 +166,11 @@ num_out = 0;
 num_in = 0;
 check_contain = 1;
 for m=1:length(testSuite_val)
-    [~, eval] = validateReach(testSuite_val{m}, configs, check_contain, plot_settings);
+    [~, eval] = validateReach(testSuite_val(m), configs, check_contain, plot_settings);
     num_out = num_out + eval.num_out;
     num_in = num_in + eval.num_in;
 end
-num_all = length(testSuite_val)*n_k_val*size(testSuite_val{1}.y,3);
+num_all = length(testSuite_val)*n_k_val*size(testSuite_val(1).y,3);
 fprintf("VALIDATION DATA: \n");
 for i = 1:length(configs)
     p_contained = 100-(num_out(i)/(num_out(i)+num_in(i)))*100;

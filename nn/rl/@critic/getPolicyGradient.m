@@ -53,23 +53,19 @@ else
     GBatch = [];
 end
 
-options.rl.critic.nn.train.updateGradient = false;
-
 % Get policy gtradient
 if strcmp(options.rl.critic.nn.train.method,'point')
     % Point based learning
     yPredBatch = obj.nn.evaluate_(cBatch,options.rl.critic,obj.idxLayer);
     [loss, policyGradient, ~] = aux_computeLoss(yPredBatch,[]);
-    grad_inC = obj.nn.backprop(policyGradient,options.rl.critic,obj.idxLayer);
+    grad_inC = obj.nn.backprop(policyGradient,options.rl.critic,obj.idxLayer,false);
     grad_inG = [];
 else
     % Set based learning
     [yPredBatchC,yPredBatchG] = obj.nn.evaluateZonotopeBatch_(cBatch,GBatch,options.rl.critic,obj.idxLayer);
     [loss, policyGradient, gradOutG] = aux_computeLoss(yPredBatchC, yPredBatchG);
-    [grad_inC,grad_inG] = obj.nn.backpropZonotopeBatch_(policyGradient,gradOutG,options.rl.critic,obj.idxLayer);
+    [grad_inC,grad_inG] = obj.nn.backpropZonotopeBatch_(policyGradient,gradOutG,options.rl.critic,obj.idxLayer,false);
 end
-
-options.rl.critic.nn.train.updateGradient = true;
 
 grad_in = aux_getActionInputGradients(grad_inC,grad_inG,batch,options);
 end

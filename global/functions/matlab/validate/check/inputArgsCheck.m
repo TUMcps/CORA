@@ -21,7 +21,9 @@ function inputArgsCheck(inputArgs)
 %                                (check function checkValueAttributes for details)
 %                   possibilities - (only id = 'str') admissible strings as
 %                                   a cell-array of chars or single
-%                                   char-array
+%                                   char-array; post fixes of the form
+%                                   '...<postfix>' are appended to all
+%                                   other possibilities
 %
 % Outputs:
 %    ---
@@ -45,6 +47,7 @@ function inputArgsCheck(inputArgs)
 % Written:       30-May-2022
 % Last update:   23-January-2024 (MW, exact match for strings)
 %                03-March-2025 (TL, reworked using checkValueAttributes)
+%                10-September-2025 (TL, enabled postfixes for str)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -171,10 +174,25 @@ else
     validateStr = inputArg(3);
 end
 
+% expand '...:<postfix>' syntax
+ids = startsWith(validateStr,'...');
+postfixes = validateStr(ids);
+postfixesCut = cellfun(@(postfix) strrep(postfix,'...',''), postfixes,'UniformOutput',false);
+validateStr = validateStr(~ids);
+% check if given value has a postfix
+if any(contains(value,postfixesCut))
+    % concat postfixes to all other valid strings
+    validateStrWithPostfix = cellfun(@(x) ...
+        ... % remove '...' prefix of postfixes
+        strcat(x, postfixesCut), ...
+        validateStr, 'UniformOutput', false);
+    validateStr = [validateStr validateStrWithPostfix{:}];
+end
+
 % check exact match with admissible values
 if ~ismember(value, validateStr)
     % generate string of admissible values (user info)
-    validrange = ['''', strjoin(validateStr, "', '"), ''''];
+    validrange = ['''', strjoin([validateStr postfixes], "', '"), ''''];
 
     % throw error
     throw(CORAerror('CORA:wrongValue', aux_countingNumber(i), ...

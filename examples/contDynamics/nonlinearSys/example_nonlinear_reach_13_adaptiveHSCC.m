@@ -55,7 +55,7 @@ tab2(1,2) = volume(interval(endset));
 simOpt.points = 10;           % number of initial points
 simOpt.fracVert = 0.2;        % fraction of vertices initial set
 
-simRes = simulateRandom(sys,params,simOpt);
+traj = simulateRandom(sys,params,simOpt);
 
 % figures
 if makePlots
@@ -71,7 +71,7 @@ for p=1:ceil(sys.nrOfDims/2)
     useCORAcolors("CORA:contDynamics")
     plot(R,projDims{p});
     plot(R(1).R0);
-    plot(simRes,projDims{p});
+    plot(traj,projDims{p});
     if p == 1; plot(params.R0,projDims{p},'r','LineWidth',1.5);
     else;      scatter(0.01,0.01,3,'r','filled');
     end

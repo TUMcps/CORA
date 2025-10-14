@@ -65,9 +65,7 @@ for i=1:length(files)
         filesepPos = strfind(fname,filesep);
         for j=1:length(filesepPos)
             % insert backslash
-            fname = [fname(1:filesepPos(j)) filesep fname(filesepPos(j)+1:end)];
-            % increment all indices due to added character
-            filesepPos = filesepPos + 1;
+            fname = [fname(1:filesepPos(j)-1) '/' fname(filesepPos(j)+1:end)];
         end
     else
         [~, fname] = fileparts(files(i).name);
@@ -106,7 +104,7 @@ for i=1:length(files)
 
     seed = randi(2^32);
 
-    % Supress output of example by usage of evalc
+    % Suppress output of example by usage of evalc
     try
         if verbose
             fprintf('.. rng(%10i); header of %-70s : ', seed, fname);

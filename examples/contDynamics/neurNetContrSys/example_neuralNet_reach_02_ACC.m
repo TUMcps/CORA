@@ -89,27 +89,23 @@ sys = neurNetContrSys(sys, nn, 0.1);
 % Simulation --------------------------------------------------------------
 
 timerVal = tic;
-simRes = simulateRandom(sys, params);
+traj = simulateRandom(sys, params);
 tSim = toc(timerVal);
 disp(['Time to compute random simulations: ', num2str(tSim)]);
 
 % Check Violation --------------------------------------------------------
 
 timerVal = tic;
-simResDistances = [];
+trajDistances = [];
 isVio = false;
-for i = 1:length(simRes)
-    simRes_i = simRes(i);
-    for j = 1:length(simRes_i.x)
-        x = simRes_i.x{j};
-        x = DM * x' + Db;
+for i = 1:length(traj)
+    traj_i = traj(i);
+    for j = 1:size(traj_i.x,3)
+        x = traj_i.x(:,:,j);
+        x = DM * x + Db;
         
-        simResDistances_ij = simResult({x'}, simRes_i.t(j));
-        if isempty(simResDistances)
-            simResDistances = simResDistances_ij;
-        else
-            simResDistances = add(simResDistances, simResDistances_ij);
-        end
+        trajDistances_ij = trajectory([],x,[],traj_i.t);
+        trajDistances = [trajDistances; trajDistances_ij];
             
         % relative distance D_rel
         distance = x(1, :);
@@ -183,7 +179,7 @@ plotOverTime(R_distances, 1, 'DisplayName', 'Distance', 'FaceColor', CORAcolor("
 plotOverTime(R_distances, 2, 'DisplayName', 'Safe distance', 'FaceColor', CORAcolor("CORA:unsafe"));
 
 % plot simulations
-plotOverTime(simResDistances, 1, 'DisplayName', 'Simulations', 'Color', CORAcolor("CORA:simulations"));
+plotOverTime(trajDistances, 1, 'DisplayName', 'Simulations', 'Color', CORAcolor("CORA:simulations"));
 
 % labels and legend
 xlabel('time');

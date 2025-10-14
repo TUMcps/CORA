@@ -36,19 +36,14 @@ path = [CORAROOT filesep 'models' filesep 'testCases' filesep 'pedestrians'];
 load([path filesep 'Pellegrini2009Test'],'Pellegrini2009Test');
 
 %% Conformance settings
-params.testSuite = cell(100,1);
-for m=1:100
-    % add nominal inputs equal to zeros to each test case since minimal input
-    % dimension for linearSysDT is 1
-    params.testSuite{m} = set_u(Pellegrini2009Test{m}, zeros(size(Pellegrini2009Test{m}.y,1),1));
-end
+params.testSuite = Pellegrini2009Test(1:100);
 
 
 %% System dynamics
 % create pedestrian model (see Lecture "Formal Methods for Cyber-Physical
 % Systems - Conformance Checking")
 % sample time
-dt = Pellegrini2009Test{1}.sampleTime;
+dt = Pellegrini2009Test(1).dt;
 % discrete time system matrix from continuous system matrix Ac
 Ac = [0 0 1 0; 0 0 0 1; 0 0 0 0; 0 0 0 0];
 A = expm(Ac*dt);
@@ -84,11 +79,11 @@ options.cs.P = eye(2);
 options.cs.cost = 'frob';
 params_frob = conform(pedestrian,params,options); 
 
-% %% for debugging: check conformance
-% params_interval.testSuite = params.testSuite;
-% res = isconform(pedestrian,params_interval,options); 
-% params_frob.testSuite = params.testSuite;
-% res = isconform(pedestrian,params_frob,options);
+%% for debugging: check conformance
+params_interval.testSuite = params.testSuite;
+assert(isconform(pedestrian,params_interval,options)); 
+params_frob.testSuite = params.testSuite;
+assert(isconform(pedestrian,params_frob,options));
 
 %% Compute reachable set using obtained parameters
 options.zonotopeOrder = inf;
@@ -118,8 +113,8 @@ for k = 1:length(dims)
         plot(R_frob.timePoint.set{iStep},projDims,'g');
 
         % plot unified test cases
-        plot(squeeze(union_y_a{1}(iStep,projDims(1),:)),...
-            squeeze(union_y_a{1}(iStep,projDims(2),:)),'kx');
+        plot(squeeze(union_y_a(projDims(1),iStep,:)),...
+            squeeze(union_y_a(projDims(2),iStep,:)),'kx');
 
         % label plot
         xlabel(['x_{',num2str(projDims(1)),'}']);

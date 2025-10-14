@@ -44,7 +44,7 @@ clear linearSysDT % required for some MATLAB versions so that copied file is rec
 
 
 %% Load side slip model
-load slipEstimationModel_4D params options vehicle simRes
+load slipEstimationModel_4D params options vehicle traj
 
 % set approach
 options.alg = 'Hinf-G';
@@ -71,7 +71,7 @@ for iSet = 1:timeSteps
     % check if slightly bloated versions enclose each other
     res_cont = isequal(IH,IH_alternative,accuracy);
     % check if simulation is enclosed
-    res_sim = contains(IH,simRes.x{1}(iSet,:)');
+    res_sim = contains(IH,traj.x(:,iSet));
     % combine results
     assert(res_cont && res_sim);
 end
@@ -94,7 +94,7 @@ addpath(genpath(path));
 %     % plot estimated sets over time
 %     h = plotOverTime(estSet,iDim,'FaceColor',[.6 .6 .6],'EdgeColor','none');
 %     % plot true state
-%     p = plot(t(1:length(simRes.x{1}(:,iDim))),simRes.x{1}(:,iDim),'k.');
+%     p = plot(t(1:length(traj.x(:,iDim))),traj.x(:,iDim),'k.');
 %     legend([h(end),p(end)],'Set of possible states','True state');
 %     % axes labels
 %     xlabel('t');

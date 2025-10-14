@@ -56,7 +56,7 @@ sys = linearSysDT('sys',A,B,[],[],[],[],E,dt);
 
 % Parameters --------------------------------------------------------------
 
-params.tFinal = 40;
+params.tFinal = 10;
 params.R0 = zonotope(zeros(6,1),diag([1, 1, 1, pi/5, pi/5, 2]));
 params.U = zonotope(zeros(2,1),pi*eye(2));
 params.W = zonotope(zeros(6,1),diag([0.037, 0.00166, 0.0078, 0.00124, 0.00107, 0.07229]));
@@ -97,7 +97,7 @@ params.R0 = R_under.timePoint.set{end};
 simOpt.points = 25;
 simOpt.type = 'constrained';
 simOpt.R = R_under; % requires under-approximative reachable sets
-simRes = simulateRandom(sys, params, simOpt);
+traj = simulateRandom(sys, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -118,7 +118,10 @@ for k = 1:length(dims)
     plot(R_over.R0,projDims,'FaceColor','w','EdgeColor','k');
     
     % plot simulation results
-    plot(simRes,projDims,'Marker','.');
+    if ~isempty(traj) 
+        % traj is often empty since params.R0 for simulation is empty set
+        plot(traj,projDims,'Marker','.');
+    end
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);

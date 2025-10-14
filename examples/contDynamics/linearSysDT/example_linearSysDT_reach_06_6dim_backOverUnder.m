@@ -98,7 +98,7 @@ params.R0 = R_under.timePoint.set{end};
 simOpt.points = 25;
 simOpt.type = 'constrained';
 simOpt.R = R_under; % requires under-approximative reachable sets
-simRes = simulateRandom(sys, params, simOpt);
+traj = simulateRandom(sys, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -119,7 +119,7 @@ for k = 1:length(dims)
     plot(R_over(1).R0,projDims);
     
     % plot simulation results
-    plot(simRes,projDims,'Marker','.');
+    plot(traj,projDims,'Marker','.');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);

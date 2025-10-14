@@ -9,8 +9,8 @@ function [t,x,loc] = simulate(pHA,params)
 %    params - system parameters
 %
 % Outputs:
-%    t - cell-array storing the time vectors
-%    x - cell-array storing the state trajectories
+%    t - array storing the time vectors
+%    x - array storing the state trajectories
 %    loc - double-array storing the visited locations
 %
 % Other m-files required: none
@@ -34,8 +34,7 @@ function [t,x,loc] = simulate(pHA,params)
     locCurr = params.startLoc;      % current location
     xInter = params.x0;             % intermediate state at transitions
 
-    t = {}; x = {}; loc = [];
-    cnt = 0;
+    t = []; x = []; loc = [];
 
     % create list of label occurences to check whether all labeled
     % transitions are enabled at the same time
@@ -44,9 +43,6 @@ function [t,x,loc] = simulate(pHA,params)
     % loop over the different locations 
     while tInter < params.tFinal && ~isempty(locCurr) && ...
            ~all(params.finalLoc == locCurr)
-
-        % increment counter
-        cnt = cnt + 1;
 
         % construct new location with local Automaton Product
         currentLocation = locationProduct(pHA,locCurr,allLabels);
@@ -64,12 +60,17 @@ function [t,x,loc] = simulate(pHA,params)
         % update time
         tInter = tNew(end);
 
-        % concatenate to one full trajectory via cell-arrays (we cannot
-        % splice the individual parts into one large sequence since the
-        % number of states can vary across locations)
-        t{cnt,1} = tNew;
-        x{cnt,1} = xNew;
-        loc(cnt,:) = params.loc';
+        % concatenate to one full trajectory 
+        t = [t tNew];
+        if size(x,1) < size(xNew,1)
+            % old location has fewer states: fill with NaN
+            x = [x; NaN(size(xNew,1)-size(x,1), size(x,2))];
+        elseif size(x,1) > size(xNew,1)
+            % new location has fewer states: fill with NaN
+            xNew = [xNew; NaN(size(x,1)-size(xNew,1), size(xNew,2))];
+        end
+        x = [x xNew];
+        loc = [loc repmat(params.loc, 1, length(tNew))];
     end
     
 end
@@ -77,15 +78,15 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function res = aux_mergeInputVector(loc,uLoc,inputCompMap)
+function u = aux_mergeInputVector(loc,uLoc,inputCompMap)
 % construct the input vector for the current location from the inputs for 
 % the subcomponents
 
-    res = zeros(size(inputCompMap,1),1);
+    u = zeros(size(inputCompMap,1),1);
     temp = unique(inputCompMap);
     
     for i = 1:length(temp)
-        res(inputCompMap == temp(i)) = uLoc{temp(i)}{loc(temp(i))}; 
+        u(inputCompMap == temp(i)) = uLoc{temp(i)}{loc(temp(i))}; 
     end
 end
 

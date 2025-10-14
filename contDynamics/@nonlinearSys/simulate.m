@@ -30,7 +30,7 @@ function [t,x,ind,y] = simulate(nlnsys,params,varargin)
 %
 %    [t,x] = simulate(nlnsys,params);
 %
-%    plot(x(:,1),x(:,2),'r');
+%    plot(x(1,:),x(2,:),'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -42,6 +42,7 @@ function [t,x,ind,y] = simulate(nlnsys,params,varargin)
 % Written:       03-May-2007 
 % Last update:   12-March-2008
 %                08-May-2020 (MW, update interface)
+%                28-August-2025 (LL, transpose t, x, and y)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -115,13 +116,13 @@ for i = 1:size(params.u,2)
     end
 
     % store the results
-    x = [x;x_]; 
+    x = [x x_']; 
     if isempty(t)
-        t = t_ + params.tStart;
+        t = t_' + params.tStart;
     else 
-        t = [t;t_ + t(end)]; 
+        t = [t t_'+t(end)]; 
     end
-    x0 = x(end,:)';
+    x0 = x(:,end);
 
     if ~isempty(ind)
         return; 

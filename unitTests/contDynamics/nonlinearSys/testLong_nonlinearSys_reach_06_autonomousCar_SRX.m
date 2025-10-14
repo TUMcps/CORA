@@ -103,12 +103,12 @@ for iChange = 1:inputChanges
     params.tFinal=params.tFinal+finalTime/inputChanges;
     params.u = params.uTransVec(:,iChange);
     if iChange > 1
-        params.x0 = x{iChange-1}(end,:);
+        params.x0 = x{iChange-1}(:,end);
     end
 
     %simulate hybrid automaton
     [t{iChange},x{iChange}] = simulate(carDyn,params,opt); 
-    options.xStep(:,iChange+1) = x{iChange}(end,:);
+    options.xStep(:,iChange+1) = x{iChange}(:,end);
 end
 
 %reset options

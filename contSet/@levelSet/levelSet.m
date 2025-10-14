@@ -40,8 +40,8 @@ classdef levelSet < contSet
 
 % Authors:       Niklas Kochdumper
 % Written:       19-July-2019
-% Last update:   ---
-% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)
+% Last update:   30-July-2025 (NK, allow mixed equality/inequality cons.)
+% Last revision: 16-June-2023 (MW, restructure using auxiliary functions)    
 
 % ------------------------------ BEGIN CODE -------------------------------
 
@@ -104,6 +104,7 @@ end
 
 methods (Static = true)
     ls = generateRandom(varargin) % generates a random level set
+    ls = enclosePoints(points,varargin)  % enclose point cloud by level set
     ls = empty(n) % instantiates an empty level set
     ls = Inf(n) % instantiates a fullspace level set
 end
@@ -146,9 +147,11 @@ function aux_checkInputArgs(eq,vars,compOp,solved,n_in)
                 throw(CORAerror('CORA:wrongValue','third',"be '==' or '<=' or '<'"));
             end
         else
-            % for multiple comparison operators, no '==' allowed
-            if any(cellfun(@(x) ~ismember(x,{'<=','<'}),compOp,'UniformOutput',true))
-                throw(CORAerror('CORA:wrongValue','third',"be '<=' or '<'"));
+            % multiple comparison operators are specified in a cell-array
+            if any(cellfun(@(x) ~ismember(x,{'<=','<','=='}),compOp,'UniformOutput',true))
+                throw(CORAerror('CORA:wrongValue','third',"be '==' or '<=' or '<'"));
+            elseif length(compOp) ~= length(eq) 
+                throw(CORAerror('CORA:wrongValue','third',"cell-array with length equal to number of equations"))
             end
         end
     end
@@ -171,12 +174,23 @@ function [eq,vars,compOp,solved,funHan,der,dim,solvable] = aux_computeProperties
     % function handle
     funHan = matlabFunction(eq,'Vars',{vars});
 
-    % compute derivatives
-    if strcmp(compOp,'==')
-        grad = gradient(eq,vars);
+    % find index of the equality operators
+    ind = [];
+
+    if iscell(compOp)
+        ind = find(cellfun(@(x) strcmp(x,'=='),compOp) == 1);
+    elseif strcmp(compOp,'==')
+        ind = 1;
+    end
+
+    % compute derivatives (only if there is a single equality constraint)
+    if (~iscell(compOp) && strcmp(compOp,'==') && length(eq) == 1) || ...
+                                                         length(ind) == 1
+
+        grad = gradient(eq(ind),vars);
         der.grad =  matlabFunction(grad,'Vars',{vars});
     
-        hess = hessian(eq,vars);
+        hess = hessian(eq(ind),vars);
         der.hess = matlabFunction(hess,'Vars',{vars});
     
         third = cell(length(grad),1);
@@ -187,13 +201,15 @@ function [eq,vars,compOp,solved,funHan,der,dim,solvable] = aux_computeProperties
         der.third = third;
     end
     
-    % try to solve non-linear equation for one variable
-    if ~iscell(compOp) && strcmp(compOp,'==')
+    % try to solve non-linear equation for one variable (only if there is a
+    % single equality constraint)
+    if (~iscell(compOp) && strcmp(compOp,'==') && length(eq) == 1) || ...
+                                                          length(ind) == 1
     
         if isempty(solved)
     
             solved = cell(length(vars),1); 
-            vars_ = symvar(eq);
+            vars_ = symvar(eq(ind));
             
             % loop over all variables
             for i = 1:length(vars)
@@ -202,13 +218,15 @@ function [eq,vars,compOp,solved,funHan,der,dim,solvable] = aux_computeProperties
                 if ismember(vars(i),vars_)
                 
                     solved{i}.contained = 1;
-                    temp = solve(eq == 0,vars(i));
+                    [temp,~,cond] = solve(eq(ind) == 0,vars(i), ...
+                                                'ReturnConditions',true);
                 
                     % check if the equation could be solved for variable
                     try
-                        if ~isempty(temp)
+                        if ~isempty(temp) %&& isempty(symvar(cond))
                             solved{i}.solvable = 1;
                             solved{i}.eq = temp;
+                            solved{i}.cond =  cond;
                             
                             % loop over all solutions
                             solved{i}.funHan = cell(length(solved{i}.eq),1);

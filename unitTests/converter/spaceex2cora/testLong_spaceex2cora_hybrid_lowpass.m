@@ -32,7 +32,7 @@ params.x0 = [0;0;0;0];
 params.startLoc = [1;3]; 
 
 % simulation
-[~,simRes{1}] = simulate(pHA,params);
+[~,x{1}] = simulate(pHA,params);
 
 
 %% automaton #2: converted parallel HA
@@ -41,7 +41,7 @@ spaceex2cora('lowpass_parallel.xml',true,[],'lowpass_parallel');
 pHA_SX = lowpass_parallel();
 
 % simulation 
-[~,simRes{2}] = simulate(pHA_SX, params);
+[~,x{2}] = simulate(pHA_SX, params);
 
 
 %% automaton #3: converted flat HA
@@ -51,7 +51,7 @@ HA_SX = lowpass_flat();
 
 % simulation
 params.startLoc = 3;
-[~,simRes{3}] = simulate(HA_SX, params);
+[~,x{3}] = simulate(HA_SX, params);
 
 
 %% visualization
@@ -61,12 +61,12 @@ params.startLoc = 3;
 % 
 % for p=1:length(projDims)
 %     subplot(1,2,p); hold on; box on;
-%     for i=1:length(simRes{1})
-%         plot(simRes{1}{i}(:,projDims{p}(1)),simRes{1}{i}(:,projDims{p}(2)),...
+%     for i=1:length(x{1})
+%         plot(x{1}{i}(:,projDims{p}(1)),x{1}{i}(:,projDims{p}(2)),...
 %             'Color',colorblind('b'));
-%         plot(simRes{2}{i}(:,projDims{p}(1)),simRes{2}{i}(:,projDims{p}(2)),...
+%         plot(x{2}{i}(:,projDims{p}(1)),x{2}{i}(:,projDims{p}(2)),...
 %             'Color',colorblind('r'),'LineStyle','--');
-%         plot(simRes{3}{i}(:,projDims{p}(1)),simRes{3}{i}(:,projDims{p}(2)),...
+%         plot(x{3}{i}(:,projDims{p}(1)),x{3}{i}(:,projDims{p}(2)),...
 %             'Color',colorblind('y'),'LineStyle','-.');
 %     end
 % end
@@ -75,15 +75,13 @@ params.startLoc = 3;
 %% compare simulation results
 tol = 1e-6;
 
-for i = 1:length(simRes{1})
-    % compare results for original and converted parallel hybrid automaton
-    assertLoop(all(size(simRes{1}{i}) == size(simRes{2}{i})),i);
-    assertLoop(all(all(withinTol(simRes{1}{i},simRes{2}{i},tol))),i)
+% compare results for original and converted parallel hybrid automaton
+assert(all(size(x{1}) == size(x{2})));
+assert(all(all(withinTol(x{1},x{2},tol))))
 
-    % compare results for original and converted flat hybrid automaton
-    assertLoop(all(size(simRes{1}{i}) == size(simRes{3}{i})),i);
-    assertLoop(all(withinTol(simRes{1}{i},simRes{2}{i},tol),"all"),i)
-end
+% compare results for original and converted flat hybrid automaton
+assert(all(size(x{1}) == size(x{3})));
+assert(all(withinTol(x{1},x{2},tol),"all"))
 
 res = true;
 

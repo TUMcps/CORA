@@ -38,13 +38,13 @@ ax = gca();
 colorOrder = ax.ColorOrder;
 
 % plot set
-plot(E1,[1,2]);
+plot(E1,[1,2],'Filled',false);
 V = [-3.0497 -3.0597 0.6514 1.5522 -2.6948 -3.0279 -3.0497;
     -1.8645 -1.8570 7.5677 9.0267 -1.4353 -1.8649 -1.8645];
 % check points
-assert(compareMatrices(V, [ax.Children(1).XData;ax.Children(1).YData],1e-4,'subset',true));
-% test color
+assert(compareMatrices(V, readVerticesFromFigure(ax.Children(1)),1e-4,'subset',true));
 assert(isequal(colorOrder(1,:), ax.Children(1).Color));
+    
 close;
 
 % gather results

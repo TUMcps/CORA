@@ -50,7 +50,7 @@ simOpt.points = 2;
 simOpt.fracVert = 1;
 simOpt.fracInpVert = 1;
 
-simRes = simulateRandom(sys, params, simOpt);
+traj = simulateRandom(sys, params, simOpt);
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -80,9 +80,9 @@ Rwrappingfree = reach(sys,params,options);
 
 % Verification ------------------------------------------------------------
 
-assert(contains(Radaptive,simRes));
-assert(contains(Rstandard,simRes));
-assert(contains(Rwrappingfree,simRes));
+assert(contains(Radaptive,traj));
+assert(contains(Rstandard,traj));
+assert(contains(Rwrappingfree,traj));
 
 res = true;
 

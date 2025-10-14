@@ -43,7 +43,7 @@ params.tFinal = 1;
 [t,x] = simulate(sys,params);
 
 figure
-plot(x(:,1),x(:,2),'k', 'DisplayName', 'Simulation');
+plot(x(1,:),x(2,:),'k', 'DisplayName', 'Simulation');
 legend()
 close(gcf);
 

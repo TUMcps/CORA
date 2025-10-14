@@ -75,7 +75,7 @@ disp("Enclosure satisfied? " + all(enclosure));
 
 simOpt.points = 60;
 %simOpt.points = 6;
-simRes = simulateRandom(sys, params, simOpt);
+traj = simulateRandom(sys, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -90,7 +90,7 @@ plot(R);
 plot(R(1).R0,[1 2]);
 
 % plot simulation results     
-plot(simRes);
+plot(traj);
 
 % plot invariant
 plot(E,[1 2],'LineWidth',3,'Color',colorblind('g'));

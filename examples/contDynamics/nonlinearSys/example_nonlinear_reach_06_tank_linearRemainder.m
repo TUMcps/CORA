@@ -70,7 +70,7 @@ disp(['computation time of reachable set with ' ...
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 60;
-simRes = simulateRandom(tank, params, simOpt);
+traj = simulateRandom(tank, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -98,7 +98,7 @@ for plotRun=1:3
     plot(R(1).R0,projDims);
   
     % plot simulation results      
-    plot(simRes,projDims,'DisplayName','Simulations');
+    plot(traj,projDims,'DisplayName','Simulations');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);

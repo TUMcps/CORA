@@ -73,7 +73,7 @@ E = [];
 [E_unique,id_unique] = removeRedundantIds(E,id);
 
 % ... expected result
-exp_E_unique = [];
+exp_E_unique = zeros(3,0);
 exp_id_unique = [1, 2, 3];
 
 % ... check result

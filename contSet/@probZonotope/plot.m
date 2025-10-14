@@ -32,6 +32,7 @@ function han = plot(probZ,varargin)
 % Written:       03-August-2007
 % Last update:   17-July-2020
 %                25-May-2022 (TL, 1D Plotting)
+%                16-July-2025 (TL, project before calling enclosingProbability)
 % Last revision: 12-July-2023 (TL, restructure)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -74,12 +75,15 @@ end
 function eP = aux_preprocess(probZ,m,dims)
     % preprocess
     
-    % one-dimensional case
+
+    % project
+    probZ = project(probZ,dims);
     if length(dims) == 1
-        probZ = project(probZ, dims);
-        probZ = [1;0] * probZ;
-        dims = [1,2];
+        % make one-dimensional case two-dimensional
+        probZ = [1;0] * probZ; 
+        dims = 1:2;
     end
+    dims = 1:numel(dims);
 
     % compute enclosing probability
     eP = enclosingProbability(probZ,m,dims);

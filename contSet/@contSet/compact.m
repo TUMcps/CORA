@@ -71,8 +71,8 @@ elseif isa(S,'levelSet') % ---
 elseif isa(S,'polygon') % ---
     [method,tol] = setDefaultValues({'all',0.01},varargin);
     methods = {'all','simplify','douglasPeucker'};
-
-elseif isa(S,'spectraShadow') % ---
+    
+elseif isa(S,'spectraShadow')
     [method,tol] = setDefaultValues({'all',eps},varargin);
     methods = {'all','zeros'};
 

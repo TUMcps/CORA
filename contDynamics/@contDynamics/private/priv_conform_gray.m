@@ -61,7 +61,7 @@ if ~isfield(options.cs, 'p0') && ~isfield(options.cs, 'set_p')
     options.cs.p0 = [center(params.R0); center(params.U)];
     options.cs.set_p = @(p,params) set_p_default(p, params, sys);
     % changes in center vector do not change derivatives
-    options.cs.derivRecomputation = false; 
+    options.cs.updateDeriv = false; 
 elseif ~isfield(options.cs, 'p0') || ~isfield(options.cs, 'set_p')
     throw(CORAerror('CORA:notDefined','Initial guess for p or parameter function set_p is undefined!'))
 end
@@ -108,7 +108,7 @@ try
     [sys_upd,params] = options.cs.set_p(p_opt,params);
     
     % find conformant parameters for the estimated c
-    options.cs.derivRecomputation = true;
+    options.cs.updateDeriv = true;
     [params_new, fval] = priv_conform_white(sys_upd, params, options);
 catch ME % usually due to timeout
     if ME.message == "Timeout" || ME.identifier== "optim:barrier:UsrObjUndefAtX0"
@@ -150,7 +150,7 @@ end
 
         % compute the cost cost for each test case
         [sys_p,params] = options.cs.set_p(p,params);
-        if ~options.cs.derivRecomputation && ...
+        if ~options.cs.updateDeriv && ...
                 (isa(sys_p, 'nonlinearSysDT') || isa(sys_p, 'nonlinearARX')) && ...
                 ~contains(func2str(sys_p.mFile), "predict")
             % derivative recomputation since model is changed 
@@ -163,12 +163,12 @@ end
         fval = 0;
         p_GO = cell(length(testSuite),1);
         for m = 1 : length(testSuite)
-            u_nom = testSuite{m}.u + center(U_p)';
-            x0_nom = testSuite{m}.initialState + center(R0_p);
-            p_GO{m} = computeGO(sys_p, x0_nom, permute(u_nom,[2,1,3]), n_k);
+            u_nom = testSuite(m).u + center(U_p);
+            x0_nom = testSuite(m).x(:,1,1) + center(R0_p);
+            p_GO{m} = computeGO(sys_p, x0_nom, u_nom, n_k);
 
             % compute least square or maximum error
-            y_m = permute(testSuite{m}.y,[2,1,3]);
+            y_m = testSuite(m).y;
             if type == "grayLS"
                 cost_m = options.cs.w.* sqrt(mean((y_m-p_GO{m}.y).^2,3));
             else

@@ -49,7 +49,7 @@ R = reach(sys,params,options);
 
 % simulation
 simOpt.points = 10;
-simRes = simulateRandom(sys,params,simOpt);
+traj = simulateRandom(sys,params,simOpt);
 
 % check reachable set
 assert(~check(specUnsafe,R));
@@ -57,20 +57,20 @@ assert(check(specSafe,R));
 assert(check(specInvariant,R));
 
 % check simulation results
-assert(~check(specUnsafe,simRes));
-assert(check(specSafe,simRes));
-assert(check(specInvariant,simRes));
+assert(~check(specUnsafe,traj));
+assert(check(specSafe,traj));
+assert(check(specInvariant,traj));
 
 % check timed ---
 
 specTimed = specification(interval(-1,1),'safeSet',interval(1));
 
 % no simulation in time, something is wrong with simRes object
-simRes = simResult({ones(11,1)},{(0:0.01:0.1)'});
-assert(~check(specTimed,simRes))
+traj = trajectory([],ones(1,11),[],0:0.01:0.1);
+assert(~check(specTimed,traj))
 % but with time, all is good
-simRes = simResult({ones(11,1)},{(0:0.1:1)'});
-assert(check(specTimed,simRes))
+traj = trajectory([],ones(1,11),[],0:0.1:1);
+assert(check(specTimed,traj))
 
 % combine results
 res = true;

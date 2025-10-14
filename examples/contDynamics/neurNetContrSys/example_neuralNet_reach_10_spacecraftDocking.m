@@ -84,14 +84,14 @@ isSafe = @(x) (sqrt(x(3)^2 + x(4)^2)) <= (0.2 + 2*n*sqrt(x(1)^2 + x(2)^2));
 % Simulation --------------------------------------------------------------
 
 timerVal = tic;
-simRes = simulateRandom(sys, params);
+traj = simulateRandom(sys, params);
 tSim = toc(timerVal);
 disp(['Time to compute random simulations: ', num2str(tSim)]);
 
 % Check Violation --------------------------------------------------------
 
 timerVal = tic;
-isVio = aux_checkSimulations(simRes,isSafe);
+isVio = aux_checkSimulations(traj,isSafe);
 tVio = toc(timerVal);
 disp(['Time to check violation in simulations: ', num2str(tVio)]);
 
@@ -136,7 +136,7 @@ projDims = 1; % [3,4] look more problematic even after single step
 useCORAcolors("CORA:contDynamics")
 plotOverTime(R, projDims, 'DisplayName', 'Reachable set')
 plotOverTime(R(1).R0, projDims, 'DisplayName', 'Initial set');
-plotOverTime(simRes, projDims, 'DisplayName', 'Simulations');
+plotOverTime(traj, projDims, 'DisplayName', 'Simulations');
 xlabel('Time');
 ylabel('x');
 
@@ -158,20 +158,17 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function isVio = aux_checkSimulations(simRes,isSafe)
+function isVio = aux_checkSimulations(traj,isSafe)
     % check specifications in simulations
     
     % iterate through all simulations
-    for i = 1:numel(simRes)
-        x_i = simRes(i).x;
-        for j = 1:numel(x_i)
-            x_ij = x_i{j};
-            for k = 1:size(x_ij,1)
-                % check each point
-                isVio = ~isSafe(x_ij(k, :)');
-                if isVio
-                    return;
-                end
+    for i = 1:numel(traj)
+        x_i = traj(i).x;
+        for k = 1:size(x_i,2)
+            % check each point
+            isVio = ~isSafe(x_i(:,k));
+            if isVio
+                return;
             end
         end
     end

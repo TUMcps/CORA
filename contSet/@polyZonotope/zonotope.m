@@ -15,7 +15,7 @@ function Z = zonotope(pZ)
 %    Z = zonotope(pZ);
 %
 %    figure; hold on;
-%    plot(pZ,[1,2],'Filled','r');
+%    plot(pZ,[1,2],'FaceColor','r');
 %    plot(Z,[1,2],'b');
 %
 % Other m-files required: none

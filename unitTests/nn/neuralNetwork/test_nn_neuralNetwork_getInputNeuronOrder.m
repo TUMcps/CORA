@@ -53,7 +53,7 @@ assert(isequal(neuronOrder,1:16))
 
 % sensitivity
 neuronOrder = nn.getInputNeuronOrder('sensitivity',x);
-[~,idx] = sort(mean(abs(nn.calcSensitivity(x))));
+[~,idx] = sort(mean(abs(nn.calcSensitivity(x)),1));
 assert(isequal(neuronOrder,idx));
 
 % snake

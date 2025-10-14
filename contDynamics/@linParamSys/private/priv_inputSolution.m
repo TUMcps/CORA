@@ -29,7 +29,7 @@ function obj = priv_inputSolution(obj,params,options)
 % ------------------------------ BEGIN CODE -------------------------------
 
 %set of possible inputs
-V=obj.B*params.U;
+V=obj.B*params.U+obj.c;
 
 %compute vTrans if possible
 try
@@ -64,7 +64,7 @@ inputSet = inputSet + obj.E*r*Vabs;
 intM = intM + obj.E*r;
 
 %input solution due certain input
-inputSetTrans = intM*zonotope(vTrans);
+inputSetTrans = intM*zonotope(interval(vTrans));
 
 %delete zero generators in zonotope representation
 inputSet=compact_(inputSet,'zeros',eps);

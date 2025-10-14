@@ -51,7 +51,7 @@ options.guardIntersect = 'zonoGirard';
 
 % Simulation --------------------------------------------------------------
 
-simRes = simulateRandom(HA,params);
+traj = simulateRandom(HA,params);
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -69,7 +69,7 @@ for k=1:2
     plotOverTime(R,k);
 
     % plot simulation
-    plotOverTime(simRes,k);
+    plotOverTime(traj,k);
 
     % labels, title, and limitss
     xlabel('Time')

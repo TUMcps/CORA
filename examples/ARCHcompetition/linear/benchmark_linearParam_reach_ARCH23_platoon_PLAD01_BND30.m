@@ -157,14 +157,14 @@ points = cell(runs,1);
 x_all = cell(runs,1);
 t_all = cell(runs,1);
 y_all = cell(runs,1);
-
+traj(runs,1) = trajectory();
 for j=1:runs
 
     points{j} = randPoint(R0);
 
     % reset time
     t = 0;
-    simRes_ = {}; counter = 1;
+    traj_(4,1) = trajectory(); counter = 1;
 
     for i = 1:2
        
@@ -175,8 +175,8 @@ for j=1:runs
         
         params.R0 = zonotope(points{j});
         temp = simulateRandom(linSys_c, params, simOpt);
-        points{j} = temp.x{1}(end,:)';
-        simRes_{counter} = temp;
+        points{j} = temp.x(:,end);
+        traj_(counter) = temp;
         counter = counter + 1;
         
         % simulate uncontrolled system
@@ -186,21 +186,22 @@ for j=1:runs
         
         params.R0 = zonotope(points{j});
         temp = simulateRandom(linSys_n, params, simOpt);
-        points{j} = temp.x{1}(end,:)';
-        simRes_{counter} = temp;
+        points{j} = temp.x(:,end);
+        traj_(counter) = temp;
         counter = counter + 1;
     end
 
-    % unify all parts to one simRes object
-    x_all{j,1} = [simRes_{1}.x{1}; simRes_{2}.x{1}; simRes_{3}.x{1}; simRes_{4}.x{1}];
-    t_all{j,1} = [simRes_{1}.t{1}; simRes_{2}.t{1}; simRes_{3}.t{1}; simRes_{4}.t{1}];
-    y_all{j,1} = [simRes_{1}.y{1}; simRes_{2}.y{1}; simRes_{3}.y{1}; simRes_{4}.y{1}];
-
+    % unify all parts to one traj object
+    x_all{j,1} = [];
+    t_all{j,1} = [];
+    y_all{j,1} = [];
+    for i_traj = 1:length(traj_)
+        x_all{j,1} = [x_all{j,1} traj_(i_traj).x];
+        t_all{j,1} = [t_all{j,1} traj_(i_traj).t];
+        y_all{j,1} = [y_all{j,1} traj_(i_traj).y];
+    end
+    traj(j) = trajectory([],x_all{j,1},y_all{j,1},t_all{j,1});
 end
-
-% init full simResult object
-simRes = simResult(x_all,t_all,{},y_all);
-
 
 % Visualization -----------------------------------------------------------
 
@@ -209,12 +210,12 @@ figure; hold on; box on;
 useCORAcolors("CORA:contDynamics");
 
 % plot reachable set
-plotOverTime(R_full,1,'Unify',true);
+plotOverTime(R_full,1);
 
 updateColorIndex;
 
 % plot simulation results
-plotOverTime(simRes,1);
+plotOverTime(traj,1);
 
 % labels
 xlabel('$t$','interpreter','latex');

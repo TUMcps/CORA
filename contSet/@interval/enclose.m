@@ -14,7 +14,7 @@ function I_out = enclose(I1,I2)
 %
 % Example: 
 %    I1 = interval([1;-1], [2; 1]);
-%    I2 = rand(2,2)*I1 + rand(2,1);
+%    I2 = interval([3;-3], [5; -2]);
 %    I_out = enclose(I1,I2);
 %
 % Other m-files required: none

@@ -1,0 +1,21 @@
+; Cersyve-9 property cart_pole
+
+(declare-const X_0 Real)
+(declare-const X_1 Real)
+(declare-const X_2 Real)
+(declare-const X_3 Real)
+
+(declare-const Y_0 Real)
+(declare-const Y_1 Real)
+
+(assert (<= X_0 1))
+(assert (>= X_0 -1))
+(assert (<= X_1 0.41887902047863906))
+(assert (>= X_1 -0.41887902047863906))
+(assert (<= X_2 1))
+(assert (>= X_2 -1))
+(assert (<= X_3 1))
+(assert (>= X_3 -1))
+
+(assert (<= Y_0 0))
+(assert (>= Y_1 0))

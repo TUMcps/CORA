@@ -1,9 +1,9 @@
-function [res,R,simRes,failedDim] = priv_isconform_RRT(sys,params,options)
+function [res,R,traj_RRT,failedDim] = priv_isconform_RRT(sys,params,options)
 % priv_isconform_RRT - performs a conformance check using a white-box model and
 %   rapidly exploring random trees (RRTs), see [1].
 %
 % Syntax:
-%    [res,R,simRes,failedDim] = priv_isconform_RRT(sys,params,options)
+%    [res,R,traj,failedDim] = priv_isconform_RRT(sys,params,options)
 %
 % Inputs:
 %    sys - contDynamics system
@@ -13,7 +13,7 @@ function [res,R,simRes,failedDim] = priv_isconform_RRT(sys,params,options)
 % Outputs:
 %    res - true if conformance was achieved, otherwise false
 %    R - reachSet object (only time steps for which measurments exist)
-%    simRes - states of the rapidly exploring random tree
+%    traj - states of the rapidly exploring random tree
 %    failedDim - dimension for which the conformance check failed (only for box enclosure of reachable sets)
 %
 % Reference:
@@ -41,22 +41,22 @@ testSuite = params.testSuite;
 % init partial results, reachable sets, and simulation results
 resPartial = zeros(length(testSuite),1);
 R = cell(length(testSuite),1);
-simRes = cell(length(testSuite),1);
+traj_RRT = [];
 
-%% loop over test cases
-for iCase = 1:length(testSuite)
+%% loop over trajectories
+for m = 1:length(testSuite)
 
     % compute time step and final time
-    testCase = testSuite{iCase};
-    timeSteps = size(testCase.u,1);
-    options.timeStep = testCase.sampleTime/options.timeStepDivider;
-    params.tFinal = testCase.sampleTime*timeSteps;
+    traj_m = testSuite(m);
+    timeSteps = size(traj_m.u,2);
+    options.timeStep = traj_m.dt/options.timeStepDivider;
+    params.tFinal = traj_m.dt*timeSteps;
     
     
     % input trajectory from test case
-    params.u = testCase.u';
+    params.u = traj_m.u;
     % consider time step divider
-    dim = size(testCase.u,2);
+    dim = size(traj_m.u,1);
     tmp = [];
     for iStep = 1:options.timeStepDivider
         tmp((1:dim) + (iStep-1)*dim, :) = params.u;
@@ -85,23 +85,23 @@ for iCase = 1:length(testSuite)
         R_new.set{iStep} = reduce(R_new.set{iStep},options.reductionTechnique,options.postProcessingOrder);
     end
     % init reachset
-    R{iCase} = reachSet(R_new);
+    R{m} = reachSet(R_new);
 
     %% compute rapidly-exploring random tree
     % "hack" before validateOptions is fixed (remove this later)
     % rewrite to remove extended options.uTransVec for intermediate time
     % steps in reachability analysis
-    options.uTransVec = testCase.u';
+    options.uTransVec = traj_m.u;
     % check for pre-computed RRT
     if isfield(options,'preComputedRRT')
-        load(options.preComputedRRT, 'simRes')
+        load(options.preComputedRRT, 'traj_RRT')
     else
         % compute RRT
         options.type = 'rrt';
-        options.R = R{iCase};
-        simRes{iCase} = simulateRandom(options.refModel, params, options);
+        options.R = R{m};
+        traj_RRT = [trajRRT; simulateRandom(options.refModel, params, options)];
         % save result
-        save simResRRT simRes
+        save trajRRT traj_RRT
     end
 
     %% enclosure check
@@ -113,14 +113,14 @@ for iCase = 1:length(testSuite)
         % loop over all samles
         for iSample = 1:options.points
             % project result form high-fidelity model
-            xProj = options.convertToAbstractState(simRes{iCase}.x{iSample}(iStep,:)');
+            xProj = options.convertToAbstractState(traj_RRT(m).x(:,iStep,iSample));
             % check containment
-            if ~contains(R{iCase}.timePoint.set{iStep}, xProj)
+            if ~contains(R{m}.timePoint.set{iStep}, xProj)
                 disp('Model is not reachset conformant');
                 res = false;
                 % return failed dimension for box enclosure
                 if options.postProcessingOrder==1
-                    I = interval(R{iCase}.timePoint.set{iStep});
+                    I = interval(R{m}.timePoint.set{iStep});
                     % indices where infimum is breached
                     failedDim.inf = find(I.inf > xProj);
                     % indices where supremum is breached
@@ -132,7 +132,7 @@ for iCase = 1:length(testSuite)
     end
     
     % containment successfully shown
-    resPartial(iCase) = 1;
+    resPartial(m) = 1;
 
 end
 

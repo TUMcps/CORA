@@ -88,7 +88,7 @@ spec = add(specGoalSet,specObstacle);
 % Verification ------------------------------------------------------------
 
 t = tic;
-[res, R, simRes] = verify(sys, spec, params, options, true, 9);
+[res, R, traj] = verify(sys, spec, params, options, true, 9);
 tTotal = toc(t);
 disp(['Result: ' res])
 
@@ -103,13 +103,13 @@ plot(specObstacle, [1,2], 'DisplayName', 'Obstacle');
 
 % plot reachable set
 useCORAcolors('CORA:contDynamics')
-plot(R, [1,2], 'Unify', true, 'DisplayName', 'Reachable set');
+plot(R, [1,2], 'DisplayName','Reachable set');
 
 % plot initial set
 plot(R(1).R0,[1,2],'DisplayName','Initial set');
 
 % plot simulation
-plot(simRes, [1,2], 'DisplayName', 'Simulations','Color','k');
+plot(traj, [1,2],'DisplayName','Simulations');
 
 % labels and legend
 xlabel('x'); ylabel('y');

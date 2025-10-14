@@ -100,19 +100,45 @@ end
 if isempty(Y)
     throw(CORAerror("CORA:converterIssue",sprintf('Unable to convert file: %s', file)));
 elseif isscalar(Y)
-    spec = specification(Y{1}, 'safeSet');
+    % We have a single unsafe set.
+    spec = specification(Y{1}, 'unsafeSet');
 else
-    % convert to the union of unsafe sets
-    Y = safeSet2unsafeSet(Y);
+    % We have a union of unsafe sets, i.e., any point contained in any set 
+    % is a counter example.
+    % We want to reduce the number of specification sets. Therefore, we 
+    % try to convert to the union of unsafe sets to a union of safe sets.
+    Y_safe = safeSet2unsafeSet(Y); % We can use the function; safe vs. unsafe is juts
+    % Check if we could reduce the number of specifications.
+    if length(Y_safe) < length(Y)
+        % We could reduce the number of specifications; we add the sets 
+        % as unsafe sets.
+        Y = Y_safe;
+        type = 'safeSet'; % Type of union, e.g. Y is a union of safe sets
+    else
+        % We could not reduce the number of specifications; we add the 
+        % sets as unsafe sets.
+        type = 'unsafeSet'; % Type of union, e.g. Y is a union of unsafe sets
+    end
+    % Initialize the result
     spec = [];
-
+    % Add all the specifications together. We can only add inverse 
+    % sets, because then all specification have to hold simultaneously.
     for i = 1:length(Y)
-        spec = add(spec, specification(Y{i}, 'unsafeSet'));
+        switch type
+            case 'safeSet'
+                % We have to convert the safe set to an unsafe set.
+                Yi_safe = specification(Y{i},'safeSet');
+                % All inverted sets unsafe sets have to be avoided.
+                spec = add(spec,Yi_safe);
+            case 'unsafeSet'
+                % We have to convert the unsafe set to an safe set.
+                Yi_unsafe = specification(Y{i},'unsafeSet');
+                % We add the unsafe set.
+                spec = add(spec,Yi_unsafe);
+        end
     end
 end
 
-% vnnlib files have specifications inverted
-spec = inverse(spec);
 end
 
 

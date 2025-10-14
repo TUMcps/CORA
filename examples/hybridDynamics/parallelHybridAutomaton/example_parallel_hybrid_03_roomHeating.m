@@ -57,7 +57,7 @@ options.guardIntersect = 'zonoGirard';
 
 % Simulation --------------------------------------------------------------
 
-simRes = simulateRandom(pHA,params);
+traj = simulateRandom(pHA,params);
 
 
 % Reachability Analysis ---------------------------------------------------
@@ -71,7 +71,7 @@ R = reach(pHA,params,options);
 for k=1:2
     figure; box on; hold on
     plotOverTime(R,k);
-    plotOverTime(simRes,k);
+    plotOverTime(traj,k);
     xlabel('Time')
     ylabel('Temperature');
     title(['Room ' num2str(k)]);

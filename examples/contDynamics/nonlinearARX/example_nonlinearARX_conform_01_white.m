@@ -71,7 +71,7 @@ params_true.testSuite = createTestSuite(sys, params_true, n_k, n_m, ...
 
 % Identification Options
 options = options_reach;
-options.cs.robustnessMargin = 1e-9;
+options.cs.robustness = 1e-9;
 options.cs.verbose = false;
 options.cs.cost = cost_norm;
 options.cs.constraints = constraints;
@@ -110,10 +110,10 @@ fprintf("Identification time: %.4f\n", Ts);
 num_out = 0;
 check_contain = 1;
 for m=1:length(params_true.testSuite)
-    [~, eval] = validateReach(params_true.testSuite{m}, configs, check_contain);
+    [~, eval] = validateReach(params_true.testSuite(m), configs, check_contain);
     num_out = num_out + eval.num_out;
 end
-num_all = length(params_true.testSuite)*n_k_val*size(params_true.testSuite{1}.y,3);
+num_all = length(params_true.testSuite)*n_k_val*size(params_true.testSuite(1).y,3);
 p_contained = 100-num_out(2)/num_all*100;
 fprintf("%.2f%% of the samples are contained in the reachable " + ...
     "set for the identification test cases (must be 100%%!). \n", ...
@@ -128,10 +128,10 @@ testSuite_val = createTestSuite(sys, params_true, n_k_val, n_m_val, ...
 num_out = 0;
 check_contain = 1;
 for m=1:length(testSuite_val)
-    [~, eval] = validateReach(testSuite_val{m}, configs, check_contain, plot_settings);
+    [~, eval] = validateReach(testSuite_val(m), configs, check_contain, plot_settings);
     num_out = num_out + eval.num_out;
 end
-num_all = length(testSuite_val)*n_k_val*size(testSuite_val{1}.y,3);
+num_all = length(testSuite_val)*n_k_val*size(testSuite_val(1).y,3);
 p_contained = 100-num_out(2)/num_all*100;
 fprintf("%.2f%% of the samples are contained in the " + ...
     "reachable set for the validation test cases. \n", p_contained);

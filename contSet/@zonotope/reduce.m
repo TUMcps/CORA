@@ -7,6 +7,9 @@ function [Z,varargout] = reduce(Z,method,varargin)
 %    Z = reduce(Z,method,order)
 %    Z = reduce(Z,method,order,filterLength)
 %    Z = reduce(Z,method,order,filterLength,option)
+%    if method from {'minVolume', 'VSF', 'TSF', 'shortestGenVol',
+%    'shortestGenTSF', 'scalingDet'}:
+%    Z = reduce(Z,method,order,composeVolume)
 %
 % Inputs:
 %    Z - zonotope object
@@ -25,18 +28,28 @@ function [Z,varargout] = reduce(Z,method,varargin)
 %                   - 'scale'
 %                   - 'scaleHausdorff'  
 %                   - 'redistribute'
-%                   - 'valero'          
+%                   - 'valero'
+%                   - 'minVolume'       this and below methods assume
+%                   removing one of the original generators and rescaling
+%                   the remaining ones leads to the minimal volume (SS)
+%                   - 'VSF'
+%                   - 'TSF'
+%                   - 'shortestGenVol'
+%                   - 'shortestGenTSF'
+%                   - 'scalingDet'
 %    order - order of reduced zonotope
 %    filterLength - ???
 %    options - ???
 %    alg - ???
+%    composeVolume - computes volume of over-approximation for minVolume...
 %
 % Outputs:
 %    Z - zonotope object
-%    dHerror - (optional, only 'adaptive' and 'scaleHausdorff') 
-%              over-approximation of the Hausdorff distance between the 
-%              original and reduced zonotope
+%    dHerror - (optional, only 'adaptive') over-approximation of the
+%              Hausdorff distance between the original and reduced zonotope
 %    gredIdx - index of reduced generators
+%    minimalVolume - (optional) for methods from {'minVolume', 'VSF', 'TSF',
+%                    'shortestGenVol', 'shortestGenTSF', 'scalingDet'}
 %
 % Example: 
 %    Z = zonotope([1;-1],[2 3 1 -1 -2 1 -4 3 0; 2 3 -2 1 -3 2 1 0 2]);
@@ -76,6 +89,7 @@ function [Z,varargout] = reduce(Z,method,varargin)
 % Written:       24-January-2007 
 % Last update:   15-September-2007
 %                27-June-2018
+%                11-June-2025 (SS, added further minVolume methods)
 % Last revision: 06-October-2024 (MW, refactor including priv_)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -167,13 +181,22 @@ switch method
         option = 'svd';
         alg = 'interior-point';
         Z = priv_reduceConstOpt(Z,order, option, alg);  
+
+    case {'minVolume', 'VSF', 'TSF', 'shortestGenVol', 'shortestGenTSF', 'scalingDet'}
+        if nargin == 3
+            [Z, minimalVolume] = priv_minSubZonotope(Z, 'method', method, 'order', varargin{1});
+        else
+            [Z, minimalVolume] = priv_minSubZonotope(Z, 'method', method, 'order', varargin{1}, 'composeVolume', varargin{2});
+        end
+        varargout{1} = minimalVolume;
     
     % wrong method
         otherwise
         throw(CORAerror('CORA:wrongValue','second',...
             "'adaptive', 'adaptive-penven', 'cluster', 'combastel', 'constOpt', 'girard'" + ...
             "'methA', 'methB', 'methC', 'pca', 'scott', 'redistribute', 'sadraddini'" + ...
-            "'scale', 'scaleHausdorff', or 'valero'"));
+            "'scale', 'scaleHausdorff', or 'valero'" + ...
+            "'minVolume', 'VSF', 'TSF', 'shortestGenVol', 'shortestGenTSF', or 'scalingDet'"));
 end
 
 % ------------------------------ END OF CODE ------------------------------

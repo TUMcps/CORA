@@ -56,7 +56,7 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 
 % Simulation --------------------------------------------------------------
 
-simRes = simulateRandom(sys, params);
+traj = simulateRandom(sys, params);
 
 
 % Visualization -----------------------------------------------------------
@@ -76,7 +76,7 @@ for k = 1:length(dims)
     plot(R.R0,projDims, 'DisplayName','Initial set');
     
     % plot simulation results    
-    plot(simRes,projDims, 'DisplayName', 'Simulations');
+    plot(traj,projDims, 'DisplayName', 'Simulations');
 
     % label plot
     xlabel(['x_{',num2str(projDims(1)),'}']);

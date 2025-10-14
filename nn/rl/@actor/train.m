@@ -81,7 +81,7 @@ else
     gradOutG = options.rl.actor.nn.train.eta/max(options.rl.noise,[],'all') * gradOutG;
     loss.vol =  1/max(options.rl.noise,[],'all')*loss.vol;
 
-    obj.nn.backpropZonotopeBatch_(policyGradient.gradC,gradOutG,options.rl.actor,obj.idxLayer);
+    obj.nn.backpropZonotopeBatch_(policyGradient.gradC,gradOutG,options.rl.actor,obj.idxLayer,true);
 
 end
 

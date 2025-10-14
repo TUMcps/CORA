@@ -105,7 +105,7 @@ disp(['computation time: ',num2str(tVer+tComp)]);
 
 simOpt.points = 10;
 
-simRes = simulateRandom(linSys, params, simOpt);
+traj = simulateRandom(linSys, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -114,13 +114,13 @@ figure; hold on; box on;
 useCORAcolors("CORA:contDynamics")
 
 % plot reachable set over time 
-plotOverTime(R,1,'Unify',true);
+plotOverTime(R,1);
 
 % no initial set
 updateColorIndex;
 
 % plot simulation results
-plotOverTime(simRes,1);
+plotOverTime(traj,1);
 
 % formatting
 xlabel('$t$','interpreter','latex');

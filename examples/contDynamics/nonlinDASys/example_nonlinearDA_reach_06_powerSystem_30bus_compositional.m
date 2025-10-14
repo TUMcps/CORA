@@ -277,6 +277,9 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % Simulation --------------------------------------------------------------
 
 nrRuns = 10;
+traj_1 = [];
+traj_2 = [];
+traj_3 = [];
 for iRun = 1:nrRuns
     simOpt.points = 1;
     
@@ -286,7 +289,7 @@ for iRun = 1:nrRuns
     params.tFinal = 0.1; 
     u0_gen = [2.6; 0.4; 0; 0; 0; 0];
     params.u = [u0_gen; u0_load];
-    simRes_1{iRun} = simulateRandom(IEEE30_model, params, simOpt);
+    traj_1 = [traj_1; simulateRandom(IEEE30_model, params, simOpt)];
 
     % operation under fault
     params.tStart = 0.1; 
@@ -295,8 +298,8 @@ for iRun = 1:nrRuns
     u0_gen = [0; 0.4; 0; 0; 0; 0];
     params.u = [u0_gen; u0_load];
     % initial set is final solution of normal operation
-    params.R0 = zonotope(simRes_1{iRun}.x{1}(end,:)');
-    simRes_2{iRun} = simulateRandom(IEEE30_fault_model, params, simOpt);
+    params.R0 = zonotope(traj_1(iRun).x(:,end));
+    traj_2 = [traj_2; simulateRandom(IEEE30_fault_model, params, simOpt)];
     
     % operation after fixing the fault
     params.tStart = 0.13; 
@@ -305,8 +308,8 @@ for iRun = 1:nrRuns
     u0_gen = [2.6; 0.4; 0; 0; 0; 0];
     params.u = [u0_gen; u0_load];
     % initial set is final solution of normal operation
-    params.R0 = zonotope(simRes_2{iRun}.x{1}(end,:)');
-    simRes_3{iRun} = simulateRandom(IEEE30_model, params, simOpt);
+    params.R0 = zonotope(traj_2(iRun).x(:,end));
+    traj_3 = [traj_3; simulateRandom(IEEE30_model, params, simOpt)];
 end
 % save IEEE30sim
 % Visualization -----------------------------------------------------------
@@ -375,9 +378,9 @@ for plotRun=1:length(projDimDyn)
 
     % plot simulation results
     for j=1:nrRuns
-        plot(simRes_1{j},projDimDyn{plotRun},'k');
-        plot(simRes_2{j},projDimDyn{plotRun},'k');
-        plot(simRes_3{j},projDimDyn{plotRun},'k');
+        plot(traj_1(j),projDimDyn{plotRun},'k');
+        plot(traj_2(j),projDimDyn{plotRun},'k');
+        plot(traj_3(j),projDimDyn{plotRun},'k');
     end
 
 
@@ -465,17 +468,11 @@ for plotRun=1:length(projDimAlg)
     % plot simulation results
     for j=1:nrRuns
         % mode 1
-        for i=1:length(simRes_1{j}.t)
-            plot(simRes_1{j}.a{1}(:,projDimAlg{plotRun}(1)), simRes_1{j}.a{1}(:,projDimAlg{plotRun}(2)),'Color',0*[1 1 1]);
-        end
+        plot(traj_1(j).a(projDim(1),:), traj_1(j).a(projDim(2),:),'Color',0*[1 1 1]);
         % mode 2
-        for i=1:length(simRes_2{j}.t)
-            plot(simRes_2{j}.a{1}(:,projDimAlg{plotRun}(1)), simRes_2{j}.a{1}(:,projDimAlg{plotRun}(2)),'Color',0*[1 1 1]);
-        end
+        plot(traj_2(j).a(projDim(1),:), traj_2(j).a(projDim(2),:),'Color',0*[1 1 1]);
         % mode 3
-        for i=1:length(simRes_3{j}.t)
-            plot(simRes_3{j}.a{1}(:,projDimAlg{plotRun}(1)), simRes_3{j}.a{1}(:,projDimAlg{plotRun}(2)),'Color',0*[1 1 1]);
-        end
+        plot(traj_3(j).a(projDim(1),:), traj_3(j).a(projDim(2),:),'Color',0*[1 1 1]);
     end
     
     % label plot

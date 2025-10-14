@@ -66,7 +66,7 @@ disp(['computation time of reachable set with '...
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 60;
-simRes = simulateRandom(vanderPol, params, simOpt);
+traj = simulateRandom(vanderPol, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -86,7 +86,7 @@ plot(R_linRem,projDims,'DisplayName','Linear Remainder');
 plot(R_linRem(1).R0,projDims,'DisplayName','Initial set');
 
 % plot simulation results      
-plot(simRes,projDims,'DisplayName','Simulations');
+plot(traj,projDims,'DisplayName','Simulations');
 
 %label plot
 xlabel(['x_{',num2str(projDims(1)),'}']);

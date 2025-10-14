@@ -1,44 +1,35 @@
-function testSuite = createTestSuite(sys, params, n_k, n_m, n_s, options)
-% createTestSuite - Creates a testSuite consisting of test cases for
-%   the given system dynamics
+function traj = createTestSuite(sys, params, n_k, n_m, n_s, options)
+% createTestSuite - Creates a trajectory array consisting of random
+%   trajectories for the given system dynamics and parameters
 %
 % Syntax:
-%    testSuite = createTestSuite(sys, params, n_k, n_m, n_s, options)
-%    testSuite = createTestSuite(sys, params, n_k, n_m, n_s)
+%    traj = createTestSuite(sys, params, n_k, n_m, n_s, options)
+%    traj = createTestSuite(sys, params, n_k, n_m, n_s)
 %
 % Inputs:
 %    sys - dynamical system
 %    params - parameter defining the conformance problem
 %       .R0 - initial state set
 %       .U - input set
-%    n_k - length per test case
-%    n_m - number of test cases
-%    n_s - numbers of random simulations per test case
+%    n_k - length per trajectory
+%    n_m - number of trajectories
+%    n_s - numbers of random simulations per trajectory
 %    options - [optional] options specifying the sampling methods
 %       .p_extr - fraction of simulations using extreme points
-%           if not specified: 0
-%       .p_biased - fraction of simulation from biased uncertainty set
 %           if not specified: 0
 %       .inputCurve - array with form of the nominal input trajectories 
 %                     ("rand", "randn", "bezier", "sinWave", "sigmoid") 
 %                     for each input dimension
 %           if not specified: "randn"
-%       .inputParameters - n_p x n_u array with the curve parameters
-%           if not specified: sampling from the inputSet curve 
-%       .inputSet - set of admissible parameters for nominal input 
-%                   (or as cell array with for each input dimension)
+%       .inputSet - set of admissible parameters for generating nominal 
+%                   input 
 %           if not specified: sampling from default parameter sets
-%       .inputFactor - vector with a multiplicative scaling factor
-%                      for each input dimension
-%           if not specified: no scaling
 %       .stateSet - set of admissible nominal initial states
 %           if not specified: nominal initial states are zero
-%       .contInput - boolean specifying if continuous input is required
-%           if not specified: true
 %           
 %
 % Outputs:
-%    testSuite - cell array of N_m testCase objects
+%    traj - array of N_m trajectory objects
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -47,36 +38,26 @@ function testSuite = createTestSuite(sys, params, n_k, n_m, n_s, options)
 % See also: ---
 
 % Authors:       Laura Luetzow, Zeqi Li
-% Written:       28-February-2024             
+% Written:       27-August-2025            
 % Last update:   ---
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% settings
 if nargin < 6
     options = {}; % use default settings
 end
+
+% probability of extreme samples
 if ~isfield(options, 'p_extr')
     options.p_extr = 0;
 end
-if ~isfield(options, 'p_biased')
-    options.p_biased = 0;
-elseif ~isa(params.R0, 'zonotope') || ~isa(params.U, 'zonotope')
-    throw(CORAerror('CORA:notSupported',"Creation of biased test cases is only implemented for zonotopic uncertainty sets."))
-else
-    U_biased = zonotope(center(params.U)+ sum(0.5*generators(params.U),2), 0.5*generators(params.U));
-end
 
-% figure; hold on; 
+% simulationi time
 params.tFinal = n_k *sys.dt - sys.dt;
 
-if isa(sys,'linearSysDT') || isa(sys,'linearARX')
-    u=[];
-    x0 = [];
-    y = [];
-else
-    testSuite = cell(n_m,1);
-end
+traj(n_m,1) = trajectory();
 for m = 1:n_m
     % sample a random nominal input trajectory of the specified curve type
     u_m = aux_createCurve(sys.nrOfInputs,n_k,sys.dt,options);
@@ -88,43 +69,25 @@ for m = 1:n_m
         x0_m = zeros(dim(params.R0),1);
     end
 
-    y_m = zeros(n_k,sys.nrOfOutputs,n_s);
+    y_m = zeros(sys.nrOfOutputs,n_k,n_s);
     % sample the true input trajectory and initial state vector
     for s = 1:n_s
-        if rand(1) < options.p_biased
-            U = U_biased;
-        else
-            U = params.U;
-        end
-        R0 = params.R0;
         if rand(1) < options.p_extr
-            params.x0 = x0_m + randPoint(R0,1,'extreme');
+            params.x0 = x0_m + randPoint(params.R0,1,'extreme');
         else
-            params.x0 = x0_m + randPoint(R0,1);
+            params.x0 = x0_m + randPoint(params.R0,1);
         end
         if rand(1) < options.p_extr
-            params.u = u_m + randPoint(U, n_k,'extreme');
+            params.u = u_m + randPoint(params.U, n_k,'extreme');
         else
-            params.u = u_m + randPoint(U, n_k);
+            params.u = u_m + randPoint(params.U, n_k);
         end
 
         % simulate the system dynamics to obtain the output trajectory
         [~,~,~,y_m(:,:,s)] = simulate(sys,params);
     end
-    if n_m > 1 && (isa(sys,'linearSysDT') || isa(sys,'linearARX'))
-        % create one test case by concatenating all trajectories in the 
-        % third dimension
-        x0 = cat(3,x0,repmat(x0_m,1,1,n_s));
-        u = cat(3,u,repmat(u_m',1,1,n_s));
-        y = cat(3,y,y_m);
-    else
-        % create testCase for each nominal trajectory
-        testSuite{m} = testCase(y_m, u_m', x0_m, sys.dt, class(sys));
-    end
-end
-
-if n_m > 1 && (isa(sys,'linearSysDT') || isa(sys,'linearARX'))
-    testSuite{1} = testCase(y, u, x0, sys.dt, class(sys));
+    % create trajectory object for each nominal trajectory
+    traj(m) = trajectory(u_m, x0_m, y_m, [], sys.dt, [], [], class(sys));
 end
 end
 
@@ -150,131 +113,71 @@ else
     end
 end
 
-% define curve parameters or parameter set for sampling
-default_inputSet = false;
-if isfield(options, 'inputParameters') 
-    % curve parameters are given
-    p = options.inputParameters;
-
-else 
-    % curve parameters have to be sampled
-    if ~isfield(options, 'inputSet')
-        % sampling from the default parameter set
-        default_inputSet = true; 
-        d_min = 0; % minimum time delay
-        d_max = 1/4*tFinal; % maximum time delay
-
-    elseif iscell(options.inputSet)
-        % sampling from different given parameter sets
-        inputSet = options.inputSet; 
-
-    else
-        % sampling from the same given parameter set
-        inputSet = repmat({options.inputSet},n_u,1);
-    end
-end
-
+% loop through all input dimensions
 for i = 1: n_u
-    if isfield(options, 'inputParameters')
-        p_i = p(:,i);
-    elseif isfield(options, 'inputSet')        
+    if isfield(options, 'inputSet') && iscell(options.inputSet)
         p_i = randPoint(inputSet{i}, 1);
+    elseif isfield(options, 'inputSet')
+        p_i = randPoint(inputSet, 1);
+    else
+        p_i = randPoint(interval([-10; 1; 1; 0; 0; 0],...
+            [-1; 10; 1; 0; 2; 2]));
     end
+    % minimum and maximum input with u_max>=u_min+1e-3
+    u_min = p_i(1); 
+    u_max = max(u_min+1e-3, p_i(2)); 
+    % number of nonzero inputs (must be between 3 and n_k)
+    n_nonzero = min(max(round(p_i(3)*n_k), 3), n_k);
+    % start time step of nonzero inputs (must be smaller equal than n_k-n_nonzero+1)   
+    k_start_max = n_k-n_nonzero+1;
+    k_start = min(max(round(p_i(4)*k_start_max), 1), k_start_max); 
+    % scaling parameters
+    A1 = p_i(5); 
+    A2 = p_i(6); 
+
+    % generate time vector
+    t = 1:n_nonzero;
+
     switch curveType(i)
+        % generate input signals
         case "rand"
-            if default_inputSet
-                p_i = randPoint(interval([d_min;-1;3/4*tFinal],[d_max;1;tFinal]),1);
-            end
-
-            % load parameters of test case-------------------------------------
-            delay = max(p_i(1),0); % timeDelay
-            A = p_i(2); % amplitude
-            tZero = max(min(p_i(3),tFinal), delay+dt); % time after which input is equal to zero
-
-            % generate input signals-------------------------------------------
-            t = max(ceil( delay /dt)*dt,dt) : dt : min( floor( (tZero+delay) /dt)*dt, tFinal);
-            u(i,max(ceil( delay /dt),1): min(floor( (tZero+delay) /dt),n_k)) = ...
-                A * rand(length(t),1);
+            % uniformly distributed
+            u_i = u_min + (u_max-u_min) * rand(1,n_nonzero);
 
         case "randn"
-            if default_inputSet
-                p_i = randPoint(interval([d_min;-1;3/4*tFinal],[d_max;1;tFinal]),1);
-            end
-
-            % load parameters of test case-------------------------------------
-            delay = max(p_i(1),0); % timeDelay
-            A = p_i(2); % amplitude
-            tZero = max(min(p_i(3),tFinal), delay+dt); % time after which input is equal to zero
-
-            % generate input signals-------------------------------------------
-            t = max(ceil( delay /dt)*dt,dt) : dt : min( floor( (tZero+delay) /dt)*dt, tFinal);
-            u(i,max(ceil( delay /dt),1): min(floor( (tZero+delay) /dt),n_k)) = ...
-                A * randn(length(t),1);
+            % Gaussian distributed
+            u_i = A1 * randn(1,n_nonzero);
 
         case "bezier"
-            if default_inputSet
-                p_i = randPoint(interval([d_min;-1;3/4*tFinal;0;0],[d_max;1;tFinal;8;8]),1);
+            % Bezier curve
+            % control points
+            P = [0 0; 0.25 A1; 0.75 A2; 1 0];  
+            n = size(P,1)-1; % Degree of curve
+            x = linspace(0,1,100);
+
+            % generate input signals
+            B = zeros(length(x),2);
+            for j = 0:n
+                % Bernstein polynomial
+                B = B + (nchoosek(n,j) * (1-x).^(n-j) .* x.^j)' * P(j+1,:);
             end
-
-            % load parameters of test case-------------------------------------
-            delay = max(p_i(1),0); % timeDelay
-            A = p_i(2); % slipCompensation
-            tZero = max(min(p_i(3),tFinal), delay+dt);
-            p1 = p_i(4); % \in [0,8]
-            p2 = p_i(5); % \in [0,8]
-
-            % generate input signals-------------------------------------------
-            t = max(ceil( delay /dt)*dt,dt) : dt : min( floor( (tZero+delay) /dt)*dt, tFinal);
-            u(i,max(ceil( delay /dt),1): min(floor( (tZero+delay) /dt),n_k)) = ...
-                A*( 30/tZero + (6*p1-120)/tZero^2*(t-delay) + ...
-                (90-9*p1+3*p2)/tZero^3*(t-delay).^2 );
+            u_i = interp1(B(:,1), B(:,2), (t-1)/(n_nonzero-1), 'linear');
 
         case "sigmoid"
-            if default_inputSet
-                p_i = randPoint(interval([d_min;-1;-1; -1; 1],[d_max;1;1;1;10]),1);
-            end
+            % Signmoid curve
+            % generate input signals;
+            t_mid = t(round(n_nonzero/2));
+            u_i = A1* 1./(1+A2/n_nonzero*exp(-t+t_mid));
+            u_i = u_i - u_i(1); % start with zero
 
-            % load parameters of test case-------------------------------------
-            delay = max(p_i(1),0); % timeDelay
-            A = p_i(2); % slipCompensation
-            A1 = p_i(3); % \in [2,4]
-            A2 = p_i(4); % \in [-2,4]
-            p3 = p_i(5); % \in [4,12]
-
-            % generate input signals-------------------------------------------
-            t = max(ceil( delay /dt)*dt,dt) : dt : tFinal;
-            u(i,max(ceil( delay /dt),1):n_k) = ...
-                A*(A1*p3.*exp(-p3.*((t-delay)-0.5))./(1+exp(...
-                -p3.*((t-delay)-0.5))).^2 + A2*p3.*exp(-p3*((t-delay)-2))./...
-                (1+exp(-p3.*((t-delay)-2))).^2);
-
-        case "sinWave"
-            if default_inputSet
-                p_i = randPoint(interval([d_min;-1;tFinal/10; 0],[d_max;1;10*tFinal;n_k]),1);
-            end
-
-            % load parameters of test case-------------------------------------
-            delay = max(p_i(1),0); % timeDelay
-            A = p_i(2); % amplitude
-            T = 10*max(dt,p_i(3))*dt; 
-            Ts = max(0,p_i(4))*dt; % duration for keeping a constant input
-
-            % generate input signals-------------------------------------------
-            t1 = max(ceil(delay/dt)*dt,dt) : dt : min(floor((T/4+delay)/dt),n_k)*dt;
-            t2 = ceil((T/4+Ts+delay)/dt)*dt : dt : min(floor((T/2+Ts+delay)/dt),n_k)*dt ;
-
-            u(i,max(ceil(delay/dt),1):min(floor((T/4+delay)/dt),n_k)) = ...
-                A*cos((2*pi/T)*(t1-delay));
-            u(i,ceil((T/4+Ts+delay)/dt):min(floor((T/2+Ts+delay)/dt),n_k)) = ...
-                A*cos((2*pi/T)*(t2-Ts-delay));
+        case "sinWave"            
+            % Sinus curve
+            % generate input signals
+            u_i = A1*sin(A2*(2*pi/n_nonzero)*(t-1));
     end
-
-    if isfield(options, 'inputFactor')
-        u(:,i) = options.inputFactor(i) * u(:,i);
-    end
-end
-if ~isfield(options, 'contInput') || options.contInput
-    u = cumsum(u,2);
+    u(i, k_start:k_start+n_nonzero-1) = u_i; 
+    u(i, u(i,:) < u_min) = u_min;
+    u(i, u(i,:) > u_max) = u_max;
 end
 end
 

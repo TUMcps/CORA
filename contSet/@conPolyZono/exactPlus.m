@@ -27,9 +27,9 @@ function cPZ = exactPlus(cPZ,cPZ2)
 %    res_ = cPZ1 + cPZ2;
 %
 %    figure; hold on
-%    h1 = plot(res_,[1,2],'FaceColor','b','Splits',10);
-%    h2 = plot(res,[1,2],'FaceColor','r','Splits',10);
-%    legend([h1;h2],'Minkowski sum','exact plus');
+%    h1 = plot(res_,[1,2],'FaceColor','b','Splits',10,'DisplayName','Minkowski sum');
+%    h2 = plot(res,[1,2],'FaceColor','r','Splits',10,'DisplayName','Exact plus');
+%    legend;
 %
 % Other m-files required: none
 % Subfunctions: none

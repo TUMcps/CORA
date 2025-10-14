@@ -39,11 +39,10 @@ function han = plotPolygon(V,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% default
-NVpairs = {'Color',nextcolor};
-
-% read plot options
-if ~isempty(varargin)
+% parse name-value pairs
+if isempty(varargin)
+    NVpairs = {'Color',nextcolor};
+else
     NVpairs = readPlotOptions(varargin);
 end
 
@@ -210,6 +209,7 @@ function han = aux_plotSinglePoint(V,NVpairs,hasFaceColor,facecolor)
     % EdgeColor > Color
     [NVpairs,color] = readNameValuePair(NVpairs, 'Color');
     [NVpairs,edgecolor] = readNameValuePair(NVpairs,'EdgeColor');
+    [NVpairs,facealpha] = readNameValuePair(NVpairs,'FaceAlpha');
     NVpairs{end+1} = 'MarkerEdgeColor';
     if ~isempty(edgecolor)
         NVpairs{end+1} = edgecolor;
@@ -408,7 +408,12 @@ function han = aux_plot3D(V,NVpairs,doConvHull,hasFaceColor,facecolor)
 
 if doConvHull
     % compute convex hull
-    V = aux_convHull(V);
+    try
+        V = aux_convHull(V);
+    catch 
+        % plot V nevertheless
+        CORAwarning("CORA:plot",'Convex hull failed. Continuing...')
+    end
 end
 
 if ~hasFaceColor

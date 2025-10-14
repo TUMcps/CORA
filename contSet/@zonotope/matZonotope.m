@@ -11,7 +11,7 @@ function matZ = matZonotope(Z)
 %    matZ - matZonotope object
 %
 % Example: 
-%    Z = zonotope([randn(2,1),randn(2,10)]);
+%    Z = zonotope([ 0.578 ; 0.433 ], [ 0.768 -0.642 0.248 0.606 0.962 -0.536 0.215 -0.185 0.096 -0.583 ; -0.214 0.267 -0.344 0.999 -0.746 -0.953 -0.778 0.768 -0.262 -0.118 ]);
 %    matZ = matZonotope(Z);
 %
 % Other m-files required: none

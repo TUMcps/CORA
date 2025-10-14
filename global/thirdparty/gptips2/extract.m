@@ -17,7 +17,14 @@ function [mainTree,subTree] = extract(index,parentExpr)
 %   GPTIPS 2
 %
 %   See also PICKNODE, GETDEPTH, GETCOMPLEXITY
+% Authors:       ???
+% Written:       ???
+% Last update:   28-August-2025 (TL, bug fix 2025a, range operator (:) only allows scalar)
+% Last revision: ---
 
+if ~isscalar(index)
+    index = min(index);
+end
 cnode = parentExpr(index);
 iplus = index + 1;
 iminus = index - 1;
@@ -59,7 +66,7 @@ elseif cnode=='?' %ERC token
 else %otherwise extract a tree with a function node as root
     
     %subtree defined when number open brackets=number of closed brackets
-    search_seg = parentExpr(index:endpos);
+    search_seg = parentExpr(index(1):endpos);
     
     %get indices of open brackets
     op = strfind(search_seg,'(');
@@ -81,6 +88,6 @@ else %otherwise extract a tree with a function node as root
     end
     
     subTree = search_seg(1:j);
-    mainTree = [parentExpr(1:iminus) '$'  parentExpr(j+index:endpos)];
+    mainTree = [parentExpr(1:iminus(1)) '$'  parentExpr(j+index(1):endpos)];
     return
 end

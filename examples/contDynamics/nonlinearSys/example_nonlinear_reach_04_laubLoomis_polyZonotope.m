@@ -73,7 +73,7 @@ disp(['computation time of reachable set: ',num2str(tComp)]);
 % number of initial points
 simOpt.points = 10;
 % random simulation
-simRes = simulateRandom(sys,params,simOpt); 
+traj = simulateRandom(sys,params,simOpt); 
 
 
 % Visualization -----------------------------------------------------------
@@ -91,7 +91,7 @@ plotOverTime(R,projDim,'DisplayName','Reachable set');
 plotOverTime(R(1).R0,projDim, 'DisplayName','Initial set');
 
 % plot simulation results      
-plotOverTime(simRes,projDim,'DisplayName','Simulations');
+plotOverTime(traj,projDim,'DisplayName','Simulations');
 
 % plot the unsafe set
 spec = specification(interval(5,10),'unsafeSet',interval(0,params.tFinal));
@@ -122,7 +122,7 @@ for i = 1:length(dims)
     plot(R(1).R0,projDim,'DisplayName','Initial set');
     
     % plot simulation results      
-    plot(simRes,projDim,'DisplayName','Simulations');
+    plot(traj,projDim,'DisplayName','Simulations');
     
     % formatting
     xlabel(['x_',num2str(projDim(1))]);

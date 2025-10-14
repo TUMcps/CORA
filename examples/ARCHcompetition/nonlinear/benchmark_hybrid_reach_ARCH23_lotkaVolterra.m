@@ -115,14 +115,14 @@ disp(['Area of final box: ',num2str(area)]);
 figure; hold on; box on;
 
 % plot reachable set
-plot(R1(1),[1,2],'FaceColor',colorblind('b'),'Unify',true);
-plot(R1(2),[1,2],'FaceColor',colorblind('r'),'Unify',true);
-plot(R1(3),[1,2],'FaceColor',colorblind('gray'),'Unify',true);
-plot(R2,[1,2],'FaceColor',colorblind('y'),'Unify',true);
-plot(R3(1),[1,2],'FaceColor',colorblind('r'),'Unify',true);
-plot(R3(2),[1,2],'FaceColor',colorblind('y'),'Unify',true);
-plot(R4,[1,2],'FaceColor',colorblind('r'),'Unify',true);
-plot(R5,[1,2],'FaceColor',colorblind('b'),'Unify',true);
+plot(R1(1),[1,2],'FaceColor',colorblind('b'));
+plot(R1(2),[1,2],'FaceColor',colorblind('r'));
+plot(R1(3),[1,2],'FaceColor',colorblind('gray'));
+plot(R2,[1,2],'FaceColor',colorblind('y'));
+plot(R3(1),[1,2],'FaceColor',colorblind('r'));
+plot(R3(2),[1,2],'FaceColor',colorblind('y'));
+plot(R4,[1,2],'FaceColor',colorblind('r'));
+plot(R5,[1,2],'FaceColor',colorblind('b'));
 
 % plot guard set
 syms x y

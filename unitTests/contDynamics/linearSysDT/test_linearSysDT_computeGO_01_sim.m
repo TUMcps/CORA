@@ -53,8 +53,8 @@ for k=0:n_k-1
         x = x + p_GO.B{k+1,i+1} * (params.u(:,i+1) - u_ref(:,i+1));
         y = y + p_GO.D{k+1,i+1} * (params.u(:,i+1) - u_ref(:,i+1));
     end
-    assertLoop(sum(y-y_sim(k+1,:)', 'all') <= 1e-6,i)
-    assertLoop(sum(x-x_sim(k+1,:)', 'all') <= 1e-6,i)
+    assertLoop(sum(y-y_sim(:,k+1), 'all') <= 1e-6,i)
+    assertLoop(sum(x-x_sim(:,k+1), 'all') <= 1e-6,i)
 end
 
 res = true;

@@ -28,26 +28,31 @@ function layer = instantiateFromString(activation)
 
 % check input arguments
 activation = lower(activation);
-possibleActivations = {'relu','sigmoid','tanh','softmax', 'identity', 'none','invsqrtroot','sqrt'};
+possibleActivations = {'relu','sigmoid','tanh','softmax', 'identity', 'none','invsqrtroot','sqrt','sin','cos'};
 inputArgsCheck({{activation,'str', possibleActivations}});
 
 switch activation
+    % main activation function
     case "relu"
         layer = nnReLULayer();
     case "sigmoid"
         layer = nnSigmoidLayer();
     case "tanh"
         layer = nnTanhLayer();
+        % special activation functions
     case "softmax"
         layer = nnSoftmaxLayer();
-    case "identity"
-        layer = nnIdentityLayer();
-    case "none"
+    case {"identity", "none"}
         layer = nnIdentityLayer();
     case "invsqrtroot"
         layer = nnInvSqrtRootLayer();
     case "sqrt"
         layer = nnRootLayer();
+        % layers from handle
+    case "sin"
+        layer = nnActLayerFromHandle(@sin);
+    case "cos"
+        layer = nnActLayerFromHandle(@cos);
     otherwise
         % should not be executed anyway due to inputArgsCheck. 
         throw(CORAerror('CORA:wrongValue', 'first', ...

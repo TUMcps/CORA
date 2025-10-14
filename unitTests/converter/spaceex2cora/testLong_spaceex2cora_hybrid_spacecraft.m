@@ -50,13 +50,10 @@ params.startLoc = 1;
 
 % Compute Error -----------------------------------------------------------
 
-for i = 1:length(x)
-    
-    diff = x{i} - x_SX{i};
-    error = sum(diff.^2,1);
-    
-    assertLoop(error <= 1e-5,i) 
-end
+diff = x - x_SX;
+error = sum(diff.^2,2);
+
+assert(all(error <= 1e-5))
 
 disp('Successful Conversion: error = ' + string(max(error)))
 res = true;

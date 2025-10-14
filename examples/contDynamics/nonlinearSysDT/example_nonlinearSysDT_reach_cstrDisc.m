@@ -59,7 +59,7 @@ disp("Computation time: " + tComp);
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 100;
-simRes = simulateRandom(sysDisc, params, simOpt);
+traj = simulateRandom(sysDisc, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -74,7 +74,7 @@ plot(R,[1 2],'DisplayName','Reachable set');
 plot(R.R0,[1,2],'DisplayName','Initial set');
 
 % plot simulation
-plot(simRes,[1,2],'Marker','.','LineStyle','none','DisplayName','Simulations');
+plot(traj,[1,2],'Marker','.','LineStyle','none','DisplayName','Simulations');
 
 % formatting
 xlabel('T-T_0');

@@ -48,20 +48,20 @@ resPartial = zeros(length(testSuite),1);
 R = cell(length(testSuite),1);
 
 % in case no initial set is provided
-provideInitialState = true;
+provideInitialState = ~isfield(params,'R0');
 
-%% loop over test cases
-for iCase = 1:length(testSuite)
+%% loop over trajectories
+for m = 1:length(testSuite)
 
     % compute time step and final time
-    testCase = testSuite{iCase};
-    timeSteps = size(testCase.y,1);
-    options.timeStep = testCase.sampleTime/options.timeStepDivider;
-    params.tFinal = testCase.sampleTime*(timeSteps-1);
+    traj_m = testSuite(m);
+    timeSteps = size(traj_m.y,2);
+    options.timeStep = traj_m.dt/options.timeStepDivider;
+    params.tFinal = traj_m.dt*(timeSteps-1) + 1e-8; % + 1e-8 for numerical robustness
 
     % input trajectory from test case
-    for iSample = 1: size(testCase.u,3) % for linear systems
-        params.u = testCase.u(:,:,iSample)';
+    for iSample = 1: size(traj_m.y,3) 
+        params.u = traj_m.u;
         if isempty(params.u)
             % read default value in case none is given
             params.u = getDefaultValueParams('u',sys,params,options);
@@ -77,7 +77,7 @@ for iCase = 1:length(testSuite)
         %% compute reachable set
 
         % rewrite params and options for reach
-        [paramsReach,optionsReach] = aux_rewriteReach(params,options,provideInitialState,testCase);
+        [paramsReach,optionsReach] = aux_rewriteReach(params,options,provideInitialState,traj_m);
 
         % compute reachable set
         R_full = reach(sys, paramsReach, optionsReach);
@@ -97,7 +97,7 @@ for iCase = 1:length(testSuite)
             R_new.set{iStep} = reduce(R_new.set{iStep},options.reductionTechnique,options.postProcessingOrder);
         end
         % init reachset
-        R{iCase} = reachSet(R_new);
+        R{m} = reachSet(R_new);
 
         %% enclosure check
         % initilaize failed dimensions
@@ -106,16 +106,16 @@ for iCase = 1:length(testSuite)
         % loop over all time steps
         for iStep = 1:timeSteps
             % check containment
-            if ~contains(R{iCase}.timePoint.set{iStep}, testCase.y(iStep,:,iSample)')
+            if ~contains(R{m}.timePoint.set{iStep}, traj_m.y(:,iStep,iSample))
                 disp('Model is not reachset conformant');
                 res = false;
                 % return failed dimension for box enclosure
                 if options.postProcessingOrder==1
-                    I = interval(R{iCase}.timePoint.set{iStep});
+                    I = interval(R{m}.timePoint.set{iStep});
                     % indices where infimum is breached
-                    failedDim.inf = find(I.inf > testCase.y(iStep,:,iSample)');
+                    failedDim.inf = find(I.inf > traj_m.y(:,iStep,iSample));
                     % indices where supremum is breached
-                    failedDim.sup = find(I.sup < testCase.y(iStep,:,iSample)');
+                    failedDim.sup = find(I.sup < traj_m.y(:,iStep,iSample));
                 end
                 return
             end
@@ -123,7 +123,7 @@ for iCase = 1:length(testSuite)
     end
     
     % containment successfully shown
-    resPartial(iCase) = 1;
+    resPartial(m) = 1;
 end
 
 % final conformance checking result
@@ -134,7 +134,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [paramsReach,optionsReach] = aux_rewriteReach(params,options,provideInitialState,testCase)
+function [paramsReach,optionsReach] = aux_rewriteReach(params,options,provideInitialState,traj)
     
     % copy params and options
     paramsReach = params;
@@ -143,8 +143,12 @@ function [paramsReach,optionsReach] = aux_rewriteReach(params,options,provideIni
     % update params ---
     % in case no initial set is provided
     if provideInitialState
-        paramsReach.R0 = zonotope(testCase.initialState);
+        paramsReach.R0 = zonotope(traj.x(:,1,1));
+    else 
+        paramsReach.R0 = params.R0 + zonotope(traj.x(:,1,1));
     end
+    paramsReach.U = paramsReach.U + paramsReach.uTrans;
+    paramsReach = rmfield(paramsReach,'uTrans');
     paramsReach = rmfield(paramsReach,'testSuite');
 
 

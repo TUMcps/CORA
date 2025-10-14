@@ -23,7 +23,7 @@ function res = testLong_linearSysDT_observe_08_pedestrian()
 % ------------------------------ BEGIN CODE -------------------------------
 
 % Load pedestrian model ---------------------------------------------------
-load pedestrianModel pedestrian params options simRes
+load pedestrianModel pedestrian params options traj
 
 % Set of evaluated estimators
 Estimator = {

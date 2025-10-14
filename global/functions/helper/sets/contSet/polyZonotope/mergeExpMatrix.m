@@ -22,9 +22,9 @@ function [id,E1,E2] = mergeExpMatrix(id1,id2,E1,E2)
 %
 % See also: ---
 
-% Authors:       Niklas Kochdumper
+% Authors:       Niklas Kochdumper, Tobias Ladner
 % Written:       25-June-2018 
-% Last update:   ---
+% Last update:   07-October-2025 (TL, optimization)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -33,38 +33,13 @@ function [id,E1,E2] = mergeExpMatrix(id1,id2,E1,E2)
 [E1,id1] = removeRedundantIds(E1,id1);
 [E2,id2] = removeRedundantIds(E2,id2);
 
-L1 = length(id1);
-L2 = length(id2);
+% gather all ids
+id = unique([id1;id2]);
 
-% ID vectors are identical
-if L1 == L2 && all(id1 == id2)
-   
-    id = id1;
-    
-% ID vectors not identical -> MERGE
-else
-    
-    % merge the two sets
-    id = id1;
-    ind2 = zeros(size(id2));
-    for i = 1:length(id2)
-       ind = find(id == id2(i));
-       if isempty(ind)
-          id = [id;id2(i)];
-          ind2(i) = length(id);
-       else
-          ind2(i) = ind;
-       end
-    end
-    
-    % construct the new exponent matrices
-    L = length(id);
-    
-    E1 = [E1;zeros(L-L1,size(E1,2))];
-    
-    temp = zeros(L,size(E2,2));
-    temp(ind2,:) = E2;
-    E2 = temp;
+% extend exponent matrices
+E1 = (id1' == id) * E1;
+E2 = (id2' == id) * E2;
+
 end
 
 % ------------------------------ END OF CODE ------------------------------

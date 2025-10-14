@@ -108,9 +108,10 @@ methods (Access = {?nnLayer, ?neuralNetwork})
     end
 
     % sensitivity
-    function S = evaluateSensitivity(obj, S, x, options)
+    function S = evaluateSensitivity(obj, S, options)
         % compute id with maximum value
         function [dmax, maxId] = getMaxId(ids)
+            x = obj.backprop.store.input;
             [~, argmax] = max(x(ids));
             maxId = ids(argmax);
             dmax = 0;
@@ -124,7 +125,7 @@ methods (Access = {?nnLayer, ?neuralNetwork})
 
         % simulate using linear layer
         linl = nnLinearLayer(P, bias);
-        S = linl.evaluateSensitivity(S, x);
+        S = linl.evaluateSensitivity(S, options);
     end
 
     % zonotope/polyZonotope

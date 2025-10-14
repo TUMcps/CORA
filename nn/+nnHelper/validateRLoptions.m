@@ -51,7 +51,7 @@ if isempty(defaultActorTrainFields)
         'eta', 0.1;
         'omega', 0.5;
         'exact_backprop', false;
-        'zonotope_weight_update', 'outer_product';
+        'zonotope_weight_update', 'sum';
     };
 end
 
@@ -62,7 +62,7 @@ if isempty(defaultCriticTrainFields)
         'optim', nnAdamOptimizer(1e-3,.9,.999,1e-8,1e-2);
         'eta', 0.01;
         'exact_backprop', false;
-        'zonotope_weight_update', 'outer_product';
+        'zonotope_weight_update', 'sum';
     };
 end
 

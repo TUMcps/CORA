@@ -61,7 +61,7 @@ params.testSuite = createTestSuite(sys, params, n_k, n_m, n_s);
 
 % General Options
 options = options_reach;
-options.cs.robustnessMargin = 1e-9;
+options.cs.robustness = 1e-9;
 options.cs.verbose = false;
 
 num_id = length(cost_norm);
@@ -91,13 +91,13 @@ for i_id = 1 : length(params_id) % for each identification
     for m = 1 : n_m % for each nominal trajectory
 
         % compute the reachable set
-        params_id{i_id}.u = params.testSuite{m}.u';
-        params_id{i_id}.R0 = X0 + params.testSuite{m}.initialState;
+        params_id{i_id}.u = params.testSuite(m).u;
+        params_id{i_id}.R0 = X0 + params.testSuite(m).x(:,1,1);
         R_id = reach(sys, params_id{i_id}, options_reach);
 
         % compute the partial reachable set Y_p
         p_GO = computeGO(sys, params_id{i_id}.R0.c, ...
-            params_id{i_id}.U.c + params.testSuite{m}.u', n_k);
+            params_id{i_id}.U.c + params.testSuite(m).u, n_k);
         Y_p = cell(n_k,1);
         for k=1:n_k
             Y_p{k} = p_GO.y(:,k) + p_GO.C{k} * ...
@@ -110,9 +110,8 @@ for i_id = 1 : length(params_id) % for each identification
 
         % check containment
         for k=1:n_k
-            [~,n,numPoints] = size(params.testSuite{m}.y);
-            assertLoop(contains(R_id.timePoint.set{k}, reshape(params.testSuite{m}.y(k,:,:),n,numPoints,1),'exact',1e-5),i_id,m,k)
-            assertLoop(contains(Y_p{k}, reshape(params.testSuite{m}.y(k,:,:),n,numPoints,1),'exact',1e-5),i_id,m,k)
+            assertLoop(contains(R_id.timePoint.set{k}, squeeze(params.testSuite(m).y(:,k,:)),'exact',1e-5),i_id,m,k)
+            assertLoop(contains(Y_p{k}, squeeze(params.testSuite(m).y(:,k,:)),'exact',1e-5),i_id,m,k)
         end
     end
 end

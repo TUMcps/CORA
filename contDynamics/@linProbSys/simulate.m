@@ -15,8 +15,8 @@ function [t,x,ind,y] = simulate(obj,params,options)
 %       .u piecewise constant input signal u(t) specified as a matrix
 %           for which the number of rows is identical to the number of
 %           system input
-%    options - settings
 %       .timeStep time step size
+%    options - settings
 %
 % Outputs:
 %    t - time vector
@@ -34,6 +34,7 @@ function [t,x,ind,y] = simulate(obj,params,options)
 % Written:       16-May-2007 
 % Last update:   26-February-2008
 %                17-July-2020
+%                28-August-2025 (LL, transpose x)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -44,6 +45,10 @@ end
 if nargout == 4
     CORAwarning('CORA:contDynamics',"Output trajectories not supported for class linProbSys!");
     y = [];
+end
+% set tStart
+if ~isfield(params,'tStart')
+    params.tStart = 0;
 end
 
 %self-programmed euler solver
@@ -65,6 +70,5 @@ for i=1:nrOfTimeSteps-1
     x(:,i+1) = expm(obj.A*h)*x(:,i) + ...
         inv(obj.A)*(expm(obj.A*h) - eye(length(obj.A)))*(params.u+u);
 end
-x=x';
 
 % ------------------------------ END OF CODE ------------------------------

@@ -85,7 +85,7 @@ disp(['computation time of reachable set using interval matrices: ',num2str(tCom
 % Simulation --------------------------------------------------------------
 
 simOpt.points = 10;
-simRes = simulateRandom(sysIntMat, params, simOpt);
+traj = simulateRandom(sysIntMat, params, simOpt);
 
 
 % Visualization -----------------------------------------------------------
@@ -104,7 +104,7 @@ plot(RmatZono,projDim,'Order',10,'DisplayName','Matrix zonotope');
 plot(RintMat.R0,projDim,'DisplayName','Initial set');
 
 % plot simulation results     
-plot(simRes,projDim,'DisplayName','Simulations');
+plot(traj,projDim,'DisplayName','Simulations');
 
 % label plot
 xlabel(['x_{',num2str(projDim(1)),'}']);
@@ -125,7 +125,7 @@ plotOverTime(RmatZono,projDim(1),'DisplayName','Matrix zonotope');
 plotOverTime(RintMat.R0,projDim(1),'DisplayName','Initial set');
 
 % plot simulation results
-plotOverTime(simRes,projDim(1),'DisplayName','Simulations');
+plotOverTime(traj,projDim(1),'DisplayName','Simulations');
 
 % label plot
 xlabel('t');

@@ -40,7 +40,7 @@ function [t,x,ind,y] = simulate(linsys,params,varargin)
 %
 %    [t,x] = simulate(linsys,params);
 %
-%    plot(x(:,1),x(:,2),'r');
+%    plot(x(1,:),x(2,:),'r');
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -52,7 +52,8 @@ function [t,x,ind,y] = simulate(linsys,params,varargin)
 % Written:       03-May-2007 
 % Last update:   20-March-2008
 %                08-May-2020 (MW, update interface)
-%                13-February-2023 (MW, remove duplicates)                                           
+%                13-February-2023 (MW, remove duplicates)    
+%                28-August-2025 (LL, transpose t, x, and y)
 % Last revision: 16-November-2021 (MW, include params.w|v)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -136,24 +137,24 @@ for i = 1:steps
     if i == 1
         if timeStepGiven
             % only save first and last entry
-            t = [t_(1); t_(end)] + params.tStart;
-            x = [x_(1,:); x_(end,:)];
+            t = [t_(1) t_(end)] + params.tStart;
+            x = [x_(1,:)' x_(end,:)'];
         else
-            t = t_ + params.tStart;
-            x = x_;
+            t = t_' + params.tStart;
+            x = x_';
         end
     else
         if timeStepGiven
             % only save last entry
-            t = [t; t_(end) + t(end)];
-            x = [x; x_(end,:)];
+            t = [t t_(end) + t(end)];
+            x = [x x_(end,:)'];
         else
             % save all simulated points
-            t = [t; t_(2:end) + t(end)];
-            x = [x; x_(2:end,:)];
+            t = [t t_(2:end)' + t(end)];
+            x = [x x_(2:end,:)'];
         end
     end
-    x0 = x(end,:)';
+    x0 = x(:,end);
 
     % compute output: skip last entry since the input is not valid there,
     % instead, this will be covered by the next input
@@ -163,7 +164,7 @@ for i = 1:steps
         else
             y_ = linsys.C * x_(1:end-1,:)' + linsys.D * params.u(:,i) + linsys.k + params.v(:,i);
         end
-        y = [y;y_'];
+        y = [y y_];
     end
 
     if ~isempty(ind)
@@ -175,7 +176,7 @@ end
 % compute last output
 if comp_y
     ylast = linsys.C * x_(end,:)' + linsys.D * params.u(:,end) + linsys.k + params.v(:,end);
-    y = [y; ylast'];
+    y = [y ylast];
 end
 
 end

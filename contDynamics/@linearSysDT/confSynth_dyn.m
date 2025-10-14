@@ -56,7 +56,7 @@ n = size(linsysDT.A,1); % system dimension
 w = options.w; % weight vector
 
 %% Unify all differences to the nominal solution; see y_a(k) in eq. 14 of [2]
-[union_y_a,union_x_a] = priv_conform_unifyTestCases(linsysDT,params);
+[union_y_a,union_x_a] = priv_conform_unifyTrajectories(linsysDT,params);
 
 %% Corollary 1 in [2]: change time horizon to ensure conformance of an 
 % infinite time horizon; requires that the entire state can be measured
@@ -100,7 +100,7 @@ else
         % partial A matrix
         A_partial = [-N*Gamma, -G_tilde];
         % partial b vector
-        b_partial = -max(N*union_y_a{k+1}',[],2);
+        b_partial = -max(N*union_y_a{k+1},[],2);
         % compose A and b for linear constraint by adding constraints of each
         % time step
         lin_A(end+1:end+nrOfConstraints,:) = A_partial; 

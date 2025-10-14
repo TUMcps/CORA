@@ -95,7 +95,7 @@ for s=1:length(sys)
         % loop over all settings
         for o=1:length(simOpt)
             try
-                simRes = simulateRandom(sys{s}, params{p}, simOpt{o});
+                traj = simulateRandom(sys{s}, params{p}, simOpt{o});
             catch ME
                 % run-time error
                 assertLoop(false,ME.message,[],s,p,o);

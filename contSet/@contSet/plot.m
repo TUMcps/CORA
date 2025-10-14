@@ -18,7 +18,7 @@ function han = plot(S,varargin)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: plot
+% See also: plot, CORA_PLOT_FILLED
 
 % Authors:       Tobias Ladner
 % Written:       14-October-2024
@@ -110,6 +110,7 @@ function [S,NVpairs] = aux_process(S,dims,NVpairs)
         purpose = 'fill';
     end
     NVpairs = readPlotOptions(NVpairs,purpose);
+    NVpairs = [NVpairs,{'NVPAIRS_VALIDATED',true}];
 end
 
 function S = aux_intersectWithAxisLimits(S,NVpairs)

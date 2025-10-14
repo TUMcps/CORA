@@ -92,7 +92,7 @@ params.v = randPoint(V,dt_steps+1);
 % simulate the linear ARX system with normal parametrization
 params.u = [params.u; params.w zeros(nrDists,1); params.v];
 start_idx = sys_ARX.n_p + 1;
-params.y0 = y_linDT(1:start_idx-1,:)';
+params.y0 = y_linDT(:,1:start_idx-1);
 [t_ARX,~,~,y_ARX] = simulate(sys_ARX,params);
 
 % simulate the linear ARX system with time-varying parametrization
@@ -130,11 +130,11 @@ for i_y = 1:dim_y
     grid on
     ax = gca;
     ax.LineWidth = 1;
-    plot(t_linDT,y_linDT(:,i_y), '-o','Color', col(1,:), ...
+    plot(t_linDT,y_linDT(i_y,:), '-o','Color', col(1,:), ...
         'DisplayName', 'SS', 'lineWidth', 1.5);
-    plot(t_ARX,y_ARX(:,i_y), ':*','Color', col(3,:), ...
+    plot(t_ARX,y_ARX(i_y,:), ':*','Color', col(3,:), ...
         'DisplayName', 'ARX', 'lineWidth', 1.5);
-    plot(t_tvpARX,y_tvpARX(:,i_y), '--x','Color', col(2,:),...
+    plot(t_tvpARX,y_tvpARX(i_y,:), '--x','Color', col(2,:),...
         'DisplayName', 'ARXtvp', 'lineWidth', 1.5);
     ylabel(sprintf('Output y_%d', i_y))
     if i_y == 1

@@ -97,15 +97,23 @@ params.v = v_rand;
 % simulate nonlinear system
 params_NL.u = [u_rand; zeros(n_x+n_y, dt_steps+1)];
 [t_nonlin_u, x_nonlin_u, ~, y_nonlin_u] = simulate(sys,params_NL);
+assert(size(t_nonlin_u,2) == size(x_nonlin_u,2))
+assert(size(t_nonlin_u,2) == size(y_nonlin_u,2))
 
 params_NL.u = [u_rand; [w_rand zeros(n_x, 1)]; v_rand];
 [t_nonlin_uwv, x_nonlin_uwv, ~, y_nonlin_uwv] = simulate(sys,params_NL);
+assert(size(t_nonlin_uwv,2) == size(x_nonlin_uwv,2))
+assert(size(t_nonlin_uwv,2) == size(y_nonlin_uwv,2))
 
 assert(isequal(t_lin_u, t_nonlin_u, t_lin_uwv, t_nonlin_uwv));
 assert(sum(abs(y_lin_u - y_nonlin_u),'all') < 1e-6);
 assert(sum(abs(y_lin_uwv - y_nonlin_uwv),'all') < 1e-6);
 assert(sum(abs(x_lin_u - x_nonlin_u),'all') < 1e-6);
 assert(sum(abs(x_lin_uwv - x_nonlin_uwv),'all') < 1e-6);
+
+% simulate without inputs
+params_NL = rmfield(params_NL,'u');
+simulate(sys,params_NL);
 
 % combine results
 res = true;

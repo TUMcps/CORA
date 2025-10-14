@@ -1,10 +1,10 @@
-function [params, results] = conform(sys,params,options,varargin)
+function [params,results] = conform(sys,params,options,varargin)
 % conform - performs reachset conformance by computing the reachable 
 %         of a system and checking whether all measurements are included
 %
 % Syntax:
-%    [params, results] = conform(sys,params,options)
-%    [params, results] = conform(sys,params,options,type)
+%    [params,results] = conform(sys,params,options)
+%    [params,results] = conform(sys,params,options,type)
 %
 % Inputs:
 %    sys - contDynamics object
@@ -17,9 +17,9 @@ function [params, results] = conform(sys,params,options,varargin)
 %    params - struct with conformant parameters
 %    results - struct with the optimization results (dependent on type)
 %       .R - reachSet object (only time steps for which measurments exist)
-%       .simRes - states of the rapidly exploring random tree
-%       .unifiedOutputs - unified test cases (only deviation to nominal 
-%           solution)
+%       .traj - states of the rapidly exploring random tree
+%       .unifiedOutputs - n_m x 1 cell array with dim_y x n_k x n_s 
+%           arrays describing the deviation to the nominal solution
 %       .sys - updated system
 %       .p - estimated parameters
 %       .fval - final optimization cost
@@ -41,6 +41,7 @@ function [params, results] = conform(sys,params,options,varargin)
 % Authors:       Matthias Althoff, Laura Luetzow
 % Written:       15-June-2023
 % Last update:   21-March-2024 (LL, change name from confSynth to conform)
+%                08-September-2025 (LL, change structure of unified outputs)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -52,39 +53,48 @@ type = setDefaultValues({"white"},varargin);
 switch type
     case "RRT"
         % synthesize conformance using RRTs, see [1]    
-        [params, R, simRes] = priv_conform_RRT(sys, params, options);
+        [params,R,traj] = priv_conform_RRT(sys,params,options);
         results.R = R;
-        results.simRes = simRes;
+        results.traj = traj;
 
     otherwise
 
-        if contains(type,"black") % blackGP, blackCGP
+        if type == "black" 
             % approximate the system dynamics
-            sys = priv_conform_black(params, options, type);
+            traj = options.id.testSuite_id;
+            options_ = options;
+            options_.id = rmfield(options_.id, 'testSuite_id');
+            if isa(sys, 'nonlinearARX') && contains(options.idAlg, 'gp')
+                % requires system parameters and conformance testSuite for 
+                % identification
+                options_.params = params;
+            end
+            sys = sys.identify(traj,options_);
+            if options.id.save_res
+                save(options.id.filename + "_sys", 'sys');
+            end
+            options = rmiffield(options,'id');
             results.sys = sys;
-            options = rmfield(options, 'approx');
-            params = rmfield(params, ["testSuite_train","testSuite_val"]);
         end
-    
+
         % conformance synthesis for dedicated system dynamics
         [params,options] = validateOptions(sys,params,options);
         [sys_upd,params,options] = aux_updateSys(sys,params,options);
     
         % Identify conformant parameters
-        if type == "white" || contains(type,"black")
-            [params, fval, p_opt,  union_y_a] = priv_conform_white(sys_upd, params, options);
+        if type == "white" || type == "black"
+            [params,fval,p_opt,union_y_a] = priv_conform_white(sys_upd,params,options);
             results.sys = sys;
             results.unifiedOutputs = union_y_a;
-    
-        elseif contains(type,"gray") % "graySim", "graySeq", "grayLS"
-            [params, fval, p_opt, sys_opt] = priv_conform_gray(sys_upd, params, options, type);
+
+        elseif contains(type,"gray") % "graySim","graySeq","grayLS"
+            [params,fval,p_opt,sys_opt] = priv_conform_gray(sys_upd,params,options,type);
             results.sys = sys_opt;
         end
-    
+
         params = aux_updateUWV(params);
         results.fval = fval;
         results.p = p_opt;
-
 end
 
 end
@@ -92,7 +102,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [sys, params, options] = aux_updateSys(sys, params, options)
+function [sys,params,options] = aux_updateSys(sys,params,options)
 % preprocess sys, parameters and options
 
 % augment input set with the additive uncertainty sets W and V if given
@@ -107,19 +117,9 @@ if isfield(params, 'V')
     sys = augment_u_with_v(sys);
 end
 
-% add the dimensions of the optimization variables to options
-options.cs.n_a = size(params.U.generators,2) + size(params.R0.generators,2);
-if isa(sys, 'linearSysDT') || isa(sys, 'linearARX')
-    % c can be computed with linear programming
-    options.cs.n_c = size(params.U.generators,1) + size(params.R0.generators,1);
-else
-    % c is not estimated in the linear program
-    options.cs.n_c = 0;
-end
-
 % adapt testSuite to the system dynamics (augment nominal input, update
 % initial state)
-params.testSuite = aux_preprocessTestSuite(sys, params.testSuite);
+params.testSuite = aux_preprocessTestSuite(sys,params.testSuite,options.cs.recMethod);
 
 end
 
@@ -141,7 +141,7 @@ end
 
 end
 
-function testSuite = aux_preprocessTestSuite(sys, testSuite)
+function testSuite = aux_preprocessTestSuite(sys,testSuite,recMethod)
 % preprocessTestSuite - preprocess testSuite, i.e., 
 %   - augment nominal inputs with zeros to match input dimension of sys
 %   - unify test cases for linear systems, 
@@ -149,37 +149,26 @@ function testSuite = aux_preprocessTestSuite(sys, testSuite)
 
 % Augment nominal input with zeros
 for m = 1:length(testSuite)
-    diff_u = sys.nrOfInputs - size(testSuite{m}.u,2);
+    diff_u = sys.nrOfInputs - size(testSuite(m).u,1);
     if diff_u > 0
-        u_in = cat(2, testSuite{m}.u, zeros(size(testSuite{m}.u,1), diff_u, size(testSuite{m}.u,3)));
-        testSuite{m} = testCase(testSuite{m}.y, u_in, testSuite{m}.initialState, sys.dt, class(sys));
+        u_in = [testSuite(m).u; zeros(diff_u, testSuite(m).n_k)];
+        testSuite(m) = trajectory(u_in, testSuite(m).x, testSuite(m).y, [], sys.dt, [], [], testSuite(m).name);
     end
-end
-
-% Combine test cases for linear systems
-if (isa(sys, 'linearARX') || isa(sys, 'linearSysDT')) ...
-        && length(testSuite) > 1
-    testSuite_m = combineTestCases(testSuite{1},testSuite{2});
-    for m=3:length(testSuite)
-        testSuite_m = combineTestCases(testSuite_m,testSuite{m});
-    end
-    testSuite = {};
-    testSuite{1} = testSuite_m;
 end
 
 % Adaption initial state to state-space models
 if ~isa(sys, 'linearARX') && ~isa(sys, 'nonlinearARX') 
-    if sys.nrOfDims == size(testSuite{1}.initialState,1)
+    if sys.nrOfDims == size(testSuite(1).x,1)
         % all good
         return
     end
-    throw(CORAerror('CORA:notSupported',['Transformation of test cases created by input-output-models ' ...
+    throw(CORAerror('CORA:notSupported',['Transformation of trajectories created by input-output-models ' ...
         'to state-space models is not implemented, yet.']))
 end
 
 % Adaption initial state to input-output models
-if contains(testSuite{1}.name, ["ARX", "ARX"]) && ...
-        sys.n_p*sys.nrOfOutputs == size(testSuite{1}.initialState,1)
+if contains(testSuite(1).name, ["ARX", "ARX"]) && ...
+        sys.n_p*sys.nrOfOutputs == size(testSuite(1).x,1)
     % testSuite was generated by an input-output model with the same
     % model dimension
     % -> initial state should be set correctly
@@ -191,7 +180,7 @@ end
 n_m = length(testSuite);
 testSuite_new = {};
 for m=1:n_m
-    testSuite_new = [testSuite_new; setInitialStateToMeas(testSuite{m},sys.nrOfDims)];
+    testSuite_new = [testSuite_new; setInitialStateToMeas(testSuite(m),sys.nrOfDims)];
 end
 testSuite = testSuite_new;
 

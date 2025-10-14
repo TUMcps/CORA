@@ -69,10 +69,12 @@ simOpt.fracInpVert = 0.5;  % fraction of vertices input set
 simOpt.nrConstInp = 2;     % number of constant input over time horizon  
 
 % random simulation
-simRes = simulateRandom(HA,params,simOpt); 
+traj = simulateRandom(HA,params,simOpt); 
 
 % extract the states at the intersection with the guard set
-[~,xHit] = extractHits(simRes,1);
+for i=1:length(traj)
+    [~,xHit{i}] = extractHits(traj(i),1);
+end
 points = reshape(cell2mat(xHit),5,[]);
 % project for verification
 points = points(2:end,:);

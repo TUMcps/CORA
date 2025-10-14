@@ -81,7 +81,7 @@ simOpt.fracVert = 0.8;
 params.R0 = R0sim;
 
 % simulate the system
-simRes = simulateRandom(sys, params, simOpt);
+traj = simulateRandom(sys, params, simOpt);
 
 
 % Verification ------------------------------------------------------------
@@ -139,8 +139,8 @@ for i = 1:length(Rset)
 end
 
 % plot simulation
-for i = 1:length(simRes.x)
-   plot(simRes.t{i},simRes.x{i}(:,indMid),'Color',CORAcolor("CORA:simulations"));
+for i = 1:length(traj)
+    plot(traj(i).t,traj(i).x(indMid,:),'Color',CORAcolor("CORA:simulations"));
 end
 
 % formatting 

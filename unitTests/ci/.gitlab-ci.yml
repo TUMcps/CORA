@@ -11,8 +11,10 @@ variables:
 
 # define base settings
 .base-job:
+  variables:
+    matlabVersion: 'r2024b'
   image:
-    name: tobiasladnertum/cora:r2024b
+    name: tobiasladnertum/cora:$matlabVersion
     entrypoint: [""]
   tags:
     - matlab
@@ -148,8 +150,6 @@ test-mp:
 .base-runTestSuite-compatibility:
   extends: .base-runTestSuite-ext
   stage: compatibility
-  image:
-    name: tobiasladnertum/cora:$matlabVersion
   variables:
     testSuite: 'short'
     checkTime: 'false'

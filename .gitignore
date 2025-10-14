@@ -37,11 +37,17 @@ manual/*.pdf
 **/*.toc
 **/*.synctex.gz
 **/*-eps-converted-to.pdf
+**/*.synctex(busy)
 
-manual/figures/externalize
+manual/figures/externalize/**/*.dpth
+manual/figures/externalize/**/*.log
+manual/figures/externalize/**/*.md5
 
 */.idea
 manual/manual.iml
 
 # for MAC users
 **/.DS_Store
+
+# exclude folders in workspace
+workspace/*
