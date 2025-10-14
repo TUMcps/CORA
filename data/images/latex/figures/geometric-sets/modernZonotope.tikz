@@ -1,0 +1,53 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=4cm,
+height=4cm,
+at={(0.0in,0.0in)},
+scale only axis,
+xmin=-2.4,
+xmax=2.4,
+xtick={\empty},
+ymin=-2.4,
+ymax=2.4,
+ytick={\empty},
+axis background/.style={fill=white}
+]
+
+\addplot[area legend, draw=mycolor1, fill=mycolor1, fill opacity=0.2, forget plot]
+table[row sep=crcr] {%
+x	y\\
+-2	-2\\
+-2	0\\
+0	2\\
+2	2\\
+2	0\\
+0	-2\\
+-2	-2\\
+}--cycle;
+\end{axis}
+
+\begin{axis}[%
+width=7.427in,
+height=9.479in,
+at={(0in,0in)},
+scale only axis,
+xmin=0,
+xmax=1,
+ymin=0,
+ymax=1,
+axis line style={draw=none},
+ticks=none,
+axis x line*=bottom,
+axis y line*=left
+]
+\end{axis}
+\end{tikzpicture}%

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Archive | CORA - A Tool for Continuous Reachability Analysis</title>
+    <meta name="author" content="Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger, Tobias Ladner">
+        <meta name="description"
+          content="The Continuous Reachability Analyzer (CORA) is a MATLAB-based toolbox
+            designed for the formal verification of cyber-physical systems through reachability analysis.
+            It offers a comprehensive suite of tools for modeling and analyzing various system dynamics, including linear, nonlinear, and hybrid systems.
+            CORA supports both continuous and discrete-time systems, accommodating uncertainties in system inputs and parameters.
+            These uncertainties are captured by a diverse range of set representations such as intervals, zonotopes, Taylor models, and polytopes.
+            Additionally, CORA provides functionalities for the formal verification of neural networks as well as data-driven system identification with reachset conformance.
+            Various converters are implemented to easily model a system in CORA such as the well-established SpaceEx format for dynamic systems and ONNX format for neural networks.
+            CORA ensures the seamless integration of different reachability algorithms without code modifications and aims for a user-friendly experience through automatic parameter tuning,
+            making it a versatile tool for researchers and engineers in the field of cyber-physical systems.">
+    <meta name="keywords" content="CORA, Matlab, toolbox, reachability analysis, set-based computing">
+    <link rel="icon" type="image/x-icon" href="../../../data/images/CoraLogo-icon.png">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/newsreader@4.5.10/index.min.css " rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="../../../styles/css.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <!-- MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+
+    <!-- Timeline -->
+    <link href="../../../styles/timeline.css" rel="stylesheet">
+
+</head>
+<body>
+
+<nav class="navbar bg-dark navbar-expand-lg fixed-top" data-bs-theme="dark">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler"
+                aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html"> <img src="../../../data/images/CoraLogo-icon.png"/></a>
+        <div class="collapse navbar-collapse" id="navbarToggler">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item navbar-text">
+                    <div class="d-block d-lg-none">
+                        <hr/>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#features">New Features</a>
+                </li>
+                <li class="nav-item navbar-text">
+                    <div class="d-block d-lg-none">
+                        <hr/>
+                    </div>
+                </li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://github.com/TUMcps/CORA"><i class="bi bi-github"></i> GitHub</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="../../../manual/index.html"><i class="bi bi-file-earmark-pdf-fill"></i> Manual</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../../publications/index.html"><i class="bi bi-file-text-fill"></i> Publications</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="../index.html"><i class="bi bi-archive-fill"></i> Archive</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://de.mathworks.com/matlabcentral/fileexchange/68551-cora"><i
+                            class="bi bi-box-seam-fill"></i> Matlab</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="row space-before">
+        <div class="col-12 col-lg-6 col-xl-8 order-1 order-lg-0">
+            <h2 id="headline">CORA v2026</h2>
+            <p>
+                On October 14, 2025, we released CORA v2026:
+                <a href="../../../data/archive/version/CORA_2026.zip"><i class="bi bi-file-earmark-zip-fill"></i> CORA v2026</a>
+                <a target="_blank" href="../../../data/archive/manual/Cora2026Manual.pdf"><i class="bi bi-file-earmark-pdf-fill"></i> Manual</a>
+            </p>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4 order-0 order-lg-1 text-center">
+            <div class="row">
+                <div class="col-3 col-sm-3 col-lg-2"></div>
+                <div class="col-6 col-sm-6 col-lg-8">
+                    <object type="image/svg+xml" data="../../../data/images/CoraLogo.svg">
+                        Your browser does not support SVG
+                    </object>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr id="features"/>
+    <div class="row space-before">
+        <div class="col-12">
+            <h4>New Features</h4>
+            <ul>
+
+		<li><b>Automatic system identification:</b>
+		It is now possible to automatically identify a suitable dynamic model from data and establish reachset conformance via the \(\texttt{identify}\) and \(\texttt{conform}\) operators. We also overhauled how trajectories are handled 		in CORA to improve efficiency. For details, please visit Sec. 4.1.9, Sec. 4.1.11, and Sec. 7.2.
+
+		<li><b>Neural network verification:</b>
+		We significantly improved the verification of neural networks in CORA, added the ability to verify graph neural networks, generate sufficient explanations for neural network predictions, and overhauled the training of verifiably robust neural networks. Details can be found in Sec. 6.
+
+		<li><b>Set containment certificate:</b>
+		While \(\texttt{contains}\) has always returned \(\texttt{true}\) if CORA was able to determine containment, a returned \(\texttt{false}\) might also indicate that containment holds, but CORA is not able to determine it. To eliminate this ambiguity, \(\texttt{contains}\) now also returns a certificate on the result. Details are described in Sec. 2.1.2.1.
+
+		<li><b>Visualizations:</b>
+		We revised the plotting capabilities of CORA and introduced a new default schema to plot sets to improve visibility on small monitors and beamers. It is also possible to create animated videos directly from CORA. Additionally, users might want to check \(\texttt{CORAtable}\)s for better display of tabular data. For details, please visit Sec. 2.1.4.10.
+
+		<li><b>Repeatability package:</b>
+		If you want to use CORA as part of a repeatability package, we got you covered and provide a Docker file with all dependencies installed. Instructions on how to set it up can be found in Appendix F.
+
+		<li><b>Miscellaneous:</b>
+		Minor improvements have been made in various parts of the code: Some basic functionality runs more efficiently, several bug fixes result in an improved user experience, and more unit tests ensure greater reliability. Please also have a look at Appendix A.12 for deprecated functionality and their replacements.
+
+            </ul>
+        </div>
+    </div>
+
+    <!-- footer -->
+    <div class="row space-before">
+        <hr/>
+        <div class="col-12 col-md-6">Copyright &copy; 2023 - All Rights Reserved - <a href="https://www.tum.de/en/" target="_blank">Technische
+            Universit&auml;t M&uuml;nchen</a></div>
+        <div class="col-12 col-md-6">Website by Matthias Althoff, Niklas Kochdumper, Mark Wetzlinger, and Tobias Ladner</div>
+    </div>
+
+</div>
+
+<!-- Load Bootstrap at the very end -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+
+<!-- javascript -->
+<script src="../../../scripts/general.js"></script>
+
+</body>
+</html>
