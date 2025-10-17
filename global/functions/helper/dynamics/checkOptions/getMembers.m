@@ -177,6 +177,12 @@ switch fieldname
     case 'cs.constraints'
         memberlist = {'half','gen'};
 
+    case 'cs.task'
+        memberlist = {'reg','class'};
+
+    case 'cs.outMethod'
+        memberlist = {'','RMSE', 'search', 'searchG', 'MILP'};
+
     case 'cs.recMethod'
         memberlist = {'','recUnSiCo', 'recAlpha'};
 

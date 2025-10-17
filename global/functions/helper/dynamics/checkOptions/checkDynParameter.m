@@ -92,10 +92,6 @@ for i=1:length(checks)
     if isempty(errmsgid) 
         % c_* validation functions return also msg
         [rescheck,msg] = checks(i).checkfun(val);
-    elseif contains(errmsgid,"change_")
-        % a check which triggers a parameter change was triggered
-        % change parameter according to ID
-        options = changeDynParameter(errmsgid,params,options);
     else 
         % standard case
         rescheck = checks(i).checkfun(val);
@@ -105,7 +101,11 @@ for i=1:length(checks)
     if ~rescheck
         % check was not ok
 
-        if VALIDATEOPTIONS_ERRORS
+        if contains(errmsgid,"change_")
+            % a check which triggers a parameter change was triggered
+            % change parameter according to ID
+            options = changeDynParameter(errmsgid,params,options);
+        elseif VALIDATEOPTIONS_ERRORS
             % error message if validation failed
             throw(CORAerror('CORA:specialError', ...
                 sprintf('%s.%s: %s.',listname, field, msg)));

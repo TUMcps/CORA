@@ -48,8 +48,12 @@ end
 
 % parse plotting options
 NVpairs = readPlotOptions(varargin(2:end),'trajectory');
+
 NVpairs = [NVpairs,{'NVPAIRS_VALIDATED',true}]; 
 [NVpairs,whichtraj] = readNameValuePair(NVpairs,'Traj','ischar','x');
+
+% plot jumps to other locations in dotted line
+NVpairs_jump = [NVpairs(1:end-2), {'LineStyle', ':','NVPAIRS_VALIDATED',true}]; 
 
 % check dimension
 if length(dims) < 2
@@ -68,14 +72,34 @@ oldColorIndex = ax.ColorOrderIndex;
 % loop over all simulated trajectories
 hold on
 for r=1:length(traj)
-    for j = 1:size(traj(r).(whichtraj),3)
-        han_i = plotPolygon(traj(r).(whichtraj)(dims,:,j),NVpairs{:});
+    % extract indizes for jumps to different locations
+    jumps = [0 find(sum(abs(diff(traj(r).loc,1,2)),1) ~= 0) traj(r).n_k];
+    for i_jumpEnd = 2:length(jumps)
+        % indizes for trajectory part within the same location
+        idz = jumps(i_jumpEnd-1)+1:jumps(i_jumpEnd);
+
+        % indizes for jump between locations
+        if i_jumpEnd > 2
+            idz_jump = jumps(i_jumpEnd-1):jumps(i_jumpEnd-1)+1;
+        else
+            idz_jump = [];
+        end
+
+        % plot trajectory parts
+        for j = 1:size(traj(r).(whichtraj),3)
+            han_i = plotPolygon(traj(r).(whichtraj)(dims,idz,j),NVpairs{:});
+            if ~isempty(idz_jump)
+                % plot jump
+                han_i = plotPolygon(traj(r).(whichtraj)(dims,idz_jump,j),NVpairs_jump{:});
+            end
+        end
     end
 
-    if i == 1
+    if r == 1
         han = han_i;
         % don't display subsequent plots in legend
         NVpairs = [NVpairs, {'HandleVisibility','off'}];
+        NVpairs_jump = [NVpairs_jump, {'HandleVisibility','off'}];
     end
 end
 

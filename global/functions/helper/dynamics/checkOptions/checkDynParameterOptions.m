@@ -196,6 +196,10 @@ switch field % TODO sort and categorize
         checks = aux_getChecksOptions_cs_cost(checks,sys,func,params,options);
     case 'cs.constraints'
         checks = aux_getChecksOptions_cs_constraints(checks,sys,func,params,options);
+    case 'cs.task'
+        checks = aux_getChecksOptions_cs_task(checks,sys,func,params,options);
+    case 'cs.numRotations'
+        checks = aux_getChecksOptions_cs_numRotations(checks,sys,func,params,options);
         % scaling factors alpha
     case 'cs.a_min'
         checks = aux_getChecksOptions_cs_a_min(checks,sys,func,params,options);
@@ -221,6 +225,16 @@ switch field % TODO sort and categorize
         checks = aux_getChecksOptions_cs_updateDeriv(checks,sys,func,params,options);
     case 'cs.timeout'
         checks = aux_getChecksOptions_cs_timeout(checks,sys,func,params,options);
+        % outlier detection
+    case 'cs.outMethod'
+        checks = aux_getChecksOptions_cs_outMethod(checks,sys,func,params,options);
+    case 'cs.numOutlier'
+        checks = aux_getChecksOptions_cs_numOutlier(checks,sys,func,params,options);
+    case 'cs.idzOutlier'
+        checks = aux_getChecksOptions_cs_idzOutlier(checks,sys,func,params,options);
+    case 'cs.determineActive'
+        checks = aux_getChecksOptions_cs_determineActive(checks,sys,func,params,options);
+        % 
     case 'cs.recMethod'
         checks = aux_getChecksOptions_cs_recMethod(checks,sys,func,params,options);
     case 'cs.batchSize'
@@ -796,6 +810,20 @@ function checks = aux_getChecksOptions_cs_constraints(checks,sys,func,params,opt
     checks(end+1) = add2checks(@(val)any(ismember(getMembers('cs.constraints'),val)), 'membercs.constraints');
 end
 
+% cs.task
+function checks = aux_getChecksOptions_cs_task(checks,sys,func,params,options)
+    %checks(end+1) = add2checks(@ischar, 'ischar');
+    checks(end+1) = add2checks(@(val)any(ismember(getMembers('cs.task'),val)), 'membercs.task');
+end
+
+% cs.numRotations
+function checks = aux_getChecksOptions_cs_numRotations(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@isscalar, 'isscalar');
+    checks(end+1) = add2checks(@isnumeric, 'isnumeric');
+    checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
+    checks(end+1) = add2checks(@(val)ge(val,0), 'gezero');
+end
+
 % cs.set_p
 function checks = aux_getChecksOptions_cs_set_p(checks,sys,func,params,options)
     checks(end+1) = add2checks(@(val)isa(val,'function_handle'), 'isafunction_handle');
@@ -830,13 +858,40 @@ function checks = aux_getChecksOptions_cs_verbose(checks,sys,func,params,options
 end
 
 % cs.robustness
-function checks = aux_getChecksOptions_cs_robustness(checks,sys,func,params,options)
+function checks = aux_getChecksOptions_cs_robustness(checks,sys,func,params,options) 
+    checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gezero');
 end
 
 % cs.updateDeriv
 function checks = aux_getChecksOptions_cs_updateDeriv(checks,sys,func,params,options)    
+    checks(end+1) = add2checks(@isscalar, 'isscalar');
+    checks(end+1) = add2checks(@islogical, 'islogical');
+end
+
+% cs.outMethod
+function checks = aux_getChecksOptions_cs_outMethod(checks,sys,func,params,options) 
+    checks(end+1) = add2checks(@(val)any(ismember(getMembers('cs.outMethod'),val)), 'membercs.outMethod');
+end
+
+% cs.numOutlier
+function checks = aux_getChecksOptions_cs_numOutlier(checks,sys,func,params,options) 
+    checks(end+1) = add2checks(@isscalar, 'isscalar');
+    checks(end+1) = add2checks(@isnumeric, 'isnumeric');
+    checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
+    checks(end+1) = add2checks(@(val)ge(val,0), 'gezero');
+end
+
+% cs.idzOutlier
+function checks = aux_getChecksOptions_cs_idzOutlier(checks,sys,func,params,options) 
+    checks(end+1) = add2checks(@isnumeric, 'isnumeric');
+    checks(end+1) = add2checks(@(val) all(val>= 1), 'vectorgeone');
+    checks(end+1) = add2checks(@(val) all(mod(val,1)==0), 'integer');
+end
+
+% cs.determineActive
+function checks = aux_getChecksOptions_cs_determineActive(checks,sys,func,params,options)    
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@islogical, 'islogical');
 end

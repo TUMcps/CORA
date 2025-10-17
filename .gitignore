@@ -51,3 +51,6 @@ manual/manual.iml
 
 # exclude folders in workspace
 workspace/*
+
+# CORA release
+global/functions/release/commitHistory.txt

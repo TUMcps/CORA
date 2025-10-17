@@ -13,7 +13,7 @@ function res = test_nonlinearSysDT_conform_02_costs
 
 % Authors:       Laura Luetzow
 % Written:       06-November-2023
-% Last update:   ---
+% Last update:   08-October-2025 (LL, test rotations for interval norm)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -21,7 +21,7 @@ function res = test_nonlinearSysDT_conform_02_costs
 % set random number stream
 rng('default')
 
-cost_norm = {"interval", "frob"}; 
+cost_norm = {"interval","interval1","interval5","frob"}; 
 constraints = "half";
 n_m = 2;
 n_s = 100;
@@ -52,7 +52,19 @@ params_id = cell(num_id,1);
 options.cs.constraints = constraints;
 
 for i_id = 1:num_id
-    options.cs.cost = cost_norm{i_id};
+    if strcmp(cost_norm{i_id},'interval1')
+        % one rotation
+        options.cs.cost = 'interval';
+        options.cs.numRotations = 1;
+    elseif strcmp(cost_norm{i_id},'interval5')
+        % five rotations
+        options.cs.cost = 'interval';
+        options.cs.numRotations = 5;
+    else
+        % no rotations
+        options.cs.cost = cost_norm{i_id};
+        options.cs.numRotations = 0;
+    end
 
     % Initial Estimates of the Disturbance Sets
     c_R0 = zeros(size(center(params_true.R0)));

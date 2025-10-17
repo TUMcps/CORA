@@ -1,9 +1,9 @@
-function res = test_linearSysDT_conform_05_rec
-% test_linearSysDT_conform_05_rec - unit test for recursive
+function res = test_linearSysDT_conform_06_rec
+% test_linearSysDT_conform_06_rec - unit test for recursive
 %   reachset-conformant identification
 %
 % Syntax:
-%    test_linearSysDT_conform_05_rec
+%    test_linearSysDT_conform_06_rec
 %
 % Inputs:
 %    -

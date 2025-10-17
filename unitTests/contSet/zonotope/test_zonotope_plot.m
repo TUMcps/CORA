@@ -88,6 +88,9 @@ try
     plot(Z, 1:3, 'EdgeColor','r', 'EdgeAlpha', 0.1,'FaceColor','b')
     plot(Z, 1:3, 'EdgeColor','r', 'EdgeAlpha', 0.1,'FaceColor','b','FaceAlpha',0.2)
     plot(Z, 1:2, 'EdgeColor', [0 1 0 0.1])
+
+    % plot with name-value pair syntax Name=<value> should also work
+    plot(Z,1:3,Color='g')
     
     % close figure
     close;

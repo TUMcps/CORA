@@ -1,0 +1,6 @@
+CORA v2026.0.1
+
+- contDynamics/conform: added outlier detection
+- contDynamics/reach: bug fix
+- contSet/plot: bug fix
+- global/classes/confPredictor: added, makes set-based predictions with coverage guarantees

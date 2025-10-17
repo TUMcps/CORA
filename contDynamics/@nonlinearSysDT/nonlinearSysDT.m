@@ -15,6 +15,7 @@ classdef nonlinearSysDT < contDynamics
 %    nlnsysDT = nonlinearSysDT(name,fun,dt,out_fun)
 %    nlnsysDT = nonlinearSysDT(fun,dt,states,inputs,out_fun,outputs)
 %    nlnsysDT = nonlinearSysDT(name,fun,dt,states,inputs,out_fun,outputs)
+%    nlnsysDT = nonlinearSysDT(name,fun,dt,states,inputs,out_fun,outputs,outLinCheck)
 %
 % Inputs:
 %    fun - function handle to the dynamic equation
@@ -24,6 +25,7 @@ classdef nonlinearSysDT < contDynamics
 %    inputs - number of inputs
 %    out_fun - function handle to the output equation
 %    outputs - number of outputs
+%    outLinCheck - true if linearity of output function is checked
 %
 % Outputs:
 %    nlnsysDT - generated nonlinearSysDT object
@@ -82,7 +84,7 @@ methods
     function nlnsysDT = nonlinearSysDT(varargin)
 
         % 0. check number of input arguments
-        assertNarginConstructor([0,2:7],nargin);
+        assertNarginConstructor([0,2:8],nargin);
 
         % 1. copy constructor: not allowed due to obj@contDynamics below
         %         if nargin == 1 && isa(varargin{1},'nonlinearSysDT')
@@ -90,14 +92,14 @@ methods
         %         end
 
         % 2. parse input arguments: varargin -> vars
-        [name,fun,dt,states,inputs,out_fun,outputs] = aux_parseInputArgs(varargin{:});
+        [name,fun,dt,states,inputs,out_fun,outputs,outLinCheck] = aux_parseInputArgs(varargin{:});
 
         % 3. check correctness of input arguments
         aux_checkInputArgs(name,fun,dt,states,inputs,out_fun,outputs);
 
         % 4. default output equation and number of outputs (= states)
         [states,inputs,out_fun,outputs,out_isLinear,rewriteAsC,C] = ...
-            aux_computeProperties(fun,states,inputs,out_fun,outputs);
+            aux_computeProperties(fun,states,inputs,out_fun,outputs,outLinCheck);
         
         % 5. instantiate parent class
         % note: currently, we only support unit disturbance matrices
@@ -126,6 +128,16 @@ methods
         
     end
 
+    
+    function obj = setJacobian(obj,func)
+        % allow switching between standard and interval arithmetic
+        obj.jacobian = func; 
+    end
+
+    function obj = setOutJacobian(obj,func)
+        % allow switching between standard and interval arithmetic
+        obj.out_jacobian = func; 
+    end
 
     % update system dynamics for the new augmented input [u; w] where w is
     % the process noise acting on all states 
@@ -198,11 +210,11 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [name,fun,dt,states,inputs,out_fun,outputs] = aux_parseInputArgs(varargin)
+function [name,fun,dt,states,inputs,out_fun,outputs,outLinCheck] = aux_parseInputArgs(varargin)
 
     % default values
     name = []; fun = @(x,u)[]; states = []; inputs = [];
-    out_fun = []; outputs = []; dt = 0;
+    out_fun = []; outputs = []; dt = 0; outLinCheck = true;
 
     % no input arguments
     if nargin == 0
@@ -236,8 +248,16 @@ function [name,fun,dt,states,inputs,out_fun,outputs] = aux_parseInputArgs(vararg
         % syntax: obj = nonlinearSysDT(fun,dt,states,inputs,out_fun,outputs)
         [fun,dt,states,inputs,out_fun,outputs] = varargin{:};
     elseif nargin == 7
-        % syntax: obj = nonlinearSysDT(name,fun,dt,states,inputs,out_fun,outputs)
-        [name,fun,dt,states,inputs,out_fun,outputs] = varargin{:};
+        if ischar(varargin{1})
+            % syntax: obj = nonlinearSysDT(name,fun,dt,states,inputs,out_fun,outputs)
+            [name,fun,dt,states,inputs,out_fun,outputs] = varargin{:};
+        elseif isa(varargin{1},'function_handle')
+            % syntax: obj = nonlinearSysDT(fun,dt,states,inputs,out_fun,outputs,outLinCheck)
+            [fun,dt,states,inputs,out_fun,outputs,outLinCheck] = varargin{:};
+        end
+    elseif nargin == 8
+        % syntax: obj = nonlinearSysDT(name,fun,dt,states,inputs,out_fun,outputs,outLinCheck)
+        [name,fun,dt,states,inputs,out_fun,outputs,outLinCheck] = varargin{:};
     end
 
     % get name from function handle
@@ -319,7 +339,7 @@ function C = aux_rewriteOutFunAsMatrix(out_fun,states,outputs)
 end
 
 function [states,inputs,out_fun,outputs,out_isLinear,rewriteAsC,C] = ...
-        aux_computeProperties(fun,states,inputs,out_fun,outputs)
+        aux_computeProperties(fun,states,inputs,out_fun,outputs,outLinCheck)
 
     % get number of states and number of inputs 
     if isempty(states) || isempty(inputs)
@@ -356,16 +376,24 @@ function [states,inputs,out_fun,outputs,out_isLinear,rewriteAsC,C] = ...
         % function (required for potential rewriting into obj.C)
         % number of inputs to the output functions
         try
+            assert(outLinCheck) % check only if outLinCheck = true
             [temp,out_out] = inputArgsLength(out_fun,2);
             % number of inputs to output function has to be zero in order
             % to potentially rewrite output equation to a C matrix
             out_inputs = temp(2);
             rewriteAsC = out_inputs == 0;
         catch
-            throw(CORAerror('CORA:specialError',...
-                ['Failed to determine number of outputs automatically!\n'...
-                   'Please provide number of outputs ' ...
-                   'as an additional input argument!']));
+            if ~isempty(outputs)
+                % use user-specified number of inputs and states
+                rewriteAsC = false;
+                out_isLinear = false;
+                return
+            else
+                throw(CORAerror('CORA:specialError',...
+                    ['Failed to determine number of outputs automatically!\n'...
+                    'Please provide number of outputs ' ...
+                    'as an additional input argument!']));
+            end
         end
 
         % ensure that output function does not use too many states

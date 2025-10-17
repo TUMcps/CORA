@@ -59,9 +59,9 @@ function con = priv_conform_whiteCon(sys,testSuite,p_GO,G_X0,G_U,options_cs,unio
 
 if strcmp(options_cs.constraints,"half")
     A_eq = []; b_eq = [];
-    [A_ineq,b_ineq] = aux_halfspaceConstraints(sys,testSuite,p_GO,G_X0,G_U,union_y_a,n_c);
+    [A_ineq,b_ineq] = aux_halfspaceConstraints(sys,testSuite,p_GO,G_X0,G_U,union_y_a,n_c,options_cs);
 elseif strcmp(options_cs.constraints,"gen")
-    [A_eq,b_eq,A_ineq,b_ineq] = aux_generatorConstraints(sys,testSuite,p_GO,G_X0,G_U,n_c);
+    [A_eq,b_eq,A_ineq,b_ineq] = aux_generatorConstraints(sys,testSuite,p_GO,G_X0,G_U,n_c,options_cs);
 end
 
 con.A_eq = A_eq;
@@ -75,9 +75,11 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 function [A_ineq,b_ineq] = aux_halfspaceConstraints(sys,testSuite, ...
-    p_GO, G_X0, G_U, union_y_a,n_c)
+    p_GO, G_X0, G_U, union_y_a,n_c,options_cs)
 
 A_ineq = []; b_ineq = [];
+A_ineq_z = []; A_ineq_T = []; % only required for classification tasks
+n_y = size(testSuite(1).y,1);
 
 for m = 1 : length(testSuite)
     % y_m = testSuite(m).y;
@@ -132,15 +134,39 @@ for m = 1 : length(testSuite)
         end
         A_ineq(end+1:end+size(Nk,1),:) = -A_ineqk;
 
-        % compute the linear summand d
-        union_y_ak = permute(union_y_a_m(:,k,:),[1 3 2]);
-        b_ineqk = max(Nk_c*union_y_ak,[],2);
-        b_ineq(end+1:end+size(Nk,1),1) = -b_ineqk;
+        if strcmp(options_cs.task,"class")
+            b_ineqk = Nk_c*p_GO_m.y(:,k);
+            b_ineq(end+1:end+size(Nk,1),1) = b_ineqk;
+
+            A_ineq_z = blkdiag(A_ineq_z,Nk_c);
+            T_is = [];
+            for i=1:n_y
+                if testSuite(m).y(i,1) ~= 1 % false class
+                    continue
+                end
+                T_is = [T_is; repmat((1:n_y)==i, n_y, 1) - eye(n_y)];
+            end
+            if isempty(T_is)
+                T_is = zeros(1,size(Nk_c,2));
+            end
+            A_ineq_T = blkdiag(A_ineq_T, -T_is);
+        else
+            % compute the linear summand d
+            union_y_ak = permute(union_y_a_m(:,k,:),[1 3 2]);
+            b_ineqk = max(Nk_c*union_y_ak,[],2);
+            b_ineq(end+1:end+size(Nk,1),1) = -b_ineqk;
+        end
     end
+end
+
+if strcmp(options_cs.task,"class")
+    A_ineq = [A_ineq A_ineq_z; ...
+        zeros(size(A_ineq_T,1),size(A_ineq,2)) A_ineq_T];
+    b_ineq = [b_ineq; zeros(size(A_ineq_T,1),1)];
 end
 end
 
-function [A_eq,b_eq,A_ineq,b_ineq] = aux_generatorConstraints(sys,testSuite,p_GO,G_X0,G_U,n_c)
+function [A_eq,b_eq,A_ineq,b_ineq] = aux_generatorConstraints(sys,testSuite,p_GO,G_X0,G_U,n_c,options_cs)
 
 b_eq = [];
 
@@ -168,45 +194,64 @@ for m = 1:length(testSuite)
     y_m = testSuite(m).y;
     n_k = size(y_m, 2); % number of timesteps
 
-    R_as = zeros(n_k * eta_X0 + sum(1:n_k)*eta_U, eta_X0 + eta_U);
-    Q_bs = [];
-    Q_cs = zeros(n_k*n_y, n_x+n_u);
-    I_ak = ([I_aX0; zeros(n_k*eta_U, eta_X0+eta_U)]);
-    for k=1:n_k
+    T_i = eye(n_y);
+    if strcmp(options_cs.task,"class")
+        n_classes = n_y; % loop through all classes
+    else
+        n_classes = 1;
+    end
+    for i=1:n_classes
+        if strcmp(options_cs.task,"class") % classification
+            if y_m(i,1) ~= 1 % false class
+                continue
+            end
+            T_i = repmat((1:n_y)==i, n_y, 1) - eye(n_y);
+        end
+        R_as = zeros(n_k * eta_X0 + sum(1:n_k)*eta_U, eta_X0 + eta_U);
+        Q_bs = [];
+        Q_cs = zeros(n_k*n_y, n_x+n_u);
+        I_ak = ([I_aX0; zeros(n_k*eta_U, eta_X0+eta_U)]);
+        for k=1:n_k
 
-        % matrices for equality constraints
-        % Compute the generators of the reachable output set
-        G_Yk = zeros(n_y,eta_X0+k*eta_U);
-        G_Yk(:,1:eta_X0) = p_GO_m.C{k}*G_X0;
-        sum_D = 0;
-        for j = 1:k
-            % Compute sum_j Dj
+            % matrices for equality constraints
+            % Compute the generators of the reachable output set
+            G_Yk = zeros(n_y,eta_X0+k*eta_U);
+            G_Yk(:,1:eta_X0) = p_GO_m.C{k}*G_X0;
+            sum_D = 0;
+            for j = 1:k
+                % Compute sum_j Dj
+                if n_c > 0
+                    sum_D = sum_D + p_GO_m.D{k,j};
+                end
+
+                G_Yk(:,eta_X0+(j-1)*eta_U+1:eta_X0+j*eta_U) = p_GO_m.D{k,j}*G_U;
+            end
+            Q_bs = blkdiag(Q_bs, T_i*G_Yk);
             if n_c > 0
-                sum_D = sum_D + p_GO_m.D{k,j};
+                Q_cs((k-1)*n_y+1:k*n_y,:) = [p_GO_m.C{k} sum_D];
             end
 
-            G_Yk(:,eta_X0+(j-1)*eta_U+1:eta_X0+j*eta_U) = p_GO_m.D{k,j}*G_U;
+            % matrices for inequality constraints
+            I_ak(eta_X0+(k-1)*eta_U+1:eta_X0+k*eta_U,:) = I_aU;
+            R_as((k-1)*eta_X0 + sum(1:k-1)*eta_U+1:k*eta_X0 + sum(1:k)*eta_U,:) = I_ak(1:eta_X0+k*eta_U,:);
         end
-        Q_bs = blkdiag(Q_bs, G_Yk);
+
+        % equality constraints Ax = b
+        n_s = size(y_m,3);
+        if strcmp(options_cs.task,"class") % classification
+            b_eq = [b_eq; T_i*reshape(p_GO_m.y,[],1)];
+            Q_bs = -Q_bs;
+        else
+            b_eq = [b_eq; reshape(y_p_GO_m(:,1:size(y_m,2))-y_m,[],1)];
+        end
         if n_c > 0
-            Q_cs((k-1)*n_y+1:k*n_y,:) = [p_GO_m.C{k} sum_D];
+            Q_c = [Q_c; sparse(-repmat(Q_cs, n_s, 1))];
         end
+        Q_b = blkdiag(Q_b, sparse(kron(eye(n_s),Q_bs))); % copy for each sample
 
-        % matrices for inequality constraints
-        I_ak(eta_X0+(k-1)*eta_U+1:eta_X0+k*eta_U,:) = I_aU;
-        R_as((k-1)*eta_X0 + sum(1:k-1)*eta_U+1:k*eta_X0 + sum(1:k)*eta_U,:) = I_ak(1:eta_X0+k*eta_U,:);
+        % inequality constraints Ax <= b
+        R_a = [R_a; sparse(-repmat(R_as, n_s, 1))];
     end
-
-    % equality constraints Ax = b
-    n_s = size(y_m,3);
-    Q_b = blkdiag(Q_b, sparse(kron(eye(n_s),Q_bs))); % copy for each sample
-    b_eq = [b_eq; reshape(y_p_GO_m(:,1:size(y_m,2))-y_m,[],1)];
-    if n_c > 0
-        Q_c = [Q_c; sparse(-repmat(Q_cs, n_s, 1))];
-    end
-
-    % inequality constraints Ax <= b
-    R_a = [R_a; sparse(-repmat(R_as, n_s, 1))];
 end
 R_c = sparse(size(R_a,1), n_c);
 R_b = speye(size(R_a,1));
@@ -215,6 +260,14 @@ A_ineq = [R_a R_c R_b; R_a R_c -R_b];
 b_ineq = sparse(size(A_ineq, 1),1);
 
 A_eq = [sparse(size(Q_b,1), n_a) Q_c Q_b];
+
+if strcmp(options_cs.task,"class") % classification
+    % no equality constraints for classification constraints
+    A_ineq = [A_eq; A_ineq];
+    b_ineq = [b_eq; b_ineq];
+    A_eq = []; %zeros(1,size(A_eq,2));
+    b_eq = []; %0;
+end
 
 % remove rows which correspond to NaN values due to missing
 % measurements in some test cases

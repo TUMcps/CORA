@@ -189,7 +189,9 @@ function res = aux_getCondfunOptions_errorOrder(sys,func,params,options)
     elseif strcmp(func,'priv_reachInnerParallelotope')
         res = options.tensorOrder > 2;
     else
-        res = ~startsWith(class(sys),'lin') && ~contains(options.alg,'adaptive') && options.tensorOrder>2;
+        res = ~startsWith(class(sys),'lin') && ~contains(options.alg,'adaptive') ...
+            && isfield(options,'tensorOrder') && options.tensorOrder>2;
+        % (if tensorOrder not specified -> set to default = 2)
     end
 end
 

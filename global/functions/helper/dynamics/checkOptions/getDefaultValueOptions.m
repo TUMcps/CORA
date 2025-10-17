@@ -115,16 +115,20 @@ switch field
     case 'idAlg'
         defValue = aux_def_idAlg(sys,params,options);
     % for conform_white:
+    case 'cs.cost'
+        defValue = 'interval';
+    case 'cs.constraints'
+        defValue = 'gen';
+    case 'cs.task'
+        defValue = 'reg';
+    case 'cs.numRotations'
+        defValue = 0;
     case 'cs.cp_lim'
         defValue = Inf;
     case 'cs.a_min'
         defValue = 0;
     case 'cs.a_max'
         defValue = Inf;
-    case 'cs.cost'
-        defValue = 'interval';
-    case 'cs.constraints'
-        defValue = 'gen';
     case 'cs.P'
         defValue = 1;
     case 'cs.w'
@@ -135,6 +139,15 @@ switch field
         defValue = 1e-9;
     case 'cs.updateDeriv'
         defValue = true;
+        % outlier detection
+    case 'cs.outMethod'
+        defValue = 'RMSE';
+    case 'cs.numOutlier'
+        defValue = 0;
+    case 'cs.idzOutlier'
+        defValue = [];
+    case 'cs.determineActive'
+        defValue = false;
         % recursive identification
     case 'cs.recMethod'
         defValue = '';

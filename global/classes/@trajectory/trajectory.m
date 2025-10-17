@@ -163,7 +163,7 @@ if CHECKS_ENABLED && n_in > 0
     end
 
     % time points and must match the average sampling time
-    if ~isempty(t) && ~isempty(dt) && ~withinTol(dt, mean(diff(t,[],2),'all'), 1e-6)
+    if ~isempty(t) && ~isempty(dt) && n_k > 1 && ~withinTol(dt, mean(diff(t,[],2),'all'), 1e-6)
         throw(CORAerror('CORA:wrongInputInConstructor',...
             'Time points and average sampling time does not match.'));
     end

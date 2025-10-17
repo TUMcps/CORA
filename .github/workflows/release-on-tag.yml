@@ -15,8 +15,11 @@ jobs:
       - name: Get Commit Message
         id: get_commit_message
         run: |
-          COMMIT_MESSAGE=$(git log -1 --pretty=format:%B ${{ github.ref }})
-          echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_ENV
+          {
+            echo "commit_message<<EOF"
+            git log -1 --pretty=format:%B ${{ github.ref }}
+            echo "EOF"
+          } >> "$GITHUB_ENV"
 
       - name: Create GitHub Release
         env:

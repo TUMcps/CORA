@@ -138,7 +138,7 @@ for i=1:length(cats)
     end
     % if plotOptions given, this has precedence over linespec (if both)
     for j=1:2:length(plotOptions)
-        if ischar(plotOptions{j}) && strcmp(plotOptions{j},cat)
+        if strcmp(plotOptions{j},cat)
             % assign value of name-value pair
             if linespecGiven
                 NVpairs{end} = plotOptions{j+1};

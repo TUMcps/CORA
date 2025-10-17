@@ -23,6 +23,8 @@ function [params,results] = conform(sys,params,options,varargin)
 %       .sys - updated system
 %       .p - estimated parameters
 %       .fval - final optimization cost
+%       .idzActive - indizes of active / boundary data points (only 
+%           determined if options.cs.determineActive = true, otherwise NaN)
 %
 % References:
 %    [1] M. Althoff and J. M. Dolan. Reachability computation of low-order 
@@ -80,12 +82,31 @@ switch type
         % conformance synthesis for dedicated system dynamics
         [params,options] = validateOptions(sys,params,options);
         [sys_upd,params,options] = aux_updateSys(sys,params,options);
-    
+
         % Identify conformant parameters
         if type == "white" || type == "black"
-            [params,fval,p_opt,union_y_a] = priv_conform_white(sys_upd,params,options);
-            results.sys = sys;
+            if options.cs.numOutlier >= 1 && ...
+                    (params.testSuite(1).n_k > 1 || params.testSuite(1).n_s > 1)
+                throw(CORAerror('CORA:specialError', ['Outlier detection ' ...
+                    'not implemented for n_k > 1 or n_s > 1. ' ...
+                    '            Please use options.cs.numOutlier = 0.']))
+            end
+            if options.cs.numOutlier >= 1 && any(strcmp(options.cs.outMethod, {'search','searchG'}))
+                % outlier detection via iterative search
+                [params,fval,p_opt,union_y_a,idzActive] = priv_conform_iterOD(sys_upd, params, options);
+            else
+                if options.cs.numOutlier >= 1 && strcmp(options.cs.outMethod, 'RMSE')
+                    % remove data points with biggest RMSE
+                    deviations = computeOutputDev(params.testSuite,sys_upd);
+                    dev_vec = squeeze(rms(deviations,1));
+                    [~,idzOutlier] = sort(dev_vec,'descend');
+                    options.cs.idzOutlier = idzOutlier(1:options.cs.numOutlier);
+                end
+                [params,fval,p_opt,union_y_a,idzActive] = priv_conform_white(sys_upd,params,options);
+            end
+            results.sys = sys_upd;
             results.unifiedOutputs = union_y_a;
+            results.idzActive = idzActive;
 
         elseif contains(type,"gray") % "graySim","graySeq","grayLS"
             [params,fval,p_opt,sys_opt] = priv_conform_gray(sys_upd,params,options,type);
@@ -119,7 +140,7 @@ end
 
 % adapt testSuite to the system dynamics (augment nominal input, update
 % initial state)
-params.testSuite = aux_preprocessTestSuite(sys,params.testSuite,options.cs.recMethod);
+params.testSuite = aux_preprocessTestSuite(sys,params.testSuite);
 
 end
 
@@ -141,7 +162,7 @@ end
 
 end
 
-function testSuite = aux_preprocessTestSuite(sys,testSuite,recMethod)
+function testSuite = aux_preprocessTestSuite(sys,testSuite)
 % preprocessTestSuite - preprocess testSuite, i.e., 
 %   - augment nominal inputs with zeros to match input dimension of sys
 %   - unify test cases for linear systems, 
