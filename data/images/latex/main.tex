@@ -1,23 +1,11 @@
 \documentclass[crop=true]{standalone}
 
-% tikz
-\usepackage{tikzscale}
-\usepackage{pgfplots}
-\usepackage{mathtools}
-\pgfplotsset{compat=1.18}
-% \usepgfplotslibrary{external}
-% \tikzexternalize[prefix=./]
-% \newcommand{\includetikz}[1]{%
-%     \tikzsetnextfilename{#1}%
-%     \input{#1.tikz}%
-% }
+% load coara-macs
+\usepackage[sets,nn,operations,colors,tikz]{cora-macs}
+\externalizeFiguresByDefaultfalse
+
 % explicitly set line width to avoid different widths in different pdf viewers
 \tikzset{every picture/.style={line width=0.5pt}}
-% groupplots
-\usepgfplotslibrary{groupplots}
-\usetikzlibrary{pgfplots.groupplots}
-\usetikzlibrary{matrix}
-\usetikzlibrary{patterns}
 
 \begin{document}
 %
@@ -30,8 +18,8 @@
 % 5. Convert dvi to svg:										        dvisvgm main.dvi --font-format=woff --optimize -o ./figures/dynamics-systems/feedback_neuralNetContrSys.svg
 % 6. Add to website         										    <img src="<figure-path>/<figure-name>.svg"/>
 %
-% \input{./<figure-path>/<figure-name>.tikz}
-\input{./figures/geometric-sets/modernZonotope.tikz}
+% \input{./<figure-path>/<figure-name>}
+\includetikz{./figures/architecture} % without .tikz !
 %
 % Note: Make sure that there are no empty lines within the document environment for standalone to properly crop the image.
 %

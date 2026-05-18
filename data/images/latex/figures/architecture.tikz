@@ -1,0 +1,53 @@
+
+
+% ---------------------------------
+% CONFIGURATION
+% ---------------------------------
+\def\totalcols{12}        % Number of grid columns
+\def\rowheight{1.2}       % Base height of a block
+\def\blockmargin{0.01} % adjust to taste
+
+% ---------------------------------
+% BLOCK COMMAND
+% Arguments:
+% 1 = row number (1 = bottom)
+% 2 = start column (integer)
+% 3 = end column (integer)
+% 4 = label/text
+% 5 = color (TikZ name)
+% ---------------------------------
+% margin between blocks (relative to total width)
+
+\newcommand{\block}[5]{%
+  \pgfmathsetmacro{\xstart}{(#2-1)/\totalcols + \blockmargin}
+  \pgfmathsetmacro{\xend}{(#3)/\totalcols - \blockmargin}
+  \pgfmathsetmacro{\y}{(#1-1)*\rowheight}
+  \pgfmathsetmacro{\height}{\rowheight - 20*\blockmargin}
+  \pgfmathsetmacro{\width}{\xend - \xstart}
+
+  \begin{scope}[shift={(\xstart\linewidth, \y)}]
+    \draw[draw=#5,fill=#5!20, rounded corners=3pt, thick]
+      (0,0) rectangle ({\width\linewidth}, \height);
+
+    \node[text=black,text width={0.9*\width\linewidth},align=center]
+      at ({0.5*\width\linewidth}, {0.5*\height}) {{#4}};
+  \end{scope}
+}
+
+
+\begin{tikzpicture}[x=1pt,y=1cm]
+
+% Example usage
+\block{1}{0}{12}{Geometric Sets}{CORAcolorYellow}
+
+\block{2}{0.5}{5}{Reachability Analysis of Dynamic Systems}{CORAcolorRed}
+\block{2}{6}{10}{Neural Network Verification}{CORAcolorBlue}
+\block{2}{11}{11.5}{\ldots}{CORAcolorGreen}
+
+
+\block{3}{1}{3}{System Identification}{CORAcolorDarkRed}
+\block{3}{4}{7}{Neural Network Control System}{CORAcolorPurple}
+\block{3}{8}{9}{Robust Training}{CORAcolorLightBlue}
+% \block{3}{10}{11}{\includegraphics[width=\linewidth,keepaspectratio]{./figures/CORAlogo.png}}{white}
+
+\end{tikzpicture}

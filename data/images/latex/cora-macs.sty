@@ -1,0 +1,416 @@
+
+% package information --------------------------------------------------------------------------------------------------
+
+\NeedsTeXFormat{LaTeX2e}
+\providecommand{\CORAMACSname}[0]{cora-macs}
+\providecommand{\CORAMACSversion}[0]{2025-06-27} % Should match the version on CTAN.
+\ProvidesPackage{\CORAMACSname}[\CORAMACSversion]
+\PackageInfo{\CORAMACSname}{"CORA MACROS - Version \CORAMACSversion"}
+
+% Authors: Tobias Ladner, Lukas Koller
+% TUM - Cyber-Physical Systems Group
+% Website: https://www.ce.cit.tum.de/cps
+
+% Based on: https://www.overleaf.com/learn/latex/Writing_your_own_package
+
+% required packages ----------------------------------------------------------------------------------------------------
+
+% general packages
+\RequirePackage{xifthen}
+\RequirePackage{xstring}
+\RequirePackage{amsfonts}
+\RequirePackage{keyval}
+
+% color
+\RequirePackage{xcolor}
+
+% tikz
+\RequirePackage{tikzscale}
+\RequirePackage{pgfplots}
+\RequirePackage{mathtools}
+\RequirePackage{graphics}
+\usepgfplotslibrary{external}
+
+
+% pre-processing -------------------------------------------------------------------------------------------------------
+
+% for better logging
+\newcommand{\DeclareCORAOption}[2]{
+  \DeclareOption{#1}{
+  % display information
+    \PackageInfo{\CORAMACSname}{"Loading '#1' option"}
+    % content
+    #2
+  }
+}
+
+% nice to have
+\providecommand{\R}{\ensuremath{\mathbb{R}}}
+\providecommand{\N}{\ensuremath{\mathbb{N}}}
+
+% all sets should be written in mathcal
+\newcommand{\contSet}[1]{\ensuremath{\mathcal{#1}}}
+
+% CORA macro
+\providecommand{\CORA}[0]{{\color{black}C\color{red!90!black}O\color{black}RA}}
+
+% declare options ------------------------------------------------------------------------------------------------------
+
+\DeclareCORAOption{sets}{ %                                                                          --- continuous sets
+% contSet ---
+
+% formatting
+  \newcommand{\neghphantom}[1]{\settowidth{\dimen0}{#1}\hspace*{-\dimen0}}
+
+  % short-hand notation (including nice punctuation for large sets)
+  \newcommand{\shortContSet}[3][]{\ensuremath{% \defContSet[punctuation]{abbreviation}{cs parameters of set}
+    \left<#2\right>_{#3\,}%
+    \ifthenelse{\isempty{#1}}% add abbreviation
+    {} % none given
+    {\neghphantom{\scriptsize #3}#1\neghphantom{#1}\hphantom{\scriptsize #3}}
+  }}
+  \newcommand{\defContSet}[2]{\left\{ #1 \ \middle|\ #2 \right\}}
+  \newcommand{\defContSetSplit}[2]{\left\{ #1 \vphantom{#2} \ \right| \\ &\qquad \left. \vphantom{#1} #2 \right\}}
+
+  % interval ---
+  \providecommand{\I}{\contSet{I}}
+  \newcommand{\shortI}[2]{\ensuremath{\left[#1,#2\right]}}
+
+  % zonotope ---
+  \providecommand{\Z}{\contSet{Z}}
+  \newcommand{\shortZ}[3][]{\shortContSet[#1]{#2,#3}{Z}}
+  \newcommand{\defZ}{\left\{ c + \sum_{i=1}^{p} \beta_i G_{(\cdot,i)} ~\middle|~ \beta_i \in [-1,1] \right\}}
+
+  % polynomial zonotope ---
+  \providecommand{\PZ}{\contSet{PZ}}
+  \providecommand{\PZid}{{\scalebox{0.9}{$\mathtt{id}$}}}
+  \newcommand{\shortPZ}[5][]{\shortContSet[#1]{#2,#3,#4,#5}{PZ}}
+  \newcommand{\defPZmain}{c + \sum_{i=1}^h \left(\prod_{k=1}^p \alpha_k^{E_{(k,i)}}\right) G_{(\cdot, i)} + \sum_{j=1}^{q} \beta_j G_{I(\cdot, j)}}
+  \newcommand{\defPZcond}{\alpha_k, \beta_j \in \left[-1,1\right]}
+  \newcommand{\defPZ}{\defContSet{\defPZmain}{\defPZcond}}
+  \newcommand{\defPZSplit}{\defContSetSplit{\defPZmain}{\defPZcond}}
+}
+
+
+\DeclareCORAOption{operations}{ %                                                                         --- operations
+
+% define monospace operator including inline operator
+  \newcommand{\operator}[3][]{%
+    \text{\normalfont\small#2}%
+    \IfSubStr{#1}{inline}% if inline
+    {(#3)}% no \left/\right
+    {\left(#3\right)}}
+  \newcommand{\operatortt}[3][]{\operator[#1]{{\ensuremath{\mathtt{#2}}}}{#3}}
+
+  % enclosure
+  \newcommand{\opEnclose}[3][]{\operatortt[#1]{enclose}{#2,#3}}
+  \newcommand{\opEnclosePrime}[3][]{\operatortt[#1]{enclose}{#2,#3}}
+  \newcommand{\opIntervalEnclosure}[2][]{\operatortt[#1]{interval}{#2}}
+  \newcommand{\opBoxEnclosure}[2][]{\operatortt[#1]{box}{#2}}
+  \newcommand{\opBound}[2][]{\operatortt[#1]{bound}{#2}}
+  \newcommand{\opZonotopeEnclosure}[2][]{\operatortt[#1]{zonotope}{#2}}
+  \newcommand{\opZonoEnclosure}[2][]{\operatortt[#1]{zono}{#2}}
+  \newcommand{\opPolyZonotopeEnclosure}[2][]{\operatortt[#1]{polyZonotope}{#2}}
+  \newcommand{\opPolyZonoEnclosure}[2][]{\operatortt[#1]{polyZono}{#2}}
+
+  % further operations
+  \newcommand{\opProject}[2][]{\operatortt{project}{#2}}
+
+  % operations that should be stantard latex operations
+  \providecommand{\diag}[2][]{\operator[#1]{diag}{#2}}
+  \providecommand{\Diag}[2][]{\operator[#1]{Diag}{#2}}
+  \providecommand{\mod}[3][]{\operator[#1]{mod}{#2,#3}}
+  \newcommand{\dia}[2][]{\operator[#1]{dia}{#2}}
+  \newcommand{\sign}[2][]{\operator[#1]{sign}{#2}}
+}
+
+
+\DeclareCORAOption{nn}{ %                                                                            --- neural networks
+
+% neural network
+  \newcommand{\NN}[0]{\ensuremath{\Phi}}
+  \newcommand{\numLayers}[0]{\ensuremath{\kappa}}
+  \newcommand{\numNeurons}[0]{\ensuremath{n}}
+
+  % layers
+  \newcommand{\nnLayerName}[2][]{\ensuremath{L_{#2}^\text{#1}}}
+  \newcommand{\nnLayer}[3][]{\ensuremath{\nnLayerName[#1]{#2}\left(#3\right)}}
+  \newcommand{\nnActFun}{\ensuremath{\phi}}
+  \newcommand{\actfun}{\nnActFun} % remove?
+  \newcommand{\actFun}{\nnActFun} % remove?
+
+  % point propagation
+  \newcommand{\nnInput}[0]{\ensuremath{x}}
+  \newcommand{\nnInputAdv}[0]{\widetilde{\nnInput}}
+  \newcommand{\nnHidden}[0]{\ensuremath{h}}
+  \newcommand{\nnOutput}[0]{\ensuremath{y}}
+  \newcommand{\nnGrad}{\ensuremath{g}}
+
+  % set propagation
+  \newcommand{\nnInputSet}[0]{\contSet{X}}
+  \newcommand{\nnHiddenSet}[0]{\contSet{H}}
+  \newcommand{\nnHiddenSetExact}[0]{\nnHiddenSet^*}
+  \newcommand{\nnOutputSet}[0]{\contSet{Y}}
+  \newcommand{\nnOutputSetExact}[0]{\nnOutputSet^*}
+  \newcommand{\nnGradSet}{\contSet{G}}
+
+  % set-based training
+  \newcommand{\nnTarget}{\ensuremath{t}}
+  \newcommand{\regrSub}{MSE}
+  \newcommand{\ceSub}{CE}
+  \newcommand{\pointLoss}{\ensuremath{E}}
+  \newcommand{\setLoss}{\ensuremath{\widetilde{E}}}
+
+  % other
+  \newcommand{\nnPertRadius}{\epsilon}
+
+  % specification
+  \newcommand{\unsafeSet}[0]{\contSet{S}}
+
+}
+
+%
+
+\DeclareCORAOption{colors}{%                                                                                  --- colors
+
+% cora colors (see CORAcolor in cora)                                                                    --- cora colors
+  \definecolor{CORAcolorReachSet}{rgb}{0.2706, 0.5882, 1.0000}     % blue
+  \definecolor{CORAcolorReachSet2}{rgb}{0.6902, 0.8235, 1.0000}    % light-blue
+  \definecolor{CORAcolorInitialSet}{rgb}{1, 1, 1}                  % white
+  \definecolor{CORAcolorFinalSet}{rgb}{0.9000, 0.9000, 0.9000}     % light-gray
+  \definecolor{CORAcolorSimulations}{rgb}{0.0000, 0.0000, 0.0000}  % black
+  \definecolor{CORAcolorUnsafe}{rgb}{0.9451, 0.5529, 0.5686}       % red
+  \definecolor{CORAcolorUnsafeLight}{rgb}{0.9882, 0.9098, 0.9137}  % light red
+  \definecolor{CORAcolorSafe}{rgb}{0.4706, 0.7725, 0.4980}         % light green
+  \definecolor{CORAcolorUnknown}{rgb}{0.9290, 0.6940, 0.1250}      % yellow
+  \colorlet{CORAcolorInvariant}{CORAcolorSafe}                     % light green
+
+  % default colors (also default matlab colors)
+  \definecolor{CORAcolorBlue}{rgb}{0, 0.4470, 0.7410}
+  \definecolor{CORAcolorRed}{rgb}{0.8500, 0.3250, 0.0980}
+  \definecolor{CORAcolorYellow}{rgb}{0.9290, 0.6940, 0.1250}
+  \definecolor{CORAcolorPurple}{rgb}{0.4940, 0.1840, 0.5560}
+  \definecolor{CORAcolorGreen}{rgb}{0.4660, 0.6740, 0.1880}
+  \definecolor{CORAcolorLightBlue}{rgb}{0.3010, 0.7450, 0.9330}
+  \definecolor{CORAcolorDarkRed}{rgb}{0.6350, 0.0780, 0.1840}
+
+  % define order of colors (see useCORAcolors in cora)
+  \colorlet{CORAcolor1}{CORAcolorBlue}
+  \colorlet{CORAcolor2}{CORAcolorRed}
+  \colorlet{CORAcolor3}{CORAcolorYellow}
+  \colorlet{CORAcolor4}{CORAcolorPurple}
+  \colorlet{CORAcolor5}{CORAcolorGreen}
+  \colorlet{CORAcolor6}{CORAcolorLightBlue}
+  \colorlet{CORAcolor7}{CORAcolorDarkRed}
+
+  \definecolor{CORAcolorHighlight1}{rgb}{1.0000,0.6824,0.2980} % 'CORA:highlight1 (orange)'
+  \definecolor{CORAcolorHighlight2}{rgb}{0.3804,0.6275,1.0000} % 'CORA:highlight2 (lightblue)'
+
+  %                                                                                                       --- TUM colors
+  \definecolor{TUMblue}{rgb}{0.00, 0.40, 0.74}
+  \definecolor{TUMgray}{rgb}{0.85, 0.85, 0.86}
+  \definecolor{TUMpantone285C}{rgb}{0.00, 0.45, 0.81}
+  \definecolor{TUMpantone300C}{RGB}{27, 94, 170} %uncorrected TUMpantone300C
+  \definecolor{lightblue}{rgb}{0.7529,0.8118,0.9333}
+
+}
+
+
+\DeclareCORAOption{tikz}{ %                                                                                     --- tikz
+
+% groupplots
+  \usepgfplotslibrary{groupplots}
+  \usetikzlibrary{pgfplots.groupplots}
+  \usetikzlibrary{matrix}
+  \usetikzlibrary{patterns,patterns.meta}
+  \usetikzlibrary{arrows,arrows.meta}
+
+  % main packages
+  \pgfplotsset{compat=1.18}
+
+  \newif\ifexternalizeFiguresByDefault
+  \externalizeFiguresByDefaultfalse % Disable externalization by default.
+
+  % Allow users to enable deafult externalization with the following command:
+  \providecommand{\CORAexternalizeFiguresByDefault}{\externalizeFiguresByDefaulttrue}
+
+  % tikz externalize
+  \providecommand{\includetikzinternalpath}{./figures/externalize}
+  \providecommand{\includetikzupdatepath}[1]{\renewcommand{\includetikzinternalpath}[1]{##1}}
+  \tikzexternalize[prefix=\includetikzinternalpath/]
+  % include tikz
+  \providecommand{\includetikzinternalusetikz}[1]{%
+    \tikzset{external/export next=\CORAtikzexternalize}
+    \tikzsetnextfilename{\CORAtikzname{#1}}%
+    \input{#1.tikz}%
+  }
+  % reuse externalized pdf
+  \providecommand{\includetikzinternalusepdf}[1]{%
+    \IfSubStr{\CORAtikzexternalize}{true}{
+    % include pdf if exists
+      \IfFileExists{{\includetikzinternalpath/\CORAtikzname{#1}.pdf}}{%
+      % include pdf
+        \includegraphics{\includetikzinternalpath/\CORAtikzname{#1}.pdf}%
+      }{
+      % show error message
+        \texttt{
+          \tiny  \sloppy
+          The file ''\expandafter\detokenize\expandafter{\includetikzinternalpath}/\expandafter\detokenize\expandafter{\CORAtikzname{#1}}.pdf`` does not exist and has to be exported first.
+          Please re-compile with tikz externalize and shell escape enabled.
+          Check the documentation for details.
+        }
+      }
+    }{
+    % call tikz
+      \includetikzinternalusetikz{#1}
+    }
+  }
+  % set up commands for tikz options (default: false)
+  \providecommand{\CORAtikzname}[1]{#1}
+  \providecommand{\CORAtikzexternalize}{false}
+  \providecommand{\CORAtikzsetupoptions}[1]{
+  % option 'animate': externalize with overlaynumber
+    \IfSubStr{#1}{animate}{
+    % have overlay number in name to have each overlay as separate pdf
+      \renewcommand{\CORAtikzname}[1]{##1-animate-\overlaynumber}
+      \mode<handout>{
+        % additionally have one pdf for handout mode
+        \renewcommand{\CORAtikzname}[1]{##1-animate-handout}
+      }
+    }{
+      \renewcommand{\CORAtikzname}[1]{##1}
+    }
+    % option 'noexternalize'/'noexport': whether figure should be not externalized
+    \IfSubStr{#1}{noexternalize}{
+      \renewcommand{\CORAtikzexternalize}{false}
+    }{
+      \IfSubStr{#1}{noexport}{
+        \renewcommand{\CORAtikzexternalize}{false}
+      }{
+        % option 'externalize'/'export': whether figure should be externalized
+        \IfSubStr{#1}{externalize}{
+          \renewcommand{\CORAtikzexternalize}{true}
+        }{
+          \IfSubStr{#1}{export}{
+            \renewcommand{\CORAtikzexternalize}{true}
+          }{
+            \ifexternalizeFiguresByDefault
+              \renewcommand{\CORAtikzexternalize}{true}
+            \else
+              \renewcommand{\CORAtikzexternalize}{false}
+            \fi
+          }
+        }
+      }
+    }
+    
+  }
+  % main command to include tikz
+  \providecommand{\includetikz}[2][]{\texttt{Not yet initialized}}
+  % make tikz/pdf selectable
+  \providecommand{\CORAexternalizeusetikz}{\renewcommand{\includetikz}[2][]{
+    \CORAtikzsetupoptions{##1}
+    \IfSubStr{##1}{usepdf}{
+      \includetikzinternalusepdf{##2}%
+    }{
+      \includetikzinternalusetikz{##2}%
+    }
+  }}
+  \providecommand{\CORAexternalizeusepdf}{\renewcommand{\includetikz}[2][]{\CORAtikzsetupoptions{##1}\includetikzinternalusepdf{##2}}}
+  \CORAexternalizeusetikz
+
+  \tikzset {external/optimize=true}
+  % ensure
+  \makeatletter
+  \providecommand*{\overlaynumber}{\number\beamer@slideinframe}
+  \makeatother
+
+  % styling
+  \pgfplotsset{every axis/.append style={
+    ylabel near ticks,
+    xlabel near ticks,
+  }}
+  \tikzset{
+    >={Stealth[length=1mm]},
+  }
+
+  % rounded axis (add to options of \begin{axis} or \begin{groupplot})
+  \pgfplotsset{
+    rounded axis/.style={
+      % hiding axis, having draw=black results in weird line artifact in the bottom left corner...
+      axis line style={rounded corners,draw=none},
+      % clip everything within axis (nothing is drawn outside rounded corners then)
+      execute at begin axis={
+        \clip[rounded corners] (current axis.south west) -- (current axis.south east) -- (current axis.north east) --(current axis.north west) -- cycle;
+      },
+      % (re-)draw axis border at the very end
+      execute at end plot visualization={
+        \draw[rounded corners] (current axis.south west) rectangle (current axis.north east);
+      },
+      % also apply rounded corners to legend
+      legend style={rounded corners},
+      every legend image post/.style={rounded corners=1pt}
+    }
+  }
+
+  % plot sets in default style of CORA
+  \pgfplotsset{
+    plot filled/.style={area legend, draw=#1, fill=#1, fill opacity=0.2}
+  }
+
+  % frame animations - in-/visible on for tikz objects
+  \tikzset{
+    alt/.code args={<#1>#2#3}{%
+    \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path
+  },
+  invisible/.style={opacity=0},
+  visible on/.style={alt={#1{}{invisible}}},
+  invisible on/.style={alt={#1{invisible}{}}},
+}
+
+% tikz neural networks
+\tikzset{
+  pics/nn/.style n args={4}{code={ % args: number of layers, list of hidden neurons, size of neuron, distance between neurons
+    \pgfmathsetmacro{\d}{#4};
+    \pgfmathsetmacro{\hn}{#1};
+    \foreach[count=\i] \h in {#2} { % draw network
+      \foreach \ii in {1,...,\h} { % draw layer
+        \node[circle,fill=CORAcolorBlue!75,draw=CORAcolorBlue,thick,inner sep={#3}] (l\i-\ii) at ({1.0cm*(\i-1-0.5*(\hn-1))},{\d*(\ii-0.5*(\h+1))}) {}; % \d*(\ii-1+0.5*Mod(\h,2))
+      };
+    };
+    % connect neurons
+    \foreach[count=\i] \hi in {#2} { %
+      \foreach[count=\j] \hj in {#2} { %
+        \pgfmathtruncatemacro{\dji}{\j-\i};
+        \ifnum\dji=1
+        \foreach \ii in {1,...,\hi} { %
+          \foreach \jj in {1,...,\hj} { %
+            \draw (l\i-\ii) -- (l\j-\jj); %
+          };
+        };
+        \fi
+      };
+    };
+  },
+  },
+  neuron label/.style n args={1}{label={[font=\footnotesize,text=white]center:#1}},
+  pics/zono3/.style n args={2}{code={\filldraw (0,-{#1}) -- (-{#2},-{#1}) -- (-{#2},0) -- (0,{#1}) -- ({#2},{#1}) -- ({#2},0) -- cycle;}},
+  pics/lossArrows3/.style n args={2}{code={\draw (0,0) -- ({0.5*#2},{0.5*#1}) -- ({0.5*#2},{#1}) -- ({#2},{#1});}},
+}
+
+\pgfplotsset{
+  enclosurefunction/.style={color=black, forget plot},
+  enclosureset/.style={color=CORAcolorGreen, forget plot},
+  enclosuresetbounds/.style={color=CORAcolorGreen, dashed, forget plot},
+  enclosureinputbounds/.style={color=TUMgray, dashed, forget plot},
+  enclosurepolynomial/.style={color=CORAcolorBlue, forget plot},
+  enclosureerror/.style={color=CORAcolorRed, forget plot},
+}
+
+}
+
+% process options ------------------------------------------------------------------------------------------------------
+
+\ProcessOptions\relax
+
+% post-processing ------------------------------------------------------------------------------------------------------

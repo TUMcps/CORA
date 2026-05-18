@@ -61,8 +61,8 @@
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#reach-continuous">Reachability Analysis for Continuous Systems</a></li>
                         <li><a class="dropdown-item" href="#reach-hybrid">Reachability Analysis for Hybrid Systems</a></li>
-                        <li><a class="dropdown-item" href="#geometric-sets">Geometric Sets</a></li>
                         <li><a class="dropdown-item" href="#nn">Formal Verification of Neural Networks</a></li>
+                        <li><a class="dropdown-item" href="#geometric-sets">Geometric Sets</a></li>
                     </ul>
                 </li>
 
@@ -142,6 +142,14 @@
             CORA ensures the seamless integration of different reachability algorithms without code modifications and aims for a user-friendly experience through automatic parameter tuning,
             making it a versatile tool for researchers and engineers in the field of cyber-physical systems.
         </p>
+        <div class="row justify-content-end">
+            <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+                <object type="image/svg+xml" data="./data/images/latex/figures/architecture.svg">
+                    Your browser does not support SVG
+                </object>
+                <div class="space-before-xs"></div>
+            </div>
+        </div>
     </div>
 
     <!-- Features -->
@@ -180,27 +188,9 @@
         </div>
     </div>
 
-    <hr id="geometric-sets" class="flyin"/>
-    <div class="row space-before flyin">
-        <div class="col-12 col-md-6 col-xl-8 order-1 order-md-0">
-            <h5>Geometric Sets</h5>
-            <p>CORA has a modular design, making it possible to use the capabilities of the various set representations
-                for other purposes besides reachability analysis. The toolbox implements vector set representation,
-                e.g., intervals, zonotopes, Taylor models, and polytopes, as well as matrix set representations
-                such as matrix zonotopes and interval matrices.</p>
-            <div class="text-start"><a href="./pages/geometric-sets/index.html" class="btn btn-primary">Read more</a></div>
-        </div>
-        <div class="col-12 col-md-6 col-xl-4 order-0 order-md-1 text-center">
-            <object type="image/svg+xml" data="./data/images/latex/figures/setBasedAlgorithm2.svg">
-                Your browser does not support SVG
-            </object>
-            <div class="space-before-xs"></div>
-        </div>
-    </div>
-
     <hr id="nn" class="flyin"/>
     <div class="row space-before flyin">
-        <div class="col-12 col-md-6 col-xl-8 order-1 order-md-1">
+        <div class="col-12 col-md-6 col-xl-8 order-1 order-md-0">
             <h5>Neural Network Verification and Robust Training</h5>
             <p>CORA enables the formal verification of neural networks, both in open-loop and in closed-loop scenarios. Open-loop verification
                 refers to the task where properties of the output set of a neural network are verified, e.g., correctly classified images given noisy
@@ -208,13 +198,32 @@
                 reachability algorithms above, e.g., controlling a car while keeping a safe distance. Additionally, one can train verifiably robust neural networks in CORA.</p>
             <div class="text-start"><a href="./pages/neural-networks/index.html" class="btn btn-primary">Read more</a></div>
         </div>
-        <div class="col-12 col-md-6 col-xl-4 order-0 order-md-0 text-center">
+        <div class="col-12 col-md-6 col-xl-4 order-0 order-md-1 text-center">
             <object type="image/svg+xml" data="./data/images/latex/figures/ACC.svg">
                 Your browser does not support SVG
             </object>
             <div class="space-before-xs"></div>
         </div>
     </div>
+
+    <hr id="geometric-sets" class="flyin"/>
+    <div class="row space-before flyin">
+        <div class="col-12 col-md-6 col-xl-8 order-1 order-md-1">
+            <h5>Geometric Sets</h5>
+            <p>CORA has a modular design, making it possible to use the capabilities of the various set representations
+                for other purposes besides reachability analysis. The toolbox implements vector set representation,
+                e.g., intervals, zonotopes, Taylor models, and polytopes, as well as matrix set representations
+                such as matrix zonotopes and interval matrices.</p>
+            <div class="text-start"><a href="./pages/geometric-sets/index.html" class="btn btn-primary">Read more</a></div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-4 order-0 order-md-0 text-center">
+            <object type="image/svg+xml" data="./data/images/latex/figures/setBasedAlgorithm2.svg">
+                Your browser does not support SVG
+            </object>
+            <div class="space-before-xs"></div>
+        </div>
+    </div>
+
 
     <!-- Getting Started -->
     <hr id="get-started" class="flyin"/>
@@ -267,6 +276,9 @@
                 </div>
             </div>
         </div>
+        <h5 class="space-before">Participation in Verification Competitions</h5>
+        <p>CORA also regularly participates in various competitions in the field of formal verification. Both competitions consist of a wide range of benchmarks spanning industry applications to high-dimensional scalability tests:</p>
+        <div class="text-start"><a href="https://cps-vo.org/group/ARCH/FriendlyCompetition" class="btn btn-primary btn-sm" target="_blank">CORA @ ARCH-COMP</a> <a href="https://vnn-comp.github.io/" class="btn btn-primary btn-sm" target="_blank">CORA @ VNN-COMP</a></div>
     </div>
 
     <!-- Contact -->
