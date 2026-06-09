@@ -481,13 +481,13 @@ function han = aux_plot3Dsolvable(obj,dims,ind,NVpairs)
 
     for i = 2:size(Z_,1)-1
         for j = 2:size(Z_,2)-1
-            tmp = Z_([i-1,i,i+1],[j-1,j,j+1]);
-            if all(all(tmp < lim(ind,1) | tmp > lim(ind,2)))
+            neighborBlock = Z_([i-1,i,i+1],[j-1,j,j+1]);
+            if all(all(neighborBlock < lim(ind,1) | neighborBlock > lim(ind,2)))
                 Z(i-1,j-1) = NaN;
             end
         end
     end
-    
+
     % plot
     if ind == 1
         han = surf(Z,X,Y,NVpairs{:});
@@ -598,12 +598,12 @@ function han = aux_plot3Dcontour(obj,dims,ineq,NVpairs)
             F_ = {};
 
             for k = 1:length(F{j})
-                tmp = contains(ineq.set,F{j}{k});
-                if all(tmp)
+                containsFlags = contains(ineq.set,F{j}{k});
+                if all(containsFlags)
                     F_{end+1,1} = F{j}{k};
-                elseif any(tmp)
-                    tmp = aux_intersect3Dinequality(F{j}{k},ineq.set);
-                    F_ = [F_;tmp];
+                elseif any(containsFlags)
+                    clippedFaces = aux_intersect3Dinequality(F{j}{k},ineq.set);
+                    F_ = [F_;clippedFaces];
                 end
             end
 
@@ -935,8 +935,8 @@ function F = aux_getFaces3Dsolvable(ls,lim,ind)
     
     for i = 1:size(X,1)
         for j = 1:size(X,2)
-            tmp = zeros(3,1); tmp(ind(1:2)) = [X(i,j);Y(i,j)];
-            Z(i,j) = ls.solved{ind(end)}.funHan{1}.eq(tmp);
+            evalPoint = zeros(3,1); evalPoint(ind(1:2)) = [X(i,j);Y(i,j)];
+            Z(i,j) = ls.solved{ind(end)}.funHan{1}.eq(evalPoint);
         end
     end
 
@@ -947,8 +947,8 @@ function F = aux_getFaces3Dsolvable(ls,lim,ind)
 
     for i = 2:size(Z_,1)-1
         for j = 2:size(Z_,2)-1
-            tmp = Z_([i-1,i,i+1],[j-1,j,j+1]);
-            if all(all(tmp < lim(3,1) | tmp > lim(3,2)))
+            neighborBlock = Z_([i-1,i,i+1],[j-1,j,j+1]);
+            if all(all(neighborBlock < lim(3,1) | neighborBlock > lim(3,2)))
                 Z(i-1,j-1) = NaN;
             end
         end
@@ -984,9 +984,9 @@ function F = aux_getFaces3Dsolvable(ls,lim,ind)
         for j = 1:length(F_)
             if aux_isIntersecting1D(z(i),z(i+1),min(F_{j}(index,:)), ...
                                                   max(F_{j}(index,:)),eps)
-                tmp = zeros(size(F_{j}));
-                tmp(ind,:) = F_{j};
-                F{i}{end+1} = tmp;
+                reorderedFace = zeros(size(F_{j}));
+                reorderedFace(ind,:) = F_{j};
+                F{i}{end+1} = reorderedFace;
             end
         end
     end
@@ -1037,11 +1037,11 @@ function [pgon1,pgon2] = aux_getPolygons(cont,ls,z,lim)
         pgon1 = polygon(cont(1,:),cont(2,:));
     else                        % polygon that intersects the boundaries
         if e2 > e1
-            tmp = [cont,fliplr(V(:,e1:e2-1))];
+            polygonPts = [cont,fliplr(V(:,e1:e2-1))];
         else
-            tmp = [cont,fliplr([V(:,e1:end),V(:,1:e2-1)])];
+            polygonPts = [cont,fliplr([V(:,e1:end),V(:,1:e2-1)])];
         end
-        pgon1 = polygon(tmp(1,:),tmp(2,:));
+        pgon1 = polygon(polygonPts(1,:),polygonPts(2,:));
     end
 
     % check if first polygon belongs to the inside or outside
@@ -1157,18 +1157,22 @@ function [line,face] = aux_intersectTriangularSurfaces(V1,V2)
     % check if the surfaces cross the hyperplanes
     tmp1 = c2'*V1 - d2;
     
-    if min(tmp1) > 0 || max(tmp1) < 0
-        return;
+    if min(tmp1) >= 0 || max(tmp1) <= 0
+        if length(tmp1(tmp1 == 0)) <= 1
+            return;
+        end
     end
     
     tmp2 = c1'*V2 - d1;
     
-    if min(tmp2) > 0 || max(tmp2) < 0
-        return;
+    if min(tmp2) >= 0 || max(tmp2) <= 0
+        if length(tmp2(tmp2 == 0)) <= 1
+            return;
+        end
     end
 
     % catch the special case where the triangle lie in the same plane
-    if all(abs(tmp1) < eps) && all(abs(tmp2) < eps)
+    if all(abs(tmp1) < 1e-10) && all(abs(tmp2) < 1e-10)
 
         A = gramSchmidt(c1); b = V1(:,1);
         V1_ = A'*(V1 - b); poly1 = polygon(V1_(2,:),V1_(3,:));
@@ -1294,10 +1298,10 @@ function F = aux_intersect3Dinequality(F,ineq)
     for i = 1:3
         if inside(i) ~= inside(i+1)
             p = V(:,i) + (0:0.01:1).*(V(:,i+1)-V(:,i));
-            tmp = ineq.funHan(p);
-            ind = find(max(tmp,[],1) <= 0);
+            ineqVals = ineq.funHan(p);
+            ind = find(max(ineqVals,[],1) <= 0);
             if ~isempty(ind)
-                [~,index] = min(abs(tmp(:,ind)));
+                [~,index] = min(abs(ineqVals(:,ind)));
                 m = [m,p(:,ind(index))];
             end
         end

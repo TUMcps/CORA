@@ -64,9 +64,9 @@ function [nx,nu] = aux_numberOfParams(obj)
 % act on the system dynamics and are not just dummy inputs are considered.
 
     if isa(obj,'nonlinearSys')
-        temp = inputArgsLength(obj.mFile,2);
-        nx = temp(1);
-        nu = temp(2);
+        argLengths = inputArgsLength(obj.mFile,2);
+        nx = argLengths(1);
+        nu = argLengths(2);
     elseif isa(obj,'linearSys')
         nx = size(obj.A,1);
         B = obj.B;

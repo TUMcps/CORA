@@ -147,8 +147,8 @@ else                                                    % array of points
     
             % switch case for the different types of level sets
             if strcmp(ls.compOp,'==')
-                tmp = abs(val);
-                res(j) = all(tmp < tol | withinTol(tmp,tol));
+                absVal = abs(val);
+                res(j) = all(absVal < tol | withinTol(absVal,tol));
             elseif strcmp(ls.compOp,'<=')
                 res(j) = all(val < tol | withinTol(val,tol));
             else
@@ -163,8 +163,8 @@ else                                                    % array of points
             for i = 1:length(ls.compOp)
     
                 if strcmp(ls.compOp{i},'==')
-                    tmp = abs(val(i));
-                    resVec(i) = tmp < tol | withinTol(tmp,tol);
+                    absValI = abs(val(i));
+                    resVec(i) = absValI < tol | withinTol(absValI,tol);
                 elseif strcmp(ls.compOp{i},'<=')
                     resVec(i) = val(i) < tol | withinTol(val(i),tol);
                 else

@@ -73,11 +73,11 @@ function val = aux_regularPolynom(x,G,E)
     val = 0;
     
     for i = 1:length(G)
-       temp = 1;
+       monomial = 1;
        for j = 1:size(E,1)
-          temp = temp * x(j)^E(j,i); 
+          monomial = monomial * x(j)^E(j,i);
        end
-       val = val + G(i) * temp;
+       val = val + G(i) * monomial;
     end
 end
 

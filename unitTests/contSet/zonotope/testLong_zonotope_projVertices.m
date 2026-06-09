@@ -45,7 +45,8 @@ for i=1:nrTests
     V = vertices(project(Z,projDims));
 
     % compute vertices in projection
-    V_proj = projVertices(Z,projDims);
+    V_proj1 = projVertices(Z,projDims,'angle');
+    V_proj2 = projVertices(Z,projDims,'supportFunc');
 
     % visualization
 %     figure; hold on; box on;
@@ -54,8 +55,8 @@ for i=1:nrTests
 %     scatter(V_proj(1,:),V_proj(2,:),16,'g');
 
     % instantiate polygon (as projection always in 2D) and compare
-    assertLoop(compareMatrices(V_proj,V,1e-6,'subset'),i);
-    
+    assertLoop(compareMatrices(V_proj1,V,1e-6,'subset'),i);
+    assertLoop(compareMatrices(V_proj2,V,1e-6,'subset'),i);
 
 end
 

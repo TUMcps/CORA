@@ -102,8 +102,8 @@ clock = tic;
 res = true;
 
 for i = 1:length(R)
-   temp = supremum(interval(project(R{i},2)));
-   if temp > x0
+   projSupremum = supremum(interval(project(R{i},2)));
+   if projSupremum > x0
       res = false;
       break;
    end

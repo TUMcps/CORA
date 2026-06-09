@@ -121,13 +121,16 @@ params.R0 = project(params.R0, 1:obj.nn.neurons_in);
 options.nn = optionsnn;
 
 % obtain factors for initial state and input solution time step
-r = options.timeStep;
-for i = 1:(options.taylorTerms + 1)
-    options.factor(i) = r^(i) / factorial(i);
+% (only for CT systems that use Taylor-series-based reachability)
+if isfield(options, 'timeStep') && isfield(options, 'taylorTerms')
+    r = options.timeStep;
+    for i = 1:(options.taylorTerms + 1)
+        options.factor(i) = r^(i) / factorial(i);
+    end
 end
 
 % initialize time-varying inputs
-if ~isfield(params, 'uTransVec')
+if ~isfield(params, 'uTransVec') && isfield(options, 'timeStep')
     tVec = params.tStart:options.timeStep:params.tFinal;
     if tVec(end) ~= params.tFinal
         % add tFinal if sampling time and time horizon don't match
@@ -153,9 +156,12 @@ end
 
 options = nnHelper.validateNNoptions(options);
 
-% pre-compute derivatives -------------------------------------------------
+% pre-compute derivatives (only for nonlinear systems) --------------------
 
-derivatives(obj.sys, options);
+if isa(obj.sys, 'nonlinearSys') || isa(obj.sys, 'nonlinParamSys') || ...
+        isa(obj.sys, 'nonlinearSysDT')
+    derivatives(obj.sys, options);
+end
 
 end
 
@@ -211,6 +217,13 @@ function [R, res] = aux_reachability(sys, params, options, spec)
 
 res = true;
 
+% DT systems have their own reach method (no initReach/post pattern)
+if isa(sys, 'linearSysDT') || isa(sys, 'nonlinearSysDT')
+    [R, res] = reach(sys, params, options, spec);
+    return;
+end
+
+% CT systems: use initReach/post loop
 % init time steps
 tVec = params.tStart:options.timeStep:params.tFinal;
 if tVec(end) ~= params.tFinal
@@ -236,11 +249,21 @@ for i = 1:length(tVec) - 1
         params.uTrans = params.uTransVec(:, i);
         if i == 1
             [Rnext, options] = initReach(sys, params.R0, params, options);
-            % initReach does not reduce
-            Rnext.ti{1} = reduce(Rnext.ti{1},...
-                options.reductionTechnique,options.zonotopeOrder);
-            Rnext.tp{1}.set = reduce(Rnext.tp{1}.set,...
-                options.reductionTechnique,options.zonotopeOrder);
+            if iscell(Rnext.ti)
+                % nonlinearSys/nonlinParamSys: initReach does not reduce
+                Rnext.ti{1} = reduce(Rnext.ti{1},...
+                    options.reductionTechnique,options.zonotopeOrder);
+                Rnext.tp{1}.set = reduce(Rnext.tp{1}.set,...
+                    options.reductionTechnique,options.zonotopeOrder);
+            else
+                % linearSys/linParamSys: direct set objects, apply reduction
+                Rnext.ti = reduce(Rnext.ti,...
+                    options.reductionTechnique,options.zonotopeOrder);
+                if isa(Rnext.tp,'contSet')
+                    Rnext.tp = reduce(Rnext.tp,...
+                        options.reductionTechnique,options.zonotopeOrder);
+                end
+            end
         else
             [Rnext, options] = post(sys, Rnext, params, options);
         end
@@ -264,15 +287,26 @@ for i = 1:length(tVec) - 1
         end
     end
 
+    % extract sets (linearSys/linParamSys return direct objects; nonlinear return cells)
+    if iscell(Rnext.ti)
+        ti_set = Rnext.ti{1};
+        tp_set = Rnext.tp{1}.set;
+        ti_for_check = Rnext.ti;
+    else
+        ti_set = Rnext.ti;
+        tp_set = Rnext.tp;
+        ti_for_check = {Rnext.ti};
+    end
+
     % save reachable set
-    Rint.set{i} = Rnext.ti{1};
-    Rpoint.set{i+1} = Rnext.tp{1}.set;
+    Rint.set{i} = ti_set;
+    Rpoint.set{i+1} = tp_set;
     Rint.time{i} = interval(tVec(i), tVec(i+1));
     Rpoint.time{i+1} = tVec(i+1);
 
     % check specification
     if ~isempty(spec)
-        res = check(spec, Rnext.ti, Rint.time{i});
+        res = check(spec, ti_for_check, Rint.time{i});
         if ~res
             R = aux_constructReachSet(Rpoint, Rint, i);
             return;

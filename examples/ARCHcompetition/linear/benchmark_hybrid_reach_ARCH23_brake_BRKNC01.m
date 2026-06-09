@@ -105,8 +105,8 @@ res = true;
 list = query(R,'reachSet');
 
 for i = 1:length(list)
-   temp = supremum(interval(project(list{i},2)));
-   if temp > x0
+   projSupremum = supremum(interval(project(list{i},2)));
+   if projSupremum > x0
       res = false;
       break;
    end

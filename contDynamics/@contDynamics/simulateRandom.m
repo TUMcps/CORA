@@ -12,7 +12,7 @@ function traj = simulateRandom(sys, params, varargin)
 %    sys - contDynamics object
 %    params - system parameters
 %    options - settings for random simulation, depending on .type (see below)
-%       .type = 'gaussian', 'standard' (default), 'rrt', 'constrained';
+%       .type = 'gaussian', 'standard' (default), 'rrt', 'constrained', 'falsify';
 %       .points - nr of simulation runs
 %       further options if .type = 'standard':
 %           .fracVert - fraction of initial states starting from vertices
@@ -32,6 +32,8 @@ function traj = simulateRandom(sys, params, varargin)
 %           .R:          object of class reachSet storing the computed reachable set
 %       further options if .type = 'constrained':
 %           .R:          object of class reachSet storing the computed reachable set
+%       further options if .type = 'falsify'
+%           .dims - dimensions that should be covered by trajectories
 %
 % Outputs:
 %    traj - object of class trajectory storing time and states of the 
@@ -66,6 +68,8 @@ switch options.type
         traj = priv_simulateRRT(sys,params,options);
     case 'constrained'
         traj = priv_simulateConstrainedRandom(sys,params,options);
+    case 'falsify'
+        traj = priv_simulateFalsify(sys,params,options);
 end
 
 % ------------------------------ END OF CODE ------------------------------

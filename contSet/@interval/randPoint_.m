@@ -33,12 +33,18 @@ function p = randPoint_(I,N,type,varargin)
 % Written:       17-September-2019
 % Last update:   25-June-2021 (MP, add type gaussian)
 %                19-August-2022 (MW, integrate standardized pre-processing)
+%                20-October-2025 (TL, bug fix, set only contains center)
 % Last revision: 27-March-2023 (MW, rename randPoint_)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 % get object properties
 c = center(I); r = rad(I); n = dim(I);
+
+% quick exit: set only contains the center
+if all(withinTol(r, 0),"all")
+    p = repmat(c,1,N); return
+end
 
 % generate different types of extreme points
 if strcmp(type,'standard') || startsWith(type,'uniform')
@@ -63,9 +69,9 @@ elseif strcmp(type,'extreme')
     ind = find(r > 0);
     if length(ind) < n
         I = project(I,ind);
-        temp = randPoint_(I,N,type);
+        projPoints = randPoint_(I,N,type);
         p = c * ones(1,N);
-        p(ind,:) = temp;
+        p(ind,:) = projPoints;
         return;
     end
     
@@ -77,9 +83,9 @@ elseif strcmp(type,'extreme')
         % generate random vertices
         p = zeros(n,N); cnt = 1;
         while cnt <= N
-            temp = sign(-1 + 2*rand(n,1));
-            if ~ismember(temp',p','rows')
-                p(:,cnt) = temp; cnt = cnt + 1;
+            randVertex = sign(-1 + 2*rand(n,1));
+            if ~ismember(randVertex',p','rows')
+                p(:,cnt) = randVertex; cnt = cnt + 1;
             end
         end
         p = c + p.*r;
@@ -98,10 +104,10 @@ elseif strcmp(type,'extreme')
         p = [V, zeros(n,N-size(V,2))];
         
         for i = size(V,2)+1:N
-            temp = sign(-1 + 2*rand(n,1));
+            boundaryPoint = sign(-1 + 2*rand(n,1));
             ind = randi([1,n]);
-            temp(ind) = -1 + 2*rand();
-            p(:,i) = c + temp .* r;
+            boundaryPoint(ind) = -1 + 2*rand();
+            p(:,i) = c + boundaryPoint .* r;
         end
     end
 end

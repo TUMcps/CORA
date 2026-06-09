@@ -59,8 +59,7 @@ problem.ub = ub;
 for i = 1:n
 
     % min/max ksi_i
-    f = zeros(n, 1);
-    f(i, 1) = 1;
+    f = unitvector(i, n);
 
     % minimize (Equation (25) in [1])
     problem.f = f;

@@ -84,8 +84,8 @@ if nargin == 4 || nargin == 5
     if nargin == 5
         ind = varargin{4};
     else
-        temp = 1:size(T, 2);
-        ind = repmat({temp}, [size(T, 1), 1]);
+        colIndices = 1:size(T, 2);
+        ind = repmat({colIndices}, [size(T, 1), 1]);
     end
 
     % check input arguments
@@ -110,8 +110,8 @@ elseif nargin == 2 || nargin == 3
     if nargin == 3
         ind = varargin{2};
     else
-        temp = 1:size(T, 2);
-        ind = repmat({temp}, [size(T, 1), 1]);
+        colIndices = 1:size(T, 2);
+        ind = repmat({colIndices}, [size(T, 1), 1]);
     end
 
     % check input arguments
@@ -250,19 +250,19 @@ function res = aux_cubMapMixed(pZ1, pZ2, pZ3, T, ind)
 
 % split into a zonotope Z that over-approximates the dependent generators,
 % and a zonotope Zrem that contains the independent generators
-pZtemp = pZ1;
-pZtemp.GI = [];
-Z1 = zonotope(pZtemp);
+pZdepOnly = pZ1;
+pZdepOnly.GI = [];
+Z1 = zonotope(pZdepOnly);
 Zrem1 = zonotope([0 * pZ1.c, pZ1.GI]);
 
-pZtemp = pZ2;
-pZtemp.GI = [];
-Z2 = zonotope(pZtemp);
+pZdepOnly = pZ2;
+pZdepOnly.GI = [];
+Z2 = zonotope(pZdepOnly);
 Zrem2 = zonotope([0 * pZ2.c, pZ2.GI]);
 
-pZtemp = pZ3;
-pZtemp.GI = [];
-Z3 = zonotope(pZtemp);
+pZdepOnly = pZ3;
+pZdepOnly.GI = [];
+Z3 = zonotope(pZdepOnly);
 Zrem3 = zonotope([0 * pZ3.c, pZ3.GI]);
 
 % construct extended generator and exponent matrix (extended by center)

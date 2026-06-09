@@ -32,8 +32,8 @@ cZ = conZonotope(zB.Z{1});
 
 % calculate the intersection of the parallel sets
 for i = 2:zB.parallelSets
-    temp = conZonotope(zB.Z{i});
-    cZ = and_(cZ,temp,'exact');
+    cZ_i = conZonotope(zB.Z{i});
+    cZ = and_(cZ,cZ_i,'exact');
 end
 
 % ------------------------------ END OF CODE ------------------------------

@@ -121,8 +121,8 @@ function res = aux_conZonotopeLinearize(cPZ)
     % over-approximate the unconstrained poly. zonotope with a zonotope
     G = cPZ.G;
     
-    temp = prod(ones(size(cPZ.E))-mod(cPZ.E,2),1);
-    ind_ = find(temp == 1);
+    allEvenExp = prod(ones(size(cPZ.E))-mod(cPZ.E,2),1);
+    ind_ = find(allEvenExp == 1);
     Gquad = G(:,ind_);
 
     ind = find(sum(cPZ.E,1) == 1);
@@ -145,8 +145,8 @@ function res = aux_conZonotopeLinearize(cPZ)
     jacHan = aux_funHanJacobian(cPZ.A,cPZ.EC);
     funHan = @(x) aux_funCon(x,cPZ.b,cPZ.A,cPZ.EC);
     
-    temp = ones(length(cPZ.id),1);
-    dom = interval(-temp,temp);
+    onesVec = ones(length(cPZ.id),1);
+    dom = interval(-onesVec,onesVec);
     
     cen = center(dom);
     J = jacHan(center(dom));
@@ -218,9 +218,9 @@ function jacHan = aux_funHanJacobian(A,EC)
 
     for i = 1:length(Elist)
        ind = find(EC(i,:) > 0);
-       temp = EC(:,ind);
-       temp(i,:) = temp(i,:) - 1;
-       Elist{i} = temp;
+       diffEC = EC(:,ind);
+       diffEC(i,:) = diffEC(i,:) - 1;
+       Elist{i} = diffEC;
        Alist{i} = A(:,ind) * diag(EC(i,ind));
     end
 

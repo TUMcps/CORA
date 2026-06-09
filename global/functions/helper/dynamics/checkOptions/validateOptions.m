@@ -847,16 +847,16 @@ while idx < length(allfields)
         shift = length(structfields);
 
         % read out these other parameters
-        temp = allfields(idx+1:end);
+        remainingFields = allfields(idx+1:end);
 
         % append names of fields of parameter-struct to 'allfields', using
         % the format 'param_i.sub_j'
         for j=1:shift
             allfields{idx-1+j} = [structname '.' structfields{j}];
         end
-        
+
         % concatenate other parameter back onto the list of all parameters
-        allfields = [allfields(1:idx-1+shift); temp];
+        allfields = [allfields(1:idx-1+shift); remainingFields];
 
         % correct index
         idx = idx + shift - 1;

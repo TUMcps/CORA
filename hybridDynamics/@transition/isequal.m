@@ -100,7 +100,14 @@ if any([isnumeric(trans1.guard),isnumeric(trans2.guard)])
         res = false; return
     end
 elseif ~isequal(trans1.guard,trans2.guard,tol)
-    res = false; return
+    if isa(trans1.guard,'polytope') && isa(trans2.guard,'polytope')
+        if ~isequal(compact(trans1.guard,'aligned'), ...
+                               compact(trans2.guard,'aligned'),tol)
+            res = false; return;
+        end
+    else
+        res = false; return
+    end
 end
 
 end

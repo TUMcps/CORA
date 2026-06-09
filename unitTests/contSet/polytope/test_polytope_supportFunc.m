@@ -129,7 +129,7 @@ n = 3; A = [eye(n); -eye(n)]; b = [ones(2*n,1)];
 P = polytope(A,b);
 for i=1:n
     % direction
-    ei = zeros(n,1); ei(i) = 1;
+    ei = unitvector(i,n);
     % upper bound and lower bound
     assertLoop(withinTol(supportFunc(P,ei),1),i);
     assertLoop(withinTol(supportFunc(P,ei,'lower'),-1),i);

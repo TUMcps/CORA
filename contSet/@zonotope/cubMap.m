@@ -72,8 +72,8 @@ function res = cubMap(Z,varargin)
         if nargin == 5
             ind = varargin{4}; 
         else
-            temp = 1:size(T,2);
-            ind = repmat({temp},[size(T,1),1]);
+            colIndices = 1:size(T,2);
+            ind = repmat({colIndices},[size(T,1),1]);
         end
 
         % check input arguments
@@ -82,23 +82,23 @@ function res = cubMap(Z,varargin)
                         {Z3,'att','zonotope'};
                         {T,'att','cell'};
                         {ind,'att','cell'}});
-        
+
         % mixed cubic multiplication
         res = aux_cubMapMixed(Z,Z2,Z3,T,ind);
-        
+
     elseif nargin == 2 || nargin == 3
         % res = cubMap(Z,T)
         % res = cubMap(Z,T,ind)
-        
+
         % assign input arguments
         T = varargin{1};
-        
+
         % parse optional input arguments
         if nargin > 2
-            ind = varargin{2}; 
+            ind = varargin{2};
         else
-            temp = 1:size(T,2);
-            ind = repmat({temp},[size(T,1),1]);
+            colIndices = 1:size(T,2);
+            ind = repmat({colIndices},[size(T,1),1]);
         end 
         
         % check input arguments
@@ -134,9 +134,9 @@ function res = aux_cubMapSingle(Z,T,ind)
            quadMat = [Z.c,Z.G]' * T{i,ind{i}(k)} * [Z.c,Z.G];
 
            % add up all entries that correspond to identical factors
-           temp = tril(quadMat,-1);
-           quadMat = quadMat - temp;
-           quadMat = quadMat + temp';
+           lowerTriPart = tril(quadMat,-1);
+           quadMat = quadMat - lowerTriPart;
+           quadMat = quadMat + lowerTriPart';
 
            % multiply with the zonotope generators of the corresponding
            % dimension
@@ -165,8 +165,8 @@ function res = aux_cubMapSingle(Z,T,ind)
        end
 
        % half the entries for purely quadratic factors
-       temp = diag(listQuad{1});
-       listQuad{1}(1,1) = listQuad{1}(1,1) + 0.5*sum(temp(2:end));
+       diagEntries = diag(listQuad{1});
+       listQuad{1}(1,1) = listQuad{1}(1,1) + 0.5*sum(diagEntries(2:end));
 
        for k = 2:N
           listQuad{1}(k,k) = 0.5 * listQuad{1}(k,k); 

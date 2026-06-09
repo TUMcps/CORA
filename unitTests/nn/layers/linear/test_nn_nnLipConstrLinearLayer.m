@@ -23,11 +23,15 @@ function res = test_nn_nnLipConstrLinearLayer()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% Specify number of input and output neurons.
+nIn = 31;
+nOut = 27;
+
 % Instantiate a linear layer with fixed weights.
-W = rand(5,3); 
-b = rand(5,1);
-lambda = 3;
-name = "TestLayer";
+W = rand([nOut nIn]); 
+b = zeros([nOut 1]); % Bias does not matter.
+lambda = randi([1 5]);
+name = 'TestLayer';
 layer = nnLipConstrLinearLayer(W, b, lambda, name);
 
 % Check if the attributes are correctly assigned.
@@ -37,15 +41,28 @@ assert(lambda == layer.lambda)
 assert(strcmp(name,layer.name))
 
 % Check that the normalization.
-options.nn.train.backprop = true;
-layer.normWeights(options);
-% Obtain the normalization matrix.
-W_norm = layer.backprop.store.W_norm;
-assert(compareMatrices(W*W_norm,layer.W));
-% Normalizing twice should not do anything.
-layer.normWeights(options);
-assert(compareMatrices(W*W_norm,layer.W));
-assert(compareMatrices(layer.backprop.store.W_norm,eye(3)));
+% Specify number of inputs.
+N = 10;
+% Generate a random inputs.
+x = rand([nIn N]);
+% Compute the output.
+y = layer.evaluate(x);
+% Compute a lower bound of the Lipschitz constant from the input and
+% outputs.
+dy = pdist(y','chebychev'); % Compute l-inf norm between outputs
+dx = pdist(x','cityblock'); % COmpute l-1 norm between inputs
+% Compute all possible lowerbounds for Lipschitz constants.
+labmdas = dy./dx;
+% Check lower bounds.
+assert(all(lambda >= labmdas | isnan(lambda),'all'));
+
+% Check bias.
+b = rand([nOut 1]);
+layer = nnLipConstrLinearLayer(zeros([nOut nIn]),b);
+% Compute the outputs.
+y = layer.evaluate(x);
+% Check the outputs.
+assert(all(y == b,'all'));
 
 % Check variable input.
 layer = nnLipConstrLinearLayer(W);
@@ -55,8 +72,8 @@ assert(sum(layer.b) == 0)
 assertThrowsAs(@nnLipConstrLinearLayer,'MATLAB:minrhs');
 
 % Check for a dimension missmatch.
-W = rand(4,3); 
-b = rand(10,1);
+W = rand([nOut nIn]); 
+b = rand([nOut+3 1]);
 assertThrowsAs(@nnLipConstrLinearLayer,'CORA:wrongInputInConstructor',W,b);
 
 % Test completed.

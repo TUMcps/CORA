@@ -217,29 +217,31 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
             centerTerm = 0;
             biasUpdate = 0;
         else
-            % Compute outer product between centers.
-            centerTerm = gc*c';
-            % Compute bias update.
-            biasUpdate = sum(gc,2);
+            if updateWeights
+                % Compute outer product between centers.
+                centerTerm = gc*c';
+                % Compute bias update.
+                biasUpdate = sum(gc,2);
+            end
             % Compute the outgoing gradient of the center.
             gc = obj.W'*gc;
         end
 
-        if strcmp(options.nn.train.zonotope_weight_update,'center')
-            % Use the center to update the weights and biases. There is no
-            % generator term.
-            gensTerm = 0;
-        elseif strcmp(options.nn.train.zonotope_weight_update,'sum')
-            % Compute the outer product between generator matrices.
-            gensTerm = sum(pagemtimes(gG(:,genIds,:),'none', ...
-                G(:,genIds,:),'transpose'),3);
-        else
-            throw(CORAerror('CORA:wrongFieldValue', ...
-                'options.nn.train.zonotope_weight_update',...
-               "Only supported values are 'center' and 'sum'!"));
-        end
-
         if updateWeights
+            if strcmp(options.nn.train.zonotope_weight_update,'center')
+                % Use the center to update the weights and biases. There is no
+                % generator term.
+                gensTerm = 0;
+            elseif strcmp(options.nn.train.zonotope_weight_update,'sum')
+                % Compute the outer product between generator matrices.
+                gensTerm = sum(pagemtimes(gG(:,genIds,:),'none', ...
+                    G(:,genIds,:),'transpose'),3);
+            else
+                throw(CORAerror('CORA:wrongFieldValue', ...
+                    'options.nn.train.zonotope_weight_update',...
+                   "Only supported values are 'center' and 'sum'!"));
+            end
+
             % Compute weights and bias update.
             weightsUpdate = centerTerm + gensTerm; 
             % Update weights and bias.

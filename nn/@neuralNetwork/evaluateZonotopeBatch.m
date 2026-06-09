@@ -1,4 +1,4 @@
-function [c,G] = evaluateZonotopeBatch(nn,c,G,varargin)
+function [c,G,varargout] = evaluateZonotopeBatch(nn,c,G,varargin)
 % evaluateZonotopeBatch - evaluate neural network for a batch of zonotopes
 %
 % Syntax:
@@ -33,12 +33,16 @@ function [c,G] = evaluateZonotopeBatch(nn,c,G,varargin)
 
 % validate parameters
 [options, idxLayer] = setDefaultValues( ...
-    {struct('nn',struct('poly_method','bounds')), ...
-        1:length(nn.layers)}, varargin);
+    {struct('nn',struct('poly_method','bounds')),1:length(nn.layers)}, varargin);
 % Set default evaluation parameters.
 options = nnHelper.validateNNoptions(options);
 % Propagate sets forward through the network.
-[c,G] = nn.evaluateZonotopeBatch_(c,G,options,idxLayer);
+[c,G,a] = nn.evaluateZonotopeBatch_(c,G,options,idxLayer);
+
+if isfield(options.nn,'neuron_aggregation_fun') && nargout == 3
+    % Set the neuron aggregation result using the variable output argument.
+    varargout{1} = a;
+end
 
 end
 

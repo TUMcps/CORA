@@ -64,8 +64,8 @@ if all(size(pZ.id) == size(pZ2.id)) &&  all(pZ.id == pZ2.id) &&  ...
 
     c = 0.5 * pZ.c + 0.5 * pZ2.c;
 
-    temp = ones(1,size(pZ.E,2));
-    E = [pZ.E, pZ.E; 0*temp, temp];
+    onesRow = ones(1,size(pZ.E,2));
+    E = [pZ.E, pZ.E; 0*onesRow, onesRow];
     E = [E, [zeros(size(E,1)-1,1); 1]];
 
     if ~isempty(pZ.id)
@@ -76,9 +76,9 @@ if all(size(pZ.id) == size(pZ2.id)) &&  all(pZ.id == pZ2.id) &&  ...
 
     % compute convex hull of the independent generators by using the
     % enclose function for linear zonotopes
-    temp = zeros(length(pZ.c),1);
-    Z1 = zonotope([temp, pZ.GI]);
-    Z2 = zonotope([temp, pZ2.GI]);
+    zeroCenter = zeros(length(pZ.c),1);
+    Z1 = zonotope([zeroCenter, pZ.GI]);
+    Z2 = zonotope([zeroCenter, pZ2.GI]);
 
     Z = enclose(Z1,Z2);
     GI = generators(Z);
@@ -86,7 +86,7 @@ if all(size(pZ.id) == size(pZ2.id)) &&  all(pZ.id == pZ2.id) &&  ...
     % construct resulting polynomial zonotope object
     pZ = polyZonotope(c,G,GI,E);
     pZ.id = id;
-    
+
 else
     
     % bring the exponent matrices to a common representation
@@ -112,9 +112,9 @@ else
     
     % compute convex hull of the independent generators by using the
     % enclose function for linear zonotopes
-    temp = zeros(length(pZ.c),1);
-    Z1 = zonotope([temp, pZ.GI]);
-    Z2 = zonotope([temp, pZ2.GI]);
+    zeroCenter = zeros(length(pZ.c),1);
+    Z1 = zonotope([zeroCenter, pZ.GI]);
+    Z2 = zonotope([zeroCenter, pZ2.GI]);
 
     Z = enclose(Z1,Z2);
     GI = generators(Z);

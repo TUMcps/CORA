@@ -53,8 +53,8 @@ end
 for iInput = 1:totalNrOfInputs 
     
     %generate input intervals
-    tmp = cellZonotopes(inputField,iInput);
-    uZ = tmp{1};
+    inputZonoCell = cellZonotopes(inputField,iInput);
+    uZ = inputZonoCell{1};
     
     %for all velocities
     for iVel = 1:totalNrOfVelocities
@@ -70,8 +70,8 @@ for iInput = 1:totalNrOfInputs
         iState     
         
         %simulate hybrid automaton
-        tmp = cellZonotopes(stateField,iState);
-        params.R0 = tmp{1};
+        stateZonoCell = cellZonotopes(stateField,iState);
+        params.R0 = stateZonoCell{1};
         
         initialStates = gridPoints(interval(params.R0),5);
         sampleInputs = gridPoints(interval(uZ),5);

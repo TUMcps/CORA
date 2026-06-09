@@ -80,8 +80,8 @@ function res = cubMap(cZ,varargin)
         if nargin > 4
             ind = varargin{4}; 
         else
-            temp = 1:size(T,2);
-            ind = repmat({temp},[size(T,1),1]);
+            colIdx = 1:size(T,2);
+            ind = repmat({colIdx},[size(T,1),1]);
         end
 
         % check input arguments
@@ -90,23 +90,23 @@ function res = cubMap(cZ,varargin)
                         {cZ3,'att','conZonotope'};
                         {T,'att','cell'};
                         {ind,'att','cell'}});
-        
+
         % mixed cubic multiplication
         res = aux_cubMapMixed(cZ,cZ2,cZ3,T,ind);
-        
+
     elseif nargin == 2 || nargin == 3
         % res = cubMap(cZ,T)
         % res = cubMap(cZ,T,ind)
-        
+
         % assign input argument
         T = varargin{1};
-        
+
         % parse optional input arguments
         if nargin > 2
-            ind = varargin{2}; 
+            ind = varargin{2};
         else
-            temp = 1:size(T,2);
-            ind = repmat({temp},[size(T,1),1]);
+            colIdx = 1:size(T,2);
+            ind = repmat({colIdx},[size(T,1),1]);
         end 
         
         % check input arguments

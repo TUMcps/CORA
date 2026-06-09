@@ -43,8 +43,8 @@ timePoint = R.timePoint;
 minInd = max(minInd,ones(size(minInd)));
 ind = [];
 for i = 1:length(minInd)
-    temp = minInd(i):maxInd(i);
-    ind = [ind,temp];
+    indexRange = minInd(i):maxInd(i);
+    ind = [ind,indexRange];
 end
 % remove redundancies
 ind = unique(ind);

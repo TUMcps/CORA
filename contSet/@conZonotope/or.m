@@ -130,8 +130,8 @@ function Z = aux_unionTedrake(Zcell,order)
         px = size(Hx,1);
         
         % construct constraint X = Y * T
-        temp = repmat({Y},[1,nx]);
-        A1 = [blkdiag(temp{:}),zeros(d*nx,2*px*ny),zeros(d*nx,ny)];
+        Yblocks = repmat({Y},[1,nx]);
+        A1 = [blkdiag(Yblocks{:}),zeros(d*nx,2*px*ny),zeros(d*nx,ny)];
         b1 = reshape(X,[d*nx,1]);
 
         % construct constraint x = Y * beta
@@ -139,26 +139,26 @@ function Z = aux_unionTedrake(Zcell,order)
         b2 = -x;
 
         % construct constraint lambda * Hx = Hy * T
-        Atemp = [];
+        Ablk = [];
         for j = 1:size(Hx,2)
             h = Hx(:,j);
-            temp = repmat({h'},[1,size(Hy,1)]);
-            Atemp = [Atemp;blkdiag(temp{:})];
+            hBlocks = repmat({h'},[1,size(Hy,1)]);
+            Ablk = [Ablk;blkdiag(hBlocks{:})];
         end
-        
-        temp = repmat({Hy},[1,size(Hx,2)]);
-        A3 = [blkdiag(temp{:}),-Atemp,zeros(size(Atemp,1),ny)];
+
+        HyBlocks = repmat({Hy},[1,size(Hx,2)]);
+        A3 = [blkdiag(HyBlocks{:}),-Ablk,zeros(size(Ablk,1),ny)];
         b3 = zeros(size(A3,1),1);
-        
+
         % add current equality constraint to overall equality constraints
-        Atemp = [A1;A2;A3];
-        btemp = [b1;b2;b3];
-        
-        Aeq = blkdiag(Aeq,Atemp);
-        beq = [beq;btemp];
-        
+        Aeq_i = [A1;A2;A3];
+        beq_i = [b1;b2;b3];
+
+        Aeq = blkdiag(Aeq,Aeq_i);
+        beq = [beq;beq_i];
+
         % construct constraint lambda * hx <= hy + Hy beta
-        temp = repmat({hx'},[1,size(Hy,1)]);
+        hxBlocks = repmat({hx'},[1,size(Hy,1)]);
         A_ = [A_;-eye(size(Hy,1))];
         A1 = [zeros(size(Hy,1),size(Y,2)*size(X,2)),blkdiag(temp{:}),-Hy];
         

@@ -78,9 +78,9 @@ end
 % simultaneous diagonalization: Find Tb such that
 %   Tb'*Q1*Tb = I and Tb'*Q2*Tb = D (diagonal)
 [~,D] = simdiag(E1.Q,E2.Q,tol);
-tmp = max(diag(D));
+maxEigenRatio = max(diag(D));
 
 % if max(diag(D)) <= 1 => contained
-res = tmp < 1+tol | withinTol(tmp,1+tol);
+res = maxEigenRatio < 1+tol | withinTol(maxEigenRatio,1+tol);
 
 % ------------------------------ END OF CODE ------------------------------

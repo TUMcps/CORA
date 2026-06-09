@@ -36,6 +36,7 @@ methods
     function obj = nnSShapeLayer(name)
         % call super class constructor
         obj@nnActivationLayer(name)
+        obj.monotonicity = 1;
     end
 
     function [df_l,df_u] = getDerBounds(obj, l, u)
@@ -79,20 +80,7 @@ methods (Access=protected)
         % implement custom polynomial computation in subclass
         coeffs = []; d = [];
         
-        f = obj.f;
-        df = obj.getDf(1);
-
-        if strcmp(poly_method, 'singh')
-            if order == 1
-                % according to [1, Theorem 3.2]
-                lambda = min(df(l), df(u));
-                mu1 = 0.5 * (f(u) + f(l) - lambda * (u + l));
-                mu2 = 0.5 * (f(u) - f(l) - lambda * (u - l));
-                coeffs = [lambda, mu1];
-                d = mu2;
-            end
-        
-        elseif strcmp(poly_method, "throw-catch")
+        if strcmp(poly_method, "throw-catch")
             coeffs = nnHelper.calcAlternatingDerCoeffs(l, u, order, obj);
             
         end

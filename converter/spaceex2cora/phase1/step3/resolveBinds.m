@@ -78,11 +78,11 @@ for i=1:nrInstances
                     % check if variable is mapped to a constant (converting
                     % a string that does not represent a double value to a
                     % double results in NaN)
-                    temp = str2double(bind.renames(renameIdx));
-                    if ~isnan(temp)
+                    numericBind = str2double(bind.renames(renameIdx));
+                    if ~isnan(numericBind)
                         % add to list of constants
                         instances{i}.listOfConstants = [instances{i}.listOfConstants, ...
-                            struct('name',bind.keys{renameIdx},'value',temp)];
+                            struct('name',bind.keys{renameIdx},'value',numericBind)];
                         % remove from list of variables
                         idx_keep(k) = false;
                     end

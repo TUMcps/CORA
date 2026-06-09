@@ -44,9 +44,9 @@ for i=1:nrTests
     projDims = randperm(n,min([n-1,2]));
     if rand < 0.5
         % choose logical indexing
-        temp = projDims;
+        projDimIndices = projDims;
         projDims = false(n,1);
-        projDims(temp) = true;
+        projDims(projDimIndices) = true;
     end
 
     % project original center and generator matrix

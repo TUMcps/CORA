@@ -59,13 +59,13 @@ for r = 1:nrPoints
     % simulate dynamical system
     if comp_y
         % Is output desired?
-        [t_r,x_r,~,y_r] = simulateConstrained(sys,params,options);
+        [t_r,x_r,u_r,y_r] = simulateConstrained(sys,params,options);
     else
-        [t_r,x_r] = simulateConstrained(sys,params,options);
+        [t_r,x_r,u_r] = simulateConstrained(sys,params,options);
     end
 
     % construct trajectory object storing the simulation results
-    traj(r) = trajectory([],x_r,y_r,t_r);
+    traj(r) = trajectory(u_r,x_r,y_r,t_r);
 end
 
 end

@@ -67,19 +67,15 @@ P = polytope(A,b);
 P_high = projectHighDim(P,10,[4,5]);
 % check support function for new dimensions
 for i=[1 2 3 6 7 8 9 10]
-    ei = zeros(10,1);
-    ei(i) = 1;
+    ei = unitvector(i,10);
     assert(supportFunc(P_high,ei) == 0);
-    ei(i) = -1;
-    assert(supportFunc(P_high,ei) == 0);
+    assert(supportFunc(P_high,-ei) == 0);
 end
 % check for projected dimensions
 for i=[4,5]
-    ei = zeros(10,1);
-    ei(i) = 1;
+    ei = unitvector(i,10);
     assert(supportFunc(P_high,ei) == 1);
-    ei(i) = -1;
-    assert(supportFunc(P_high,ei) == 1);
+    assert(supportFunc(P_high,-ei) == 1);
 end
 
 % combine results

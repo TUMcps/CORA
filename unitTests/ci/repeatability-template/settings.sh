@@ -11,13 +11,13 @@
 # Note: Variables should be all-lowercase and words can be seperated by '-'
 
 # general settings
-NAME="myname"
 PAPERABBREV="mypaper"
+AUTHORS="myname"
 
 # setup
 DATE=`date +%y%m%d-%H%M%S`
 EVAL_NAME="${1:-$DATE}" # defaults to datetime
-DOCKER_NAME=$NAME-$PAPERABBREV-$EVAL_NAME
+DOCKER_NAME=$AUTHORS-$PAPERABBREV-$EVAL_NAME
 SCREEN_NAME=$DOCKER_NAME
 
 # Matlab
@@ -50,14 +50,14 @@ echo $SEP_LINE
 echo
 echo "Repeatability Package:"
 echo "  Paper Abbreviation:               $PAPERABBREV"
-echo "  Name:                             $NAME"
+echo "  Authors:                          $AUTHORS"
 echo "  Date:                             $DATE"
 echo
 echo "Variables:"
 echo "  Evaluation Name (\$EVAL_NAME):     $EVAL_NAME"
 echo "  Docker Name (\$DOCKER_NAME):       $DOCKER_NAME"
 echo "  Linux Screen Name (\$SCREEN_NAME): $SCREEN_NAME (if used)"
-echo "  (make available via 'source settings.sh $EVAL_NAME')"
+echo "  (use 'source settings.sh $EVAL_NAME' to set and get variables)"
 echo
 echo "Matlab:"
 if [[ "$USE_LICENSE_SERVER" == "true" ]]; then

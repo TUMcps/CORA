@@ -165,7 +165,7 @@ end
         for m = 1 : length(testSuite)
             u_nom = testSuite(m).u + center(U_p);
             x0_nom = testSuite(m).x(:,1,1) + center(R0_p);
-            p_GO{m} = computeGO(sys_p, x0_nom, u_nom, n_k);
+            p_GO{m} = computeGO(sys_p, x0_nom, u_nom, n_k, false);
 
             % compute least square or maximum error
             y_m = testSuite(m).y;

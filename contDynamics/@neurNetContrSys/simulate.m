@@ -122,7 +122,7 @@ for i = 1:length(time) - 1
 
         params_.u = params.u(:, j);
         params_.x0 = x0;
-        params_.w = zeros(length(x0), 1); % for linear systems
+        params_.w = zeros(obj.sys.nrOfDisturbances, 1); % for linear systems
 
         if isfield(params, 'timeStep')
             tSpan = tu(cnt+j-1):params.timeStep:tu(cnt+j);
@@ -133,19 +133,50 @@ for i = 1:length(time) - 1
             tSpan = [tu(cnt+j-1), tu(cnt+j)];
         end
 
-        % simulate using MATLABs ode45 function
-        try
-            if isOpt
-                [t_, x_, ~, ~, ind] = ode45(getfcn(obj.sys, params_), tSpan, ...
-                    x0, options);
+        % simulate one step using the appropriate method
+        if isa(obj.sys, 'linearSysDT')
+            % discrete step: x(k+1) = A*x + B*u + c
+            x_next = obj.sys.A * x0 + obj.sys.B * params_.u + obj.sys.c;
+            t_ = tSpan(:); x_ = [x0'; x_next'];
+
+        elseif isa(obj.sys, 'nonlinearSysDT')
+            % discrete step via dynamics function handle
+            x_next = obj.sys.mFile(x0, params_.u);
+            t_ = tSpan(:); x_ = [x0'; x_next'];
+
+        elseif isa(obj.sys, 'linParamSys')
+            % use center of A for point simulation
+            if isa(obj.sys.A, 'intervalMatrix')
+                A_c = (infimum(obj.sys.A.int) + supremum(obj.sys.A.int)) / 2;
+            elseif isa(obj.sys.A, 'matZonotope')
+                A_c = obj.sys.A.C;
             else
-                [t_, x_, ~, ~, ind] = ode45(getfcn(obj.sys, params_), tSpan, x0);
+                A_c = obj.sys.A;
             end
-        catch
+            B = obj.sys.B;
+            if isscalar(B); B = B * eye(size(A_c, 1)); end
+            f = @(t,x) A_c * x + B * params_.u + obj.sys.c;
             if isOpt
-                [t_, x_] = ode45(getfcn(obj.sys, params_), tSpan, x0, options);
+                [t_, x_] = ode45(f, tSpan, x0, options);
             else
-                [t_, x_] = ode45(getfcn(obj.sys, params_), tSpan, x0);
+                [t_, x_] = ode45(f, tSpan, x0);
+            end
+
+        else
+            % CT simulation via ode45 (linearSys, nonlinearSys, nonlinParamSys, ...)
+            try
+                if isOpt
+                    [t_, x_, ~, ~, ind] = ode45(getfcn(obj.sys, params_), tSpan, ...
+                        x0, options);
+                else
+                    [t_, x_, ~, ~, ind] = ode45(getfcn(obj.sys, params_), tSpan, x0);
+                end
+            catch
+                if isOpt
+                    [t_, x_] = ode45(getfcn(obj.sys, params_), tSpan, x0, options);
+                else
+                    [t_, x_] = ode45(getfcn(obj.sys, params_), tSpan, x0);
+                end
             end
         end
 

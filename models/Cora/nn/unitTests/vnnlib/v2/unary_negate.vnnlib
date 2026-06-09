@@ -1,0 +1,22 @@
+; Tests unary negation (- x).
+; N: R^2 -> R^1
+; X[0] in [-1, 0]: expressed as (- X[0]) in [0, 1], i.e. -X[0] >= 0 and -X[0] <= 1
+
+(vnnlib-version <2.0>)
+
+(declare-network N
+    (declare-input X real [2])
+    (declare-output Y real [1])
+)
+
+; (- X[0]) >= 0.0  =>  -X[0] >= 0  =>  X[0] <= 0
+(assert (>= (- X[0]) 0.0))
+; (- X[0]) <= 1.0  =>  -X[0] <= 1  =>  X[0] >= -1
+(assert (<= (- X[0]) 1.0))
+
+; X[1] in [0, 1]
+(assert (>= X[1] 0.0))
+(assert (<= X[1] 1.0))
+
+; output constraint
+(assert (<= Y[0] 5.0))

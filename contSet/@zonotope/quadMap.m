@@ -105,13 +105,13 @@ function Zquad = aux_quadMapSingle(Z,Q)
     end
 
     % generate new zonotope
-    tmp_sum = sum(Qnonempty);
-    if tmp_sum < 1 || withinTol(tmp_sum,1)  %if sum(Qnonempty) <= 1
+    nNonemptyQ = sum(Qnonempty);
+    if nNonemptyQ < 1 || withinTol(nNonemptyQ,1)  %if sum(Qnonempty) <= 1
         Zquad = zonotope([c,sum(abs(G),2)]);
     else
         Zquad = zonotope([c,nonzeroFilter(G)]);
     end
-    
+
 end
 
 function Zquad = aux_quadMapMixed(Z1,Z2,Q)
@@ -145,8 +145,8 @@ function Zquad = aux_quadMapMixed(Z1,Z2,Q)
     end
 
     % generate new zonotope
-    tmp_sum = sum(Qnonempty);
-    if tmp_sum < 1 || withinTol(tmp_sum,1)  %if sum(Qnonempty) <= 1
+    nNonemptyQ = sum(Qnonempty);
+    if nNonemptyQ < 1 || withinTol(nNonemptyQ,1)  %if sum(Qnonempty) <= 1
         Zquad = zonotope([Z(:,1),sum(abs(Z(:,2:end)),2)]);
     else
         Zquad = zonotope([Z(:,1),nonzeroFilter(Z(:,2:end))]);
@@ -178,8 +178,8 @@ function Zquad = aux_quadMapSingleMatZono(Z,Q)
             Q_{i} = Q{i}.G(:,:,j); 
         end
         
-        temp = quadMap(Z,Q_);
-        Z_K{j} = [temp.c,temp.G];
+        Z_Kj = quadMap(Z,Q_);
+        Z_K{j} = [Z_Kj.c,Z_Kj.G];
     end
     
     % overall zonotope

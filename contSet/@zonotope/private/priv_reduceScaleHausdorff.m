@@ -88,8 +88,8 @@ function [A,b,Aeq,beq,lb,ub,f,ind] = aux_contTedrakeHausdorff(Gx,Gy)
     [n,nx] = size(Gx); ny = size(Gy,2);
 
     % constraint Gx = Gy*T1
-    temp = repmat({Gy},[nx,1]);
-    A1_ = blkdiag(temp{:});
+    GyBlkCells = repmat({Gy},[nx,1]);
+    A1_ = blkdiag(GyBlkCells{:});
     
     Aeq1 = [zeros(size(A1_,1),ny),A1_];
     beq1 = reshape(Gx,[numel(Gx),1]);
@@ -99,11 +99,11 @@ function [A,b,Aeq,beq,lb,ub,f,ind] = aux_contTedrakeHausdorff(Gx,Gy)
     b1 = zeros(ny,1);
     
     % constraint Gy*diag(s) = Gx*T2 + D
-    temp = repmat({Gx},[ny,1]);
-    A1_ = blkdiag(temp{:});
-    
-    temp = num2cell(Gy,1);
-    A2_ = blkdiag(temp{:});
+    GxBlkCells = repmat({Gx},[ny,1]);
+    A1_ = blkdiag(GxBlkCells{:});
+
+    GyColCells = num2cell(Gy,1);
+    A2_ = blkdiag(GyColCells{:});
     
     Aeq2 = [A2_,zeros(size(A2_,1),nx*ny),-A1_,-eye(n*ny)];
     beq2 = zeros(size(Aeq2,1),1);

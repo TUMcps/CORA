@@ -123,23 +123,23 @@ function [res,listRes] = aux_convertClause(obj)
             end
 
             if ~isempty(rho_)
-                tmp = next(rtl(rho_),i-0.5);
-                res = res | tmp;
-                listRes = [listRes; {tmp}];
+                nextFormula = next(rtl(rho_),i-0.5);
+                res = res | nextFormula;
+                listRes = [listRes; {nextFormula}];
             end
 
             % loop over all globallies
             for j = 1:length(listGlob)
-                tmp = next(rtl(listGlob{j} | rho_),i-0.5);
-                res = res | tmp;
-                listRes = [listRes; {tmp}];
+                nextFormula = next(rtl(listGlob{j} | rho_),i-0.5);
+                res = res | nextFormula;
+                listRes = [listRes; {nextFormula}];
             end
 
             % loop over all non-temporal operators
             for j = 1:length(listNonTemp)
-                tmp = next(rtl(listNonTemp{j}),i-1);
-                res = res | tmp;
-                listRes = [listRes; {tmp}];
+                nextFormula = next(rtl(listNonTemp{j}),i-1);
+                res = res | nextFormula;
+                listRes = [listRes; {nextFormula}];
             end
         end
     end

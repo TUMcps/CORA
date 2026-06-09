@@ -118,8 +118,8 @@ methods
     [l, u] = backpropIntervalBatch(nn, l, u, options, varargin)
 
     [numGen,nn] = prepareForZonoBatchEval(nn, x, varargin)
-    [c, G] = evaluateZonotopeBatch(nn, c, G, varargin)
-    [c, G] = evaluateZonotopeBatch_(nn, c, G, options, idxLayer)
+    [c, G, vargout] = evaluateZonotopeBatch(nn, c, G, varargin)
+    [c, G, a] = evaluateZonotopeBatch_(nn, c, G, options, idxLayer)
     [gc, gG] = backpropZonotopeBatch(nn, gc, gG, varargin)
     [gc, gG] = backpropZonotopeBatch_(nn, gc, gG, options, idxLayer, updateWeights)
 
@@ -143,6 +143,7 @@ methods
     [layersEnum,ancIdx,predIdx,succIdx] = enumerateLayers(obj)
     neuronOrder = getInputNeuronOrder(obj,method,x,inputSize)
     gnn_red = reduceGNNForNode(obj,G,n0)
+    numParams = getNumParams(obj)
 
     function l = length(obj)
         % returns the number of layers
@@ -154,6 +155,7 @@ end
 
 methods (Static)
     obj = generateRandom(varargin)
+    obj = generateFromString(layersstring,inSz,nK,varargin)
 
     % read & convert ------------------------------------------------------
     

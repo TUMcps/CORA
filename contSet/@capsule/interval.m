@@ -46,8 +46,9 @@ E = eye(n);
 
 % loop over all dimensions
 for i = 1:n
-    ub(i) = supportFunc_(C,E(:,i),'upper');
-    lb(i) = supportFunc_(C,E(:,i),'lower');        
+    Ii = supportFunc_(C,E(:,i),'range');
+    lb(i) = infimum(Ii);
+    ub(i) = supremum(Ii);
 end
 
 % instantiate interval

@@ -23,7 +23,8 @@ function res = test_levelSet_plot
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-    tol = 0.01;
+    % large tolerance (unstable for different matlab versions)
+    tol = 0.1;
 
     % 2D Equality + Inequality (fixed) ------------------------------------
     

@@ -1,0 +1,35 @@
+; Epsilion equivalence in pruned networks:
+; a VNN-COMP benchmark with isometric networks.
+; Author: Lukas Rohwer (verbatim copy from
+;   github.com/lukasmrohwer/acasxu-benchmark/vnnlib/instance_0.vnnlib)
+
+(vnnlib-version <2.0>)
+
+(declare-network f
+    (declare-input X_f real [5])
+    (declare-output Y_f real [5])
+)
+(declare-network g
+    (isomorphic-to f)
+    (declare-input X_g real [5])
+    (declare-output Y_g real [5])
+)
+
+; Input Constraints
+(assert (and (<= X_f[0] 0.679857769) (>= X_f[0] 0.6)))
+(assert (and (<= X_f[1] 0.5) (>= X_f[1] -0.5)))
+(assert (and (<= X_f[2] 0.5) (>= X_f[2] -0.5)))
+(assert (and (<= X_f[3] 0.5) (>= X_f[3] 0.45)))
+(assert (and (<= X_f[4] -0.45) (>= X_f[4] -0.45)))
+(assert (== X_f[0] X_g[0]))
+(assert (== X_f[1] X_g[1]))
+(assert (== X_f[2] X_g[2]))
+(assert (== X_f[3] X_g[3]))
+(assert (== X_f[4] X_g[4]))
+
+; Output Constraints
+(assert (and (<= Y_g[0] (+ Y_f[0] 0.05)) (>= Y_g[0] (- Y_f[0] 0.05))))
+(assert (and (<= Y_g[1] (+ Y_f[1] 0.05)) (>= Y_g[1] (- Y_f[1] 0.05))))
+(assert (and (<= Y_g[2] (+ Y_f[2] 0.05)) (>= Y_g[2] (- Y_f[2] 0.05))))
+(assert (and (<= Y_g[3] (+ Y_f[3] 0.05)) (>= Y_g[3] (- Y_f[3] 0.05))))
+(assert (and (<= Y_g[4] (+ Y_f[4] 0.05)) (>= Y_g[4] (- Y_f[4] 0.05))))

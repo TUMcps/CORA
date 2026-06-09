@@ -88,9 +88,9 @@ function res = contractPoly(c,G,GI,E,dom,varargin)
         
         for i = 1:length(Elist)
            ind = find(E(i,:) > 0);
-           temp = E(:,ind);
-           temp(i,:) = temp(i,:) - 1;
-           Elist{i} = temp;
+           expSubMatrix = E(:,ind);
+           expSubMatrix(i,:) = expSubMatrix(i,:) - 1;
+           Elist{i} = expSubMatrix;
            Glist{i} = G(:,ind) * diag(E(i,ind));
         end
         
@@ -169,11 +169,11 @@ function res = contractPoly(c,G,GI,E,dom,varargin)
                 for k = 1:length(domSplit)
                     
                     % check if the domain is empty
-                    temp = f(domSplit{k});
-                    
-                    p = zeros(length(temp),1);
-                    
-                    if ~contains(temp,p)
+                    funcVal = f(domSplit{k});
+
+                    p = zeros(length(funcVal),1);
+
+                    if ~contains(funcVal,p)
                        continue; 
                     end
                 
@@ -289,8 +289,8 @@ function res = aux_contractPolyBoxRevisePoly(c,G,GI,E,dom)
             if infimum(dom(i)) < 0 && supremum(dom(i)) > 0
 
                  % contract first splitted domain
-                 tmp = dom;
-                 int1 = interval(infimum(tmp(i)),0);
+                 domCopy = dom;
+                 int1 = interval(infimum(domCopy(i)),0);
                  dom(i) = int1;
                  if ~isempty(GI)
                      res1_ = aux_contractBox(c(j),G(j,:),GI(j,:),E,dom,i);
@@ -299,21 +299,21 @@ function res = aux_contractPolyBoxRevisePoly(c,G,GI,E,dom)
                  end
 
                  % contract second splitted domain
-                 int2 = interval(0,supremum(tmp(i)));
+                 int2 = interval(0,supremum(domCopy(i)));
                  dom(i) = int2;
                  if ~isempty(GI)
                      res2_ = aux_contractBox(c(j),G(j,:),GI(j,:),E,dom,i);
                  else
                      res2_ = aux_contractBox(c(j),G(j,:),[],E,dom,i);
                  end
-                 dom = tmp;
+                 dom = domCopy;
 
                  % combine the results
                  res_ = interval(min(res1_),max(res2_));
-                 temp = dom(i) & res_;
-                 
-                 if ~representsa_(temp,'emptySet',eps)
-                    dom(i) = temp; 
+                 contractedDom = dom(i) & res_;
+
+                 if ~representsa_(contractedDom,'emptySet',eps)
+                    dom(i) = contractedDom;
                  else
                     res = []; return;
                  end
@@ -328,10 +328,10 @@ function res = aux_contractPolyBoxRevisePoly(c,G,GI,E,dom)
                 res_ = aux_contractBox(c(j),G(j,:),[],E,dom,i);
             end
             
-            temp = dom(i) & interval(min(res_),max(res_));
-                 
-             if ~representsa_(temp,'emptySet',eps)
-                dom(i) = temp; 
+            contractedDom = dom(i) & interval(min(res_),max(res_));
+
+             if ~representsa_(contractedDom,'emptySet',eps)
+                dom(i) = contractedDom;
              else
                 res = []; return;
              end

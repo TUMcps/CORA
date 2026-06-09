@@ -80,8 +80,8 @@ function res = contractInterval(f,dom,jacHan,varargin)
               % contract interval domain based on current constraints
               a = A(j,:); 
               a(i) = 0;
-              temp = -(b(j) + a*dom)/A(j,i);
-              dom_ = dom(i) & temp;
+              contractedDom = -(b(j) + a*dom)/A(j,i);
+              dom_ = dom(i) & contractedDom;
               
               if ~representsa_(dom_,'emptySet',eps)
                   dom(i) = dom_;

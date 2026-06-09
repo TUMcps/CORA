@@ -228,11 +228,11 @@ function val = aux_constrainedFunction(x,b,G,E)
     val = b;
 
     for i = 1:size(G,2)
-        temp = 1;
+        monomial = 1;
         for j = 1:length(x)
-           temp = temp.* x(j)^E(j,i); 
+           monomial = monomial .* x(j)^E(j,i);
         end
-        val = val + G(:,i).*temp;
+        val = val + G(:,i).*monomial;
     end    
 end
 
@@ -243,9 +243,9 @@ function pZ = aux_reduceOrderDep(pZ,order)
     m = size(pZ.G,2);
     
     if m > n * order
-        temp = polyZonotope(pZ.c,pZ.G,[],pZ.E);
-        temp = reduce(temp,'girard',order+1);
-        pZ = polyZonotope(temp.c,temp.G,[temp.GI,pZ.GI],temp.E);
+        pZred = polyZonotope(pZ.c,pZ.G,[],pZ.E);
+        pZred = reduce(pZred,'girard',order+1);
+        pZ = polyZonotope(pZred.c,pZred.G,[pZred.GI,pZ.GI],pZred.E);
     end
 end
 
@@ -278,8 +278,8 @@ function pZ = aux_removeAddGens(pZ)
        ind_ = setdiff(1:size(pZ.G,2),ind);
        
        % enclose generators belonging to add. genertors with a zonotope
-       temp = polyZonotope(zeros(n,1), pZ.G(:,ind), [], pZ.E(:,ind));
-       Z = zonotope(temp);
+       pZsub = polyZonotope(zeros(n,1), pZ.G(:,ind), [], pZ.E(:,ind));
+       Z = zonotope(pZsub);
        
        % construct the resulting polynomial zonotope
        pZ = polyZonotope(pZ.c+Z.c, pZ.G(:,ind_), ...

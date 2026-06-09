@@ -88,19 +88,19 @@ function cZ = rescale(cZ,varargin)
     end
 
     % rescale c-zonotope (Equation (24) in reference paper [1])
-    temp = diag(ksi_r);
+    scaleMat = diag(ksi_r);
 
     G = cZ.G;
     c = cZ.c + G*ksi_m;
     cZ.c = c;
-    cZ.G = G * temp;
+    cZ.G = G * scaleMat;
     cZ.b = cZ.b - cZ.A * ksi_m;
-    cZ.A = cZ.A * temp;
+    cZ.A = cZ.A * scaleMat;
 
     if ~isempty(cZ.ksi)
-       temp = ones(1,size(cZ.ksi,2));
-       ksi = cZ.ksi - ksi_m*temp;
-       cZ.ksi = zeros(size(ksi)) + ksi.*((1./ksi_r)*temp);
+       onesRow = ones(1,size(cZ.ksi,2));
+       ksi = cZ.ksi - ksi_m*onesRow;
+       cZ.ksi = zeros(size(ksi)) + ksi.*((1./ksi_r)*onesRow);
     end
 
 end
@@ -166,9 +166,9 @@ function [A_,b_,indPer] = aux_rrefInfty(A,b)
           
           % bring the column with the pivot element to the front
           A_(:,[i indC]) = A_(:,[indC i]);
-          temp = indPer(i);
+          swapVal = indPer(i);
           indPer(i) = indPer(indC);
-          indPer(indC) = temp;
+          indPer(indC) = swapVal;
           
           % divide the pivot row by the pivot element
           Ai = A_(i,:)/A_(i,i);  

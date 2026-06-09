@@ -1,6 +1,6 @@
 function [val,x] = priv_supportFunc(A,b,Ae,be,dir,type)
-% priv_supportFunc - computes the halfspace representation of the box enclosure
-%    given a vertex representation
+% priv_supportFunc - computes the support function of a polytope defined by
+%    inequality and equality constraints via linear programming
 %
 % Syntax:
 %    [val,x] = priv_supportFunc(A,b,Ae,be,dir,type)
@@ -11,60 +11,39 @@ function [val,x] = priv_supportFunc(A,b,Ae,be,dir,type)
 %    Ae - equality constraint matrix
 %    be - equality constraint offset
 %    dir - direction
-%    type - 'upper' or 'lower'
+%    type - 'upper', 'lower', or 'range'
 %
 % Outputs:
-%    val - value of the support function
-%    x - support vector
+%    val - value of the support function (interval for 'range')
+%    x - support vector (matrix [x_lower x_upper] for 'range')
 %
-% Other m-files required: none
+% Other m-files required: supportFunc_linprog
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: none
+% See also: supportFunc_linprog
 
 % Authors:       Mark Wetzlinger
 % Written:       03-October-2024
-% Last update:   ---
+% Last update:   26-March-2026 (TL, delegate to supportFunc_linprog)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if strcmp(type,'upper')
-    s = -1;
-elseif strcmp(type,'lower')
-    s = 1;
-end
-
 % simple check: empty polytope (fullspace)
 if isempty(A) && isempty(Ae)
-    val = -s*Inf; x = [];
+    switch type
+        case 'upper'
+            val = Inf; x = [];
+        case 'lower'
+            val = -Inf; x = [];
+        case 'range'
+            val = interval(-Inf,Inf); x = [];
+    end
     return
 end
 
-% set up linear program
-problem.f = s*dir';
-problem.Aineq = A;
-problem.bineq = b;
-problem.Aeq = Ae;
-problem.beq = be;
-problem.lb = [];
-problem.ub = [];
-
-% solve linear program
-[x,val,exitflag] = CORAlinprog(problem);
-val = s*val;
-
-if exitflag == -3
-    % unbounded
-    val = -s*Inf;
-    x = -s*sign(dir).*Inf(length(dir),1);
-elseif exitflag == -2
-    % infeasible -> empty set
-    val = s*Inf;
-    x = [];
-elseif exitflag ~= 1
-    throw(CORAerror('CORA:solverIssue'));
-end
+% delegate to shared LP support function
+[val,x] = supportFunc_linprog(dir,A,b,Ae,be,[],[],type);
 
 % ------------------------------ END OF CODE ------------------------------

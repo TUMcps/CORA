@@ -94,7 +94,6 @@ methods (Access = {?nnLayer, ?neuralNetwork})
                 c = M * c;
                 G = M * G;
             else
-                % compute relaxation
 
                 % constraints and offset
                 C = [
@@ -116,6 +115,9 @@ methods (Access = {?nnLayer, ?neuralNetwork})
         end
     end
 end
+
+
+% Auxiliary functions -----------------------------------------------------
 
 methods
     function buckets = getMergeBuckets(obj)

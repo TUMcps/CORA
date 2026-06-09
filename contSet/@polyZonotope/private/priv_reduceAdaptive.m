@@ -113,21 +113,21 @@ end
 
 % shift pZ.c by center of zonotope converted from dep. gens
 if any(halfs) && ~isempty(idxDep)
-    temp = find(halfs);
-%     if isscalar(temp) 
-%         temp = idxDep(idxDep == temp);
+    evenExpIdxs = find(halfs);
+%     if isscalar(evenExpIdxs)
+%         evenExpIdxs = idxDep(idxDep == evenExpIdxs);
 %     else
-        temp = temp(ismember(temp,idxDep));
+        evenExpIdxs = evenExpIdxs(ismember(evenExpIdxs,idxDep));
 %     end
-%     if ~isempty(temp)
-        pZ.c = pZ.c + sum(G(:,temp),2); % 0.5 factor already done above
+%     if ~isempty(evenExpIdxs)
+        pZ.c = pZ.c + sum(G(:,evenExpIdxs),2); % 0.5 factor already done above
 %     end
 end
 
 % remove all unused dependent factors (empty rows in E)
-temp = any(E,2);
-pZ.E = E(temp,:);
-pZ.id = pZ.id(temp);
+usedFactors = any(E,2);
+pZ.E = E(usedFactors,:);
+pZ.id = pZ.id(usedFactors);
 
 end
 

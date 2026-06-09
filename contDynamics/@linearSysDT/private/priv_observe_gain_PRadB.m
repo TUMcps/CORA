@@ -64,9 +64,9 @@ beta_lo = 0; % Min value of beta
 beta_tol = 0.01;
 
 % set options of solver
-options_sdp = sdpsettings;
+options_sdp = sdpsettings();
 options_sdp.solver = options.solver;
-options_sdp.verbose = 1;  
+options_sdp.verbose = 0;  
 options_sdp.shift = 1e-5;  
 
 % Optimization loop

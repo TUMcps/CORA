@@ -45,10 +45,11 @@ upper = zeros([n 1]);
 for i=1:n
     ei = zeros([n 1]);
     ei(i) = 1;
-    
-    lower(i) = SpS.supportFunc_(-ei,'upper');
-    upper(i) = SpS.supportFunc_(ei,'upper');
+
+    Ii = supportFunc_(SpS,ei,'range');
+    lower(i) = infimum(Ii);
+    upper(i) = supremum(Ii);
 end
-I = interval(-lower, upper);
+I = interval(lower, upper);
 
 % ------------------------------ END OF CODE ------------------------------

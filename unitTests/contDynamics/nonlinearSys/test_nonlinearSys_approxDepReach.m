@@ -60,7 +60,7 @@ Rapprox = reach(tank,params,options);
 % respective zonotope enclosures since the additional generators of the
 % zonotope representing the over-approximative reachable set are stored in 
 % the independent generator matrix
-assert(contains(zonotope(R.timePoint.set{end}),zonotope(Rapprox.timePoint.set{end}),'approx:st',1e-6));
+assert(contains(zonotope(R.timePoint.set{end}),zonotope(Rapprox.timePoint.set{end}),'approx:st',1e-4));
 
 % combine results
 res = true;

@@ -118,8 +118,8 @@ function res = aux_isEmptySet(cPZ,tol,method,splits,iter)
     end
         
     % try to contract the domain to the empty set -> set is empty
-    temp = ones(length(cPZ.id),1);
-    dom = interval(-temp,temp);
+    onesVec = ones(length(cPZ.id),1);
+    dom = interval(-onesVec,onesVec);
     
     D = contractPoly(-cPZ.b,cPZ.A,[],cPZ.EC,dom,method,iter,splits);
     

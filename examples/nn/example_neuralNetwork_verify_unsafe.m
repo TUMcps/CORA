@@ -77,10 +77,10 @@ function [nn,x,r,A,b,safeSet,options] = aux_readModelAndSpecs(modelPath,specPath
     % Extract specification.
     if isa(specs.set,'halfspace')
         A = specs.set.c';
-        b = -specs.set.d;
+        b = specs.set.d;
     else
         A = specs.set.A;
-        b = -specs.set.b;
+        b = specs.set.b;
     end
     safeSet = strcmp(specs.type,'safeSet');
 

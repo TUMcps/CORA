@@ -169,24 +169,12 @@ function val = aux_supportFuncConZonotope(cPZ,dir,type)
     cZ = conZonotope(cPZ_);
 
     % compute support function of the constrained zonotope
-    if strcmp(type,'range')
-        l = supportFunc_(cZ,1,'lower');
-        u = supportFunc_(cZ,1,'upper');
-        val1 = interval(l,u);
-    else
-        val1 = supportFunc_(cZ,1,type);
-    end
+    val1 = supportFunc_(cZ,1,type);
 
     % compute support function of the independent part
     if ~isempty(GI)
         Z = zonotope(0,GI);
-        if strcmp(type,'range')
-            l = supportFunc_(Z,1,'lower');
-            u = supportFunc_(Z,1,'upper');
-            val2 = interval(l,u);
-        else
-            val2 = supportFunc_(Z,1,type);
-        end
+        val2 = supportFunc_(Z,1,type);
     else
         val2 = 0*val1;
     end
@@ -200,9 +188,9 @@ function val = aux_supportFuncQuadProg(cPZ,dir,type)
 
     % consider different types of bounds
     if strcmp(type,'range')
-        l = supportFunc_(cPZ,dir,'lower','quadProg',[]);
-        u = supportFunc_(cPZ,dir,'upper','quadProg',[]);
-        val = interval(l,u);
+        val_lower = supportFunc_(cPZ,dir,'lower','quadProg',[]);
+        val_upper = supportFunc_(cPZ,dir,'upper','quadProg',[]);
+        val = interval(val_lower,val_upper);
         return;
     end
 
@@ -252,15 +240,15 @@ function val = aux_supportFuncQuadProg(cPZ,dir,type)
     ind_ = setdiff(1:length(d),ind);        % get negative eigenvalues
 
     if ~isempty(ind)
-        temp = zeros(size(d)); temp(ind) = d(ind);
-        H = V*diag(temp)*V'; 
+        eigPos = zeros(size(d)); eigPos(ind) = d(ind);
+        H = V*diag(eigPos)*V';
     else
         val = supportFunc_(cPZ,dir,type,'conZonotope',[],[]);
         return;
     end
     if ~isempty(ind_)
-        temp = zeros(size(d)); temp(ind_) = d(ind_);
-        N = N + V*diag(temp)*V';
+        eigNeg = zeros(size(d)); eigNeg(ind_) = d(ind_);
+        N = N + V*diag(eigNeg)*V';
     end
 
     % extract linear part A*x = b for constraints
@@ -283,12 +271,12 @@ function val = aux_supportFuncQuadProg(cPZ,dir,type)
         for j = i:size(N,2)
             if i == j && N(i,j) ~= 0
                 G = [G, N(i,j)];
-                temp = zeros(p,1); temp(i) = 2;
-                E = [E,temp];
+                expVec = zeros(p,1); expVec(i) = 2;
+                E = [E,expVec];
             elseif N(i,j) ~= 0 || N(j,i) ~= 0
                 G = [G, N(i,j) + N(j,i)];
-                temp = zeros(p,1); temp(i) = 1; temp(j) = 1;
-                E = [E,temp];
+                expVec = zeros(p,1); expVec(i) = 1; expVec(j) = 1;
+                E = [E,expVec];
             end
         end
     end

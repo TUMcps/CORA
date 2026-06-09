@@ -18,7 +18,7 @@ function display(obj)
 
 % Authors:       Tobias Ladner
 % Written:       23-November-2022
-% Last update:   17-January-2023 (TL, better layer output)
+% Last update:   17-January-2023
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -35,10 +35,31 @@ fprintf("Nr. of output neurons: %d\n", obj.neurons_out)
 fprintf(newline);
 
 fprintf("layers: (%d layers)\n", length(obj.layers))
-for i = 1:length(obj.layers)
-    layer_i = obj.layers{i};
-    fprintf(" (%d)\t %s\n", i, layer_i.getLayerInfo())
-end
+aux_printLayers(obj.layers, 0);
 fprintf("\n")
+
+end
+
+
+% Auxiliary functions -----------------------------------------------------
+
+function aux_printLayers(layers, indentLevel)
+    for i = 1:length(layers)
+        layer_i = layers{i};
+        
+        % create indentation string
+        indent = repmat('    ', 1, indentLevel);
+
+        fprintf("%s (%d)\t %s\n", indent, i, layer_i.getLayerInfo())
+        
+        % check for composite layer
+        if isa(layer_i, 'nnCompositeLayer')
+            for j = 1:length(layer_i.layers)
+                fprintf("%s   Path %d:\n", indent, j);
+                aux_printLayers(layer_i.layers{j}, indentLevel + 1);
+            end
+        end
+    end
+end
 
 % ------------------------------ END OF CODE ------------------------------

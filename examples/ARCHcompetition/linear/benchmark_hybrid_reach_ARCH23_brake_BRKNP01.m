@@ -103,9 +103,9 @@ for i = 1:size(R,1)
     for j = 1:length(R(i).timeInterval.set)
        
        % get intervals
-       temp = R(i).timeInterval.set{j};
-       intX = interval(project(temp,2));
-       intT = interval(project(temp,5)) + t;
+       S = R(i).timeInterval.set{j};
+       intX = interval(project(S,2));
+       intT = interval(project(S,5)) + t;
         
        % check specification
        if supremum(intX) < x0

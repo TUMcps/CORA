@@ -219,8 +219,8 @@ E = eye(dim(I));
 rem = T.remainder;
 
 if ~strcmp(S.compOp,'==')
-    temp = interval(T);
-    rem = interval(infimum(temp),supremum(rem));
+    tayRange = interval(T);
+    rem = interval(infimum(tayRange),supremum(rem));
 end
 
 c = center(rem); r = rad(rem);
@@ -293,13 +293,13 @@ function [res,err,var] = aux_polyZonotopeUnsolvable(ls,I)
     end
     
     % compute polynomial zonotope (linear term)
-    temp = grad' * diag(r);
-    temp(:,var) = [];
-    G_ = -[0.5*G_,temp];
-    
-    temp = eye(n);
-    temp(:,var) = [];
-    E_ = [E_,temp];
+    gradScaled = grad' * diag(r);
+    gradScaled(:,var) = [];
+    G_ = -[0.5*G_,gradScaled];
+
+    identReduced = eye(n);
+    identReduced(:,var) = [];
+    E_ = [E_,identReduced];
     
     % assemble resulting polynomial zonotope
     c = zeros(n,1);
@@ -314,9 +314,9 @@ function [res,err,var] = aux_polyZonotopeUnsolvable(ls,I)
     G(var,1:size(G_,2)) = G_./grad(var);
     G(ind,size(G_,2)+1:end) = diag(r(ind));
     
-    temp = eye(n);
-    temp(:,var) = [];
-    E = [E_, temp];
+    identReduced2 = eye(n);
+    identReduced2(:,var) = [];
+    E = [E_, identReduced2];
     
     GI(var,:) = GI_./grad(var);
     
@@ -403,10 +403,10 @@ function [res,err] = aux_polyZonotopeSolvable(eq,var,I)
     else
        c = [m(1:var-1);c_;m(var+1:end)];
        GI = [zeros(var-1,1);GI_;zeros(n-var,1)];
-       temp = [r_(1:var-1);0;r_(var:end)];
-       temp = diag(temp);
-       temp(:,var) = [];
-       G = [[zeros(var-1,size(G_,2));G_;zeros(n-var,size(G_,2))],temp];
+       radiiDiag = [r_(1:var-1);0;r_(var:end)];
+       radiiDiag = diag(radiiDiag);
+       radiiDiag(:,var) = [];
+       G = [[zeros(var-1,size(G_,2));G_;zeros(n-var,size(G_,2))],radiiDiag];
     end
     
     E = [E_,eye(n-1)];
@@ -479,11 +479,11 @@ function res = aux_quadEval(Q,I)
     res = interval(0,0);
         
     for k = 1:length(I)
-        temp = interval(0,0);
+        crossTerm = interval(0,0);
         for l = k+1:length(I)
-            temp = temp + (Q(k,l) + Q(l,k)) * I(l);
+            crossTerm = crossTerm + (Q(k,l) + Q(l,k)) * I(l);
         end
-        res = res + Q(k,k) * I(k)^2 + temp * I(k);
+        res = res + Q(k,k) * I(k)^2 + crossTerm * I(k);
     end
 end
 

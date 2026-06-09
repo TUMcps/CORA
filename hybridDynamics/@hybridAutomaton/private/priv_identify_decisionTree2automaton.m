@@ -42,9 +42,9 @@ function HA = priv_identify_decisionTree2automaton(tree,data,sys,noise)
 
     % catch the case with a single node
     if length(nodes) == 1
-        tmp = unique(data.clus);
-        [~,ind] = max(sum(data.clus' == tmp,2));
-        HA = hybridAutomaton(location(nodes{1}.poly,transition(),sys{tmp(ind)}));
+        uniqueClus = unique(data.clus);
+        [~,ind] = max(sum(data.clus' == uniqueClus,2));
+        HA = hybridAutomaton(location(nodes{1}.poly,transition(),sys{uniqueClus(ind)}));
         return;
     end
 
@@ -98,17 +98,17 @@ function HA = priv_identify_decisionTree2automaton(tree,data,sys,noise)
             if i ~= j
 
                 % loop over all potential outgoing transitions
-                tmp = intersect(nodes{i}.surf,nodes{j}.surf);
-    
-                for k = 1:length(tmp)
-    
+                sharedSurfaces = intersect(nodes{i}.surf,nodes{j}.surf);
+
+                for k = 1:length(sharedSurfaces)
+
                     % construct guard set
-                    ind1 = find(nodes{i}.surf == tmp(k));
+                    ind1 = find(nodes{i}.surf == sharedSurfaces(k));
                     A = nodes{i}.poly.A; b = nodes{i}.poly.b;
                     c = A(ind1,:); d = b(ind1);
                     A(ind1,:) = []; b(ind1,:) = [];
-    
-                    ind2 = find(nodes{j}.surf == tmp(k));
+
+                    ind2 = find(nodes{j}.surf == sharedSurfaces(k));
                     A_ = nodes{j}.poly.A; b_ = nodes{j}.poly.b;
                     c_ = A_(ind2,:);
                     A_(ind2,:) = []; b_(ind2,:) = [];
@@ -514,8 +514,8 @@ function [target,success,score] = aux_dynamicsAfterBouncing(mode,node,poly,guard
     for i = 1:length(node.seg)
 
         % check if the segment bounces off the current surface
-        tmp = abs(poly.A * data.x(:,node.seg{i}(1)) - poly.b);
-        [~,ind] = min(tmp);
+        hyperplaneDist = abs(poly.A * data.x(:,node.seg{i}(1)) - poly.b);
+        [~,ind] = min(hyperplaneDist);
 
         if ind == guard && data.indTraj(node.seg{i}(1)) > 1
             index = [index;i];
@@ -528,8 +528,8 @@ function [target,success,score] = aux_dynamicsAfterBouncing(mode,node,poly,guard
     for i = 1:length(mode.seg)
 
         % check if the segment bounces off the current surface
-        tmp = abs(poly.A * data.x(:,mode.seg{i}(end)) - poly.b);
-        [~,ind] = min(tmp);
+        hyperplaneDist = abs(poly.A * data.x(:,mode.seg{i}(end)) - poly.b);
+        [~,ind] = min(hyperplaneDist);
 
         if ind == guard && mode.seg{i}(end) < length(data.traj) && ...
                 data.traj(mode.seg{i}(end)+1) == data.traj(mode.seg{i}(end))
@@ -603,26 +603,26 @@ function nodes = aux_removeRedundanciesPolytope(nodes)
     % loop over all root nodes
     for i = 1:length(nodes)
 
-        tmp = nodes{i}.poly;
+        origPoly = nodes{i}.poly;
 
         % remove redundant halfspaces
         poly = compact(nodes{i}.poly,'aligned');
 
         % check which halfspaces were removed
-        matOrig = [tmp.A,tmp.b]; matNew = [poly.A,poly.b];
+        matOrig = [origPoly.A,origPoly.b]; matNew = [poly.A,poly.b];
         ind = zeros(size(matNew,1),1);
 
         for j = 1:size(matNew,1)
             [~,ind(j)] = min(sum(abs(matOrig - matNew(j,:)),2));
         end
 
-        % remove stored informations for the removed halfspace 
+        % remove stored informations for the removed halfspace
         nodes{i}.surf = nodes{i}.surf(ind);
         nodes{i}.type = nodes{i}.type(ind);
         nodes{i}.side = nodes{i}.side(ind);
         nodes{i}.points = nodes{i}.points(ind);
 
-        nodes{i}.poly = polytope(tmp.A(ind,:),tmp.b(ind));
+        nodes{i}.poly = polytope(origPoly.A(ind,:),origPoly.b(ind));
     end
 end
 
@@ -821,12 +821,12 @@ function err = aux_computeError(Aall,data)
         end
     else
         for i = 1:size(x,2)-1
-            temp = B*data.u(:,i) + c;
+            inputOffset = B*data.u(:,i) + c;
 
-            k1 = A*x(:,i) + temp;
-            k2 = A*(x(:,i) + dt*k1/2) + temp;
-            k3 = A*(x(:,i) + dt*k2/2) + temp;
-            k4 = A*(x(:,i) + dt*k3) + temp;
+            k1 = A*x(:,i) + inputOffset;
+            k2 = A*(x(:,i) + dt*k1/2) + inputOffset;
+            k3 = A*(x(:,i) + dt*k2/2) + inputOffset;
+            k4 = A*(x(:,i) + dt*k3) + inputOffset;
             x(:,i+1) = x(:,i) + dt/6*(k1 + 2*k2 + 2*k3 + k4);
         end
     end
@@ -845,12 +845,12 @@ function seg = aux_trajectorySegments(traj,index)
 
     for i = 1:length(ind1)-1
 
-        tmp1 = ind1(i)+1:ind1(i+1);
-        ind2 = find(index(tmp1(2:end)) ~= index(tmp1(1:end-1))+1);
-        ind2 = [0,ind2,length(tmp1)];
+        segInds = ind1(i)+1:ind1(i+1);
+        ind2 = find(index(segInds(2:end)) ~= index(segInds(1:end-1))+1);
+        ind2 = [0,ind2,length(segInds)];
 
         for j = 1:length(ind2)-1
-            seg{end+1} = tmp1(ind2(j)+1:ind2(j+1));
+            seg{end+1} = segInds(ind2(j)+1:ind2(j+1));
         end
     end
 end
@@ -962,12 +962,12 @@ function err = aux_predictionErrorAutomaton(HA,data)
                     end
                     
                     % integrate using Runge-Kutta-4
-                    temp = B_*traj{j}.u(:,i) + c_;
+                    inputOffset = B_*traj{j}.u(:,i) + c_;
 
-                    k1 = A_*x(:,i) + temp;
-                    k2 = A_*(x(:,i) + dt*k1/2) + temp;
-                    k3 = A_*(x(:,i) + dt*k2/2) + temp;
-                    k4 = A_*(x(:,i) + dt*k3) + temp;
+                    k1 = A_*x(:,i) + inputOffset;
+                    k2 = A_*(x(:,i) + dt*k1/2) + inputOffset;
+                    k3 = A_*(x(:,i) + dt*k2/2) + inputOffset;
+                    k4 = A_*(x(:,i) + dt*k3) + inputOffset;
                     
                     x(:,i+1) = x(:,i) + dt/6*(k1 + 2*k2 + 2*k3 + k4);
                 end

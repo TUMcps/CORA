@@ -51,9 +51,9 @@ d = [1;1];
 val = supportFunc(cPZ,d,'lower','quadProg');
 
 % compute exact solution
-temp = d'*G;
-problem.H = 2*blkdiag([temp(2) 0.5*temp(3);0.5*temp(3) temp(4)],0);
-problem.f = [temp(1);0;0];
+gProj = d'*G;
+problem.H = 2*blkdiag([gProj(2) 0.5*gProj(3);0.5*gProj(3) gProj(4)],0);
+problem.f = [gProj(1);0;0];
 problem.Aineq = [];
 problem.bineq = [];
 problem.Aeq = [A(2);A(1);A(3)]';

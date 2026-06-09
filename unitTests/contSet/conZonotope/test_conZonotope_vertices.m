@@ -107,7 +107,7 @@ V = vertices(cZ);
 
 % compare with ground-truth
 V_ = [1 1 3 3;3 -1 2 -2];
-assert(compareMatrices(V,V_),1e-6);
+assert(compareMatrices(V,V_,1e-6));
 
 
 % combine results

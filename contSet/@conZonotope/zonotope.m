@@ -98,8 +98,7 @@ function res = aux_zonotopeNullSpace(obj)
     
     for i = 1:m_
         
-        f = zeros(m_,1);
-        f(i) = 1;
+        f = unitvector(i,m_);
         
         % compute minimum
         problem.f = f';

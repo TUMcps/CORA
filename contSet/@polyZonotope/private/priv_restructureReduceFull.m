@@ -140,8 +140,8 @@ else
     end 
     
     % remove redundant rows from the exponent matrix
-    temp = sum(E,2);
-    E = E(temp > 0,:);
+    expRowSums = sum(E,2);
+    E = E(expRowSums > 0,:);
     
     % construct the resulting restructured polynomial zonotope
     pZ = polyZonotope(pZ.c+zono_.c, G, GI, E);

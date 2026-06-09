@@ -29,8 +29,7 @@ layer = nnSigmoidLayer();
 % compute error
 l = 1; u = 2;
 [coeffs, ~] = layer.computeApproxPoly(l, u, 1, 'regression');
-[der1l,der1u] = layer.getDerBounds(l, u);
-[diff2l,diff2u] = nnHelper.minMaxDiffOrder(coeffs, l, u, layer.f, der1l, der1u);
+[diff2l,diff2u] = nnHelper.minMaxDiffOrder(layer, coeffs, l, u);
 L = interval(diff2l,diff2u);
 % check containment
 x = linspace(l, u);
@@ -40,8 +39,7 @@ assert(res && all(contains(L, y_f-y_p)));
 
 l = 1; u = 2;
 [coeffs, ~] = layer.computeApproxPoly(l, u, 1, 'singh');
-[der1l,der1u] = layer.getDerBounds(l, u);
-[diff2l,diff2u] = nnHelper.minMaxDiffOrder(coeffs, l, u, layer.f, der1l, der1u);
+[diff2l,diff2u] = nnHelper.minMaxDiffOrder(layer, coeffs, l, u);
 L = interval(diff2l,diff2u);
 % check containment
 x = linspace(l, u);
@@ -53,8 +51,7 @@ layer = nnTanhLayer();
 % compute error
 l = 1; u = 2;
 [coeffs, ~] = layer.computeApproxPoly(l, u, 1, 'regression');
-[der1l,der1u] = layer.getDerBounds(l, u);
-[diff2l,diff2u] = nnHelper.minMaxDiffOrder(coeffs, l, u, layer.f, der1l, der1u);
+[diff2l,diff2u] = nnHelper.minMaxDiffOrder(layer, coeffs, l, u);
 L = interval(diff2l,diff2u);
 % check containment
 x = linspace(l, u);
@@ -64,8 +61,7 @@ assert(res && all(contains(L, y_f-y_p)));
 
 l = 1; u = 2;
 [coeffs, ~] = layer.computeApproxPoly(l, u, 1, 'singh');
-[der1l,der1u] = layer.getDerBounds(l, u);
-[diff2l,diff2u] = nnHelper.minMaxDiffOrder(coeffs, l, u, layer.f, der1l, der1u);
+[diff2l,diff2u] = nnHelper.minMaxDiffOrder(layer, coeffs, l, u);
 L = interval(diff2l,diff2u);
 % check containment
 x = linspace(l, u);

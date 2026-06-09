@@ -33,11 +33,13 @@ A = [1 1 1]; b = 1;
 cZ = conZonotope(Z,A,b);
 
 % compute vertices
-V = vertices(cZ);
-V_proj = projVertices(cZ);
+V = vertices(cartProd(cZ,interval(-1,1)));
+V_proj1 = projVertices(cZ,[1,2],'angle');
+V_proj2 = projVertices(cZ,[1,2],'supportFunc');
 
 % check vertices
-assert(compareMatrices(V,V_proj,1e-14))
+assert(compareMatrices(V_proj1,V(1:2,:),1e-14,'subset'))
+assert(compareMatrices(V_proj2,V(1:2,:),1e-14,'subset'))
 
 % higher-dimensional constrained zonotope
 Z = [0 1.5 -1.5 0.5;0 1 0.5 -1; 1 0 -0.5 -1];
@@ -52,10 +54,12 @@ dims = {[1,2],[2,3],[1,3]};
 % check all three projections
 for i=1:length(dims)
     % computed vertices of projected constrained zonotope
-    V_proj = projVertices(cZ,dims{i});
+    V_proj1 = projVertices(cZ,dims{i},'angle');
+    V_proj2 = projVertices(cZ,dims{i},'supportFunc');
 
     % check vertices
-    assertLoop(compareMatrices(V_proj,V(dims{i},:),1e-6,'subset'),i)
+    assertLoop(compareMatrices(V_proj1,V(dims{i},:),1e-6,'subset'),i)
+    assertLoop(compareMatrices(V_proj2,V(dims{i},:),1e-6,'subset'),i)
 end
 
 
@@ -72,11 +76,13 @@ cZ2 = conZonotope(Z,A,b);
 cZ_ = convHull(cZ1,cZ2);
 
 % compute vertices
-V = vertices(cZ_);
-V_proj = projVertices(cZ_);
+V = vertices(cartProd(cZ_,interval(-1,1)));
+V_proj1 = projVertices(cZ_,[1,2],'angle');
+V_proj2 = projVertices(cZ_,[1,2],'supportFunc');
 
 % check vertices
-assert(compareMatrices(V_proj,V,1e-14,'subset'),i)
+assert(compareMatrices(V_proj1,V(1:2,:),1e-14,'subset'),i)
+assert(compareMatrices(V_proj2,V(1:2,:),1e-14,'subset'),i)
 
 end
 

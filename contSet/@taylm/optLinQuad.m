@@ -201,9 +201,9 @@ function [D,x] = aux_calcRedDomain(objLin,intHo,type,Dorig)
 
     for i = 1:length(b1)
         if slopes(i) ~= 0
-           temp = (2*rad(intHo))/slopes(i) + b1(i);
-           if temp > -1 && temp < 1
-              b2(i) = temp; 
+           reducedBound = (2*rad(intHo))/slopes(i) + b1(i);
+           if reducedBound > -1 && reducedBound < 1
+              b2(i) = reducedBound;
            end
         end 
     end
@@ -231,13 +231,13 @@ function [dom1,dom2,t1,t2] = aux_halveDomain(tay,dom)
    infi = infimum(dom);
    sup = supremum(dom);
 
-   temp = sup;
-   temp(indCoord) = infi(indCoord) + radius(indCoord);
-   dom1 = interval(infi,temp);
+   upperSplit = sup;
+   upperSplit(indCoord) = infi(indCoord) + radius(indCoord);
+   dom1 = interval(infi,upperSplit);
 
-   temp = infi;
-   temp(indCoord) = sup(indCoord) - radius(indCoord);
-   dom2 = interval(temp,sup);
+   lowerSplit = infi;
+   lowerSplit(indCoord) = sup(indCoord) - radius(indCoord);
+   dom2 = interval(lowerSplit,sup);
 
    % re-expand the taylor models at the center of the halved domains
    t1 = reexpand(tay,dom1);

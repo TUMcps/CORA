@@ -55,8 +55,24 @@ function [points,dims,NVpairs] = aux_parseInputArgs(points,varargin)
     % set default values
     dims = setDefaultValues({[1,2]},varargin);
     NVpairs = readPlotOptions([varargin(2:end),{'Filled',false}]);
-    NVpairs = ['LineStyle','none','Marker','.',NVpairs];
     NVpairs = [NVpairs,'NVPAIRS_VALIDATED',true];
+    % set default values
+    NVpairs = [NVpairs,'LineStyle','none'];
+    % convert edge/face color to marker edge/face color
+    [NVpairs,edgecolor] = readNameValuePair(NVpairs,'EdgeColor');
+    if ~isempty(edgecolor)
+        NVpairs = [NVpairs,'MarkerEdgeColor',edgecolor];
+    end
+    [NVpairs,facecolor] = readNameValuePair(NVpairs,'FaceColor');
+    if ~isempty(facecolor)
+        NVpairs = [NVpairs,'MarkerFaceColor',facecolor];
+    end
+    % check if marker is given
+    [~,marker] = readNameValuePair(NVpairs,'Marker');
+    if isempty(marker)
+        NVpairs = [NVpairs,'Marker','.'];
+    end
+
 end
 
 function aux_checkInputArgs(points,dims,NVpairs)

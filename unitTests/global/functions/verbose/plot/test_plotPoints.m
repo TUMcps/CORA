@@ -27,6 +27,7 @@ try
     % test if plotting works ----------------------------------------------
 
     figure;
+    ax = gca();
 
     % 2D
     V = [1 0; 1 2; 0 3; -2 2; -3 0; 0 -1; 1 0]';
@@ -48,7 +49,17 @@ try
     V = [1 0 1; 1 2 -1; 0 3 0; -2 2 1; -3 0 2; 0 -1 0; 1 0 1]';
     plotPoints(V,1:2);
     plotPoints(V,1:2,'.r');
-    plotPoints(V,1:2,'FaceColor','r');
+    plotPoints(V,1:2,'o','FaceColor','r');
+    assert(isequal(ax.Children.MarkerFaceColor,[1 0 0]))
+
+    % test single point
+    V = [1;2];
+    plotPoints(V);
+    assert(strcmp(ax.Children.Marker,'.'))
+    plotPoints(V,1:2,'.');
+    assert(strcmp(ax.Children.Marker,'.'))
+    plotPoints(V,1:2,'o');
+    assert(strcmp(ax.Children.Marker,'o'))
 
     close;
 

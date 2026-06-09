@@ -1,4 +1,4 @@
-function p_GO = computeGO(nlnsysDT,x0,u_ref,n_k)
+function p_GO = computeGO(nlnsysDT,x0,u_ref,n_k, compute_params)
 % computeGO - compute the reference trajectory and the parameters for a 
 %    linearized system
 %
@@ -10,6 +10,7 @@ function p_GO = computeGO(nlnsysDT,x0,u_ref,n_k)
 %    x0 - initial state
 %    u_ref - reference input trajectory
 %    n_k - number of time steps
+%    compute_params - boolean specifying if GO parameters are computed
 %
 % Outputs:
 %    p_GO - struct with the GO parameters for a give nreference trajectory
@@ -33,8 +34,8 @@ function p_GO = computeGO(nlnsysDT,x0,u_ref,n_k)
 %                                   dimensions: n_y x n_k
 %
 % References:
-%    [1] L. Luetzow and M. Althoff, "Reachset-conformant System
-%        Identification," arXiv, 2024. 
+%    [1] L. Luetzow and M. Althoff, "Reachset-Conformant System
+%        Identification," Transactions on Automatic Control, 2026.  
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -44,7 +45,7 @@ function p_GO = computeGO(nlnsysDT,x0,u_ref,n_k)
 
 % Authors:       Laura Luetzow
 % Written:       21-July-2023
-% Last update:   ---
+% Last update:   12-February-2026 (LL, add input variable compute_params)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -66,39 +67,23 @@ p_GO.C = cell(n_k,1);
 p_GO.D = cell(n_k,n_k);
 p_GO.E = cell(n_k,n_k);
 
-% compute the linearized system matrices
+if nargin <= 4
+    compute_params = true;
+end
+
 for k = 1 : n_k
     % compute reference solution x_ref and y_ref and the linearized system matrices
-    [A_lin{k},B_lin{k}] = nlnsysDT.jacobian(x_ref(:,k), u_ref(:,k));
     x_ref(:,k+1) = nlnsysDT.mFile(x_ref(:,k), u_ref(:,k));
-
-    [C_lin,D_lin] = nlnsysDT.out_jacobian(x_ref(:,k), u_ref(:,k));
     y_ref(:,k) = nlnsysDT.out_mFile(x_ref(:,k), u_ref(:,k));
 
     % compute transfer matrices G for the x0->y(i) equation
-    A_prod = eye(size(A_lin{1},1));
-    for j = 1 : k-1
-        A_prod = A_prod * A_lin{k-j};
-        A_prod_j = 1;
-        for i = 1 : k-j-1
-            A_prod_j = A_prod_j * A_lin{k-i};
-        end
-        AA_prod = A_lin{k} * A_prod_j;
-        p_GO.B{k,j} = AA_prod * B_lin{j};
-        p_GO.F{k,j} = AA_prod * [eye(nlnsysDT.nrOfDims) zeros(nlnsysDT.nrOfDims, nlnsysDT.nrOfOutputs)];
+    if compute_params
+        % compute the linearized system matrices
+        [A_lin{k},B_lin{k}] = nlnsysDT.jacobian(x_ref(:,k), u_ref(:,k));
+        [C_lin_k,D_lin_k] = nlnsysDT.out_jacobian(x_ref(:,k), u_ref(:,k));
 
-        CA_prod = C_lin * A_prod_j;
-        p_GO.D{k,j} = CA_prod * B_lin{j};
-        p_GO.E{k,j} = CA_prod * [eye(nlnsysDT.nrOfDims) zeros(nlnsysDT.nrOfDims, nlnsysDT.nrOfOutputs)];
+        p_GO = computeGO_k(A_lin, B_lin, C_lin_k, D_lin_k, k, p_GO);
     end
-    p_GO.A{k} = A_lin{k} * A_prod;
-    p_GO.B{k,k} = B_lin{k}; 
-    p_GO.F{k,k} = [eye(nlnsysDT.nrOfDims) zeros(nlnsysDT.nrOfDims, nlnsysDT.nrOfOutputs)]; % L = [L_x; L_y]
-    
-    p_GO.C{k} = C_lin * A_prod;
-    p_GO.D{k,k} = D_lin;
-    p_GO.E{k,k} = [zeros(nlnsysDT.nrOfOutputs, nlnsysDT.nrOfDims) eye(nlnsysDT.nrOfOutputs)]; % L = [L_x; L_y]
-
 end
 p_GO.x = x_ref;
 p_GO.y = y_ref;

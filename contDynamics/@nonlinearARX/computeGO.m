@@ -1,4 +1,4 @@
-function p_GO = computeGO(nlnARX,x0,u_ref,n_k)
+function p_GO = computeGO(nlnARX,x0,u_ref,n_k,compute_params)
 % computeGO - compute the reference trajectory and the parameters for a 
 %    linearized system
 %
@@ -10,6 +10,7 @@ function p_GO = computeGO(nlnARX,x0,u_ref,n_k)
 %    x0 - stacked initial outputs
 %    u_ref - reference input trajectory
 %    n_k - number of time steps
+%    compute_params - boolean specifying if GO parameters are computed
 %
 % Outputs:
 %    p_GO - struct with the GO parameters for a given reference trajectory
@@ -33,8 +34,8 @@ function p_GO = computeGO(nlnARX,x0,u_ref,n_k)
 %                                   dimensions: n_y x n_k
 %
 % References:
-%    [1] L. Luetzow and M. Althoff, "Reachset-conformant System
-%        Identification," arXiv, 2024. 
+%    [1] L. Luetzow and M. Althoff, "Reachset-Conformant System
+%        Identification," Transactions on Automatic Control, 2026. 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -44,7 +45,7 @@ function p_GO = computeGO(nlnARX,x0,u_ref,n_k)
 
 % Authors:       Laura Luetzow
 % Written:       14-November-2023
-% Last update:   ---
+% Last update:   12-February-2026 (LL, add input variable compute_params)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -85,50 +86,58 @@ C = cell(n_k,1);
 D = cell(n_k,n_k);
 E = cell(n_k,n_k);
 
+if nargin <= 4
+    compute_params = true;
+end
+
 for k = n_p+1:n_k
     % compute linearized system matrices
     y_last = reshape(y_ref(:,k-n_p:k-1),[],1);
-    [A_lin,B_lin] = nlnARX.jacobian(y_last, u_stacked(:,k));
-    A_tilde{k} = [A_tilde_firstRows; A_lin];
-    for i = 1:n_p+1
-        B_tilde{k,i} = [B_tilde_firstRows; B_lin(:, (i-1)*n_u+1:i*n_u)];
-    end
     y_ref(:,k) = nlnARX.mFile(y_last,  u_stacked(:,k));
 
-    % compute reformulated system matrices
-    A_k = cell(k-n_p,1);
-    A_k{1} = A_tilde{k};
-    F{k,k} = F_tilde;
-    E{k,k} = C_tilde * F{k,k};
-    for j = 1 : k-n_p-1
-        A_k{j+1} = A_k{j} * A_tilde{k-j};
-        F{k,k-j} = A_k{j} * F_tilde;
-        E{k,k-j} = C_tilde * F{k,k-j};
-    end
-    A{k} = A_k{k-n_p};
-    C{k} = C_tilde * A{k};
-
-    % compute B and D
-    for i=0:k-1
-        if i <= n_p
-            B{k,k-i} = B_tilde{k,n_p+1-i};
-        else
-            B{k,k-i} = zeros(size(B_tilde{k,n_p+1}));
+    if compute_params
+        [A_lin,B_lin] = nlnARX.jacobian(y_last, u_stacked(:,k));
+        A_tilde{k} = [A_tilde_firstRows; A_lin];
+        for i = 1:n_p+1
+            B_tilde{k,i} = [B_tilde_firstRows; B_lin(:, (i-1)*n_u+1:i*n_u)];
         end
-
+        % compute reformulated system matrices
+        A_k = cell(k-n_p,1);
+        A_k{1} = A_tilde{k};
+        F{k,k} = F_tilde;
+        E{k,k} = C_tilde * F{k,k};
         for j = 1 : k-n_p-1
-            if i >= j && i-j <= n_p
-                B{k,k-i} = B{k,k-i} + A_k{j} * B_tilde{k-j,n_p+1-i+j};
-            end
+            A_k{j+1} = A_k{j} * A_tilde{k-j};
+            F{k,k-j} = A_k{j} * F_tilde;
+            E{k,k-j} = C_tilde * F{k,k-j};
         end
-        D{k,k-i} = C_tilde * B{k,k-i};
+        A{k} = A_k{k-n_p};
+        C{k} = C_tilde * A{k};
+
+        % compute B and D
+        for i=0:k-1
+            if i <= n_p
+                B{k,k-i} = B_tilde{k,n_p+1-i};
+            else
+                B{k,k-i} = zeros(size(B_tilde{k,n_p+1}));
+            end
+
+            for j = 1 : k-n_p-1
+                if i >= j && i-j <= n_p
+                    B{k,k-i} = B{k,k-i} + A_k{j} * B_tilde{k-j,n_p+1-i+j};
+                end
+            end
+            D{k,k-i} = C_tilde * B{k,k-i};
+        end
     end
 end
 
 % compute C and D
-for k = 1:n_p
-    C{k} = [zeros(n_y,(k-1)*n_y) eye(n_y) zeros(n_y,(n_p-k)*n_y)];
-    [D{k,1:k}] = deal(zeros(n_y, n_u));
+if compute_params
+    for k = 1:n_p
+        C{k} = [zeros(n_y,(k-1)*n_y) eye(n_y) zeros(n_y,(n_p-k)*n_y)];
+        [D{k,1:k}] = deal(zeros(n_y, n_u));
+    end
 end
 
 % save nominal signals in p_GO

@@ -16,9 +16,9 @@ function res = testnn_neuralNetwork_verify()
 %
 % See also: -
 
-% Authors:       Lukas Koller
+% Authors:       Lukas Koller, Benedikt Kellner
 % Written:       03-September-2024
-% Last update:   ---
+% Last update:   14-March-2026 (BK, input bounds check in counterexample validation)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -61,11 +61,10 @@ options.nn.num_neuron_splits = 1;
 % Restrict the number of input generators.
 options.nn.train.num_init_gens = 5;
 % Restrict the number of approximation error generators per layer.
-options.nn.train.num_approx_err = 50;
+options.nn.train.num_approx_err = 33;
 options.nn.approx_error_order = 'sensitivity*length';
 % Add relu tightening constraints.
-options.nn.num_relu_tighten_constraints = inf;
-% options.nn.neuron_xor_input_splits = false;
+options.nn.num_relu_constraints = 7;
 % Do verification.
 [verifRes,x_,y_] = nn.verify(x,r,A,b,safeSet,options,timeout,verbose);
 assert(~strcmp(verifRes.str,'COUNTEREXAMPLE') & isempty(x_) & isempty(y_));
@@ -82,46 +81,46 @@ options.nn.refinement_method = 'naive';
 assert(~strcmp(verifRes.str,'VERIFIED'));
 if strcmp(verifRes.str,'COUNTEREXAMPLE')
     assert(~isempty(x_) & ~isempty(y_) & ...
-        aux_checkCounterexample(nn,A,b,safeSet,x_,y_));
+        aux_checkCounterexample(nn,x,r,A,b,safeSet,x_,y_));
 end
 
 % Test 'zonotack' implementation with restricted number of generators.
 options.nn.falsification_method = 'zonotack';
-options.nn.refinement_method = 'zonotack-layerwise';
+options.nn.refinement_method = 'zonotack';
 % Specify parameters.
 options.nn.num_splits = 3; 
 options.nn.num_dimensions = 1;
-options.nn.num_neuron_splits = 0;
+options.nn.num_neuron_splits = 1;
 % Restrict the number of input generators.
 options.nn.train.num_init_gens = 5;
 % Restrict the number of approximation error generators per layer.
-options.nn.train.num_approx_err = 25;
+options.nn.train.num_approx_err = 43;
 options.nn.approx_error_order = 'length';
 % Add relu tightening constraints.
-options.nn.num_relu_tighten_constraints = 3;
+options.nn.num_relu_constraints = 3;
 % Do verification.
 [verifRes,x_,y_] = nn.verify(x,r,A,b,safeSet,options,timeout,verbose);
 assert(~strcmp(verifRes.str,'VERIFIED'));
 if strcmp(verifRes.str,'COUNTEREXAMPLE')
     assert(~isempty(x_) & ~isempty(y_) & ...
-        aux_checkCounterexample(nn,A,b,safeSet,x_,y_));
+        aux_checkCounterexample(nn,x,r,A,b,safeSet,x_,y_));
 end
 
 % Test 'zonotack' implementation with restricted number of generators.
 options.nn.falsification_method = 'zonotack';
-options.nn.refinement_method = 'zonotack-layerwise';
+options.nn.refinement_method = 'zonotack';
 % Specify parameters.
 options.nn.num_splits = 2; 
 options.nn.num_dimensions = 1;
 options.nn.num_neuron_splits = 0;
 % Add relu tightening constraints.
-options.nn.num_relu_tighten_constraints = 100;
+options.nn.num_relu_constraints = 7;
 % Do verification.
 [verifRes,x_,y_] = nn.verify(x,r,A,b,safeSet,options,timeout,verbose);
 assert(~strcmp(verifRes.str,'VERIFIED'));
 if strcmp(verifRes.str,'COUNTEREXAMPLE')
     assert(~isempty(x_) & ~isempty(y_) & ...
-        aux_checkCounterexample(nn,A,b,safeSet,x_,y_));
+        aux_checkCounterexample(nn,x,r,A,b,safeSet,x_,y_));
 end
 
 % Third test case with other model: prop_2.vnnlib -------------------------
@@ -132,18 +131,18 @@ options.nn.falsification_method = 'zonotack';
 options.nn.refinement_method = 'zonotack'; 
 % Specify parameters.
 options.nn.num_splits = 2; 
-options.nn.num_dimensions = 0;
+options.nn.num_dimensions = 3;
 options.nn.num_neuron_splits = 1;
-options.nn.add_orth_neuron_splits = true;
 % Add relu tightening constraints.
 options.nn.num_relu_constraints = 15;
+options.nn.relu_constraint_heuristic = 'input-radius';
 % Do verification.
 [verifRes,x_,y_] = nn.verify(x,r,A,b,safeSet,options,timeout,verbose);
 % Finding a counterexample is hard.
 assert(~strcmp(verifRes.str,'VERIFIED'));
 if strcmp(verifRes.str,'COUNTEREXAMPLE')
     assert(~isempty(x_) & ~isempty(y_) & ...
-        aux_checkCounterexample(nn,A,b,safeSet,x_,y_));
+        aux_checkCounterexample(nn,x,r,A,b,safeSet,x_,y_));
 end
 
 % Fourth test case with other model: prop_2.vnnlib -------------------------
@@ -154,18 +153,17 @@ options.nn.falsification_method = 'zonotack';
 options.nn.refinement_method = 'zonotack'; 
 % Specify parameters.
 options.nn.num_splits = 2; 
-options.nn.num_dimensions = 1;
+options.nn.num_dimensions = 3;
 options.nn.num_neuron_splits = 1;
-options.nn.input_xor_neuron_splitting = true;
 % Add relu tightening constraints.
-options.nn.num_relu_constraints = inf;
+options.nn.num_relu_constraints = 10;
 % Do verification.
 [verifRes,x_,y_] = nn.verify(x,r,A,b,safeSet,options,timeout,verbose);
 % Finding a counterexample is hard.
 assert(~strcmp(verifRes.str,'VERIFIED'));
 if strcmp(verifRes.str,'COUNTEREXAMPLE')
     assert(~isempty(x_) & ~isempty(y_) & ...
-        aux_checkCounterexample(nn,A,b,safeSet,x_,y_));
+        aux_checkCounterexample(nn,x,r,A,b,safeSet,x_,y_));
 end
 
 end
@@ -210,7 +208,11 @@ function [nn,options,x,r,A,b,safeSet] = ...
 
 end
 
-function res = aux_checkCounterexample(nn,A,b,safeSet,x_,y_)
+function res = aux_checkCounterexample(nn,x,r,A,b,safeSet,x_,y_)
+% Check input bounds.
+tol = 1e-6;
+assert(all(x_ >= x - r - tol,'all') & all(x_ <= x + r + tol,'all'), ...
+    'Counterexample x_ out of input bounds.');
 % Compute output of the neural network.
 yi = nn.evaluate(x_);
 % Check if output matches.

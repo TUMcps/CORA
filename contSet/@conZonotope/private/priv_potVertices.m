@@ -39,8 +39,8 @@ if isempty(cZ.ksi)
     cZ = reduceConstraints(cZ);
     
     % remove all all-zero columns in the constraint matrix
-    temp = sum(abs(cZ.A),1);
-    ind1 = find(temp == 0);
+    colAbsSum = sum(abs(cZ.A),1);
+    ind1 = find(colAbsSum == 0);
     ind2 = setdiff(1:size(cZ.A,2),ind1);
     
     A_ = cZ.A(:,ind2);

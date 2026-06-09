@@ -1,0 +1,32 @@
+; Tests (equal-to NAME) network equivalence (stronger variant of isomorphic-to).
+; Two networks f and g declared equal; same joint input/output structure as
+; acasxu_equivalence.vnnlib but using equal-to instead of isomorphic-to.
+
+(vnnlib-version <2.0>)
+
+(declare-network f
+    (declare-input Xf real [3])
+    (declare-output Yf real [2])
+)
+
+(declare-network g
+    (equal-to f)
+    (declare-input Xg real [3])
+    (declare-output Yg real [2])
+)
+
+; coupled inputs
+(assert (== Xf[0] Xg[0]))
+(assert (== Xf[1] Xg[1]))
+(assert (== Xf[2] Xg[2]))
+
+; box on first network input
+(assert (>= Xf[0] 0.0))
+(assert (<= Xf[0] 1.0))
+(assert (>= Xf[1] 0.0))
+(assert (<= Xf[1] 1.0))
+(assert (>= Xf[2] 0.0))
+(assert (<= Xf[2] 1.0))
+
+; output spec: Yf[0] - Yg[0] <= 0.1
+(assert (<= (- Yf[0] Yg[0]) 0.1))

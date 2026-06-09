@@ -4,7 +4,7 @@ function val = robustness(obj,varargin)
 % 
 % Syntax:
 %    val = robustness(obj,R)
-%    val = robustness(obj,sim)
+%    val = robustness(obj,traj)
 %    val = robustness(obj,x,t)
 %
 % Inputs:
@@ -76,14 +76,14 @@ function val = robustness(obj,varargin)
     end
     
     % compute robustness of the overall temporal logic formula
-    r = aux_robustnessTemporalLogic(phi,r_pred,t);
+    r = aux_robustnessTemporalLogic(phi,r_pred,t,0);
     val = r(1);
 end
 
 
 % Auxiliary functions -----------------------------------------------------
 
-function r = aux_robustnessTemporalLogic(phi,r,time)
+function r = aux_robustnessTemporalLogic(phi,r,time,depth)
 % recursive function to compute the robustness of a temporal logic formula
 % according to Definition 2.3 in [1]
 
@@ -93,21 +93,21 @@ function r = aux_robustnessTemporalLogic(phi,r,time)
 
     elseif strcmp(phi.type,'&') % ---
         % compute robustness of each hs
-        r1 = aux_robustnessTemporalLogic(phi.lhs,r,time);
-        r2 = aux_robustnessTemporalLogic(phi.rhs,r,time);
+        r1 = aux_robustnessTemporalLogic(phi.lhs,r,time,depth);
+        r2 = aux_robustnessTemporalLogic(phi.rhs,r,time,depth);
 
         r = min([r1;r2],[],1);
 
     elseif strcmp(phi.type,'|') % ---
         % compute robustness of each hs
-        r1 = aux_robustnessTemporalLogic(phi.lhs,r,time);
-        r2 = aux_robustnessTemporalLogic(phi.rhs,r,time);
+        r1 = aux_robustnessTemporalLogic(phi.lhs,r,time,depth);
+        r2 = aux_robustnessTemporalLogic(phi.rhs,r,time,depth);
 
         r = max([r1;r2],[],1);
 
     elseif strcmp(phi.type,'next') % ---
 
-        r = aux_robustnessTemporalLogic(phi.lhs,r,time);
+        r = aux_robustnessTemporalLogic(phi.lhs,r,time,depth+1);
 
         index = find(time >= phi.from);
         index = intersect(index,1:length(r));
@@ -116,7 +116,7 @@ function r = aux_robustnessTemporalLogic(phi,r,time)
 
     elseif strcmp(phi.type,'finally') % --- 
 
-        r_ = aux_robustnessTemporalLogic(phi.lhs,r,time);
+        r_ = aux_robustnessTemporalLogic(phi.lhs,r,time,depth+1);
 
         index = find(time >= phi.from & time <= phi.to);
 
@@ -127,11 +127,14 @@ function r = aux_robustnessTemporalLogic(phi,r,time)
             index = index(index <= length(r));
             r(cnt) = max(r_(index));
             cnt = cnt + 1; index = index + 1;
+            if depth == 0
+                break;
+            end
         end
 
     elseif strcmp(phi.type,'globally') % ---
 
-        r_ = aux_robustnessTemporalLogic(phi.lhs,r,time);
+        r_ = aux_robustnessTemporalLogic(phi.lhs,r,time,depth+1);
 
         index = find(time >= phi.from & time <= phi.to);
 
@@ -142,12 +145,15 @@ function r = aux_robustnessTemporalLogic(phi,r,time)
             index = index(index <= length(r));
             r(cnt) = min(r_(index));
             cnt = cnt + 1; index = index + 1;
+            if depth == 0
+                break;
+            end
         end
 
     elseif strcmp(phi.type,'until') % ---
         % compute robustness of each hs
-        r1 = aux_robustnessTemporalLogic(phi.lhs,r,time);
-        r2 = aux_robustnessTemporalLogic(phi.rhs,r,time);
+        r1 = aux_robustnessTemporalLogic(phi.lhs,r,time,depth+1);
+        r2 = aux_robustnessTemporalLogic(phi.rhs,r,time,depth+1);
         
         index = find(time >= phi.from & time <= phi.to);
 
@@ -163,13 +169,17 @@ function r = aux_robustnessTemporalLogic(phi,r,time)
             end
     
             cnt = cnt + 1; index = index + 1;
+
+            if depth == 0
+                break;
+            end
         end
 
     elseif strcmp(phi.type,'release') % ---
 
         % compute robustness of each hs
-        r1 = aux_robustnessTemporalLogic(phi.lhs,r,time);
-        r2 = aux_robustnessTemporalLogic(phi.rhs,r,time);
+        r1 = aux_robustnessTemporalLogic(phi.lhs,r,time,depth+1);
+        r2 = aux_robustnessTemporalLogic(phi.rhs,r,time,depth+1);
         
         % find indices
         index = find(time >= phi.from & time <= phi.to);
@@ -190,6 +200,10 @@ function r = aux_robustnessTemporalLogic(phi,r,time)
             end
     
             cnt = cnt + 1; index = index + 1;
+
+            if depth == 0
+                break;
+            end
         end
 
         % negate result?
@@ -201,14 +215,13 @@ function [r,t] = aux_robustnessTrace(x,t,sets)
 % precompute the robustness for all predicates on a single trace
 
     % bring to common time step size
-    dt = min(diff(t));
+    dt = mean(diff(t));
 
     if abs(dt - max(diff(t))) > eps
         t_ = t;
         t = 0:dt:t(end);
         [~,ind] = unique(t_);
-        x = [interp1(t_(ind),x(ind,1),t,'linear','extrap'); ...
-             interp1(t_(ind),x(ind,2),t,'linear','extrap')]';
+        x = interp1(t_(ind),x(ind,:),t,'linear','extrap');
     end
 
     % compute robustness
@@ -296,7 +309,7 @@ function val = aux_robustnessTrajectory(traj,phi,sets)
     for i = 1:length(traj)
         for j = 1:size(traj(i).x,3)
             [r_pred,t] = aux_robustnessTrace(traj(i).x(:,:,j)',traj(i).t',sets);
-            r = aux_robustnessTemporalLogic(phi,r_pred,t);
+            r = aux_robustnessTemporalLogic(phi,r_pred,t,0);
             val = min(val,r(1));
         end
     end
@@ -319,7 +332,7 @@ function val = aux_robustnessPoint(p,S)
     else
 
         if isa(S,'polytope')
-            if contains(S,p)
+            if contains_(S,p,'exact',eps,0,false,false)
                 len = sqrt(sum(S.A.^2,2));
                 val = max((S.A * p - S.b)./len);
                 
@@ -477,8 +490,8 @@ function [phi,pred,sets] = aux_preprocessTemporalLogic(phi)
 
         if length(clauses) == 1                 % single safe set
 
-            tmp = convert2set(clauses{1});
-            sets{i} = aux_reverseInequalityConstraints(tmp);
+            safeSet = convert2set(clauses{1});
+            sets{i} = aux_reverseInequalityConstraints(safeSet);
 
         else                                    % union of safe sets
 

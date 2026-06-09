@@ -114,11 +114,11 @@ function S_out = aux_convHullSingle(cPZ)
     % construct auxiliary matrices
     c_ = repmat(cPZ.c,[1,a]);
     G_ = repmat(cPZ.G,[1,a]);
-    temp = repmat({cPZ.E},[1,a]); E_ = blkdiag(temp{:});
-    temp = repmat({ones(1,h)},[1,a]); Eh = blkdiag(temp{:});
-    temp = repmat({cPZ.A},[1,a]); A_ = blkdiag(temp{:});
+    repE = repmat({cPZ.E},[1,a]); E_ = blkdiag(repE{:});
+    repOnes = repmat({ones(1,h)},[1,a]); Eh = blkdiag(repOnes{:});
+    repA = repmat({cPZ.A},[1,a]); A_ = blkdiag(repA{:});
     b_ = repmat(cPZ.b,[a,1]);
-    temp = repmat({cPZ.EC},[1,a]); R_ = blkdiag(temp{:});
+    repEC = repmat({cPZ.EC},[1,a]); R_ = blkdiag(repEC{:});
 
     % construct resulting constrained polynomial zonotope
     c = a*cPZ.c; 

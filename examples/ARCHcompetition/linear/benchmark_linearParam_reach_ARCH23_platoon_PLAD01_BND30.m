@@ -174,20 +174,20 @@ for j=1:runs
         t = t + 5;
         
         params.R0 = zonotope(points{j});
-        temp = simulateRandom(linSys_c, params, simOpt);
-        points{j} = temp.x(:,end);
-        traj_(counter) = temp;
+        simRes = simulateRandom(linSys_c, params, simOpt);
+        points{j} = simRes.x(:,end);
+        traj_(counter) = simRes;
         counter = counter + 1;
-        
+
         % simulate uncontrolled system
         params.tStart = t;
         params.tFinal = t + 5;
         t = t + 5;
-        
+
         params.R0 = zonotope(points{j});
-        temp = simulateRandom(linSys_n, params, simOpt);
-        points{j} = temp.x(:,end);
-        traj_(counter) = temp;
+        simRes = simulateRandom(linSys_n, params, simOpt);
+        points{j} = simRes.x(:,end);
+        traj_(counter) = simRes;
         counter = counter + 1;
     end
 

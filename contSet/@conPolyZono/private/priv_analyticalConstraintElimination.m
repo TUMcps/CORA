@@ -136,16 +136,16 @@ function [val_,ind_,empty] = aux_elimSingleEntryConstraint(A,b,E)
     % fix a single factor
     if length(ind_) == 1
 
-        temp = nthroot(b/A(index),E(ind_,index));
+        factorVal = nthroot(b/A(index),E(ind_,index));
 
-        if temp > 1     % value located outside the domain
+        if factorVal > 1     % value located outside the domain
            empty = true;
            return;
         else
            if mod(E(ind_,index),2) == 0
-               val_ = [-temp,temp];
+               val_ = [-factorVal,factorVal];
            else
-               val_ = temp;
+               val_ = factorVal;
            end
         end
 
@@ -255,8 +255,8 @@ function [val,ind] = aux_elimSpecialCase(A,E)
     
     if ~isempty(ind)
         % evaluate gradient on the whole domain using interval arithmetic
-        temp = ones(size(E,1),1);
-        dom = interval(0*temp,temp);
+        onesVec = ones(size(E,1),1);
+        dom = interval(0*onesVec,onesVec);
         gradInt = interval(zeros(length(ind),1));
 
         for i = 1:length(ind)
@@ -327,11 +327,11 @@ function [val,indices] = aux_updateValues(val,indices,val_,ind_)
         
         % no common factor between stored and new values
         if isempty(int)
-           temp = ones(1,size(val,2));
+           replicator = ones(1,size(val,2));
            valOld = val;
            val = [];
            for i = 1:size(val_,2)
-                val = [val, [val_(:,i)*temp ; valOld]];
+                val = [val, [val_(:,i)*replicator ; valOld]];
            end
            indices = [ind_;indices];
            
@@ -370,19 +370,19 @@ function res = aux_subsFactorValue(obj,ind,val)
     A = obj.A;
 
     % substite value into generators
-    temp = val.^obj.E(ind,:);
-    
-    for i = 1:size(temp,1)
-        G = G * diag(temp(i,:));
+    genScaling = val.^obj.E(ind,:);
+
+    for i = 1:size(genScaling,1)
+        G = G * diag(genScaling(i,:));
     end
-    
+
     E(ind,:) = [];
-    
+
     % substite value into constraints
-    temp = val.^obj.EC(ind,:);
-    
-    for i = 1:size(temp,1)
-        A = A * diag(temp(i,:));
+    conScaling = val.^obj.EC(ind,:);
+
+    for i = 1:size(conScaling,1)
+        A = A * diag(conScaling(i,:));
     end
     
     EC(ind,:) = [];
@@ -405,14 +405,14 @@ end
 function res = aux_removeTrivialConstraints(obj)
 % remove the trivial constraint 0 = 0*a1 + 0*a2 + ...
 
-    temp = sum(abs(obj.A),2);
-    
+    conRowSums = sum(abs(obj.A),2);
+
     A = obj.A;
     b = obj.b;
     ind = [];
-    
-    for i = 1:length(temp)
-       if temp(i) == 0 && obj.b(i) == 0
+
+    for i = 1:length(conRowSums)
+       if conRowSums(i) == 0 && obj.b(i) == 0
            ind = [ind;i];
        end
     end

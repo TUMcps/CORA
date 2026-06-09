@@ -28,6 +28,12 @@ PAPER_TITLE = 'CORA'; % !
 VENUE_NAME = 'VNN-COMP';   % !
 aux_runStartup(PAPER_TITLE,VENUE_NAME);
 
+% hyperparameter overrides (empty struct = use benchmark defaults)
+overrides = struct();
+
+% instance indices to run (empty = all instances)
+instanceIds = [];
+
 % also change 3. Scripts below
 
 % 2. SETUP (nothing to change here) ---------------------------------------
@@ -60,9 +66,9 @@ basepath = '.';
 % 3. RUN SCRIPTS (update as needed) ---------------------------------------
 
 benchmarks = {...
-    'test', ...
+    ... 'test', ...
     ... % VNN-COMP'25 benchmarks
-    ... 'acasxu_2023', ...
+    'acasxu_2023', ...
     ... 'cctsdb_yolo_2023', ... % (not supported; not main track)
     ... 'cersyve', ... % (test)
     ... 'cgan_2023', ... % (not supported)
@@ -90,7 +96,7 @@ benchmarks = {...
 };
 
 scripts = { ...
-    @() run_benchmarks(benchmarks,datapath,resultspath), 'run_benchmarks';
+    @() run_benchmarks(benchmarks,datapath,resultspath,overrides,instanceIds), 'run_benchmarks';
 };
 
 % run scripts

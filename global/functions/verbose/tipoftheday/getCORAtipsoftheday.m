@@ -176,7 +176,7 @@ end
 
 function tips = aux_getTipsManual() % ./manual
     tips = {
-        ['We document the capabilities of CORA in the <a href="cora.in.tum.de/manual">CORA manual</a>.\n' ...
+        ['We document the capabilities of CORA in the <a href="https://cora.in.tum.de/manual">CORA manual</a>.\n' ...
         'Please check the manual for definitions, details, examples, and more.']
     };
 end

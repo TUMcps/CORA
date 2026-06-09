@@ -39,8 +39,26 @@ assert(all(contains(I,p)));
 p = randPoint(I,1,'extreme');
 assert(contains(I,p));
 
+% degenerate ---
 
-% combine results
+% just center
+lb = [-2; -1]; ub = [1; -1];
+I = interval(lb,ub);
+p = randPoint(I,10);
+assert(all(contains(I,p)));
+p = randPoint(I,1,'extreme');
+assert(contains(I,p));
+
+% only one dimension
+lb = [-2; -1]; ub = [1; -1];
+I = interval(lb,ub);
+p = randPoint(I,10);
+assert(all(contains(I,p)));
+p = randPoint(I,1,'extreme');
+assert(contains(I,p));
+
+
+% test completed
 res = true;
 
 % ------------------------------ END OF CODE ------------------------------

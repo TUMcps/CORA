@@ -344,9 +344,9 @@ function [states,inputs,out_fun,outputs,out_isLinear,rewriteAsC,C] = ...
     % get number of states and number of inputs 
     if isempty(states) || isempty(inputs)
         try
-            temp = inputArgsLength(fun,2);
-            states = temp(1);
-            inputs = max(1,temp(2));
+            argLengths = inputArgsLength(fun,2);
+            states = argLengths(1);
+            inputs = max(1,argLengths(2));
         catch
             throw(CORAerror('CORA:specialError',...
                 ['Failed to determine number of states and ' ...

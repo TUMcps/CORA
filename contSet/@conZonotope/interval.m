@@ -51,17 +51,12 @@ for i = 1:n
     dir = unitvector(i,n);
 
     % calculate exact bounds by solving a linear program
-    lb = supportFunc_(cZ,dir,'lower');
-    if lb == Inf
-        % empty
+    Ii = supportFunc_(cZ,dir,'range');
+    if representsa_(Ii,'emptySet',0)
         I = interval.empty(n);
         return
     end
-    ub = supportFunc_(cZ,dir,'upper');
-    I(i) = interval(lb,ub);
-    % we do not need to check for emptiness here since this is already
-    % covered by the check for 'lower' above
-    
+    I(i) = Ii;
 end
 
 % ------------------------------ END OF CODE ------------------------------

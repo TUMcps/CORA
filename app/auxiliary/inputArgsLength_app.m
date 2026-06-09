@@ -53,11 +53,11 @@ try
     count = zeros(narginf,1);
     for i=1:narginf
         % last 'true' value in logical indices is required dimension
-        tmp = find(mask(:,i),1,'last');
-        if isempty(tmp)
-            tmp = 0;
+        lastTrueIdx = find(mask(:,i),1,'last');
+        if isempty(lastTrueIdx)
+            lastTrueIdx = 0;
         end
-        count(i) = tmp;
+        count(i) = lastTrueIdx;
     end
 
     % sanity check: call function with computed number of input arguments

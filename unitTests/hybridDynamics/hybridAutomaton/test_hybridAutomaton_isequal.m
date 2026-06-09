@@ -64,9 +64,9 @@ HA1 = hybridAutomaton([loc_1;loc_2]);
 assert(isequal(HA1,HA1));
 
 % same array of hybrid automata
-temp = isequal([HA1;HA1],[HA1;HA1]);
-assert(all(size(temp) == [2,1]));
-assert(all(temp));
+eqResult = isequal([HA1;HA1],[HA1;HA1]);
+assert(all(size(eqResult) == [2,1]));
+assert(all(eqResult));
 
 % different number of locations
 HA2 = hybridAutomaton(loc_3);

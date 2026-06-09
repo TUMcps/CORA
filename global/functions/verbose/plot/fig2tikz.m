@@ -134,7 +134,7 @@ for c=1:nrChildren
                             % order is ok
                         elseif all([min(V1,[],1) > min(V2,[],1), max(V1,[],1) < max(V2,[],1)])
                             % swap order
-                            temp = V1; V1 = V2; V2 = temp;
+                            swapV = V1; V1 = V2; V2 = swapV;
                         else
                             % unknown shape (not a ring)
                             throw(CORAerror('CORA:specialError','Unknown shape'));

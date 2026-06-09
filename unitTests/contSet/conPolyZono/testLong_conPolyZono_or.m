@@ -45,11 +45,11 @@ for i = 1:2
     for j = 1:length(sets)
         
         % generate random object of the current set representation
-        temp = sets{j}('Dimension',2);
-        cPZ2 = conPolyZono(temp);
+        otherSet = sets{j}('Dimension',2);
+        cPZ2 = conPolyZono(otherSet);
 
         % compute union
-        cPZ = cPZ1 | temp;
+        cPZ = cPZ1 | cPZ2;
 
         % get random points inside the two conPolyZono objects
         points = [randPoint(cPZ1,5,'extreme'), ...

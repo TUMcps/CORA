@@ -248,9 +248,9 @@ while true
             end
             
             % take worst-case current gain (use same dimensions as for lin)
-            temp = abstrerr(options.orders == options.minorder) ./ ...
+            errRatio = abstrerr(options.orders == options.minorder) ./ ...
                 abstrerr_h(options.orders == options.minorder);
-            varphi = max( temp(~isnan(temp)) );
+            varphi = max( errRatio(~isnan(errRatio)) );
             
             if varphi > options.decrFactor + 10*eps
                 throw(CORAerror('CORA:specialError',...
@@ -307,9 +307,9 @@ while true
         % ... run using tuned time step size (or scaled time step size
         % for varphi if timeStepEqualHorizon is true, or last step)
         if timeStepequalHorizon
-            temp = abstrerr(options.orders == options.minorder) ./ ...
+            errRatio = abstrerr(options.orders == options.minorder) ./ ...
                 abstrerr_h(options.orders == options.minorder);
-            options.varphi(options.i,1) = max( temp(~isnan(temp)) );
+            options.varphi(options.i,1) = max( errRatio(~isnan(errRatio)) );
         elseif ~lastStep
             options.varphi(options.i,1) = aux_varphiest(finitehorizon,...
                 options.timeStep,Rerror_h,Rerror,options.decrFactor,options.minorder);

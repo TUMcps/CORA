@@ -64,9 +64,8 @@ if isempty(directory)
 end
 
 % correct separator for directory
-temp = strrep(directory,'\',filesep);
-temp = strrep(temp,'/',filesep);
-directory = temp;
+directory = strrep(directory,'\',filesep);
+directory = strrep(directory,'/',filesep);
 % check if directory actually exists
 if ~isfolder(directory)
     throw(CORAerror('CORA:specialError',...

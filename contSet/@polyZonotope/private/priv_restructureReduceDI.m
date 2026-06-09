@@ -127,8 +127,8 @@ function pZ = priv_restructureReduceDI(pZ, dfOrder, method, varargin)
             % generators to remove additionally
             N = m_-(genOrder-1)*n;
             
-            tmp = 1:m;
-            ii_mask_not = tmp(~indMask);
+            genIndices = 1:m;
+            ii_mask_not = genIndices(~indMask);
             
             % find indices of generators to reduce
             ind_r = aux_gens2reduce(G(:,~indMask),E(:,~indMask),N);
@@ -163,12 +163,12 @@ end
 function ind_r = aux_gens2reduce(G,E,M)
     % sort generators according to metric
     m = size(G,2);
-    Gtemp = G;         
+    Gscaled = G;
     ind = all(mod(E,2)==0,1);
-    Gtemp(:,ind) = 0.5 * Gtemp(:,ind);
-    
+    Gscaled(:,ind) = 0.5 * Gscaled(:,ind);
+
     % determine length of the generators
-    len = sum(Gtemp.^2,1);
+    len = sum(Gscaled.^2,1);
     [~,ii_s] = sort(len,'ascend');
     ind_r = ismember(1:m,ii_s(1:M));
 end

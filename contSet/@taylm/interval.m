@@ -82,11 +82,11 @@ function int = aux_tayl2int(tay)
     
     for i = 1:length(tay.coefficients)
         exp = tay.monomials(i,:);
-        temp = 1;       
+        intProduct = 1;
         for j = 1:length(exp)
-           temp = aux_intMul(temp,aux_intPower(exp(j)));
+           intProduct = aux_intMul(intProduct,aux_intPower(exp(j)));
         end
-        int = int + aux_evalInt(temp) * tay.coefficients(i);
+        int = int + aux_evalInt(intProduct) * tay.coefficients(i);
     end
 end
 

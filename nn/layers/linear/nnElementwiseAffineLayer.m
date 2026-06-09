@@ -40,7 +40,8 @@ methods
     % constructor
     function obj = nnElementwiseAffineLayer(varargin)
         % parse input
-        [scale, offset, name] = setDefaultValues({1, 0, []}, varargin);
+        [scale, offset, name, areParamsLearnable] = ...
+            setDefaultValues({1, 0, [], false}, varargin);
         inputArgsCheck({ ...
             {scale, 'att', 'numeric'}
             {offset, 'att', 'numeric'}
@@ -58,7 +59,7 @@ methods
         end
 
         % call super class constructor
-        obj@nnLayer(name)
+        obj@nnLayer(name,areParamsLearnable)
 
         obj.scale = double(scale);
         obj.offset = double(offset);
@@ -87,7 +88,7 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
     % numeric
     function r = evaluateNumeric(obj, input, options)
         [scale,offset] = obj.aux_getScaleAndOffset();
-        r = scale(:) .* input + offset(:);
+        r = scale .* input + offset;
     end
 
     % sensitivity
@@ -112,22 +113,25 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
     % interval 
     function bounds = evaluateInterval(obj, bounds, options)
         [scale,offset] = obj.aux_getScaleAndOffset();
-        l_ = scale.*bounds.inf + offset;
-        u_ = scale.*bounds.sup + offset;
-        bounds = interval(min(l_,u_),max(l_,u_));
+        % Compute the bounds.
+        bounds_ = scale.*cat(3,bounds.inf,bounds.sup) + offset;
+        % Swap the bounds of the scale is negative.
+        bounds_(scale < 0,:,:) = bounds_(scale < 0,:,[2 1]);
+        % Construct the results interval.
+        bounds = interval(bounds_(:,:,1),bounds_(:,:,2));
     end
 
     % zonotope batch (for training)
     function [c, G] = evaluateZonotopeBatch(obj, c, G, options)
         [scale,offset] = obj.aux_getScaleAndOffset();
         % Add the offset.
-        c = scale(:).*c + offset(:);
+        c = scale.*c + offset;
         if options.nn.interval_center
-            % Flip bounds in case the scale is negative.
-            c = [min(c,[],2) max(c,[],2)];
+            % Swap the bounds of the scale is negative.
+            c(scale < 0,:,:) = c(scale < 0,[2 1],:);
         end
         % Scale the generators.
-        G = scale(:).*G;
+        G = scale.*G;
     end
 
     % taylm
@@ -147,20 +151,64 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
 
     % numeric
     function grad_in = backpropNumeric(obj, input, grad_out, options, updateWeights)
+        if updateWeights
+            % Update scale and offset.
+            dscale = obj.aux_aggrGradOfParam(size(obj.scale), ...
+                sum(grad_out.*input,2));
+            obj.updateGrad('scale',dscale,options);
+            doffset = obj.aux_aggrGradOfParam(size(obj.offset), ...
+                sum(grad_out,2));
+            obj.updateGrad('offset',doffset,options);
+        end
+        % Obtain the scale and offset.
         [scale,offset] = obj.aux_getScaleAndOffset();
+        % Compute the incoming gradient.
         grad_in = scale .* grad_out;
     end
 
     % interval batch
     function [gl, gu] = backpropIntervalBatch(obj, l, u, gl, gu, options, updateWeights)
+        % Obtain the scale and offset.
         [scale,offset] = obj.aux_getScaleAndOffset();
-        gl = scale.*gl;
-        gu = scale.*gu;
+        % Concatenate the inputs gradient to simplify computations.
+        inputs = cat(3,l,u);
+        grads = cat(3,gl,gu);
+        % Swap the inputs and gradients if the scale is negative.
+        inputs(scale < 0,:,:) = inputs(scale < 0,:,[2 1]);
+        grads(scale < 0,:,:) = grads(scale < 0,:,[2 1]);
+        if updateWeights
+            % Update scale and offset.
+            dscale = obj.aux_aggrGradOfParam(size(obj.scale), ...
+                sum(grads.*inputs,2:3));
+            obj.updateGrad('scale',dscale,options);
+            doffset = obj.aux_aggrGradOfParam(size(obj.offset), ...
+                sum(grads,2:3));
+            obj.updateGrad('offset',doffset,options);
+        end
+        % Compute the gradients.
+        gl = scale.*grads(:,:,1);
+        gu = scale.*grads(:,:,2);
     end
     
     % zonotope batch
     function [gc, gG] = backpropZonotopeBatch(obj, c, G, gc, gG, options, updateWeights)
+        % Obtain the scale and offset.
         [scale,offset] = obj.aux_getScaleAndOffset();
+        if options.nn.interval_center
+            % Swap the center and center gradients if the scale is negative.
+            c(scale < 0,:,:) = c(scale < 0,[2 1],:);
+            gc(scale < 0,:,:) = gc(scale < 0,[2 1],:);
+        end
+        if updateWeights
+            % Update scale and offset.
+            dscale = obj.aux_aggrGradOfParam(size(obj.scale), ...
+                sum(gc.*c,2:3) + sum(gG.*G,2:3));
+            obj.updateGrad('scale',dscale,options);
+            doffset = obj.aux_aggrGradOfParam(size(obj.offset), ...
+                sum(gc,2:3));
+            obj.updateGrad('offset',doffset,options);
+        end
+        % Compute the gradients.
         gc = scale.*gc;
         gG = scale.*gG;
     end
@@ -170,10 +218,16 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 methods
+    % for exporting/importing (struct and json)
     function fieldStruct = getFieldStruct(obj)
         fieldStruct = struct;
         fieldStruct.scale = obj.scale;
         fieldStruct.offset = obj.offset;
+    end
+
+    function names = getParamNames(obj)
+        % List parameters.
+        names = {'scale', 'offset'};
     end
 end
 
@@ -208,24 +262,45 @@ methods (Access = protected)
         end
     end
 
-    function [scale,offset] = aux_getScaleAndOffset(obj)
-        if isfield(obj.backprop.store,'scale') ...
-                && isfield(obj.backprop.store,'offset')
-            % Return stored parameters.
-            scale = obj.backprop.store.scale;
-            offset = obj.backprop.store.offset;
-        else
-            % Obtain input size.
-            inImgSize = obj.inputSize;
-            % Pad scale and offset to match input size; i.e., channel-wise
-            % scale and offset.
-            scale = aux_getPaddedParameter(obj, obj.scale, inImgSize);
-            offset = aux_getPaddedParameter(obj, obj.offset, inImgSize);
-            % Store the parameters.
-            obj.backprop.store.scale = scale;
-            obj.backprop.store.offset = offset;
+    % Aggregate the gradients for scale or offset channel-wise.
+    function g = aux_aggrGradOfParam(obj, pSz, g, varargin)
+        [inImgSize] = setDefaultValues({obj.inputSize}, varargin);
+        % Ensure the image size has at least 3 dimensions.
+        ndims = length(inImgSize);
+        if ndims < 3
+            inImgSize = [inImgSize ones(3 - ndims)];
         end
 
+        % Compute number of spacial dimensions in the feature map.
+        spacDim = prod(inImgSize(1:2));
+        % Obtain number of output channels.
+        out_c = inImgSize(3);
+
+        if prod(pSz) < spacDim*out_c
+            if prod(pSz) == 0
+                g = zeros(pSz,1,'like',g);
+            elseif prod(pSz) == 1
+                % There is only a scalar parameter.
+                g = sum(g,'all');
+            else
+                % Reshape the gradients.
+                g = reshape(g,inImgSize);
+                % Aggreate accross the spacial dimensions.
+                g = sum(g,1:2);
+            end
+        else
+            % We do not aggregate any dimensions.
+            g = reshape(g,pSz);
+        end
+    end
+
+    function [scale,offset] = aux_getScaleAndOffset(obj)
+        % Obtain input size.
+        inImgSize = obj.inputSize;
+        % Pad scale and offset to match input size; i.e., channel-wise
+        % scale and offset.
+        scale = aux_getPaddedParameter(obj, obj.scale, inImgSize);
+        offset = aux_getPaddedParameter(obj, obj.offset, inImgSize);
     end
 end
 

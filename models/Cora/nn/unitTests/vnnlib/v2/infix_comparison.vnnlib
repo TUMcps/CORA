@@ -1,0 +1,24 @@
+; Tests infix comparison form: (lhs op rhs) instead of prefix (op lhs rhs).
+; Exercises (Y_f[1] < Y_g[1]) style as seen in real VNNCOMP 2026 benchmarks.
+
+(vnnlib-version <2.0>)
+
+(declare-network f
+    (declare-input X_f real [3])
+    (declare-output Y_f real [2])
+)
+(declare-network g
+    (equal-to f)
+    (declare-input X_g real [3])
+    (declare-output Y_g real [2])
+)
+
+(assert (and (<= X_f[0] 1.0) (>= X_f[0] 0.0)))
+(assert (and (<= X_f[1] 1.0) (>= X_f[1] 0.0)))
+(assert (and (<= X_f[2] 1.0) (>= X_f[2] 0.0)))
+(assert (== X_f[0] X_g[0]))
+(assert (== X_f[1] X_g[1]))
+(assert (== X_f[2] X_g[2]))
+
+; infix comparison: equivalent to (< Y_f[1] Y_g[1])
+(assert (Y_f[1] < Y_g[1]))

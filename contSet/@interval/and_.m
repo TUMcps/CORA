@@ -43,8 +43,8 @@ lb = max(I.inf, S.inf);
 ub = min(I.sup, S.sup);
 
 % check if intersection is empty
-tmp = lb - ub;
-if all(tmp <= eps, 'all')
+boundsGap = lb - ub;
+if all(boundsGap <= eps, 'all')
     res = interval(min([lb,ub],[],2),max([lb,ub],[],2));
 else
     res = interval.empty(prod(dim(S)));

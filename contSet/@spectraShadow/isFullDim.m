@@ -201,11 +201,11 @@ function x = aux_maxNormPerpendicularSpectrahedron(SpS,X)
         beta = sdpvar(size(G,2),1);
         w = sdpvar(size(X,2),1);
         constraints = [];
-        temp = A0;
+        lmiMatrix = A0;
         for j=1:size(G,2)
-            temp = temp + beta(j) * Ai{j};
+            lmiMatrix = lmiMatrix + beta(j) * Ai{j};
         end
-        constraints = [constraints temp >= 0];
+        constraints = [constraints lmiMatrix >= 0];
 
         if isempty(X)
             x = G*beta + c;

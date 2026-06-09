@@ -59,13 +59,13 @@ elseif strcmp(type,'upper')
     x = V(:,idx);
     
 elseif strcmp(type,'range')
-    % compute lower/upper
-    [val_lower,x_lower] = supportFunc_(pgon,dir,'lower');
-    [val_upper,x_upper] = supportFunc_(pgon,dir,'upper');
+    % compute lower and upper bound directly (avoids recomputing s)
+    [val_lower,idx_lower] = min(s);
+    [val_upper,idx_upper] = max(s);
 
     % obtain result
     val = interval(val_lower,val_upper);
-    x = [x_lower x_upper];
+    x = [V(:,idx_lower) V(:,idx_upper)];
 end
 
 

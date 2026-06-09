@@ -19,13 +19,14 @@ function obj = convertDLToolboxNetwork(dlt_layers, verbose)
 %
 % See also: -
 
-% Authors:       Tobias Ladner, Lukas Koller
+% Authors:       Tobias Ladner, Lukas Koller, Benedikt Kellner
 % Written:       30-March-2022
 % Last update:   05-June-2022 (LK, Conv, Pool)
 %                17-January-2023 (TL, Reshape)
 %                23-November-2023 (TL, bug fix with scalar element-wise operation)
 %                25-July-2023 (TL, nnElementwiseAffineLayer)
 %                31-July-2023 (LK, nnSoftmaxLayer)
+%                14-March-2026 (BK, ScalingLayer, CustomOutputLayer)
 % Last revision: 17-August-2022
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -83,63 +84,76 @@ function [layers,inputSize,currentSize] = aux_convertLayers( ...
         % Obtain the i-th layer.
         dlt_layer = dlt_layers{i};
         
-        if iscell(dlt_layer)
-            if verbose
-                fprintf("#%d: Composite\n", i)
-            end
-            % We need to construct a composite layer.
-            layersi = {};
-            % Iterate the computation paths.
-            for j=1:length(dlt_layer)
-                if ~isempty(nextInputIdx)
-                    % Construct the reshape layers that reshapes the input
-                    % of the j-th computation path.
-                    reshapeIdx = reshape(nextInputIdx{j},1,[]);
-                    preshapeLayer = nnReshapeLayer( ...
-                        reshapeIdx,dlt_layers{i-1}.Name);
-                    currentSize = size(nextInputIdx{j});
+        try
+            if iscell(dlt_layer)
+                if verbose
+                    fprintf("#%d: Composite\n", i)
                 end
-                % Convert the j-th computation path.
-                [layersij,~,~] = aux_convertLayers( ...
-                    dlt_layer{j},inputSize,currentSize,verbose);
-                if ~isempty(nextInputIdx)
-                    % Prepend the reshape layer.
-                    layersij = [{preshapeLayer}; layersij];
+                % We need to construct a composite layer.
+                layersi = {};
+                % Iterate the computation paths.
+                for j=1:length(dlt_layer)
+                    if ~isempty(nextInputIdx)
+                        % Construct the reshape layers that reshapes the input
+                        % of the j-th computation path.
+                        reshapeIdx = reshape(nextInputIdx{j},1,[]);
+                        preshapeLayer = nnReshapeLayer( ...
+                            reshapeIdx,dlt_layers{i-1}.Name);
+                        currentSize = size(nextInputIdx{j});
+                    end
+                    % Convert the j-th computation path.
+                    [layersij,~,~] = aux_convertLayers( ...
+                        dlt_layer{j},inputSize,currentSize,verbose);
+                    if ~isempty(nextInputIdx)
+                        % Prepend the reshape layer.
+                        layersij = [{preshapeLayer}; layersij];
+                    end
+                    % Append the converted layers.
+                    layersi{j} = layersij;
                 end
-                % Append the converted layers.
-                layersi{j} = layersij;
-            end
-            % Increment the index to obtain aggregation layer.
-            i = i+1;
-            % Obtain the aggregation layer.
-            aggr_dlt_layer = dlt_layers{i};
-            % Check the type of aggregation layer.
-            if isa(aggr_dlt_layer,'nnet.cnn.layer.AdditionLayer')
-                aggregation = 'add';
-            elseif isa(aggr_dlt_layer,'nnet.cnn.layer.ConcatenationLayer')
-                aggregation = 'concat';
+                % Increment the index to obtain aggregation layer.
+                i = i+1;
+                % Obtain the aggregation layer.
+                aggr_dlt_layer = dlt_layers{i};
+                % Check the type of aggregation layer.
+                if isa(aggr_dlt_layer,'nnet.cnn.layer.AdditionLayer')
+                    aggregation = 'add';
+                elseif isa(aggr_dlt_layer,'nnet.cnn.layer.ConcatenationLayer')
+                    aggregation = 'concat';
+                else
+                    % Aggregation type is not supported.
+                    aggregation = [];
+                end
+                % Instantiate the composite layer.
+                compLayer = nnCompositeLayer(layersi,aggregation);
+                % Append the composite layer.
+                layers{end+1} = compLayer;
+                % Update the output size.
+                currentSize = layers{end}.getOutputSize(currentSize);
+                % Reset the input indices.
+                nextInputIdx = {};
             else
-                % Aggregation type is not supported.
-                aggregation = [];
+                if verbose
+                    fprintf("#%d: %s\n", i, class(dlt_layer))
+                end
+                % Just append a regular layer.
+                [layers,inputSize_,currentSize,nextInputIdx] = ...
+                    aux_convertLayer(layers,dlt_layer,currentSize,verbose);
+                if isempty(inputSize)
+                    inputSize = inputSize_;
+                end
             end
-            % Instantiate the composite layer.
-            compLayer = nnCompositeLayer(layersi,aggregation);
-            % Append the composite layer.
-            layers{end+1} = compLayer;
-            % Update the output size.
-            currentSize = layers{end}.getOutputSize(currentSize);
-            % Reset the input indices.
-            nextInputIdx = {};
-        else
-            if verbose
-                fprintf("#%d: %s\n", i, class(dlt_layer))
+        catch ME
+            if iscell(dlt_layer)
+                 name = "Composite";
+                 cls = "cell";
+            else
+                 name = dlt_layer.Name;
+                 cls = class(dlt_layer);
             end
-            % Just append a regular layer.
-            [layers,inputSize_,currentSize,nextInputIdx] = ...
-                aux_convertLayer(layers,dlt_layer,currentSize,verbose);
-            if isempty(inputSize)
-                inputSize = inputSize_;
-            end
+            fprintf(2, "Error converting layer %d (%s, class: %s):\n%s\n", ...
+                i, name, cls, ME.message);
+            rethrow(ME);
         end
     end
     layers = reshape(layers, [], 1); % 1 column
@@ -187,7 +201,8 @@ function [layers,inputSize,currentSize,nextInputIdx] = ...
             b = double(dlt_layer.Bias);
             layers{end+1} = nnLinearLayer(W, b, dlt_layer.Name);
     
-    elseif isa(dlt_layer, 'nnet.onnx.layer.ElementwiseAffineLayer') 
+    elseif isa(dlt_layer, 'nnet.onnx.layer.ElementwiseAffineLayer') || ...
+            isa(dlt_layer, 'nnet.cnn.layer.ScalingLayer')
         s = double(dlt_layer.Scale);
         o = double(dlt_layer.Offset);
 
@@ -230,6 +245,49 @@ function [layers,inputSize,currentSize,nextInputIdx] = ...
         dilation = dlt_layer.DilationFactor;
         layers{end+1} = nnConv2DLayer(W, b, padding, stride, dilation, dlt_layer.Name);
 
+         % sanity check
+        if length(size(W)) == 4
+             assert(size(W, 3) == dlt_layer.NumChannels, ...
+            'CORA:convertDLToolboxNetwork:Conv2DDimensions', ...
+            'Expected 3rd dimension of Weights to match NumChannels (%d), but got %d.', ...
+            dlt_layer.NumChannels, size(W, 3));
+             assert(size(W, 4) == dlt_layer.NumFilters, ...
+            'CORA:convertDLToolboxNetwork:Conv2DDimensions', ...
+            'Expected 4th dimension of Weights to match NumFilters (%d), but got %d.', ...
+            dlt_layer.NumFilters, size(W, 4));
+        end
+
+    elseif isa(dlt_layer, 'nnet.cnn.layer.TransposedConvolution2DLayer')
+        W = double(dlt_layer.Weights);
+        b = double(reshape(dlt_layer.Bias, [], 1));
+        cs = dlt_layer.CroppingSize;   % DLT: [top bottom left right]
+    
+        if numel(cs) == 4
+            % Convert DLT [top bottom left right] -> CORA [left top right bottom]
+            cropping = [cs(3), cs(1), cs(4), cs(2)];
+        else
+            % handle scalar / 1x2 / 2x2 cases as needed
+            cs = cs(:)';
+            cropping = [cs(2), cs(1), cs(2), cs(1)];
+        end
+    
+        stride = dlt_layer.Stride;
+        dilation = [1, 1];  % DLT transposed conv has no dilation
+    
+        layers{end+1} = nnConvTranspose2DLayer(W, b, cropping, stride, dilation, dlt_layer.Name);
+
+        % sanity check
+        if length(size(W)) == 4
+             assert(size(W, 3) == dlt_layer.NumFilters, ...
+            'CORA:convertDLToolboxNetwork:TransposedConvDimensions', ...
+            'Expected 3rd dimension of Weights to match NumFilters (%d), but got %d.', ...
+            dlt_layer.NumFilters, size(W, 3));
+             assert(size(W, 4) == dlt_layer.NumChannels, ...
+            'CORA:convertDLToolboxNetwork:TransposedConvDimensions', ...
+            'Expected 4th dimension of Weights to match NumChannels (%d), but got %d.', ...
+            dlt_layer.NumChannels, size(W, 4));
+        end
+
     elseif isa(dlt_layer, 'nnet.cnn.layer.BatchNormalizationLayer')
         % batch normalization
         mean = dlt_layer.TrainedMean;
@@ -254,7 +312,69 @@ function [layers,inputSize,currentSize,nextInputIdx] = ...
         stride = dlt_layer.Stride;
         layers{end+1} = nnMaxPool2DLayer(poolSize, stride, dlt_layer.Name);
 
-        % activation functions ---
+    elseif contains(class(dlt_layer), 'Upsample')
+        % upsample
+        
+        % Check for interpolation mode if available (e.g. in ONNX layers)
+        if isprop(dlt_layer, 'Mode')
+            mode = dlt_layer.Mode;
+            if (isa(mode, 'string') || isa(mode, 'char')) && ~strcmpi(mode, 'nearest')
+                throw(CORAerror('CORA:notDefined', ...
+                      'convertDLToolboxNetwork/UpsampleMode: Only "nearest" neighbor upsampling is supported. Found mode: %s', mode));
+            end
+        end
+        
+        % determine scale factor
+        scale = [];
+         
+         % Check properties starting with onnx__
+         if isempty(scale)
+             props = properties(dlt_layer);
+             for k=1:length(props)
+                 if contains(props{k}, 'onnx__')
+                     val = dlt_layer.(props{k});
+                     try
+                         if isa(val, 'dlarray'); val = extractdata(val); end
+                         val = double(val);
+                     catch
+                          props = properties(dlt_layer);
+                          throw(CORAerror('CORA:wrongFieldValue', ...
+                             'convertDLToolboxNetwork/UpsampleScale: Could not detect Scale/Scales for Upsample layer. Properties: %s', strjoin(props, ', '))); 
+                     end
+                     if numel(val)==4 && all(val(1:2)==1) && all(val(3:4)>1)
+                         scale = val; break;
+                     end
+                 end
+             end
+         end
+
+        if length(scale) == 4
+            scale = scale(3:4); 
+        end
+        
+        if isscalar(scale)
+             scale = [scale scale];
+        end
+        
+        currentSize = [currentSize(:)', ones(1, max(0, 3-length(currentSize)))];
+        H = currentSize(1);
+        W = currentSize(2);
+        C = currentSize(3);
+        
+        % Nearest Neighbor reindexing
+        % generate input indices
+        rows = repelem((1:H)', scale(1));
+        cols = repelem(1:W, scale(2));
+        
+        % mapping: output(i,j) -> input(rows(i), cols(j))
+        % linear index in input: (cols-1)*H + rows
+        linIdx = rows + (cols-1)*H;
+        
+        % handle channels
+        offsets = reshape((0:C-1)*H*W, 1, 1, C);
+        idx_out = linIdx + offsets;
+        
+        layers{end+1} = nnReshapeLayer(idx_out, dlt_layer.Name);
 
     elseif isa(dlt_layer, 'nnet.cnn.layer.ReLULayer')
         % relu
@@ -281,15 +401,53 @@ function [layers,inputSize,currentSize,nextInputIdx] = ...
         % ignore
         inputSize = [];
         return
+    
 
     elseif isa(dlt_layer, 'nnet.cnn.layer.RegressionOutputLayer') || ...
-            isa(dlt_layer, 'nnet.cnn.layer.ClassificationOutputLayer')
+            isa(dlt_layer, 'nnet.cnn.layer.ClassificationOutputLayer') || ...
+            isa(dlt_layer, 'nnet.onnx.layer.CustomOutputLayer')
         % ignore
         inputSize = [];
         return
 
     % Custom Layers -----------------------------------------------
+    elseif strcmp(dlt_layer.Name, 'Gemm_To_ReshapeLayer1000')
+        % TODO: safe as a CORA linear layer, followed by a reshpae layer
+        % Read the corresponding weights from the dl toolbox layer
+        W = double(dlt_layer.gen_l1_0_weight');   % now 512 x 5
+        b = double(dlt_layer.gen_l1_0_bias);      % 512 x 1
+        layers{end+1} = nnLinearLayer(W, b, dlt_layer.Name);
 
+        % Get all field names of the 'Vars' structure
+        varNames = fieldnames(dlt_layer.Vars);
+        
+        % Find the field name that contains the specific string
+        matchingFieldIndices = contains(varNames, 'onnx__Reshape_');
+        
+        % Check if a match was found and get the name (assuming only one match)
+        if any(matchingFieldIndices)
+            fieldName = varNames{matchingFieldIndices};
+            
+            % Use dynamic field access
+            onnxShape = double(extractdata(dlt_layer.Vars.(fieldName)));
+        else
+            % Handle case where no field matches the pattern
+            CORAwarning('CORA:nn','No field containing "onnx__Reshape_" found in dlt_layer.Vars.');
+            onnxShape = []; % or some other default/error value
+        end
+
+        % Convert to DLT/MATLAB ordering and drop batch dim:
+        shapeDlt = flip(onnxShape);          % [2;2;128;1]
+        H = shapeDlt(1);
+        W = shapeDlt(2);
+        C = shapeDlt(3);
+        
+        % Build index tensor with desired output shape [H W C]
+        outSize = [H, W, C];                 % [2 2 128]
+        idx_out = reshape(1:prod(outSize), outSize);
+        
+        % CORA reshape layer equivalent to your ONNX Reshape/Flatten
+        layers{end+1} = nnReshapeLayer(idx_out, dlt_layer.Name);
     elseif contains(lower(class(dlt_layer)), 'flatten') || ...
             contains(lower(class(dlt_layer)), 'reshape') || ...
             contains(lower(class(dlt_layer)), 'slice')
@@ -372,7 +530,7 @@ function [layers,inputSize,currentSize,nextInputIdx] = ...
         layers{end+1} = nnReLULayer(dlt_layer.Name);
         layers{end+1} = nnLinearLayer(params.Learnables.Operation_6_MatMul_W, params.Nonlearnables.Operation_6_Add_B,dlt_layer.Name);
         layers{end+1} = nnReLULayer(dlt_layer.Name);
-        layers{end+1} = nnLinearLayer(params.Learnables.linear_7_MatMul_W, params.Nonlearnables.linear_7_Add_B,dlt_layer.Name);
+        layers{end+1} = nnLinearLayer(params.Learnables.linear_7_MatMul_W, params.Nonlearnables.linear_7_Add_B,dlt_layer.Name)
     else
         % unknown layer, show warning
         if verbose

@@ -75,10 +75,9 @@ else
     infi = infimum(I); sup = supremum(I); n = dim(I);
     
     for i = 1:n
-       temp = zeros(n,1);
-       temp(i) = 1;
-       sup(i) = sup(i) - supportFunc_(S,temp,'upper','interval',8,1e-3);
-       infi(i) = infi(i) + supportFunc_(S,-temp,'upper','interval',8,1e-3);
+       unitDir = unitvector(i,n);
+       sup(i) = sup(i) - supportFunc_(S,unitDir,'upper','interval',8,1e-3);
+       infi(i) = infi(i) + supportFunc_(S,-unitDir,'upper','interval',8,1e-3);
     end
     
     % construct resulting interval

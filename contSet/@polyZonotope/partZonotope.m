@@ -83,16 +83,16 @@ for i=2:length(indexE)
     [eMp_i,Gi,ci] = priv_removeZeroExponents(eMp_i,Gi);
     if sum(mod(e_vi,2))==0
         % only even exponents
-        pZtmp = polyZonotope(1/2*ci,1/2*Gi,zeros(nx,0),eMp_i,idp);
-        pZ_cp = exactPlus(pZ_cp,pZtmp);
+        pZevenShift = polyZonotope(1/2*ci,1/2*Gi,zeros(nx,0),eMp_i,idp);
+        pZ_cp = exactPlus(pZ_cp,pZevenShift);
         ci = 1/2*ci;
         Gi = 1/2*Gi;
     end
     
-    tmp = polyZonotope(zeros(nx,1),[ci,Gi],zeros(nx,0),...
+    pZgen = polyZonotope(zeros(nx,1),[ci,Gi],zeros(nx,0),...
                 [zeros(np,1),eMp_i;ones(1,1+size(eMp_i,2))],[idp;ido(i-1)]);
     % add generator (center added at the end)
-    PZ = exactPlus(PZ,tmp);
+    PZ = exactPlus(PZ,pZgen);
     % check if e_vi corresponds only to constant-in-p generators
     if isempty(eMp_i)
         ind_constGen(i) = true;

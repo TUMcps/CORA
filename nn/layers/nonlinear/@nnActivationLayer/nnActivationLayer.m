@@ -44,6 +44,8 @@ properties
     f                       % function
     df                      % function derivative
 
+    monotonicity = []; % numeric, n-times monotonic (f and its n-1 derivatives)
+
     % adaptive refinement
 
     order = 1               % order of approximation polynomial
@@ -147,8 +149,8 @@ methods (Access = {?nnLayer, ?neuralNetwork})
     end
     
     % conZonotope
-    [c, G, C, d, l, u] = evaluateConZonotope(obj, c, G, C, d, l, u, options)
-    function [c, G, C, d, l, u] = evaluateConZonotopeNeuron(obj, c, G, C, d, l, u, j, options)
+    [c, G, C, d, l, u] = evaluateConZonotope(obj, c, G, C, d, l, u, optionsLP, options)
+    function [c, G, C, d, l, u] = evaluateConZonotopeNeuron(obj, c, G, C, d, l, u, j, optionsLP, options)
         throw(CORAerror('CORA:nnLayerNotSupported', obj, 'conZonotope'))
     end
 
@@ -193,8 +195,7 @@ methods
         % bound approximation error according to [1, Sec. 3.2]
 
         % compute the difference between activation function and quad. fit
-        [df_l,df_u] = obj.getDerBounds(l, u);
-        [diffl,diffu] = nnHelper.minMaxDiffOrder(coeffs, l, u, obj.f, df_l,df_u);
+        [diffl,diffu] = nnHelper.minMaxDiffOrder(obj, coeffs, l, u);
         
         % change polynomial s.t. lower and upper error are equal
         diffc = (diffl+diffu)/2;

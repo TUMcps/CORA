@@ -48,14 +48,18 @@ for i=1:nrTests
     V_ = vertices(project(I,projDims));
 
     % compute projected vertices
-    V_proj = projVertices(I,projDims);
+    V_proj1 = projVertices(I,projDims,'angle');
+    V_proj2 = projVertices(I,projDims,'supportFunc');
 
     % has to have 4 vertices (all dimensions have non-zero extension)
-    assertLoop(size(V_proj,2) == 4,i)
+    assertLoop(size(V_proj1,2) == 4,i)
+    assertLoop(size(V_proj2,2) == 4,i)
 
     % check vertices
-    assertLoop(compareMatrices(V_proj,V(projDims,:),1e-14,'subset'),i)
-    assertLoop(compareMatrices(V_,V_proj,1e-14),i)
+    assertLoop(compareMatrices(V_proj1,V(projDims,:),1e-14,'subset'),i)
+    assertLoop(compareMatrices(V_,V_proj1,1e-14),i)
+    assertLoop(compareMatrices(V_proj2,V(projDims,:),1e-14,'subset'),i)
+    assertLoop(compareMatrices(V_,V_proj2,1e-14),i)
 
 end
 

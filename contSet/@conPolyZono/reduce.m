@@ -168,8 +168,8 @@ function pZ = aux_removeIndepGens(pZ)
     if isempty(pZ.id)
         id = (1:size(pZ.GI,2))';
     else
-        temp = max(pZ.id);
-        id = [pZ.id; (temp+1:temp+size(pZ.GI,2))'];
+        maxId = max(pZ.id);
+        id = [pZ.id; (maxId+1:maxId+size(pZ.GI,2))'];
     end
     
     pZ = polyZonotope(pZ.c,G,[],E,id);

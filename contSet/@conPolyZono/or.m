@@ -99,11 +99,11 @@ b = [1;b_;0.5*cPZ.b;0.5*S.b];
 % check exponent matrices of constraints
 if ~isempty(cPZ.EC)
     if ~isempty(S.EC)
-        temp = blkdiag(cPZ.EC,S.EC);
-        E1 = [zeros(2,size(temp,2));temp];
+        blkEC = blkdiag(cPZ.EC,S.EC);
+        E1 = [zeros(2,size(blkEC,2));blkEC];
     else
-        temp = size(cPZ.EC,2);
-        E1 = [zeros(2,temp);cPZ.EC;zeros(p2,temp)];
+        nColsEC1 = size(cPZ.EC,2);
+        E1 = [zeros(2,nColsEC1);cPZ.EC;zeros(p2,nColsEC1)];
     end
 else
     % cPZ.EC is not empty
@@ -113,19 +113,16 @@ else
         E1 = [];
     end
 end
-E2 = zeros(p,1);
-E2(1,1) = 1;
+E2 = unitvector(1,p);
 EC = [[1;1;zeros(p1+p2,1)],Etemp,E1,E2];
 
 % construct the overall state matrices
 c = (cPZ.c + S.c)/2;     
 G = [(cPZ.c - S.c)/2, zeros(length(c),1), cPZ.G, S.G];
 
-temp1 = zeros(p,1);
-temp1(1) = 1;
+unitVec1 = unitvector(1,p);
 
-temp2 = zeros(p,1);
-temp2(2) = 1;
+unitVec2 = unitvector(2,p);
 
 if ~isempty(cPZ.E)
     n = size(cPZ.E,2);
@@ -141,7 +138,7 @@ else
     E2_ = []; 
 end
 
-E = [temp1, temp2, E1_, E2_];
+E = [unitVec1, unitVec2, E1_, E2_];
 
 % construct new independent generators
 % compute independent part of the resulting set
@@ -174,30 +171,30 @@ end
 function [A,b,EC] = aux_conMatrix(p1,p2)
 
     % exponent matrix
-    temp1 = ones(1,p1);
-    temp2 = ones(1,p2);
+    ones1 = ones(1,p1);
+    ones2 = ones(1,p2);
     R_ = zeros(p1,p2);
-    
+
     R = [];
-    
+
     for i = 1:p1
-       temp = R_;
-       temp(i,:) = 2*temp2;
-       R = [R, [temp;2*eye(p2)]];
+       Rblock = R_;
+       Rblock(i,:) = 2*ones2;
+       R = [R, [Rblock;2*eye(p2)]];
     end
+
+    expBase = [[1 0 0*ones1 ones1 0*ones2 ones2]; ...
+            [0 1 0*ones1 0*ones1 0*ones2 0*ones2];
+            [0*ones1' 0*ones1' 2*eye(p1) 2*eye(p1) zeros(p1,2*p2)]; ...
+            [0*ones2' 0*ones2' zeros(p2,2*p1) 2*eye(p2) 2*eye(p2)]];
     
-    temp = [[1 0 0*temp1 temp1 0*temp2 temp2]; ...
-            [0 1 0*temp1 0*temp1 0*temp2 0*temp2];
-            [0*temp1' 0*temp1' 2*eye(p1) 2*eye(p1) zeros(p1,2*p2)]; ...
-            [0*temp2' 0*temp2' zeros(p2,2*p1) 2*eye(p2) 2*eye(p2)]];
-    
-    EC = [temp, ...
+    EC = [expBase, ...
               [zeros(2,size(R,2));R], ...
               [ones(1,size(R,2));zeros(1,size(R,2));R]];
           
     % constraint matrix
-    A = [1, -1, 0.5/p1 * temp1, -0.5/p1 * temp1, -0.5/p2 * temp2, ...
-         -0.5/p2 * temp2, -0.25/(p1*p2) * ones(1,size(R,2)), ...
+    A = [1, -1, 0.5/p1 * ones1, -0.5/p1 * ones1, -0.5/p2 * ones2, ...
+         -0.5/p2 * ones2, -0.25/(p1*p2) * ones(1,size(R,2)), ...
          0.25/(p1*p2) * ones(1,size(R,2))];
      
     % offset vector

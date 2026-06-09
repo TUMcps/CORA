@@ -14,7 +14,7 @@ function res = enlargeAxis(factor)
 
 % Authors:       Tobias Ladner
 % Written:       09-August-2023
-% Last update:   ---
+% Last update:   04-December-2025 (TL, 3d enlargement)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -27,14 +27,16 @@ end
 % get axis limits
 xLim = xlim();
 yLim = ylim();
+zLim = zlim();
 
 % enlarge viewbox
-I = interval([xLim(1);yLim(1)],[xLim(2);yLim(2)]);
+I = interval([xLim(1);yLim(1);zLim(1)],[xLim(2);yLim(2);zLim(2)]);
 I = enlarge(I,factor);
 
 % set axis
 xlim([I.inf(1) I.sup(1)])
 ylim([I.inf(2) I.sup(2)])
+zlim([I.inf(3) I.sup(3)])
 
 
 end

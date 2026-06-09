@@ -111,24 +111,24 @@ for i=1:length(outputs)
     end
 
     % output matrix C
-    temp = subs(outputEq,sym_input,zeros(length(inputs),1));
+    outputNoInput = subs(outputEq,sym_input,zeros(length(inputs),1));
     for j=1:length(states)
         % substitute 1 for j-th state and 0 for all other states to
-        % determine coefficient in C matrix 
-        C(i,j) = double(subs(temp,sym_state,Ix(:,j)));
+        % determine coefficient in C matrix
+        C(i,j) = double(subs(outputNoInput,sym_state,Ix(:,j)));
     end
 
-    temp = subs(outputEq,sym_state,zeros(length(states),1));
+    outputNoState = subs(outputEq,sym_state,zeros(length(states),1));
     % feedthrough matrix D
     for j=1:length(inputs)
         % substitute 1 for j-th state and 0 for all other states to
         % determine coefficient in C matrix
-        D(i,j) = double(subs(temp,sym_input,Iu(:,j)));
+        D(i,j) = double(subs(outputNoState,sym_input,Iu(:,j)));
     end
 
     % constant offset k: all that remains
-    temp = subs(outputEq,sym_state,zeros(length(states),1));
-    k(i) = double(subs(temp,sym_input,zeros(length(inputs),1)));
+    outputNoState = subs(outputEq,sym_state,zeros(length(states),1));
+    k(i) = double(subs(outputNoState,sym_input,zeros(length(inputs),1)));
 
 end
 

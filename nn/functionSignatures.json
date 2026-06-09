@@ -61,6 +61,22 @@
      ]
   },
 
+  "neuralNetwork.generateFromString":
+  {
+     "inputs":
+     [
+        {"name":"layersstring", "kind":"required", "type":["char", "string"],"purpose":"string where each line specifies a layer type"},
+        {"name":"inSz", "kind":"required", "type":["numeric"],"purpose":"array specifying the size of an input image"},
+        {"name":"nK", "kind":"required", "type":["numeric"],"purpose":"number of output dimensions"},
+        {"name":"actfun", "kind":"namevalue", "type":["char", "choices={'relu', 'sigmoid', 'tanh'}"],"purpose":"activation function"},
+        {"name":"batchnorm", "kind":"namevalue", "type":["logical"],"purpose":"add a batch norm before each activation function"},
+        {"name":"verbose", "kind":"namevalue", "type":["logical"],"purpose":"verbose output"}
+     ],
+     "outputs": [
+         {"name":"nn", "type":"neuralNetwork"}
+     ]
+  },
+
   "neuralNetwork.generateRandom":
   {
      "inputs":

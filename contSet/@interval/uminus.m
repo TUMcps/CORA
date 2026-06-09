@@ -28,10 +28,10 @@ function I = uminus(I)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % store value
-temp = I.inf;
+origInf = I.inf;
 
 % rewrite infimum and supremum
 I.inf = -I.sup;
-I.sup = -temp;
+I.sup = -origInf;
 
 % ------------------------------ END OF CODE ------------------------------

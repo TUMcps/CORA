@@ -128,10 +128,10 @@ c = 1;
 for i=1:length(funcs)
     firstfilesep = strfind(funcs{i},delim);
     firstfilesep = firstfilesep(1);
-    temp = funcs{i}(1:firstfilesep-1); 
-    if ~strcmp(currsuperfolder,temp)
+    superfolderName = funcs{i}(1:firstfilesep-1);
+    if ~strcmp(currsuperfolder,superfolderName)
         endIdx(c,1) = i-1; c = c+1; startIdx(c,1) = i;
-        superfolders{c,1} = temp;
+        superfolders{c,1} = superfolderName;
         currsuperfolder = superfolders{c};
     end
 end
@@ -146,12 +146,12 @@ for i=1:length(superfolders)
         idxatsign = idxatsign(1);
         idxfileseps = strfind(funcs{j},delim);
         nextfilesep = idxfileseps(find(idxfileseps > idxatsign,1,'first'));
-        temp = funcs{j}(idxatsign+1:nextfilesep-1);
-        if ~strcmp(currclass,temp)
+        className = funcs{j}(idxatsign+1:nextfilesep-1);
+        if ~strcmp(currclass,className)
             if c > 0; nrfuncperclass{i,1}(c,1) = nrfunc; end
             c = c+1;
-            classes{i,1}{c} = temp;
-            currclass = temp;
+            classes{i,1}{c} = className;
+            currclass = className;
             nrfunc = 0;
         end
         nrfunc = nrfunc + 1;
@@ -244,8 +244,8 @@ function funclist = aux_functionList(funcs)
 funclist = {};
 for i=1:length(funcs.files)
     if isstruct(funcs.files{i}) % directory / class
-        temp = aux_functionList(funcs.files{i});
-        funclist = [funclist; temp];
+        funcSublist = aux_functionList(funcs.files{i});
+        funclist = [funclist; funcSublist];
     else % file
         funclist{end+1,1} = [funcs.dir filesep funcs.files{i}];
     end
@@ -284,7 +284,7 @@ else
     testname = ['test_' funcname];
 end
 
-temp = {};
+matchingTests = {};
 % go through list to search for all matching names
 for i=1:length(testlist)
     % either names are identical (shortest version), cases like
@@ -292,11 +292,11 @@ for i=1:length(testlist)
     % or there is additional text (separated by a '_') as in
     %       test_linearSys_reach_01
     if strcmp(testlist{i},testname) || contains(testlist{i},[testname '_'])
-        temp = [temp testlist{i}];
+        matchingTests = [matchingTests testlist{i}];
     end
 end
-if ~isempty(temp)
-    unittestname = temp;
+if ~isempty(matchingTests)
+    unittestname = matchingTests;
 end
 
 end

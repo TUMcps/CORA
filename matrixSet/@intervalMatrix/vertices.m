@@ -36,7 +36,7 @@ V = unique(V', 'rows')'; %eliminate vectors that occur multiple times
 %convert vertices to matrix vertices
 matV=cell(length(V(1,:)),1);
 for i=1:length(V(1,:))
-    matV{i}=vec2mat(V(:,i));
+    matV{i}= reshape(V(:,i),dimIntMat);
 end
 
 % ------------------------------ END OF CODE ------------------------------

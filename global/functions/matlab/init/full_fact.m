@@ -58,19 +58,19 @@ des_mat=zeros(0,1);
 % Loop for full factorial points
 for i=1:nargin
     if i~=1 && i~=nargin
-        temp=zeros(0,1);
+        designCol=zeros(0,1);
         for j=1:prod(levels(1:i-1))
-            temp1=repmat(varargin{i},prod(levels(i+1:end)),1);
-            temp1=sortrows(temp1);
-            temp=[temp; temp1];
+            designCol1=repmat(varargin{i},prod(levels(i+1:end)),1);
+            designCol1=sortrows(designCol1);
+            designCol=[designCol; designCol1];
         end
     elseif i==nargin
-        temp=repmat(varargin{i},total/levels(i),1);
+        designCol=repmat(varargin{i},total/levels(i),1);
     else
-       temp=repmat(varargin{i},total/levels(i),1);
-       temp=sortrows(temp);
+       designCol=repmat(varargin{i},total/levels(i),1);
+       designCol=sortrows(designCol);
     end
-    des_mat=[des_mat temp];
+    des_mat=[des_mat designCol];
 end
 
 % ------------------------------ END OF CODE ------------------------------

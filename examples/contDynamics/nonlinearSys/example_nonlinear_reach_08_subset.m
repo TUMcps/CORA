@@ -122,11 +122,11 @@ x = sym('x',[size(Rproj.E,1),1]);
 objSym = -b;
 
 for i = 1:length(Rproj.G)
-   temp = x(1)^Rproj.E(1,i);
+   monomial = x(1)^Rproj.E(1,i);
    for j = 2:length(x)
-       temp = temp*x(j)^Rproj.E(j,i);
+       monomial = monomial*x(j)^Rproj.E(j,i);
    end
-   objSym = objSym + Rproj.G(i)*temp;
+   objSym = objSym + Rproj.G(i)*monomial;
 end
 
 objFun = matlabFunction(-objSym,'Vars',{x});

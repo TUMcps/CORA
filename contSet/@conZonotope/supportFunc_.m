@@ -57,97 +57,28 @@ G_proj = dir' * cZ.G;
 % check if one of the special cases are applicable
 [fval,x,ksi] = aux_trySpecialCases(G_proj,cZ.A,cZ.b);
 
-empty = false;
 if isempty(fval)
     % linear program:
     % max_{x \in cZ} dir' * x
     % s.t. x = c + G*ksi
     %      A * ksi = b
-    [ksi,fval,val,empty] = aux_evaluateLP(G_proj,cZ.A,cZ.b,type);
+    nrGen = numel(G_proj);
+    [fval,ksi] = supportFunc_linprog(G_proj', [], [], cZ.A, cZ.b, ...
+        -ones(nrGen,1), ones(nrGen,1), type);
 end
 
-% unless emptiness determined, calculate bound by adding the zonotope center
-if ~empty
-    if strcmp(type,'range')
-        temp = dir' * cZ.c + fval;
-        val = interval(temp(1),temp(2));
-    elseif any(strcmp(type,{'upper','lower'}))
-        val = dir' * cZ.c + fval;
-    end
-    
-    % calculate support vector
-    if nargout >= 2
-        x = cZ.c + cZ.G*ksi;
-    end
+% calculate bound by adding the zonotope center
+val = dir' * cZ.c + fval;
+
+% calculate support vector
+if nargout >= 2 && ~isempty(ksi)
+    x = cZ.c + cZ.G*ksi;
 end
 
 end
 
 
 % Auxiliary functions -----------------------------------------------------
-
-function [ksi,fval,val,empty] = aux_evaluateLP(G_proj,A,b,type)
-
-% number of generators -> number of optimization variables
-nrGen = numel(G_proj);
-
-problem.Aineq = [];
-problem.bineq = [];
-problem.Aeq = A;
-problem.beq = b;
-% ksi in [-1, 1]
-problem.lb = -ones(nrGen,1);
-problem.ub = ones(nrGen,1);
-
-% for easier concatenation if type == 'range'
-fval = []; ksi = []; val = []; empty = false;
-
-% lower bound
-if any(strcmp(type,{'lower','range'}))
-    problem.f = G_proj';
-    [ksi,fval,exitflag] = CORAlinprog(problem);
-
-    if exitflag == -2
-        % primal infeasible -> empty set
-        empty = true;
-        if strcmp(type,'range')
-            val = interval.empty(1);
-        elseif strcmp(type,'lower')
-            val = Inf;
-        end
-        return
-    elseif exitflag <= -3
-        % should not be unbounded, or other solver issue...
-        throw(CORAerror('CORA:solverIssue'));
-    end
-end
-
-% upper bound: since linprog always computes a minimization, we
-% need to multiply with -1 in some parts...
-if any(strcmp(type,{'upper','range'}))
-    problem.f = -G_proj';
-    [ksi_,fval_,exitflag] = CORAlinprog(problem);
-
-    if exitflag == -2
-        % primal infeasible -> empty set
-        empty = true;
-        if strcmp(type,'range')
-            val = interval.empty(1);
-        elseif strcmp(type,'upper')
-            val = -Inf;
-        end
-        return
-    elseif exitflag == 1
-        % combine factors
-        ksi = [ksi, ksi_];
-        fval = [fval, -fval_];
-    elseif exitflag <= -3
-        % should not be unbounded, or other solver issue...
-        throw(CORAerror('CORA:solverIssue'));
-    end
-end
-
-end
 
 function [val,x,ksi] = aux_supportFunc_unconstrained(cZ,dir,type)
 

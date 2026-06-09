@@ -121,7 +121,9 @@ function aux_runStartup(PAPER_TITLE,VENUE_NAME)
     end
     fprintf('Matlab: %s\n', version)
     fprintf('System: %s\n', computer)
-    fprintf('GPU available: %i\n', canUseGPU)
+    if ~isempty(which('canUseGPU'))
+        fprintf('GPU available: %i\n', canUseGPU)
+    end
     disp(' ')
     aux_seperateLine()
     disp(' ')

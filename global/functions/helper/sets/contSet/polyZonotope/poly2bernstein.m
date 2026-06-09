@@ -229,9 +229,9 @@ function A = aux_transposeMatrix(A,r,len,l,n)
             A = aux_transpose_(A);
         else
             len_ = (n+1)^(r-1);
-            temp = mat2cell(A,n+1,len_ * ones(1,len/len_));
-            temp = cellfun(@aux_transpose_,temp,'UniformOutput',false);
-            A = [temp{:}];
+            blocks = mat2cell(A,n+1,len_ * ones(1,len/len_));
+            blocks = cellfun(@aux_transpose_,blocks,'UniformOutput',false);
+            A = [blocks{:}];
         end
     end
 end
@@ -241,8 +241,8 @@ function A = aux_transpose_(A)
     n = size(A,1);
     p = size(A,2)/n;
     
-    temp = reshape(permute(reshape(A,[n,p,n]),[2,1,3]),[1,n*p,n]);
-    A = permute(temp,[3,2,1]);
+    permuted = reshape(permute(reshape(A,[n,p,n]),[2,1,3]),[1,n*p,n]);
+    A = permute(permuted,[3,2,1]);
 end
 
 % ------------------------------ END OF CODE ------------------------------

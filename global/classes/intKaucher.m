@@ -191,13 +191,13 @@ methods
             % matrix multiplication
             for i = 1:size(factor1,1)
                 for j = 1:size(factor2,2)
-                    temp = intKaucher(0,0);
+                    dotProduct = intKaucher(0,0);
                     for k = 1:size(factor1,2)
-                        temp = temp + intKaucher(inf1(i,k),sup1(i,k)).* ...
+                        dotProduct = dotProduct + intKaucher(inf1(i,k),sup1(i,k)).* ...
                                       intKaucher(inf2(k,j),sup2(k,j));
                     end
-                    infRes(i,j) = temp.inf;
-                    supRes(i,j) = temp.sup;
+                    infRes(i,j) = dotProduct.inf;
+                    supRes(i,j) = dotProduct.sup;
                 end
             end
             

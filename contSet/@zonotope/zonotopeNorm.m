@@ -12,7 +12,7 @@ function [res, minimizer] = zonotopeNorm(Z,p)
 % Outputs:
 %    res - zonotope-norm of the point p
 %    minimizer - (optional) returns a solution x s.t. Gx = p and for
-%                 which norm(x,inf) = zonotopeNorm(Z,p)
+%        which norm(x,inf) = zonotopeNorm(Z,p); requires Z to be 0-centered
 %
 % Example:
 %    c = [0;0];
@@ -80,10 +80,11 @@ end
 [n,numGen] = size(Z.G);
 
 % Set up objective and constraints of the linear program as defined in
-% [2, Equation (8)]
+% [1, Equation (8)]
 problem.f = [1; zeros(numGen,1)];
 
 problem.Aeq = [zeros(n,1), Z.G];
+% while in [1, (8)], it says p-c here, it would not be a valid norm (Def. 4)
 problem.beq = p;
 
 problem.Aineq = [-ones(numGen,1),  speye(numGen); ...
@@ -109,7 +110,11 @@ end
 % all good, compute minimizer
     
 % remove first entry from minimizer as obtained by lp
-minimizer = minimizer_p(2:end);
-
+if nargout == 2
+    if ~all(withinTol(Z.c, 0))
+        CORAwarning("CORA:contSet","Returned minimizer might not be valid as the given zonotope is not zero-centered.")
+    end    
+    minimizer = minimizer_p(2:end);
+end
 
 % ------------------------------ END OF CODE ------------------------------

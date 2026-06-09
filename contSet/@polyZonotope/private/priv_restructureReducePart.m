@@ -54,17 +54,17 @@ if p/n + 1 < order
 else
     
     % half the generator length for exponents that are all even
-    Gtemp = pZ.G;         
-    temp = prod(ones(size(pZ.E))-mod(pZ.E,2),1);
-    ind = find(temp == 1);
-    Gtemp(:,ind) = 0.5 * Gtemp(:,ind);
+    Gscaled = pZ.G;
+    isAllEven = prod(ones(size(pZ.E))-mod(pZ.E,2),1);
+    ind = find(isAllEven == 1);
+    Gscaled(:,ind) = 0.5 * Gscaled(:,ind);
     
     % compute cost (= length of generators) of removing each dependent
     % factor
     cost = zeros(p,1);
     
     for i = 1:p
-       cost(i) = sum(sum(Gtemp(:,pZ.E(i,:) > 0).^2,1));
+       cost(i) = sum(sum(Gscaled(:,pZ.E(i,:) > 0).^2,1));
     end
     
     % compare with cost (= length of genertors) of independent
@@ -112,8 +112,8 @@ else
         zono_ = reduce(zono,method,1);
         
         % construct resulting zonotope
-        temp = pmax - length(index);
-        id = [pZ.id(index); (max(pZ.id)+1:max(pZ.id) + temp)'];
+        nNewFactors = pmax - length(index);
+        id = [pZ.id(index); (max(pZ.id)+1:max(pZ.id) + nNewFactors)'];
         
         pZ = polyZonotope(zono_.c, pZ.G(:,ind_), zono_.G, pZ.E(:,ind_),id);
     end

@@ -45,9 +45,9 @@ function res = linComb(cPZ,S)
 
 % determine conPolyZono object
 if ~isa(cPZ,'conPolyZono')
-    temp = cPZ;
+    swapVar = cPZ;
     cPZ = S;
-    S = temp;
+    S = swapVar;
 end
 
 % convert other set representations to constrained polynomial zonotope
@@ -83,14 +83,14 @@ res.b = [cPZ.b;S.b];
 
 if isempty(cPZ.A)
     if ~isempty(S.A)
-        temp = zeros(length(cPZ.id),size(S.EC,2));
-        EC = [temp;S.EC];
+        zeroPad1 = zeros(length(cPZ.id),size(S.EC,2));
+        EC = [zeroPad1;S.EC];
         res.EC = [EC; zeros(1,size(res.A,2))];
     end
 else
     if isempty(S.A)
-        temp = zeros(length(S.id),size(cPZ.EC,2));
-        EC = [cPZ.EC;temp];
+        zeroPad2 = zeros(length(S.id),size(cPZ.EC,2));
+        EC = [cPZ.EC;zeroPad2];
         res.EC = [EC; zeros(1,size(res.A,2))];
     else
         EC = blkdiag(cPZ.EC,S.EC);

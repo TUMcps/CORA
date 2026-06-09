@@ -35,23 +35,23 @@ path2solver = {};
 switch lower(name)
     case 'mosek'
         % path to solver
-        temp = which('mosekdiag');
-        while ~isempty(temp)
+        solverPath = which('mosekdiag');
+        while ~isempty(solverPath)
             % mosekdiag can be in ../toolbox/r2017a and ../toolbox/r2017aom
             try
                 % directory
-                temp = fileparts(temp);
+                solverPath = fileparts(solverPath);
                 % remove from path
-                rmpath(temp);
+                rmpath(solverPath);
                 res = true;
                 % add to list of removed folders
-                path2solver{end+1,1} = temp;
+                path2solver{end+1,1} = solverPath;
             catch ME
                 % some issue...
                 res = false; return
             end
             % check if another instance of mosekdiag is on the path
-            temp = which('mosekdiag');
+            solverPath = which('mosekdiag');
         end
 
     otherwise

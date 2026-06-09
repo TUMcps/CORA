@@ -258,8 +258,8 @@ elseif strcmp(options.alg,'poly') && options.tensorOrder == 3
     VerrorDyn = error_secondOrder_dyn + error_thirdOrder_dyn;
     VerrorDyn = reduce(VerrorDyn,'adaptive',sqrt(options.redFactor));
 
-    temp = VerrorDyn + zonotope(VerrorStat);
-    err = abs(center(temp)) + sum(abs(generators(temp)),2);
+    Zerr = VerrorDyn + zonotope(VerrorStat);
+    err = abs(center(Zerr)) + sum(abs(generators(Zerr)),2);
     % same as: err = supremum(abs(interval(VerrorDyn) + interval(VerrorStat)))
     
 % OTHER COMBINATIONS OF ALG/TENSORORDER NOT IMPLEMENTED YET
@@ -292,9 +292,9 @@ end
 % save only what is precisely needed
 if options.isHessianConst
     for i=1:length(H)
-        temp = abs(H{i});
+        absHessian = abs(H{i});
         options.hessianConst{i} = ...
-            max(infimum(temp),supremum(temp));
+            max(infimum(absHessian),supremum(absHessian));
     end
 end
 options.hessianCheck = true;

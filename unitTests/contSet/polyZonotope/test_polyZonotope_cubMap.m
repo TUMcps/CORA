@@ -30,18 +30,18 @@ function res = test_polyZonotope_cubMap
 pZ = polyZonotope([0;1],[1 -1;2 0],[],eye(2));
 
 % define third-order tensor
-temp = [1 -1; 0 2];
-T{1,1} = temp;
-T{1,2} = temp;
-T{2,1} = temp;
-T{2,2} = temp;
+tensorSlice = [1 -1; 0 2];
+T{1,1} = tensorSlice;
+T{1,2} = tensorSlice;
+T{2,1} = tensorSlice;
+T{2,2} = tensorSlice;
 
 % compute cubic map
 pZres = cubMap(pZ,T);
 
 % define ground truth
-temp = [2 13 -1 28 -4 21 -7 3 -1];
-Z_ = [temp;temp];
+truthRow = [2 13 -1 28 -4 21 -7 3 -1];
+Z_ = [truthRow;truthRow];
 c_ = Z_(:,1);
 G_ = Z_(:,2:end);
 E_ = [1 0 2 1 3 2 1 0;...

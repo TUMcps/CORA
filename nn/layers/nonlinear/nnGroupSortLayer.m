@@ -46,7 +46,7 @@ methods
     function df_i = getDf(obj, i)
         % The activation function is not elementwise; thus, not well
         % defined.
-        df_i = 1;
+        df_i = @(x) 1;
     end
 
     function [df_l,df_u] = getDerBounds(obj, l, u)
@@ -82,7 +82,7 @@ methods (Access = {?nnLayer, ?neuralNetwork})
         % Trim the padded dimensions.
         r = r(1:n,:);
         
-        if options.nn.train.backprop
+        if isfield(options,'nn') && options.nn.train.backprop
             % Compute permutation indices.
             idx_ = sub2ind([obj.groupSize numGroups_ bSz],idx_, ...
                 repelem(1:numGroups_,obj.groupSize,1,bSz), ...
@@ -102,6 +102,9 @@ methods (Access = {?nnLayer, ?neuralNetwork})
         end
     end
 
+    function [c, G] = evaluateZonotopeBatch(obj, c, G, options)
+        throw(CORAerror('CORA:nnLayerNotSupported', obj, 'evaluate/zonotope (batch)'))
+    end
 
 % backprop ----------------------------------------------------------------
 

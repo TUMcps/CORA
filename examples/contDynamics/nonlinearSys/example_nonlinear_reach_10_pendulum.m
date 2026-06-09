@@ -96,8 +96,8 @@ totalSets = length(Rphasespace);
 xyInt = cell(totalSets,1);
 % reachable sets
 for i=1:length(Rphasespace)
-    temp = interval(Rphasespace{i});
-    angleminmax = temp(1);
+    I = interval(Rphasespace{i});
+    angleminmax = I(1);
     xyInt{i,1} = [P.L*sin(angleminmax);-P.L*cos(angleminmax)];
 end
 % simulation

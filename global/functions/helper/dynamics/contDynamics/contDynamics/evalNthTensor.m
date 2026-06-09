@@ -38,18 +38,18 @@ function res = evalNthTensor(T,x,order)
         
         % loop over all system dimensions
         for i = 1:length(T)
-            temp = T{i};
-            
+            Ti = T{i};
+
             % first-order is a special case, since the derivative there is
             % stored as a matrix instead of a cell array
             if order == 1
-                res(i) = temp * x;
+                res(i) = Ti * x;
             else
                 % calculate the value of the term with a recursive function
-                res(i) = x(1) * aux_evalQuadratic(temp{1},x);
+                res(i) = x(1) * aux_evalQuadratic(Ti{1},x);
 
                 for j = 2:length(x)
-                    res(i) = res(i) + x(j) * aux_evalQuadratic(temp{j},x);
+                    res(i) = res(i) + x(j) * aux_evalQuadratic(Ti{j},x);
                 end
             end
         end  
@@ -83,9 +83,9 @@ function res = aux_evalQuadratic(T,x)
         for i = 1:length(x)
            H(i,i) = aux_evalQuadratic(T{i,i},x);
            for j = i+1:length(x)
-               temp = aux_evalQuadratic(T{i,j},x);
-               H(i,j) = temp;
-               H(j,i) = temp;
+               offDiagVal = aux_evalQuadratic(T{i,j},x);
+               H(i,j) = offDiagVal;
+               H(j,i) = offDiagVal;
            end
         end
        

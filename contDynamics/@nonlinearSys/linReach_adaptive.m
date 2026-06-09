@@ -303,9 +303,9 @@ while true
             % to avoid numerical issues (i.e., lower orders jumping to
             % "impossible" values for varphi_i due to other effects), take
             % only dimensions with lowest order
-            temp = abstrerr(options.orders == options.minorder) ./ ...
+            errRatio = abstrerr(options.orders == options.minorder) ./ ...
                 abstrerr_h(options.orders == options.minorder);
-            varphi = max( temp(~isnan(temp)) );
+            varphi = max( errRatio(~isnan(errRatio)) );
             
             % check condition for varphi
             if varphi < options.zetaphi(options.minorder+1)
@@ -354,9 +354,9 @@ while true
         % ... run using tuned time step size (or scaled time step size
         % for varphi if timeStepEqualHorizon is true, or last step)
         if timeStepequalHorizon
-            temp = abstrerr(options.orders == options.minorder) ./ ...
+            errRatio = abstrerr(options.orders == options.minorder) ./ ...
                 abstrerr_h(options.orders == options.minorder);
-            options.varphi(options.i,1) = max( temp(~isnan(temp)) );
+            options.varphi(options.i,1) = max( errRatio(~isnan(errRatio)) );
         elseif ~lastStep
             options.varphi(options.i,1) = aux_varphiest(finitehorizon,...
                 options.timeStep,Rerror_h,Rerror,options.decrFactor,...

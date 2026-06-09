@@ -102,6 +102,13 @@ switch field % TODO sort and categorize
         checks = aux_getChecksOptions_fracInpVert(checks,sys,func,params,options);
     case 'fracVert'
         checks = aux_getChecksOptions_fracVert(checks,sys,func,params,options);
+    case 'dims'
+        % falsify
+        checks = aux_getChecksOptions_dims(checks,sys,func,params,options);
+    case 'maxTime'
+        checks = aux_getChecksOptions_maxTime(checks,sys,func,params,options);
+    case 'dynamics'
+        checks = aux_getChecksOptions_dynamics(checks,sys,func,params,options);
         % guard
     case 'guardIntersect'
         checks = aux_getChecksOptions_guardIntersect(checks,sys,func,params,options);
@@ -462,7 +469,9 @@ function checks = aux_getChecksOptions_nrConstInp(checks,sys,func,params,options
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)mod(val,1)==0, 'integer');
     checks(end+1) = add2checks(@(val)ge(val,0), 'gezero');
-    checks(end+1) = add2checks(@(val)c_nrConstInp(val,sys,params,options), '');
+    if ~strcmp(func,'falsify')
+        checks(end+1) = add2checks(@(val)c_nrConstInp(val,sys,params,options), '');
+    end
 end
 
 % fracInpVert
@@ -477,6 +486,19 @@ function checks = aux_getChecksOptions_fracVert(checks,sys,func,params,options)
     checks(end+1) = add2checks(@isscalar, 'isscalar');
     checks(end+1) = add2checks(@isnumeric, 'isnumeric');
     checks(end+1) = add2checks(@(val)ge(val,0) && le(val,1), 'normalized');
+end
+
+% maxTime
+function checks = aux_getChecksOptions_maxTime(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@isscalar, 'isscalar');
+    checks(end+1) = add2checks(@isnumeric, 'isnumeric');
+    checks(end+1) = add2checks(@(val)ge(val,0), 'gezero');
+end
+
+% dynamics
+function checks = aux_getChecksOptions_dynamics(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@ischar, 'ischar');
+    checks(end+1) = add2checks(@(val)any(ismember(getMembers('dynamics'),val)), 'memberdynamics');
 end
 
 % vertSamp
@@ -495,6 +517,14 @@ end
 % R
 function checks = aux_getChecksOptions_R(checks,sys,func,params,options)
     checks(end+1) = add2checks(@(val)isa(val,'reachSet'), 'isareachSet');
+end
+
+% dims
+function checks = aux_getChecksOptions_dims(checks,sys,func,params,options)
+    checks(end+1) = add2checks(@isvector, 'isvector');
+    checks(end+1) = add2checks(@(val)all(ge(val,1)), 'geone');
+    checks(end+1) = add2checks(@(val)all(le(val,sys.nrOfOutputs)), 'eqsysdim');
+    checks(end+1) = add2checks(@(val)all(mod(val,1) == 0), 'integer');
 end
 
 % guardIntersect

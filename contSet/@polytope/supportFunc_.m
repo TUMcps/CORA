@@ -55,15 +55,7 @@ if P.isVRep.val
 end
 
 % compute support function and support vector using linear program
-if strcmp(type,'lower') || strcmp(type,'upper')
-    [val,x] = aux_solveLinProg(P,dir,type);
-elseif strcmp(type,'range')
-    [val_upper,x_upper] = aux_solveLinProg(P,dir,'upper');
-    [val_lower,x_lower] = aux_solveLinProg(P,dir,'lower');
-    % combine values
-    val = interval(val_lower,val_upper);
-    x = [x_lower x_upper];
-end
+[val,x] = aux_solveLinProg(P,dir,type);
 
 end
 

@@ -63,15 +63,15 @@ while true
     M = M + Apower_abs{eta} * deltat^(eta) / factorial(eta);
     
     % compute powers
-    temp = deltat^(eta+1) / factorial(eta+1) * Apower{eta};
-    ApowerV = temp * Vdyn;   
+    ApowerScaled = deltat^(eta+1) / factorial(eta+1) * Apower{eta};
+    ApowerV = ApowerScaled * Vdyn;   
     % compute sum
     AVsum = AVsum + ApowerV;
     
     % compute error set
     if isVstat
         % including static error
-        Asum = Asum + temp;
+        Asum = Asum + ApowerScaled;
     end
     
     RerrorInt_etanoF = RerrorInt_etanoF + sum(abs(generators(ApowerV)),2);

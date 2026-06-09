@@ -64,11 +64,11 @@ function int = optBnbAdv(obj)
     while true
 
        % get indices of the subdomains that contain the upper and the lower bounds 
-       temp = cell2mat(cellfun(@(x) supremum(x),bounds,'UniformOutput',false));
-       [valMax,indMax] = max(temp);
-       
-       temp = cell2mat(cellfun(@(x) infimum(x),bounds,'UniformOutput',false));
-       [valMin,indMin] = min(temp);
+       upperBounds = cell2mat(cellfun(@(x) supremum(x),bounds,'UniformOutput',false));
+       [valMax,indMax] = max(upperBounds);
+
+       lowerBounds = cell2mat(cellfun(@(x) infimum(x),bounds,'UniformOutput',false));
+       [valMin,indMin] = min(lowerBounds);
        
        % check for convergence 
        if abs(upperBound-valMax) <= 2*obj.eps && abs(lowerBound-valMin) <= 2*obj.eps
@@ -135,13 +135,13 @@ function [dom1,dom2,int1,int2] = aux_halveDomain(obj,dom,ind)
    infi = infimum(dom{ind});
    sup = supremum(dom{ind});
 
-   temp = sup;
-   temp(indCoord) = infi(indCoord) + radius(indCoord);
-   dom1 = interval(infi,temp);
+   upperSplit = sup;
+   upperSplit(indCoord) = infi(indCoord) + radius(indCoord);
+   dom1 = interval(infi,upperSplit);
 
-   temp = infi;
-   temp(indCoord) = sup(indCoord) - radius(indCoord);
-   dom2 = interval(temp,sup);
+   lowerSplit = infi;
+   lowerSplit(indCoord) = sup(indCoord) - radius(indCoord);
+   dom2 = interval(lowerSplit,sup);
 
    % re-expand the taylor models at the center of the halved
    % domains

@@ -118,8 +118,8 @@ function G = aux_extractGenerators(R)
                 G = [G,R{j}.Z{i}.G];
             end
         elseif isa(R{j},'polyZonotope')
-            temp = zonotope(R{j});
-            G = [G,temp.G];
+            zonoApprox = zonotope(R{j});
+            G = [G,zonoApprox.G];
         elseif isa(R{j},'zonotope') || isa(R{j},'conZonotope')
             G = [G,R{j}.G];
         else % ?

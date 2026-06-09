@@ -13,6 +13,7 @@ classdef CORAtable < ASCIItable
 %           Special column formats:
 %           - 'rownr', displays current row number
 %           - 'time', displays time since header was printed as HH:mm:ss
+%           - 'time-detailed', time since header was printed as HH:mm:ss.SSS
 %           - 'sum{%.3e & %.3e}', mean+std summary, '&' represents '+-' 
 %    varargin - name-value pairs
 %        <'ColumnWidths',colWidths> - numeric, column width

@@ -88,7 +88,7 @@ function [x,t,loc] = aux_simulateTimeVaryingInput(HA,params)
     
     % initialization
     steps = size(params.uLoc{1},2);
-    dt = params.tFinal/steps;
+    dt = (params.tFinal-params.tStart)/steps;
     uLoc = params.uLoc;
     params = rmfield(params,'uLoc');
     t = []; x = []; loc = [];
@@ -116,7 +116,7 @@ function [x,t,loc] = aux_simulateTimeVaryingInput(HA,params)
             xNew = [xNew; NaN(size(x,1)-size(xNew,1), size(xNew,2))];
         end
         x = [x xNew];
-        loc = [loc repmat(locNew, 1, length(tNew))];
+        loc = [loc locNew];
 
         % update simulation settings
         params.tStart = params.tFinal;

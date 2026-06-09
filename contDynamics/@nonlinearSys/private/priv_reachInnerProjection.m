@@ -287,9 +287,9 @@ function res = aux_picardLindeloefTaylm(fun,z0,t,varargin)
         
        % update solution
        z_ = z0;
-       temp = fun(z);
+       fVal = fun(z);
        for i = 1:n
-          z_(i) = z_(i) + t * temp(i); 
+          z_(i) = z_(i) + t * fVal(i);
        end
        
        zInt_ = interval(z_);
@@ -395,16 +395,16 @@ function res = aux_lieDerivative(fun,n,order)
     for i = 2:order
        
         % compute Lie-derivative
-        temp = sym(zeros(n,1));
+        lieDeriv = sym(zeros(n,1));
         J = jacobian(f,x);
-        
+
         for j = 1:n
-           temp = temp + J(:,j)*fun_(j); 
+           lieDeriv = lieDeriv + J(:,j)*fun_(j);
         end
-        
+
         % convert to function handle
-        res{i} = matlabFunction(temp,'Vars',{x});
-        f = temp;
+        res{i} = matlabFunction(lieDeriv,'Vars',{x});
+        f = lieDeriv;
     end
 end
 
@@ -420,8 +420,8 @@ function res = aux_lieDerivativeJacobian(der,n)
     for l = 1:length(der)
         
         % compute derivative
-        temp = der{l};
-        d = jacobian(temp(x));
+        derFun = der{l};
+        d = jacobian(derFun(x));
         derJac = sym(zeros(n,n));
         
         for i = 1:n

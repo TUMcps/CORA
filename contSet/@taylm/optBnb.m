@@ -48,8 +48,8 @@ function res = optBnb( obj )
     % Implementation of Alogrithm 1 from reference paper [1]
     % (standard version, without reexpansion)
 
-    tmp = length(obj.names_of_var);
-    dom = interval(-ones(1, tmp), ones(1, tmp));
+    nVars = length(obj.names_of_var);
+    dom = interval(-ones(1, nVars), ones(1, nVars));
     
     int = 0;
     % insert the initial interval into the polynomial 

@@ -57,11 +57,11 @@ for m = 1:length(testSuite)
     params.u = traj_m.u;
     % consider time step divider
     dim = size(traj_m.u,1);
-    tmp = [];
+    tiledU = [];
     for iStep = 1:options.timeStepDivider
-        tmp((1:dim) + (iStep-1)*dim, :) = params.u;
+        tiledU((1:dim) + (iStep-1)*dim, :) = params.u;
     end
-    params.u = reshape(tmp,dim,[]);
+    params.u = reshape(tiledU,dim,[]);
 
     %% compute reachable set
 

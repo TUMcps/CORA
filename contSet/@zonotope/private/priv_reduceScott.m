@@ -137,9 +137,9 @@ function [A,indPer,fullRank] = aux_rrefInfty(A)
           
           % bring the column with the pivot element to the front
           A(:,[i indC]) = A(:,[indC i]);
-          temp = indPer(i);
+          swapVal = indPer(i);
           indPer(i) = indPer(indC);
-          indPer(indC) = temp;
+          indPer(indC) = swapVal;
           
           % divide the pivot row by the pivot element
           Ai = A(i,:)/A(i,i);  

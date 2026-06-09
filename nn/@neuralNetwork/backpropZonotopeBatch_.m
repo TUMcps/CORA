@@ -30,8 +30,14 @@ function [gc,gG] = backpropZonotopeBatch_(nn,gc,gG,options,idxLayer,updateWeight
 for i = flip(idxLayer)
     layeri = nn.layers{i};
     % Retrieve stored input
-    c = layeri.backprop.store.inc;
-    G = layeri.backprop.store.inG;
+    if isfield(layeri.backprop.store,'inc') ...
+            && isfield(layeri.backprop.store,'inG')
+        c = layeri.backprop.store.inc;
+        G = layeri.backprop.store.inG;
+    else
+        c = [];
+        G = [];
+    end
     % Compute incoming gradient.
     [gc,gG] = layeri.backpropZonotopeBatch(c,G,gc,gG,options,updateWeights);
 end

@@ -45,7 +45,7 @@ b = 0;
 for i=1:length(obj.layers)
     layer = obj.layers{i};
 
-    if isa(layer, 'nnConv2DLayer')
+    if isa(layer, 'nnConv2DLayer') || isa(layer, 'nnConvTranspose2DLayer')
         layer = layer.convert2nnLinearLayer();
     end
 

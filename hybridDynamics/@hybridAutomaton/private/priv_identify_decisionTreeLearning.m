@@ -111,9 +111,9 @@ function node = priv_identify_decisionTreeLearning(data,options,varargin)
     polyLeft = poly & polytope(node.surface.Ae,node.surface.be);
     polyRight = poly & polytope(-node.surface.Ae,-node.surface.be);
     
-    tmp = node.surface.Ae * data.x - node.surface.be;
-    ind = find(tmp <= 0); dataLeft = aux_subsetStruct(data,ind);
-    ind = setdiff(1:length(tmp),ind); dataRight = aux_subsetStruct(data,ind);
+    surfaceDist = node.surface.Ae * data.x - node.surface.be;
+    ind = find(surfaceDist <= 0); dataLeft = aux_subsetStruct(data,ind);
+    ind = setdiff(1:length(surfaceDist),ind); dataRight = aux_subsetStruct(data,ind);
 
     options.depth = options.depth - 1;
 
@@ -240,12 +240,12 @@ function seg = aux_trajectorySegments(traj,index)
 
     for i = 1:length(ind1)-1
 
-        tmp1 = ind1(i)+1:ind1(i+1);
-        ind2 = find(index(tmp1(2:end)) ~= index(tmp1(1:end-1))+1);
-        ind2 = [0,ind2,length(tmp1)];
+        segInds = ind1(i)+1:ind1(i+1);
+        ind2 = find(index(segInds(2:end)) ~= index(segInds(1:end-1))+1);
+        ind2 = [0,ind2,length(segInds)];
 
         for j = 1:length(ind2)-1
-            seg{end+1} = tmp1(ind2(j)+1:ind2(j+1));
+            seg{end+1} = segInds(ind2(j)+1:ind2(j+1));
         end
     end
 end
@@ -302,9 +302,9 @@ function [surf,fitted,points] = aux_identifyJumpingSurface(data,jumps,start,dest
     for i = 2:length(jumps_)
         ind = jumps_(i-1)+1:jumps_(i);
         ind = intersect(ind,find(data.traj == data.traj(jumps_(i))));
-        tmp = find(data.index(ind(2:end)) ~= data.index(ind(1:end-1)+1));
-        if ~isempty(tmp)
-            ind = ind(tmp(end):end);
+        modeChangeInds = find(data.index(ind(2:end)) ~= data.index(ind(1:end-1)+1));
+        if ~isempty(modeChangeInds)
+            ind = ind(modeChangeInds(end):end);
         end
         xBefore{i-1} = data.x(:,ind);
     end
@@ -392,9 +392,9 @@ function [surf,gini,fitted,type] = aux_identifyNonJumpingSurface(data,start,dest
     fitted = sum(abs(surf.Ae*x - surf.be) < abs(surf.Ae*options.noise));
 
     % compute the trajectory based Gini index
-    tmp = surf.Ae * data.x - surf.be;
-    indIn = find(tmp <= 0);
-    indOut = setdiff(1:length(tmp),indIn);
+    surfaceDist = surf.Ae * data.x - surf.be;
+    indIn = find(surfaceDist <= 0);
+    indOut = setdiff(1:length(surfaceDist),indIn);
 
     if isempty(indIn) || isempty(indOut)
         surf = []; gini = inf; type = 'none'; return;
@@ -559,30 +559,30 @@ function [w,cost] = aux_ransacOptimization(xBorder,data,costFun,options)
     else
         combs = zeros(N,m);
         for i = 1:N
-            tmp = randperm(size(xBorder,2));
-            combs(i,:) = tmp(1:m);
+            randPerm = randperm(size(xBorder,2));
+            combs(i,:) = randPerm(1:m);
         end
     end
 
     % loop over all random picks
     for i = 1:size(combs,1)
-        
+
         % randomly select n points to determine the swiching surface
         ind = combs(i,:);
-        tmp = [ind,setdiff(1:size(xBorder,2),ind)];
+        orderedInds = [ind,setdiff(1:size(xBorder,2),ind)];
 
         % learn switching surface using these points
         points = xBorder(:,ind);
         [V,~,~] = svd(points-mean(points,2));
         c = V(:,end);
-        d = c'*xBorder(:,tmp(m:end));
+        d = c'*xBorder(:,orderedInds(m:end));
 
         % determine shifts that are within the noise threshold
-        tmp = d([false,abs(d(2:end) - d(1)) < 2*abs(c'*options.noise)]);
+        shiftCandidates = d([false,abs(d(2:end) - d(1)) < 2*abs(c'*options.noise)]);
 
-        if ~isempty(tmp)
-            [~,ind] = sort(abs(tmp - d(1)),'ascend');
-            d = [d(1),tmp(ind(min(length(ind),40)))];
+        if ~isempty(shiftCandidates)
+            [~,ind] = sort(abs(shiftCandidates - d(1)),'ascend');
+            d = [d(1),shiftCandidates(ind(min(length(ind),40)))];
         else
             d = d(1);
         end

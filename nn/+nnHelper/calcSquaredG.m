@@ -32,7 +32,7 @@ end
 
 if ~isempty(G1) && ~isempty(G2)
     if isEqual
-        temp = G1' * G2;
+        gramMatrix = G1' * G2;
 
         % we can ignore the left lower triangle in this case
         % as it's the same as the right upper triangle
@@ -42,11 +42,11 @@ if ~isempty(G1) && ~isempty(G2)
         cnt = n;
 
         for i = 1:n - 1
-            G_quad(i) = temp(i, i);
-            G_quad(cnt+1:cnt+n-i) = 2 * temp(i, i+1:n);
+            G_quad(i) = gramMatrix(i, i);
+            G_quad(cnt+1:cnt+n-i) = 2 * gramMatrix(i, i+1:n);
             cnt = cnt + n - i;
         end
-        G_quad(n) = temp(end, end);
+        G_quad(n) = gramMatrix(end, end);
     else
         % calculate all values
         G_quad = G1' * G2;

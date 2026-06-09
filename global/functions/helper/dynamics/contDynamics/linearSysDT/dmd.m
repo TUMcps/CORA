@@ -187,10 +187,10 @@ function c = aux_compConstOffset(A,B,X,U,dt,type)
     for i = 1:length(X)
 
        X1_ = []; X2_ = [];
-       tmp = F; pred = A*X{i}(:,1) + B*U{i}(:,1); 
+       propResidual = F; pred = A*X{i}(:,1) + B*U{i}(:,1);
 
        for j = 2:size(X{i},2)
-          X1_ = [X1_; tmp]; tmp = A*tmp + F;
+          X1_ = [X1_; propResidual]; propResidual = A*propResidual + F;
           X2_ = [X2_; X{i}(:,j) - pred]; 
           if j < size(X{i},2)
               pred = A*pred + B*U{i}(:,j);

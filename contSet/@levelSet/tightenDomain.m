@@ -115,8 +115,8 @@ function int = aux_contractorLinear(obj,int,maxIter)
             if sign(sup_(j)) == sign(inf_(j))
                 k_ = k;
                 k_(j) = interval(0,0);
-                temp = (-f + transpose(k)*m - transpose(k_)*int)/k(j);
-                int(j) = and_(int(j),temp,'exact');
+                tightenedRange = (-f + transpose(k)*m - transpose(k_)*int)/k(j);
+                int(j) = and_(int(j),tightenedRange,'exact');
             end
         end
     end
@@ -205,9 +205,9 @@ function int = aux_contractorSplit(obj,int,maxIter)
 
                     % split along largest dimension
                     [~,ind] = max(rad(int_));
-                    temp = split(int_,ind);
-                    intNew{end+1} = temp{1};
-                    intNew{end+1} = temp{2};
+                    splitResult = split(int_,ind);
+                    intNew{end+1} = splitResult{1};
+                    intNew{end+1} = splitResult{2};
                    
                 else
                    
@@ -315,11 +315,11 @@ function res = aux_quadEval(Q,int)
     res = interval(0,0);
         
     for k = 1:length(int)
-        temp = interval(0,0);
+        crossTerm = interval(0,0);
         for l = k+1:length(int)
-            temp = temp + 0.5*(Q(k,l) + Q(l,k)) * int(l);
+            crossTerm = crossTerm + 0.5*(Q(k,l) + Q(l,k)) * int(l);
         end
-        res = res + 0.5 * Q(k,k) * int(k)^2 + temp * int(k);
+        res = res + 0.5 * Q(k,k) * int(k)^2 + crossTerm * int(k);
     end
 end
 

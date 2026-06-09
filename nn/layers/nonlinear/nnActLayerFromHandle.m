@@ -6,12 +6,13 @@ classdef nnActLayerFromHandle < nnActivationLayer
 %    speed up computation time.
 %
 % Syntax:
-%    obj = nnActLayerFromHandle(fun, layerid, name)
+%    obj = nnActLayerFromHandle(fun, layerid, monotonicity, name)
 %
 % Inputs:
 %    fun - function handle
 %    layerid - identifier of layer (used to re-use derivative computations)
 %    name - name of the layer, defaults to type
+%    monotonicity - numeric, n-times monotonic
 %
 % Outputs:
 %    obj - generated object
@@ -24,7 +25,7 @@ classdef nnActLayerFromHandle < nnActivationLayer
 
 % Authors:       Tobias Ladner
 % Written:       06-October-2025
-% Last update:   ---
+% Last update:   18-December-2025 (monotonicity)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -37,12 +38,13 @@ methods
     % constructor
     function obj = nnActLayerFromHandle(fun,varargin)
         narginchk(1,3)
-        [layerid,name] = setDefaultValues({[],[]},varargin);
+        [layerid,monotonicity,name] = setDefaultValues({[],[],[]},varargin);
         % call super class constructor
         obj@nnActivationLayer(name)
         % save property
         inputArgsCheck({{fun,'att','function_handle'}})
         obj.fun = fun;
+        obj.monotonicity = monotonicity;
         % recompute derivative (with unique layer name)
         if isempty(layerid)
             layerid = getDefaultName(obj);
@@ -53,6 +55,14 @@ methods
     end
 
     function [df_l,df_u] = getDerBounds(obj, l, u)
+        % check monotonicity
+        if ~isempty(obj.monotonicity) && obj.monotonicity
+            ys = obj.df([l,u]);
+            df_l = min(ys,[],2);
+            df_u = max(ys,[],2);
+            return
+        end
+        % general solution
         df = obj.df(interval(l,u));
         df_l = df.inf; df_u = df.sup;
     end

@@ -127,8 +127,8 @@ if sum(genInd) > 0
 end
 
 % add every generator with all-zero exponent matrix to the zonotope center
-temp = sum(Eout,1);
-genInd = temp == 0;
+expSum = sum(Eout,1);
+genInd = expSum == 0;
 
 c1 = c1 + sum(G1(:,genInd),2);
 G1(:,genInd) = [];

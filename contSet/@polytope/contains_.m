@@ -265,7 +265,7 @@ function [res, cert, scaling] = aux_contains_Hpoly_pointcloud(P,S,tol,scalingTog
     res_ineq = true;
     if ~isempty(P.b_.val)
         offset_ineq = P.A_.val*S - P.b_.val;
-        res_ineq = all(offset_ineq < tol | withinTol(offset_ineq,0,tol));
+        res_ineq = all(offset_ineq < tol | withinTol(offset_ineq,0,tol),1);
         scaling = max(P.A_.val*S./P.b_.val);
     end
     
@@ -273,7 +273,7 @@ function [res, cert, scaling] = aux_contains_Hpoly_pointcloud(P,S,tol,scalingTog
     res_eq = true;
     if ~isempty(P.be_.val)
         offset_eq = P.Ae_.val*S - P.be_.val;
-        res_eq = all(offset_eq == 0 | withinTol(offset_eq,0,tol));
+        res_eq = all(offset_eq == 0 | withinTol(offset_eq,0,tol),1);
         scaling(~res_eq) = inf; % If an equality constraint is not
         % satisfied, then by convention the norm is infinite
     end

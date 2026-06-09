@@ -66,8 +66,8 @@ function ls = levelSet(pZ,varargin)
 
     % loop over all (n-1)-dimensional faces of the hypercube spanned by the
     % most important factors
-    tmp = cellfun(@(x) x*[1,1],num2cell(1:fac),'UniformOutput',false);
-    F = [repmat([1,-1],[1,fac]);[tmp{:}]];
+    facIdxPairs = cellfun(@(x) x*[1,1],num2cell(1:fac),'UniformOutput',false);
+    F = [repmat([1,-1],[1,fac]);[facIdxPairs{:}]];
 
     for i = 1:size(F,2)
     

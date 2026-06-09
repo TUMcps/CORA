@@ -1,16 +1,18 @@
-function val = robustness(spec,p,varargin)
+function val = robustness(spec,varargin)
 % robustness - computes the robustness score of a point with respect to 
 %    the specifications, where a positive robustness score means that all
 %    specifications are satisfied
 %
 % Syntax:
-%    val = robustness(spec,p)
-%    val = robustness(spec,p,time)
+%    val = robustness(spec,traj)
+%    val = robustness(spec,x)
+%    val = robustness(spec,x,time)
 %
 % Inputs:
 %    spec - specification object
-%    p - point represented by a vector
-%    time - scalar representing the current time
+%    traj - simulated trajectories (class trajectory)
+%    x - states of the trace (dimensions: [m,n])
+%    t - times of the trace (dimensions: [m,1])
 %
 % Outputs:
 %    val - robustness value for the point p
@@ -23,7 +25,7 @@ function val = robustness(spec,p,varargin)
 
 % Authors:       Niklas Kochdumper
 % Written:       27-November-2021             
-% Last update:   ---
+% Last update:   17-November-2025 (NK, changed interface + restructured)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -31,64 +33,111 @@ function val = robustness(spec,p,varargin)
     % initialize robustness value
     val = Inf;
 
+    % catch case with multiple specifications
+    if size(spec,1) > 1
+
+        for i = 1:size(spec,1)
+            val_ = robustness(spec(i,1),varargin{:});
+            val = min(val,val_);
+        end
+        
+        return;
+    end
+
     % parse input arguments
-    time = [];
-    
-    if nargin > 2 && ~isempty(varargin{1})
-       time = varargin{1}; 
+    t = [];
+
+    if nargin == 2
+        if isa(varargin{1},'trajectory')
+
+            traj = varargin{1};
+           
+            % case with multipe trajectories
+            if size(traj,1) > 1
+                for i = 1:size(traj,1)
+                    val_ = robustness(spec,traj(i,1));
+                    val = min(val,val_);
+                end
+                
+                return;
+
+            % case with one single trajectory
+            else
+                if ~isempty(traj.y)
+                    x = traj.y;
+                else
+                    x = traj.x;
+                end
+                t = traj.t;
+            end
+        else
+            x = varargin{1};
+        end
+    else
+       x = varargin{1}; t = varargin{2};
+    end
+
+    % catch case with temporal logic specification
+    if strcmp(spec.type,'logic')
+        if isempty(t)
+            throw(CORAerror('CORA:specialError',...
+                  'Time is required for temporal logic specifications."'));
+        end
+
+        val = robustness(spec.set,x',t);
+        return;
+    end
+
+    % check if time is valid
+    if ~representsa_(spec.time,'emptySet',eps)
+        if isempty(t)
+            throw(CORAerror('CORA:specialError',...
+                        'Time is required for timed specifications."'));
+
+        % interpolate to obtain trajectory at required time
+        elseif ~any(contains_(spec.time,t,'exact',eps,0,false,false))
+            [~,ind] = unique(t);
+            x = interp1(t(ind),x(:,ind)',center(spec.time))';
+            t = center(spec.time);
+        end
     end
     
-    % check if multiple points are provided
-    if size(p,2) > 1
-        
-        % compute robustness for all points
-        val = zeros(1,size(p,2));
-        
-        for i = 1:size(p,2)
-            val(i) = robustness(spec,p(:,i),varargin{:}); 
-        end
-        
-    else
+    % loop over all points
+    for i = 1:size(x,2)
 
-        % loop over all specifications
-        for i = 1:size(spec,1)
+        if representsa_(spec.time,'emptySet',eps) || ...
+                     contains_(spec.time,t(i),'exact',eps,0,false,false)
 
-            % check if time frames overlap
-            if isempty(time) && ~representsa_(spec(i,1).time,'emptySet',eps)
-                throw(CORAerror('CORA:specialError',...
-                    'Timed specifications require a time interval."'));
+            % different types of specifications
+            switch spec.type
+
+                case 'invariant'
+                    val_ = aux_robustnessSafeSet(spec.set,x(:,i));
+
+                case 'unsafeSet'
+                    val_ = aux_robustnessUnsafeSet(spec.set,x(:,i));
+
+                case 'safeSet'
+                    val_ = aux_robustnessSafeSet(spec.set,x(:,i));
+
+                case 'custom'
+                    throw(CORAerror('CORA:notSupported',...
+                        ['Robustness computation for custom ' ...
+                         'specifications is not supported!']));
             end
 
-            if representsa_(spec(i,1).time,'emptySet',eps) ...
-                || contains(spec(i,1).time,time)
-
-                % different types of specifications
-                switch spec(i,1).type
-
-                    case 'invariant'
-                        val_ = aux_robustnessSafeSet(spec(i,1).set,p);
-
-                    case 'unsafeSet'
-                        val_ = aux_robustnessUnsafeSet(spec(i,1).set,p);
-
-                    case 'safeSet'
-                        val_ = aux_robustnessSafeSet(spec(i,1).set,p);
-
-                    case 'custom'
-                        throw(CORAerror('CORA:notSupported',...
-                            ['Robustness computation for custom ' ...
-                             'specifications is not supported!']));
-
-                    case 'logic'
-                        throw(CORAerror('CORA:notSupported',...
-                            ['Robustness computation for logic ' ...
-                             'specifications is not supported!']));
-                end
-
-                % overall robustness is minimum of single specifications
+            % overall robustness is minimum of single specifications
+            if ~isempty(t)
                 val = min(val,val_);
+            else
+                val = [val,val_];
             end
         end
+    end
+
+    % assign output arguments
+    if isempty(t)
+        val = val(2:end);
     end
 end
 
@@ -99,7 +148,13 @@ function val = aux_robustnessUnsafeSet(S,p)
 % compute the robustness value of point p for an unsafe set S
 
     % convert set S to a polytope with normalized halfspace directions
-    S_ = normalizeConstraints(polytope(S),'A');
+    S_ = polytope(S);
+    
+    if ~S_.isHRep.val
+        constraints(S_);
+    end
+
+    S_ = normalizeConstraints(S_,'A');
     C = S_.A; d = S_.b;
     
     % check if the point is inside or outside the unsafe set
@@ -114,7 +169,13 @@ function val = aux_robustnessSafeSet(S,p)
 % compute the robustness value of point p for a safe set S
 
     % convert set S to a polytope with normalized halfspace directions
-    S_ = normalizeConstraints(polytope(S),'A');
+    S_ = polytope(S);
+    
+    if ~S_.isHRep.val
+        constraints(S_);
+    end
+
+    S_ = normalizeConstraints(S_,'A');
     C = S_.A; d = S_.b;
     
     % check if the point is inside or outside the safe set
@@ -132,14 +193,14 @@ function d = aux_distancePolyPoint(C,d,p)
     n = length(p); m = size(C,1);
     
     % check how many halfspace constraints are violated
-    temp = C*p - d;
-    ind = find(temp > 0);
+    halfspaceVals = C*p - d;
+    ind = find(halfspaceVals > 0);
     
     if length(ind) == 1
         
         % only one halfspace constraint violated -> distance to polytope is
         % equal to the distance to the halfspace constraint
-        d = temp(ind(1));
+        d = halfspaceVals(ind(1));
         
     elseif length(ind) == n
         

@@ -37,10 +37,10 @@ for i=1:nrOfTests
     % wrong initializations
     q_plus1 = randn(n+1,1);
     q_mat = randn(n);
-    temp = randn(n+1);
+    randMat = randn(n+1);
     %%%
     Q = Q_nonpsd * Q_nonpsd';
-    
+
     % admissible initializations
     % only shape matrix
     E = ellipsoid(Q);
@@ -50,9 +50,9 @@ for i=1:nrOfTests
     E = ellipsoid(Q,q);
     assertLoop(all(all(withinTol(E.Q,Q,tol))),i)
     assertLoop(all(withinTol(E.q,q,tol)),i)
-    
-    
-    Q_plus1 = temp * temp';
+
+
+    Q_plus1 = randMat * randMat';
     
     % shape matrix non-psd (only n > 1)
     if n > 1

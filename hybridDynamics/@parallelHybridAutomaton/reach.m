@@ -128,11 +128,11 @@ function [R,res] = reach(pHA,params,options,varargin)
             end
 
             % save reachable set to array
-            temp = struct('set',{{R0}},'time',{{tStart}});
+            initTimePoint = struct('set',{{R0}},'time',{{tStart}});
             if r == length(R)
                 R(2*r,1) = reachSet();
             end
-            R(r+1,1) = reachSet(temp,[],list(1).parent,locID);
+            R(r+1,1) = reachSet(initTimePoint,[],list(1).parent,locID);
             % increment counter
             r = r + 1;
 
@@ -186,13 +186,13 @@ function [R,res] = reach(pHA,params,options,varargin)
         % store the computed reachable set
         for i = 1:size(Rtemp,1)
             % construct new reachable set
-            temp = reachSet(Rtemp.timePoint,Rtemp.timeInterval,...
+            newReachSet = reachSet(Rtemp.timePoint,Rtemp.timeInterval,...
                                 parent,locID);
             % append new reachable set to full list
             if r == length(R)
                 R(2*r,1) = reachSet();
             end
-            R(r+1,1) = temp;
+            R(r+1,1) = newReachSet;
             % increment counter
             r = r + 1;
         end

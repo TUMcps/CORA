@@ -52,11 +52,11 @@ for k = 1:3
     points = zeros(2,N);
     
     for i = 1:size(points,2)
-        temp = rand(3,1);
-        temp = temp/sum(temp);
-        points(:,i) = V(:,1)*temp(1) + V(:,2)*temp(2) + V(:,3)*temp(3);
+        weights = rand(3,1);
+        weights = weights/sum(weights);
+        points(:,i) = V(:,1)*weights(1) + V(:,2)*weights(2) + V(:,3)*weights(3);
     end
-    
+
     points = [points,V];
 
     % calculate points that have to be located inside the resulting 
@@ -142,14 +142,14 @@ for k = 1:3
     for i = 1:N
         
         % first constrained zonotope
-        temp = rand(3,1);
-        temp = temp/sum(temp);
-        points1(:,i) = V1(:,1)*temp(1) + V1(:,2)*temp(2) + V1(:,3)*temp(3);
-        
+        weights = rand(3,1);
+        weights = weights/sum(weights);
+        points1(:,i) = V1(:,1)*weights(1) + V1(:,2)*weights(2) + V1(:,3)*weights(3);
+
         % second constrained zonotope
-        temp = rand(2,1);
-        temp = temp/sum(temp);
-        points2(:,i) = V2(:,1)*temp(1) + V2(:,2)*temp(2);
+        weights = rand(2,1);
+        weights = weights/sum(weights);
+        points2(:,i) = V2(:,1)*weights(1) + V2(:,2)*weights(2);
     end
     
     points1 = [points1,V1];

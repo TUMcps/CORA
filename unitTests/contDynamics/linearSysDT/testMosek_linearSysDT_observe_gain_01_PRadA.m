@@ -23,7 +23,7 @@ function res = testMosek_linearSysDT_observe_gain_01_PRadA()
 
 % Authors:       Matthias Althoff
 % Written:       18-September-2020
-% Last update:   ---
+% Last update:   15-April-2026 (NH, changed to observe(sys,params,options))
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -31,35 +31,24 @@ function res = testMosek_linearSysDT_observe_gain_01_PRadA()
 % assume true
 res = true;
 
-% enable access to private function "observe_gain_PRadA"
-path = CORAROOT;
-source = fullfile(path,'contDynamics','@linearSysDT','private','observe_gain_PRadA.m');
-target = fullfile(path,'contDynamics','@linearSysDT','observe_gain_PRadA.m');
-copyfile(source,target);
-rmpath(genpath(path));
-addpath(genpath(path));
+% Load model
+[vehicle,params,options] = load_model_linearSysDT("slipEstimationModel_6D");
 
-% Load side slip model
-load slipEstimationModel_6D params options vehicle
+% Select observer
+options.alg = 'PRad-A';
 
-% Load exact result
-load gain_sideSlip6D_PRad-A PRadA
+% observe
+estSet = observe(vehicle,params,options);
 
-% compute optimal gain
-options = params2options(params,options);
-OGain = observe_gain_PRadA(vehicle,options);
+% enclose last estimated set by interval
+IH = interval(estSet.timePoint.set{end});
 
-% compute maximum error
-error = abs(OGain - PRadA);
-maxError = max(max(error));
+% Define comparison interval hull
+IH_saved = interval([-0.778056174558984;-1.326674879561634;0.200143289514439;12.473975086385328;-0.384359504384016;-16.441513231174888],[1.183980022309567;1.083577489492029;0.916131742263717;16.129019752785275;0.543922444305893;15.918231613685712]);
 
-% error acceptable?
-assert((maxError < 1e-8));
+%check if slightly bloated versions enclose each other
+assert(isequal(IH,IH_saved,1e-6));
 
-
-% revoke access to private function
-delete(target);
-rmpath(genpath(path));
-addpath(genpath(path));
+end
 
 % ------------------------------ END OF CODE ------------------------------

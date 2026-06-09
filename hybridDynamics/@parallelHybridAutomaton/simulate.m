@@ -83,10 +83,10 @@ function u = aux_mergeInputVector(loc,uLoc,inputCompMap)
 % the subcomponents
 
     u = zeros(size(inputCompMap,1),1);
-    temp = unique(inputCompMap);
-    
-    for i = 1:length(temp)
-        u(inputCompMap == temp(i)) = uLoc{temp(i)}{loc(temp(i))}; 
+    uniqueInputComps = unique(inputCompMap);
+
+    for i = 1:length(uniqueInputComps)
+        u(inputCompMap == uniqueInputComps(i)) = uLoc{uniqueInputComps(i)}{loc(uniqueInputComps(i))};
     end
 end
 

@@ -162,11 +162,11 @@ function han = aux_plotSplit(cZ,splits,dims,NVpairs)
 
            % split the set
            [~,ind] = max(r);
-           temp = split(cZSplit{j},ind);
+           splitRes = split(cZSplit{j},ind);
 
            % update variables
-           listTemp{counter} = temp{1};
-           listTemp{counter+1} = temp{2};
+           listTemp{counter} = splitRes{1};
+           listTemp{counter+1} = splitRes{2};
            counter = counter + 2;
         end
 

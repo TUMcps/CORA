@@ -137,8 +137,8 @@ function Z = aux_unionTedrake(Zcell,order)
         hx = ones(2*nx,1);
         
         % construct constraint X = Y * T
-        temp = repmat({Y},[1,nx]);
-        A1 = [blkdiag(temp{:}),zeros(n*nx,4*nx*ny),zeros(n*nx,ny)];
+        YblkCells = repmat({Y},[1,nx]);
+        A1 = [blkdiag(YblkCells{:}),zeros(n*nx,4*nx*ny),zeros(n*nx,ny)];
         b1 = reshape(X,[n*nx,1]);
 
         % construct constraint x = Y * beta
@@ -146,28 +146,28 @@ function Z = aux_unionTedrake(Zcell,order)
         b2 = -x;
 
         % construct constraint lambda * Hx = Hy * T
-        Atemp = [];
+        AlambdaHx = [];
         for j = 1:size(Hx,2)
             h = Hx(:,j);
-            temp = repmat({h'},[1,size(Hy,1)]);
-            Atemp = [Atemp;blkdiag(temp{:})];
+            hBlkCells = repmat({h'},[1,size(Hy,1)]);
+            AlambdaHx = [AlambdaHx;blkdiag(hBlkCells{:})];
         end
-        
-        temp = repmat({Hy},[1,size(Hx,2)]);
-        A3 = [blkdiag(temp{:}),-Atemp,zeros(size(Atemp,1),ny)];
+
+        HyBlkCells = repmat({Hy},[1,size(Hx,2)]);
+        A3 = [blkdiag(HyBlkCells{:}),-AlambdaHx,zeros(size(AlambdaHx,1),ny)];
         b3 = zeros(size(A3,1),1);
-        
+
         % add current equality constraint to overall equality constraints
-        Atemp = [A1;A2;A3];
+        AeqBlock = [A1;A2;A3];
         btemp = [b1;b2;b3];
         
-        Aeq = blkdiag(Aeq,Atemp);
+        Aeq = blkdiag(Aeq,AeqBlock);
         beq = [beq;btemp];
-        
+
         % construct constraint lambda * hx <= hy + Hy beta
-        temp = repmat({hx'},[1,size(Hy,1)]);
+        hxBlkCells = repmat({hx'},[1,size(Hy,1)]);
         A_ = [A_;-eye(size(Hy,1))];
-        A1 = [zeros(size(Hy,1),size(Y,2)*size(X,2)),blkdiag(temp{:}),-Hy];
+        A1 = [zeros(size(Hy,1),size(Y,2)*size(X,2)),blkdiag(hxBlkCells{:}),-Hy];
         
         % construct constraint lambda >= 0
         A2 = [zeros(4*nx*ny,nx*ny),-eye(4*nx*ny),zeros(4*nx*ny,ny)];
@@ -179,8 +179,8 @@ function Z = aux_unionTedrake(Zcell,order)
     % solve linear program
     f = [ones(2*ny,1);zeros(size(Aeq,2),1)];
     
-    Atemp = [-eye(ny),-eye(ny)];
-    A = [[A_,A];[Atemp,zeros(ny,size(A,2))]];
+    AboundConstr = [-eye(ny),-eye(ny)];
+    A = [[A_,A];[AboundConstr,zeros(ny,size(A,2))]];
     b = zeros(size(A,1),1);
     Aeq = [zeros(size(Aeq,1),2*ny),Aeq];
 

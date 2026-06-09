@@ -1,0 +1,9 @@
+(vnnlib-version <2.0>)
+
+(declare-network N
+    (declare-input  X real [3])
+    (declare-output Y real [2])
+)
+
+; X has shape [3], so valid indices are 0,1,2. Index 3 is out of bounds.
+(assert (<= X[3] 1.0))

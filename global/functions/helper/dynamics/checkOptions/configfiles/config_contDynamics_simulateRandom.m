@@ -71,6 +71,8 @@ optionsList(end+1,1) = add2list('fracVert','default');
 optionsList(end+1,1) = add2list('p_conf','default');
 
 % optional
+% only for type = 'falsify'
+optionsList(end+1,1) = add2list('dims','optional');
 
 end
 

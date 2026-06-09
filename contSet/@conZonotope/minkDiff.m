@@ -103,8 +103,7 @@ switch method
         % compute support function for each basis vector
         S0_sF = zeros(N_C,1);
         for i=1:N_C
-            basisvector = zeros(N_C,1);
-            basisvector(i) = 1;
+            basisvector = unitvector(i,N_C);
             S0_sF(i) = supportFunc_(S0,(basisvector'*Gamma)','upper');
             if S0_sF(i) > 1
                 cZ = conZonotope.empty(n);

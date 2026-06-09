@@ -94,8 +94,8 @@ function str = aux_displayPoly(obj)
     % make a syms expression
     res = c.*prod(repmat(v,[size(c,1) 1]).^degs,2);
     % transform to character array
-    temp = num2cell(res);
-    charArr = cellfun(@(x) char(vpa(x,5)),temp,'UniformOutput',false);
+    monomialCells = num2cell(res);
+    charArr = cellfun(@(x) char(vpa(x,5)),monomialCells,'UniformOutput',false);
     
     % join the single monomials
     str = '';

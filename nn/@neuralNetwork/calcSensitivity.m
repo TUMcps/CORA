@@ -50,7 +50,7 @@ y = obj.evaluate(x,options,idxLayer);
 [nK,bSz] = size(y);
 
 % Initialize the sensitivity in for the output, i.e., identity matrix.
-S = repmat(eye(nK,'like',y),1,1,bSz);
+S = repmat(reshape(eye(nK,'like',y),[nK nK 1]),1,1,bSz);
 
 % Enable storing the sensitivity.
 options.nn.store_sensitivity = storeSensitivty;

@@ -61,7 +61,7 @@ function res = GJKalgorithm(S1,S2,varargin)
     try
         d = center(S2) - center(S1);
     catch
-        d = zeros(n,1); d(1) = 1;
+        d = unitvector(1,n);
     end
 
     % compute initial support vector

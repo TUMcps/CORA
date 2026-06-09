@@ -28,13 +28,15 @@ function [instanceFilename,modelName,vnnlibName] = ...
 
 % Authors:       Lukas Koller
 % Written:       11-August-2025
-% Last update:   ---
+% Last update:   02-June-2026 (BK, multi-network path support)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-modelName = regexp(modelPath,'([^/]+)(?=\.onnx$)','match');
-vnnlibName = regexp(vnnlibPath,'([^/]+)(?=\.vnnlib$)','match');
+% match the .onnx stem anywhere in the string, excluding Python-list chars so
+% multi-network paths like "[('f','onnx/foo.onnx'),('g',...)]" also work
+modelName = regexp(modelPath,'([^/''"() ]+)(?=\.onnx)','match');
+vnnlibName = regexp(vnnlibPath,'([^/]+)(?=\.vnnlib)','match');
 instanceFilename = [benchName '_' modelName{1} '_' vnnlibName{1} '.mat'];
 
 end

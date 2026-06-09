@@ -1,0 +1,28 @@
+; Single network with two separate declare-input blocks (multi-modal pattern).
+; Inspired by lukasmrohwer/smart-turn-multimodal-benchmark.
+; X1 shape [2,3] = 6 dims, X2 shape [4] = 4 dims -> joint input is 10-D.
+
+(vnnlib-version <2.0>)
+
+(declare-network f
+    (declare-input X1 real [2, 3])
+    (declare-input X2 real [4])
+    (declare-output Y real [2])
+)
+
+; Box constraints on X1 (all elements in [0, 1])
+(assert (and (>= X1[0,0] 0.0) (<= X1[0,0] 1.0)))
+(assert (and (>= X1[0,1] 0.0) (<= X1[0,1] 1.0)))
+(assert (and (>= X1[0,2] 0.0) (<= X1[0,2] 1.0)))
+(assert (and (>= X1[1,0] 0.0) (<= X1[1,0] 1.0)))
+(assert (and (>= X1[1,1] 0.0) (<= X1[1,1] 1.0)))
+(assert (and (>= X1[1,2] 0.0) (<= X1[1,2] 1.0)))
+
+; Box constraints on X2 (all elements in [-1, 1])
+(assert (and (>= X2[0] -1.0) (<= X2[0] 1.0)))
+(assert (and (>= X2[1] -1.0) (<= X2[1] 1.0)))
+(assert (and (>= X2[2] -1.0) (<= X2[2] 1.0)))
+(assert (and (>= X2[3] -1.0) (<= X2[3] 1.0)))
+
+; Output specification: Y[0] < 0.5 (safe set)
+(assert (<= Y[0] 0.5))

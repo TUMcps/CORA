@@ -47,9 +47,6 @@ if isempty(defaultFields)
        'sort_exponents', false;
        'maxpool_type', 'project';
        'order_reduction_sensitivity', false;
-       'use_approx_error', true;
-       'train', struct('backprop', false);
-       'interval_center', false;
        'store_sensitivity',false;
        'store_sensitivity_based_neuron_similarity',false;
        'use_dlconv',true; % Use deep learning toolbox convolution.
@@ -61,37 +58,40 @@ if isempty(defaultFields)
        % evaluateZonotopeBatch
        'use_approx_error', true;
        'approx_error_order', 'sequential';
-       'train', struct('backprop', false);
+       'train', struct( ...
+           'backprop', false ... % Store relevant inputs during forward propagation for backpropagation and training.
+       );
+       'store_approx_error', false; % Store the approximation errors in activation layers during forward propagation.
+       'store_approx_error_grad', false; % Store the gradient of approximation errors in activation layers during back propagation.
+       'store_slope_grad', false; % Store the gradient of approximation slope in activation layers during back propagation.
+       'backprop_without_weight_update', false; % Store relevant inputs during forward propagation for backprop without weight update computation.
        % Zonotope Batch propagation with interval center
        'interval_center', false;
-       'store_approx_error_gradients', false;
        % Batch norm
-       'batch_norm_moving_stats', false;
-       'batch_norm_calc_stats', false;
+       'batch_norm_stats', 'moving_stats'; % {'calc_stats','stored_stats','moving_stats'}
        % neuralNetwork/verify
-       'falsification_method','center';
-       'refinement_method','naive';
-       'refinement_min_iter',3;
-       'refinement_max_iter',5;
-       'num_splits',2;
-       'num_dimensions',1;
-       'num_neuron_splits',0;
-       'split_position','zero';
-       'input_xor_neuron_splitting',false;
-       'add_orth_neuron_splits',false;
-       'exact_conzonotope_bounds',false;
-       'batch_union_conzonotope_bounds',true;
-       'max_verif_iter',inf;
-       'num_relu_constraints',0;
-       'polytope_bound_approx_max_iter',5;
-       'verify_dequeue_type','half-half';
-       'verify_enqueue_type','prepend';
-       'input_generator_heuristic','zono-norm-gradient';
-       'input_split_heuristic','zono-norm-gradient';
-       'neuron_split_heuristic','zono-norm-gradient';
-       'relu_constraint_heuristic','zono-norm-gradient';
-       'verify_cascade_unsafe_set_constraints',false;
-       'verif_slope_optim_step_size',1e-2;
+       'falsification_method','center'; % falsification method
+       'refinement_method','naive'; % verification method
+       'refinement_max_iter',8; % maximum number of refinement iterations
+       'num_splits',2; % number of pieces after split (input and neuron)
+       'num_dimensions',1; % number of dimensions to split into #num_splits pieces each
+       'num_neuron_splits',0; % number of neurons to split into #num_splits pieces each
+       'neuron_split_position','zero'; % split offset for neuron splits
+       'conzonotope_bounding_method','fourier-motzkin'; % {'fourier-motzkin','dual-iter','exact'}
+       'polytope_bound_approx_max_iter',8; % only for 'fourier-motzkin'
+       'conzonotope_bound_max_iter',0; % only for 'dual-iter'
+       'conzonotope_bound_step_size',1; % only for 'dual-iter'
+       'batch_union_conzonotope_bounds',true; % either batch union constraints or use a for-loop
+       'max_verif_iter',inf; % minimum number of verification iterations
+       'num_relu_constraints',0; % number of neurons for which we consider ReLU constraints, i.e., ReLU(x) >= x, ReLU(x) >= 0
+       'verify_dequeue_type','half-half'; % specify dequeue for verification queue
+       'verify_enqueue_type','prepend'; % specify enqueue for verification queue
+       'input_generator_heuristic','most-sensitive-input-radius'; % input generator heuristic; used if num_init_gens < n0
+       'input_split_heuristic','most-sensitive-input-radius'; % input split heuristic
+       'neuron_split_heuristic','most-sensitive-approx-error'; % neuron split heuristic
+       'relu_constraint_heuristic','most-sensitive-approx-error'; % ReLU constraints heuristic
+       'verify_cascade_unsafe_set_constraints',false; % Split safe sets into unsafe sets and verify them individually and apply already verified specifications.
+       'verif_slope_optim_step_size',0; % Step size for the optimization of the approximation slope
     };
 end
 % default training parameter values
@@ -107,13 +107,12 @@ if isempty(defaultTrainFields) % TODO sort and add comments
        'lossFun', @(options) @(t,y) 0; % custom loss
        'lossDer', @(options) @(t,y) 0; % gradient of custom loss
        'backprop', true; % enable backpropagation
-       'shuffle_data', 'never'; % shuffle the training data
+       'shuffle_data', 'every_epoch'; % shuffle the training data
        'early_stop', inf; % early stopping when val loss is not decreasing
        'lr_decay', 1; % factor for learning rate decay
        'lr_decay_epoch', []; % epochs for learning rate decay
        'val_freq', 50; % validation frequency
        'print_freq', 50; % verbose training output printing frequency
-       'shuffle_data', 'never'; % shuffle training data
        'early_stop', inf; % number of epoch with non-decreasing validation loss for early stopping
        % projected gradient descent attack
        'pgd_iterations', 0;
@@ -132,10 +131,10 @@ if isempty(defaultTrainFields) % TODO sort and add comments
        'kappa', 1/2; % IBP weighting factor
        % TRADES or SABR weighting
        'lambda', 0; % SABR & TRADES weighting factor
-       % Set training
-       'volume_heuristic', 'interval';
+       % Set-based training
+       'volume_heuristic', 'f-radius'; % zonotope norm for the set-based loss
        'tau', 0; % weighting factor
-       'zonotope_weight_update', 'center'; % compute weight update
+       'zonotope_weight_update', 'sum'; % compute weight update
        'exact_backprop', true; % exact gradient computations of image enc
        'num_approx_err', inf; % maximum number of approximation errors per nonlinear layer
        'num_init_gens', inf; % maximum number of input generators
@@ -161,6 +160,13 @@ options.nn = nnHelper.setDefaultFields(options.nn,defaultFields);
 if setTrainFields
     options.nn.train = ...
         nnHelper.setDefaultFields(options.nn.train,defaultTrainFields);
+else
+    % We do not set all training options, but we have to set the default
+    % for e.g. options.nn.train.backprop.
+    idx = strcmp(defaultFields(:,1),'train');
+    options.nn.train = ...
+        nnHelper.setDefaultFields(options.nn.train,...
+        [fieldnames(defaultFields{idx,2}) struct2cell(defaultFields{idx,2})]);
 end
 
 % check fields
@@ -178,7 +184,7 @@ if CHECKS_ENABLED
     
     % poly_method
     validPolyMethod = {'regression', 'ridgeregression', ...
-    'throw-catch', 'taylor', 'singh', 'bounds', 'center'};
+    'throw-catch', 'taylor', 'singh', 'bounds', 'center','random'};
     aux_checkFieldStr(options.nn, 'poly_method', validPolyMethod, structName);
     
     % num_generators
@@ -248,17 +254,43 @@ if CHECKS_ENABLED
         {'sequential','random','length','sensitivity*length'},structName);
     aux_checkFieldClass(options.nn,'interval_center', ...
         {'logical'},structName);
+
+    % Check fields for storing and computing approximation errors in
+    % activation layers.
+    aux_checkFieldClass(options.nn,'store_approx_error', ...
+        {'logical'},structName);
+    aux_checkFieldClass(options.nn,'store_approx_error_grad', ...
+        {'logical'},structName);
+    aux_checkFieldClass(options.nn,'store_slope_grad', ...
+        {'logical'},structName);
+    aux_checkFieldClass(options.nn,'backprop_without_weight_update', ...
+        {'logical'},structName);
+
+    % We can only store the gradients if the gradients can be computed.
+    if options.nn.store_slope_grad ...
+            && ~(options.nn.backprop_without_weight_update || options.nn.train.backprop)
+        throw(CORAerror('CORA:wrongValue','options.nn.store_slope_grad',...
+            ['The gradient of the approximation slope can only be computed ' ...
+            'and stored if the relevant backpropagation inputs are stored ' ...
+            '            (i.e., options.nn.backprop_without_weight_update || options.nn.train.backprop']));
+    end
+    if options.nn.store_slope_grad ...
+            && ~(options.nn.backprop_without_weight_update || options.nn.train.backprop)
+        throw(CORAerror('CORA:wrongValue','options.nn.store_slope_grad',...
+            ['The gradient of the approximation slope can only be computed ' ...
+            'and stored if the relevant backpropagation inputs are stored ' ...
+            '            (i.e., options.nn.backprop_without_weight_update || options.nn.train.backprop']));
+    end
+
     % batch norm
-    aux_checkFieldClass(options.nn,'batch_norm_moving_stats', ...
-        {'logical'},structName);
-    aux_checkFieldClass(options.nn,'batch_norm_calc_stats', ...
-        {'logical'},structName);
+    aux_checkFieldStr(options.nn,'batch_norm_stats', ...
+        {'calc_stats','stored_stats','moving_stats'},structName);
 
     % Check neuralNetwork/verify fields.
     if setTrainFields
         % Regression poly method is not supported for training.
         aux_checkFieldStr(options.nn,'poly_method', ...
-            {'bounds','singh','center'},structName);
+            {'bounds','singh','center','random'},structName);
 
         % optimizer
         aux_checkFieldClass(options.nn.train,'optim', ...
@@ -342,15 +374,8 @@ if CHECKS_ENABLED
     aux_checkFieldStr(options.nn,'refinement_method', ...
         {'naive','zonotack','zonotack-layerwise'},structName);
     % refinement iterations
-    aux_checkFieldClass(options.nn,'refinement_min_iter', ...
-        {'scalar&integer&positive'},structName);
     aux_checkFieldClass(options.nn,'refinement_max_iter', ...
         {'scalar&integer&positive'},structName);
-    if options.nn.refinement_min_iter > options.nn.refinement_max_iter
-        throw(CORAerror('CORA:wrongFieldValue', ...
-            sprintf(['options.nn.train.refinement_min_iter cannot ' ...
-            'be greater than options.nn.train.refinement_max_iter'])));
-    end
     % verification iterations
     aux_checkFieldClass(options.nn,'max_verif_iter', ...
         {'scalar&integer&positive','scalar&inf&positive'},structName);
@@ -374,37 +399,54 @@ if CHECKS_ENABLED
     aux_checkFieldClass(options.nn,'num_relu_constraints', ...
         {'scalar&integer&nonnegative','scalar&inf&nonnegative'},structName);
     % splitting
+    % splitting parameters
     aux_checkFieldClass(options.nn,'num_splits', ...
         {'scalar&integer&positive'},structName);
     aux_checkFieldClass(options.nn,'num_dimensions', ...
         {'scalar&integer&nonnegative'},structName);
     aux_checkFieldClass(options.nn,'num_neuron_splits', ...
         {'scalar&integer&nonnegative'},structName);
-    aux_checkFieldStr(options.nn,'split_position', ...
+    aux_checkFieldStr(options.nn,'neuron_split_position', ...
             {'zero','middle'},structName);
-    aux_checkFieldClass(options.nn,'input_xor_neuron_splitting', ...
-        {'logical'},structName);
-    aux_checkFieldClass(options.nn,'add_orth_neuron_splits', ...
-        {'logical'},structName);
-    % heuristics
+
+    % input heuristics
     aux_checkFieldStr(options.nn,'input_generator_heuristic', ...
         {'most-sensitive-input-radius', ...
-        'zono-norm-gradient'},structName);
+        'zono-norm-gradient', ...
+        'most-unstable', ...
+        'product-sensitivity', ...
+        'centered-sensitivity'},structName);
+    % ...
     aux_checkFieldStr(options.nn,'input_split_heuristic', ...
         {'most-sensitive-input-radius', ...
-        'zono-norm-gradient'},structName);
+        'zono-norm-gradient', ...
+        'most-unstable', ...
+        'product-sensitivity', ...
+        'centered-sensitivity'},structName);
+
+    % neuron split heuristics
     aux_checkFieldStr(options.nn,'neuron_split_heuristic', ...
         {'least-unstable', ...
         'least-unstable-gradient', ...
         'most-sensitive-approx-error', ...
         'most-sensitive-input-radius', ...
-        'zono-norm-gradient'},structName);
+        'zono-norm-gradient', ...
+        'most-unstable', ...
+        'gap-sensitivity', ...
+        'product-sensitivity', ...
+        'centered-sensitivity'},structName);
+
+    % relu constraint heuristics
     aux_checkFieldStr(options.nn,'relu_constraint_heuristic', ...
-        {'least-unstable', ...
+        {'input-radius','approx-error','least-unstable', ...
         'least-unstable-gradient', ...
         'most-sensitive-approx-error', ...
         'most-sensitive-input-radius', ...
-        'zono-norm-gradient'},structName);
+        'zono-norm-gradient', ...
+        'most-unstable', ...
+        'gap-sensitivity', ...
+        'product-sensitivity', ...
+        'centered-sensitivity'},structName);
 end
 
 end

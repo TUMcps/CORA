@@ -180,6 +180,7 @@ end
 % Auxiliary functions -----------------------------------------------------
 
 methods
+    % for exporting (struct and json)
     function layerStruct = exportAsStruct(obj)
        layerStruct = struct;
        layerStruct.type = class(obj);
@@ -193,6 +194,7 @@ methods
 end
 
 methods (Static)
+    % for importing (struct and json)
     function layer = importFromStruct(layerStruct)
         fieldStruct = layerStruct.fields;
 
@@ -215,6 +217,7 @@ methods (Static)
                 scale = fieldStruct.scale;
                 offset = fieldStruct.offset;
                 layer = nnElementwiseAffineLayer(scale, offset);
+
                 % nonlinear ---
             case 'nnReLULayer'
                 layer = nnReLULayer();
@@ -225,6 +228,7 @@ methods (Static)
                 layer = nnSigmoidLayer();
             case 'nnTanhLayer'
                 layer = nnTanhLayer();
+
                 % special ---
             case 'nnReshapeLayer'
                 idx_out = fieldStruct.idx_out;
@@ -243,7 +247,7 @@ methods (Static)
     end
 end
 
-methods (Abstract)
+methods (Abstract) % implemented in sub-classes
     [nin, nout] = getNumNeurons(obj)
     outputSize = getOutputSize(obj, inputSize)
 end

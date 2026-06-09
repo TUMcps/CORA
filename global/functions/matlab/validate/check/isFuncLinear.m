@@ -87,10 +87,10 @@ allZeroH = sym(zeros(length(inputArgsAll)));
 % loop over each individual function
 for j=1:size(res,2)
     % eval (i,j)-th function
-    temp = f(inputArgs{:});
+    funcResult = f(inputArgs{:});
 
     % compute Jacobian
-    J = jacobian(temp(:,j),inputArgsAll);
+    J = jacobian(funcResult(:,j),inputArgsAll);
     
     % loop over each equation
     for i=1:size(J,1)

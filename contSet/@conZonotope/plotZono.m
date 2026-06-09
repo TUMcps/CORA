@@ -62,7 +62,7 @@ end
 function [cZ,dims,plotOptZ,plotOptCon] = aux_parseInput(cZ,varargin)
     % parse input arguments
     [dims,plotOptZ,plotOptCon] = setDefaultValues(...
-        {[1,2],'b',{'FaceColor','r'}},varargin);
+                                    {[1,2],{'Filled',false},{}},varargin);
     
     % check input arguments
     inputArgsCheck({{cZ,'att','conZonotope'};

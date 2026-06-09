@@ -81,12 +81,12 @@ function [Rtp,options,Verror] = linReach(nlnsysDT,Rinit,params,options)
     if isa(Rtp,'polyZonotope') && isfield(options,'polyZono') && ...
         ~isinf(options.polyZono.maxPolyZonoRatio)
 
-        temp = options.polyZono; 
-        ratio = approxVolumeRatio(Rtp,temp.volApproxMethod);
+        polyZonoOpts = options.polyZono;
+        ratio = approxVolumeRatio(Rtp,polyZonoOpts.volApproxMethod);
 
-        if ratio > temp.maxPolyZonoRatio
-            Rtp = restructure(Rtp,temp.restructureTechnique,...
-                                temp.maxDepGenOrder);
+        if ratio > polyZonoOpts.maxPolyZonoRatio
+            Rtp = restructure(Rtp,polyZonoOpts.restructureTechnique,...
+                                polyZonoOpts.maxDepGenOrder);
         end
     end
     

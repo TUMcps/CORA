@@ -38,8 +38,13 @@ function initWeights(nn,varargin)
 [method,seed,idxLayer] = setDefaultValues({'glorot','default',...
     1:length(layers)}, varargin);
 
+% Check if valid method is set.
+admissibleMethods = {'glorot','shi'};
+inputArgsCheck({{method,'str',admissibleMethods}})
+
 rng(seed); % Set seed for reproducability.
 
+% Initialize the weights of all layers.
 for i=idxLayer
     layeri = layers{i};
     if isempty(layeri.getLearnableParamNames())
@@ -49,22 +54,29 @@ for i=idxLayer
 
     if isa(layeri,'nnLinearLayer') ...
         || isa(layeri,'nnConv2DLayer') ...
+        || isa(layeri,'nnConvTranspose2DLayer') ...
         || isa(layeri,'nnLipConstrLinearLayer')
+        % Obtain the number of input neurons.
         [nin, ~] = layeri.getNumNeurons();
-        if strcmp(method,'glorot')
-            % uniform between [-a,a] where a = 1/sqrt(nin)
-            a = 1/sqrt(nin);
-            layeri.W = unifrnd(-a,a,size(layeri.W));
-            % init bias with 0
-            layeri.b = zeros(size(layeri.b));
-        elseif strcmp(method,'shi')
-            % normal distributed with mu = 0, sigma = sqrt(2*pi)/nin
-            sigma = sqrt(2*pi)/nin;
-            layeri.W = normrnd(0,sigma,size(layeri.W));
-            % init bias with 0
-            layeri.b = zeros(size(layeri.b));
+        % Initialize the layer according to the selected method.
+        switch method
+            case 'glorot'
+                % Uniform between [-a,a] where a = 1/sqrt(nin).
+                a = 1/sqrt(nin);
+                layeri.W = unifrnd(-a,a,size(layeri.W));
+                % Initial the bias with 0.
+                layeri.b = zeros(size(layeri.b));
+            case 'shi'
+                % Normal distributed with mu = 0, sigma = sqrt(2*pi)/nin.
+                sigma = sqrt(2*pi)/nin;
+                layeri.W = normrnd(0,sigma,size(layeri.W));
+                % Initial the bias with 0.
+                layeri.b = zeros(size(layeri.b));
+            otherwise
+                throw(CORAerror('CORA:wrongValue','first',admissibleMethods))
         end
     elseif isa(layeri,'nnBatchNormLayer')
+        % Use default values for batch normalization.
         layeri.scale = 1;
         layeri.offset = 0;
     end

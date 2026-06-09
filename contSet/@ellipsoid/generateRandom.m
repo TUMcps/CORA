@@ -73,8 +73,8 @@ if isempty(isdegenerate)
 end
 
 % generate a n-by-n random matrix (normal distribution) 
-tmp = randn(n);
-Q = tmp'*tmp;
+randMat = randn(n);
+Q = randMat'*randMat;
 % make sure Q is positive-semidefinite -> valid ellipsoid shape matrix
 Q = 1/2*(Q+Q');
 E = ellipsoid.empty(1);

@@ -1,16 +1,15 @@
-function [diffl,diffu] = minMaxDiffOrder(coeffs, l, u, f, der1l,der1u)
+function [diffl,diffu] = minMaxDiffOrder(layer, coeffs, l, u)
 % minMaxDiffOrder - compute the maximum and the minimum difference between the activation
 % function and a polynomial fit
 %
 % Syntax:
-%    L = nnHelper.minMaxDiffOrder(coeffs, l, u, f, der1)
+%    L = nnHelper.minMaxDiffOrder(layer, coeffs, l, u)
 %
 % Inputs:
+%    layer - nnActivationLayer
 %    coeffs - coefficients of polynomial
 %    l - lower bound of input domain
 %    u - upper bound of input domain
-%    f - function handle of activation function
-%    der1 - bounds for derivative of activation functions
 %
 % Outputs:
 %    [diffl,diffu] - interval bounding the lower and upper error
@@ -19,17 +18,19 @@ function [diffl,diffu] = minMaxDiffOrder(coeffs, l, u, f, der1l,der1u)
 % Subfunctions: none
 % MAT-files required: none
 %
-% See also: -
+% See also: nnActLayerFromHandle
 
 % Authors:       Tobias Ladner
 % Written:       28-March-2022
 % Last update:   31-August-2022 (adjust tol)
 %                30-May-2023 (output bounds)
 %                02-May-2025 (added maxPoints)
+%                18-December-2025 (refactor,monotonicity)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% settings
 tol = 1e-4;
 minPoints = 1e4;
 maxPoints = 5e9; % requires 40GB
@@ -44,7 +45,29 @@ if l == u
     return
 end
 
-% calculate bounds for derivative of polynomial
+% check if monotonicity can be exploited
+if ~isempty(layer.monotonicity) && layer.monotonicity >= 2 && numel(coeffs) == 2
+    % f is convex/concave, and linear polynomial
+    % -> check end points, and extrema
+    xs = [l,u];
+    ddiff = @(x) layer.df(x) - coeffs(1);
+    if ddiff(l) * ddiff(u) > 0
+        try
+            xs = [xs fzero(ddiff, [l u])];
+        catch ME
+            keyboard
+        end
+    end
+    ys = layer.f(xs) - polyval(coeffs,xs);
+    
+    % find bounds
+    diffl = min(ys)-eps;
+    diffu = max(ys)+eps;
+    return
+end
+
+% calculate bounds for derivative of f and polynomial
+[der1l,der1u] = layer.getDerBounds(l, u);
 [der2l,der2u] = nnHelper.getDerInterval(coeffs, l, u);
 
 % der = der1 - -der2; % '-' as we calculate f(x) - p(x)
@@ -65,9 +88,9 @@ dx = (u-l)/numPoints;
 tol = der * dx;
 
 % sample points
-x = linspace(l, u, numPoints);
-x = [l, x, u]; % add l, u in case x is empty (der = 0)
-diff = f(x) - polyval(coeffs, x);
+xs = linspace(l, u, numPoints);
+xs = [l, xs, u]; % add l, u in case x is empty (der = 0)
+diff = layer.f(xs) - polyval(coeffs, xs);
 
 % find bounds
 diffl = min(diff)-tol;

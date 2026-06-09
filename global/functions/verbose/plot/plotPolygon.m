@@ -217,13 +217,13 @@ function han = aux_plotSinglePoint(V,NVpairs,hasFaceColor,facecolor)
         NVpairs{end+1} = color;
     end
     
-    % FaceColor and marker
+    % FaceColor and marker (prepend to 
     if hasFaceColor
         % filled point
-        NVpairs = [NVpairs,{'Marker','.','MarkerFaceColor',facecolor}];
+        NVpairs = [{'Marker','.','MarkerFaceColor',facecolor},NVpairs];
     else
         % open circle
-        NVpairs = [NVpairs,{'Marker','o'}];
+        NVpairs = [{'Marker','o'},NVpairs];
     end
 
     % remove line style

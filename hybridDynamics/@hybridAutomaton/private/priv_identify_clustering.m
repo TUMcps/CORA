@@ -227,9 +227,9 @@ function [A,best,index,noise] = aux_systemMatrixStencil(trajData,stencil)
     ind = 1:size(noise,2);
 
     for i = 1:size(noise,1)
-        [tmp,ind1] = sort(noise(i,:),'descend');
-        m = floor(length(tmp)/2);
-        ind2 = find(tmp(1:m-1) > 2*tmp(2:m));
+        [sortedNoise,ind1] = sort(noise(i,:),'descend');
+        m = floor(length(sortedNoise)/2);
+        ind2 = find(sortedNoise(1:m-1) > 2*sortedNoise(2:m));
         ind = setdiff(ind,ind1(ind2));
     end
 
@@ -320,12 +320,12 @@ function [err,noise] = aux_computeError(Aall,data)
         end
     else
         for i = 1:size(x,2)-1
-            temp = B*data.u(i,:)' + c;
+            inputOffset = B*data.u(i,:)' + c;
 
-            k1 = A*x(:,i) + temp;
-            k2 = A*(x(:,i) + dt*k1/2) + temp;
-            k3 = A*(x(:,i) + dt*k2/2) + temp;
-            k4 = A*(x(:,i) + dt*k3) + temp;
+            k1 = A*x(:,i) + inputOffset;
+            k2 = A*(x(:,i) + dt*k1/2) + inputOffset;
+            k3 = A*(x(:,i) + dt*k2/2) + inputOffset;
+            k4 = A*(x(:,i) + dt*k3) + inputOffset;
             x(:,i+1) = x(:,i) + dt/6*(k1 + 2*k2 + 2*k3 + k4);
         end
     end
@@ -409,12 +409,12 @@ function err = aux_trajectoryError(trajData,clus,A,B,c,inputs,noise)
                 if all(abs(trajData{j}.x(i,:)' - trajData{j}.x(i+1,:)') < 2*noise)
 
                     A_ = A{clus_(i)}; c_ = c{clus_(i)}; B_ = B{clus_(i)};
-                    temp = B_*trajData{j}.u(i,:)' + c_;
-    
-                    k1 = A_*x(:,i) + temp;
-                    k2 = A_*(x(:,i) + dt*k1/2) + temp;
-                    k3 = A_*(x(:,i) + dt*k2/2) + temp;
-                    k4 = A_*(x(:,i) + dt*k3) + temp;
+                    inputOffset = B_*trajData{j}.u(i,:)' + c_;
+
+                    k1 = A_*x(:,i) + inputOffset;
+                    k2 = A_*(x(:,i) + dt*k1/2) + inputOffset;
+                    k3 = A_*(x(:,i) + dt*k2/2) + inputOffset;
+                    k4 = A_*(x(:,i) + dt*k3) + inputOffset;
     
                     x(:,i+1) = x(:,i) + dt/6*(k1 + 2*k2 + 2*k3 + k4);
 
@@ -589,9 +589,9 @@ function trajData = aux_dataFormatARX(trajData,options)
 
                 % terminate if derivative estimate is clean enough
                 ddx = aux_derivative(trajData{j}.t,dx);
-                tmp = trajData(j); tmp{1}.x = dx; tmp{1}.dx = ddx;
+                derivTrajData = trajData(j); derivTrajData{1}.x = dx; derivTrajData{1}.dx = ddx;
 
-                [~,~,~,noise_] = aux_systemMatrixStencil(tmp,1);
+                [~,~,~,noise_] = aux_systemMatrixStencil(derivTrajData,1);
 
                 if all(noise_ <= 2*noise)
                     break;
@@ -599,9 +599,9 @@ function trajData = aux_dataFormatARX(trajData,options)
 
                 % apply a moving average filter
                 for k = 1:n
-                    tmp = [dx(1,k)*ones(l,1);dx(:,k);dx(end,k)*ones(l,1)];
-                    tmp = filter((1/l)*ones(1,l),1,tmp);
-                    dx(:,k) = tmp(l+1:end-l);
+                    paddedDx = [dx(1,k)*ones(l,1);dx(:,k);dx(end,k)*ones(l,1)];
+                    paddedDx = filter((1/l)*ones(1,l),1,paddedDx);
+                    dx(:,k) = paddedDx(l+1:end-l);
                 end
             end
 
@@ -674,12 +674,12 @@ function data = aux_uniformSampledData(data)
             dup = find(abs(data{i}.t(2:end) - data{i}.t(1:end-1)) < eps);
             dup = [0;dup;length(data{i}.t)];
 
-            tmp = find(dup(1:end-1) == dup(2:end)-1);
+            consecDupInds = find(dup(1:end-1) == dup(2:end)-1);
 
-            if isempty(tmp)
+            if isempty(consecDupInds)
                 break;
             else
-                indKeep = setdiff(1:length(data{i}.t),dup(tmp+1))';
+                indKeep = setdiff(1:length(data{i}.t),dup(consecDupInds+1))';
                 data{i}.t = data{i}.t(indKeep);
                 data{i}.x = data{i}.x(indKeep,:);
                 if isfield(data{i},'u')
@@ -696,9 +696,9 @@ function data = aux_uniformSampledData(data)
         
             % get unique indices of current window
             indOrig = dup(j)+1:dup(j+1);
-            [~,tmp] = find(t <= data{i}.t(indOrig(end)));
-            indNew = cnt:tmp(end);
-            cnt = tmp(end) + 1;
+            [~,timeMatchInds] = find(t <= data{i}.t(indOrig(end)));
+            indNew = cnt:timeMatchInds(end);
+            cnt = timeMatchInds(end) + 1;
 
             [~,ind] = unique(data{i}.t(indOrig));
             ind = indOrig(ind);

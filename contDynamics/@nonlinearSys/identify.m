@@ -149,8 +149,8 @@ function options = aux_checkOptions(options,traj)
         x = sym('x',[size(traj(1).x,1),1]);
         u = sym('u',[min(1,size(traj(1),1)),1]); %TO-DO: traj(1).u??
         try
-            tmp = options.phi(x,u);
-            if size(tmp,2) ~= 1
+            phiVal = options.phi(x,u);
+            if size(phiVal,2) ~= 1
                 throw(CORAerror('CORA:specialError', ...
                       'options.phi: function handle has to return a vector'));
             end
@@ -178,12 +178,12 @@ function phi = aux_nonlinearBasisFunctions(traj,options)
     n = size(traj(1).x,1);
     x = sym('x',[n,1]);
 
-    temp = num2cell(x);
-    poly = temp;
+    xCell = num2cell(x);
+    poly = xCell;
 
     if ismember(options.basis,{'trig','all'})
-        poly = [poly; cellfun(@(x) cos(x),temp,'UniformOutput',false)];
-        poly = [poly; cellfun(@(x) sin(x),temp,'UniformOutput',false)];
+        poly = [poly; cellfun(@(x) cos(x),xCell,'UniformOutput',false)];
+        poly = [poly; cellfun(@(x) sin(x),xCell,'UniformOutput',false)];
     end
 
     % add inputs

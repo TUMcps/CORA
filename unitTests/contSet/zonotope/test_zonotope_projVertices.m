@@ -34,10 +34,12 @@ Z = conZonotope(c,G);
 
 % compute vertices
 V = vertices(Z);
-V_proj = projVertices(Z);
+V_proj1 = projVertices(Z,[1,2],'angle');
+V_proj2 = projVertices(Z,[1,2],'supportFunc');
 
 % check vertices
-assert(compareMatrices(V,V_proj,1e-14))
+assert(compareMatrices(V,V_proj1,1e-14))
+assert(compareMatrices(V,V_proj2,1e-14))
 
 
 % 3D zonotope
@@ -53,10 +55,12 @@ dims = {[1,2],[2,3],[1,3]};
 % check all three projections
 for i=1:length(dims)
     % computed vertices of projected zonotope
-    V_proj = projVertices(Z,dims{i});
+    V_proj1 = projVertices(Z,dims{i},'angle');
+    V_proj2 = projVertices(Z,dims{i},'supportFunc');
 
     % check vertices
-    assertLoop(compareMatrices(V_proj,V(dims{i},:),1e-14,'subset'),i)
+    assertLoop(compareMatrices(V_proj1,V(dims{i},:),1e-14,'subset'),i)
+    assertLoop(compareMatrices(V_proj2,V(dims{i},:),1e-14,'subset'),i)
 end
 
 
@@ -75,10 +79,12 @@ Z = zonotope([1;1]);
 
 % compute vertices
 V = [1;1];
-V_proj = projVertices(Z);
+V_proj1 = projVertices(Z,[1,2],'angle');
+V_proj2 = projVertices(Z,[1,2],'supportFunc');
 
 % check vertices
-assert(compareMatrices(V,V_proj,1e-14))
+assert(compareMatrices(V,V_proj1,1e-14))
+assert(compareMatrices(V,V_proj2,1e-14))
 
 end
 

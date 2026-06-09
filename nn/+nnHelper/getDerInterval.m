@@ -22,13 +22,22 @@ function [derl,deru] = getDerInterval(coeffs, l, u)
 % Authors:       Tobias Ladner
 % Written:       13-May-2022
 % Last update:   30-May-2023 (TL, fpolyder, output bounds)
+%                18-December-2025 (TL, monotonicity)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% find extreme points of derivate of polynomial
+% find extreme points of derivative of polynomial
 p = coeffs;
+% check monotonicity (quick check)
 dp = fpolyder(p);
+if numel(p) == 2 % linear polynomials are always monotonic
+    % given polynomial is monotonic -> only check bounds
+    ys = polyval(dp,[l,u]);
+    derl = min(ys,[],2); 
+    deru = max(ys,[],2);
+    return
+end
 dp2 = fpolyder(dp);
 dp2_roots = roots(dp2);
 dp2_roots = dp2_roots(imag(dp2_roots) == 0); % filter imaginary roots

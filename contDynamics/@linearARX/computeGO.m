@@ -1,4 +1,4 @@
-function p_GO = computeGO(linARX, x0, u_ref, n_k)
+function p_GO = computeGO(linARX, x0, u_ref, n_k,compute_params)
 % computeGO - compute the reference trajectory and the parameters of a GO
 %   model
 %
@@ -10,6 +10,7 @@ function p_GO = computeGO(linARX, x0, u_ref, n_k)
 %    x0 - stacked initial outputs
 %    u_ref - reference input trajectory
 %    n_k - number of time steps
+%    compute_params - boolean specifying if GO parameters are computed
 %
 % Outputs:
 %    p_GO - struct with the GO parameters for a given reference trajectory
@@ -33,8 +34,8 @@ function p_GO = computeGO(linARX, x0, u_ref, n_k)
 %                                   dimensions: n_y x n_k
 %
 % References:
-%    [1] L. Luetzow and M. Althoff, "Reachset-conformant System
-%        Identification," arXiv, 2024. 
+%    [1] L. Luetzow and M. Althoff, "Reachset-Conformant System
+%        Identification," Transactions on Automatic Control, 2026. 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -44,7 +45,7 @@ function p_GO = computeGO(linARX, x0, u_ref, n_k)
 
 % Authors:       Laura Luetzow
 % Written:       27-March-2024
-% Last update:   ---
+% Last update:   12-February-2026 (LL, add input variable compute_params)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -83,6 +84,10 @@ C = cell(n_k,1);
 D = cell(n_k,n_k);
 E = [zeros(n_y,(n_p-1)*n_y) eye(n_y)];
 
+if nargin <= 4
+    compute_params = true;
+end
+
 for k = n_p:n_k-1
 
     if ~isempty(x0) && ~isempty(u_ref)
@@ -94,37 +99,41 @@ for k = n_p:n_k-1
         end
     end
 
-    % compute reformulated system matrices
-    A_ext_powerk = cell(k+1-n_p,1);
-    A_ext_powerk{1} = 1;
-    for j = 0 : k-n_p
-        A_ext_powerk{j+2} = A_ext_powerk{j+1} * A_ext;
-    end
-    A{k+1} = A_ext_powerk{k+1-n_p+1};
-    C{k+1} = E * A{k+1};
+    if compute_params
+        % compute reformulated system matrices
+        A_ext_powerk = cell(k+1-n_p,1);
+        A_ext_powerk{1} = 1;
+        for j = 0 : k-n_p
+            A_ext_powerk{j+2} = A_ext_powerk{j+1} * A_ext;
+        end
+        A{k+1} = A_ext_powerk{k+1-n_p+1};
+        C{k+1} = E * A{k+1};
 
-    for i=0:k
-        % j = 0:
-        if k-i <= n_p
-            B{k+1,i+1} = B_ext{k-i+1};
-        else
-            B{k+1,i+1} = zeros(size(B_ext{n_p+1}));
-        end
-        
-        % j > 0:
-        for j = 1 : k-n_p
-            if k-i-j >= 0 && k-i-j <= n_p
-                B{k+1,i+1} = B{k+1,i+1} + A_ext_powerk{j+1} * B_ext{k-i-j+1};
+        for i=0:k
+            % j = 0:
+            if k-i <= n_p
+                B{k+1,i+1} = B_ext{k-i+1};
+            else
+                B{k+1,i+1} = zeros(size(B_ext{n_p+1}));
             end
+
+            % j > 0:
+            for j = 1 : k-n_p
+                if k-i-j >= 0 && k-i-j <= n_p
+                    B{k+1,i+1} = B{k+1,i+1} + A_ext_powerk{j+1} * B_ext{k-i-j+1};
+                end
+            end
+            D{k+1,i+1} = E * B{k+1,i+1};
         end
-        D{k+1,i+1} = E * B{k+1,i+1};
     end
 end
 
-% initial time steps
-for k = 0:n_p-1
-    C{k+1} = [zeros(n_y,k*n_y) eye(n_y) zeros(n_y,(n_p-k-1)*n_y)];
-    [D{k+1,1:k+1}] = deal(zeros(n_y, n_u));
+if compute_params
+    % initial time steps
+    for k = 0:n_p-1
+        C{k+1} = [zeros(n_y,k*n_y) eye(n_y) zeros(n_y,(n_p-k-1)*n_y)];
+        [D{k+1,1:k+1}] = deal(zeros(n_y, n_u));
+    end
 end
 
 % save nominal signals in p_GO

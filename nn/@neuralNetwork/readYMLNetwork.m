@@ -38,20 +38,20 @@ while ~finished
     text = text(ind(1)+2:end);
     ind = strfind(text,',');
     if ~isempty(ind)
-        temp = strtrim(text(1:ind(1)-1));
+        actFunName = strtrim(text(1:ind(1)-1));
         text = text(ind(1)+1:end);
     else
-        temp = strtrim(text(1:end-1));
+        actFunName = strtrim(text(1:end-1));
         finished = true;
     end
     % add to previous activations
-    if strcmp(temp,'Sigmoid')
-        actFun = [actFun; {'sigmoid'}]; 
-    elseif strcmp(temp,'Tanh')
-        actFun = [actFun; {'tanh'}]; 
-    elseif strcmp(temp,'ReLU')
+    if strcmp(actFunName,'Sigmoid')
+        actFun = [actFun; {'sigmoid'}];
+    elseif strcmp(actFunName,'Tanh')
+        actFun = [actFun; {'tanh'}];
+    elseif strcmp(actFunName,'ReLU')
         actFun = [actFun; {'ReLU'}];
-    elseif strcmp(temp,'Linear')
+    elseif strcmp(actFunName,'Linear')
         % no activation -> add identity
         actFun = [actFun; {'identity'}];
     else
@@ -79,15 +79,15 @@ bias = [bias,{[num2str(length(actFun)+1),':']}];
 cnt = 1;
 
 for i = 1:length(b)
-   temp = 'temp = ';
+   biasStr = 'biasData = ';
    ind = strfind(bias{cnt},'[');
    bias{cnt} = bias{cnt}(ind(1)-1:end);
    while ~startsWith(strtrim(bias{cnt}),[num2str(i+1),':'])
-       temp = [temp, strtrim(bias{cnt})];
+       biasStr = [biasStr, strtrim(bias{cnt})];
        cnt = cnt + 1;
    end
-   evalc(temp);
-   b{i} = temp';
+   evalc(biasStr);
+   b{i} = biasData';
 end
 
 % parse the weights
@@ -97,21 +97,21 @@ cnt = 1;
 
 for i = 1:length(W)
    cnt = cnt + 1;
-   temp = [];
+   weightStr = [];
    ind = strfind(weights{cnt},'[');
    weights{cnt} = weights{cnt}(ind(1)+1:end);
    % parse string
    while ~startsWith(strtrim(weights{cnt}),[num2str(i+1),':'])
-       temp = [temp, strtrim(weights{cnt})];
+       weightStr = [weightStr, strtrim(weights{cnt})];
        cnt = cnt + 1;
        if startsWith(strtrim(weights{cnt}),'- [')
           ind = strfind(weights{cnt},'[');
           weights{cnt} = weights{cnt}(ind(1)+1:end);
-          temp(end) = ';';
+          weightStr(end) = ';';
        end
    end
-   evalc(['temp = [',temp]);
-   W{i} = temp;
+   evalc(['weightData = [',weightStr]);
+   W{i} = weightData;
 end
 
 % construct neural network

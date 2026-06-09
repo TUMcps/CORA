@@ -52,8 +52,8 @@ inputArgsCheck({{cPZ,'att','conPolyZono'};
                     'polynomial','interval','all','none'}}});
 
 % contract the domain for the factors based on polynomial constraints
-temp = ones(length(cPZ.id),1);
-dom = interval(-temp,temp);
+onesVec = ones(length(cPZ.id),1);
+dom = interval(-onesVec,onesVec);
 
 if ~isempty(cPZ.A) && ~strcmp(method,'none')
 	dom = contractPoly(-cPZ.b,cPZ.A,[],cPZ.EC,dom,method);

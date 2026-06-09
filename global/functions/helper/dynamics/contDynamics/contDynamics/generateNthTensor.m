@@ -115,9 +115,9 @@ else                            % previous tensor provided
                 for k = 1:length(vars)
                    T{i}(k,k) = diff(Tprev{i}(k),vars(k));
                    for j = k+1:length(vars)
-                       temp = diff(Tprev{i}(k),vars(j));
-                       T{i}(k,j) = temp;
-                       T{i}(j,k) = temp;
+                       offDiagDeriv = diff(Tprev{i}(k),vars(j));
+                       T{i}(k,j) = offDiagDeriv;
+                       T{i}(j,k) = offDiagDeriv;
                    end
                 end
            else
@@ -128,9 +128,9 @@ else                            % previous tensor provided
                 for k = 1:length(vars)
                    T{i}{k,k} = aux_hessianFromPrevious(Tprev{i}{k},vars(k));
                    for j = k+1:length(vars)
-                       temp = aux_hessianFromPrevious(Tprev{i}{k},vars(j));
-                       T{i}{k,j} = temp;
-                       T{i}{j,k} = temp;
+                       offDiagDeriv = aux_hessianFromPrevious(Tprev{i}{k},vars(j));
+                       T{i}{k,j} = offDiagDeriv;
+                       T{i}{j,k} = offDiagDeriv;
                    end
                 end 
            end

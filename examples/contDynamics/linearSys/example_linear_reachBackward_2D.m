@@ -1,4 +1,4 @@
-function res = example_linear_reachBackward_2D
+function res = example_linear_reachBackward_2D(varargin)
 % example_linear_reachBackward_2D - example for backward reachability
 %    analysis, inspired by [1, Sec. V-A]
 %
@@ -6,7 +6,7 @@ function res = example_linear_reachBackward_2D
 %    res = example_linear_reachBackward_2D
 %
 % Inputs:
-%    -
+%    visual - bool, plotting of sets
 %
 % Outputs:
 %    res - true/false
@@ -24,9 +24,12 @@ function res = example_linear_reachBackward_2D
 % Authors:       Mark Wetzlinger
 % Written:       20-October-2024
 % Last update:   ---
-% Last revision: ---
+% Last revision: 30-March-2026 (LK, plotting flag)
 
 % ------------------------------ BEGIN CODE -------------------------------
+
+% Set default plotting value.
+[visual] = setDefaultValues({false}, varargin);
 
 % init 2D quadrotor system
 A = [0 1; 0 0];
@@ -51,11 +54,13 @@ options.verbose = true;
 % backward reachability analysis
 R = reachBackward(sys,params,options);
 
-% visualization
-figure; hold on; box on;
-useCORAcolors("CORA:contDynamics")
-plot(R,[1,2]);
-plot(Z,[1,2],'k');
+if visual
+    % visualization
+    figure; hold on; box on;
+    useCORAcolors("CORA:contDynamics")
+    plot(R,[1,2]);
+    plot(Z,[1,2],'k');
+end
 
 
 % example completed

@@ -97,8 +97,8 @@ if ~iscell(linsysDT.A)
     for i = 1:steps
 
         % compute successor state
-        temp = linsysDT.A * x(:,i) + linsysDT.B * params.u(:,i) + linsysDT.c + linsysDT.E * params.w(:,i);
-        x(:,i+1) = temp';
+        nextState = linsysDT.A * x(:,i) + linsysDT.B * params.u(:,i) + linsysDT.c + linsysDT.E * params.w(:,i);
+        x(:,i+1) = nextState';
 
         % compute output
         if comp_y
@@ -115,8 +115,8 @@ else
     for i = 1:steps
 
         % compute successor state
-        temp = linsysDT.A{i} * x(:,i) + linsysDT.B{i} * params.u(:,i) + linsysDT.c + linsysDT.E * params.w(:,i);
-        x(:,i+1) = temp';
+        nextState = linsysDT.A{i} * x(:,i) + linsysDT.B{i} * params.u(:,i) + linsysDT.c + linsysDT.E * params.w(:,i);
+        x(:,i+1) = nextState';
 
         % compute output
         if comp_y

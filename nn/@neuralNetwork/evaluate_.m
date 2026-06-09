@@ -86,7 +86,8 @@ function r = aux_evaluateInterval(obj, input, options, idxLayer)
     for k = idxLayer
         layer_k = obj.layers{k};
         % Store input for backpropgation
-        if options.nn.train.backprop
+        if options.nn.train.backprop || ...
+                (isa(layer_k,'nnActivationLayer') && options.nn.backprop_without_weight_update)
             layer_k.backprop.store.input = r;
         end
         r = layer_k.evaluateInterval(r, options);

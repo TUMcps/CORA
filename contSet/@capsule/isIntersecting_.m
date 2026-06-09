@@ -138,8 +138,8 @@ function res = aux_isIntersecting_capsule(C1,C2)
     dist = norm(p1-p2);
     
     % check for intersection
-    tmp = C1.r + C2.r;
-    res = dist < tmp | withinTol(dist,tmp);
+    combinedRadius = C1.r + C2.r;
+    res = dist < combinedRadius | withinTol(dist,combinedRadius);
     
 end
 

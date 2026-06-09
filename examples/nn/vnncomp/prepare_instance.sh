@@ -25,6 +25,12 @@ echo "Preparing $TOOL_NAME for benchmark instance '$BENCHMARK' with onnx file '$
 # Check GPU status.
 nvidia-smi
 
-sudo matlab -nodisplay -r "prepare_instance('$BENCHMARK','$ONNX_FILE','$VNNLIB_FILE'); quit;"
+# Build MATLAB command, optionally with overrides file.
+if [ -n "$CORA_OVERRIDES_FILE" ] && [ -f "$CORA_OVERRIDES_FILE" ]; then
+    echo "Using overrides file: $CORA_OVERRIDES_FILE"
+    sudo matlab -nodisplay -r "prepare_instance('$BENCHMARK','$ONNX_FILE','$VNNLIB_FILE','$CORA_OVERRIDES_FILE'); quit;"
+else
+    sudo matlab -nodisplay -r "prepare_instance('$BENCHMARK','$ONNX_FILE','$VNNLIB_FILE'); quit;"
+fi
 
 exit 0

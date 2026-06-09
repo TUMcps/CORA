@@ -83,8 +83,8 @@ else
         c = zB;
         zB = S;
         for i = 1:zB.parallelSets
-            temp = zonotope(c);
-            zB.Z{i} = cartProd_(temp,zB.Z{i},'exact');
+            Zc = zonotope(c);
+            zB.Z{i} = cartProd_(Zc,zB.Z{i},'exact');
         end
 
     else

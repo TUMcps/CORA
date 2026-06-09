@@ -48,6 +48,7 @@ classdef neurNetContrSys < contDynamics
 % Written:       17-September-2021
 % Last update:   23-November-2022 (TL, polish)
 %                14-December-2022 (TL, property check in inputArgsCheck)
+%                20-February-2026 (TL, add linearSys/linearSysDT/nonlinearSysDT/linParamSys)
 % Last revision: 18-June-2023 (MW, restructure using auxiliary functions)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -117,7 +118,7 @@ function aux_checkInputArgs(sys,nn,dt,n_in)
 
         % check data types
         inputArgsCheck({ ...
-            {sys,'att',{'nonlinearSys','nonlinParamSys'}},...
+            {sys,'att',{'linearSys','linearSysDT','linParamSys','nonlinearSys','nonlinearSysDT','nonlinParamSys'}},...
             {nn,'att',{'neuralNetwork'}},...
             {dt,'att','numeric',{'scalar','positive'}},...
         })
@@ -141,20 +142,107 @@ function [sys,nn,dt] = aux_computeProperties(sys,nn,dt)
 % compute properties of neurNetContrSys object
 
     n = sys.nrOfDims; m = nn.neurons_out;
+    name = [sys.name, 'Controlled'];
+    n_ext = max(1, sys.nrOfInputs - m);
+
     % instantiate closed-loop system
-    if isa(sys, 'nonlinearSys')
+    if isa(sys, 'nonlinearSys') % nonlinear ---
 
         f = @(x,u) [sys.mFile(x(1:n), [x(n+1:n+m); u]); zeros(m, 1)];
-        name = [sys.name, 'Controlled'];
-        sys = nonlinearSys(name, f, n+m, max(1, sys.nrOfInputs-m));
+        sys = nonlinearSys(name, f, n+m, n_ext);
+
+    elseif isa(sys, 'nonlinearSysDT')
+
+        f = @(x,u) [sys.mFile(x(1:n), [x(n+1:n+m); u]); zeros(m, 1)];
+        sys = nonlinearSysDT(name, f, dt, n+m, n_ext);
 
     elseif isa(sys, 'nonlinParamSys')
 
         f = @(x,u,p) [sys.mFile(x(1:n), [x(n+1:n+m); u], p); zeros(m, 1)];
-        name = [sys.name, 'Controlled'];
-        sys = nonlinParamSys(name, f, n+m, max(1, sys.nrOfInputs-m));
+        sys = nonlinParamSys(name, f, n+m, n_ext);
+
+    elseif isa(sys, 'linearSys') % linear ---
+
+        [A_aug, B_aug, c_aug] = aux_augmentLinear(sys, n, m, n_ext);
+        sys = linearSys(name, A_aug, B_aug, c_aug);
+
+    elseif isa(sys, 'linearSysDT')
+
+        [A_aug, B_aug, c_aug] = aux_augmentLinear(sys, n, m, n_ext);
+        sys = linearSysDT(name, A_aug, B_aug, c_aug, dt);
+
+    elseif isa(sys, 'linParamSys')
+
+        [A_aug, B_aug, c_aug] = aux_augmentLinParam(sys, n, m, n_ext);
+        sys = linParamSys(name, A_aug, B_aug, c_aug, sys.type);
 
     end
+
+end
+
+function [A_aug, B_aug, c_aug] = aux_augmentLinear(sys, n, m, n_ext)
+% build augmented matrices for linear closed-loop system
+%   augmented state: [x; u_nn], where u_nn = x(n+1:n+m) are the NN outputs
+%   x'     = A*x + B_nn*u_nn + B_ext*u_ext + c  =>  [A, B_nn; 0, 0] * x_aug + [B_ext; 0] * u_ext
+%   u_nn'  = 0  (reset by NN at each sampling step)
+
+    % expand scalar B to full matrix (scalar B means identity-like effect)
+    B = sys.B;
+    if isscalar(B)
+        B = B * eye(n);
+    end
+
+    A_aug = [sys.A, B(:, 1:m); zeros(m, n+m)];
+
+    if sys.nrOfInputs > m
+        B_aug = [B(:, m+1:end); zeros(m, n_ext)];
+    else
+        B_aug = zeros(n+m, 1);
+    end
+
+    c_aug = [sys.c; zeros(m, 1)];
+
+end
+
+function [A_aug, B_aug, c_aug] = aux_augmentLinParam(sys, n, m, n_ext)
+% build augmented matrices for linParamSys closed-loop system
+%   same structure as aux_augmentLinear; A may be intervalMatrix/matZonotope,
+%   B is assumed numeric (uncertainty typically lives in A only)
+
+    B = sys.B;
+    if isscalar(B)
+        B = B * eye(n);
+    end
+
+    B_nn = B(:, 1:m);
+
+    if isa(sys.A, 'intervalMatrix')
+        % intervalMatrix has no horzcat/vertcat; work through numeric bounds
+        A_inf = infimum(sys.A.int);
+        A_sup = supremum(sys.A.int);
+        A_aug_inf = [A_inf, B_nn; zeros(m, n+m)];
+        A_aug_sup = [A_sup, B_nn; zeros(m, n+m)];
+        A_aug = intervalMatrix((A_aug_inf+A_aug_sup)/2, (A_aug_sup-A_aug_inf)/2);
+    elseif isa(sys.A, 'matZonotope')
+        % matZonotope: augment center and each generator slice (n x n x h)
+        C_aug = [sys.A.C, B_nn; zeros(m, n+m)];
+        h = size(sys.A.G, 3);
+        G_aug = zeros(n+m, n+m, h);
+        for i = 1:h
+            G_aug(:,:,i) = [sys.A.G(:,:,i), zeros(n,m); zeros(m,n+m)];
+        end
+        A_aug = matZonotope(C_aug, G_aug);
+    else
+        A_aug = [sys.A, B_nn; zeros(m, n+m)];
+    end
+
+    if sys.nrOfInputs > m
+        B_aug = [B(:, m+1:end); zeros(m, n_ext)];
+    else
+        B_aug = zeros(n+m, 1);
+    end
+
+    c_aug = [sys.c; zeros(m, 1)];
 
 end
 

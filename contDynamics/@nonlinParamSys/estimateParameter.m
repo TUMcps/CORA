@@ -63,7 +63,7 @@ function p = estimateParameter(sys,varargin)
                   'Number of states for system and data does not match!'));
     else
         m = 1;
-        if isfield(traj(1),'u')
+        if ~isempty(traj(1).u)
             m = size(traj(1).u,1);
         end
         if m ~= sys.nrOfInputs
@@ -171,7 +171,7 @@ function [cost,grad] = aux_costMultiStep(p,traj,f,jacFp,jacFx)
             xi = traj(i).x(:,j);
             dt = traj(i).t(j) - traj(i).t(j-1);
 
-            if isfield(traj(i),'u')
+            if ~isempty(traj(i).u)
                 ui = traj(i).u(:,j-1);
             else
                 ui = 0;

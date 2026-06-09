@@ -12,7 +12,7 @@ function res = example_neuralNetwork_train_monotonic()
 %    res - boolean
 %
 % References:
-%    [1] Kitouni, O. et al. Expressive monotonic neural networks. (ICLR). 2023
+%    [1] Nolte, N. et al. Expressive monotonic neural networks. (ICLR). 2023
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -29,9 +29,11 @@ function res = example_neuralNetwork_train_monotonic()
 
 rng('default')
 
-% We train a monotonic neural network to approximate f(x) = pi*x + sin(pi*x).
-
-f = @(x) x + 1/(2*pi)*sin(2*pi*x);
+% We train a monotonic neural network to approximate h.
+a = 3/2;
+f = @(x) x + sin(x); % Base monotonic function
+g = @(x) f(a*2*pi*x); % Scale the input to [0,1]
+h = @(x) 1/g(1)*g(x); % Scale the output to [0,1]
 
 % Generate the Dataset. ---------------------------------------------------
 
@@ -41,19 +43,22 @@ xu = 1;
 
 % Samples data points.
 xs = linspace(xl,xu,1000);
-ts = f(xs);
+ts = h(xs);
+% Create validation data.
+vXs = linspace(xl,xu,333);
+vTs = h(vXs);
 
 % Specify Network and Training Parameters. --------------------------------
 
-n0 = 1; % number of input dimensions.
-nK = 1; % number of output dimensions.
-nk = 50; % number of hidden dimensions.
-K = 3; % number of layers.
-actfun = 'groupSort'; % type of activation function, i.e., {'relu','tanh','groupSort'}.
+n0 = size(xs,1); % number of input dimensions.
+nK = size(ts,1); % number of output dimensions.
+nk = 32; % number of hidden dimensions.
+K = 4; % number of layers.
+actfun = 'groupsort'; % type of activation function
 
 % Specify the training parameters.
-lr = 1e-3; % learning rate.
-numEpoch = 300; % number of epochs.
+lr = 1e-2; % learning rate.
+numEpoch = 250; % number of epochs.
 bSz = 64; % batch size.
 
 % Train the Neural Network. -----------------------------------------------
@@ -63,16 +68,15 @@ options.nn.train = struct( ...
     'optim',nnAdamOptimizer(lr),...
     'max_epoch',numEpoch,...
     'mini_batch_size',bSz,...
-    'loss','mse',...
-    'shuffle_data','every_epoch' ...
+    'loss','mse' ...
 );
 
 % Create a random neural network.
-lambda = 1; % Lipschitz constant
-nn = aux_generateMonotonicNeuralNetwork(options,n0,nk,nK,K,actfun,lambda);
+lambda = 3; % Lipschitz constant
+[nn,~,options] = aux_generateMonotonicNeuralNetwork(options,n0,nk,nK,K,actfun,lambda);
 
 % Train the neural network.
-loss = nn.train(xs,ts,[],[],options,true);
+loss = nn.train(xs,ts,vXs,vTs,options,true);
 
 % Visualize the Loss. -----------------------------------------------------
 
@@ -103,7 +107,7 @@ end
 
 % Auxiliary functions -----------------------------------------------------
 
-function [nn,layers] = aux_generateMonotonicNeuralNetwork(options, ...
+function [nn,layers,options] = aux_generateMonotonicNeuralNetwork(options, ...
     n0,nk,nK,K,actfun,lambda)
     % Generate a random neural network.
     % - n0: number of input dimensions.
@@ -128,26 +132,21 @@ function [nn,layers] = aux_generateMonotonicNeuralNetwork(options, ...
         nin = nks(i);
         % Obtain the number of output neurons.
         nout = nks(i+1);
+        % Compute the Lipschitz constant for the i-th layer.
+        lambdai = nthroot(lambda,K);
         % Create a linear layer.
-        layers{end+1} = nnLipConstrLinearLayer(zeros(nout,nin),zeros(nout,1),lambda^-(1/K));
+        layers{end+1} = nnLipConstrLinearLayer( ...
+            zeros(nout,nin),zeros(nout,1),lambdai);
         if i < length(nks)-2
-            % Append an activation layer (only if not the last linear layer).
-            switch actfun
-                case 'relu'
-                    layers{end+1} = nnReLULayer;
-                case 'tanh'
-                    layers{end+1} = nnTanhLayer;
-                case 'groupSort'
-                    layers{end+1} = nnGroupSortLayer;
-                otherwise
-                    throw(CORAerror('CORA:wrongValue', ...
-                        'actfun',{'relu','tanh'}));
-            end
+            % Create an activation layer.
+            actl = nnActivationLayer.instantiateFromString(actfun);
+            % Append the activation layer.
+            layers{end+1} = actl;
         end
     end
     % Create the resiudal connection.
     addLayer = nnCompositeLayer({ ...
-        {nnLinearLayer(lambda*ones(n0,1),0,'residualConnection',false)}; ... % Linear layer to sum input dimensions with fixed weights.
+        {nnLinearLayer(lambda*ones([nK n0]),0,'residualConnection',false)}; ... % Linear layer to sum input dimensions with fixed weights.
         layers ...
     },'add');
 
@@ -156,9 +155,6 @@ function [nn,layers] = aux_generateMonotonicNeuralNetwork(options, ...
     nn.setInputSize([n0 1]);
     % Initialize the weights and bias.
     nn.initWeights('glorot');
-    % Normalize the weights.
-    nn.normWeights(options);
-
 end
 
 % ------------------------------ END OF CODE ------------------------------

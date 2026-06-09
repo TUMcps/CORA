@@ -112,6 +112,8 @@ methods (Static = true)
     cZ = generateRandom(varargin) % generate random constrained zonotope
     cZ = empty(n) % instantiates an empty constrained zonotope
     cZ = origin(n) % instantiates a constrained zonotope representing the origin in R^n
+
+    [l,u,bl,bu] = approximateBoundsWithGPU(cZs,numUnionConst,options) % GPU-based bound approximation
 end
 
 methods (Access = protected)

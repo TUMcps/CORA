@@ -37,10 +37,12 @@ projDims = [2,3];
 V = [-4 -2; -4 3; 4 3; 4 -2]';
 
 % compute projected vertices
-V_proj = projVertices(I,projDims);
+V_proj1 = projVertices(I,projDims,'angle');
+V_proj2 = projVertices(I,projDims,'supportFunc');
 
 % check vertices
-assert(compareMatrices(V,V_proj,1e-14))
+assert(compareMatrices(V,V_proj1,1e-14))
+assert(compareMatrices(V,V_proj2,1e-14))
 
 
 % degenerate interval (line)
@@ -53,10 +55,12 @@ projDims = [1,3];
 V = [-3 3; 1 3]';
 
 % compute projected vertices
-V_proj = projVertices(I,projDims);
+V_proj1 = projVertices(I,projDims,'angle');
+V_proj2 = projVertices(I,projDims,'supportFunc');
 
 % check vertices
-assert(compareMatrices(V,V_proj,1e-14))
+assert(compareMatrices(V,V_proj1,1e-14))
+assert(compareMatrices(V,V_proj2,1e-14))
 
 
 % degenerate interval (point)
@@ -69,10 +73,12 @@ projDims = [2,3];
 V = [-4;3];
 
 % compute projected vertices
-V_proj = projVertices(I,projDims);
+V_proj1 = projVertices(I,projDims,'angle');
+V_proj2 = projVertices(I,projDims,'supportFunc');
 
 % check vertices
-assert(compareMatrices(V,V_proj,1e-14))
+assert(compareMatrices(V,V_proj1,1e-14))
+assert(compareMatrices(V,V_proj2,1e-14))
 
 end
 

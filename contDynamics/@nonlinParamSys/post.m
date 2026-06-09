@@ -35,17 +35,17 @@ function [Rnext,options] = post(obj,R,params,options)
 if strcmp(options.alg,'poly') && isa(R.tp{1}.set,'polyZonotope') && ...
    isfield(options,'polyZono') && ~isinf(options.polyZono.maxPolyZonoRatio)
 
-    temp = options.polyZono;
+    polyZonoOpts = options.polyZono;
 
     for i = 1:length(R.tp)
-        
-        % compute ratio of dependent to independent part 
-        ratio = approxVolumeRatio(R.tp{i}.set,temp.volApproxMethod);
+
+        % compute ratio of dependent to independent part
+        ratio = approxVolumeRatio(R.tp{i}.set,polyZonoOpts.volApproxMethod);
 
         % restructure the polynomial zonotope
-        if ratio > temp.maxPolyZonoRatio
+        if ratio > polyZonoOpts.maxPolyZonoRatio
            R.tp{i}.set = restructure(R.tp{i}.set, ...
-                      temp.restructureTechnique,temp.maxDepGenOrder);
+                      polyZonoOpts.restructureTechnique,polyZonoOpts.maxDepGenOrder);
         end
     end
 end

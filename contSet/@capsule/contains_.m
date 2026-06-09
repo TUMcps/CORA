@@ -185,8 +185,8 @@ function res = aux_containsSphere(C,c,r)
     % check case where capsule is a hypersphere (no generator)
     if isempty(C.g)
         
-        tmp = norm(C.c-c) + r;
-        res = tmp < C.r | withinTol(tmp,C.r);
+        dist = norm(C.c-c) + r;
+        res = dist < C.r | withinTol(dist,C.r);
        
     else
        
@@ -201,15 +201,15 @@ function res = aux_containsSphere(C,c,r)
             diff = (C.c + proj*g_) - c;
             
             % check if distance to axis is smaller than the radius
-            tmp = norm(diff) + r;
-            res = tmp < C.r | withinTol(tmp,C.r);
+            distToAxis = norm(diff) + r;
+            res = distToAxis < C.r | withinTol(distToAxis,C.r);
             
         else    
             % check if point is in upper or lower hypersphere
-            tmp = norm(C.c + C.g - c) + r;
-            res1 = tmp < C.r | withinTol(tmp,C.r);
-            tmp = norm(C.c - C.g - c) + r;
-            res2 = tmp < C.r | withinTol(tmp,C.r);
+            distUpper = norm(C.c + C.g - c) + r;
+            res1 = distUpper < C.r | withinTol(distUpper,C.r);
+            distLower = norm(C.c - C.g - c) + r;
+            res2 = distLower < C.r | withinTol(distLower,C.r);
             
             res = res1 | res2;
         end  
@@ -254,8 +254,8 @@ function res = aux_inSphere(c,r,p)
 % checks if a point is contained in the hypersphere defined by center and
 % radius
     
-    tmp = norm(p-c);
-    res = tmp < r | withinTol(tmp,r);
+    dist = norm(p-c);
+    res = dist < r | withinTol(dist,r);
 
 end
 

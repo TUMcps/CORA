@@ -22,6 +22,7 @@ function matZ = matZonotope(matP)
 % Authors:       Matthias Althoff
 % Written:       22-July-2010 
 % Last update:   02-May-2024 (TL, new structure of vertices)
+%                13-April-2026 (LS, fix shape of matrix zonotope)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -33,9 +34,13 @@ matV = matP.V;
 V = reshape(matV,[],size(matV,3));
 
 %convert to zonotope
-Z = zonotope.enclosePoints(V);
+Z = compact(zonotope.enclosePoints(V),'zeros');
+
+% reshape center and generator matrix
+C = reshape(Z.c,[size(matP),1]);
+G = reshape(Z.G,[size(matP),size(Z.G,2)]);
 
 %convert to matrix zonotope
-matZ = matZonotope(Z);
+matZ = matZonotope(C,G);
 
 % ------------------------------ END OF CODE ------------------------------

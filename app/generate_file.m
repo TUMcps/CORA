@@ -790,12 +790,12 @@ elseif get(handles.rbCreateMat_Linear, 'Value')
         if isfield(handles, 'B')
             mat_str = handles.B;
             B = get(handles.textB_Linear, 'String');
-            temp = evalin('base',B);
+            Bmat = evalin('base',B);
             A = evalin('base',A);
-            if isscalar(temp)
+            if isscalar(Bmat)
                 handles.nrOfInputs_Linear = size(A,1);
             else
-                handles.nrOfInputs_Linear = size(temp,2);
+                handles.nrOfInputs_Linear = size(Bmat,2);
             end
             if ~isempty(mat_str)
                 fprintf(id, 'B = %s;\n', B);

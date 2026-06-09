@@ -1,6 +1,40 @@
-CORA v2026.0.1
+CORA v2026.1.0
 
-- contDynamics/conform: added outlier detection
-- contDynamics/reach: bug fix
-- contSet/plot: bug fix
-- global/classes/confPredictor: added, makes set-based predictions with coverage guarantees
+- added MATLAB R2025b Docker image and made it the default
+- conZonotope/polytope: added fast 2D constrained-zonotope to halfspace-polytope conversion
+- contDynamics/falsify: added, disproves specifications by finding falsifying trajectories (white-box and black-box Monte-Carlo/Koopman algorithms)
+- contDynamics/neurNetContrSys: added support for linearSys/linearSysDT/nonlinearSysDT/linParamSys as the plant dynamics
+- contDynamics/simulateConstrained: bug fix, consistently return inputs in trajectory objects
+- contDynamics/simulateRandom: added options.type = 'falsify' to obtain extreme trajectories via falsification
+- contSet supportFunc_: refactored to share a common LP-based support-function helper with 'range' support and x0 warm-starting; spectraShadow/supportFunc_ bug fix
+- contSet/double|single|sparse|full: added, converts the numeric properties of a set
+- contSet/projVertices: added new fast 2D vertex-projection algorithm for much faster polytope projection and plotting
+- contSet/projVertices: bug fix, collinear points could delete wrong vertex positions
+- examples/nn/vnncomp: added hyperparameter tuning scripts (grid search with crash-safe resume) and an extensive verify test suite
+- global/CORAtable: added 'time-detailed' column type
+- global/plotPoints|plotPolygon|CORAwarning|enlargeAxis: bug fixes
+- interval/randPoint: bug fix, set only containing the center
+- matPolytope/matZonotope: bug fix, corrected dimensions in conversion
+- neuralNetwork/computeReducedNetwork: added, automatic neuron-merging-based network reduction
+- neuralNetwork/convertDLToolboxNetwork: bug fix, correctly handle ScalingLayer and skip CustomOutputLayer during ONNX conversion (fixed spurious violations in safeNLP and cora benchmarks)
+- neuralNetwork/display: now recursively lists layers within nnCompositeLayer
+- neuralNetwork/generateFromString: added, easy construction of neural networks from a string
+- neuralNetwork/getNumParams: added, computes the number of learnable parameters
+- neuralNetwork/verify: added specification-driven input refinement and a modular nnHeuristics package with new splitting heuristics (least-unstable-gradient, gap-/product-/centered-sensitivity, etc.)
+- neuralNetwork/verify: integrated iterative-dual conZonotope bounding solver and split-tree visualization
+- nn/nnActivationLayer/evaluateZonotopeBatch: bug fix, invalid interval bounds for negative activation slopes
+- nn/nnActivationLayer: speed up through monotonicity exploitation
+- nn/nnBatchNormLayer: bug fix in training gradient computation; simplified implementation
+- nn/nnConvTranspose2DLayer: added, supports transposed 2D convolutions (deconvolutions), enabling GAN verification (cgan_2023 benchmark)
+- nn/vnn-comp: added cascading specification constraints
+- nn: added VNN-LIB 2.0 .vnnlib parser (declare-network blocks, multi-dimensional indexing, ==/isomorphic-to, multi-network specs) with full 1.x backward compatibility
+- nn: added multi-network VNN-COMP support (monotonic_acasxu, isomorphic_acasxu) via a joint-network builder, plus VNN-LIB 2.0 counterexample output format
+- nnHelper/buildJointNetwork: added, assembles a joint network and projects coupled input polytopes
+- polyZonotope/volume: added volume computation for polynomial zonotopes
+- polytope/plotHalfspaces: added, plots the halfspaces of a polytope
+- polytope/project: bug fix, fallback projection when fourier.m is unavailable (ARM Macs)
+- polytope/reduce: added
+- reachSet/plot: bug fix, do not unify sets when plotting the time-point solution
+- stl/gradientRobustness: added, computes the gradient through a temporal logic formula
+- stl/robustnessEncodingMILP: added MILP encoding of STL robustness
+- zonotope/reduceUnderApprox: added underapproximative order reduction methods

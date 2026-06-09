@@ -89,9 +89,9 @@ pHA__ = parallelHybridAutomaton(components__,inputBinds);
 
 % full comparison
 assert(isequal(pHA,pHA));
-temp = isequal([pHA,pHA_],[pHA,pHA__]);
-assert(all(size(temp) == [1,2]));
-assert(all(temp == [true false]));
+eqResult = isequal([pHA,pHA_],[pHA,pHA__]);
+assert(all(size(eqResult) == [1,2]));
+assert(all(eqResult == [true false]));
 % slightly different automata
 assert(~isequal(pHA,pHA_));
 assert(~isequal(pHA,pHA__));

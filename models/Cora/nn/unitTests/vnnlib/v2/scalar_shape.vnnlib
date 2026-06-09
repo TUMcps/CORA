@@ -1,0 +1,15 @@
+; Tests scalar shape [] (empty bracket list = scalar tensor).
+; N: scalar input X -> scalar output Y
+
+(vnnlib-version <2.0>)
+
+(declare-network N
+    (declare-input X real [])
+    (declare-output Y real [])
+)
+
+; scalar variable referenced without index
+(assert (>= X 0.5))
+(assert (<= X 1.5))
+
+(assert (<= Y 10.0))

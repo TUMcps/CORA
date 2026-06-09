@@ -183,8 +183,8 @@ for j = 1:5
 
     % check if all points are located inside the over-approximating
     % polytope
-    temp = C * points - d * ones(1,size(points,2));
-    assertLoop(all(temp <= 1e-12),j)
+    constraintVals = C * points - d * ones(1,size(points,2));
+    assertLoop(all(constraintVals <= 1e-12),j)
 end
 
 

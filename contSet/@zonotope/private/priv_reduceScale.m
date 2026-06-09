@@ -79,8 +79,8 @@ function [A,b,Aeq,beq,lb,ub,f,ind] = aux_contTedrake(Gx,Gy)
     nx = size(Gx,2); ny = size(Gy,2);
 
     % constraint Gx = Gy*T
-    temp = repmat({Gy},[nx,1]);
-    A1_ = blkdiag(temp{:});
+    GyBlkCells = repmat({Gy},[nx,1]);
+    A1_ = blkdiag(GyBlkCells{:});
     
     Aeq1 = [zeros(size(A1_,1),ny),A1_];
     beq1 = reshape(Gx,[numel(Gx),1]);

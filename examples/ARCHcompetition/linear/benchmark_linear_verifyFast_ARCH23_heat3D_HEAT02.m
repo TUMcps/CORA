@@ -37,9 +37,9 @@ sys = linearSys('heat',A,B,[],C);
 % Parameters --------------------------------------------------------------
     
 x0 = aux_getInit(A,samples,1);
-temp = diag(0.1*x0);
-temp = temp(:,x0 > 0);
-params.R0 = zonotope(x0,temp);
+genMat = diag(0.1*x0);
+genMat = genMat(:,x0 > 0);
+params.R0 = zonotope(x0,genMat);
 params.U = zonotope(interval(zeros(size(sys.B,2),1)));
 
 params.tFinal = 40;

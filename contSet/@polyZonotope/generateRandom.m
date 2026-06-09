@@ -115,8 +115,8 @@ end
 
 ind = find(sum(E,2) == 0);
 for i = 1:length(ind)
-   temp = floor(1 + rand*(size(E,2)-1));
-   E(ind(i),temp) = aux_randomExponent(exp_low,exp_up);
+   randColIdx = floor(1 + rand*(size(E,2)-1));
+   E(ind(i),randColIdx) = aux_randomExponent(exp_low,exp_up);
 end
 
 % remove redundant exponents

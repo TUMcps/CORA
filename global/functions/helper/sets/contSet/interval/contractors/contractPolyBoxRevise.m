@@ -77,16 +77,16 @@ function res = contractPolyBoxRevise(f,dom)
             if infimum(dom(i)) < 0 && supremum(dom(i)) > 0
 
                  % contract first splitted domain
-                 tmp = dom;
-                 int1 = interval(infimum(tmp(i)),0);
+                 domCopy = dom;
+                 int1 = interval(infimum(domCopy(i)),0);
                  dom(i) = int1;
                  res1_ = aux_contractBox(x(i),p(j),dom,i);
 
                  % contract second splitted domain
-                 int2 = interval(0,supremum(tmp(i)));
+                 int2 = interval(0,supremum(domCopy(i)));
                  dom(i) = int2;
                  res2_ = aux_contractBox(x(i),p(j),dom,i);
-                 dom = tmp;
+                 dom = domCopy;
 
                  % combine the results
                  res_ = interval(min(res1_),max(res2_));

@@ -253,9 +253,9 @@ end
 % save only what is precisely needed
 if options.isHessianConst
     for i=1:length(H)
-        temp = abs(H{i});
+        absHessian = abs(H{i});
         options.hessianConst{i} = ...
-            max(infimum(temp),supremum(temp));
+            max(infimum(absHessian),supremum(absHessian));
     end
 end
 options.hessianCheck = true;

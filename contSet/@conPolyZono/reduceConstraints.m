@@ -89,14 +89,14 @@ function cPZ = reduceConstraints(cPZ,varargin)
         c(con+n) = []; G(con+n,:) = [];
         
         % insert solved constrained for all occurancies of monomials
-        temp = find(pZ.E(:,ind) > 0);
-        
+        nonzeroExpIdx = find(pZ.E(:,ind) > 0);
+
         for i = 1:length(index)
             if expo(i) <= 2           % to prevent exposion of comp. time
                 [Gcon_,Econ_] = aux_getPolynomial(Gcon,Econ,expo(i));
                 G = [G, G(:,index(i)) * Gcon_]; 
                 G(:,index(i)) = zeros(size(G,1),1);
-                e = E(:,index(i)); e(temp) = zeros(length(temp),1);    
+                e = E(:,index(i)); e(nonzeroExpIdx) = zeros(length(nonzeroExpIdx),1);    
                 E = [E, e*ones(1,size(Econ_,2)) + Econ_];
 
                 % reduce smallest gens to remain computationally feasible
@@ -151,16 +151,16 @@ function [res,ind,index,expo,exact] = aux_selectMonomial(pZ,n,red)
     
     for i = indCon
         
-        temp = find(pZ.E(:,i) > 0);
+        nonzeroRows = find(pZ.E(:,i) > 0);
         index = []; expo = [];
-        
+
         % determine monomials containing multiples of the current monomial
         for j = indGen
-            
-            if all(pZ.E(temp,j) > 0)
-                coeff = pZ.E(temp(1),j) / pZ.E(temp(1),i);
-                if mod(coeff,1) == 0 && ... 
-                   all(coeff*pZ.E(temp,i) == pZ.E(temp,j))
+
+            if all(pZ.E(nonzeroRows,j) > 0)
+                coeff = pZ.E(nonzeroRows(1),j) / pZ.E(nonzeroRows(1),i);
+                if mod(coeff,1) == 0 && ...
+                   all(coeff*pZ.E(nonzeroRows,i) == pZ.E(nonzeroRows,j))
                     index = [index, j];
                     expo = [expo, coeff];
                 end
@@ -184,26 +184,26 @@ function [res,ind,index,expo,exact] = aux_selectMonomial(pZ,n,red)
     val = zeros(length(ind),1);
     
     for i = 1:length(ind)
-        temp1 = setdiff(1:size(pZ.G,2),indList{i});
-        temp2 = any(pZ.E(pZ.E(:,ind(i)) > 0,temp1) > 0);
-        if ~isempty(temp2)
-            val(i) = sum(sum(pZ.G(:,temp1(temp2)).^2,1));
+        otherGenIdx = setdiff(1:size(pZ.G,2),indList{i});
+        sharedFactors = any(pZ.E(pZ.E(:,ind(i)) > 0,otherGenIdx) > 0);
+        if ~isempty(sharedFactors)
+            val(i) = sum(sum(pZ.G(:,otherGenIdx(sharedFactors)).^2,1));
         end
     end
     
     % select monomial whos removal destroyes the least dependencies
-    temp = find(val == 0);
-    
-    if isempty(temp)
-        [~,temp] = sort(val,'ascend');
-        ind = ind(temp(1)); index = indList{temp(1)}; 
-        expo = expoList{temp(1)}; return;
-    elseif length(temp) == 1 && ~red
-        res = 1; ind = ind(temp(1)); 
-        index = indList{temp(1)}; expo = expoList{temp(1)}; return;
+    zeroValIdx = find(val == 0);
+
+    if isempty(zeroValIdx)
+        [~,sortIdx] = sort(val,'ascend');
+        ind = ind(sortIdx(1)); index = indList{sortIdx(1)};
+        expo = expoList{sortIdx(1)}; return;
+    elseif length(zeroValIdx) == 1 && ~red
+        res = 1; ind = ind(zeroValIdx(1));
+        index = indList{zeroValIdx(1)}; expo = expoList{zeroValIdx(1)}; return;
     else
-        ind = ind(temp); 
-        indList = indList(temp); expoList = expoList(temp);
+        ind = ind(zeroValIdx);
+        indList = indList(zeroValIdx); expoList = expoList(zeroValIdx);
     end
     
     % computed an estimate for the expected Hausdorff-distance error
@@ -211,19 +211,19 @@ function [res,ind,index,expo,exact] = aux_selectMonomial(pZ,n,red)
     % the method descriped in Appendix IV in [1]
     cZ = aux_conZonoEnclosure(pZ,n);
     r = aux_rescaleIterative(cZ);
-    [val,temp] = min(r(ind));
-    
-    if val ~= 0
+    [minVal,minIdx] = min(r(ind));
+
+    if minVal ~= 0
         % determine monomial whos removal results in the least over-approx.
         A = cZ.A; G = cZ.G;
         H = aux_hausdorffError(A,G,r,ind');
-        [~,temp] = sort(H(ind),'ascend');  
+        [~,minIdx] = sort(H(ind),'ascend');
     else
         exact = true;
     end
-    
-    ind = ind(temp(1)); index = indList{temp(1)}; 
-    expo = expoList{temp(1)};
+
+    ind = ind(minIdx(1)); index = indList{minIdx(1)};
+    expo = expoList{minIdx(1)};
     res = true;
 end
 
@@ -297,9 +297,9 @@ function r = aux_rescaleIterative(cZ)
                 if abs(iA(i,j)) < 1e10
 
                     % calculate new tightend domain for the current factor
-                    temp = E;
-                    temp(j) = 0;
-                    dummy = iA(i,j) .* ( b(i) - A(i,:)*temp );
+                    domCopy = E;
+                    domCopy(j) = 0;
+                    dummy = iA(i,j) .* ( b(i) - A(i,:)*domCopy );
 
                     % update domains
                     R(j) = and_(R(j),dummy,'exact');

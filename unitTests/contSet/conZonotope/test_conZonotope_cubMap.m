@@ -37,18 +37,18 @@ b = 0;
 cZ = conZonotope(Z,A,b);
 
 % define third-order tensor
-temp = [1 -1; 0 2];
-T{1,1} = temp;
-T{1,2} = temp;
-T{2,1} = temp;
-T{2,2} = temp;
+tensorSlice = [1 -1; 0 2];
+T{1,1} = tensorSlice;
+T{1,2} = tensorSlice;
+T{2,1} = tensorSlice;
+T{2,2} = tensorSlice;
 
 % compute cubic map
 cZres = cubMap(cZ,cZ,cZ,T);
 
 % define ground truth
-temp = [2 3 1 4 7 6 1 -1 -2 1 9 3 -3 12 -1 -4 21 3 -3 -7 3 -1 1 -1];
-Z_ = [temp;temp];
+truthRow = [2 3 1 4 7 6 1 -1 -2 1 9 3 -3 12 -1 -4 21 3 -3 -7 3 -1 1 -1];
+Z_ = [truthRow;truthRow];
 A_ = zeros(3,23);
 A_(1,1) = 1;
 A_(1,2) = 1;
@@ -71,18 +71,18 @@ b = 0;
 cZ = conZonotope(Z,A,b);
 
 % define third-order tensor
-temp = [1 -1; 0 2];
-T{1,1} = temp;
-T{1,2} = temp;
-T{2,1} = temp;
-T{2,2} = temp;
+tensorSlice = [1 -1; 0 2];
+T{1,1} = tensorSlice;
+T{1,2} = tensorSlice;
+T{2,1} = tensorSlice;
+T{2,2} = tensorSlice;
 
 % compute cubic map
 cZres = cubMap(cZ,T);
 
 % define ground truth
-temp = [16 13 -1 14 -4 21 -7 3 -1];
-Z_ = [temp;temp];
+truthRow = [16 13 -1 14 -4 21 -7 3 -1];
+Z_ = [truthRow;truthRow];
 A_ = [1 1 0 0 0 0 0 0];
 b_ = 0;
 cZ = conZonotope(Z_,A_,b_);

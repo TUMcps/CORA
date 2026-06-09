@@ -53,14 +53,14 @@ methods
         % 1. parse input arguments: varargin -> vars
         narginchk(0,7)
         % validate input
-        [W, b, padding, stride, dilation, name] = ...
-            setDefaultValues({1, 0, [0 0 0 0], [1 1], [1 1], []}, varargin);
+        [W, b, padding, stride, dilation, name, areParamsLearnable] = ...
+            setDefaultValues({1, 0, [0 0 0 0], [1 1], [1 1], [], true}, varargin);
         
         % 2. check correctness of input arguments
         aux_checkInputArgs(W, b, padding, stride, dilation, name)
 
         % 3. call super class constructor
-        obj@nnLayer(name)
+        obj@nnLayer(name, areParamsLearnable)
 
         % 4. assign properties
         obj.W = W;
@@ -107,12 +107,24 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
     % numeric
     function bounds = evaluateInterval(obj, bounds, options)
         obj.checkInputSize()
+        
+        % Check input validity
+        if any(bounds.inf > bounds.sup, 'all')
+             throw(CORAerror('CORA:notDefined', ...
+                 'nnConv2DLayer:InvalidInputInterval: Input interval to Conv2D layer %s has inf > sup. Max violation: %e', ...
+                 obj.name, max(bounds.inf - bounds.sup, [], 'all')));
+        end
+
         % IBP (see Gowal et al. 2018)
         [mu,~] = obj.conv2d((bounds.sup + bounds.inf)/2,options, ...
             'sparseIdx');
         % r = pagemtimes(abs(Wff),(bounds.sup - bounds.inf)/2);
         [r,~] = obj.conv2d((bounds.sup - bounds.inf)/2,options, ...
             'sparseIdx',abs(obj.W),[]);
+
+        if any(r < 0, 'all')
+             r = max(r, 0);
+        end
 
         l = mu - r;
         u = mu + r;
@@ -169,6 +181,14 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
             % Extract upper and lower bound.
             cl = reshape(c(:,1,:),[n batchSize]);
             cu = reshape(c(:,2,:),[n batchSize]);
+            
+            % Sanitize bounds to prevent interval constructor crash
+            if any(cl > cu, 'all')
+                t = cl; 
+                cl = min(t, cu); 
+                cu = max(t, t);
+            end
+
             % Evaluate bounds.
             c = obj.evaluateInterval(interval(cl,cu),options);
             c = permute(cat(3,c.inf,c.sup),[1 3 2]);
@@ -194,7 +214,7 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
 
         % simulate using linear layer
         linl = nnLinearLayer(Wff, bias);
-        r = linl.evaluateTaylm(obj, input, options);
+        r = linl.evaluateTaylm(input, options);
     end
 
     % conZonotope
@@ -207,9 +227,12 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
 
         % simulate using linear layer
         linl = nnLinearLayer(Wff, bias);
-        [c, G, C, d, l, u] = linl.evaluateConZonotope(obj, c, G, C, d, l, u, options);
+        [c, G, C, d, l, u] = linl.evaluateConZonotope(c, G, C, d, l, u, options);
     end
 
+    end
+
+methods (Access = {?nnLayer, ?neuralNetwork})
     % backprop ------------------------------------------------------------
 
     function grad_in = backpropNumeric(obj, input, grad_out, options, updateWeights)   
@@ -434,19 +457,25 @@ methods (Access = protected)
             setDefaultValues({'', obj.W, obj.b, obj.inputSize, ...
                 obj.stride, obj.padding, obj.dilation}, varargin);
 
-        % Put generators into batch and do regular convolution.
-        [n,q,batchSize] = size(G);
-        inputLin = reshape(cat(2,permute(c,[1 3 2]),G),n,(q+1)*batchSize);
-
-        [rLin,Wff] = obj.conv2d(inputLin,options,store,Filter,[],inImgSize, ...
-            stride,padding,dilation);
-        r = reshape(rLin,[],q+1,batchSize);
-
         % Compute bias vector.
         bias = obj.aux_getPaddedBias(varargin{:});
 
-        c = reshape(r(:,1,:),[size(r,1) batchSize]) + bias;
-        G = r(:,2:end,:);
+        % Do the convolution on the center.
+        [c,Wff] = obj.conv2d(c,options,store,Filter,[],inImgSize, ...
+            stride,padding,dilation);
+        % Add the bias.
+        c = c + bias;
+
+        % Obtain the number of dimensions, number of generators and
+        % batch size.
+        [n,q,batchSize] = size(G);
+        % Combine batch and generators to a single batch.
+        G = reshape(G,[n q*batchSize]);
+        % Do the convolution on the genertors; .
+        [G,Wff] = obj.conv2d(G,options,store,Filter,[],inImgSize, ...
+            stride,padding,dilation);
+        % Reshape the generators to the correct dimensions.
+        G = reshape(G,[],q,batchSize);
     end
 
     function r = transconv2d(obj,input,options,varargin)

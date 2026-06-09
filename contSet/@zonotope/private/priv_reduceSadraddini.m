@@ -121,26 +121,26 @@ function [A,b,Aeq,beq,lb,ub,f] = aux_optProbSadraddiniLinear(G,Gred,T0)
 
     % constraint G = Gred{i+1}*T0{i} - Gred{i}*T0{i} + Gred{i}*T0{i+1},
     % which is an approximation of the bilinear constraing G = Gred*T0
-    tmp = repmat({Gred},[m,1]);
+    GredBlkCells = repmat({Gred},[m,1]);
 
     Gred_ = reshape(1:n*mred,[n,mred]);
-    Atmp = zeros(n*m,n*mred); cnt = 1;
+    AbilinApprox = zeros(n*m,n*mred); cnt = 1;
 
     for i = 1:m
         for j = 1:n
-            Atmp(cnt,Gred_(j,:)) = T0(:,i);
+            AbilinApprox(cnt,Gred_(j,:)) = T0(:,i);
             cnt = cnt + 1;
         end
     end
 
-    Aeq1 = [zeros(n*m,1),Atmp,blkdiag(tmp{:}),zeros(n*m,m*mred + n*mred)];
+    Aeq1 = [zeros(n*m,1),AbilinApprox,blkdiag(GredBlkCells{:}),zeros(n*m,m*mred + n*mred)];
     beq1 = reshape(G + Gred*T0,[n*m,1]);
 
     % constraint Gred = G*T1 + Delta
-    tmp = repmat({G},[mred,1]);
+    GblkCells = repmat({G},[mred,1]);
 
     Aeq2 = [zeros(n*mred,1),-eye(n*mred),zeros(n*mred,m*mred), ...
-                                            blkdiag(tmp{:}),eye(n*mred)];
+                                            blkdiag(GblkCells{:}),eye(n*mred)];
     beq2 = zeros(n*mred,1);
 
     % constraint || T0 ||_inf \leq 1
@@ -162,11 +162,11 @@ function [A,b,Aeq,beq,lb,ub,f] = aux_optProbSadraddiniLinear(G,Gred,T0)
     A4 = zeros(1,size(A3,2)); A4(1) = -1; b4 = 0;
     
     % constraing -0.1 <= Gred{i+1}(k,j) - Gred{i}(k,j) <= 0.1
-    tmp = reshape(Gred,[n*mred,1]);
+    GredVec = reshape(Gred,[n*mred,1]);
 
     A5 = [zeros(2*n*mred,1),[eye(n*mred);-eye(n*mred)], ...
                                     zeros(2*n*mred,size(A4,2)-(1+n*mred))];
-    b5 = [tmp + 0.1; -(tmp - 0.1)];
+    b5 = [GredVec + 0.1; -(GredVec - 0.1)];
 
     % objective minimize delta
     f = zeros(1,size(A5,2)); f(1) = 1;
@@ -201,9 +201,9 @@ function [A,b,Aeq,beq,lb,ub,f,ind] = aux_scaleGeneratorMatrix(G,Gred)
     [n,mred] = size(Gred); m = size(G,2);
 
     % constraint G = Gred*diag(s)*T_, where variable T = diag(s)*T_
-    temp = repmat({Gred},[m,1]);
+    GredBlkCells = repmat({Gred},[m,1]);
 
-    Aeq1 = [zeros(n*m,mred),blkdiag(temp{:})];
+    Aeq1 = [zeros(n*m,mred),blkdiag(GredBlkCells{:})];
     beq1 = reshape(G,[n*m,1]);
 
     % constraint s > 0

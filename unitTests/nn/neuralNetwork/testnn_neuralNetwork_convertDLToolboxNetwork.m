@@ -51,6 +51,32 @@ y = nn.evaluate(x);
 y_dlt = nn_dlt.predict(reshape(x,nn.layers{1}.inputSize))';
 assert(all(withinTol(y,y_dlt,tol)))
 
+% Test a neural networks from VNN-COMP ------------------------------------
+
+% Reset the random number generator.
+rng('default');
+% Specify the model paths.
+modelpaths = {
+    [CORAROOT '/models/Cora/nn/ACASXU_run2a_1_2_batch_2000.onnx'];
+    [CORAROOT '/models/Cora/nn/ACASXU_run2a_5_3_batch_2000.onnx'];
+};
+
+for i=1:length(modelpaths)
+    % Load the neural network as a DLT network.
+    nn_dlt = importNetworkFromONNX(modelpaths{i}, ...
+        InputDataFormats='BSSC',NameSpace='DLT_CustomLayers');
+    % Load the neural network as a CORA network.
+    nn = neuralNetwork.readONNXNetwork(modelpaths{i},false,'BSSC');
+    % Generate a random input.
+    x = rand(nn.neurons_in,1);
+    % Compute the output with the CORA network.
+    y = nn.evaluate(x);
+    % Compute the output with the DLT network.
+    y_dlt = nn_dlt.predict(reshape(x,nn.layers{1}.inputSize))';
+    % Check if the results are within the tolerance.
+    assert(all(withinTol(y,y_dlt,tol)));
+end
+
 % test completed
 res = true;
 

@@ -1,4 +1,4 @@
-function p_GO = computeGO(linsysDT,x0,u_ref,n_k)
+function p_GO = computeGO(linsysDT,x0,u_ref,n_k,compute_params)
 % computeGO - compute the parameters of a general output (GO) model
 %
 % Syntax:
@@ -9,6 +9,7 @@ function p_GO = computeGO(linsysDT,x0,u_ref,n_k)
 %    x0 - initial state
 %    u_ref - reference input trajectory
 %    n_k - number of time steps
+%    compute_params - boolean specifying if GO parameters are computed
 %
 % Outputs:
 %    p_GO - struct with the GO parameters for a given reference trajectory
@@ -32,8 +33,8 @@ function p_GO = computeGO(linsysDT,x0,u_ref,n_k)
 %                                   dimensions: n_y x n_k
 %
 % References:
-%    [1] L. Luetzow and M. Althoff, "Reachset-conformant System
-%        Identification," arXiv, 2024. 
+%    [1] L. Luetzow and M. Althoff, "Reachset-Conformant System
+%        Identification," Transactions on Automatic Control, 2026. 
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -43,7 +44,7 @@ function p_GO = computeGO(linsysDT,x0,u_ref,n_k)
 
 % Authors:       Laura Luetzow
 % Written:       21-July-2023
-% Last update:   ---
+% Last update:   12-February-2026 (LL, add input variable compute_params)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -73,6 +74,10 @@ p_GO.C = cell(n_k,1);
 p_GO.D = cell(n_k,n_k);
 p_GO.E = cell(n_k,n_k);
 
+if nargin <= 4
+    compute_params = true;
+end
+
 % compute the linearized system matrices
 if iscell(linsysDT.A)
     %linear time-varying system
@@ -84,30 +89,11 @@ if iscell(linsysDT.A)
             y_ref(:,k,:) = pagemtimes(linsysDT.C{k},x_ref(:,k,:)) + pagemtimes(linsysDT.D{k},u_ref(:,k,:));
         end
 
-        % compute transfer matrices G for the x0->y(i) equation
-        A_prod = eye(size(linsysDT.A{1},1));
-        for j = 1 : k-1
-            A_prod = A_prod * linsysDT.A{k-j};
-            A_prod_j = 1;
-            for i = 1 : k-j-1
-                A_prod_j = A_prod_j * linsysDT.A{k-i};
-            end
-            AA_prod = linsysDT.A{k} * A_prod_j;
-            p_GO.B{k,j} = AA_prod * linsysDT.B{j};
-            p_GO.F{k,j} = AA_prod * [eye(linsysDT.nrOfDims) zeros(linsysDT.nrOfDims, linsysDT.nrOfOutputs)];
+        if compute_params
+            % compute transfer matrices G for the x0->y(i) equation
 
-            CA_prod = linsysDT.C{k} * A_prod_j;
-            p_GO.D{k,j} = CA_prod * linsysDT.B{j};
-            p_GO.E{k,j} = CA_prod * [eye(linsysDT.nrOfDims) zeros(linsysDT.nrOfDims, linsysDT.nrOfOutputs)];
+            p_GO = computeGO_k(linsysDT.A,linsysDT.B,linsysDT.C{k},linsysDT.D{k},k, p_GO);
         end
-        % save matrices of the GO model for time step k
-        p_GO.A{k} = linsysDT.A{k} * A_prod;
-        p_GO.B{k,k} = linsysDT.B{k};
-        p_GO.F{k,k} = [eye(linsysDT.nrOfDims) zeros(linsysDT.nrOfDims, linsysDT.nrOfOutputs)]; % L = [L_x; L_y]
-
-        p_GO.C{k} = linsysDT.C{k} * A_prod;
-        p_GO.D{k,k} = linsysDT.D{k};
-        p_GO.E{k,k} = [zeros(linsysDT.nrOfOutputs, linsysDT.nrOfDims) eye(linsysDT.nrOfOutputs)]; % L = [L_x; L_y]
     end
 else
     %linear time-invariant system    
@@ -119,21 +105,22 @@ else
             y_ref(:,k,:) = pagemtimes(linsysDT.C,x_ref(:,k,:)) + pagemtimes(linsysDT.D,u_ref(:,k,:));
         end
 
-        % compute matrices for GO model
-        if k>1
-            p_GO.A{k} = linsysDT.A * p_GO.A{k-1};
-            p_GO.C{k} = linsysDT.C * p_GO.A{k-1};
-        else
-            p_GO.A{k} = linsysDT.A;
-            p_GO.C{k} = linsysDT.C;
+        if compute_params
+            % compute matrices for GO model
+            if k>1
+                p_GO.A{k} = linsysDT.A * p_GO.A{k-1};
+                p_GO.C{k} = linsysDT.C * p_GO.A{k-1};
+            else
+                p_GO.A{k} = linsysDT.A;
+                p_GO.C{k} = linsysDT.C;
+            end
+            p_GO.B{k,k} = linsysDT.B;
+            p_GO.D{k,k} = linsysDT.D;
+            for j = k-1 : -1: 1
+                p_GO.B{k,j} = p_GO.A{k-j} * linsysDT.B;
+                p_GO.D{k,j} = linsysDT.C* p_GO.B{k,j+1};
+            end
         end
-        p_GO.B{k,k} = linsysDT.B;
-        p_GO.D{k,k} = linsysDT.D;
-        for j = k-1 : -1: 1
-            p_GO.B{k,j} = p_GO.A{k-j} * linsysDT.B;
-            p_GO.D{k,j} = linsysDT.C* p_GO.B{k,j+1};
-        end
-
     end
 end
 

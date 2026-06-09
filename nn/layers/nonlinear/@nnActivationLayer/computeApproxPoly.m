@@ -72,6 +72,16 @@ if strcmp(poly_method, 'regression')
     % compute polynomial that best fits the activation function
     coeffs = nnHelper.leastSquarePolyFunc(x, y, order);
 
+elseif ~isempty(obj.monotonicity) && obj.monotonicity && strcmp(poly_method, 'singh')
+    if order == 1
+        % according to [1, Theorem 3.2]
+        lambda = min(obj.df(l), obj.df(u));
+        mu1 = 0.5 * (obj.f(u) + obj.f(l) - lambda * (u + l));
+        mu2 = 0.5 * (obj.f(u) - obj.f(l) - lambda * (u - l));
+        coeffs = [lambda, mu1];
+        d = mu2;
+    end
+
 elseif strcmp(poly_method, 'ridgeregression')
     x = linspace(l, u, numPoints);
     y = obj.f(x);

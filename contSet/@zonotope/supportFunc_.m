@@ -8,7 +8,7 @@ function [val,x,fac] = supportFunc_(Z,dir,type,varargin)
 %
 % Inputs:
 %    Z - zonotope object
-%    dir - direction for which the bounds are calculated (vector)
+%    dir - direction for which the bounds are calculated (n x m with m directions)
 %    type - upper bound, lower bound, or both ('upper','lower','range')
 %
 % Outputs:
@@ -25,6 +25,7 @@ function [val,x,fac] = supportFunc_(Z,dir,type,varargin)
 % Authors:       Niklas Kochdumper
 % Written:       19-November-2019
 % Last update:   10-December-2022 (MW, add type = 'range')
+%                08-December-2025 (TL, allowed multiple directions)
 % Last revision: 27-March-2023 (MW, rename supportFunc_)
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -54,15 +55,15 @@ G_ = dir'*G;
 
 % upper or lower bound
 if strcmp(type,'lower')
-    val = c_ - sum(abs(G_));
+    val = c_ - sum(abs(G_),2);
     fac = -sign(G_)';
     
 elseif strcmp(type,'upper')
-    val = c_ + sum(abs(G_));
+    val = c_ + sum(abs(G_),2);
     fac = sign(G_)';
     
 elseif strcmp(type,'range')
-    val = interval(c_ - sum(abs(G_)), c_ + sum(abs(G_)));
+    val = interval(c_ - sum(abs(G_),2), c_ + sum(abs(G_),2));
     fac = [-sign(G_)' sign(G_)'];
 
 end

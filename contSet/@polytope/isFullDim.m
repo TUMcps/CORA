@@ -309,8 +309,7 @@ maximizer = [];
 % loop over all dimensions (for y)
 for i=1:n
     % compute maximum for y = +e_i
-    y = zeros(n,1);
-    y(i) = 1;
+    y = unitvector(i,n);
     [res, x] = aux_firstMaximum(P,y,X);
 
     % save maximizer if objective value is larger

@@ -1,0 +1,20 @@
+(vnnlib-version <2.0>)
+
+(declare-network f
+    (declare-input  X real [3])
+    (declare-output Y real [2])
+)
+
+(declare-network g
+    (isomorphic-to f)
+    (declare-input  X2 real [3])
+    (declare-output Y2 real [2])
+)
+
+(declare-network h
+    (isomorphic-to g)
+    (declare-input  X3 real [3])
+    (declare-output Y3 real [2])
+)
+
+(assert (<= X[0] 1.0))

@@ -363,8 +363,8 @@ elseif isSDPT3
     % split bot into diag and non-diag part
     a_val_Bbot = ones(1,nS);
     % scale off-diag entries by sqrt(2)
-    tmp = gsum(1:n*N+1+n);
-    iMask_B_od = ~ismember(id_MB_u,tmp(n*N+1+1:end));
+    diagCumSumIndices = gsum(1:n*N+1+n);
+    iMask_B_od = ~ismember(id_MB_u,diagCumSumIndices(n*N+1+1:end));
     a_val_Bbot(iMask_B_od) = sqrt(2)*a_val_Bbot(iMask_B_od);
     a_val_B = [a_val_BBtop_',-a_val_Bbot];
 

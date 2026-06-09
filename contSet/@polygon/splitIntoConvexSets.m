@@ -39,10 +39,10 @@ while true
         % try to combine it with other polygons in the list
         for j = i + 1:length(list)
 
-            tmp = list{i} | list{j};
+            mergedPolygon = list{i} | list{j};
 
-            if isConvex(tmp)
-                list{i} = tmp;
+            if isConvex(mergedPolygon)
+                list{i} = mergedPolygon;
                 list{j} = [];
                 stop = true;
                 finished = false;

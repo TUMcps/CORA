@@ -284,8 +284,8 @@ for i = 1:size(R,1)
         V = [infimum(Rtime{j}),infimum(Rtime{j}),...
             supremum(Rtime{j}),supremum(Rtime{j});...
             intXmin,intXmax,intXmax,intXmin];
-        temp = polygon(V(1,:),V(2,:));
-        pgon = pgon | temp;
+        polygonSlice = polygon(V(1,:),V(2,:));
+        pgon = pgon | polygonSlice;
     end
 
 end

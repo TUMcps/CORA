@@ -45,7 +45,7 @@ function eqs = priv_polytope_cora2spaceex(obj)
 
         for idx = 1: size(A,1)
             Astr = char(Ax(idx));
-            bstr = num2str(b(idx));
+            bstr = num2str(b(idx),32);
             eq_c = [Astr, ' <= ' , bstr];
             if ~isempty(eqs)
                 eqs = [eqs,' & ',newline,eq_c];
@@ -64,7 +64,7 @@ function eqs = priv_polytope_cora2spaceex(obj)
         Ax = A*x;
 
         for idx = 1: size(A,1)
-            eq = [char(Ax(idx)), ' == ' , num2str(b(idx))];
+            eq = [char(Ax(idx)), ' == ' , num2str(b(idx),32)];
             if ~isempty(eqs)
                 eqs = [eqs,' & ',newline,eq];
             else

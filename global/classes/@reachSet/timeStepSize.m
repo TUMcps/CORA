@@ -42,8 +42,8 @@ for i = 1:size(R,1)
     if all(num)
         dt = [dt; diff(cell2mat(R(i,1).timePoint.time))];
     else
-        tmp = cellfun(@infimum,R(i,1).timePoint.time);
-        dt = [dt; diff(tmp)];
+        timeInfima = cellfun(@infimum,R(i,1).timePoint.time);
+        dt = [dt; diff(timeInfima)];
         hybrid = true;
     end
 end

@@ -36,15 +36,15 @@ for i=1:nrTests
 
     % compute random vertices
     I = interval(-ones(n,1),ones(n,1));
-    temp = randPoint(I,100);
+    randomPoints = randPoint(I,100);
     % take extreme point in each dimension
     V = zeros(n,2*n);
     for j=1:n
-        [~,maxIdx] = max(temp(j,:));
-        [~,minIdx] = min(temp(j,:));
-        V(:,(2*j-1)) = temp(:,maxIdx);
-        V(:,2*j) = temp(:,minIdx);
-        temp(:,[maxIdx,minIdx]) = [];
+        [~,maxIdx] = max(randomPoints(j,:));
+        [~,minIdx] = min(randomPoints(j,:));
+        V(:,(2*j-1)) = randomPoints(:,maxIdx);
+        V(:,2*j) = randomPoints(:,minIdx);
+        randomPoints(:,[maxIdx,minIdx]) = [];
     end
 
     % init polytope

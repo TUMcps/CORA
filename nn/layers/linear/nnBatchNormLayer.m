@@ -39,10 +39,10 @@ methods
     function obj = nnBatchNormLayer(varargin)
         % parse input
         [scale, offset, movVar, movMean, name, epsilon, momentum] = ...
-            setDefaultValues({1, 0, 1, 0, [], 0.001, 0.99}, varargin);
+            setDefaultValues({1, 0, 1, 0, [], 1e-5, 0.99}, varargin);
 
         % call super class constructor
-        obj@nnElementwiseAffineLayer(scale, offset, name)
+        obj@nnElementwiseAffineLayer(scale, offset, name, true)
 
         obj.epsilon = epsilon;
         obj.momentum = momentum;
@@ -68,35 +68,14 @@ end
 methods  (Access = {?nnLayer, ?neuralNetwork})
 
     % numeric
-    function r = evaluateNumeric(obj, input, options)
-        if (options.nn.train.backprop && ~options.nn.batch_norm_moving_stats) ...
-                || options.nn.batch_norm_calc_stats
-            % Obtain batch size.
-            bs = size(input,2);
-            % Obtain input size and normalization dimensions.
-            [reshapeSize,normDims] = obj.aux_getNormDims(bs);
-            % Compute mean and standard deviation across the batch.
-            batchMean = mean(reshape(input,reshapeSize),normDims);
-            batchVar = mean((reshape(input,reshapeSize) - batchMean).^2,normDims);
-            % Update statistics.
-            obj.movVar = obj.movVar * obj.momentum ...
-                + batchVar * (1 - obj.momentum);
-            obj.movMean = obj.movMean * obj.momentum ...
-                + batchMean * (1 - obj.momentum);
-        else
-            % We are in inference-mode: Normalize the input with trained 
-            % mean and variance.
-            batchMean = obj.movMean;
-            batchVar = obj.movVar;
-        end
-        % Correct pad and reshape the computed mean and variance.
-        batchMean = obj.aux_getPaddedParameter(batchMean(:));
-        batchVar = obj.aux_getPaddedParameter(batchVar(:));
-        % Normalize the input with current mean and variance.
-        isqrtVar = 1./sqrt(batchVar + obj.epsilon);
+    function r = evaluateNumeric(obj,input,options)
+        % Compute the statistics.
+        [batchMean,~,isqrtVar] = ...
+            obj.aux_computeStoreAndUpdateStats(input,options);
+        % Normalize the input with the statistics.
         input = (input - batchMean).*isqrtVar;
         % Apply scale and offset.
-        r = obj.evaluateNumeric@nnElementwiseAffineLayer(input, options);
+        r = obj.evaluateNumeric@nnElementwiseAffineLayer(input,options);
 
         if options.nn.train.backprop
             % Store the batch-normed input.
@@ -106,16 +85,15 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
     end
 
     % sensitivity
-    function S = evaluateSensitivity(obj, S, options)
+    function S = evaluateSensitivity(obj,S,options)
         % Obtain the stored input.
         x = obj.backprop.store.input;
-
-        % Apply learned scaling; use previously stored statistics.
-        batchVar = obj.movVar; % obj.backprop.store.batchVar;
-        batchVar = obj.aux_getPaddedParameter(batchVar);
-        S = 1./sqrt(batchVar(:) + obj.epsilon)' .* S;
+        % Compute the statistics.
+        [~,~,isqrtVar] = obj.aux_computeStoreAndUpdateStats(x,options);
+        % Apply the normalization.
+        S = isqrtVar'.*S;
         % Apply scale and offset.
-        S = obj.evaluateSensitivity@nnElementwiseAffineLayer(S, options);
+        S = obj.evaluateSensitivity@nnElementwiseAffineLayer(S,options);
 
         if options.nn.store_sensitivity
             % Store the gradient (used for the sensitivity computation).
@@ -132,45 +110,19 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
     end
 
     % interval 
-    function bounds = evaluateInterval(obj, bounds, options)
-        if (options.nn.train.backprop && ~options.nn.batch_norm_moving_stats) ...
-                || options.nn.batch_norm_calc_stats
-            % % We use the previously stored mean and variance of the nominal input.
-            % batchMean = obj.backprop.store.batchMean;
-            % batchVar = obj.backprop.store.batchVar;
-
-            % Use the statistics of the center.
-            c = 1/2*(bounds.sup + bounds.inf);
-            % Obtain batch size.
-            bs = size(c,2);
-            % Obtain input size and normalization dimensions.
-            [reshapeSize,normDims] = obj.aux_getNormDims(bs);
-            % Compute mean and standard deviation across the batch.
-            batchMean = mean(reshape(c,reshapeSize),normDims);
-            batchVar = mean((reshape(c,reshapeSize) - batchMean).^2,normDims);
-            % Update statistics.
-            obj.movVar = obj.movVar * obj.momentum ...
-                + batchVar * (1 - obj.momentum);
-            obj.movMean = obj.movMean * obj.momentum ...
-                + batchMean * (1 - obj.momentum);
-        else
-            % We are in inference-mode: Normalize the input with trained 
-            % mean and variance.
-            batchMean = obj.movMean;
-            batchVar = obj.movVar;
-        end
-        % Correct pad and reshape the computed mean and variance.
-        batchMean = obj.aux_getPaddedParameter(batchMean(:));
-        batchVar = obj.aux_getPaddedParameter(batchVar(:));
-        % Normalize the input with current mean and variance.
-        isqrtVar = 1./sqrt(batchVar + obj.epsilon);
+    function bounds = evaluateInterval(obj,bounds,options)
+        % Compute the center for the statistics computations.
+        c = 1/2*(bounds.sup + bounds.inf);
+        % Compute the statistics.
+        [batchMean,~,isqrtVar] = ...
+            obj.aux_computeStoreAndUpdateStats(c,options);
+        % Normalize the input.
         bounds = interval( ...
             (bounds.inf - batchMean).*isqrtVar,...
             (bounds.sup - batchMean).*isqrtVar ...
         );
-
         % Apply scale and offset.
-        bounds = obj.evaluateInterval@nnElementwiseAffineLayer(bounds, options);
+        bounds = obj.evaluateInterval@nnElementwiseAffineLayer(bounds,options);
 
         if options.nn.train.backprop
             % Store the batch-normed input.
@@ -180,42 +132,21 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
     end
 
     % zonotope batch (for training)
-    function [c, G] = evaluateZonotopeBatch(obj, c, G, options)
-        if (options.nn.train.backprop && ~options.nn.batch_norm_moving_stats) ...
-                || options.nn.batch_norm_calc_stats
-            if options.nn.interval_center
-                c_ = reshape(1/2*sum(c,2),size(c,[1 3]));
-            else
-                c_ = c;
-            end
-            % Obtain batch size.
-            bs = size(c_,2);
-            % Obtain input size and normalization dimensions.
-            [reshapeSize,normDims] = obj.aux_getNormDims(bs);
-            % Compute mean and standard deviation across the batch.
-            batchMean = mean(reshape(c_,reshapeSize),normDims);
-            batchVar = mean((reshape(c_,reshapeSize) - batchMean).^2,normDims);
-            % Update statistics.
-            obj.movVar = obj.movVar * obj.momentum ...
-                + batchVar * (1 - obj.momentum);
-            obj.movMean = obj.movMean * obj.momentum ...
-                + batchMean * (1 - obj.momentum);
+    function [c,G] = evaluateZonotopeBatch(obj,c,G,options)
+        % Compute the center for the statistics computations.
+        if options.nn.interval_center
+            c_ = reshape(1/2*sum(c,2),size(c,[1 3]));
         else
-            % We are in inference-mode: Normalize the input with trained 
-            % mean and variance.
-            batchMean = obj.movMean;
-            batchVar = obj.movVar;
+            c_ = c;
         end
-        % Correct pad and reshape the computed mean and variance.
-        batchMean = obj.aux_getPaddedParameter(batchMean(:));
-        batchVar = obj.aux_getPaddedParameter(batchVar(:));
-        % Normalize the input with current mean and variance.
-        isqrtVar = 1./sqrt(batchVar + obj.epsilon);
+        % Compute the statistics.
+        [batchMean,~,isqrtVar] = ...
+            obj.aux_computeStoreAndUpdateStats(c_,options);
+        % Normalize the input.
         c = (c - batchMean).*isqrtVar;
         G = G.*isqrtVar;
-
         % Apply scale and offset.
-        [c, G] = obj.evaluateZonotopeBatch@nnElementwiseAffineLayer(c, G, options);
+        [c,G] = obj.evaluateZonotopeBatch@nnElementwiseAffineLayer(c,G,options);
 
         if options.nn.train.backprop
             % Store the batch-normed input.
@@ -253,8 +184,6 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
         % Obtain stored batch statistics.
         isqrtVar = obj.backprop.store.isqrtVar;
         % Backprop through batch normalization.
-        % grad_in = isqrtVar.*(grad_in - 1/bs*sum(grad_in,2) ...
-        %     -1/bs*sum(gradInput_,2).*(input_normed - 1/bs*sum(input_normed,2)));
         grad_in = isqrtVar.*(grad_in - 1/bs*sum(grad_in,2) ...
             + 1/(2*bs^2)*isqrtVar.*sum(gradInput_,2));
     end
@@ -285,16 +214,7 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
             l, u, gl, gu, options, updateWeights);
         % Obtain stored batch statistics.
         isqrtVar = obj.backprop.store.isqrtVar;        
-        % % Backprop through batch normalization; the statistics are computed 
-        % % based on the nominal input, thus derivate of the mean and
-        % % variance are 0.
-        % gl = isqrtVar.*gl;
-        % gu = isqrtVar.*gu;
-
-        % grad_c = 1/2*(gu + gl);
-        % grad_c = isqrtVar.*(grad_c - 1/bs*sum(grad_c,2) ...
-        %     -1/bs*sum(gradInput_,2).*(input_normed - 1/bs*sum(input_normed,2)));
-
+        % Backprop the gradients.
         sumg = 1/2*(1/bs*sum(gl + gu,2) ...
             - 1/(2*bs^2)*isqrtVar.*sum(glInput_ + guInput_,2));
         gl = isqrtVar.*(gl - sumg);
@@ -303,7 +223,7 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
 
     function [gc, gG] = backpropZonotopeBatch(obj, c, G, gc, gG, options, updateWeights)
         % Obtain batch size.
-        [~,~,bs] = size(G);
+        [n,~,bs] = size(G);
         % Obtain the indices of the relevant generators.
         genIds = obj.genIds;
 
@@ -312,18 +232,18 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
         G_normed = obj.backprop.store.G_normed(:,genIds,:);
         % Compute Hadamard product between gradient and input.
         if options.nn.interval_center
-            gradc_ = reshape(sum(gc.*c_normed,2),size(c,[1 3]));
+            gradc_ = reshape(sum(gc.*c_normed,2),[n bs]);
         else
             gradc_ = gc.*c_normed;
         end
-        gradG_ = reshape(sum(gG(:,genIds,:).*G_normed,2),size(c,[1 3]));
+        gradG_ = reshape(sum(gG(:,genIds,:).*G_normed,2),[n bs]);
 
         if updateWeights
             % Obtain input size and normalization dimensions.
             [reshapeSize,normDims] = obj.aux_getNormDims(bs);
             % Update offset parameter.
             if options.nn.interval_center
-                gc_ = reshape(sum(gc,2),size(c,[1 3]));
+                gc_ = reshape(sum(gc,2),[n bs]);
             else
                 gc_ = gc;
             end
@@ -338,12 +258,8 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
         [gc, gG] = obj.backpropZonotopeBatch@nnElementwiseAffineLayer( ...
             c, G, gc, gG, options, updateWeights);
         % Obtain stored batch statistics.
-        isqrtVar = obj.backprop.store.isqrtVar;
-        % Backprop through batch normalization.
-        % gc = isqrtVar.*(gc - 1/bs*sum(gc,2) ...
-        %     -1/bs*sum(gradc_,2).*(c_normed - 1/bs*sum(c_normed,2)));
-        % gG = isqrtVar.*gG;
-
+        isqrtVar = obj.backprop.store.isqrtVar;        
+        % Backprop the gradients.
         if options.nn.interval_center
             sumg = 1/2*(1/bs*sum(gc,[2 3]) ...
                 - 1/(2*bs^2)*isqrtVar.*sum(gradc_ + gradG_,2));
@@ -357,6 +273,45 @@ methods  (Access = {?nnLayer, ?neuralNetwork})
 end
 
 methods (Access = protected)
+
+    function [batchMean,batchVar,isqrtVar] = ...
+            aux_computeStoreAndUpdateStats(obj,x,options)
+        % Compute, store, and update the batch statistics.
+
+        switch options.nn.batch_norm_stats
+            case 'calc_stats'
+                % Obtain batch size.
+                bs = size(x,2);
+                % Obtain input size and normalization dimensions.
+                [reshapeSize,normDims] = obj.aux_getNormDims(bs);
+                % Compute mean and standard deviation across the batch.
+                batchMean = mean(reshape(x,reshapeSize),normDims);
+                batchVar = mean((reshape(x,reshapeSize) - batchMean).^2,normDims);
+                % Store the computed statistics 
+                % (for options.nn.batch_norm_stats='store_stats').
+                obj.backprop.store.batchMean = batchMean;
+                obj.backprop.store.batchVar = batchVar;
+                % Update statistics.
+                obj.movVar = obj.movVar * obj.momentum ...
+                    + batchVar * (1 - obj.momentum);
+                obj.movMean = obj.movMean * obj.momentum ...
+                    + batchMean * (1 - obj.momentum);
+            case 'stored_stats'
+                % Use the computed statistics from a previous forward pass.
+                batchMean = obj.backprop.store.batchMean;
+                batchVar = obj.backprop.store.batchVar;
+            case 'moving_stats'
+                % We are in inference-mode: Normalize the input with trained 
+                % mean and variance.
+                batchMean = obj.movMean;
+                batchVar = obj.movVar;
+        end
+        % Correct pad and reshape the computed mean and variance.
+        batchMean = obj.aux_getPaddedParameter(batchMean(:));
+        batchVar = obj.aux_getPaddedParameter(batchVar(:));
+        % Normalize the input with current mean and variance.
+        isqrtVar = 1./sqrt(batchVar + obj.epsilon);
+    end
 
     function [reshapeSize,normDims] = aux_getNormDims(obj,bs)
         % Obtain input size.

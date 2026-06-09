@@ -195,8 +195,8 @@ function [eq,vars,compOp,solved,funHan,der,dim,solvable] = aux_computeProperties
     
         third = cell(length(grad),1);
         for i = 1:length(grad)
-            temp = hessian(grad(i),vars); 
-            third{i} = matlabFunction(temp,'Vars',{vars});
+            hessGrad_i = hessian(grad(i),vars);
+            third{i} = matlabFunction(hessGrad_i,'Vars',{vars});
         end
         der.third = third;
     end
@@ -218,14 +218,14 @@ function [eq,vars,compOp,solved,funHan,der,dim,solvable] = aux_computeProperties
                 if ismember(vars(i),vars_)
                 
                     solved{i}.contained = 1;
-                    [temp,~,cond] = solve(eq(ind) == 0,vars(i), ...
+                    [solvedEq,~,cond] = solve(eq(ind) == 0,vars(i), ...
                                                 'ReturnConditions',true);
-                
+
                     % check if the equation could be solved for variable
                     try
-                        if ~isempty(temp) %&& isempty(symvar(cond))
+                        if ~isempty(solvedEq) %&& isempty(symvar(cond))
                             solved{i}.solvable = 1;
-                            solved{i}.eq = temp;
+                            solved{i}.eq = solvedEq;
                             solved{i}.cond =  cond;
                             
                             % loop over all solutions
@@ -289,8 +289,8 @@ function [eq,grad,hess,third] = aux_derivatives(eq,vars,i)
     % third-order tensor
     third = cell(length(grad_),1);
     for i = 1:length(grad_)
-       temp = hessian(grad_(i),vars_); 
-       third{i} = matlabFunction(temp,'Vars',{vars});
+       hessGrad_i = hessian(grad_(i),vars_);
+       third{i} = matlabFunction(hessGrad_i,'Vars',{vars});
     end
 end
 

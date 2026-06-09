@@ -158,10 +158,10 @@ function [x0,u,K,t] = aux_readSolutionFile(path)
     % read initial state x0
     fid = fopen(path);
     data = fgetl(fid);
-    temp = split(data);
+    dataFields = split(data);
     x0 = zeros(6,1);
-    for i = 1:length(temp)
-       x0(i) = str2double(strrep(temp{i},';','')); 
+    for i = 1:length(dataFields)
+       x0(i) = str2double(strrep(dataFields{i},';',''));
     end
     t0 = x0(1);
     x0 = x0(2:end);
@@ -178,8 +178,8 @@ function [x0,u,K,t] = aux_readSolutionFile(path)
     K = cell(length(t)-1,1);
     
     for i = 1:length(K)
-       temp = data{i,4:end};
-       K{i} = [temp(1:5);temp(6:10)];
+       gainData = data{i,4:end};
+       K{i} = [gainData(1:5);gainData(6:10)];
     end
 end
 
@@ -254,17 +254,17 @@ function tay = aux_taylorOccupancySet()
     % second order derivative
     Qfun = cell(length(f),1);
     for i = 1:length(f)
-       temp = hessian(f(i),x); 
-       Qfun{i} =  matlabFunction(temp,'Vars',{x});
+       hessF = hessian(f(i),x);
+       Qfun{i} =  matlabFunction(hessF,'Vars',{x});
     end
     
     % Lagrange remainder
     Tfun = cell(size(A));
     for i = 1:size(A,1)
         for j = 1:size(A,2)
-            temp = hessian(A(i,j),x);
-            if any(any(temp ~= 0))
-                Tfun{i,j} = matlabFunction(temp,'Vars',{x});
+            hessA = hessian(A(i,j),x);
+            if any(any(hessA ~= 0))
+                Tfun{i,j} = matlabFunction(hessA,'Vars',{x});
             end
         end
     end

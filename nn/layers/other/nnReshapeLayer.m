@@ -167,10 +167,31 @@ methods(Access=private)
         else
             [~,bSz] = size(input);
         end
-        % The inverse of reshape; needed for backpropagation.
+        
         idx_vec = obj.idx_out(:);
-        r = zeros([prod(inSize) bSz],'like',input);
-        r(idx_vec,:) = input;
+        nIn = prod(inSize);
+        
+        % The inverse of reshape; needed for backpropagation.
+        % We use accumarray to correctly handle Duplicate Indices (e.g. from Upsampling).
+        % Direct assignment r(idx, :) = input would overwrite gradients and crash on GPU.
+        
+        if bSz == 1
+            r = accumarray(idx_vec, input, [nIn 1]);
+        else
+            % Handle batch accumulation via global indexing
+            % Create offsets for each batch element
+            idx_offsets = (0:bSz-1) * nIn;
+            
+            % Expand indices: idx_global is (M, B)
+            % Implicit expansion (R2016b+)
+            idx_global = idx_vec + idx_offsets;
+            
+            % Flatten and accumulate
+            r = accumarray(idx_global(:), input(:), [nIn*bSz, 1]);
+            
+            % Reshape back to (N_in, B)
+            r = reshape(r, nIn, bSz);
+        end
 
         if isMatrix
             % Reshape result to original shape.

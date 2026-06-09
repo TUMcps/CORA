@@ -43,10 +43,10 @@ m = size(G,2);
 A0 = speye(2*m);
 Ai = cell([1 m]);
 for i = 1:m
-    temp = zeros([2*m 1]);
-    temp(i) = 1;
-    temp(m+i) = -1;
-    Ai{i} = spdiags(temp,0,2*m,2*m);
+    diagEntries = zeros([2*m 1]);
+    diagEntries(i) = 1;
+    diagEntries(m+i) = -1;
+    Ai{i} = spdiags(diagEntries,0,2*m,2*m);
 end
 
 % Append constraints of the inequality constraints

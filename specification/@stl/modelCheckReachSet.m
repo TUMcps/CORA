@@ -120,14 +120,14 @@ function list = aux_safe2unsafe(sets)
 
     for i = 2:length(sets)
 
-        tmp = aux_reverseHalfspaceConstraints(sets{i});
+        negatedSet = aux_reverseHalfspaceConstraints(sets{i});
 
         list_ = {};
 
-        for j = 1:length(tmp)
+        for j = 1:length(negatedSet)
             for k = 1:length(list)
-                if isIntersecting(list{k},tmp{j})
-                    list_{end+1} = list{k} & tmp{j};
+                if isIntersecting(list{k},negatedSet{j})
+                    list_{end+1} = list{k} & negatedSet{j};
                 end
             end
         end

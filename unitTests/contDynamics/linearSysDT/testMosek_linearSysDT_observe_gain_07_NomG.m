@@ -24,7 +24,7 @@ function res = testMosek_linearSysDT_observe_gain_07_NomG()
 
 % Authors:       Matthias Althoff
 % Written:       01-March-2021
-% Last update:   ---
+% Last update:   15-April-2026 (NH, changed to observe(sys,params,options))
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -32,35 +32,24 @@ function res = testMosek_linearSysDT_observe_gain_07_NomG()
 % assume true
 res = true;
 
-% enable access to private function "observe_gain_NomG"
-path = CORAROOT;
-source = fullfile(path,'contDynamics','@linearSysDT','private','observe_gain_NomG.m');
-target = fullfile(path,'contDynamics','@linearSysDT','observe_gain_NomG.m');
-copyfile(source,target);
-rmpath(genpath(path));
-addpath(genpath(path));
+% Load model
+[vehicle,params,options] = load_model_linearSysDT("slipEstimationModel_6D");
 
-% Load side slip model
-load slipEstimationModel_6D vehicle
+% Select observer
+options.alg = 'Nom-G';
 
-% Load exact result
-load gain_sideSlip6D_Nom-G NomG
+% observe
+estSet = observe(vehicle,params,options);
 
-% compute optimal gain
-options.solver = 'mosek';
-OGain = observe_gain_NomG(vehicle,options);
+% enclose last estimated set by interval
+IH = interval(estSet.timePoint.set{end});
 
-% compute maximum error
-error = abs(OGain - NomG);
-maxError = max(max(error));
+% Define comparison interval hull
+IH_saved = interval([-0.225898704526925;-0.443530742956009;0.627544324295057;14.656518527163982;-0.217104466264740;-9.547719910992430],[0.210964292493496;-0.127758196118713;0.838615415997879;15.014442017597094;0.187817674437501;10.464502863326619]);
 
-% error acceptable?
-assert((maxError < 1e-8));
+%check if slightly bloated versions enclose each other
+assert(isequal(IH,IH_saved,1e-6));
 
-
-% revoke access to private function
-delete(target);
-rmpath(genpath(path));
-addpath(genpath(path));
+end
 
 % ------------------------------ END OF CODE ------------------------------

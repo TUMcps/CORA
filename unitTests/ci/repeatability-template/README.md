@@ -1,18 +1,17 @@
 
 > # Creating a repeatability package
-> This block contains information for creating the repeatability package.
+> This block contains information for creating the repeatability package. Delete this block before submission.
 > - Update: 
->   - In `README.md` (this file): Update lines marked with ❗. All other lines are information for reviewers (and you) to run the repeatabiltiy package.
+>   - In `README.md` (this file): Update lines marked with ❗. All other lines are information for reviewers (and you) to run the repeatability package.
 >   - In `./settings.sh`: Update settings
->     - `NAME` is used for naming the Docker container such that we know whom to blame if it requires too much memory. Use `anonymous` for blind submissions.
+>     - `AUTHORS` is used for naming the Docker container such that we know whom to blame if it requires too much memory. Use `anonymous` for blind submissions.
 >     - Use `LICENSE_SERVER=28000@mlm1.rbg.tum.de` within TUM network while testing.
 >   - In `./code/main.m`: Update settings (and adapt scripts).
 >   - In `Dockerfile`, update Matlab version
 > - Add CORA to `./code` (code runs out of the box, but you want to do this step eventually).
-> - Update [Important Notes](#important-notes) block below.
 > - For blind submissions:
 >   - In `settings.sh`:
->     - Set `NAME=anonymous`
+>     - Set `AUTHORS=anonymous`
 >     - Set `LICENSE_SERVER=<port>@<hostname>`
 >   - In `./code/scripts`: Anonymize scripts.
 >   - In `./code/cora`: Anonymize (main) classes and functions relevant for your paper.
@@ -24,11 +23,6 @@ This folder contains a repeatability package for:
 
 - Paper: `<paper-title>`❗
 - Venue: `<venue-name>`❗
-
-To run the repeatability package, please follow these steps:
-- [Step 1: Installation](#step-1-installation) *(Docker or Matlab)*
-- [Step 2: Run the code](#step-2-run-the-code) *(Docker or Matlab)*
-- [Step 3: View results](#step-3-view-results)
 
 ## Folder structure
 
@@ -44,11 +38,22 @@ To run the repeatability package, please follow these steps:
     - `./plots`             : path to plots    
     - `./results.txt`       : logs of all outputs to command window    
   - `./Dockerfile`          : Dockerfile
-  - `./license.lic`         : place [license file](#option-2-license-file) here
+  - `./license.lic`         : place [license file](#step-1-installation) here
   - `./README.md`           : read me file (this file)
   - `./run.sh`              : **main script** to run [from command line using Docker](#run-from-command-line-recommended)
   - `./settings.sh`         : settings for bash scripts
   - `./screen.sh`           : script to run `run.sh` [within a linux screen](#run-from-command-line-recommended)
+
+## Scope
+
+- *Explain default scope of the repeatability package: Which part of the paper is reproduced? Where can I find the respective result?* ❗
+- Estimated time: `<time>`❗
+- *Explain settings to run the full evaluation* ❗
+
+To run the repeatability package, please follow these steps:
+- [Step 1: Installation](#step-1-installation) *(Docker or Matlab)*
+- [Step 2: Run the code](#step-2-run-the-code) *(Docker or Matlab)*
+- [Step 3: View results](#step-3-view-results)
 
 ## Step 1: Installation
 This folder contains the code as well as a Docker file to run the code in one click.
@@ -78,7 +83,7 @@ Download a license file `license.lic` to run the code:
 	1. "Activate a Computer"
 	(...may differ depending on how your licensing is set up).
 2. Choose:
-	- Release: `R2025a`❗
+	- Release: `R2025b`❗
 	- Operating System: `Linux`
 	- Host ID: `0242AC11000a` (= Default MAC of Docker container)
 	- Computer Login Name: `matlab`
@@ -128,7 +133,7 @@ You can always detach from the screen using `CTRL+A+D` and reattach using
 
 where `SCREEN_NAME` is as in `settings.sh` (see [variables](#variables) below) or using `screen -ls`.
 
-➡️ Procceed with [Step 3: View results](#step-3-view-results)
+➡️ Proceed with [Step 3: View results](#step-3-view-results)
 
 #### ii) Run the package directly
 
@@ -138,7 +143,7 @@ You can also run the evaluation in one click in a Docker container using the `ru
 
 where the arguments `<evalname>` and `<gpu-device>` are as above.
 
-➡️ Procceed with [Step 3: View results](#step-3-view-results)
+➡️ Proceed with [Step 3: View results](#step-3-view-results)
 
 #### Variables
 
@@ -176,7 +181,7 @@ The results will be stored to `./results/<evalname>`.
 	
 **Note:** Please ensure that all required toolboxes for CORA are installed (see [Step 1c:](#c-install-matlab-and-required-toolboxes-not-recommended) above).
 
-➡️ Procceed with [Step 3: View results](#step-3-view-results)
+➡️ Proceed with [Step 3: View results](#step-3-view-results)
 
 ---
 
@@ -191,18 +196,12 @@ you can view intermediate results by copying the current `results` folder out of
 
 where `DOCKER_NAME` is as in `settings.sh` (see [variables](#variables) above) or using `Docker ps`.
 
-
-## Important notes
-
-- *add any information here, e.g., settings to reduce evaluation time.* ❗
-- When running the evaluation in Docker, Docker might randomly stop if not enough memory is available.
-
-
 ## Known error messages
 
-If running `run.sh`/`screen.sh` results in obscure error messages (`$'\r': command not found`), 
-it might be due to different line breaks in `run.sh`/`screen.sh` using windows/linux. 
-You can fix it using:
+- If running `run.sh`/`screen.sh` results in obscure error messages (`$'\r': command not found`), 
+  it might be due to different line breaks in `run.sh`/`screen.sh` using windows/linux. 
+  You can fix it using:
 
-    sed -i 's/\r$//' *.sh
+      sed -i 's/\r$//' *.sh
 
+- When running the evaluation in Docker, Docker might randomly stop (with message "Killed.") if not enough memory is available.

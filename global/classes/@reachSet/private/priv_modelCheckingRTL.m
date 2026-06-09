@@ -136,15 +136,15 @@ function list = aux_safe2unsafe(sets)
 
     for i = 2:length(sets)
 
-        tmp = aux_reverseInequalityConstraints(sets{i});
+        negatedSet = aux_reverseInequalityConstraints(sets{i});
 
         list_ = {};
 
-        for j = 1:length(tmp)
+        for j = 1:length(negatedSet)
             for k = 1:length(list)
-                if isa(list{k},'levelSet') || isa(tmp{j},'levelSet') || ...
-                                            isIntersecting_(list{k},tmp{j},'exact',1e-8)
-                    list_{end+1} = and_(list{k},tmp{j},'exact');
+                if isa(list{k},'levelSet') || isa(negatedSet{j},'levelSet') || ...
+                                            isIntersecting_(list{k},negatedSet{j},'exact',1e-8)
+                    list_{end+1} = and_(list{k},negatedSet{j},'exact');
                 end
             end
         end

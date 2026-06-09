@@ -23,16 +23,18 @@ function res = test_nn_nnActLayerFromHandle()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-funs = {@sin, @cos};
+funs = {@sin, @cos, @(x) 1./x};
+names = {'sin','cos','inverse'};
+monotonicity = {[],[],inf};
 
 for i=1:numel(funs)
     % init layer
-    layer = nnActLayerFromHandle(funs{i});
+    layer = nnActLayerFromHandle(funs{i},names{i},monotonicity{i});
     
     % check evaluate
     
     % check point
-    x = [0;0];
+    x = [5;7];
     y = layer.evaluate(x);
     assertLoop(all(layer.f(x) == y),i);
     

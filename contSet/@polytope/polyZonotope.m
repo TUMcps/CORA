@@ -205,8 +205,8 @@ while length(list) > 1
         
         % update id-vectors if empty
         if isempty(tempList{counter}.id)
-           temp = tempList{counter};
-           tempList{counter} = polyZonotope(temp.c,temp.G,temp.GI,temp.E,1);
+           pZ_i = tempList{counter};
+           tempList{counter} = polyZonotope(pZ_i.c,pZ_i.G,pZ_i.GI,pZ_i.E,1);
         end
         
         % update length of ID vectors

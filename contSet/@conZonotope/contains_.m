@@ -495,8 +495,8 @@ function res = aux_containsAHpolytope_approx(cZ1,cZ2, tol)
     d = length(x);
     
     % construct constraint X = Y * T
-    temp = repmat({Y},[1,nx]);
-    A1 = [blkdiag(temp{:}),zeros(d*nx,qy*qx),zeros(d*nx,ny)];
+    Yblocks = repmat({Y},[1,nx]);
+    A1 = [blkdiag(Yblocks{:}),zeros(d*nx,qy*qx),zeros(d*nx,ny)];
     b1 = reshape(X,[d*nx,1]);
 
     % construct constraint y-x = Y * beta
@@ -504,15 +504,15 @@ function res = aux_containsAHpolytope_approx(cZ1,cZ2, tol)
     b2 = y-x;
 
     % construct constraint lambda * Hx = Hy * T
-    Atemp = [];
+    Ablk = [];
     for j = 1:nx
         h = Hx(:,j);
-        temp = repmat({h'},[1,qy]);
-        Atemp = [Atemp;blkdiag(temp{:})];
+        hBlocks = repmat({h'},[1,qy]);
+        Ablk = [Ablk;blkdiag(hBlocks{:})];
     end
 
-    temp = repmat({Hy},[1,nx]);
-    A3 = [blkdiag(temp{:}),-Atemp,zeros(size(Atemp,1),ny)];
+    HyBlocks = repmat({Hy},[1,nx]);
+    A3 = [blkdiag(HyBlocks{:}),-Ablk,zeros(size(Ablk,1),ny)];
     b3 = zeros(size(A3,1),1);
 
     % construct overall equality constraints
@@ -520,8 +520,8 @@ function res = aux_containsAHpolytope_approx(cZ1,cZ2, tol)
     beq = [b1;b2;b3];
 
     % construct constraint lambda * hx <= hy + Hy beta
-    temp = repmat({hx'},[1,qy]);
-    A1 = [zeros(qy,ny*nx),blkdiag(temp{:}),-Hy];
+    hxBlocks = repmat({hx'},[1,qy]);
+    A1 = [zeros(qy,ny*nx),blkdiag(hxBlocks{:}),-Hy];
     b1 = hy;
 
     % construct constraint lambda >= 0

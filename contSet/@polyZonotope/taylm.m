@@ -56,11 +56,11 @@ tay = taylm(int);
 res = pZ.c;
 
 for i = 1:size(G,2)
-    temp = 1;
+    monomial = 1;
     for j = 1:size(E,1)
-       temp = temp * tay(j)^E(j,i); 
+       monomial = monomial * tay(j)^E(j,i);
     end
-    res = res + G(:,i) * temp;
+    res = res + G(:,i) * monomial;
 end
 
 % ------------------------------ END OF CODE ------------------------------

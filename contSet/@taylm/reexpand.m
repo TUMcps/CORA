@@ -96,8 +96,8 @@ function mon = aux_monomials(M,N)
     % loop over all monomials up to a degree of N
     while sum(mon(end,:)) <= N
         
-        temp = aux_nextMonomial(M,mon(end,:)); 
-        mon = [mon;temp];     
+        nextMon = aux_nextMonomial(M,mon(end,:));
+        mon = [mon;nextMon];     
     end
     
     mon = mon(1:end-1,:);

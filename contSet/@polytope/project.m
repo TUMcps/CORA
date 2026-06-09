@@ -33,6 +33,7 @@ function P_out = project(P,dims)
 %                28-June-2022 (VK, Changed using the fourier toolbox)
 %                15-November-2023 (MW, bug fix for equality constraints)
 %                14-July-2024 (MW, support vertex representation)
+%                03-November-2025 (LK, in case fourier.m is not found default to method='fourier')
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -56,6 +57,14 @@ end
 if P.isVRep.val
     P_out = polytope(P.V_.val(dims,:));
     return
+end
+
+% use fast algorithm for projection to 2D
+if length(dims) == 2 && isBounded(P)
+    V = projVertices(P,dims);
+    [A,b,Ae,be] = constraints(polytope(V));
+    P_out = polytope(A,b,Ae,be);
+    return;
 end
 
 % default method
@@ -84,45 +93,28 @@ removeDims = setdiff(1:n_in,dims);
 % different methods
 switch method
     case 'fourier_jones'
-        Ab = [A(:, [dims, removeDims]), b];
         try
-            Ab_ = fourier(Ab, 1:length(dims), 1e-6, 0);
+            P_out = aux_fourierJones(A,b,dims,removeDims);
+            return;
         catch ME
             % fourier uses mex files located at ./global/thirdparty/fourier
             % which have to be included for the current OS.
             % test if this is the reason for the error
             if strcmp(ME.identifier,'MATLAB:TooManyInputs')
                 % give better error message
-                throw(CORAerror('CORA:specialError', [ ...
-                    'The function ''fourier'' is missing a compiled mex file for your operating system.\n' ...
+                CORAwarning('CORA:contSet',['The function ''fourier'' is missing a compiled mex file for your operating system.\n' ...
+                    'Using the fallback method ''fourier'' for polytope/project!\n'...
                     'To install it, please type ''tbxmanager install fourier'' in the command window and contact us about this issue.\n' ...
-                    'See also: ' strrep(CORAROOT,filesep,'/') '/global/thirdparty/fourier/readme.txt']))
+                    'See also: ' strrep(CORAROOT,filesep,'/') '/global/thirdparty/fourier/readme.txt'])
+                P_out = aux_fourier(A,b,dims,removeDims);
+                return
             else
                 % rethrow ME
                 rethrow(ME)
             end
-        end
-        P_out = polytope(Ab_(:,1:end-1), Ab_(:,end));
-        return
-
+        end 
     case 'fourier'
-        for i = 1:length(removeDims)
-           
-            % project away current dimension 
-            [A,b] = aux_fourierMotzkinElimination(A,b,removeDims(i));
-            
-            % update indices to match projected polytope
-            removeDims = removeDims - 1;
-            
-            % remove redundant halfspaces
-            [A,b] = priv_normalizeConstraints(A,b,[],[],'A');
-            [A,b] = priv_compact_all(A,b,[],[],n_in,1e-12);
-        end
-        
-        % sort dimensions of the remaining projected polytope according to dims
-        [~,ind] = sort(dims);
-        A(:,ind) = A;
-        P_out = polytope(A,b);
+        P_out = aux_fourier(A,b,dims,removeDims);
         return
 end
 
@@ -130,6 +122,33 @@ end
 
 
 % Auxiliary functions -----------------------------------------------------
+
+function P_out = aux_fourierJones(A,b,dims,removeDims)
+    % Apply 'fourier_jones' which uses global/thirdparty/fourier.
+    Ab = [A(:, [dims, removeDims]), b];
+    Ab_ = fourier(Ab, 1:length(dims), 1e-6, 0);
+    P_out = polytope(Ab_(:,1:end-1), Ab_(:,end));
+end
+
+function P_out = aux_fourier(A,b,dims,removeDims)
+    % Apply 'fourier' which uses aux_fourierMotzkinElimination.
+    for i = 1:length(removeDims)
+        % project away current dimension 
+        [A,b] = aux_fourierMotzkinElimination(A,b,removeDims(i));
+    
+        % update indices to match projected polytope
+        removeDims = removeDims - 1;
+    
+        % remove redundant halfspaces
+        [A,b] = priv_normalizeConstraints(A,b,[],[],'A');
+        [A,b] = priv_compact_all(A,b,[],[],size(A,2),1e-12);
+    end
+        
+    % sort dimensions of the remaining projected polytope according to dims
+    [~,ind] = sort(dims);
+    A(:,ind) = A;
+    P_out = polytope(A,b);
+end
 
 function [A,b] = aux_fourierMotzkinElimination(A,b,j)
 % project the polytope A*x <= b onto the dimension "j" using

@@ -105,21 +105,21 @@ for k = 1:5
 
     % calculate extrem matrices + random matrices from the interval matrix
     ind = combinator(2,4);
-    temp = cell(2,1);
-    temp{1} = infimum(I);
-    temp{2} = supremum(I);
+    bounds = cell(2,1);
+    bounds{1} = infimum(I);
+    bounds{2} = supremum(I);
     N = 100;
 
     matrices = cell(size(ind,1)+N);
 
     for i = 1:size(ind,1)
-        matrices{i} = [temp{ind(i,1)}(1,1) temp{ind(i,2)}(1,2); ...
-                       temp{ind(i,3)}(2,1) temp{ind(i,4)}(2,2)];
+        matrices{i} = [bounds{ind(i,1)}(1,1) bounds{ind(i,2)}(1,2); ...
+                       bounds{ind(i,3)}(2,1) bounds{ind(i,4)}(2,2)];
     end
 
     for i = 1:N
-        temp = (rand(2) - 0.5*ones(2))*2;
-        matrices{size(ind,1)+i} = m + temp.*r;
+        randOffset = (rand(2) - 0.5*ones(2))*2;
+        matrices{size(ind,1)+i} = m + randOffset.*r;
     end
 
 

@@ -32,7 +32,7 @@ if isnumeric(summand)
 
     % translate the polygon
     V = vertices_(pgon);
-    pgon = polygon(V+summand);
+    pgon = polygon(V+summand,'Simplify',false);
 
 elseif isa(summand, 'polygon')
     % compute Minkowski sum

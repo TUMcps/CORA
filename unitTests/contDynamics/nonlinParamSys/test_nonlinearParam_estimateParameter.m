@@ -18,35 +18,77 @@ function completed = test_nonlinearParam_estimateParameter()
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-% system dynamics
-p_true = 2.8;
-f = @(x,u,p) [x(1)*cos(x(2)); ...
-    x(1)^2/p(1) * tan(u(1))];
-dim_x = 2;
-sys = nonlinParamSys(f);
+    % Test 1: Single Input 
 
-% simulate ground-truth system
-simOpts.x0 = [-1; 1];
-simOpts.tFinal = 1;
-simOpts.u = 0.3;
-simOpts.p = p_true;
-[t,x] = simulate(sys,simOpts);
-u = repmat(simOpts.u,[1,length(t)]);
+    % system dynamics
+    p_true = 2.8;
+    f = @(x,u,p) [x(1)*cos(x(2)); ...
+        x(1)^2/p(1) * tan(u(1))];
+    dim_x = 2;
+    sys = nonlinParamSys(f);
+    
+    % simulate ground-truth system
+    simOpts.x0 = [-1; 1];
+    simOpts.tFinal = 1;
+    simOpts.u = 0.3;
+    simOpts.p = p_true;
+    [t,x] = simulate(sys,simOpts);
+    u = repmat(simOpts.u,[1,length(t)]);
+    
+    p_est = estimateParameter(sys,x,t,u);
+    
+    % simulate system with estimated parameter
+    simOpts.p = p_est;
+    [t_est,x_est] = simulate(sys,simOpts);
+    
+    % check size
+    assert(size(x,1) == dim_x)
+    assert(size(x_est,1) == dim_x)
+    
+    % check deviation
+    assert(sum(abs(t-t_est),'all') < 1e-9)
+    assert(sum(abs(x-x_est),'all') < 1e-3)
 
-p_est = estimateParameter(sys,x,t,u);
 
-% simulate system with estimated parameter
-simOpts.p = p_est;
-[t_est,x_est] = simulate(sys,simOpts);
+    % Test 2: Multiple Inputs
 
-% check size
-assert(size(x,1) == dim_x)
-assert(size(x_est,1) == dim_x)
+    % system dynamics
+    p_true = [7.96e-8;7];
+    f = @(x,u,p) p(1)*(u(1) - u(2) - p(2)*(x(1) - u(3)));
+    dim_x = 1;
+    sys = nonlinParamSys(f);
 
-% check deviation
-assert(sum(abs(t-t_est),'all') < 1e-9)
-assert(sum(abs(x-x_est),'all') < 1e-3)
+    % simulate ground-truth system
+    simOpts.x0 = 90;
+    simOpts.tFinal = 4;
+    simOpts.u = [0.3;1;-4];
+    simOpts.p = p_true;
+    [t,x] = simulate(sys,simOpts);
+    u = repmat(simOpts.u,[1,length(t)]);
+    
+    p_est1 = estimateParameter(sys,x,t,u);
 
-completed = true;
+    options.alg = 'multiStep';
+    p_est2 = estimateParameter(sys,x,t,u,options);
+    
+    % simulate system with estimated parameter
+    simOpts.p = p_est1;
+    [t_est1,x_est1] = simulate(sys,simOpts);
+
+    simOpts.p = p_est2;
+    [t_est2,x_est2] = simulate(sys,simOpts);
+    
+    % check size
+    assert(size(x,1) == dim_x)
+    assert(size(x_est1,1) == dim_x)
+    assert(size(x_est2,1) == dim_x)
+    
+    % check deviation
+    assert(sum(abs(t-t_est1),'all') < 1e-9)
+    assert(sum(abs(x-x_est1),'all') < 1e-3)
+    assert(sum(abs(t-t_est2),'all') < 1e-9)
+    assert(sum(abs(x-x_est2),'all') < 1e-3)
+
+    completed = true;
 
 % ------------------------------ END OF CODE ------------------------------

@@ -38,8 +38,8 @@ function res = polyZonotope(obj)
     names = {};
     
     for i = 1:size(obj,1)
-       temp = obj(i,1);
-       names = [names, temp.names_of_var];
+       tayDim = obj(i,1);
+       names = [names, tayDim.names_of_var];
     end
     
     names = unique(names);
@@ -60,44 +60,44 @@ function res = polyZonotope(obj)
     % loop over all taylor model dimensions
     for i = 1:n
         
-       temp = obj(i,1);
-       
+       tayDim = obj(i,1);
+
        % determine indices of variables
-       ind = zeros(length(temp.names_of_var),1);
-       
-       for j = 1:length(temp.names_of_var)
+       ind = zeros(length(tayDim.names_of_var),1);
+
+       for j = 1:length(tayDim.names_of_var)
            for k = 1:length(names)
-              if strcmp(names{k},temp.names_of_var{j})
+              if strcmp(names{k},tayDim.names_of_var{j})
                   ind(j) = k;
                   break;
               end
            end
        end
-       
+
        % convert polynomial part
-       coeff = temp.coefficients';
-       e = temp.monomials(:,2:end)';
-       
+       coeff = tayDim.coefficients';
+       e = tayDim.monomials(:,2:end)';
+
        if i == 1
           G = [G, [coeff;zeros(n-1,length(coeff))]];
        elseif i == n
           G = [G, [zeros(n-1,length(coeff));coeff]];
        else
-          G = [G, [zeros(i-1,length(coeff));coeff;zeros(n-i,length(coeff))]]; 
+          G = [G, [zeros(i-1,length(coeff));coeff;zeros(n-i,length(coeff))]];
        end
-       
+
        Etemp = zeros(length(names),size(e,2));
        Etemp(ind,:) = e;
-       E = [E,Etemp];       
-       
+       E = [E,Etemp];
+
        % convert remainder part
-       c(i) = center(temp.remainder);
-       GI(i,i) = rad(temp.remainder);
+       c(i) = center(tayDim.remainder);
+       GI(i,i) = rad(tayDim.remainder);
     end
     
     % add all constant monomials to the center vector
-    temp = sum(E,1);
-    ind = find(temp == 0);
+    expSums = sum(E,1);
+    ind = find(expSums == 0);
     c = c + sum(G(:,ind),2);
     E(:,ind) = [];
     G(:,ind) = [];

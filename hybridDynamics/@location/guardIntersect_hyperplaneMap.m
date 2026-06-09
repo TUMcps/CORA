@@ -256,12 +256,12 @@ function R = aux_mappedSetError(guard,R0,A,b,err)
     % obtain object properties
     n = guard.Ae;                    % hyperplane normal vector
     
-    % interval enclosure of the fraction 
-    temp = A*R0 + b;
-    I = interval(-n * err)/interval(n*temp);
-    
+    % interval enclosure of the fraction
+    flowSet = A*R0 + b;
+    I = interval(-n * err)/interval(n*flowSet);
+
     % overall set (see (15) in [1])
-    R = I*temp + err;
+    R = I*flowSet + err;
 
 end
 
@@ -317,10 +317,10 @@ function [k,L,Q,phi] = aux_taylorSeriesParam(guard,A,b,R0)
     Lambda_int = interval(n'*(A*R0 + b));
     Theta_int = interval(-n*(n'*(A*R0 + b)) + (-1)*(d + (-1)*n'*R0)*Upsilon);
 
-    temp = Theta_int/Lambda_int;
-    
-    psi_c = center(temp);
-    psi_g = rad(temp);
+    psi_int = Theta_int/Lambda_int;
+
+    psi_c = center(psi_int);
+    psi_g = rad(psi_int);
     
     % interval enclosure phi of the set 1/Lambda^2 (see Prop. 3 in [1])
     phi = 1/Lambda_int^2;
@@ -343,9 +343,9 @@ function [k,L,Q,phi] = aux_taylorSeriesParam(guard,A,b,R0)
         (A*x0 + b)*Theta'/Lambda^2;
 
     % quadratic map Q(i,l,m) (see Prop. 3 in [1])
-    c = center(A*R0 + b);
-    temp = A*R0 + b;
-    G = temp.G;
+    flowZono = A*R0 + b;
+    c = center(flowZono);
+    G = flowZono.G;
     gens = length(G(1,:));
     
     Q = cell(length(b),1);

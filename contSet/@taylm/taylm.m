@@ -408,12 +408,12 @@ function obj = aux_computeObject(obj,func,int,max_order,names,opt_method,eps,tol
             
             % evaluate the symbolic formula with taylor models
             if ~isempty(v)
-                temp = subs(func,v,tay);
-                str = sprintf('obj = %s;',char(temp));
+                substitutedExpr = subs(func,v,tay);
+                str = sprintf('obj = %s;',char(substitutedExpr));
                 eval(str);
             else
-                temp = eval(func);
-                obj = taylm(interval(temp,temp),max_order,'const',opt_method,eps,tolerance);
+                evaluatedConst = eval(func);
+                obj = taylm(interval(evaluatedConst,evaluatedConst),max_order,'const',opt_method,eps,tolerance);
             end
     
         end

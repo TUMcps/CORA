@@ -113,22 +113,22 @@ for i=1:numComp
     if all(arrayfun(@(x) strcmp(x.name,'location'),...
             pHA.components(i).location,'UniformOutput',true))
         % no location has an actual name (all default names)
-        temp = "no names";
+        locNames = "no names";
     else
-        temp = [];
+        locNames = [];
         for j=1:numLoc
             nameLoc = pHA.components(i).location(j).name;
             if strcmp(nameLoc,'location')
                 % default name
-                temp = [temp "(no name)"];
+                locNames = [locNames "(no name)"];
             else
-                temp = [temp "'" + string(nameLoc) + "'"];
+                locNames = [locNames "'" + string(nameLoc) + "'"];
             end
         end
     end
     % extend last entry by closing parenthesis
-    temp(end) = temp(end) + ")";
-    dispUpToLength(temp,100,locString);
+    locNames(end) = locNames(end) + ")";
+    dispUpToLength(locNames,100,locString);
 
     
     % transitions in location
@@ -153,11 +153,11 @@ for i=1:numComp
                     transString = [transString "loc" + j + " -> loc" + target(1)];
                 end
             else % numTarget > 1
-                temp = syncLabel(target == target(1));
-                temp = temp(cellfun(@(x)~isempty(x),temp,'UniformOutput',true));
-                if ~isempty(temp)
+                sharedSyncLabels = syncLabel(target == target(1));
+                sharedSyncLabels = sharedSyncLabels(cellfun(@(x)~isempty(x),sharedSyncLabels,'UniformOutput',true));
+                if ~isempty(sharedSyncLabels)
                     transString = [transString "loc" + j + " -> loc" + target(1) ...
-                        + " (" + numTarget + " times, incl. labels: '" + strjoin(temp,"','") + "')"];
+                        + " (" + numTarget + " times, incl. labels: '" + strjoin(sharedSyncLabels,"','") + "')"];
                 else
                     transString = [transString "loc" + j + " -> loc" + target(1) ...
                         + " (" + numTarget + "times)"];
@@ -181,22 +181,22 @@ for i=1:numComp
     else
         inpString = "   Input dimension: " + ...
             pHA.components(i).location(1).contDynamics.nrOfInputs + " (";
-        temp = [];
+        inputBindStrings = [];
         % loop over each input
         for j=1:pHA.components(i).location(1).contDynamics.nrOfInputs
             origin_comp = pHA.bindsInputs{i}(j,1);
             origin_idx = pHA.bindsInputs{i}(j,2);
             if origin_comp == 0
                 % global
-                temp = [temp "u" + j + " = u" + origin_idx + "(global)"];
+                inputBindStrings = [inputBindStrings "u" + j + " = u" + origin_idx + "(global)"];
             else
                 % output from other component
-                temp = [temp "u" + j + " <- y" + origin_idx + " of comp.#" + origin_comp];
+                inputBindStrings = [inputBindStrings "u" + j + " <- y" + origin_idx + " of comp.#" + origin_comp];
             end
         end
         % extend last entry by parenthesis
-        temp(end) = temp(end) + ")";
-        dispUpToLength(temp,100,inpString);
+        inputBindStrings(end) = inputBindStrings(end) + ")";
+        dispUpToLength(inputBindStrings,100,inpString);
     end
     
     % output dimension

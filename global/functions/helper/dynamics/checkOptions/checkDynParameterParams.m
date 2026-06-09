@@ -154,7 +154,7 @@ end
 % u
 function checks = aux_getChecksParams_u(checks,sys,func,params,options)
     if isa(sys,'hybridAutomaton')
-        if strcmp(func,'simulate')
+        if ismember(func,{'simulate','falsify'})
             checks(end+1) = add2checks(@(val)c_HA_sim_u(val,sys,params), '');
         else
             checks(end+1) = add2checks(@(val)all(size(val) == [length(sys.location),1]), '???');

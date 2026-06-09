@@ -270,9 +270,10 @@ for epoch=1:maxEpoch % epoch
         if isfield(options.nn.train,'data_augmentation')
             xBatch = options.nn.train.data_augmentation(xBatch);
         end
-        % enable backpropagation
+        % enable backpropagation and batch norm computation
         options.nn.train.backprop = true;
-        options.nn.interval_center = ivalC;
+        options.nn.interval_center = ivalC;     
+        options.nn.batch_norm_stats = 'calc_stats';
         if strcmp(options.nn.train.method,'point') ...
                 || options.nn.train.noise == 0 ... (strcmp(options.nn.train.method,'set') && options.nn.train.noise == 0)
             % Forward propagation
@@ -295,9 +296,14 @@ for epoch=1:maxEpoch % epoch
                 % Compute indices for elements in current batch
                 propIdx = j:j+min(propBatchSize,miniBatchSize)-1;
 
-                % Batch norm is based on statistics of the nominal input; normal forward
-                % propagation to compute stats.
-                options.nn.batch_norm_calc_stats = true; % compute batch stats.
+                % Batch norm is based on statistics of the nominal input. Therefore, we do 
+                % a point-based forward propagation to compute and store the stats.
+                options.nn.batch_norm_stats = 'calc_stats'; % compute batch stats.
+                options.nn.train.backprop = false; % Disable backprop.
+                nn.evaluate_(xBatch(:,propIdx),options,idxLayer);
+                % Reset flags.
+                options.nn.batch_norm_stats = 'stored_stats'; % Use the just computed stats.
+                options.nn.train.backprop = true;
 
                 % construct input generators
                 [xBatch_,GBatch_] = aux_construtInputGenerators(nn, ...
@@ -355,9 +361,10 @@ for epoch=1:maxEpoch % epoch
             lossValCenter = zeros(numValBatches,1);
             lossValVol = zeros(numValBatches,1);
             lossValTotal = zeros(numValBatches,1);
-            % disable backpropagation
+            % disable backpropagation and batch norm computation
             options.nn.train.backprop = false;
             options.nn.interval_center = false;
+            options.nn.batch_norm_stats = 'calc_stats';
             % Loop index.
             k = 1;
             for j=1:miniBatchSize:max(1,valN - mod(valN,miniBatchSize))
@@ -642,7 +649,7 @@ if any(noise > 0)
         zBatch = reshape(zBatch,[v0 batchSize numInitGens]);
 
         % Move center in the middle of attacks.
-        xBatch = 1/numInitGens*reshape(sum(zBatch,3),[v0 batchSize]);
+        xBatch = min(max(mean(zBatch,3),xBatchL),xBatchU);
         % xBatch = 1/2*reshape(max(zBatch,[],3) + min(zBatch,[],3),[v0 batchSize]);
         % Update noise.
         noise = min(xBatchU - xBatch,xBatch - xBatchL);
@@ -662,8 +669,8 @@ if any(noise > 0)
         end
 
         if options.nn.interval_center
-            r = reshape(sum(abs(GBatch),2),[v0 batchSize]);
-            xBatch = permute(cat(3,xBatch - (noise - r),xBatch + (noise - r)),[1 3 2]);
+            r = max(noise - reshape(sum(abs(GBatch),2),[v0 batchSize]),0);
+            xBatch = permute(cat(3,xBatch - r,xBatch + r),[1 3 2]);
             % xBatch = permute(cat(3,xBatch,xBatch),[1 3 2]);
         end
     else
@@ -688,15 +695,14 @@ function [lossBatch] = aux_trainOtherMethods(nn,xBatch,tBatch,idxLayer,...
 inpInf = options.nn.train.input_space_inf;
 inpSup = options.nn.train.input_space_sup;
 
-% Batch norm is based on statistics of the nominal input; normal forward
-% propagation to compute stats.
-options.nn.batch_norm_calc_stats = true; % compute batch stats.
+% Batch norm is based on statistics of the nominal input. Therefore, we do 
+% a point-based forward propagation to compute and store the stats.
+options.nn.batch_norm_stats = 'calc_stats'; % compute batch stats.
 options.nn.train.backprop = false; % Disable backprop.
 nn.evaluate_(xBatch,options,idxLayer);
 % Reset flags.
-options.nn.batch_norm_calc_stats = false;
+options.nn.batch_norm_stats = 'stored_stats'; % Use the just computed stats.
 options.nn.train.backprop = true;
-options.nn.batch_norm_moving_stats = true;
 
 % Handle forward and back-propagation of other training methods for robust
 % neural networks, see references [3-6]

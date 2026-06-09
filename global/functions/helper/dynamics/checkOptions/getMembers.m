@@ -105,7 +105,9 @@ switch fieldname
                       {'approxdep_girard','approxdep_pca'}];
         
     case 'reductionTechniqueUnderApprox'
-        memberlist = {'sum','scale','linProg'};
+        memberlist = {'sadraddini','yang','raghuraman','kochdumper',...
+                    'scale','boxLP','boxWetzlinger','boxCone','nlp','cluster', ...
+                    'sum','linProg','wetzlinger'}; % old names
         
         % guard
     case 'guardIntersect'
@@ -155,8 +157,11 @@ switch fieldname
         memberlist = {'linearize','forwardBackward','polyBox'};
         
     case 'type'
-        memberlist = {'standard','gaussian','rrt','constrained'};
+        memberlist = {'standard','gaussian','rrt','constrained','falsify'};
         
+    case 'dynamics'
+        memberlist = {'lin','mixInt'};
+
     case 'norm'
         memberlist = {'interval','frob'};
     

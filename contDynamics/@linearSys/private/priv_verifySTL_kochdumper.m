@@ -673,8 +673,8 @@ function [res,alpha] = aux_falsifyingFactors(cons)
             end
 
             % 1st constraint in Equation (9) in [5]
-            temp = polytope(-C(j,:),-d(j)) & B;
-            A1 = [temp.A -temp.b]; b1 = zeros(size(A1,1),1);
+            P = polytope(-C(j,:),-d(j)) & B;
+            A1 = [P.A -P.b]; b1 = zeros(size(A1,1),1);
 
             % 2nd constraint in Equation (9) in [5]
             A2 = [eye(n), -ones(n,1); -eye(n), -ones(n,1)]; 
@@ -764,12 +764,12 @@ function E = aux_remMatrixExp(A,dt,order)
 % remainder of the matrix exponential according to Eq. (3.3) in [4]
 
     Aabs = abs(A);
-    tmp = eye(size(A));
-    Emat = expm(Aabs*dt) - tmp;
-    
+    powerTerm = eye(size(A));
+    Emat = expm(Aabs*dt) - powerTerm;
+
     for i = 1:order
-       tmp = tmp * Aabs * dt / i;
-       Emat = Emat - tmp;
+       powerTerm = powerTerm * Aabs * dt / i;
+       Emat = Emat - powerTerm;
     end
     Emat = abs(Emat);
     
@@ -787,36 +787,36 @@ function [F,G] = aux_curvatureEnclosure(A,E,dt,order)
     end
     
     % compute curvature enclosure for homogeneous solution
-    tmp = A*dt;
+    powerTerm = A*dt;
     F = E;
-    
+
     for i = 2:order
-       tmp = tmp * A * dt/i;
-       F = F + I{i} * tmp;
+       powerTerm = powerTerm * A * dt/i;
+       F = F + I{i} * powerTerm;
     end
 
     % compute curvature enclosure for particular solution
-    tmp = eye(size(A))*dt;
+    powerTerm = eye(size(A))*dt;
     G = E * dt;
-    
+
     for i = 2:order+1
-       tmp = tmp * A * dt/i;
-       G = G + I{i}*tmp;
+       powerTerm = powerTerm * A * dt/i;
+       G = G + I{i}*powerTerm;
     end
 end
 
 function [T,res] = aux_constInputPropMat(A,dt)
 % propagation matrix for constant inputs T = A^-1 * (e^A*dt - I)
 
-    tmp = eye(size(A)) * dt;
-    T = tmp;
+    powerTerm = eye(size(A)) * dt;
+    T = powerTerm;
     cnt = 2;
 
     while cnt < 1000
-        tmp = tmp * dt/cnt * A;
-        T = T + tmp;
+        powerTerm = powerTerm * dt/cnt * A;
+        T = T + powerTerm;
         cnt = cnt + 1;
-        if all(all(abs(tmp) < eps))
+        if all(all(abs(powerTerm) < eps))
             break;
         end
     end
@@ -838,15 +838,15 @@ function list = aux_safe2unsafe(sets)
     for i = 2:length(sets)
     
         % reverse next constraint
-        tmp = aux_reverseHalfspaceConstraints(sets{i});
+        reversedHalfspaces = aux_reverseHalfspaceConstraints(sets{i});
 
         list_ = {};
 
-        for j = 1:length(tmp)
+        for j = 1:length(reversedHalfspaces)
             for k = 1:length(list)
-                if isIntersecting(list{k},tmp{j})
+                if isIntersecting(list{k},reversedHalfspaces{j})
                     % compute intersection
-                    list_{end+1} = polytope(list{k}) & polytope(tmp{j});
+                    list_{end+1} = polytope(list{k}) & polytope(reversedHalfspaces{j});
                 end
             end
         end

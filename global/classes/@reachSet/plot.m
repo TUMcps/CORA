@@ -84,6 +84,11 @@ function [R,dims,NVpairs,unify,whichset] = aux_preprocess(R,varargin)
     
     % check which set has to be plotted
     whichset = aux_checkSet(R,whichset);
+
+    % disable unifying for time point plotting
+    if strcmp(whichset,'tp')
+        unify = false;
+    end
 end
 
 function whichset = aux_checkSet(R,whichset)

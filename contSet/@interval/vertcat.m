@@ -32,8 +32,8 @@ I = varargin{1};
 
 %if object is not an interval
 if ~isa(I,'interval')
-    tmp = I;
-    I = interval(tmp,tmp);
+    numericVal = I;
+    I = interval(numericVal,numericVal);
 end
 
 for i = 2:nargin

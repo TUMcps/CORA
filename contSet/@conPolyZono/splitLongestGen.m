@@ -34,9 +34,9 @@ indAll = [];
 for i = 1:size(E,1)
     if sum(E(i,:)) == 1
         ind = find(E(i,:) == 1);
-        temp = E(:,ind);
-        temp(i) = 0;
-        if all(temp == 0)
+        expCol = E(:,ind);
+        expCol(i) = 0;
+        if all(expCol == 0)
            indAll = [indAll,ind];
         end
     end
@@ -50,8 +50,8 @@ if length(indAll) < size(E,2)
 end
 
 % halve length of generators with all even exponents
-temp = prod(ones(size(E))-mod(E,2),1);
-ind = find(temp == 1);
+allEvenExp = prod(ones(size(E))-mod(E,2),1);
+ind = find(allEvenExp == 1);
 if ~isempty(ind)
     G(:,ind) = 0.5*G(:,ind);
 end
@@ -60,8 +60,8 @@ end
 lenGen = zeros(length(cPZ.id),1);
 
 for i = 1:length(cPZ.id)
-    temp = G(:,E(i,:) > 0);
-    lenGen(i) = sum(sum(temp.^2,1));
+    associatedGens = G(:,E(i,:) > 0);
+    lenGen(i) = sum(sum(associatedGens.^2,1));
 end
 
 % select the generator for which the sum of generators is largest

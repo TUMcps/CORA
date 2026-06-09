@@ -814,8 +814,8 @@ function [A,b,Aeq,beq] = aux_extractEqConstr(A,b,Aeq,beq,tol)
     % Heuristic: sort the constraints according to a hash function to make
     % it easier to identify similar constraints
     A_ = abs(A);
-    temp = 1:size(A,2);
-    [A_,ind] = sortrows([A_*temp',A_]);
+    colIndices = 1:size(A,2);
+    [A_,ind] = sortrows([A_*colIndices',A_]);
     A = A(ind,:);
     b = b(ind,:);
     

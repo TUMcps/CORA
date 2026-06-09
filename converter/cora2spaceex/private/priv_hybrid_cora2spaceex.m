@@ -55,13 +55,13 @@ for idx = 1:numel(systems)
     
     % concatenate transitions correctly (only non-empty transitions)
     for j=1:length(trans_)
-        if ~isemptyobject(trans_)
+        if ~isemptyobject(trans_(j))
             try
-                trans = [trans; trans_];
+                trans = [trans; trans_(j)];
             catch
-                trans = [trans; trans_'];
+                trans = [trans; trans_(j)'];
             end
-            ids = [ids; ones(length(trans_),1)*idx];
+            ids = [ids; idx];
         end
     end
     

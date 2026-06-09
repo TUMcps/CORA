@@ -682,9 +682,9 @@ for i = 1:length(spec)
         G{end}.time = spec(i).time;
 
     elseif strcmp(spec(i).type,'unsafeSet') % ---
-        tmp = normalizeConstraints(polytope(spec(i).set),'A');
-        if size(tmp.A,1) > 1
-            F{end+1}.set = tmp;
+        P = normalizeConstraints(polytope(spec(i).set),'A');
+        if size(P.A,1) > 1
+            F{end+1}.set = P;
             F{end}.time = spec(i).time;
             if size(F{end}.set.A,1) > size(F{end}.set.A,2)
                F{end}.int = interval(F{end}.set);
@@ -694,7 +694,7 @@ for i = 1:length(spec)
                F{end}.isBounded = false; 
             end
         else
-            G{end+1}.set = polytope(-tmp.A,-tmp.b);
+            G{end+1}.set = polytope(-P.A,-P.b);
             G{end}.time = spec(i).time;
         end
 
@@ -886,8 +886,8 @@ while true
     timeStep = tFinal/steps;
     % check if that time step size divides all durations of
     % piecewise-constant input vectors into integers
-    temp = constInt ./ timeStep;
-    if all(withinTol(temp,round(temp)))
+    stepRatio = constInt ./ timeStep;
+    if all(withinTol(stepRatio,round(stepRatio)))
         % time step found
         break
     end

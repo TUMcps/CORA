@@ -67,8 +67,8 @@ end
 
 % check for explosion
 if isa(Rinit,'zonotope')
-    temp = rad(interval(Rinit));
-    if all(temp > eps) && options.compTimePoint && ...
+    initRad = rad(interval(Rinit));
+    if all(initRad > eps) && options.compTimePoint && ...
        max(rad(interval(Rfirst.tp)) ./ rad(interval(Rinit))) > 1e10 % arbitary value
         throw(CORAerror('CORA:reachSetExplosion'));
     end

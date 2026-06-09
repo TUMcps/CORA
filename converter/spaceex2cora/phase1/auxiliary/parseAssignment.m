@@ -63,21 +63,21 @@ for i = 1:length(equations)
     if length(sides) == 2
         
         % trim variable name, then remove uptick by going back to char array
-        temp = strtrim(sides(1));
-        temp = char(temp);
-        if(temp(end) == '''')
+        varName = strtrim(sides(1));
+        varName = char(varName);
+        if(varName(end) == '''')
             % trim uptick
-            temp = temp(1:end-1);
+            varName = varName(1:end-1);
         else
             warn_ct = warn_ct+1;
             warnings(warn_ct).message = sprintf(...
                 "Format Warning: assigned variable %s has no uptick",...
-                temp);
+                varName);
         end
         
         % update counter & store processed strings
         numExpr = numExpr+1;
-        varnames(numExpr) = string(temp);
+        varnames(numExpr) = string(varName);
         exprStrings(numExpr) = sides(2);
     else
         warn_ct = warn_ct+1;

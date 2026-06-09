@@ -15,7 +15,7 @@ function completed = example_linearSysDT_observe_01_vehicle()
 
 % Authors:       Matthias Althoff
 % Written:       30-April-2021
-% Last update:   13-July-2021
+% Last update:   15-April-2026 (NH)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -29,20 +29,20 @@ paramsOrig = params;
 
 % Set of evaluated estimators
 Estimator = {
-    'FRad-A' 
-    'FRad-B' 
-    'ESO-A'
-    'FRad-C'  
-    'Nom-G' 
-    'ESO-D'
+    'PRad-A' 
+    'PRad-B' 
+    'PRad-C'
+    'PRad-D'  
+    'PRad-E' 
+    'Nom-G'
     'Hinf-G' 
     };
 
 % set solver
-options.solver = 'sdpt3';
+options.solver = 'mosek';
 % ensure that solver is on path
-if ~isSolverInstalled('sdpt3')
-    throw(CORAerror('CORA:noSuitableSolver','sdpt3'));
+if ~isSolverInstalled('mosek')
+    throw(CORAerror('CORA:noSuitableSolver','mosek'));
 end
 
 %% perform evaluation
@@ -107,8 +107,8 @@ c = [ 0.0000000000000000 ; 0.0000000000000000 ; 0.0000000000000000 ; 0.000000000
 C = [ 0.0000000000000000 15.0000000000000000 0.0000000000000000 0.0000000000000000 0.0000000000000000 0.0000000000000000 ; 0.0000000000000000 0.0000000000000000 1.0000000000000000 0.0000000000000000 0.0000000000000000 0.0000000000000000 ; 0.0000000000000000 0.0000000000000000 0.0000000000000000 1.0000000000000000 0.0000000000000000 0.0000000000000000 ; 0.0000000000000000 0.0000000000000000 0.0000000000000000 0.0000000000000000 1.0000000000000000 0.0000000000000000 ];
 D = [];
 k = [];
-E = [];
-F = [];
+E = eye(6);
+F = eye(4);
 dt = 0.0100000000000000;
 vehicle = linearSysDT(name,A,B,c,C,D,k,E,F,dt);
 

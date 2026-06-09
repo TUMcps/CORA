@@ -41,9 +41,9 @@ C(1,indMid) = 1;
 % Parameters --------------------------------------------------------------
     
 x0 = aux_getInit(A,samples,1);
-temp = diag(0.1*x0);
-temp = temp(:,x0 > 0);
-R0sim = zonotope(x0,temp);
+genMat = diag(0.1*x0);
+genMat = genMat(:,x0 > 0);
+R0sim = zonotope(x0,genMat);
 
 params.tFinal = 40;
 

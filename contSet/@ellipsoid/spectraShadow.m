@@ -72,9 +72,9 @@ L = chol(inv(E.Q));
 A0 = [1-E.q'*(L'*L)*E.q sparse(1,n); sparse(n,1) speye(n)];
 Ai = cell(1,n);
 
-temp = 2*E.q'*(L'*L);
+linearCoeffs = 2*E.q'*(L'*L);
 for i = 1:n
-    Ai{i} = [temp(i), L(:,i)'; L(:,i), sparse(n,n)];
+    Ai{i} = [linearCoeffs(i), L(:,i)'; L(:,i), sparse(n,n)];
 end
 
 end
@@ -118,9 +118,9 @@ L = sqrt(D_pinv) * V_pinv';
 A0 = [1-E.q'*(L'*L)*E.q, sparse(1,n); sparse(n,1), speye(n)];
 Ai = cell([1 n]);
 
-temp = 2*E.q'*(L'*L);
+linearCoeffs = 2*E.q'*(L'*L);
 for i = 1:n
-    Ai{i} = [temp(i) L(:,i)'; L(:,i) sparse(n,n)];
+    Ai{i} = [linearCoeffs(i) L(:,i)'; L(:,i) sparse(n,n)];
 end
 
 % We now add the equality constraints:

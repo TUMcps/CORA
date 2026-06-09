@@ -26,7 +26,7 @@ function [nn_red, S] = computeReducedNetwork(obj, S, varargin)
 %
 % Reference:
 %    [1] Ladner et al., Fully Automatic Neural Network Reduction for 
-%        Formal Verification. arxiv. 2024.
+%        Formal Verification. TMLR. 2025.
 %
 % Other m-files required: none
 % Subfunctions: none

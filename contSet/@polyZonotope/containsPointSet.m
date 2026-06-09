@@ -65,14 +65,14 @@ end
 nrSplits = length(pZsplit);
 qZsplit = cell(nrSplits+1,1);
 for i = 1:nrSplits
-    temp = zonotope(pZsplit{i});
-    temp = reduce(temp,'girard',order);
-    qZsplit{i} = polytope(temp);
+    zonoApprox = zonotope(pZsplit{i});
+    zonoApprox = reduce(zonoApprox,'girard',order);
+    qZsplit{i} = polytope(zonoApprox);
 end
 % append zonotope conversion of full polynomial zonotope
-temp = zonotope(pZ);
-temp = reduce(temp,'girard',order);
-qZsplit{end} = polytope(temp);
+zonoFull = zonotope(pZ);
+zonoFull = reduce(zonoFull,'girard',order);
+qZsplit{end} = polytope(zonoFull);
 
 % check if all points of the original polynomial zonotope are located
 % inside the reduced polynomial zonotope

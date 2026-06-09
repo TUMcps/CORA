@@ -52,7 +52,8 @@ for i=1:nrTests
 
     % compute vertices
     V = vertices(project(cZ,projDims));
-    V_proj = projVertices(cZ,projDims);
+    V_proj1 = projVertices(cZ,projDims,'angle');
+    V_proj2 = projVertices(cZ,projDims,'supportFunc');
 
     % visualization
 %     figure; hold on; box on;
@@ -60,7 +61,8 @@ for i=1:nrTests
 %     scatter(V_proj(1,:),V_proj(2,:),16,'g');
     
     % check vertices (large tolerance since linear programs are used)
-    assertLoop(compareMatrices(V,V_proj,1e-8),i)
+    assertLoop(compareMatrices(V,V_proj1,1e-8),i)
+    assertLoop(compareMatrices(V,V_proj2,1e-8),i)
 
 end
 

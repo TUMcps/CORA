@@ -151,11 +151,11 @@ function res = contract(f,dom,varargin)
                 for k = 1:length(domSplit)
                     
                     % check if the domain is empty
-                    temp = f(domSplit{k});
-                    
-                    p = zeros(length(temp),1);
-                    
-                    if ~contains(temp,p)
+                    funcVal = f(domSplit{k});
+
+                    p = zeros(length(funcVal),1);
+
+                    if ~contains(funcVal,p)
                        continue; 
                     end
                 

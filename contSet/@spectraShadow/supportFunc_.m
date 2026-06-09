@@ -52,8 +52,9 @@ if strcmp(type,'lower')
 elseif strcmp(type,'upper')
     [val,x] = aux_solvePSDProg(SpS,dir,-1,options);
 elseif strcmp(type,'range')
-    [val_upper,x_upper] = aux_solvePSDProg(SpS,dir,1,options);
-    [val_lower,x_lower] = aux_solvePSDProg(SpS,dir,-1,options);
+    % s=1 computes lower bound, s=-1 computes upper bound
+    [val_lower,x_lower] = aux_solvePSDProg(SpS,dir,1,options);
+    [val_upper,x_upper] = aux_solvePSDProg(SpS,dir,-1,options);
     % combine values
     val = interval(val_lower,val_upper);
     x = [x_lower x_upper];

@@ -47,18 +47,18 @@ function eqs = priv_levelSet_cora2spaceex(obj)
         
         % different comparison operators
         if strcmp(compOp{i},'<=')
-            temp = [char(eq(i)),' <= 0'];
+            exprStr = [char(eq(i)),' <= 0'];
         elseif strcmp(compOp{i},'<')
-            temp = [char(eq(i)),' < 0'];
+            exprStr = [char(eq(i)),' < 0'];
         else
-            temp = [char(eq(i)),' == 0'];
+            exprStr = [char(eq(i)),' == 0'];
         end
         
         % add current equation to overall string
         if isempty(eqs)
-            eqs = temp; 
+            eqs = exprStr; 
         else
-            eqs = [eqs,' & ',newline,temp];
+            eqs = [eqs,' & ',newline,exprStr];
         end
     end
 end

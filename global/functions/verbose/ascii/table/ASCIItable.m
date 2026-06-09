@@ -291,7 +291,12 @@ methods (Access=protected)
             elseif contains(format,'rownr')
                 formattedValues = sprintf(strrep(format,'rownr','i'),table.rownr);
             elseif contains(format,'time')
-                timestr = datetime([0 0 0 0 0 toc(table.timerVal)],'Format','HH:mm:ss');
+                pattern = 'HH:mm:ss';
+                if contains(format,'-detailed')
+                    pattern = 'HH:mm:ss.SSS';
+                    format = strrep(format,'-detailed','');
+                end
+                timestr = datetime([0 0 0 0 0 toc(table.timerVal)],'Format',pattern);
                 formattedValues = sprintf(strrep(format,'time','s'),timestr);
             else
                 formattedValues = sprintf(format,cvalues{i});
@@ -414,6 +419,8 @@ function [hvalues,formats,colWidths,saveContent, ...
         switch format
             case '%time'
                 formatWidth(i) = 8;
+            case '%time-detailed'
+                formatWidth(i) = 12;
             otherwise % determine format width
                 % Create enough format arguments.
                 args = repmat({0},1,numColElems(i));

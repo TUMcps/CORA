@@ -25,9 +25,9 @@ function cZ = conversionStarSetConZono(c, G, C, d, l_, u_)
 % ------------------------------ BEGIN CODE -------------------------------
 
 % normalize halfspace normal vector length
-temp = sqrt(sum(C.^2, 2));
-C = diag(temp) * C;
-d = temp .* d;
+rowNorms = sqrt(sum(C.^2, 2));
+C = diag(rowNorms) * C;
+d = rowNorms .* d;
 
 numGens = size(G, 2);
 

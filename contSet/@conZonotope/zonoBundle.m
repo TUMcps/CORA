@@ -52,8 +52,8 @@ else
     b_ = b - A*p_;
 
     % normalize halfspace directions to length 1
-    temp = diag(1./sqrt(sum(A_.^2,2)));
-    A_ = temp * A_; b_ = temp * b_;
+    normMat = diag(1./sqrt(sum(A_.^2,2)));
+    A_ = normMat * A_; b_ = normMat * b_;
     
     % enclose null-space polytope by a zonotope bundle
     d = sqrt(m);

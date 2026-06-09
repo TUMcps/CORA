@@ -1,12 +1,12 @@
-function pZ = reduce(pZ,option,order,varargin)
+function pZ = reduce(pZ,method,order,varargin)
 % reduce - reduces the order of a polynomial zonotope
 %
 % Syntax:
-%    pZ = reduce(pZ,option,order)
+%    pZ = reduce(pZ,method,order)
 %
 % Inputs:
 %    pZ - polyZonotope object
-%    option - reduction algorithm (see zonotope/reduce)
+%    method - reduction algorithm (see zonotope/reduce)
 %    order - order of reduced polynomial zonotope
 %
 % Outputs:
@@ -34,13 +34,13 @@ function pZ = reduce(pZ,option,order,varargin)
 % ------------------------------ BEGIN CODE -------------------------------
 
     % adaptive order reduction
-    if strcmp(option,'adaptive')
+    if strcmp(method,'adaptive')
         % note: var 'order' is not an order here
         pZ = priv_reduceAdaptive(pZ,order);
         return;
     end
 
-    if contains(option,'approxdep_')
+    if contains(method,'approxdep_')
         % remove independent generators
         pZ.GI = zeros(dim(pZ),0);
     end
@@ -88,7 +88,7 @@ function pZ = reduce(pZ,option,order,varargin)
 
         % reduce the constructed zonotope with the reduction techniques for
         % linear zonotopes
-        zonoRed = reduce(zono,option,1,varargin{:});
+        zonoRed = reduce(zono,method,1,varargin{:});
 
         % remove the generators that got reduced from the generator matrices
         pZ.G(:,indDep) = [];
@@ -101,7 +101,7 @@ function pZ = reduce(pZ,option,order,varargin)
 
     end
     
-    if contains(option,'approxdep_')
+    if contains(method,'approxdep_')
         % again remove rest generators
         pZ.GI = zeros(dim(pZ),0);
     end

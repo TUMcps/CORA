@@ -56,8 +56,8 @@ function res = priv_inverse(obj)
     
         % check if the input taylor model is admissible (> 0)
         rem = interval(T);
-        temp = rem + 1./c_f;
-        if infimum(temp) <= 0 && supremum(temp) >= 0
+        shiftedRange = rem + 1./c_f;
+        if infimum(shiftedRange) <= 0 && supremum(shiftedRange) >= 0
             throw(CORAerror('CORA:outOfDomain','validDomain',...
                 'Function ''taylm/priv_inverse'' is not defined for value 0!'));
         end
@@ -86,9 +86,9 @@ function res = priv_inverse(obj)
         % the real value of the Lagrange remainder up to a certain
         % precision with an algorithm based on splits into subdomains
         remReal = rem + 1/c_f;
-        temp = 1/remReal;
-        
-        if infimum(LagRem) < infimum(temp) && supremum(LagRem) > supremum(temp)
+        directInverse = 1/remReal;
+
+        if infimum(LagRem) < infimum(directInverse) && supremum(LagRem) > supremum(directInverse)
             LagRem = aux_globalBounds(1/c_f,obj.max_order,remReal,obj.eps);
         end
         

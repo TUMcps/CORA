@@ -45,19 +45,19 @@ des_mat=zeros(0,1);
 % Loop for full factorial points
 for i=1:length(levels)
     if i~=1 && i~=length(levels)
-        temp=zeros(0,1);
+        designCol=zeros(0,1);
         for j=1:prod(levels(1:i-1))
-            temp1=repmat(1:levels(i),prod(levels(i+1:end)),1);
-            temp1=sortrows(temp1);
-            temp=[temp; temp1];
+            designCol1=repmat(1:levels(i),prod(levels(i+1:end)),1);
+            designCol1=sortrows(designCol1);
+            designCol=[designCol; designCol1];
         end
     elseif i==length(levels)
-        temp=repmat((1:levels(i))',total/levels(i),1);
+        designCol=repmat((1:levels(i))',total/levels(i),1);
     else
-       temp=repmat((1:levels(i))',total/levels(i),1);
-       temp=sortrows(temp);
+       designCol=repmat((1:levels(i))',total/levels(i),1);
+       designCol=sortrows(designCol);
     end
-    des_mat=[des_mat temp];
+    des_mat=[des_mat designCol];
 end
 
 % ------------------------------ END OF CODE ------------------------------

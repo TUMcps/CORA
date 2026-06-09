@@ -68,8 +68,8 @@ pZ = polyZonotope(c,G,[],E);
 warOrig = warning;
 warning('off','all');
 
-p = length(pZ.id); temp = ones(p,1);
-dom = interval(-temp,temp);
+p = length(pZ.id); onesVec = ones(p,1);
+dom = interval(-onesVec,onesVec);
 
 [polyPrev,V] = aux_getPolygon(pZ,cPZ.GI);
 list{1}.set = pZ;
@@ -173,13 +173,13 @@ function res = aux_splitDomain(obj)
    [pZsplit,factor] = splitLongestGen(obj.set);
    
    % split the domain
-   temp = split(obj.dom,factor);
-   
+   splitDom = split(obj.dom,factor);
+
    % construct output variable
    res = cell(2,1);
-   
-   res{1}.set = pZsplit{1}; res{1}.dom = temp{2};
-   res{2}.set = pZsplit{2}; res{2}.dom = temp{1};
+
+   res{1}.set = pZsplit{1}; res{1}.dom = splitDom{2};
+   res{2}.set = pZsplit{2}; res{2}.dom = splitDom{1};
 end
 
 function res = aux_intersectsNullSpace(obj)

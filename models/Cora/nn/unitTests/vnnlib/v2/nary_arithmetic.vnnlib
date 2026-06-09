@@ -1,0 +1,28 @@
+; Tests n-ary arithmetic: (+ a b c) and (* scalar var).
+; N: R^3 -> R^1
+; Constraint: sum of X[0]+X[1]+X[2] in [1, 3]  (written as two inequalities)
+; and X[0] in [0, 1] via (* 2 X[0]) <= 2
+
+(vnnlib-version <2.0>)
+
+(declare-network N
+    (declare-input X real [3])
+    (declare-output Y real [1])
+)
+
+; all inputs in [0, 1]
+(assert (>= X[0] 0.0))
+(assert (<= X[0] 1.0))
+(assert (>= X[1] 0.0))
+(assert (<= X[1] 1.0))
+(assert (>= X[2] 0.0))
+(assert (<= X[2] 1.0))
+
+; n-ary addition: X[0] + X[1] + X[2] <= 3.0
+(assert (<= (+ X[0] X[1] X[2]) 3.0))
+
+; scalar * variable: 2 * X[0] <= 2.0
+(assert (<= (* 2.0 X[0]) 2.0))
+
+; output constraint
+(assert (<= Y[0] 5.0))

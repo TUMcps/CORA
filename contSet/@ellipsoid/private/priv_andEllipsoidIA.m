@@ -465,8 +465,8 @@ elseif isSDPT3
     % constraint matrices
     % li
     % get index for upper triangular matrix
-    tmp = diag(id_M);
-    a_subk_li = tmp(1:1+n_nd)';
+    diagIndices = diag(id_M);
+    a_subk_li = diagIndices(1:1+n_nd)';
     a_Subl_l = (id_l').*ones(N,1+n_nd);
     a_val_li = [1,-ones(1,n_nd)];
 

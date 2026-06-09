@@ -47,8 +47,8 @@ function res = aux_s_asin( obj )
     end
    
     % check if the input taylor model is admissible (> 0)
-    temp = interval(obj);
-    if infimum(temp) < -1 || supremum(temp) > 1
+    objRange = interval(obj);
+    if infimum(objRange) < -1 || supremum(objRange) > 1
         throw(CORAerror('CORA:outOfDomain','validDomain','>= -1 and <= 1'));
     end
     

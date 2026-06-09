@@ -54,3 +54,6 @@ workspace/*
 
 # CORA release
 global/functions/release/commitHistory.txt
+
+# claude code
+.claude

@@ -97,11 +97,11 @@ function [R,res] = reach(HA,params,options,varargin)
         if any(instantTransition)
 
             % save reachable set to array
-            temp = struct('set',{{R0}},'time',{{tStart}});
+            initTimePoint = struct('set',{{R0}},'time',{{tStart}});
             if r == length(R)
                 R(2*r,1) = reachSet();
             end
-            R(r+1,1) = reachSet(temp,[],list(1).parent,locID);
+            R(r+1,1) = reachSet(initTimePoint,[],list(1).parent,locID);
             % increment counter
             r = r + 1;
 
@@ -154,12 +154,12 @@ function [R,res] = reach(HA,params,options,varargin)
             % compute output set
             Ytemp = aux_outputSet(Rtemp(i),HA.location(locID),params,options);
             % init reachSet object and append to full list
-            temp = reachSet(Ytemp.timePoint,Ytemp.timeInterval,...
+            newReachSet = reachSet(Ytemp.timePoint,Ytemp.timeInterval,...
                             parent,locID);
             if r == length(R)
                 R(2*r,1) = reachSet();
             end
-            R(r+1,1) = temp;
+            R(r+1,1) = newReachSet;
             % increment counter
             r = r + 1;
         end

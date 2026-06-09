@@ -106,8 +106,8 @@ function [res,cert,scaling] = contains_(pZ,S,method,tol,maxEval,certToggle,scali
     fHan = @(x) aux_funcPoly(x,pZ.c,pZ.G,pZ.GI,pZ.E);
     jacHan = aux_funHanJacobian(pZ.G,pZ.GI,pZ.E);
         
-    temp = ones(length(pZ.id) + size(pZ.GI,2),1);
-    X = interval(-temp,temp);
+    onesVec = ones(length(pZ.id) + size(pZ.GI,2),1);
+    X = interval(-onesVec,onesVec);
         
     % point in polynomial zonotope containment
     if isnumeric(S)
@@ -218,10 +218,10 @@ function res = aux_disproveContainment(pZ1,pZ2)
         return
     end
 
-    temp = I(ind);
+    contractedFactors = I(ind);
     res = false;
-    
-    if representsa_(temp,'emptySet',eps) || any(supremum(temp) < 1) || any(infimum(temp) > -1)
+
+    if representsa_(contractedFactors,'emptySet',eps) || any(supremum(contractedFactors) < 1) || any(infimum(contractedFactors) > -1)
        res = true; 
     end
 end
@@ -255,10 +255,10 @@ function res = aux_proveContainment(obj,fHan,jacHan,X)
             x = aux_getFactorDomain(fHan,Y,X);
             X_ = x + pinv(jacHan(x))*(Y - center(Y));
         
-            temp = aux_containsInterval(fHan,jacHan,X,X_,Y); 
-            
+            isContained = aux_containsInterval(fHan,jacHan,X,X_,Y);
+
             % split the set if it is not contained
-            if ~temp
+            if ~isContained
                sets = aux_splitLongestGen_(list{j});
                
                list_{end+1} = sets{1};
@@ -328,9 +328,9 @@ function jacHan = aux_funHanJacobian(G,GI,E)
 
     for i = 1:length(Elist)
        ind = find(E(i,:) > 0);
-       temp = E(:,ind);
-       temp(i,:) = temp(i,:) - 1;
-       Elist{i} = temp;
+       diffE = E(:,ind);
+       diffE(i,:) = diffE(i,:) - 1;
+       Elist{i} = diffE;
        Glist{i} = G(:,ind) * diag(E(i,ind));
     end
 
@@ -394,9 +394,9 @@ function res = aux_containsInterval(f,df,X,X_,Y_,varargin)
         d(2) = aux_dist(U1_,u1_ + tau*t);
         U1_ = u1_ + tau*t; 
         
-        temp = X_;
-        temp(ind) = cartProd_(U1_,U2_,'exact');
-        [J1,J2] = aux_Extract(C*df(temp),ind,n);
+        Xupdated = X_;
+        Xupdated(ind) = cartProd_(U1_,U2_,'exact');
+        [J1,J2] = aux_Extract(C*df(Xupdated),ind,n);
     end
 
     % try without pre-conditioning matrix
@@ -426,8 +426,8 @@ function d = aux_dist(int1,int2)
 % compute the distance of two intervals
     a1 = abs(supremum(int1)-supremum(int2));
     a2 = abs(infimum(int1)-infimum(int2));
-    temp = max([a1,a2],[],2);
-    d = sqrt(sum(temp.^2));
+    maxDiff = max([a1,a2],[],2);
+    d = sqrt(sum(maxDiff.^2));
 end
 
 function ind = aux_getSuitableSubmatrix(J,n)

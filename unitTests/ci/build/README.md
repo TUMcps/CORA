@@ -7,7 +7,7 @@ The `Dockerfile` in this folder pulls the desired docker matlab version
 and installs all dependencies for CORA automatically (see Sec. 1.3 in the [CORA manual](https://cora.in.tum.de/manual)).
 
 1. Update desired Matlab version in `Dockerfile`:
-    - Update `ARG MATLAB_RELEASE=<VERSION>` (e.g., `2024b`)
+    - Update `ARG MATLAB_RELEASE=<VERSION>` (e.g., `2025b`)
     
 2. Copy `Dockerfile` from `./cora/unitTests/ci/build` to `./cora`
 3. Run within `./cora`:
@@ -22,7 +22,7 @@ and installs all dependencies for CORA automatically (see Sec. 1.3 in the [CORA 
 
        docker image push tobiasladnertum/cora:r<VERSION>
 
-6. Update `./cora/unitTests/ci/Dockerfile`, `./cora/unitTests/ci/.gitlab-ci.yml`, `./cora/unitTests/ci/repeatability-template/Dockerfile` and `./cora/unitTests/ci/repeatability-template/README.md` to use new image.
+6. Update `./cora/unitTests/ci/build/README.md`, `./cora/unitTests/ci/Dockerfile`, `./cora/unitTests/ci/.gitlab-ci.yml` (default + compatibility), `./cora/unitTests/ci/repeatability-template/Dockerfile` and `./cora/unitTests/ci/repeatability-template/README.md` to use new image.
 
     
 

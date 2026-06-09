@@ -59,20 +59,20 @@ b = cell(hiddenLayers+1,1);
 for i = 1:length(nrNeurons)-1
     
     % initialization
-    temp = zeros(nrNeurons{i+1},nrNeurons{i}+1);
-   
+    weightBiasData = zeros(nrNeurons{i+1},nrNeurons{i}+1);
+
     % read data
     for k = 1:nrNeurons{i+1}
         offset = (k-1)*(nrNeurons{i}+1);
         for j = 1:nrNeurons{i}+1
-            temp(k,j) = str2double(strtrim(lines{cnt+offset+j}));
+            weightBiasData(k,j) = str2double(strtrim(lines{cnt+offset+j}));
         end
     end
     cnt = cnt + (nrNeurons{i}+1)*nrNeurons{i+1};
-    
+
     % get weight matrix and bias vector
-    W{i} = temp(:,1:end-1);
-    b{i} = temp(:,end);
+    W{i} = weightBiasData(:,1:end-1);
+    b{i} = weightBiasData(:,end);
 end
 
 % construct neural network

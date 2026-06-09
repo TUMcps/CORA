@@ -87,9 +87,9 @@ for p=1:2
     plot(Rexact.timePoint.set{end},[1,2],'k','LineWidth',1.2);
     for i=1:3
         % plot outer-approximation
-        temp = plot(R{i}.timePoint.set{end},[1,2],...
+        plotHandle = plot(R{i}.timePoint.set{end},[1,2],...
             'EdgeColor',colors{i},'LineWidth',1.2);
-        han = [temp,han];
+        han = [plotHandle,han];
         text{i} = ['$\varepsilon_{\max}$ = ',num2str(errors{i})];
         % plot inner-approximation
         plot(pgon{i},[1,2],'EdgeColor',colors{i},'LineWidth',1.2);

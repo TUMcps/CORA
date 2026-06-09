@@ -131,8 +131,9 @@ for i=1:nrTests
         if verbose
             if res
                 % check if it took much longer than previous runs
+                % (disabled, as run times are too inconsistent to compare)
                 msg = '';
-                if ~isempty(oldResults)
+                if false && ~isempty(oldResults)
                     % check if current test is present
                     oldTestResult = oldResults(strcmp({oldResults.fname},fname));
                     if isempty(oldTestResult)

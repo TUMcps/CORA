@@ -168,8 +168,8 @@ function val = aux_supportFuncBnB(pZ,dir,type,method,maxOrder)
 
     % create taylor models
     n = size(pZ_.E,1);
-    temp = ones(n,1);
-    T = taylm(interval(-temp,temp),maxOrder,[],method);
+    onesVec = ones(n,1);
+    T = taylm(interval(-onesVec,onesVec),maxOrder,[],method);
 
     % calculate bounds of the polynomial part (= dependent
     % generators)
@@ -211,8 +211,8 @@ function val = aux_supportFuncGlobOpt(pZ,dir,type,maxOrder,tol)
 
     % domain for the optimization variables
     n = size(E,1);
-    temp = ones(n,1);
-    dom = interval(-temp,temp);
+    onesVec = ones(n,1);
+    dom = interval(-onesVec,onesVec);
 
     % calculate the bounds of the depenedent part
     if strcmp(type,'lower')
@@ -278,15 +278,15 @@ function val = aux_supportFuncQuadProg(pZ,dir,type)
     ind_ = setdiff(1:length(d),ind);        % get negative eigenvalues
 
     if ~isempty(ind)
-        temp = zeros(size(d)); temp(ind) = d(ind);
-        H = V*diag(temp)*V'; 
+        eigPos = zeros(size(d)); eigPos(ind) = d(ind);
+        H = V*diag(eigPos)*V';
     else
         val = supportFunc_(pZ,dir,type,'interval',8,1e-3);
         return;
     end
     if ~isempty(ind_)
-        temp = zeros(size(d)); temp(ind_) = d(ind_);
-        N = N + V*diag(temp)*V';
+        eigNeg = zeros(size(d)); eigNeg(ind_) = d(ind_);
+        N = N + V*diag(eigNeg)*V';
     end
 
     % enclose remaining part with additional factors
@@ -297,12 +297,12 @@ function val = aux_supportFuncQuadProg(pZ,dir,type)
         for j = i:size(N,2)
             if i == j && N(i,j) ~= 0
                 G = [G, N(i,j)];
-                temp = zeros(p,1); temp(i) = 2;
-                E = [E,temp];
+                expVec = zeros(p,1); expVec(i) = 2;
+                E = [E,expVec];
             elseif N(i,j) ~= 0 || N(j,i) ~= 0
                 G = [G, N(i,j) + N(j,i)];
-                temp = zeros(p,1); temp(i) = 1; temp(j) = 1;
-                E = [E,temp];
+                expVec = zeros(p,1); expVec(i) = 1; expVec(j) = 1;
+                E = [E,expVec];
             end
         end
     end
@@ -347,14 +347,14 @@ end
 function val = aux_polyPart(x,G,E)
     % evaluate polynomial part
     for i = 1:length(G)
-       temp = x(1)^E(1,i);
+       monom = x(1)^E(1,i);
        for j = 2:size(E,1)
-           temp = temp * x(j)^E(j,i);
+           monom = monom * x(j)^E(j,i);
        end
        if i == 1
-           val = G(i) * temp;
+           val = G(i) * monom;
        else
-           val = val + G(i) * temp;
+           val = val + G(i) * monom;
        end
     end
 end

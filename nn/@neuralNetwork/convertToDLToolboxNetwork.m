@@ -31,12 +31,13 @@ end
 layers_cora = nn.layers;
 
 % init input of dlt network
-if any(cellfun(@(layer_cora) isa(layer_cora,'nnConv2DLayer'), layers_cora))
+if any(cellfun(@(layer_cora) isa(layer_cora,'nnConv2DLayer') ...
+        || isa(layer_cora,'nnConvTranspose2DLayer'), layers_cora))
     % image input
-    layers_dlt = inputLayer(layers_cora{1}.inputSize,'SSC');
+   layers_dlt = inputLayer(layers_cora{1}.inputSize,'SSC');
 else
     % feature input
-    layers_dlt = featureInputLayer(nn.neurons_in);
+   layers_dlt = featureInputLayer(nn.neurons_in);
 end
 
 % iterate over all layers
@@ -79,6 +80,16 @@ for k=1:numel(layers_cora)
                 'Stride',layer_cora_k.stride, ...
                 'Padding',layer_cora_k.padding, ...
                 'DilationFactor',layer_cora_k.dilation ...
+                );
+
+        case 'nnConvTranspose2DLayer'
+            % transposed conv 2d
+            filterSize = size(layer_cora_k.W,1:2);
+            numFilters = size(layer_cora_k.W,4);
+            layer_dlt_k = transposedConv2dLayer(filterSize,numFilters,...
+                'Weights', permute(layer_cora_k.W, [1 2 4 3]), ...
+                'Bias',reshape(layer_cora_k.b,1,1,[]), ...
+                'Stride',layer_cora_k.stride...
                 );
             
         case 'nnBatchNormLayer'

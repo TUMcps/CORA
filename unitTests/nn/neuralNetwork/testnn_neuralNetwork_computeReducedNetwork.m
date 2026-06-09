@@ -31,6 +31,7 @@ nn = neuralNetwork.readONNXNetwork(modelfile, false, 'BSSC');
 
 % get input image
 % [XTest YTest ~] = digitTest4DArrayData;
+
 % model
 idx = 2790;
 X = [0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0      0; ...

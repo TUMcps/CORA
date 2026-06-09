@@ -1,12 +1,19 @@
-function [numVerif,numFals,numUnknown] = run_instances(benchname,resultsPath)
+function [numVerif,numFals,numUnknown] = run_instances(benchname,resultsPath,options,instanceIds,timeoutMultiplier)
 % run_instances - run all instances of a benchmark.
 %
 % Syntax:
 %    [numVerif,numFals,numUnknown] = run_instances(benchname,resultsPath)
+%    [numVerif,numFals,numUnknown] = run_instances(benchname,resultsPath,options)
+%    [numVerif,numFals,numUnknown] = run_instances(benchname,resultsPath,options,instanceIds)
+%    [numVerif,numFals,numUnknown] = run_instances(benchname,resultsPath,options,instanceIds,timeoutMultiplier)
 %
 % Inputs:
 %    benchname - name of the benchmark
 %    resultsPath - path to the results directory
+%    options - (optional) fully resolved options struct. When omitted,
+%              getDefaultVNNCOMPoptions(benchname) is used.
+%    instanceIds - (optional) array of instance indices to run (default: all)
+%    timeoutMultiplier - (optional) fraction of official timeout to use (default: 1.0)
 %
 % Outputs:
 %    numVerif - number of verified instances
@@ -15,6 +22,7 @@ function [numVerif,numFals,numUnknown] = run_instances(benchname,resultsPath)
 %
 % References:
 %    [1] VNN-COMP'24
+%    [2] VNN-COMP'25
 %
 % Other m-files required: none
 % Subfunctions: none
@@ -24,16 +32,24 @@ function [numVerif,numFals,numUnknown] = run_instances(benchname,resultsPath)
 
 % Authors:       Lukas Koller
 % Written:       11-August-2025
-% Last update:   ---
+% Last update:   06-June-2026 (BK, multi-network path support)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
 
+% When no options provided, load benchmark defaults.
+if nargin < 3 || isempty(options)
+    options = getDefaultVNNCOMPoptions(benchname);
+end
+if nargin < 5 || isempty(timeoutMultiplier)
+    timeoutMultiplier = 1.0;
+end
+
 % Run all instances found in the current directory.
 verbose = true;
 
-% Obtain all instances.
-filename = 'instances.csv';
+% Obtain all instances (use fullfile(pwd,...) so MATLAB path is not searched).
+filename = fullfile(pwd,'instances.csv');
 instances = readtable(filename,'Delimiter',',');
 % Rename columns
 instances.Properties.VariableNames = {'model','vnnlib','timeout'};
@@ -44,9 +60,11 @@ N = size(instances,1);
 benchnames = {};
 models = {};
 vnnlibs = {};
-prepTimes = {};
+prepTimes = [];
 results = {};
-verifTimes = {};
+verifTimes = [];
+totalTimes = [];
+numSubproblems = [];
 
 % Count number of verified, falsified, and unknown instances.
 numVerif = 0;
@@ -56,12 +74,10 @@ numUnknown = 0;
 % Count number of patches needed to verify an instance.
 numVerifPatches = 0;
 
-% Specify the instance ids.
-instanceIds = 1:N; % All
-% instanceIds = 1:45; % acaxXu prop1
-% instanceIds = 46:90; % acaxXu prop2
-% instanceIds = 91:135; % acaxXu prop3
-% instanceIds = 136:180; % acaxXu prop4
+% Use all instances if not specified.
+if nargin < 4 || isempty(instanceIds)
+    instanceIds = 1:N;
+end
 
 for i=instanceIds
     fprintf('__________________________________________________________________\n');
@@ -71,10 +87,11 @@ for i=instanceIds
     instance = instances(i,:);
     modelPath = instance.model{1};
     vnnlibPath = instance.vnnlib{1};
-    timeout = instance.timeout;
+    timeout = instance.timeout * timeoutMultiplier;
 
-    % Create instance filename.
-    modelName = regexp(modelPath,'([^/]+)(?=\.onnx$)','match');
+    % Create instance filename (match .onnx stem, excluding Python-list chars
+    % so multi-network paths also work).
+    modelName = regexp(modelPath,'([^/''"() ]+)(?=\.onnx)','match');
 
     if strcmp(benchname,'safenlp')
         if contains(modelPath,'medical')
@@ -84,12 +101,12 @@ for i=instanceIds
         end
     end
 
-    vnnlibName = regexp(vnnlibPath,'([^/]+)(?=\.vnnlib$)','match');
+    vnnlibName = regexp(vnnlibPath,'([^/]+)(?=\.vnnlib)','match');
     instanceFilename = sprintf('%s/%s_%s.counterexample',...
         resultsPath,modelName{1},vnnlibName{1});
 
-    % Prepare the current instance.
-    prepare_instance(benchname,modelPath,vnnlibPath);
+    % Prepare the current instance with fully resolved options.
+    prepare_instance(benchname,modelPath,vnnlibPath,verbose,options);
 
     totalTime = tic;
 
@@ -106,22 +123,25 @@ for i=instanceIds
 
     % Store outputs.
     benchnames = [benchnames; benchname];
-    models = [models; 'vnncomp2024_benchmarks/benchmarks/' ...
-        benchname '/' modelPath];
-    vnnlibs = [vnnlibs; 'vnncomp2024_benchmarks/benchmarks/' ...
-        benchname '/' vnnlibPath];
-    prepTimes = [prepTimes; 0];
+    models = [models; fullfile(benchname, modelPath)];
+    vnnlibs = [vnnlibs; fullfile(benchname, vnnlibPath)];
+    prepTimes = [prepTimes; res.prepTime];
     results = [results; resStr];
-    verifTimes = [verifTimes; instanceTime];
+    % Use verify-only time from verify.m; fall back to instanceTime on error.
+    if res.time >= 0
+        verifTimes = [verifTimes; res.time];
+    else
+        verifTimes = [verifTimes; instanceTime];
+    end
+    totalTimes = [totalTimes; res.totalTime];
+    numSubproblems = [numSubproblems; res.numSubproblems];
 
     % Increment counters.
     numVerif = numVerif + strcmp(resStr,'unsat');
     numFals = numFals + strcmp(resStr,'sat');
     numUnknown = numUnknown + strcmp(resStr,'unknown');
 
-    if isfield(res,'numVerified')
-        numVerifPatches = numVerifPatches + res.numVerified;
-    end
+    numVerifPatches = numVerifPatches + res.numSubproblems;
 
     fprintf('------------------------------------------------------------------\n');
     fprintf('__________________________________________________________________\n');
@@ -133,15 +153,14 @@ statsTable.printHeader();
 statsTable.printContentRow('avg. #Verified Branches',...
     string(numVerifPatches/length(instanceIds)));
 statsTable.printContentRow('avg. Time',...
-    string(sum([verifTimes{:}])/length(instanceIds)));
+    string(sum(verifTimes)/length(instanceIds)));
 statsTable.printFooter();
 
 % Generate results table.
 resultsTable = table(benchnames,models,vnnlibs,prepTimes,results, ...
-    verifTimes);
+    verifTimes,totalTimes,numSubproblems);
 % Write to file.
-writetable(resultsTable,sprintf('%s/results.csv',resultsPath),...
-    'WriteVariableNames',false);
+writetable(resultsTable,sprintf('%s/results.csv',resultsPath));
 
 end
 

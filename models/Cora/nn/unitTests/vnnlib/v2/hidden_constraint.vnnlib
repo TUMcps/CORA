@@ -1,0 +1,10 @@
+(vnnlib-version <2.0>)
+
+(declare-network N
+    (declare-input  X real [2])
+    (declare-hidden H real [3] "relu_0")
+    (declare-output Y real [1])
+)
+
+; Constraint on hidden variable — should raise notSupported error
+(assert (<= H[0] 1.0))

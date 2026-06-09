@@ -68,11 +68,11 @@ for m = 1:length(testSuite)
         end
         % consider time step divider
         n = size(params.u,1);
-        tmp = [];
+        tiledU = [];
         for iStep = 1:options.timeStepDivider
-            tmp((1:n) + (iStep-1)*n, :) = params.u;
+            tiledU((1:n) + (iStep-1)*n, :) = params.u;
         end
-        params.u = reshape(tmp,n,[]);
+        params.u = reshape(tiledU,n,[]);
 
         %% compute reachable set
 

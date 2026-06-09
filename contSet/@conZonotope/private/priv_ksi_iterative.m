@@ -57,9 +57,9 @@ for k = 1:iter
         for j = 1:nrGens
             if ~isinf(iA(i,j))
                 % calculate new tightened domain for the current factor ksi
-                temp = E;
-                temp(j) = 0;
-                dummy = iA(i,j) .* ( b(i) - A(i,:)*temp );
+                E_reduced = E;
+                E_reduced(j) = 0;
+                dummy = iA(i,j) .* ( b(i) - A(i,:)*E_reduced );
                 
                 % update domains
                 R(j) = and_(R(j),dummy,'exact');

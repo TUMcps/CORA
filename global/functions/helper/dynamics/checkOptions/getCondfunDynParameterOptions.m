@@ -64,6 +64,8 @@ switch field
         condfun = @aux_getCondfunOptions_fracVert;
     case 'p_conf'
         condfun = @aux_getCondfunOptions_p_conf;
+    case 'dims'
+        condfun = @aux_getCondfunOptions_dims;
     case 'enclose'
         condfun = @aux_getCondfunOptions_enclose;
     case 'guardOrder'
@@ -202,7 +204,11 @@ end
 
 % nrConstInp
 function res = aux_getCondfunOptions_nrConstInp(sys,func,params,options)
-    res = any(strcmp(options.type,{'standard','gaussian'}));
+    if contains(func,'falsify')
+        res = true;
+    else
+        res = any(strcmp(options.type,{'standard','gaussian'}));
+    end
 end
 
 % fracInpVert
@@ -218,6 +224,11 @@ end
 % p_conf
 function res = aux_getCondfunOptions_p_conf(sys,func,params,options)
     res = ~strcmp(func,'simulateRandom') || any(strcmp(options.type,{'gaussian'}));
+end
+
+% dims
+function res = aux_getCondfunOptions_dims(sys,func,params,options)
+    res = any(strcmp(options.type,{'falsify'}));
 end
 
 % vertSamp

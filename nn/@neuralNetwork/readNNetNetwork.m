@@ -66,8 +66,8 @@ for i = 1:nrLayers
     W{i} = zeros(nrNeurons(i),inpSize);
     
     for j = 1:nrNeurons(i)
-        evalc(['temp = [',lines{j},'];']);
-        W{i}(j,:) = temp;
+        evalc(['weightRow = [',lines{j},'];']);
+        W{i}(j,:) = weightRow;
     end
     lines = lines(nrNeurons(i)+1:end);
     

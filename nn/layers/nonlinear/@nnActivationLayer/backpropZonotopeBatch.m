@@ -50,13 +50,13 @@ if options.nn.train.exact_backprop
     m_l = obj.backprop.store.m_l; % grad of m w.r.t to l
     m_u = obj.backprop.store.m_u; % grad of m w.r.t to u
     % Obtain the stored gradients.
-    dl_l = obj.backprop.store.dl_l; % grad of dl w.r.t to l
-    dl_u = obj.backprop.store.dl_u; % grad of dl w.r.t to u
-    du_l = obj.backprop.store.du_l; % grad of du w.r.t to l
-    du_u = obj.backprop.store.du_u; % grad of du w.r.t to u
+    el_l = obj.backprop.store.el_l; % grad of el w.r.t to l
+    el_u = obj.backprop.store.el_u; % grad of el w.r.t to u
+    eu_l = obj.backprop.store.eu_l; % grad of eu w.r.t to l
+    eu_u = obj.backprop.store.eu_u; % grad of eu w.r.t to u
 
     % During the forward propagation we store the gradient of the slope m
-    % and the approximation errors [dl,du] w.r.t. to the bounds l and u. 
+    % and the approximation errors [el,eu] w.r.t. to the bounds l and u. 
     % From, u = c + r, l = c - r, and r = sum(abs(G),2) we can compute the 
     % gradients w.r.t. the centers and the generators.
 
@@ -94,15 +94,15 @@ if options.nn.train.exact_backprop
         GdIdx = zeros([0 bSz],'like',gG);
     end
 
-    if options.nn.store_approx_error_gradients
+    if options.nn.store_slope_grad
         % Compute the gradients w.r.t. the slope.
         % Obtain the gradient of the approximation error w.r.t the slope.
-        dl_m = obj.backprop.store.dl_m;
-        du_m = obj.backprop.store.du_m;
+        el_m = obj.backprop.store.el_m;
+        eu_m = obj.backprop.store.eu_m;
         % Compute the gradient of the output center w.r.t. the slope 
-        % (derived from d(c')/d(m) = c + 1/2*(d(du)/d(m) + d(dl)/d(m)).
+        % (derived from d(c')/d(m) = c + 1/2*(d(eu)/d(m) + d(el)/d(m)).
         % Compute the gradient of the offset.
-        offset_m = 1/2*(du_m + dl_m);
+        offset_m = 1/2*(eu_m + el_m);
         if options.nn.interval_center
             % Obtain the lower and upper bounds of the center.
             cl = reshape(c(:,1,:),[nk bSz]);
@@ -112,9 +112,9 @@ if options.nn.train.exact_backprop
             offset_m(notdDimsIdx) = 0;
             % Set the gradient for the approximation errors stored in the
             % interval center.
-            dcl_m = dl_m;
+            dcl_m = el_m;
             dcl_m(dDimsIdx) = 0;
-            dcu_m = du_m;
+            dcu_m = eu_m;
             dcu_m(dDimsIdx) = 0;
             % Compute the gradient.
             c_m = permute(cat(3, ...
@@ -126,10 +126,10 @@ if options.nn.train.exact_backprop
         end
         % Compute the gradient of the output generators w.r.t. the slope 
         % (derived from d(G')/d(m) = G, and for approximation error 
-        % generators: d(G')/d(m) = 1/2*(d(du)/d(m) - d(dl)/d(m)).
+        % generators: d(G')/d(m) = 1/2*(d(eu)/d(m) - d(el)/d(m)).
         G_m = zeros(size(gG),'like',gG);
         G_m(:,genIds,:) = G(:,genIds,:);
-        G_m(GdIdx) = 1/2*(du_m(dDimsIdx) - dl_m(dDimsIdx));
+        G_m(GdIdx) = 1/2*(eu_m(dDimsIdx) - el_m(dDimsIdx));
         % Compute the slope gradient from all generators.
         G_slopeGrad = reshape(sum(gG.*G_m,2),[nk bSz]);
         % Compute the slope gradient from the center.
@@ -155,7 +155,7 @@ if options.nn.train.exact_backprop
         dmStep = stepSize*(slopeGrad - min(slopeGrad,[],1))...
             ./(max(slopeGrad,[],1) - min(slopeGrad,[],1) + 1e-6);
         % Update the slope offset.
-        obj.backprop.store.dm = obj.backprop.store.dm - dmStep;
+        obj.backprop.store.dm = obj.backprop.store.dm + dmStep;
     end
 
     % Permute the dimensions of the generator gradients for easier
@@ -164,8 +164,8 @@ if options.nn.train.exact_backprop
 
     % Compute gradients of the approximation errors w.r.t. the 
     % generators (analogous to the slope gradient computation).
-    dl_G = reshape(dl_u(dDimsIdx) - dl_l(dDimsIdx),1,[]).*r_G(:,dDimsIdx);
-    du_G = reshape(du_u(dDimsIdx) - du_l(dDimsIdx),1,[]).*r_G(:,dDimsIdx);
+    el_G = reshape(el_u(dDimsIdx) - el_l(dDimsIdx),1,[]).*r_G(:,dDimsIdx);
+    eu_G = reshape(eu_u(dDimsIdx) - eu_l(dDimsIdx),1,[]).*r_G(:,dDimsIdx);
 
     % Compute outer product of the input and gradient generator matrix. 
     outProdG = sum(G(:,genIds,:).*gG(:,genIds,:),2);
@@ -186,10 +186,10 @@ if options.nn.train.exact_backprop
 
         % Compute gradients of the approximation errors w.r.t. the interval 
         % center (analogous to the slope gradient computation).
-        dl_cl = dl_l(dDimsIdx);
-        du_cl = du_l(dDimsIdx);
-        dl_cu = dl_u(dDimsIdx);
-        du_cu = du_u(dDimsIdx);
+        el_cl = el_l(dDimsIdx);
+        eu_cl = eu_l(dDimsIdx);
+        el_cu = el_u(dDimsIdx);
+        eu_cu = eu_u(dDimsIdx);
 
         % Compute the outer product of input and gradient centers.
         outProd_cl = c(:,1,:).*gl;
@@ -198,26 +198,40 @@ if options.nn.train.exact_backprop
         outProd = outProd_cl + outProd_cu + outProdG;
 
         % Compute the factors for the approximation errors.
-        fdl_l = gl(dDimsIdx) - gG(GdIdx);
-        fdu_l = gl(dDimsIdx) + gG(GdIdx);
-        fdl_u = gu(dDimsIdx) - gG(GdIdx);
-        fdu_u = gu(dDimsIdx) + gG(GdIdx);
+        % We reshape the values to ensure that the dimensions match (to
+        % avoid issues with implicit expansion, e.g., [1 2] + [1 1 2]).
+        g_l = reshape(gl(dDimsIdx),size(dDimsIdx));
+        g_u = reshape(gu(dDimsIdx),size(dDimsIdx));
+        g_G = reshape(gG(GdIdx),size(dDimsIdx));
+
+        fel_l = g_l - g_G;
+        feu_l = g_l + g_G;
+        fel_u = g_u - g_G;
+        feu_u = g_u + g_G;
         % Add factor for lower and upper approximation errors.
-        fdl = fdl_u + fdl_l;
-        fdu = fdu_u + fdu_l;
+        fel = fel_u + fel_l;
+        feu = feu_u + feu_l;
 
         % Compute the gradients w.r.t. the input center bounds (without 
         % the gradient for the approximation errors).
-        gcl = m.*gl(:,:) + outProd(:,:).*m_cl;
-        gcu = m.*gu(:,:) + outProd(:,:).*m_cu;
+        
+        % FIX: Handle negative slopes by routing gradients.
+        % For m < 0, OutputLower depends on InputUpper, so gl flows to InputUpper.
+        mask_pos = m >= 0;
+        mask_neg = ~mask_pos;
+        gl_routed = mask_pos .* gl(:,:) + mask_neg .* gu(:,:);
+        gu_routed = mask_pos .* gu(:,:) + mask_neg .* gl(:,:);
+        
+        gcl = m.*gl_routed + outProd(:,:).*m_cl;
+        gcu = m.*gu_routed + outProd(:,:).*m_cu;
         % Add the gradients for the offset of through the approximation
         % errors that are added as generators.
-        gcl(dDimsIdx) = gcl(dDimsIdx) + 1/2*fdu.*du_cl + 1/2*fdl.*dl_cl;
-        gcu(dDimsIdx) = gcu(dDimsIdx) + 1/2*fdu.*du_cu + 1/2*fdl.*dl_cu;
+        gcl(dDimsIdx) = gcl(dDimsIdx) + 1/2*feu.*eu_cl + 1/2*fel.*el_cl;
+        gcu(dDimsIdx) = gcu(dDimsIdx) + 1/2*feu.*eu_cu + 1/2*fel.*el_cu;
         % Add gradient for the approximation errors that were added to the
         % interval center.
-        gcl(notdDimsIdx) = gcl(notdDimsIdx) - dl_l(notdDimsIdx);
-        gcu(notdDimsIdx) = gcu(notdDimsIdx) + du_u(notdDimsIdx);
+        gcl(notdDimsIdx) = gcl(notdDimsIdx) - el_l(notdDimsIdx);
+        gcu(notdDimsIdx) = gcu(notdDimsIdx) + eu_u(notdDimsIdx);
         % Concatenate the center gradient bounds.
         gc = permute(cat(3,gcl,gcu),[1 3 2]);
     else
@@ -228,8 +242,8 @@ if options.nn.train.exact_backprop
 
         % Compute gradients of the approximation errors w.r.t. the center 
         % (analogous to the slope gradient computation).
-        dl_c = dl_u(dDimsIdx) + dl_l(dDimsIdx);
-        du_c = du_u(dDimsIdx) + du_l(dDimsIdx);
+        el_c = el_u(dDimsIdx) + el_l(dDimsIdx);
+        eu_c = eu_u(dDimsIdx) + eu_l(dDimsIdx);
 
         % Compute the outer product of input and gradient center.
         outProdc = permute(c.*gc,[1 3 2]);
@@ -237,16 +251,16 @@ if options.nn.train.exact_backprop
         outProd = outProdc + outProdG;
 
         % Compute the factors for the approximation errors.
-        fdl = gc(dDimsIdx) - gG(GdIdx);
-        fdu = gc(dDimsIdx) + gG(GdIdx);
+        fel = gc(dDimsIdx) - gG(GdIdx);
+        feu = gc(dDimsIdx) + gG(GdIdx);
 
         % Compute the gradients w.r.t. the input center.
         gc = m.*gc + outProd(:,:).*m_c;
         % Add the gradient for the approximation errors.
-        gc(dDimsIdx) = gc(dDimsIdx) + 1/2*(fdu.*du_c + fdl.*dl_c);
+        gc(dDimsIdx) = gc(dDimsIdx) + 1/2*(feu.*eu_c + fel.*el_c);
     end
 
-    if options.nn.store_approx_error_gradients
+    if options.nn.store_approx_error_grad
         % Extract the gradients.
         dgrad = zeros([nk bSz],'like',gG);
         dgrad(dDimsIdx) = gG(GdIdx);
@@ -262,7 +276,7 @@ if options.nn.train.exact_backprop
     gG_ = permute(gG(:,genIds,:),[2 1 3]);
 
     % Add the gradient for the approximation errors.
-    gG_(:,dDimsIdx) = gG_(:,dDimsIdx) + 1/2*(fdu(:)'.*du_G + fdl(:)'.*dl_G);
+    gG_(:,dDimsIdx) = gG_(:,dDimsIdx) + 1/2*(feu(:)'.*eu_G + fel(:)'.*el_G);
 
     % Re-permute the dimensions of the generator gradients.
     gG(:,genIds,:) = permute(gG_,[2 1 3]);
@@ -270,7 +284,12 @@ else
     % Consider the linear approximation as fixed. Use the slope of the
     % approximation for backpropagation.
     if options.nn.interval_center
-        gc = permute(m,[1 3 2]).*gc;
+        % Handle negative slopes: if m < 0, swap the gradients coming from
+        % lower/upper bounds.
+        gc_perm = gc(:,[2 1],:);
+        m_exp = permute(m, [1 3 2]);
+        mask_pos = m_exp >= 0;
+        gc = mask_pos .* (m_exp .* gc) + (~mask_pos) .* (m_exp .* gc_perm);
     else
         gc = gc.*m;
     end

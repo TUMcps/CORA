@@ -38,9 +38,9 @@ function pZ = linComb(pZ1,S)
 
 % determine polyZonotope object
 if ~isa(pZ1,'polyZonotope')
-    temp = pZ1;
+    swapped = pZ1;
     pZ1 = S;
-    S = temp;
+    S = swapped;
 end
 
 % convert other set representations to polynomial zonotopes
@@ -89,9 +89,9 @@ E = [E1, E1, zero1, zero1; ...
 
 % compute convex hull of the independent generators by using the
 % enclose function for linear zonotopes
-temp = zeros(length(pZ1.c),1);
-Z1 = zonotope([temp, pZ1.GI]);
-Z2 = zonotope([temp, S.GI]);
+zeroCenter = zeros(length(pZ1.c),1);
+Z1 = zonotope([zeroCenter, pZ1.GI]);
+Z2 = zonotope([zeroCenter, S.GI]);
 
 Z = enclose(Z1,Z2);
 GI = Z.G;

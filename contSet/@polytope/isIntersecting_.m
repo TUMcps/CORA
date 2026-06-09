@@ -414,8 +414,8 @@ function res = aux_isIntersecting_P_zB(P,zB)
         bineq = [bineq;ones(2*m,1)];
     end
     
-    temp = repmat(eye(n),[zB.parallelSets,1]);
-    Aeq = [temp,zeros(size(temp,1),p),Aeq];
+    eyeRep = repmat(eye(n),[zB.parallelSets,1]);
+    Aeq = [eyeRep,zeros(size(eyeRep,1),p),Aeq];
     
     % construct objective function
     f = zeros(size(Aeq,2),1);

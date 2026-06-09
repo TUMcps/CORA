@@ -51,9 +51,8 @@ S = polygon(S);
 % expand boundaries
 pgon = expandBoundaries(pgon,tol);
 
-% compute intersection
-pgon_intersection = polygon(intersect(pgon.set, S.set));
-res = ~representsa_(pgon_intersection,"emptySet",tol);
+% check overlapping
+res = overlaps(pgon.set,S.set);
 
 end
 

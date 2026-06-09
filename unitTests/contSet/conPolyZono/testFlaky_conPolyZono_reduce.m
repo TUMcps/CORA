@@ -38,8 +38,8 @@ for i = 1:5
         'NrGenerators',randi([10,20]));
     
     % draw desired reduced order at random
-    temp = size(cPZ1.G,2) + size(cPZ1.GI,2) + size(cPZ1.A,2);
-    order = rand() * temp/2;
+    totalGens = size(cPZ1.G,2) + size(cPZ1.GI,2) + size(cPZ1.A,2);
+    order = rand() * totalGens/2;
     
     % compute random points inside the original set
     points = randPoint(cPZ1,10,'extreme');

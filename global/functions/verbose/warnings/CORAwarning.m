@@ -90,8 +90,8 @@ fullstack = strjoin(stacktrace,'\n ');
 fullstack = escapewarning(fullstack);
 
 % show warning
-fprintf('[\b<strong>CORA warning:</strong> %s\n %s (<a href="matlab:fprintf(descapewarning(''Full call stack:\\n %s\\n''))">show full call stack</a>).]\b\n', ...
-    desc, stacktrace{1}, fullstack)
+fprintf('[\b<strong>CORA warning:</strong> %s\n %s (<a href="matlab:fprintf(descapewarning(''<strong>CORA warning:</strong> %s\\n Full call stack:\\n %s\\n''))">show full call stack</a>).]\b\n', ...
+    desc, stacktrace{1}, escapewarning(desc), fullstack)
 
 end
 

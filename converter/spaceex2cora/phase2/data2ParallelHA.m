@@ -91,7 +91,7 @@ for iComp = 1:nrComp
         dynamicsStr = aux_dynamicsStr(loc,iLoc,comp,iComp,isFlatHA,resultpath,functionName);
         
         % describe invariant
-        invariantStr = aux_invariantStr(loc,allTrans,isFlatHA);
+        [invariantStr,loc] = aux_invariantStr(loc,allTrans,isFlatHA);
         
         % init transition string
         transitionStr = "trans = transition();" + newline;
@@ -310,7 +310,7 @@ end
 
 end
 
-function invariantStr = aux_invariantStr(loc,allTrans,isFlatHA)
+function [invariantStr,loc] = aux_invariantStr(loc,allTrans,isFlatHA)
 
 % Get information for Invariant
 InvText = loc.Invariant.Text;
@@ -318,7 +318,13 @@ if isa(loc.Invariant.set,'fullspace')
     n = length(loc.Flow.expressions);
     [str1,str2] = aux_fullspaceString(n,allTrans,isFlatHA);
 elseif isa(loc.Invariant.set,'polytope')
-    [str1,str2] = aux_polytopeString(loc.Invariant.set);
+    if all(all(loc.Invariant.set.A == 0)) && all(loc.Invariant.set.b == 0)
+        n = length(loc.Flow.expressions);
+        [str1,str2,loc.Invariant.set] = aux_fullspaceString(n, ...
+                                                    allTrans,isFlatHA);
+    else
+        [str1,str2] = aux_polytopeString(loc.Invariant.set);
+    end
 elseif isa(loc.Invariant.set,'levelSet')
     [str1,str2] = aux_levelSetString(loc.Invariant.set);
 else
@@ -498,7 +504,7 @@ end
 
 
 % writing sets as string
-function [str1,str2] = aux_fullspaceString(n,allTrans,isFlatHA)
+function [str1,str2,inv] = aux_fullspaceString(n,allTrans,isFlatHA)
 % in principle, we interpret an undefined invariant in SpaceEx (no text) as
 % the entire n-dim. space, corresponding to a fullspace object in CORA; the
 % reachability analysis requires to leave the invariant in order to proceed
@@ -541,15 +547,15 @@ else
             % try to compute complement of guard set
             if isa(guard,'polytope') || isa(guard,'levelSet') ...
                     || isa(guard,'fullspace')
-                temp = ~guard;
+                guardComplement = ~guard;
             else
                 % complement cannot be computed
                 throw(CORAerror('CORA:converterIssue',...
                     'Issue in conversion of empty invariant and non-empty guard sets.'));
             end
-    
+
             % intersect with invariant
-            inv = and_(inv,temp,'exact');
+            inv = and_(inv,guardComplement,'exact');
     
             % break if invariant has become empty
             if isa(inv,'emptySet')

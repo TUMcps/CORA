@@ -77,11 +77,10 @@ elseif strcmp(method,'split') || strcmp(method,'quadProg')
     for i = 1:n
         
         % construct unit vector
-        temp = zeros(n,1);
-        temp(i) = 1;
+        unitDir = unitvector(i,n);
 
         % calculate bounds
-        I(i) = supportFunc_(cPZ,temp,'range',method,8);
+        I(i) = supportFunc_(cPZ,unitDir,'range',method,8);
     end
     
 end

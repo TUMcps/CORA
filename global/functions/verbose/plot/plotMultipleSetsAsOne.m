@@ -92,7 +92,7 @@ function [dims,NVpairs] = aux_parseInput(sets,varargin)
         purpose_i = purpose{i};
 
         % read anyway if no NVpairs are given
-        NVpairs_i = readPlotOptions(NVpairs_i, purpose_i);
+        NVpairs_i = [readPlotOptions(NVpairs_i, purpose_i),'NVPAIRS_VALIDATED',true];
 
         % store new NVpair for set i
         NVpairs{i} = NVpairs_i;

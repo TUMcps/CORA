@@ -72,7 +72,7 @@ gamma_tol = 0.01;
 options_sdp = sdpsettings;
 options_sdp.solver = options.solver; 
 options_sdp.shift = 1e-5;
-options_sdp.verbose = 1;  
+options_sdp.verbose = 0;  
 
 % Optimization loop
 while(gamma_up-gamma_lo)> gamma_tol

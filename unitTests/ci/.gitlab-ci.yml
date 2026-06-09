@@ -159,12 +159,6 @@ test-mp:
     - if: $DO_CI == "true" && $CI_COMMIT_MESSAGE =~ /^(.|\r|\n)*--ci-run-compatibility(.|\r|\n)*/
       when: always
 
-# run 2022b
-test-compatibility-2022b:
-  extends: .base-runTestSuite-compatibility
-  variables:
-    matlabVersion: 'r2022b'
-
 # run 2023b
 test-compatibility-2023b:
   extends: .base-runTestSuite-compatibility
@@ -177,11 +171,17 @@ test-compatibility-2024a:
   variables:
     matlabVersion: 'r2024a'
 
-# run 2024a
+# run 2024b
 test-compatibility-2024b:
   extends: .base-runTestSuite-compatibility
   variables:
     matlabVersion: 'r2024b'
+
+# run 2025b (2025a is too unstable)
+test-compatibility-2025b:
+  extends: .base-runTestSuite-compatibility
+  variables:
+    matlabVersion: 'r2025b'
 
 # Examples test stage -----------------------------------------------------
 

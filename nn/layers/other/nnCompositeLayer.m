@@ -203,7 +203,7 @@ methods (Access = {?nnLayer, ?neuralNetwork})
                 Sin = S;
             case 'concat'
                 S_ = permute(S,[2 1 3]);
-                Sin = aux_divideInput(obj,S_,obj.outputSizes);
+                Sin = aux_divideInput(obj,S_,obj.outputSizes,true);
                 for i=1:length(Sin)
                     Sin{i} = permute(Sin{i},[2 1 3]);
                 end
@@ -244,12 +244,28 @@ methods (Access = {?nnLayer, ?neuralNetwork})
     end
 
     % zonotope batch
-    function [rc, rG] = evaluateZonotopeBatch(obj, c, G, options)
+    function [rc, rG, varargout] = evaluateZonotopeBatch(obj, c, G, options)
+        % Check if the input size was set; we require the input size to
+        % aggregate the results from the different computation paths.
         obj.checkInputSize();
 
+        % Initialize the result.
         rc = [];
         rG = [];
         imgSize = [];
+
+        % Check if there is a neuron aggregation function.
+        if isfield(options.nn,'neuron_aggregation_fun') && nargout == 3
+            doNeuronAggregation = true; 
+            % Extract the neuron aggregation function.
+            neurAggFun = options.nn.neuron_aggregation_fun;
+            % Extract the current neuron aggregation results from the 
+            % options.
+            a = options.nn.neuron_aggregation_result;
+        else
+            % There is no neuron aggregation.
+            doNeuronAggregation = false; 
+        end
 
         for i=1:length(obj.layers)
             % Initialize output of the i-th computation path. 
@@ -259,25 +275,55 @@ methods (Access = {?nnLayer, ?neuralNetwork})
             layersi = obj.layers{i};
             for j=1:length(layersi)
                 layersij = layersi{j};
-                % Store input for backpropgation.
-                if options.nn.train.backprop
+                % Store input for neuron-splitting/backprop. Store every
+                % sub-layer (not just activation layers): the composite backprop
+                % pass reads each sub-layer's input, incl. the input selectors.
+                if options.nn.train.backprop || ...
+                        options.nn.backprop_without_weight_update
                     layersij.backprop.store.inc = rci;
                     layersij.backprop.store.inG = rGi;
                 end
-                [rci,rGi] = layersij.evaluateZonotopeBatch(rci,rGi,options);
+
+                % Save pre-activation input for aggregation.
+                if doNeuronAggregation
+                    rcin = rci; 
+                    rGin = rGi;
+                end
+
+                if isa(layersij,'nnCompositeLayer') && doNeuronAggregation
+                    % Update the neuron aggregation results in the options for
+                    % nnCompositeLayer/evaluteZonotopeBatch.
+                    options.nn.neuron_aggregation_result = a;
+                    % Compute the result of the current layer.
+                    [rci,rGi,a] = layersij.evaluateZonotopeBatch(rci,rGi,options);
+                else
+                    % Compute the result of the current layer.
+                    [rci,rGi] = layersij.evaluateZonotopeBatch(rci,rGi,options);
+                end
+
+                if doNeuronAggregation
+                    % Call the neuron aggregation function (after layer
+                    % evaluation, with both input and output).
+                    a = neurAggFun(a,layersij,rcin,rGin,rci,rGi);
+                end
             end
             % Obtain the output size of the current computation path.
             imgSizei = obj.outputSizes{i};
 
+            % Aggregate the result from the different computation paths.
             if isempty(rc)
+                % Initialize the results.
                 rc = rci;
                 rG = rGi;
                 imgSize = imgSizei;
             else
+                % Check the different aggregation types.
                 switch obj.aggregation
                     case 'add'
                         % Add final results.
                         rc = rc + rci;
+                        % Check the number of generators and add
+                        % accordingly.
                         if size(rG,2) < size(rGi,2)
                             rGi(:,1:size(rG,2),:) = rGi(:,1:size(rG,2),:) + rG;
                             rG = rGi;
@@ -288,13 +334,18 @@ methods (Access = {?nnLayer, ?neuralNetwork})
                         % Concatenate the centers.
                         [rc,~] = aux_concat(obj,rc,imgSize,rci,imgSizei);
                         % Concatenate generator matrices.
-                        [rG,imgSize] = aux_concat(obj,rG,imgSize,rGi,imgSizei);
+                        [rG,imgSize] = aux_concat(obj,rG,imgSize,rGi,imgSizei,true);
                     otherwise
                         throw(CORAerror('CORA:wrongFieldValue', ...
                             'nnCompositeLayer.aggregation', ...
                             "Only supported value is 'add' and 'concat'!"));
                 end
             end
+        end
+
+        % Set the variable output argument.
+        if doNeuronAggregation
+            varargout{1} = a;
         end
     end
 
@@ -399,7 +450,7 @@ methods (Access = {?nnLayer, ?neuralNetwork})
                 %
             case 'concat'
                 gc = aux_divideInput(obj,gc,obj.outputSizes);
-                gG = aux_divideInput(obj,gG,obj.outputSizes);
+                gG = aux_divideInput(obj,gG,obj.outputSizes,true);
             otherwise
                 throw(CORAerror('CORA:wrongFieldValue', ...
                     'nnCompositeLayer.aggregation', ...
@@ -427,9 +478,15 @@ methods (Access = {?nnLayer, ?neuralNetwork})
             idxLayeri = flip(1:length(layersi));
             for j=idxLayeri
                 layersij = layersi{j};
-                % Retrieve stored input
-                c = layersij.backprop.store.inc;
-                G = layersij.backprop.store.inG;
+                % Retrieve stored input (may not exist when backprop was disabled).
+                if isfield(layersij.backprop.store,'inc') ...
+                        && isfield(layersij.backprop.store,'inG')
+                    c = layersij.backprop.store.inc;
+                    G = layersij.backprop.store.inG;
+                else
+                    c = [];
+                    G = [];
+                end
                 % Compute the gradient.
                 [rgci,rgGi] = layersij.backpropZonotopeBatch(c,G, ...
                     rgci,rgGi,options,updateWeights);
@@ -451,11 +508,12 @@ end
 
 methods
 
-    function [x,imgSize] = aux_concat(obj,x1,imgSize1,x2,imgSize2)
+    function [x,imgSize] = aux_concat(obj,x1,imgSize1,x2,imgSize2,varargin)
+        % By default we concatenate vectors.
+        isMatrixConcat = setDefaultValues(false,varargin);
 
         % Check if we are concatenating matrices, e.g., generator matrix,
         % sensitivity.
-        isMatrixConcat = ndims(x1) > 2;
         if isMatrixConcat
             % Reshape the results for easier concatenation; we move the
             % extra dimension to the batch.
@@ -493,7 +551,10 @@ methods
         end
     end
 
-    function xis = aux_divideInput(obj,x,imgSizes)
+    function xis = aux_divideInput(obj,x,imgSizes,varargin)
+        % By default we concatenate vectors.
+        isMatrixConcat = setDefaultValues(false,varargin);
+
         % Initialize the indices.
         idx = [];
         imgSize = [];
@@ -513,7 +574,6 @@ methods
 
         % Check if we are concatenating matrices, e.g., generator matrix,
         % sensitivity.
-        isMatrixConcat = ndims(x) > 2;
         if isMatrixConcat
             % Reshape the results for easier concatenation; we move the
             % extra dimension to the batch.

@@ -620,14 +620,14 @@ function convertername = aux_readConverter(st)
 % read the name of the currently implemented converters from the call stack
 
 % calling function (where error occurs) is at index 2
-temp = st(2).file;
+callerFile = st(2).file;
 
 % read out name of converter
-if contains(temp,[CORAROOT filesep 'converter'])
-    convPos = strfind(temp,'converter');
-    temp = temp(convPos+10:end);
-    filesepPos = strfind(temp,filesep);
-    convertername = temp(1:filesepPos(1)-1);
+if contains(callerFile,[CORAROOT filesep 'converter'])
+    convPos = strfind(callerFile,'converter');
+    callerFile = callerFile(convPos+10:end);
+    filesepPos = strfind(callerFile,filesep);
+    convertername = callerFile(1:filesepPos(1)-1);
 else
     % string 'converter' cannot be found in the calling function
     throw(CORAerror('CORA:specialError',...

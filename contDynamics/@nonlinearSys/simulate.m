@@ -47,11 +47,6 @@ function [t,x,ind,y] = simulate(nlnsys,params,varargin)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
-if nargout == 4
-    CORAwarning('CORA:contDynamics',"Output trajectories not supported for class nonlinearSys!");
-	y = [];
-end
-
 % parse input arguments
 isOpt = false;
 if nargin >= 3 && ~isempty(varargin{1})
@@ -87,6 +82,7 @@ end
 params_ = params;
 t = [];
 x = [];
+y = [];
 ind = [];
 x0 = params.x0;
 
@@ -113,6 +109,15 @@ for i = 1:size(params.u,2)
         else
             [t_,x_] = ode45(getfcn(nlnsys,params_),tSpan,x0);
         end
+    end
+
+    % compute output
+    if nargout == 4
+        y_ = zeros(nlnsys.nrOfOutputs,size(x_,1));
+        for j = 1:size(x_,1)
+            y_(:,j) = nlnsys.out_mFile(x_(j,:)',params.u(:,i));
+        end
+        y = [y y_];
     end
 
     % store the results

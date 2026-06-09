@@ -167,8 +167,8 @@ function [phi,pred,sets] = aux_preprocessTemporalLogic(phi)
 
         if length(clauses) == 1                 % single safe set
 
-            tmp = convert2set(clauses{1});
-            sets{i} = aux_reverseInequalityConstraints(tmp);
+            safeSet = convert2set(clauses{1});
+            sets{i} = aux_reverseInequalityConstraints(safeSet);
 
         else                                    % union of safe sets
 

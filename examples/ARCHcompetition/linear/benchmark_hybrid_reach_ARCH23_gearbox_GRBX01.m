@@ -64,8 +64,8 @@ clock = tic;
 res = true;
 
 for i = 1:length(list)
-    temp = interval(project(list{i},5));
-    if supremum(temp) >= 20
+    I = interval(project(list{i},5));
+    if supremum(I) >= 20
         res = false;
         break;
     end

@@ -73,68 +73,20 @@ problem.beq = beq;
 
 f = [dir;zeros(length(lb),1)];
 
-problem.lb = [];
-problem.ub = [];
-
-% upper/lower bound or range
-switch type 
-    case 'lower'
-    
-        % solve linear program
-        problem.f = f';
-        [x,val,exitflag] = CORAlinprog(problem);
-        if exitflag == -2
-            % primal infeasible -> empty set
-            val = Inf; x = []; return
-        elseif exitflag <= -3
-            % should not be unbounded, or other solver issue...
-            throw(CORAerror('CORA:solverIssue'));
-        end
-    
-    case 'upper'
-    
-        % solve linear program
-        problem.f = -f';
-        [x,val,exitflag] = CORAlinprog(problem);
-        if exitflag == -2
-            % primal infeasible -> empty set
-            val = -Inf; x = []; return
-        elseif exitflag <= -3
-            % should not be unbounded, or other solver issue...
-            throw(CORAerror('CORA:solverIssue'));
-        end
-        val = -val;
-   
-    case 'range'
-
-        % solve linear program for upper bound
-        problem.f = -f';
-        [x_upper,val_upper,exitflag] = CORAlinprog(problem);
-        if exitflag == -2
-            % primal infeasible -> empty set
-            val = interval(-Inf,Inf); x = []; return
-        elseif exitflag <= -3
-            % should not be unbounded, or other solver issue...
-            throw(CORAerror('CORA:solverIssue'));
-        end
-        val_upper = -val_upper;
-    
-        % solve linear program for lower bound
-        problem.f = f';
-        [x_lower,val_lower] = CORAlinprog(problem);
-    
-        % combine results for output args
-        val = interval(val_lower,val_upper);
-
-end
-
+% solve LP via shared helper (handles lower/upper/range with x0 warm-start)
+[val,x] = supportFunc_linprog(f, problem.Aineq, problem.bineq, ...
+    problem.Aeq, problem.beq, [], [], type);
 
 if nargout > 1
-    % truncate support vector
+    % truncate support vector (remove generator factor variables)
     if strcmp(type,'range')
-        x = [x_lower(1:n), x_upper(1:n)];
+        if ~isempty(x)
+            x = [x(1:n,1), x(1:n,2)];
+        end
     else
-        x = x(1:n);
+        if ~isempty(x)
+            x = x(1:n);
+        end
     end
 end
 

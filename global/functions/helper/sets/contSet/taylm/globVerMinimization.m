@@ -123,16 +123,16 @@ while ~isempty(domTay)
            % Interval arithmetic
            case 1
 
-                temp = func(domR);
-                maxTemp = supremum(temp);
-                minTemp = infimum(temp);
+                funcVal = func(domR);
+                maxTemp = supremum(funcVal);
+                minTemp = infimum(funcVal);
 
            % Affine arithmetic    
            case 2
 
-                temp = interval(a,'int');
-                maxTemp = supremum(temp);
-                minTemp = infimum(temp);
+                funcVal = interval(a,'int');
+                maxTemp = supremum(funcVal);
+                minTemp = infimum(funcVal);
 
            % Taylor model (Linear Dominated Bounder)
            case 3
@@ -293,9 +293,9 @@ function [D,Dr,x] = aux_calcRedDomain(objLin,intHo,type,Dorig,DorigR)
 
     for i = 1:length(b1)
         if slopes(i) ~= 0
-           temp = (2*rad(intHo))/slopes(i) + b1(i);
-           if temp > -1 && temp < 1
-              b2(i) = temp; 
+           bisectPoint = (2*rad(intHo))/slopes(i) + b1(i);
+           if bisectPoint > -1 && bisectPoint < 1
+              b2(i) = bisectPoint;
            end
         end 
     end
@@ -332,27 +332,27 @@ function [dom1,dom2,domR1,domR2,t1,t2,a1,a2] = aux_halveDomain(T,A,dom,domR)
    infi = infimum(domR);
    sup = supremum(domR);
 
-   temp = sup;
-   temp(indCoord) = infi(indCoord) + radius(indCoord);
-   domR1 = interval(infi,temp);
+   splitUpper = sup;
+   splitUpper(indCoord) = infi(indCoord) + radius(indCoord);
+   domR1 = interval(infi,splitUpper);
 
-   temp = infi;
-   temp(indCoord) = sup(indCoord) - radius(indCoord);
-   domR2 = interval(temp,sup);
-   
-   % split the subdomain for the taylor models along the coordinate with 
+   splitLower = infi;
+   splitLower(indCoord) = sup(indCoord) - radius(indCoord);
+   domR2 = interval(splitLower,sup);
+
+   % split the subdomain for the taylor models along the coordinate with
    % largest radius
    infi = infimum(dom);
    sup = supremum(dom);
    radius = rad(dom);
 
-   temp = sup;
-   temp(indCoord) = infi(indCoord) + radius(indCoord);
-   dom1 = interval(infi,temp);
+   splitUpper = sup;
+   splitUpper(indCoord) = infi(indCoord) + radius(indCoord);
+   dom1 = interval(infi,splitUpper);
 
-   temp = infi;
-   temp(indCoord) = sup(indCoord) - radius(indCoord);
-   dom2 = interval(temp,sup);
+   splitLower = infi;
+   splitLower(indCoord) = sup(indCoord) - radius(indCoord);
+   dom2 = interval(splitLower,sup);
 
    % adapt the taylor model domains to the possibly alternated order of 
    % variables

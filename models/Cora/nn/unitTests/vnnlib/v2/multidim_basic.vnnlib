@@ -1,0 +1,25 @@
+; Tiny single-network spec exercising multi-dimensional indexing.
+
+(vnnlib-version <2.0>)
+
+(declare-network N
+    (declare-input  X real [2,3])
+    (declare-output Y real [2])
+)
+
+; Box constraints on each input element
+(assert (>= X[0,0] 0.0))
+(assert (<= X[0,0] 1.0))
+(assert (>= X[0,1] 0.0))
+(assert (<= X[0,1] 1.0))
+(assert (>= X[0,2] 0.0))
+(assert (<= X[0,2] 1.0))
+(assert (>= X[1,0] 0.0))
+(assert (<= X[1,0] 1.0))
+(assert (>= X[1,1] 0.0))
+(assert (<= X[1,1] 1.0))
+(assert (>= X[1,2] 0.0))
+(assert (<= X[1,2] 1.0))
+
+; Output safe-set: Y[0] >= Y[1]; unsafe if violated
+(assert (<= Y[0] Y[1]))

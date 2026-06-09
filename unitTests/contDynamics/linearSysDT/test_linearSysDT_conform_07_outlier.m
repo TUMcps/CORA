@@ -26,6 +26,8 @@ function res = test_linearSysDT_conform_07_outlier
 
 %% User Specifications ----------------------------------------------------
 
+% set seed since MILP solver does not consistently compute the optimal solution
+rng(1) 
 dynamics = "pedestrian";
 
 % specifications
@@ -96,6 +98,7 @@ for n_out = [1 3]
     assert(numCont >= (n_m*n_s - n_out)) % not more than n_out outliers
 
     % MILP: mixed-integer linear programming for optimal outlier removal
+    % (but solver does not consistently compute optimal solution!)
     options.cs.outMethod = "MILP";
     options.cs.constraints = "gen";
     [params_Mgen, results_Mgen] = conform(sys,params_id_init,options);

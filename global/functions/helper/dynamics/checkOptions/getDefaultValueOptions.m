@@ -114,6 +114,10 @@ switch field
         defValue = 'tvpGeneral';
     case 'idAlg'
         defValue = aux_def_idAlg(sys,params,options);
+    case 'maxTime'
+        defValue = 600;
+    case 'dynamics'
+        defValue = 'lin';
     % for conform_white:
     case 'cs.cost'
         defValue = 'interval';

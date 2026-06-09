@@ -27,6 +27,7 @@ function res = test_codingConventions()
 %                16-July-2024 (TL, checks for CORAwarning and CORAlinprog)
 %                05-February-2025 (TL, renamed to test_codingConventions, speed up)
 %                11-April-2025 (TL, enforced timerVal in tic-toc)
+%                30-March-2026 (TL, check for temp/tmp variable names)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -82,6 +83,12 @@ files = excludefiles(files, ['models' filesep 'powerSystemsConverted']);
 files = excludefiles(files, ['models' filesep 'SpaceExConverted']);
 % - repeatability package: main file (no author block)
 files = excludefiles(files, ['unitTests' filesep 'ci' filesep 'repeatability-template' filesep 'code'],'main.m');
+% - vnncomp: benchmark data and generated +Package network layer folders
+files = excludefiles(files, ['examples' filesep 'nn' filesep 'vnncomp' filesep 'data']);
+files = excludefiles(files, ['examples' filesep 'nn' filesep 'vnncomp' filesep '+']);
+files = excludefiles(files, ['examples' filesep 'nn' filesep 'vnncomp' filesep 'scripts' filesep '+']);
+% - nn: generated +Package custom layer folders
+files = excludefiles(files, ['nn' filesep '+DLT_CustomLayers']);
 
 % iterate through all files
 for i=1:length(files)
@@ -102,7 +109,7 @@ for i=1:length(files)
 
     % hack to use break within code checks
     everythingTested = true;
-    for h=1 
+    for h=1
 
         % initial checks --------------------------------------------------
 
@@ -477,7 +484,7 @@ for i=1:length(files)
 
         % check linprog(...) -> CORAlinprog(...)
         probCall = 'linprog(';
-        allowedCalls = {'CORAlinprog(','intlinprog('};
+       allowedCalls = {'CORAlinprog(','intlinprog(','_linprog('};
         if ~ismember(filename,{'CORAlinprog',mfilename}) && ...
             ~aux_checkFunctionCall(filetext,probCall,allowedCalls)
             issues{end+1} = "Please replace linprog(...) calls with CORAlinprog(problem)";
@@ -507,6 +514,18 @@ for i=1:length(files)
         % check evParams -> options.nn
         if ~strcmp(filename,mfilename) && contains(filetext, 'evParams')
             issues{end+1} = 'With appropriate changes, please replace evParams with options.nn.';
+        end
+
+        % check temp/tmp variable names
+        for lcntCheck = 1:length(lines)
+            lineCheck = strtrim(lines{lcntCheck});
+            if isempty(lineCheck) || lineCheck(1) == '%'
+                continue
+            end
+            if ~isempty(regexp(lineCheck, '(^|\W)(temp|tmp|temp_|tmp_)\s*=(?!=)', 'once'))
+                issues{end+1} = "Avoid generic variable names 'temp'/'tmp'; use descriptive names.";
+                break
+            end
         end
 
         % test deprecated error messages

@@ -145,11 +145,11 @@ end
 
 % switch representation of points back to interval matrix if necessary
 if intMat
-    temp = cell(nrPerms,1);
+    gridCells = cell(nrPerms,1);
     for i = 1:nrPerms
-        temp{i} = reshape(p(:,i),nOrig,mOrig);
+        gridCells{i} = reshape(p(:,i),nOrig,mOrig);
     end
-    p = temp;
+    p = gridCells;
 end
 
 % ------------------------------ END OF CODE ------------------------------

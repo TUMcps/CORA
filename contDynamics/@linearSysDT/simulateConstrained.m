@@ -1,11 +1,12 @@
-function [t,x,ind,y] = simulateConstrained(linsysDT,params,options)
+function [t,x,u,y] = simulateConstrained(linsysDT,params,options)
 % simulateConstrained - simulates a linear discrete-time system such that
 %    it stays within the provided reachable set; this reachable set is
 %    typically a backwards minmax reachable set
 %
 % Syntax:
 %    [t,x] = simulateConstrained(linsysDT,params,options)
-%    [t,x,ind,y] = simulateConstrained(linsysDT,params,options)
+%    [t,x,u] = simulateConstrained(linsysDT,params,options)
+%    [t,x,u,y] = simulateConstrained(linsysDT,params,options)
 %
 % Inputs:
 %    linsysDT - linearSysDT object
@@ -22,7 +23,7 @@ function [t,x,ind,y] = simulateConstrained(linsysDT,params,options)
 % Outputs:
 %    t - time vector
 %    x - state vector
-%    ind - [] (argument exists only for syntax consistency)
+%    u - input vector
 %    y - output vector
 %
 % Example:
@@ -48,6 +49,7 @@ function [t,x,ind,y] = simulateConstrained(linsysDT,params,options)
 % Authors:       Matthias Althoff
 % Written:       21-December-2022
 % Last update:   28-August-2025 (LL, transpose x and y)
+%                23-October-2025 (LL, return inputs u)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
@@ -58,7 +60,6 @@ if ~isfield(params,'tStart')
 end
 
 % set default output arguments
-ind = [];
 y = [];
 
 % compute time vector and number of steps
@@ -85,6 +86,7 @@ if comp_y
 end
 
 % loop over all time steps
+u = zeros(linsysDT.nrOfInputs,steps);
 for i = 1:steps
     
     % sample w
@@ -94,17 +96,17 @@ for i = 1:steps
     R = options.R.timePoint.set{end-i};
     
     % compute u using linear programming
-    u = aux_linProg_sol(linsysDT, params, R, x(:,i), w);
+    u(:,i) = aux_linProg_sol(linsysDT, params, R, x(:,i), w);
     
     % compute successor state
-    x(:,i+1) = linsysDT.A * x(:,i) + linsysDT.B * u + linsysDT.c + w;
+    x(:,i+1) = linsysDT.A * x(:,i) + linsysDT.B * u(:,i) + linsysDT.c + w;
 
     % compute output
     if comp_y
         % sample v
         v = randPoint(params.V);
         % compute output
-        y(:,i) = linsysDT.C * x(:,i) + linsysDT.D * u + linsysDT.k + v;
+        y(:,i) = linsysDT.C * x(:,i) + linsysDT.D * u(:,i) + linsysDT.k + v;
     end
     
 end
@@ -112,11 +114,11 @@ end
 % the final output is unconstrained
 if comp_y
     % sample u
-    u = randPoint(params.U) + params.uTrans;
+    u(:,steps+1) = randPoint(params.U) + params.uTrans;
     % sample v
     v = randPoint(params.V);
     % compute output
-    y(:,i+1) = linsysDT.C * x(:,i+1) + linsysDT.D * u + linsysDT.k + v;
+    y(:,i+1) = linsysDT.C * x(:,i+1) + linsysDT.D * u(:,steps+1) + linsysDT.k + v;
 end
 
 end

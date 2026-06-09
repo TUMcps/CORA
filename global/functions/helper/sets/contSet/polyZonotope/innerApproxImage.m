@@ -95,9 +95,9 @@ function L = innerApproxImage(f,X,varargin)
            L_inside{end+1} = Y_;
        elseif min(rad(X_)) >= tol
            [~,dim] = max(rad(X_));
-           temp = split(X_,dim);
-           L_domain{end+1} = temp{1};
-           L_domain{end+1} = temp{2};
+           splitDomains = split(X_,dim);
+           L_domain{end+1} = splitDomains{1};
+           L_domain{end+1} = splitDomains{2};
        end
     end
     
@@ -208,9 +208,9 @@ function res = aux_InnerGeneral(f,df,X,X_,Y_,varargin)
         d(2) = aux_dist(U1_,u1_ + tau*t);
         U1_ = u1_ + tau*t;  
         
-        temp = X_;
-        temp(ind) = cartProd(U1_,U2_);
-        [J1,J2] = aux_Extract(C*df(temp),ind,n);
+        X_modified = X_;
+        X_modified(ind) = cartProd(U1_,U2_);
+        [J1,J2] = aux_Extract(C*df(X_modified),ind,n);
     end
 
     % try wihtout preconditioning matrix
@@ -245,8 +245,8 @@ function d = aux_dist(int1,int2)
 % compute the distance of two intervals
     a1 = abs(supremum(int1)-supremum(int2));
     a2 = abs(infimum(int1)-infimum(int2));
-    temp = max([a1,a2],[],2);
-    d = sqrt(sum(temp.^2));
+    maxErr = max([a1,a2],[],2);
+    d = sqrt(sum(maxErr.^2));
 end
 
 function ind = aux_getSuitableSubmatrix(J,n)

@@ -36,26 +36,29 @@ function pZ = mtimes(factor1,factor2)
 % Written:       25-June-2018 
 % Last update:   ---
 % Last revision: 04-October-2024 (MW, remove InferiorClasses)
+%                18-December-2025 (TL, speed up)
 
 % ------------------------------ BEGIN CODE -------------------------------
 
 try
-    % matrix/scalar * polynomial zonotope
-    if isnumeric(factor1)
-        c = factor1*factor2.c;
-        G = factor1*factor2.G;
-        GI = factor1*factor2.GI;
-        pZ = polyZonotope(c,G,GI,factor2.E,factor2.id);
-        return
-    end
 
     % polynomial zonotope * scalar
     % (note that polynomial zonotope * matrix is not supported)
     if isnumeric(factor2) && isscalar(factor2)
-        c = factor2*factor1.c;
-        G = factor2*factor1.G;
-        GI = factor2*factor1.GI;
-        pZ = polyZonotope(c,G,GI,factor1.E,factor1.id);
+        % swap to have scalar * polynomial zonotope
+        factor1_temp = factor1;
+        factor1 = factor2;
+        factor2 = factor1_temp;
+    end
+    
+    % matrix/scalar * polynomial zonotope
+    if isnumeric(factor1)
+        pZ = polyZonotope(1); % dummy
+        pZ.c = factor1*factor2.c;
+        pZ.G = factor1*factor2.G;
+        pZ.GI = factor1*factor2.GI;
+        pZ.E = factor2.E;
+        pZ.id = factor2.id;
         return
     end
 

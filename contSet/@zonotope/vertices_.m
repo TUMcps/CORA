@@ -48,8 +48,8 @@ n = dim(Z);
 if n == 1
     % compute the two vertices for one-dimensional case
     c = Z.c;
-    temp = sum(abs(Z.G),2);
-    V = [c - temp,c + temp];
+    genSpan = sum(abs(Z.G),2);
+    V = [c - genSpan,c + genSpan];
 
 elseif n == 2
     % use fast method
@@ -242,19 +242,19 @@ function V = aux_verticesIterate(Z)
         
         % compute new halfspaces
         if n == 2
-            temp = ndimCross(g);
-            temp = temp/norm(temp);
-            Anew = [temp';-temp'];
+            normalVec = ndimCross(g);
+            normalVec = normalVec/norm(normalVec);
+            Anew = [normalVec';-normalVec'];
         else
             comb = combinator(i-1,n-2,'c');
             Anew = zeros(2*size(comb,1),n);
             counter = 1;
 
             for j = 1:size(comb,1)
-                temp = ndimCross([G(:,comb(j,:)),g]);
-                temp = temp/norm(temp);
-                Anew(counter,:) = temp';
-                Anew(counter+1,:) = -temp';
+                normalVec = ndimCross([G(:,comb(j,:)),g]);
+                normalVec = normalVec/norm(normalVec);
+                Anew(counter,:) = normalVec';
+                Anew(counter+1,:) = -normalVec';
                 counter = counter + 2;
             end
         end
@@ -265,9 +265,9 @@ function V = aux_verticesIterate(Z)
         b = max(A*V,[],2);
         
         % remove redundant vertices
-        temp = max(A*V-b,[],1); 
+        maxViolation = max(A*V-b,[],1);
         nV = aux_numVertices(i,n);
-        [~,ind] = sort(temp,'descend');
+        [~,ind] = sort(maxViolation,'descend');
         V = V(:,ind(1:nV));
         
     end

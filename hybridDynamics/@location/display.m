@@ -79,36 +79,36 @@ else
             addString = "target locations: ";
         end
         % loop over targets of transition and synchronization labels
-        temp = [];
+        targetStrings = [];
         for i=1:length(loc.transition)
             syncLabel = loc.transition(i).syncLabel;
             if isempty(syncLabel)
-                temp = [temp string(targetLoc(i))];
+                targetStrings = [targetStrings string(targetLoc(i))];
             else
-                temp = [temp string(targetLoc(i)) + " ('" + syncLabel + "')"];
+                targetStrings = [targetStrings string(targetLoc(i)) + " ('" + syncLabel + "')"];
             end
         end
-        
+
     else
         % location from location product of parallel hybrid automaton
-        temp = [];
+        targetStrings = [];
         for i=1:length(loc.transition)
             syncLabel = loc.transition(i).syncLabel;
             if isempty(syncLabel)
-                temp = [temp "[" + strjoin(string(loc.transition(i).target),",") + "]"];
+                targetStrings = [targetStrings "[" + strjoin(string(loc.transition(i).target),",") + "]"];
             else
-                temp = [temp "[" + strjoin(string(loc.transition(i).target),",") + "]" ...
+                targetStrings = [targetStrings "[" + strjoin(string(loc.transition(i).target),",") + "]" ...
                     + " ('" + syncLabel + "')"];
             end
         end
         addString = "target locations: ";
     end
     % extend first entry by additional string
-    temp(1) = addString + temp(1);
+    targetStrings(1) = addString + targetStrings(1);
     % extend last entry by parenthesis
-    temp(end) = temp(end) + ")";
+    targetStrings(end) = targetStrings(end) + ")";
     % display transition
-    dispUpToLength(temp,100,transStr);
+    dispUpToLength(targetStrings,100,transStr);
 end
 
 % dynamics

@@ -62,9 +62,9 @@ end
     increasedOrder = floor(maxOrder)+1; 
     counter = a*ones(1,(increasedOrder));
     denominator = 1:(increasedOrder);
-    tmp = counter ./ denominator;
-    %tmp = tmp(~(tmp==0));
-    factor = prod(tmp);
+    termRatios = counter ./ denominator;
+    %termRatios = termRatios(~(termRatios==0));
+    factor = prod(termRatios);
     factor = factor / (1-(a/(maxOrder+2)));
 
     E= E*factor;

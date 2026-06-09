@@ -27,9 +27,9 @@ res = true;
 % loop over different intervals
 for i = 1:5
     
-    % create a random interval 
-    temp = rand(2,1)*i;
-    D = interval(min(temp),max(temp));
+    % create a random interval
+    randVals = rand(2,1)*i;
+    D = interval(min(randVals),max(randVals));
     
     for j = 1:20
         % create the taylor model
@@ -39,20 +39,20 @@ for i = 1:5
         % create a taylor polynomial
         e = 1:j;
         coeff = rand(j,1);
-        temp = ((T.^e) * coeff);
-        poly = temp(1);
-        for k = 2:length(temp)
-           poly = poly + temp(k); 
+        polyTerms = ((T.^e) * coeff);
+        poly = polyTerms(1);
+        for k = 2:length(polyTerms)
+           poly = poly + polyTerms(k);
         end
         
         % make sure that the taylor polynomial does not contain 0
-        temp = interval(poly);
-        if contains(temp,0)
+        polyInterval = interval(poly);
+        if contains(polyInterval,0)
            r = 2*rand();
            if r > 1
-              poly = poly - 1.1*infimum(temp);  
+              poly = poly - 1.1*infimum(polyInterval);
            else
-              poly = poly - 1.1*supremum(temp); 
+              poly = poly - 1.1*supremum(polyInterval);
            end
         end
        

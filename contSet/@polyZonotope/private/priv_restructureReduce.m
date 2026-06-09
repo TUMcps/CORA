@@ -55,33 +55,33 @@ if o <= order    % max order satisfied
     if o_ > 0
         
         % half the generator length for exponents that are all even
-        Gtemp = pZ.G;         
-        temp = prod(ones(size(pZ.E))-mod(pZ.E,2),1);
-        ind = find(temp == 1);
-        Gtemp(:,ind) = 0.5 * Gtemp(:,ind);
-       
+        Gscaled = pZ.G;
+        isAllEven = prod(ones(size(pZ.E))-mod(pZ.E,2),1);
+        ind = find(isAllEven == 1);
+        Gscaled(:,ind) = 0.5 * Gscaled(:,ind);
+
         % determine length of the generators
-        len = sum(Gtemp.^2,1);
+        len = sum(Gscaled.^2,1);
         [~,ind] = sort(len,'ascend');
-        
+
         % reduce the smallest generators
         ind = ind(1:o_);
-        
+
         Grem = pZ.G(:,ind);
         ERem = pZ.E(:,ind);
-        
+
         pZ.G(:,ind) = [];
-        pZ.E(:,ind) = [];  
-        
+        pZ.E(:,ind) = [];
+
         % reduce the polynomial zonotope that corresponds to the
         % generators that are removed
         pZ_ = polyZonotope(zeros(dim_x,1),Grem,pZ.GI,ERem);
-        
+
         zono = zonotope(pZ_);
         zono = reduce(zono,method,1);
-        
-    else       
-    
+
+    else
+
         % reduce the zonotope that corresponds to the independent generators
         zono_ = zonotope([zeros(dim_x,1),pZ.GI]);
         zono = reduce(zono_,method,1);
@@ -146,13 +146,13 @@ else            % max order exceeded
     if o_ > 0
        
         % half the generator length for exponents that are all even
-        Gtemp = pZ.G;         
-        temp = prod(ones(size(pZ.E))-mod(pZ.E,2),1);
-        ind = find(temp == 1);
-        Gtemp(:,ind) = 0.5 * Gtemp(:,ind);
-        
+        Gscaled = pZ.G;
+        isAllEven = prod(ones(size(pZ.E))-mod(pZ.E,2),1);
+        ind = find(isAllEven == 1);
+        Gscaled(:,ind) = 0.5 * Gscaled(:,ind);
+
         % determine length of the generators
-        len = sum(Gtemp.^2,1);
+        len = sum(Gscaled.^2,1);
         [~,ind] = sort(len,'ascend');
         
         % reduce the smallest generators

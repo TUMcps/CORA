@@ -3,10 +3,10 @@
 
 # To specify which MATLAB release to install in the container, edit the value of the MATLAB_RELEASE argument.
 # Use lower case to specify the release, for example: ARG MATLAB_RELEASE=r2023b
-ARG MATLAB_RELEASE=2025a
+ARG MATLAB_RELEASE=2025b
 
 # Specify the extra products to install into the image. These products can either be toolboxes or support packages.
-ARG ADDITIONAL_PRODUCTS="Symbolic_Math_Toolbox Optimization_Toolbox Statistics_and_Machine_Learning_Toolbox Deep_Learning_Toolbox Deep_Learning_Toolbox_Converter_for_ONNX_Model_Format Parallel_Computing_Toolbox"
+ARG ADDITIONAL_PRODUCTS="Symbolic_Math_Toolbox Optimization_Toolbox Statistics_and_Machine_Learning_Toolbox Deep_Learning_Toolbox Deep_Learning_Toolbox_Converter_for_ONNX_Model_Format Parallel_Computing_Toolbox Image_Processing_Toolbox"
 
 # This Dockerfile builds on the Ubuntu-based mathworks/matlab image.
 # To check the available matlab images, see: https://hub.docker.com/r/mathworks/matlab

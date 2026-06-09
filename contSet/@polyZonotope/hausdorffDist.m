@@ -66,8 +66,8 @@ function val = hausdorffDist(pZ,points,varargin)
     
     for i = 1:length(pZsplit)
         zono = zonotope(pZsplit{i});
-        temp = vertices(zono);
-        vert = [vert, temp];
+        zonoVerts = vertices(zono);
+        vert = [vert, zonoVerts];
     end
     
     % calculate the hausdorff-distance between the vertices and the point
@@ -75,10 +75,10 @@ function val = hausdorffDist(pZ,points,varargin)
     val = -inf;
     
     for i = 1:size(vert,2)
-       temp = points - vert(:,i) * ones(1,size(points,2));
-       len = sum(temp.^2,1);
-       valTemp = min(len);
-       val = max(val,sqrt(valTemp));
+       pointDiffs = points - vert(:,i) * ones(1,size(points,2));
+       len = sum(pointDiffs.^2,1);
+       minDist = min(len);
+       val = max(val,sqrt(minDist));
     end
 
 % ------------------------------ END OF CODE ------------------------------

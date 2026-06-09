@@ -1,0 +1,16 @@
+; Tests strict < and > comparison operators.
+; N: R^2 -> R^1, input X in (0, 1) x (0, 1), output Y[0] < 2.
+
+(vnnlib-version <2.0>)
+
+(declare-network N
+    (declare-input X real [2])
+    (declare-output Y real [1])
+)
+
+(assert (> X[0] 0.0))
+(assert (< X[0] 1.0))
+(assert (> X[1] 0.0))
+(assert (< X[1] 1.0))
+
+(assert (< Y[0] 2.0))

@@ -76,11 +76,11 @@ error_secondOrder = 0.5*quadMap(Z,H);
 % Lagrange remainder
 rem = interval(zeros(nlnsysDT.nrOfDims,1),zeros(nlnsysDT.nrOfDims,1));
 for i=1:length(ind)
-    temp = interval(0,0);
+    thirdOrderErr = interval(0,0);
     for j=1:length(ind{i})
-        temp = temp + (dz.' * T{i,ind{i}(j)}*dz) * dz(ind{i}(j));
+        thirdOrderErr = thirdOrderErr + (dz.' * T{i,ind{i}(j)}*dz) * dz(ind{i}(j));
     end
-    rem(i,1) = 1/6*temp;
+    rem(i,1) = 1/6*thirdOrderErr;
 end
 
 % overall abstraction error

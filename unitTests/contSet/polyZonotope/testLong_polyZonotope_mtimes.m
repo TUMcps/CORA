@@ -62,8 +62,8 @@ for i = 1:5
     cMat = center(matrix);
     
     for j = 1:N
-        temp = rand(2)*2 - ones(2);
-        mat{j} = cMat + temp.*rMat;
+        randOffset = rand(2)*2 - ones(2);
+        mat{j} = cMat + randOffset.*rMat;
     end
     
     % multiply the random matrices with the random points from the original
@@ -116,8 +116,8 @@ for i = 1:5
     cMat = center(matrix);
     
     for j = 1:N
-        temp = rand(4)*2 - ones(4);
-        mat{j} = cMat + temp.*rMat;
+        randOffset = rand(4)*2 - ones(4);
+        mat{j} = cMat + randOffset.*rMat;
     end
     
     % multiply the random matrices with the random points from the original

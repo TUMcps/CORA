@@ -122,8 +122,8 @@ function [E,EC,id] = aux_removeRedundanciesExpmat(E,EC,id)
 
     % remove empty rows from the exponent matrix
     E_ = [E,EC];
-    temp = find(sum(E_,2) == 0);
-    ind = setdiff(1:length(id),temp);
+    zeroRowIdx = find(sum(E_,2) == 0);
+    ind = setdiff(1:length(id),zeroRowIdx);
     
     E = E(ind,:); id = id(ind);
     if ~isempty(EC)

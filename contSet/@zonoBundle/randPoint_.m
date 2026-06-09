@@ -67,8 +67,8 @@ elseif strcmp(type,'extreme')
     
     % center polytope at origin
     c = center(zB);
-    temp = zB + (-c);
-    
+    zB_centered = zB + (-c);
+
     % loop over all points
     for i = 1:N
 
@@ -77,8 +77,8 @@ elseif strcmp(type,'extreme')
         d = rand(n,1) - 0.5*ones(n,1);
         d = d./norm(d);
 
-        % compute farthest point in this direction 
-        [~,x] = supportFunc_(temp,d,'upper');
+        % compute farthest point in this direction
+        [~,x] = supportFunc_(zB_centered,d,'upper');
         p(:,i) = x + c;     
     end
     

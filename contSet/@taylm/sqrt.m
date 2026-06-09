@@ -60,8 +60,8 @@ function res = aux_s_sqrt( obj )
         
         % check if the input taylor model is admissible (> 0)
         rem = interval(T);
-        temp = rem + c_f;
-        if infimum(temp) < 0
+        shiftedRange = rem + c_f;
+        if infimum(shiftedRange) < 0
             throw(CORAerror('CORA:outOfDomain','validDomain','>= 0'));
         end
     

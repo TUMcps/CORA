@@ -52,8 +52,8 @@ switch styleOfCalculation
                 % so 1 is used as the default value
                 result = priv_scalingSquaringHornerTaylorSeries(intMat,maxOrder,1);
             case 1
-                tmp = cell2mat(varargin);
-                result = priv_scalingSquaringHornerTaylorSeries(intMat,maxOrder,tmp(1));
+                vararginMat = cell2mat(varargin);
+                result = priv_scalingSquaringHornerTaylorSeries(intMat,maxOrder,vararginMat(1));
             otherwise 
                 result = [];
         end

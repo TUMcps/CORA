@@ -135,15 +135,15 @@ end
 function res = aux_checkSpaceStationHit(S,spaceStation)
 % check if the reachable set intersects the space station
 
-   temp = project(S,[1,2]);
+   projS = project(S,[1,2]);
    res = true;
-   
+
    % first check: is interval enclosure intersecting?
-   if isIntersecting(spaceStation,interval(temp))
-       
+   if isIntersecting(spaceStation,interval(projS))
+
        % second check: is reduced zonotope intersecting?
-       temp = reduce(temp,'girard',3);
-       if isIntersecting(spaceStation,temp)
+       projS = reduce(projS,'girard',3);
+       if isIntersecting(spaceStation,projS)
            res = false;
        end
    end

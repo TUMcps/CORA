@@ -178,11 +178,11 @@ function res = aux_innerApprox(f0,J,X)
        % dimensions
        for j = 1:m
           
-           temp = aux_innerApproxScalar(f0(i),J(i,:),X,j);
-           
-           if ~representsa_(temp,'emptySet',1e-12) && rad(temp) >= u(i) - l(i)
-               u(i) = supremum(temp);
-               l(i) = infimum(temp);
+           I = aux_innerApproxScalar(f0(i),J(i,:),X,j);
+
+           if ~representsa_(I,'emptySet',1e-12) && rad(I) >= u(i) - l(i)
+               u(i) = supremum(I);
+               l(i) = infimum(I);
            end
        end
     end

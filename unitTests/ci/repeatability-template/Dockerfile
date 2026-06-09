@@ -1,5 +1,5 @@
 # get image (default CORA image)
-FROM tobiasladnertum/cora:r2025a
+FROM tobiasladnertum/cora:r2025b
 WORKDIR /
 
 # ./code
