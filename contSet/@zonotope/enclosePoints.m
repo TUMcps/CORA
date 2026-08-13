@@ -43,7 +43,7 @@ function Z = enclosePoints(points,varargin)
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
-    
+
     % parse input arguments
     method = setDefaultValues({'maiga'},varargin);
 
@@ -146,7 +146,7 @@ function Z = aux_cloud2zonotope(X,ratio,s1)
         end
         [U,~] = svd(X);
         u = U(:,1);
-        g = ratio * abs(dot(u , r)) * u;
+        g = ratio * dot(abs(u),r) * u;
         X = aux_compress(X,g);
         c = c + mid;
         R = [R g];
@@ -161,11 +161,16 @@ end
 
 function X = aux_compress(X,g)
 % implementation of the compress function in [2]
-    
-    u = g/norm(g);
+
+    ng = norm(g);
+    if ng == 0
+        return
+    end
+
+    u = g/ng;
     for i=1:size(X,2)
        d = dot(X(:,i) , u);
-       d = min(norm(g),max(-norm(g),d));
+       d = min(ng,max(-ng,d));
        X(:,i) = X(:,i) - (d * u);
     end
 end
