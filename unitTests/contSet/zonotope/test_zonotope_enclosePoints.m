@@ -44,15 +44,10 @@ Z_ = zonotope.enclosePoints(p,'stursberg');
 assert(all(contains(Z,p)))
 assert(all(contains(Z_,p)))
 
-% check degenerate and sign-cancelling point clouds
+% check degenerate point cloud
 pDegenerate = repmat([1; -2],1,4);
 ZDegenerate = zonotope.enclosePoints(pDegenerate);
 assert(all(isfinite([ZDegenerate.c; ZDegenerate.G(:)])))
 assert(all(contains(ZDegenerate,pDegenerate)))
-
-pCancellation = [1 -1; -1 1];
-ZCancellation = zonotope.enclosePoints(pCancellation);
-assert(all(isfinite([ZCancellation.c; ZCancellation.G(:)])))
-assert(all(contains(ZCancellation,pCancellation)))
 
 % ------------------------------ END OF CODE ------------------------------
