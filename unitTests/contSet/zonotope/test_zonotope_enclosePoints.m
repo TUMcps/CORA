@@ -22,7 +22,7 @@ function res = test_zonotope_enclosePoints
 % Last revision: ---
 
 % ------------------------------ BEGIN CODE -------------------------------
- 
+
 % assume true
 res = true;
 
@@ -43,5 +43,11 @@ Z_ = zonotope.enclosePoints(p,'stursberg');
 % check if all points are contained
 assert(all(contains(Z,p)))
 assert(all(contains(Z_,p)))
+
+% check degenerate point cloud
+pDegenerate = repmat([1; -2],1,4);
+ZDegenerate = zonotope.enclosePoints(pDegenerate);
+assert(all(isfinite([ZDegenerate.c; ZDegenerate.G(:)])))
+assert(all(contains(ZDegenerate,pDegenerate)))
 
 % ------------------------------ END OF CODE ------------------------------
