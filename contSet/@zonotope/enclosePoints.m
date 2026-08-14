@@ -146,7 +146,7 @@ function Z = aux_cloud2zonotope(X,ratio,s1)
         end
         [U,~] = svd(X);
         u = U(:,1);
-        g = ratio * dot(abs(u),r) * u;
+        g = ratio * abs(dot(u , r)) * u;
         X = aux_compress(X,g);
         c = c + mid;
         R = [R g];
